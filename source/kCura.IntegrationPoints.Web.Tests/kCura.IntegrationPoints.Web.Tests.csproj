@@ -46,6 +46,12 @@
     <OutputPath>bin\x64\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NSubstitute">
+      <HintPath>..\packages\NSubstitute.1.7.2.0\lib\NET45\NSubstitute.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -74,6 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
