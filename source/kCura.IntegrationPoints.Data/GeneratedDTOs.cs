@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;  
+using System.Collections.Generic;
 using System.Text;
 using kCura.Relativity.Client;
 using kCura.IntegrationPoints.Data.Attributes;
 
 namespace kCura.IntegrationPoints.Data
 {
- 
+
 	[DynamicObject(ObjectTypes.IntegrationPoints, ObjectTypes.Workspace, "", ObjectTypeGuids.IntegrationPoints)]
 	public partial class IntegrationPoints : BaseRdo
 	{
@@ -28,8 +28,10 @@ namespace kCura.IntegrationPoints.Data
 		{
 			get
 			{
-				if (!(_fieldMetadata == null))
+				if (_fieldMetadata != null)
+				{
 					return _fieldMetadata;
+				}
 				_fieldMetadata = GetFieldMetadata(typeof(IntegrationPoints));
 				return _fieldMetadata;
 			}
@@ -39,8 +41,10 @@ namespace kCura.IntegrationPoints.Data
 		{
 			get
 			{
-				if (!(_objectMetadata == null))
+				if (_objectMetadata != null)
+				{
 					return _objectMetadata;
+				}
 				_objectMetadata = GetObjectMetadata(typeof(IntegrationPoints));
 				return _objectMetadata;
 			}

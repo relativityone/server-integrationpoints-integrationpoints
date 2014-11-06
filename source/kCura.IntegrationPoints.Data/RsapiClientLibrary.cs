@@ -13,28 +13,33 @@ namespace kCura.IntegrationPoints.Data
 	public class RsapiClientLibrary<T> : IGenericLibrary<T> where T: BaseRdo, new()
 	{
 		private readonly RDORepository _client;
-		
-		private DynamicObjectAttribute ObjectMetadata { get; set; }
-		private Dictionary<Guid, DynamicFieldAttribute> FieldMetadata;
-		
+				
 		public RsapiClientLibrary(IRSAPIClient client)
 		{
 			_client = client.Repositories.RDO;
-			ObjectMetadata = BaseRdo.GetObjectMetadata(typeof(T));
-			FieldMetadata = BaseRdo.GetFieldMetadata(typeof(T));
 		}
 
-		private void CheckResult<TResult>(ResultSet<TResult> result) where TResult : kCura.Relativity.Client.DTOs.Artifact
+		private static void CheckResult<TResult>(ResultSet<TResult> result) where TResult : kCura.Relativity.Client.DTOs.Artifact
 		{
-			throw new NotImplementedException();
+			if (!result.Success)
+			{
+				var messages = result.Results.Where(x => !x.Success).Select(x => x.Message);
+				var e = new AggregateException(result.Message, messages.Select(x => new Exception(x)));
+				throw e;
+			}
 		}
 
-		public int Create(T obj)
+		private static void CheckObject(T obj)
 		{
 			if (obj == null)
 			{
 				throw new ArgumentNullException("obj");
 			}
+		}
+
+		public int Create(T obj)
+		{
+			CheckObject(obj);
 			return Create(new List<T>{ obj}).First();
 		}
 
@@ -74,32 +79,52 @@ namespace kCura.IntegrationPoints.Data
 
 		public bool Update(T obj)
 		{
-			throw new NotImplementedException();
+			CheckObject(obj);
+			return Update(new List<T> {obj});
 		}
 
 		public bool Update(IEnumerable<T> objs)
 		{
-			throw new NotImplementedException();
+			var localList = objs.ToList();
+			if (!localList.Any())
+			{
+				return true;
+			}
+			var result = _client.Update(localList.Select(x => x.Rdo).ToList());
+			CheckResult(result);
+			return result.Success;
 		}
 
 		public bool Delete(int artifactId)
 		{
-			throw new NotImplementedException();
+			if (artifactId == 0)
+			{
+				throw new ArgumentException("artifactID");
+			}
+			return Delete(new List<int> {artifactId});
 		}
 
 		public bool Delete(IEnumerable<int> artifactIds)
 		{
-			throw new NotImplementedException();
+			var localList = artifactIds.ToList();
+			if (!localList.Any())
+			{
+				return true;
+			}
+			var result = _client.Delete(localList);
+			CheckResult(result);
+			return result.Success;
 		}
 
 		public bool Delete(T obj)
 		{
-			throw new NotImplementedException();
+			CheckObject(obj);
+			return Delete(new List<int> {obj.ArtifactId});
 		}
 
 		public bool Delete(IEnumerable<T> objs)
 		{
-			throw new NotImplementedException();
+			return Delete(objs.Select(x => x.ArtifactId));
 		}
 
 		public void MassDelete(IEnumerable<T> objs)
@@ -119,7 +144,9 @@ namespace kCura.IntegrationPoints.Data
 
 		public List<T> Query(Query<RDO> q, int pageSize = 0)
 		{
-			throw new NotImplementedException();
+			var result = _client.Query(q);
+			CheckResult(result);
+			return result.Results.Select(x => new T { Rdo = x.Artifact }).ToList();
 		}
 	}
 }
