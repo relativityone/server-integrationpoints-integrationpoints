@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("kCura.IntegrationPoints.Web")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("kCura.IntegrationPoints")]
+[assembly: AssemblyDescription("kCura.IntegrationPoints")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("kCura.IntegrationPoints.Web")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCompany("http://www.kcura.com")]
+[assembly: AssemblyProduct("kCura.IntegrationPoints")]
+[assembly: AssemblyCopyright("Copyright (c) 2015, kCura Corporation.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("3a913f54-706a-4e39-aec0-13c7411d928b")]
+//[assembly: Guid("9808fab4-ae17-49c5-a74a-e34543378422")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -29,7 +29,8 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-// You can specify all the values or you can default the Revision and Build Numbers 
+// You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
+// [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
