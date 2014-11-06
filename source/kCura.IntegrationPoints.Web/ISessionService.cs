@@ -8,5 +8,6 @@ namespace kCura.IntegrationPoints.Web
 {
 	public interface ISessionService
 	{
+		int WorkspaceID { get; }
 	}
 }
