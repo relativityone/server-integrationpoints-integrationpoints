@@ -41,8 +41,25 @@
     <OutputPath>bin\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core">
+      <HintPath>..\packages\Castle.Core.3.3.0\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor">
+      <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Relativity.Client, Version=8.1.225.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\kCura\kCura.Relativity.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\..\..\Method\Binaries\kCura\Mono.Cecil.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,12 +67,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseRDO.cs" />
+    <Compile Include="Attributes\DynamicFieldAttribute.cs" />
+    <Compile Include="Attributes\DynamicObjectAttribute.cs" />
+    <Compile Include="GeneratedDTOs.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+	      </Compile>
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <Compile Include="GeneratedStringConstants.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GeneratedStringConstants.tt</DependentUpon>
+    </Compile>
+    <Compile Include="IBaseRdo.cs" />
+    <Compile Include="IGenericLibrary.cs" />
+    <Compile Include="Installers\QueryInstallers.cs" />
+    <Compile Include="Queries\CreateErrorRdo.cs" />
+    <Compile Include="RsapiClientLibrary.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GeneratedDTOs.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GeneratedDTOs.cs</LastGenOutput>
+    </None>
+    <None Include="GeneratedStringConstants.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GeneratedStringConstants.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
