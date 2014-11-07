@@ -1,0 +1,12 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" > 
+	<ItemGroup>
+		<LDAPSyncSolutions Include="$(SourceRoot)\kCura.IntegrationPoints.sln;" />
+
+		<Solutions Include="@(LDAPSyncSolutions);" />
+	</ItemGroup>
+  
+	<Target Name="BuildMethod">
+		<MSBuild Projects="@(LDAPSyncSolutions)" Properties="@(Properties)" />
+	</Target>
+</Project>
+

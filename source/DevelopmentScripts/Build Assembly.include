@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+
+<project name="LDAPSync.Assembly">
+	<target name="update_version" description="Update LDAPSync AssemblyInfo files">
+		<echo message="Updating ${source.code.directory}/Version/AssemblyInfo.cs" />
+		<asminfo output="${source.code.directory}/Version/AssemblyInfo.cs" language="CSharp">
+			<imports>
+				<import namespace="System" />
+				<import namespace="System.Reflection" />
+				<import namespace="System.Runtime.CompilerServices" />
+				<import namespace="System.Runtime.InteropServices" />
+			</imports>
+			<attributes>
+				<attribute type="AssemblyDescriptionAttribute" value="kCura.IntegrationPoints" />			
+				<attribute type="AssemblyCompanyAttribute" value="${ProductLink}" /> 
+				<attribute type="AssemblyProductAttribute" value="kCura.IntegrationPoints" />
+				<attribute type="AssemblyCopyrightAttribute" value="Copyright (c) ${current.year}, kCura Corporation." />
+				<attribute type="AssemblyTrademarkAttribute" value="" />
+				<attribute type="AssemblyCultureAttribute" value="" />
+				<attribute type="ComVisibleAttribute" value="false" />
+				<attribute type="AssemblyVersionAttribute" value="${Product.Version}" />
+				<attribute type="AssemblyFileVersionAttribute" value="${Product.Version}" />
+			</attributes>
+		</asminfo>
+	</target>
+</project>

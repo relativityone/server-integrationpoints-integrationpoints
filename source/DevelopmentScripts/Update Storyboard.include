@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+
+<project name="LDAPSync.Package">
+	<property name="changeset.file.location" value="..\..\changesets.txt" />
+	
+
+	<target name="Update_Storyboard">
+	<exec program="${source.code.directory}\Dependencies\StoryboardCCNet.exe">
+			<arg value='/server:"172.16.84.42"' />
+			<arg value='/workspace:"1015532"' />
+			<arg value='/version:"${Product.Version}"' />
+			<arg value='/file:"${changeset.file.location}"' />
+			<arg value='/team:"Method"' />
+		</exec>
+	</target>
+</project>
