@@ -15,8 +15,8 @@ if not "%2" == "" (
 	SET "BUILDACTION=%2"
 )
 
-SET LDAPSyncRoot=%LDAPSync%\source
-pushd %LDAPSync%\source\developmentscripts
+SET LDAPSyncRoot=%LDAPSync%
+pushd %LDAPSync%\developmentscripts
 nant build -buildfile:"%BUILDPROJECT%" "-D:root=%LDAPSyncRoot%" "-D:buildconfig=%BUILDCONFIG%" "-D:action=%BUILDACTION%"
 popd
 
