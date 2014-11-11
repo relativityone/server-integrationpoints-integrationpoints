@@ -1,0 +1,113 @@
+
+*** Settings ***
+| Documentation		| Testing the LDAP tab in detail mode.
+| Metadata	     	| Authors	| William Sehy
+| Force Tags		| manual	| in-progress	| team.method
+| Suite Setup		| Log	| This is the suite setup keyword.
+| Test Setup		| Open Browser	| ${ROOT}
+| Test Teardown		| Close All Browsers
+| Suite Teardown	| Log	| This is the suite teardown keyword.
+
+
+*** Variables ***
+
+| ${WorkspaceName}	| Relativity Legal Hold
+
+ 
+*** Test Cases ***
+
+| The LDAP Tab's Fields are sorted correctly
+| | [Documentation]	| Verify that the LDAP tab's Fields are sorted correctly in read mode.
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Method Tab	| Settings
+| | ... | 2. Open Edit Mode
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Ensure that Scheduling Enabled is checked
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the fields, and headings, are in the following order
+| | ... | DETAIL
+| | ... | - LDAP Domain
+| | ... | - LDAP Username
+| | ... | - LDAP Password
+| | ... | - Overwrite Fields on Import
+| | ... | 
+| | ... | SCHEDULER
+| | ... | - Scheduling Enabled
+| | ... | - Interval (Only visible if Scheduling Enabled is checked)
+| | ... | - Start Date (Only visible if Scheduling Enabled is checked)
+| | ... | 
+| | ... | STATUS
+| | ... | - Last Job Start Date
+| | ... | - Last Job End Date
+| | ... | - Last Job Status
+
+
+| The LDAP Tab's Fields are of the correct Type
+| | [Documentation]	| Verify that the LDAP tab's Fields are of the correct type.
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Method Tab	| Settings
+| | ... | 2. Open Edit Mode
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Ensure that Scheduling Enabled is checked
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the fields have the correct Type:
+| | ... | - LDAP Domain: Text
+| | ... | - LDAP Username: Text
+| | ... | - LDAP Password: Text
+| | ... | - Overwrite Fields on Import: Yes/No Radio Buttons
+| | ... | 
+| | ... | - Scheduling Enabled: Yes/No Radio Buttons
+| | ... | - Interval: Dropdown
+| | ... | - Start Date: Date
+| | ... | 
+| | ... | - Last Job Start Date: Read-only
+| | ... | - Last Job End Date: Read-only
+| | ... | - Last Job Status: Read-only
+
+
+| The Interval and Start Date fields are hidden unless Scheduling Enabled is set to Yes
+| | [Documentation]	| Verify that the LDAP tab's Interval and Start Date fields are hidden unless the Scheduling Enabled checkbox is set to Yes.
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Method Tab	| Settings
+| | ... | 2. Open Edit Mode
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Ensure that Scheduling Enabled is set to Yes
+| | ... | 5. Set the Scheduling Enabled field to No
+| | ... |
+| | ... | Expected Results:
+| | ... | 6. The Interval and Start Date fields are hidden
+| | ... | 7. The Scheduling Enabled field is still visible
+| | ... | 
+| | ... | Steps:
+| | ... | 8. Set Scheduling Enabled to Yes
+| | ... | 
+| | ... | Expected Results:
+| | ... | 9. All three SCHEDULER fields are once again visible
+
+
+| Interval Dropdown List values
+| | [Documentation]	| Verify the Interval dropdown's list values are correct.
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Settings
+| | ... | 2. Click	| Edit
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Click	| Interval
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the following options are listed:
+| | ... | - Select ...
+| | ... | - Daily
+| | ... | - Weekly
+| | ... | - Monthly
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/Relativity/Shared/RelativityKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
