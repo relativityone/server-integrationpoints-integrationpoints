@@ -48,6 +48,14 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.EventHandler, Version=8.1.225.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\kCura\kCura.EventHandler.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Relativity.Client, Version=8.1.225.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Binaries\kCura\kCura.Relativity.Client.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -69,6 +77,8 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ConsoleEventHandlerBase.cs" />
+    <Compile Include="IntegrationPoints\ConsoleEventHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
