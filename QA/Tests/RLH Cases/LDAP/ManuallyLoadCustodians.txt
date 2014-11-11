@@ -1,0 +1,256 @@
+﻿ 
+*** Settings ***
+| Documentation 	| This series of testcases cover the manual LDAP button Load Custodians. 
+| ...			| within Method by pulling new Custodians from LDAP.
+| Metadata		| Authors	| Aaron Spruill	| Melissa Kelley-Windisch	| William Sehy
+| Force Tags		| manual	| in-progress	| sprint-3	| uaa140	| team.method
+| Suite Setup		| Log	| This is the suite setup keyword.
+| Test Setup		| Open Browser | ${ROOT}
+| Test Teardown 	| Close All Browsers
+| Suite Teardown	| Log	| This is the suite teardown keyword.
+
+
+*** Variables ***
+
+| ${WorkspaceName}	| Method-AS
+| ${LDAPDomain}		| testing.corp
+| ${LDAPUsername}	| rellockdown
+| ${LDAPPassword}	| P@ssw0rd@1
+
+
+*** Test Cases ***
+
+#1
+| Manually Run Load Custodians without a Field Map
+| | [Documentation]	| This testcase verifes that attempting to run Load Custodians without a Field Map fails.
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 2. LDAP server configured
+| | ... | 3. LDAP Settings are entered
+| | ... | 4. 1 new record available for import that has data in all fields
+| | ... | 5. Record the number of existing Custodians
+| | ... | 6. No LDAP Map is set up
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Login and Navigate to Configuration Option
+| | ... | 2. Click Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the following error message appears	| Cannot Load Custodians because there are no LDAP Fields Mapped.
+| | ... | 2. Verify that no new Custodians are created
+
+#2
+| Run Manual Load Custodians with a Record Missing Some Standard Data
+| | [Documentation]	| This testcase utilizes the manual Load Custodians button to import an employee
+| | ... 		| record from LDAP that is missing data from standard fields.
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 2. LDAP server configured
+| | ... | 3. 1 new record available for import with data missing from First Name and Last Name
+| | ... | 4. 1 new record available for import that has data in all fields
+| | ... | 5. Record the number of existing Custodians
+| | ... | 6. An LDAP Map must be correctly setup
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Login and Navigate to Configuration Option
+| | ... | 2. Click Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify the manual update completed successfully (success message, log, etc)
+| | ... | 2. Verify that the number of Custodians is now 2 more than what was recorded in the pre-conditions
+| | ... | 3. Verify that the 1 Custodian with the missing standard fields was created
+
+#3
+| Run Manual Load Custodians with a Record Missing Some Custom Data
+| | [Documentation]	| This testcase utilizes the manual Load Custodians button to import an employee
+| | ... 		| record from LDAP that is missing data from custom fields.
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 2. LDAP server configured
+| | ... | 3. 1 new record available for import with data missing from Department and Current Title
+| | ... | 4. 1 new record available for import that has data in all fields
+| | ... | 5. Record the number of existing Custodians
+| | ... | 6. An LDAP Map must be correctly setup
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Login and Navigate to Configuration Option
+| | ... | 2. Click Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify the manual update completed successfully (success message, log, etc)
+| | ... | 2. Verify that the number of Custodians is now 2 more than what was recorded in the pre-conditions
+| | ... | 3. Verify that the 1 Custodian with the missing custom fields was created
+
+#4
+| Run Manual Load Custodians and Disable the Agent During Execution
+| | [Documentation]	| This testcase utilizes the manual Load Custodians button to import an employee
+| | ... 		| records from LDAP but stops the import agent in the middle of the job
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 2. LDAP server configured
+| | ... | 3. x records that do not already exist in Method
+| | ... | 4. Record the number of existing Custodians
+| | ... | 5. Record the Method data for the records in the import job
+| | ... | 6. An LDAP Map must be correctly setup
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Login and Navigate to Configuration Option
+| | ... | 2. Open a Remote Desktop Connection to the environment you are testing 
+| | ... | 3. Click Load Custodians
+| | ... | 4. Pause for x seconds
+| | ... | 5. Stop the Relativity Legal Hold Agent on the Environment
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify the manual update finished loading the Custodians before disabling the agent.
+| | ... | 2. Figure out how many records, if any, were added by comparing the current number of Custodians with the number from pre-conditions.
+| | ... | 3. Check for any open threads.
+| | ... | 4. Restart the agent service
+
+#5
+| Run Manual Load Custodians and Break the Connection to the Agent Server During Execution
+| | [Documentation]	| This testcase utilizes the manual Load Custodians button to import employee records from 
+| | ... 		| LDAP but breaks the connection to the agent server in the middle of the job.
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 2. LDAP server configured and running on a different server
+| | ... | 3. x records that do not already exist in Method
+| | ... | 4. Record the number of existing Custodians
+| | ... | 5. Record the Method data for the records in the import job
+| | ... | 6. An LDAP Map must be correctly setup
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Login and Navigate to Configuration Option
+| | ... | 2. Pause for x seconds
+| | ... | 3. Stop the Relativity Agent Service on the Environment
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify the Custodian Creator failed into a recoverable state and logged the error (success message, log, etc).
+| | ... | 2. Figure out how many records, if any, were added by comparing the current number of Custodians with the number from pre-conditions.
+| | ... | 3. Check for any open threads.
+| | ... | 4. Restart the agent service
+
+
+#| | ... | Notes: These are the ones that are different than the automatic ones...
+#6
+| Run Manual Load Custodians while Previous Instance is Still Executing
+| | [Documentation]	| This testcase utilizes the manual Load Custodians button to import employee records from 
+| | ... 		| LDAP and then clicks on the button again while the process is still running.  This 
+| | ... 		| will verify that clicking the button a second time does not disrupt the import in progress or corrupt data.
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 2. LDAP server configured
+| | ... | 3. x records that do not already exist in Method
+| | ... | 4. Record the number of existing Custodians
+| | ... | 5. An LDAP Map must be correctly setup
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Login and Navigate to Configuration Option
+| | ... | 2. Pause for 1 second
+| | ... | 3. Click Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify the Custodian Creator succeeded or failed into a recoverable state and logged the error (success message, log, etc).
+| | ... | 2. Figure out how many records, if any, were added by comparing the current number of Custodians with the number from pre-conditions.
+| | ... | 3. Check for any open threads.
+
+#7
+| Run Manual Load Custodians from Two Workspaces Simultaneously
+| | [Documentation]	| This testcase utilizes the manual Load Custodians button to import employee records from 
+| | ... 		| LDAP into 2 workspaces at the same time.  This will need to be run under two separate logins
+| | ... 		| to access two workspaces and click the buttons at the same time.
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 2. LDAP server configured
+| | ... | 3. x records each that do not already exist in either Method instance
+| | ... | 4. Record the number of existing Custodians in each workspace
+| | ... | 5. An LDAP Map must be correctly setup
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Login and Navigate to Configuration Option
+| | ... | 2. Open a browser on a different server and log in to Relativity as | milylitest+2@gmail.com
+| | ... | 2. Go to the Workspace	| Method-AS2
+| | ... | 3. Go to the Tab		| Configuration
+| | ... | 4. Click			| LDAP Settings
+| | ... | 5. Click          		| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify the manual update succeeded or failed into a recoverable state and logged the error (success message, log, etc).	| #if this fails we may have a problem as we need to be able to import in more than workspace
+| | ... | 2. Figure out how many records, if any, were added to each workspace by comparing the current number of Custodians with the number from pre-conditions.
+| | ... | 3. Check for any open threads.
+
+#8
+| Run Manual Load Custodians While a Scheduled Automatic Update is Running.
+| | [Documentation]	| This testcase utilizes the manual Load Custodians button to import employee records while
+| | ... 		| a scheduled automatic update is currently running.
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 2. LDAP server configured
+| | ... | 3. x records each that do not already exist in Method
+| | ... | 4. Record the number of existing Custodians
+| | ... | 5. An LDAP Map must be correctly setup
+| | ... | 6. Scheduler configured and a current batch running
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Login and Navigate to Configuration Option
+| | ... | 2. Click Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify the manual update succeeded or failed into a recoverable state and logged the error (success message, log, etc).	| #if this fails we need to verify that it fails gracefully with an appropriate error message
+| | ... | 2. Figure out how many records, if any, were added by comparing the current number of Custodians with the number from pre-conditions.	|  #All records should be added from the automatic update that was running
+| | ... | 3. Check for any open threads.
+
+#9
+| Manually Loading Custodians updates the LDAP Status fields
+| | [Documentation]	| Verifies that manually updating Custodians with the Load Custodians button updates the three LDAP Status fields.
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. LDAP server configured
+| | ... | 2. An LDAP Map must be correctly setup
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Method Tab	| Settings
+| | ... | 2. Click Load Custodians
+| | ... | 3. Wait for the Custodians to finish loading
+| | ... | 4. Refresh the page
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. The Last Job Start Date field has been updated
+| | ... | 2. The Last Job End Date field has been updated
+| | ... | 3. The Last Job Status field has been updated
+
+
+*** Keywords ***
+
+| Login and Navigate to Configuration Option
+| | [ARGUMENTS] 	| ${WorkspaceName}
+| | Run the following manual steps:
+| | ... | 1. Open a browser and log in to Method
+| | ... | 2. Go to the Workspace	| ${WorkspaceName}
+| | ... | 3. Go to the Tab		| Configuration
+| | ... | 4. Click			| LDAP Settings
+| | ... | 5. Click          		| Load Custodians
+
+| Configure LDAP with the Following Values
+| | Run the following manual steps:
+| | ... | 1. Click			| Edit
+| | ... | 2. Enter the LDAP Domain	| testing.corp
+| | ... | 3. Enter the LDAP Username	| rellockdown
+| | ... | 4. Enter the LDAP Password	| P@ssw0rd@1
+| | ... | 5. Click			| Save
+
+| Create Basic Method LDAP Mapping
+| | [Documentation]	| Go to the Projects > Configuration tab and map LDAP fields to Method Custodian fields.
+| | Select Tab		| Settings
+| | Click the Button	| Map LDAP Fields
+| | Map the Fields	| Objectguid	| Unique ID
+| | Map the Fields	| name		| First Name
+| | Map the Fields	| sn		| Last Name
+| | Map the Fields	| mail		| Email
+| | Map the Fields	| countrycode	| Department
+| | Click the Button	| Save
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/Relativity/Shared/RelativityKeywords.txt

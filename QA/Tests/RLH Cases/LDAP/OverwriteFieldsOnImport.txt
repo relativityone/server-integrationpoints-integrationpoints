@@ -1,0 +1,334 @@
+ 
+*** Settings ***
+| Documentation 	| Testing the configuration field Overwrite on Import for Custodians LDAP import.
+| Metadata			| Authors	| Joe Stramaglia III	| William Sehy
+| Force Tags		| manual	| in-progress	| sprint-11	| uaa402	| team.method
+| Suite Setup		| Log	| This is the suite setup keyword.
+| Test Setup		| Open and Log in to Method
+| Test Teardown 	| Close All Browsers
+| Suite Teardown	| Log	| This is the suite teardown keyword.
+
+
+*** Variables ***
+
+| ${WorkspaceName}		| Method-xxx
+
+
+*** Test Cases ***
+
+| Custodians Import, New Custodians, No Changes to Old, Overwrite set to Yes
+| | [Documentation]	| Verify the functionality of import with the settings described in the title of this test
+| | Run the following manual steps:
+| | ... | Pre-conditions: 
+| | ... | 1. Given LDAP settings have been configured (See "Configure LDAP Settings" in the Keywords section at the bottom.)
+| | ... | 2. Given there are new Custodians that have not been imported in LDAP.
+| | ... | 3. Given there have not been modifications to existing Custodians in LDAP.
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Settings
+| | ... | 2. Open Edit Mode 
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Set Checkbox	| Overwrite Fields on Import	| Yes
+| | ... | 5. Click Button	| Save
+| | ... | 6. Click Button	| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the additional Custodians have been added with the correct information.
+| | ... | 2. Verify there have been no changes made to existing Custodians in Method.
+
+
+| Custodians Import, New Custodians, Changes to Old, Overwrite set to Yes
+| | [Documentation]	| Verify the functionality of import with the settings described in the title of this test
+| | Run the following manual steps:
+| | ... | Pre-conditions: 
+| | ... | 1. Given LDAP settings have been configured (See "Configure LDAP Settings" in the Keywords section at the bottom.)
+| | ... | 2. Given there are new Custodians that have not been imported in LDAP.
+| | ... | 3. Given there have been modifications to existing Custodians in LDAP.
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Settings
+| | ... | 2. Open Edit Mode 
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Set Checkbox	| Overwrite Fields on Import | Yes
+| | ... | 5. Click Button	| Save
+| | ... | 6. Click Button	| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the additional Custodians have been added with the correct information.
+| | ... | 2. Verify the changes made to the Custodians in LDAP have been applied to the Custodians in Method.
+
+
+| Custodians Import, No New Custodians, Changes to Old, Overwrite set to Yes
+| | [Documentation]	| Verify the functionality of import with the settings described in the title of this test
+| | Run the following manual steps:
+| | ... | Pre-conditions: 
+| | ... | 1. Given LDAP settings have been configured (See "Configure LDAP Settings" in the Keywords section at the bottom.)
+| | ... | 2. Given there are no new Custodians that have not been imported in LDAP.
+| | ... | 3. Given there have been modifications to existing Custodians in LDAP.
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Settings
+| | ... | 2. Open Edit Mode 
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Set Checkbox	| Overwrite Fields on Import | Yes
+| | ... | 5. Click Button	| Save
+| | ... | 6. Click Button	| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that there are no additional Custodians loaded into Method.
+| | ... | 2. Verify the changes made to the Custodians in LDAP have been applied to the Custodians in Method.
+
+
+| Custodians Import, No New Custodians, No Changes to Old, Overwrite set to Yes
+| | [Documentation]	| Verify the functionality of import with the settings described in the title of this test
+| | Run the following manual steps:
+| | ... | Pre-conditions: 
+| | ... | 1. Given LDAP settings have been configured (See "Configure LDAP Settings" in the Keywords section at the bottom.)
+| | ... | 2. Given there are no new Custodians that have not been imported in LDAP.
+| | ... | 3. Given there have not been modifications to existing Custodians in LDAP.
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Settings
+| | ... | 2. Open Edit Mode 
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Set Checkbox	| Overwrite Fields on Import | Yes
+| | ... | 5. Click Button	| Save
+| | ... | 6. Click Button	| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that there are no additional Custodians loaded into Method.
+| | ... | 2. Verify there have been no changes made to existing Custodians in Method.
+
+
+| Custodians Import, Custodians Removed, Overwrite set to Yes
+| | [Documentation]	| Verify the functionality of import with the settings described in the title of this test.
+| | Run the following manual steps:
+| | ... | Pre-conditions: 
+| | ... | 1. Given LDAP settings have been configured (See "Configure LDAP Settings" in the Keywords section at the bottom.)
+| | ... | 2. Given a Custodian that had previously been loaded into Relativity has since been removed from the Source.
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Settings
+| | ... | 2. Open Edit Mode 
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Set Checkbox	| Overwrite Fields on Import | Yes
+| | ... | 5. Click Button	| Save
+| | ... | 6. Click Button	| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify the removed Custodians still appears.
+
+
+| Custodians Import, Field Added, Overwrite set to Yes
+| | [Documentation]	| Verify the functionality of import with the settings described in the title of this test.
+| | Run the following manual steps:
+| | ... | Pre-conditions: 
+| | ... | 1. Given LDAP settings have been configured (See "Configure LDAP Settings" in the Keywords section at the bottom) and has been run.
+| | ... | 2. Given a field have been added to the Mapped Fields.
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Settings
+| | ... | 2. Open Edit Mode 
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Set Checkbox	| Overwrite Fields on Import | Yes
+| | ... | 5. Click Button	| Save
+| | ... | 6. Click Button	| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify the new field's data is loaded to all of the Custodians from LDAP.
+
+
+| Custodians Import, Field Removed, Overwrite set to Yes
+| | [Documentation]	| Verify the functionality of import with the settings described in the title of this test.
+| | Run the following manual steps:
+| | ... | Pre-conditions: 
+| | ... | 1. Given LDAP settings have been configured (See "Configure LDAP Settings" in the Keywords section at the bottom) and has been run.
+| | ... | 2. Given a field have been removed from the Mapped Fields.
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Settings
+| | ... | 2. Open Edit Mode 
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Set Checkbox	| Overwrite Fields on Import | Yes
+| | ... | 5. Click Button	| Save
+| | ... | 6. Click Button	| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify the removed field's data is still present on all of the Custodians from LDAP.
+
+
+| Custodians Import, New Custodians, Changes to Old, Overwrite set to No
+| | [Documentation]	| Verify the functionality of import with the settings described in the title of this test
+| | Run the following manual steps:
+| | ... | Pre-conditions: 
+| | ... | 1. Given LDAP settings have been configured (See "Configure LDAP Settings" in the Keywords section at the bottom.)
+| | ... | 2. Given there are new Custodians that have not been imported in LDAP.
+| | ... | 3. Given there have been modifications to existing Custodians in LDAP.
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Settings
+| | ... | 2. Open Edit Mode 
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Set Checkbox	| Overwrite Fields on Import | No
+| | ... | 5. Click Button	| Save
+| | ... | 6. Click Button	| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the additional Custodians have been added with the correct information.
+| | ... | 2. Verify there have been no changes made to existing Custodians in Method.
+
+
+| Custodians Import, No New Custodians, Changes to Old, Overwrite set to No
+| | [Documentation]	| Verify the functionality of import with the settings described in the title of this test
+| | Run the following manual steps:
+| | ... | Pre-conditions: 
+| | ... | 1. Given LDAP settings have been configured (See "Configure LDAP Settings" in the Keywords section at the bottom.)
+| | ... | 2. Given there are no new Custodians that have not been imported in LDAP.
+| | ... | 3. Given there have been modifications to existing Custodians in LDAP.
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Settings
+| | ... | 2. Open Edit Mode 
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Set Checkbox	| Overwrite Fields on Import | No
+| | ... | 5. Click Button	| Save
+| | ... | 6. Click Button	| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that there are no additional Custodians loaded into Method.
+| | ... | 2. Verify there have been no changes made to existing Custodians in Method.
+
+
+| Custodians Import, New Custodians, No Changes to Old, Overwrite set to No
+| | [Documentation]	| Verify the functionality of import with the settings described in the title of this test
+| | Run the following manual steps:
+| | ... | Pre-conditions: 
+| | ... | 1. Given LDAP settings have been configured (See "Configure LDAP Settings" in the Keywords section at the bottom.)
+| | ... | 2. Given there are new Custodians that have not been imported in LDAP.
+| | ... | 3. Given there have not been modifications to existing Custodians in LDAP.
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Settings
+| | ... | 2. Open Edit Mode 
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Set Checkbox	| Overwrite Fields on Import | No
+| | ... | 5. Click Button	| Save
+| | ... | 6. Click Button	| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the additional Custodians have been added with the correct information.
+| | ... | 2. Verify there have been no changes made to existing Custodians in Method.
+
+
+| Custodians Import, No New Custodians, No Changes to Old, Overwrite set to No
+| | [Documentation]	| Verify the functionality of import with the settings described in the title of this test
+| | Run the following manual steps:
+| | ... | Pre-conditions: 
+| | ... | 1. Given LDAP settings have been configured (See "Configure LDAP Settings" in the Keywords section at the bottom.)
+| | ... | 2. Given there are no new Custodians that have not been imported in LDAP.
+| | ... | 3. Given there have not been modifications to existing Custodians in LDAP.
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Settings
+| | ... | 2. Open Edit Mode 
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Set Checkbox	| Overwrite Fields on Import | No
+| | ... | 5. Click Button	| Save
+| | ... | 6. Click Button	| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that there are no additional Custodians loaded into Method.
+| | ... | 2. Verify there have been no changes made to existing Custodians in Method.
+
+
+| Custodians Import, Changes to Old, Overwrite set to No
+| | [Documentation]	| Verify the functionality of import with the settings described in the title of this test
+| | Run the following manual steps:
+| | ... | Pre-conditions: 
+| | ... | 1. Given LDAP settings have been configured (See "Configure LDAP Settings" in the Keywords section at the bottom).
+| | ... | 2. Given a Custodian that had previously been loaded into Relativity has since been removed from the Source.
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Settings
+| | ... | 2. Open Edit Mode 
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Set Checkbox	| Overwrite Fields on Import | No
+| | ... | 5. Click Button	| Save
+| | ... | 6. Click Button	| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the removed Custodians still appears.
+
+
+| Custodians Import, Field Added, Overwrite set to No
+| | [Documentation]	| Verify the functionality of import with the settings described in the title of this test
+| | Run the following manual steps:
+| | ... | Pre-conditions: 
+| | ... | 1. Given LDAP settings have been configured (See "Configure LDAP Settings" in the Keywords section at the bottom) and has been run.
+| | ... | 2. Given a field have been added to the Mapped Fields.
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Settings
+| | ... | 2. Open Edit Mode 
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Set Checkbox	| Overwrite Fields on Import | No
+| | ... | 5. Click Button	| Save
+| | ... | 6. Click Button	| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify the new field is not added to existing Custodians but is added to any New Custodians.
+
+
+| Custodians Import, New Custodians, Custodians Removed, Changes to Old, Field Added, Field Removed, Overwrite set to No
+| | [Documentation]	| Verify the functionality of import with the settings described in the title of this test
+| | Run the following manual steps:
+| | ... | Pre-conditions: 
+| | ... | 1. Given LDAP settings have been configured (See "Configure LDAP Settings" in the Keywords section at the bottom) and has been run.
+| | ... | 2. Given a field have been removed from the Mapped Fields.
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Settings
+| | ... | 2. Open Edit Mode 
+| | ... | 3. Click Section Tab	| LDAP
+| | ... | 4. Set Checkbox	| Overwrite Fields on Import | No
+| | ... | 5. Click Button	| Save
+| | ... | 6. Click Button	| Load Custodians
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify the removed field is still present, except on the New Custodians.
+
+
+*** Keywords ***
+
+| Configure LDAP Settings
+| | Configure LDAP with the Following Values
+| | Create Basic Method LDAP Mapping
+
+| Configure LDAP with the Following Values
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Settings
+| | ... | 2. Open Edit Mode
+| | ... | 3. Click Section Tab		| LDAP
+| | ... | 4. Enter the LDAP Domain	| testing.corp
+| | ... | 5. Enter the LDAP Username	| rellockdown
+| | ... | 6. Enter the LDAP Password	| P@ssw0rd@1
+| | ... | 7. Click	| Save
+
+| Create Basic Method LDAP Mapping
+| | [Documentation]	| Goes to the Method Tab Settings and maps LDAP fields to Method Custodian fields.
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Settings
+| | ... | 2. Click	| Map Fields
+| | ... | 3. Map the following Fields from the left and right sections respectively	| Objectguid	| Unique ID
+| | ... | 4. Map the following Fields from the left and right sections respectively	| name			| First Name
+| | ... | 5. Map the following Fields from the left and right sections respectively	| sn			| Last Name
+| | ... | 6. Map the following Fields from the left and right sections respectively	| mail			| Email
+| | ... | 7. Map the following Fields from the left and right sections respectively	| countrycode	| Department
+| | ... | 8. Click	| Save
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/Relativity/Shared/RelativityKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
