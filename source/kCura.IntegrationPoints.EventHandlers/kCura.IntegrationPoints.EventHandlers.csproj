@@ -79,6 +79,8 @@
     </Compile>
     <Compile Include="ConsoleEventHandlerBase.cs" />
     <Compile Include="IntegrationPoints\ConsoleEventHandler.cs" />
+    <Compile Include="IntegrationPoints\PreLoadEventHandler.cs" />
+    <Compile Include="PreLoadEventHandlerBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

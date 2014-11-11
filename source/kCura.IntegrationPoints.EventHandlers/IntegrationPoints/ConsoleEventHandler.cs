@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				OnClickEvent = "alert('hello world')",
 				Enabled = true
 			});
-
+			
 			return console;
 		}
 
