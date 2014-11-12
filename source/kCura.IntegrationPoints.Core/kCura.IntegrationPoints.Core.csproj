@@ -56,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application.cs" />
     <Compile Include="Installers\ServicesInstaller.cs" />
     <Compile Include="Models\ErrorModel.cs" />
     <Compile Include="..\Version\AssemblyInfo.cs">
@@ -64,9 +65,9 @@
     <Compile Include="Services\CreateError.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
