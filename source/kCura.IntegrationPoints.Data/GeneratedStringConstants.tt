@@ -1,5 +1,5 @@
 ﻿<#@ template language="C#" hostspecific="true" debug="true" #>
-<#@ assembly name="$(ProjectDir)\..\Binaries\Milyli.Relativity.CodeGen\GeneratorHelper.dll" #>
+<#@ assembly name="$(ProjectDir)\..\Dependencies\Milyli.Relativity.CodeGen\GeneratorHelper.dll" #>
 <#@ assembly name="System.Core.dll" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Linq" #>
