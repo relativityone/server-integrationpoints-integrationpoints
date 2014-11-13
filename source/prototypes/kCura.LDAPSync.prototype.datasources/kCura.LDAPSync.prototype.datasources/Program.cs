@@ -4,9 +4,14 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
+using kCura.LDAPSync.prototype.datasources.Extensions;
 using kCura.LDAPSync.prototype.datasources.Implementations;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace kCura.LDAPSync.prototype.datasources
 {
@@ -28,39 +33,12 @@ namespace kCura.LDAPSync.prototype.datasources
 
 		public static void Main(string[] args)
 		{
-			var source = new JsonDataSource("source.json");
-			var dt = GetDataSource(source);
+			var manager = new Manager(new DataSourceFactory());
+			manager.Execute();
 
-			var converter = new FileDataConverter("output.txt");
-			var sourceFields = GetDataSourceFields();
-			var destinationFields = GetOutputFields();
-			IEnumerable<FieldMap> result = sourceFields.Zip(destinationFields, (x, y) => new FieldMap
-			{
-				SourceField = x,
-				DestinationField = y
-			});
-
-			converter.SyncData(new BsEnumerable(dt), result);
+			var worker = new Worker(new DataConverterFactory(), new DataSourceFactory());
+			worker.Execute();
 		}
-
-
-
-		private static DataTable GetDataSource(IDataSource source)
-		{
-			var reader = source.GetData(new List<FieldEntry>());
-
-			var dt = reader.GetSchemaTable();
-			while (reader.Read())
-			{
-				var r = dt.NewRow();
-				for (var i = 0; i < dt.Columns.Count; i++)
-				{
-					r[i] = reader.GetString(i);
-				}
-				dt.Rows.Add(r);
-			}
-			return dt;
-		}
-
+		
 	}
 }

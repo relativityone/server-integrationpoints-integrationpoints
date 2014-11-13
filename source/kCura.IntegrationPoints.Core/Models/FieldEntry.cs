@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace kCura.LDAPSync.prototype.datasources
+namespace kCura.IntegrationPoints.Core.Models
 {
 	public enum FieldType
 	{

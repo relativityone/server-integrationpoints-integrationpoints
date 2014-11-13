@@ -9,7 +9,7 @@ namespace kCura.LDAPSync.prototype.datasources
 	/// <summary>
 	/// Provides a means to query a datasource to see which fields are available to map
 	/// </summary>
-	public interface IFieldQuery
+	public interface IFieldProvider
 	{
 		/// <summary>
 		/// Gets the fields that the datasource deems mapable

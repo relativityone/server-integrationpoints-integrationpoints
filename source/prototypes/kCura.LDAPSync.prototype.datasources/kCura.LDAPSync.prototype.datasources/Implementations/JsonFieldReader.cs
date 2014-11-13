@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace kCura.LDAPSync.prototype.datasources.Implementations
 {
-	public class JsonFieldReader : IFieldQuery
+	public class JsonFieldReader : IFieldProvider
 	{
 		private readonly string _file;
 		public JsonFieldReader(string file)
@@ -15,7 +15,7 @@ namespace kCura.LDAPSync.prototype.datasources.Implementations
 
 		private class Structure
 		{
-			public List<string> Fields { get; set; } 
+			public List<string> Fields { get; set; }
 		}
 
 		public IEnumerable<FieldEntry> GetFields()
@@ -24,14 +24,14 @@ namespace kCura.LDAPSync.prototype.datasources.Implementations
 			{
 				string json = r.ReadToEnd();
 				var items = JsonConvert.DeserializeObject<Structure>(json);
-				return items.Fields.Select(x=>new FieldEntry
+				return items.Fields.Select(x => new FieldEntry
 				{
 					DisplayName = x,
 					FieldIdentifier = x,
 					FieldType = FieldType.String
 				});
 			}
-			
+
 		}
 	}
 }

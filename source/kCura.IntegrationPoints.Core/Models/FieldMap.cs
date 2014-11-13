@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace kCura.LDAPSync.prototype.datasources
+namespace kCura.IntegrationPoints.Core.Models
 {
 	/// <summary>
 	/// Responsible for where the data is coming from to where the data is going to
@@ -21,6 +20,6 @@ namespace kCura.LDAPSync.prototype.datasources
 		/// </summary>
 		public FieldEntry DestinationField { get; set; }
 
-		public bool IsIDField { get; set; }
+		public bool IsIdentifier { get; set; }
 	}
 }

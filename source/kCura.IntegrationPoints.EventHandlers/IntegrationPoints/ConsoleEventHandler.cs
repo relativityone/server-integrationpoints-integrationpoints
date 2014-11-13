@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using kCura.EventHandler;
+using kCura.Relativity.Client;
 using Console = kCura.EventHandler.Console;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints

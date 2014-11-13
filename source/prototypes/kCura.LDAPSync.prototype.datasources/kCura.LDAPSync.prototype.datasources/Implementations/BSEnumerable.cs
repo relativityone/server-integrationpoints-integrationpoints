@@ -11,22 +11,26 @@ namespace kCura.LDAPSync.prototype.datasources.Implementations
 	/// <summary>
 	/// Intermediate source could be used for buffering, filtering, etc..
 	/// </summary>
-	public class BsEnumerable : IEnumerable<DataRow>
+	public class BsEnumerable : IEnumerable<IDictionary<FieldEntry, object>>
 	{
 		private readonly DataTable _source;
-		public BsEnumerable(DataTable source)
+		private readonly IDictionary<string,FieldEntry> _entries; 
+		public BsEnumerable(DataTable source, IEnumerable<FieldEntry> entries)
 		{
 			_source = source;
+			_entries = entries.ToDictionary(x => x.FieldIdentifier, x=>x);
 		}
-		public IEnumerator<DataRow> GetEnumerator()
+
+		public IEnumerator<IDictionary<FieldEntry, object>> GetEnumerator()
 		{
 			foreach (DataRow row in _source.Rows)
 			{
-				if (row.Field<string>(0).Contains("skip"))
+				var dictionary = new Dictionary<FieldEntry, object>();
+				foreach (DataColumn column in row.Table.Columns)
 				{
-					continue;
+					dictionary.Add(_entries[column.ColumnName], row[column]);
 				}
-				yield return row;
+				yield return dictionary;
 			}
 		}
 

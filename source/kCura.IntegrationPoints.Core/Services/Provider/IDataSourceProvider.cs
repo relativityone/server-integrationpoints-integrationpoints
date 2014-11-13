@@ -4,10 +4,11 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Models;
 
-namespace kCura.LDAPSync.prototype.datasources
+namespace kCura.IntegrationPoints.Core.Services.Provider
 {
-	public interface IDataSourceProvider
+	public interface IDataSourceProvider : IFieldProvider
 	{
 		/// <summary>
 		/// Gets the data from the source

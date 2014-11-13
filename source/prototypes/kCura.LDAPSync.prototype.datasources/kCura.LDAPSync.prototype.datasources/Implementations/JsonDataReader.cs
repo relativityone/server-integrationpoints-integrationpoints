@@ -9,23 +9,38 @@ namespace kCura.LDAPSync.prototype.datasources.Implementations
 {
 	public class JsonDataReader : IDataReader
 	{
-		private JArray _obj;
+		private JArray _object;
+		private JArray Obj
+		{
+			get
+			{
+				if (_object == null)
+				{
+					using (var r = new StreamReader(_filePath))
+					{
+						string json = r.ReadToEnd();
+						var temp = JsonConvert.DeserializeObject<JObject>(json);
+						_object = temp["data"] as JArray;
+					}
+				}
+				return _object;
+			}
+		}
 		private readonly string _filePath;
-		private int _index ;
+		private int _index;
 
-		public JsonDataReader(string filePath)
+		public JsonDataReader(string filePath, string field)
 		{
 			_filePath = filePath;
 			_index = -1;
 		}
 		public void Dispose()
 		{
-			_obj = null;
 		}
 
 		public string GetName(int i)
 		{
-			var col = _obj.Children<JObject>().First().Properties().Select(x => x.Name).ToList()[i];
+			var col = Obj.Children<JObject>().First().Properties().Select(x => x.Name).ToList()[i];
 			return col;
 		}
 
@@ -36,12 +51,12 @@ namespace kCura.LDAPSync.prototype.datasources.Implementations
 
 		public Type GetFieldType(int i)
 		{
-			throw new NotImplementedException();
+			return typeof (string);
 		}
 
 		public object GetValue(int i)
 		{
-			return _obj[_index].Values().ToList()[i].Value<string>();
+			return Obj[_index].Values().ToList()[i].Value<string>();
 		}
 
 		public int GetValues(object[] values)
@@ -138,12 +153,8 @@ namespace kCura.LDAPSync.prototype.datasources.Implementations
 		{
 			get
 			{
-				if (_obj == null)
-				{
-					this.Read();
-				}
-				var cols = _obj.Children<JObject>().First().Properties().Select(x => x.Name).ToList();
-				return cols.Count();
+				var cols = Obj.Children<JObject>().First().Properties().Select(x => x.Name).ToList();
+				return cols.Count() -1;
 			}
 		}
 
@@ -165,16 +176,12 @@ namespace kCura.LDAPSync.prototype.datasources.Implementations
 
 		public void Close()
 		{
-			
+
 		}
 
 		public DataTable GetSchemaTable()
 		{
-			if (_obj == null)
-			{
-				this.Read();
-			}
-			var columns = _obj.Children<JObject>().First().Properties().Select(x => new DataColumn(x.Name, typeof(string))).ToList();
+			var columns = Obj.Children<JObject>().First().Properties().Select(x => new DataColumn(x.Name, typeof(string))).ToList();
 			var dt = new DataTable();
 			dt.Columns.AddRange(columns.ToArray());
 			return dt;
@@ -187,37 +194,14 @@ namespace kCura.LDAPSync.prototype.datasources.Implementations
 
 		public bool Read()
 		{
-			if (_obj == null)
-			{
-				using (StreamReader r = new StreamReader(_filePath))
-				{
-					string json = r.ReadToEnd();
-					_obj = JsonConvert.DeserializeObject<JArray>(json);
-				}
-			}
-			else
-			{
-				_index++;
-			}
-			return _obj.Count > _index;
+			_index++;
+			return Obj.Count > _index;
 		}
 
-		public int Depth
-		{
-			get
-			{
-				return 1;
-			}
-		}
+		public int Depth { get { return 0;} }
 
 		public bool IsClosed { get; private set; }
 
-		public int RecordsAffected
-		{
-			get
-			{
-				return 1;
-			}
-		}
+		public int RecordsAffected { get { return -1; } }
 	}
 }

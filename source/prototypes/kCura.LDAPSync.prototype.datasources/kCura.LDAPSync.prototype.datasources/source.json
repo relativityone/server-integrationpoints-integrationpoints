@@ -1,4 +1,6 @@
-﻿[
+﻿{
+fields: ["name","type","path","column4"],
+data: [
 	{
 		name: "name1",
 		type: "type1",
@@ -60,3 +62,4 @@
 		column4: "entry10"
 	}
 ]
+}
