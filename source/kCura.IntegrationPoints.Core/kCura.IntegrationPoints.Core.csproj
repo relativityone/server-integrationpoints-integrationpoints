@@ -47,6 +47,9 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -56,17 +59,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application.cs" />
     <Compile Include="Installers\ServicesInstaller.cs" />
     <Compile Include="Models\ErrorModel.cs" />
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Models\FieldEntry.cs" />
+    <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Services\CreateError.cs" />
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Include="Services\Provider\DataProviderComponetSelector.cs" />
+    <Compile Include="Services\Provider\IDataProviderFactory.cs" />
+    <Compile Include="Services\Provider\IDataSourceProvider.cs" />
+    <Compile Include="Services\Provider\IFieldProvider.cs" />
+    <Compile Include="Services\Provider\LdapDataProvider.cs" />
+    <Compile Include="Services\Syncronizer\DataSyncronizerComponetSelector.cs" />
+    <Compile Include="Services\Syncronizer\IDataSyncronizer.cs" />
+    <Compile Include="Services\Syncronizer\IDataSyncronizerFactory.cs" />
+    <Compile Include="Services\Syncronizer\RdoSyncronizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

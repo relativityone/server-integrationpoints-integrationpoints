@@ -1,0 +1,130 @@
+@charset "UTF-8";
+
+@font-face {
+  font-family: "integration-points";
+  src:url("fonts/integration-points.eot");
+  src:url("fonts/integration-points.eot?#iefix") format("embedded-opentype"),
+    url("fonts/integration-points.woff") format("woff"),
+    url("fonts/integration-points.ttf") format("truetype"),
+    url("fonts/integration-points.svg#integration-points") format("svg");
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+[data-icon]:before {
+  font-family: "integration-points" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^="icon-"]:before,
+[class*=" icon-"]:before {
+  font-family: "integration-points" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-grippies:before {
+  content: "a";
+}
+.icon-arrow-collapsed:before {
+  content: "b";
+}
+.icon-settings-gear:before {
+  content: "c";
+}
+.icon-move-all-left:before {
+  content: "d";
+}
+.icon-move-up:before {
+  content: "e";
+}
+.icon-move-top:before {
+  content: "f";
+}
+.icon-folder-open:before {
+  content: "g";
+}
+.icon-folder:before {
+  content: "h";
+}
+.icon-filter:before {
+  content: "i";
+}
+.icon-directory:before {
+  content: "j";
+}
+.icon-clear-filter:before {
+  content: "k";
+}
+.icon-browser-plus:before {
+  content: "l";
+}
+.icon-browser-open:before {
+  content: "m";
+}
+.icon-browser-minus:before {
+  content: "n";
+}
+.icon-browser-close:before {
+  content: "o";
+}
+.icon-arrow-right:before {
+  content: "p";
+}
+.icon-arrow-left:before {
+  content: "q";
+}
+.icon-arrow-expanded:before {
+  content: "r";
+}
+.icon-reset-column-sizes:before {
+  content: "s";
+}
+.icon-move-right:before {
+  content: "t";
+}
+.icon-move-next:before {
+  content: "u";
+}
+.icon-move-previous:before {
+  content: "v";
+}
+.icon-move-left:before {
+  content: "w";
+}
+.icon-move-last:before {
+  content: "x";
+}
+.icon-move-first:before {
+  content: "y";
+}
+.icon-move-down:before {
+  content: "z";
+}
+.icon-move-bottom:before {
+  content: "A";
+}
+.icon-move-all-right:before {
+  content: "B";
+}
+.icon-sort-asc:before {
+  content: "C";
+}
+.icon-sort-desc:before {
+  content: "D";
+}

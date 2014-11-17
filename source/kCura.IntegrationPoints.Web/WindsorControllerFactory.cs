@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Web
 			{
 				throw new HttpException(404, string.Format("the controller for the '{0}' could not be found", requestContext.HttpContext.Request.Path));
 			}
-			return _kernel.Resolve<IController>(controllerType);
+			return (IController)_kernel.Resolve(controllerType);
 		}
 	}
 }
