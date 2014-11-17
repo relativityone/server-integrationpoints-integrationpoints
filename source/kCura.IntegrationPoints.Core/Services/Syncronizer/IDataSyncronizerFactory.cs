@@ -8,6 +8,6 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 {
 	public interface IDataSyncronizerFactory
 	{
-		IDataSyncronizer GetConverter();
+		IDataSyncronizer GetSyncronizer();
 	}
 }
