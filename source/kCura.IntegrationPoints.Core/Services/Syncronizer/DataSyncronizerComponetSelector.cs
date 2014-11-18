@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 	{
 		protected override Type GetComponentType(MethodInfo method, object[] arguments)
 		{
-			if (method.Name.Equals("GetConverter"))
+			if (method.Name.Equals("GetSyncronizer"))
 			{
 
 			}
