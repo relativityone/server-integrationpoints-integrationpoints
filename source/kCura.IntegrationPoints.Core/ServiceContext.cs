@@ -8,11 +8,11 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core
 {
-	public interface IServiceContext
+	public class ServiceContext : IServiceContext
 	{
-		int UserID { get; set; }
-		int WorkspaceID { get; set; }
-		IRSAPIService RsapiService { get; set; }
-		IDBContext SqlContext { get; set; }
+		public int UserID { get; set; }
+		public int WorkspaceID { get; set; }
+		public IRSAPIService RsapiService { get; set; }
+		public IDBContext SqlContext { get; set; }
 	}
 }

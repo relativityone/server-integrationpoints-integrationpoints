@@ -70,6 +70,21 @@
     <Compile Include="BaseRDO.cs" />
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
+    <Compile Include="Installers\RSAPIServiceInstaller.cs">
+      <DependentUpon>RSAPIServiceInstaller.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="IRSAPIService.cs">
+      <DependentUpon>IRSAPIService.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="RSAPIService.cs">
+      <DependentUpon>RSAPIService.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="GeneratedDTOs.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -92,6 +107,18 @@
     <Compile Include="RsapiClientLibrary.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Installers\RSAPIServiceInstaller.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>RSAPIServiceInstaller.cs</LastGenOutput>
+    </None>
+    <None Include="IRSAPIService.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IRSAPIService.cs</LastGenOutput>
+    </None>
+    <None Include="RSAPIService.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>RSAPIService.cs</LastGenOutput>
+    </None>
     <None Include="GeneratedDTOs.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>GeneratedDTOs.cs</LastGenOutput>
