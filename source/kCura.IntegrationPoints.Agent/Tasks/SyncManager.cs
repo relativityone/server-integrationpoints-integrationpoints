@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		public void Execute(Job job)
 		{
 			throw new NotImplementedException();
+
 		}
 	}
 }
