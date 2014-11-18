@@ -47,9 +47,9 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=8.1.225.2, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="kCura.Relativity.Client, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Binaries\kCura\kCura.Relativity.Client.dll</HintPath>
+      <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil">
       <HintPath>..\..\..\Method\Binaries\kCura\Mono.Cecil.dll</HintPath>
@@ -73,7 +73,8 @@
     <Compile Include="GeneratedDTOs.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-	      </Compile>
+      <DependentUpon>GeneratedDTOs.tt</DependentUpon>
+    </Compile>
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>

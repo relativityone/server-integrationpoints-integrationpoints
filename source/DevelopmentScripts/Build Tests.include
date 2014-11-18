@@ -7,8 +7,8 @@
 	<property name="testOutput32" value="${testLogDirectory}\output32.xml" />
 	<property name="testOutput64" value="${testLogDirectory}\output64.xml" />
 	
-	<property name="NUnit" value="${source.code.directory}\packages\NUnit.Runners.2.6.2\tools\nunit-console-x86.exe" unless="${property::exists('NUnit')}" />
-	<property name="NUnit64" value="${source.code.directory}\packages\NUnit.Runners.2.6.2\tools\nunit-console.exe" unless="${property::exists('NUnit64')}" />
+	<property name="NUnit" value="${source.code.directory}\packages\NUnit.Runners.2.6.3\tools\nunit-console-x86.exe" unless="${property::exists('NUnit')}" />
+	<property name="NUnit64" value="${source.code.directory}\packages\NUnit.Runners.2.6.3\tools\nunit-console.exe" unless="${property::exists('NUnit64')}" />
 	
 	<property name="testDirectory" value="${source.code.directory}" />
 	
@@ -62,6 +62,7 @@
 	</assemblyfileset>
 	
 	<assemblyfileset id="unitTestAssembliesX64">
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.ScheduleQueueAgent.Tests\bin\kCura.ScheduleQueueAgent.Tests.dll')}" />
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Data.Tests\bin\kCura.IntegrationPoints.Data.Tests.dll')}" />
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Core.Tests\bin\kCura.IntegrationPoints.Core.Tests.dll')}" />
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Agent.Tests\bin\kCura.IntegrationPoints.Agent.Tests.dll')}" />
