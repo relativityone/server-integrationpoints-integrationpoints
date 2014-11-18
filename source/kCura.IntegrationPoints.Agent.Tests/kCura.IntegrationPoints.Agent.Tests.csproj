@@ -64,7 +64,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\kCura.Agent.ScheduleQueueAgent\kCura.Agent.ScheduleQueueAgent.csproj">
+    <ProjectReference Include="..\kCura.ScheduleQueueAgent\kCura.ScheduleQueueAgent.csproj">
       <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
       <Name>kCura.Agent.ScheduleQueueAgent</Name>
     </ProjectReference>

@@ -48,9 +48,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A34000
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.Agent.ScheduleQueueAgent", "kCura.Agent.ScheduleQueueAgent\kCura.Agent.ScheduleQueueAgent.csproj", "{C831C856-E74F-48B4-AEBC-1CF15576E082}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueueAgent", "kCura.ScheduleQueueAgent\kCura.ScheduleQueueAgent.csproj", "{C831C856-E74F-48B4-AEBC-1CF15576E082}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.Agent.ScheduleQueueAgent.Tests", "kCura.Agent.ScheduleQueueAgent.Tests\kCura.Agent.ScheduleQueueAgent.Tests.csproj", "{B14533FD-8C47-4292-8C01-2FB008FBF76E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueueAgent.Tests", "kCura.ScheduleQueueAgent.Tests\kCura.ScheduleQueueAgent.Tests.csproj", "{B14533FD-8C47-4292-8C01-2FB008FBF76E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

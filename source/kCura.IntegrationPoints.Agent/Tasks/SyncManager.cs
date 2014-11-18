@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using kCura.Agent.ScheduleQueueAgent;
+using kCura.ScheduleQueueAgent;
 using kCura.IntegrationPoints.Core.Services.Provider;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
