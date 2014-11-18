@@ -31,9 +31,9 @@
 | | ... | Associative Object Type	| ${EMPTY}
 
 
-| Designation Configuration
+| Destination Configuration
 | | Find A Row With The Following Data	|
-| | ... | Name						| Designation Configuration	|
+| | ... | Name						| Destination Configuration	|
 | | ... | Field Type				| Long Text					|
 | | ... | Is Required				| No						|
 | | ... | Associative Object Type	| ${EMPTY}
