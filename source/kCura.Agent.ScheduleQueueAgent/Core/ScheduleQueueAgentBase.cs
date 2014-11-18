@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
+using kCura.Agent.ScheduleQueueAgent.Services;
+using kCura.ScheduleQueueAgent.Data;
 using Relativity.API;
 
 namespace kCura.Agent.ScheduleQueueAgent
@@ -11,10 +12,12 @@ namespace kCura.Agent.ScheduleQueueAgent
 		public ScheduleQueueAgentBase()
 		{
 			//TODO: load default services
-			//this.jobService = defaultJobService;
+			this.jobService = new JobService(DBContext);
 		}
 
-		public DBContext DBContext { get; private set; }
+		public IDBContext DBContext { get; private set; }
+		public string QueueTable { get; private set; }
+		public AgentInformation AgentInformation { get; private set; }
 
 		public virtual ITask GetTask(Job job)
 		{
@@ -22,10 +25,12 @@ namespace kCura.Agent.ScheduleQueueAgent
 			return task;
 		}
 
-		public ScheduleQueueAgentBase(DBContext dbContext, IJobService jobService)
+		public ScheduleQueueAgentBase(IDBContext dbContext, IJobService jobService)
 		{
 			this.jobService = jobService;
-			DBContext = dbContext;
+			this.DBContext = dbContext;
+			this.QueueTable = jobService.QueueTable;
+			this.AgentInformation = jobService.GetAgentInformation(base.AgentID);
 		}
 
 
@@ -54,8 +59,7 @@ namespace kCura.Agent.ScheduleQueueAgent
 
 		private void CheckQueueTable()
 		{
-			//TODO: Implement.
-			//throw new NotImplementedException();
+			jobService.CreateQueueTable();
 		}
 
 		public void ProcessQueueJobs()

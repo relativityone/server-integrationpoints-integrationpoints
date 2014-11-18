@@ -75,9 +75,14 @@
     </Compile>
     <Compile Include="BatchProcess\BatchManagerBase.cs" />
     <Compile Include="BatchProcess\BatchableTaskBase.cs" />
-    <Compile Include="Data\Interfaces\QueueServiceBase.cs" />
-    <Compile Include="Data\Services\CreateScheduleQueueTable.cs" />
+    <Compile Include="Core\Agent.cs" />
+    <Compile Include="Data\Interfaces\IQueueDBContext.cs" />
+    <Compile Include="Data\Queries\GetAgentInformation.cs" />
+    <Compile Include="Data\Queries\GetNextJob.cs" />
+    <Compile Include="Data\QueueDBContext.cs" />
+    <Compile Include="Data\Queries\CreateScheduleQueueTable.cs" />
     <Compile Include="BatchProcess\IBatchableTask.cs" />
+    <Compile Include="Helpers\QueueTableHelper.cs" />
     <Compile Include="Interfaces\IJobService.cs" />
     <Compile Include="Interfaces\ILogger.cs" />
     <Compile Include="Interfaces\IScheduleRule.cs" />
@@ -85,16 +90,28 @@
     <Compile Include="Interfaces\ITimeService.cs" />
     <Compile Include="Core\Job.cs" />
     <Compile Include="Core\LogCategory.cs" />
+    <Compile Include="CustomAttributes\QueueTableNameAttribute.cs" />
     <Compile Include="Interfaces\TaskResult.cs" />
     <Compile Include="Interfaces\TaskStatusEnum.cs" />
     <Compile Include="Core\ScheduleQueueAgentBase.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Services\JobService.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Properties\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-  <ItemGroup>
+    <Content Include="Data\Resources\GetAgentInformation.sql" />
     <Content Include="Data\Resources\CreateQueueTable.sql" />
+    <Content Include="Data\Resources\GetNextJob.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

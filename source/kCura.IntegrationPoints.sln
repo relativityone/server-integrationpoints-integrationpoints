@@ -50,6 +50,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A34000
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.Agent.ScheduleQueueAgent", "kCura.Agent.ScheduleQueueAgent\kCura.Agent.ScheduleQueueAgent.csproj", "{C831C856-E74F-48B4-AEBC-1CF15576E082}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.Agent.ScheduleQueueAgent.Tests", "kCura.Agent.ScheduleQueueAgent.Tests\kCura.Agent.ScheduleQueueAgent.Tests.csproj", "{B14533FD-8C47-4292-8C01-2FB008FBF76E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -191,6 +193,17 @@ Global
 		{C831C856-E74F-48B4-AEBC-1CF15576E082}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{C831C856-E74F-48B4-AEBC-1CF15576E082}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C831C856-E74F-48B4-AEBC-1CF15576E082}.Release|x64.ActiveCfg = Release|Any CPU
+		{B14533FD-8C47-4292-8C01-2FB008FBF76E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B14533FD-8C47-4292-8C01-2FB008FBF76E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B14533FD-8C47-4292-8C01-2FB008FBF76E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B14533FD-8C47-4292-8C01-2FB008FBF76E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B14533FD-8C47-4292-8C01-2FB008FBF76E}.Debug|x64.ActiveCfg = Debug|x64
+		{B14533FD-8C47-4292-8C01-2FB008FBF76E}.Debug|x64.Build.0 = Debug|x64
+		{B14533FD-8C47-4292-8C01-2FB008FBF76E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B14533FD-8C47-4292-8C01-2FB008FBF76E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B14533FD-8C47-4292-8C01-2FB008FBF76E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B14533FD-8C47-4292-8C01-2FB008FBF76E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B14533FD-8C47-4292-8C01-2FB008FBF76E}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
