@@ -62,8 +62,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Agent.cs" />
-    <Compile Include="Tasks\DummyTask2.cs" />
-    <Compile Include="Tasks\DummyTask1.cs" />
+    <Compile Include="Tasks\SyncManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
