@@ -67,6 +67,7 @@
     </Compile>
     <Compile Include="Models\FieldEntry.cs" />
     <Compile Include="Models\FieldMap.cs" />
+    <Compile Include="Models\RDO\IntegrationPoint.cs" />
     <Compile Include="Services\CreateError.cs" />
     <Compile Include="Services\Provider\DataProviderComponetSelector.cs" />
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />

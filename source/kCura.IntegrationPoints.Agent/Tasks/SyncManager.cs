@@ -17,6 +17,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public void Execute(Job job)
 		{
+			if (!job.RelatedObjectArtifactID.HasValue)
+			{
+				throw new ArgumentNullException("Job must have a RelatedObjectArtifactID");
+			}
+			var artifactID = job.RelatedObjectArtifactID;
+
 		}
 	}
 }
