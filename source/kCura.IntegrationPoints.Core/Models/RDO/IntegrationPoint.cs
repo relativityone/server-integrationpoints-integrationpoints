@@ -8,9 +8,11 @@ namespace kCura.IntegrationPoints.Core.Models.RDO
 {
 	public class IntegrationPoint
 	{
-		//internal Data.IntegrationPoints
-		internal IntegrationPoint()
+		private Data.IntegrationPoints _rdo;
+		internal IntegrationPoint(Data.IntegrationPoints rdo)
 		{
+			_rdo = rdo;
 		}
+		
 	}
 }

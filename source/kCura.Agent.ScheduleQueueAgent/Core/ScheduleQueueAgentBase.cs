@@ -8,6 +8,7 @@ namespace kCura.Agent.ScheduleQueueAgent
 	public abstract class ScheduleQueueAgentBase : AgentBase
 	{
 		private IJobService jobService = null;
+		
 		public ScheduleQueueAgentBase()
 		{
 			//TODO: load default services
