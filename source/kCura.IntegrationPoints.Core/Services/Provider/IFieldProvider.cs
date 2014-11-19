@@ -9,6 +9,6 @@ namespace kCura.IntegrationPoints.Core.Services.Provider
 {
 	public interface IFieldProvider
 	{
-		IEnumerable<FieldEntry> GetFields();
+		IEnumerable<FieldEntry> GetFields(string options);
 	}
 }

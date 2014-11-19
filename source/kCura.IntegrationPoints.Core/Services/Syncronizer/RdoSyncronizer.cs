@@ -18,5 +18,10 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 		{
 			throw new NotImplementedException();
 		}
+
+		public IEnumerable<FieldEntry> GetFields(string options)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

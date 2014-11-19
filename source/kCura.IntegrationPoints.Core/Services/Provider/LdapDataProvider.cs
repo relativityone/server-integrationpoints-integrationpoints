@@ -24,5 +24,10 @@ namespace kCura.IntegrationPoints.Core.Services.Provider
 		{
 			throw new NotImplementedException();
 		}
+
+		public IEnumerable<FieldEntry> GetFields(string options)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
