@@ -158,6 +158,7 @@
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Data.dll"' />
 			<arg line='"${source.reference.Injection.directory}\kCura.Injection.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.dll"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Synchronizers.RDO.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.EventHandlers.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='/ver:${Product.Version}' />
