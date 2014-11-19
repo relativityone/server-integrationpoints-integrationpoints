@@ -62,17 +62,23 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Agent.cs" />
-    <Compile Include="Tasks\DummyTask2.cs" />
-    <Compile Include="Tasks\DummyTask1.cs" />
+    <Compile Include="Tasks\SyncManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\kCura.Agent.ScheduleQueueAgent\kCura.Agent.ScheduleQueueAgent.csproj">
-      <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
-      <Name>kCura.Agent.ScheduleQueueAgent</Name>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
+      <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
+      <Name>kCura.IntegrationPoints.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.ScheduleQueueAgent\kCura.ScheduleQueueAgent.csproj">
+      <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
+      <Name>kCura.ScheduleQueueAgent</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

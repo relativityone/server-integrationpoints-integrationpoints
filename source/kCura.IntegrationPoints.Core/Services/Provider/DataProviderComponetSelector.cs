@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Core.Services.Provider
 	{
 		protected override Type GetComponentType(MethodInfo method, object[] arguments)
 		{
-			if (method.Name.Equals("GetDataSource"))
+			if (method.Name.Equals("GetDataProvider"))
 			{
 				
 			}
