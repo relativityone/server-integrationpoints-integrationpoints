@@ -9,6 +9,11 @@ namespace kCura.IntegrationPoints.Web.Controllers
 {
 	public class IntegrationPointsController : Controller
 	{
+		public IntegrationPointsController()
+		{
+			
+		}
+
 		public ActionResult Edit()
 		{
 			return View();

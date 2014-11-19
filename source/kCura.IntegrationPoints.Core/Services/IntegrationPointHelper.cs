@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			return GetRDO(artifactID).SourceConfiguration;
 		}
 
-		public FieldEntry GetIdentifierFieldEntry(int artifactID)
+		public virtual FieldEntry GetIdentifierFieldEntry(int artifactID)
 		{
 			throw new NotImplementedException();
 		}

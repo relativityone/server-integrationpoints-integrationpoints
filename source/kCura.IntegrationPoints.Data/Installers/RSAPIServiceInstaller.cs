@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.Data.Installers
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
+			container.Register(Component.For<IRSAPIService>().ImplementedBy<RSAPIService>());
 			container.Register(Component.For<IGenericLibrary<IntegrationPoint>>().ImplementedBy<RsapiClientLibrary<IntegrationPoint>>());
 		}
 	}

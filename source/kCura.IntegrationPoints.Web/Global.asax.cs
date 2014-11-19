@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Web
 		private void CreateWindsorContainer()
 		{
 			_container = new WindsorContainer();
-			_container.Install(FromAssembly.This());
+			_container.Install(FromAssembly.InThisApplication());
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));
 		}
 

@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.ScheduleQueueAgent;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
-using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -39,9 +36,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IDataReader GetProviderDataReader(int ipID)
 		{
 			IDataSourceProvider provider = _providerFactory.GetDataProvider();
-			var idField = _helper.GetIdentifierFieldEntry(ipID);
-			var options = _helper.GetSourceOptions(ipID);
-			var idReader = provider.GetBatchableData(idField, options);
+			FieldEntry idField = _helper.GetIdentifierFieldEntry(ipID);
+			string options = _helper.GetSourceOptions(ipID);
+			IDataReader idReader = provider.GetBatchableData(idField, options);
 			return idReader;
 		}
 
@@ -53,14 +50,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			while (reader.Read())
 			{
 				list.Add(reader.GetString(0));
+				idx++;
 				if (idx == batchSize)
 				{
 					_jobManager.CreateJob(list, TaskType.SyncWorker);
-					list.Clear();
+					list = new List<string>();
 					idx = 0;
 				}
-				idx++;
 			}
+
 			if (list.Any())
 			{
 				_jobManager.CreateJob(list, TaskType.SyncWorker);
