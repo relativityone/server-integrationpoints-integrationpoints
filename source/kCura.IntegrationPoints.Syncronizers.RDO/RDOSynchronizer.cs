@@ -13,7 +13,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			_fieldQuery = fieldQuery;
 		}
 
-
+		private List<string> ignoreList
+		{
+			get
+			{
+				var list = new List<string>
+				{
+					"ArtifactID",
+					"IsSystemArtifact",
+					"SystemCreatedBy",
+					"SystemCreatedOn",
+					"SystemGenerated",
+					"SystemLastModifiedBy",
+					"SystemLastModifiedOn"
+				};
+				return list;
+			}
+		}
+		
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
 			var json = JsonConvert.DeserializeObject<Core.Models.SyncConfiguration.RelativityConfiguration>(options);
@@ -21,7 +38,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			var allFieldsForRdo = new List<FieldEntry>();
 			foreach (var result in fields)
 			{
-				if (!result.Name.ToLower().Contains("system") && !result.Name.ToLower().Contains("artifact"))
+				if (!ignoreList.Contains(result.Name))
 				{
 					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString() });
 				}
