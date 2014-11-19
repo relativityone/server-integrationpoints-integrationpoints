@@ -68,7 +68,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="RDOSynchronizer.cs" />
-    <Compile Include="RelativiityFieldQuery.cs" />
+    <Compile Include="RelativityFieldQuery.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">

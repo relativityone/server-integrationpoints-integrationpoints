@@ -7,36 +7,18 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class RdoSynchronizer : kCura.IntegrationPoints.Core.Services.Syncronizer.IDataSyncronizer
 	{
-		private RelativiityFieldQuery _fieldQuery;
-		public RdoSynchronizer(RelativiityFieldQuery fieldQuery)
+		private RelativityFieldQuery _fieldQuery;
+		public RdoSynchronizer(RelativityFieldQuery fieldQuery)
 		{
 			_fieldQuery = fieldQuery;
 		}
 
-		private List<string> ignoreList
+		private List<string> IgnoredList
 		{
 			get
 			{
-				var list = new List<string>
-				{
-					"ArtifactID",
-					"IsSystemArtifact",
-					"SystemCreatedBy",
-					"SystemCreatedOn",
-					"SystemGenerated",
-					"SystemLastModifiedBy",
-					"SystemLastModifiedOn"
-				};
-				return list;
-			}
-		}
-		
-	    private List<string> IgnoredList
-	    {
-		    get
-		    {
 				// fields don't have any space in between words 
-			    var list = new List<string>
+				var list = new List<string>
 			    {
 					"IsSystemArtifact",
 					"SystemCreatedBy",
@@ -46,9 +28,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					"SystemLastModifiedOn",
 					"ArtifactID"
 			    };
-			    return list;
-		    }
-	    } 
+				return list;
+			}
+		}
 
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
