@@ -12,8 +12,8 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			
 		}
-
-		public void CreateJob<T>(T jobDetails, TaskType task)
+		
+		public void CreateJob<T>(T jobDetails, TaskType task, int integrationPointID)
 		{
 			throw new NotImplementedException();
 		}

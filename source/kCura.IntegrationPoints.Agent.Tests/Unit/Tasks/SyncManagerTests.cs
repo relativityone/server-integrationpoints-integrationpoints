@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 	[TestFixture]
 	public class SyncManagerTests
 	{
+		/*
 		[Test]
 		public void CreateJobs_JobHasMoreThanBatchSize_CreatesTwoBatches()
 		{
@@ -102,7 +103,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 
 		}
 		
-
+		*/
 
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -6,14 +7,16 @@ using kCura.ScheduleQueueAgent;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
+using kCura.ScheduleQueueAgent.BatchProcess;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	public class SyncManager : ITask
+	public class SyncManager : BatchManagerBase<string>
 	{
 		private readonly IDataProviderFactory _providerFactory;
 		private readonly IJobManager _jobManager;
 		private readonly IntegrationPointHelper _helper;
+
 		public SyncManager(IDataProviderFactory providerFactory, IJobManager jobManager, IntegrationPointHelper helper)
 		{
 			_providerFactory = providerFactory;
@@ -21,49 +24,50 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_helper = helper;
 		}
 
-		public void Execute(Job job)
+		public override int BatchSize
+		{
+			get { return Config.AgentConfig.BatchSize; }
+		}
+
+		public override IEnumerable<string> GetUnbatchedIDs(Job job)
 		{
 			if (!job.RelatedObjectArtifactID.HasValue)
 			{
 				throw new ArgumentNullException("Job must have a Related Object ArtifactID");
 			}
-			var ipID = job.RelatedObjectArtifactID.Value;
-			IDataReader idReader = GetProviderDataReader(ipID);
-			var batchSize = Config.AgentConfig.BatchSize;
-			CreateJobs(idReader, batchSize);
-		}
-
-		private IDataReader GetProviderDataReader(int ipID)
-		{
+			var integrationPointID = job.RelatedObjectArtifactID.Value;
 			IDataSourceProvider provider = _providerFactory.GetDataProvider();
-			FieldEntry idField = _helper.GetIdentifierFieldEntry(ipID);
-			string options = _helper.GetSourceOptions(ipID);
-			IDataReader idReader = provider.GetBatchableData(idField, options);
-			return idReader;
+			FieldEntry idField = _helper.GetIdentifierFieldEntry(integrationPointID);
+			string options = _helper.GetSourceOptions(integrationPointID);
+			IDataReader idReader = provider.GetBatchableIds(idField, options);
+
+			return new ReaderEnumerable(idReader);
 		}
 
-		public virtual void CreateJobs(IDataReader reader, int batchSize)
+		public override void CreateBatchJob(Job job, List<string> batchIDs)
 		{
-			var list = new List<string>();
-			var idx = 0;
+			_jobManager.CreateJob(batchIDs, TaskType.SyncWorker, job.RelatedObjectArtifactID.Value);
+		}
 
-			while (reader.Read())
+		private class ReaderEnumerable : IEnumerable<string>
+		{
+			private IDataReader _reader;
+			public ReaderEnumerable(IDataReader reader)
 			{
-				list.Add(reader.GetString(0));
-				idx++;
-				if (idx == batchSize)
+				_reader = reader;
+			}
+			public IEnumerator<string> GetEnumerator()
+			{
+				while (_reader.Read())
 				{
-					_jobManager.CreateJob(list, TaskType.SyncWorker);
-					list = new List<string>();
-					idx = 0;
+					yield return _reader.GetString(0);
 				}
 			}
 
-			if (list.Any())
+			IEnumerator IEnumerable.GetEnumerator()
 			{
-				_jobManager.CreateJob(list, TaskType.SyncWorker);
+				return GetEnumerator();
 			}
-
 		}
 
 	}

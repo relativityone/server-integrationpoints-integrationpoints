@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 	public interface IJobManager
 	{
-		void CreateJob<T>(T jobDetails, TaskType task);
+		void CreateJob<T>(T jobDetails, TaskType task, int integrationPointID);
 		//void CreateJob<T>(T jobDetails, TaskType task); //schedule rules
 	}
 }

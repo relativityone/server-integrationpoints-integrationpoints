@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -12,7 +13,6 @@ namespace kCura.IntegrationPoints.Core.Services
 	{
 		private readonly IServiceContext _context;
 		private Data.IntegrationPoint _rdo;
-
 		private Data.IntegrationPoint GetRDO(int rdoID)
 		{
 			if (_rdo == null)
@@ -34,7 +34,9 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public virtual FieldEntry GetIdentifierFieldEntry(int artifactID)
 		{
-			throw new NotImplementedException();
+			var rdo = GetRDO(artifactID);
+			var fields = JsonConvert.DeserializeObject<List<FieldMap>>(rdo.FieldMappings);
+			return fields.First(x => x.IsIdentifier).SourceField;
 		}
 		
 	}

@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="Agent.cs" />
     <Compile Include="Tasks\SyncManager.cs" />
+    <Compile Include="Tasks\SyncWorker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

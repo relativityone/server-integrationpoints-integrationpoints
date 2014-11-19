@@ -1,38 +1,46 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Relativity.API;
 
 namespace kCura.ScheduleQueueAgent.BatchProcess
 {
 	public abstract class BatchManagerBase<T> : ITask
 	{
-		public DBContext DBContext { get; private set; }
-
-		public BatchManagerBase(DBContext dbContext)
+		protected BatchManagerBase()
 		{
-			DBContext = dbContext;
+			BatchSize = 1000;
 		}
 
-		public abstract void Execute(Job job);
-
-		public void BatchTask(Job job, IBatchableTask<T> batchableTask)
+		public virtual void Execute(Job job)
 		{
-			List<T> unbatchedItemIDs = batchableTask.GetUnbatchedIDs(job);
-			int batchSize = batchableTask.BatchSize;
+			BatchTask(job, GetUnbatchedIDs(job));
+		}
 
-			if (unbatchedItemIDs.Count > 0)
+		public virtual int BatchSize { get; private set; }
+
+		public abstract IEnumerable<T> GetUnbatchedIDs(Job job);
+
+		public virtual void BatchTask(Job job, IEnumerable<T> batchIDs)
+		{
+			var list = new List<T>();
+			var idx = 0;
+			foreach (var id in batchIDs)
 			{
-				int beginIndex = 0;
-				while (beginIndex < unbatchedItemIDs.Count)
+				list.Add(id);
+				if (idx >= BatchSize)
 				{
-					int jobBatchSize = (beginIndex + batchSize) >= unbatchedItemIDs.Count
-															? unbatchedItemIDs.Count - beginIndex
-															: batchSize;
-					List<T> batchIDs = unbatchedItemIDs.GetRange(beginIndex, jobBatchSize);
-					batchableTask.CreateBatchJob(job, batchIDs);
-					beginIndex += jobBatchSize;
+					CreateBatchJob(job, list);
+					list = new List<T>();
+					idx = 0;
 				}
+				idx++;
 			}
+			if (list.Any())
+			{
+				CreateBatchJob(job, list);
+			}		
 		}
+		public abstract void CreateBatchJob(Job job, List<T> batchIDs);
 	}
 }
 

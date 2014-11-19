@@ -20,7 +20,12 @@ namespace kCura.IntegrationPoints.Core.Services.Provider
 			throw new NotImplementedException();
 		}
 
-		public IDataReader GetBatchableData(FieldEntry identifier, string options)
+		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IEnumerable<FieldEntry> GetFields(string options)
 		{
 			throw new NotImplementedException();
 		}
