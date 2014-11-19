@@ -9,6 +9,7 @@ namespace kCura.ScheduleQueueAgent
 	public abstract class ScheduleQueueAgentBase : AgentBase, ITaskFactory
 	{
 		private IJobService jobService = null;
+		
 		public ScheduleQueueAgentBase()
 		{
 			DBContext = base.Helper.GetDBContext(-1);

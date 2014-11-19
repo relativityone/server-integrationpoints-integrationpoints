@@ -7,6 +7,7 @@ using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
 
@@ -19,6 +20,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<Services.CreateError>().ImplementedBy<Services.CreateError>());
 			container.Register(Component.For<IDataProviderFactory>().AsFactory(x=>x.SelectedWith(new DataProviderComponetSelector())));
 			container.Register(Component.For<IDataSyncronizerFactory>().AsFactory(x => x.SelectedWith(new DataSyncronizerComponetSelector())));
+			container.Register(Component.For<IServiceContext>().ImplementedBy<ServiceContext>());
+			container.Register(Component.For<IntegrationPointHelper>().ImplementedBy<IntegrationPointHelper>());
 		}
 	}
 }

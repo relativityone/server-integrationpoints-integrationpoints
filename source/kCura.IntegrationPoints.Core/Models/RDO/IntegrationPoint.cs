@@ -8,9 +8,6 @@ namespace kCura.IntegrationPoints.Core.Models.RDO
 {
 	public class IntegrationPoint
 	{
-		//internal Data.IntegrationPoints
-		internal IntegrationPoint()
-		{
-		}
+		
 	}
 }

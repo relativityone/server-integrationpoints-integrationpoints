@@ -98,3 +98,4 @@ kCura.Method.sln.DotSettings
 changesets.txt
 kCura.Method.Web.Tests\Unit\Scripts\Controls\
 ~$*.doc
+source/TestResults/

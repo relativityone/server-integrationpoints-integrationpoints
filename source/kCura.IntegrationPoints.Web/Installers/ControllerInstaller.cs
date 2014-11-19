@@ -19,8 +19,13 @@ namespace kCura.IntegrationPoints.Web.Installers
 		{
 			container.Register(Classes.FromThisAssembly().BasedOn<IController>().LifestyleTransient());
 			container.Register(Component.For<ISessionService>().ImplementedBy<SessionService>());
+
 			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod<IRSAPIClient>(
-				(k)=>ConnectionHelper.Helper().GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				(k) => ConnectionHelper.Helper().GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				);
+
+			container.Register(Component.For<global::Relativity.API.IDBContext>().UsingFactoryMethod<global::Relativity.API.IDBContext>(
+				(k) => ConnectionHelper.Helper().GetDBContext(k.Resolve<ISessionService>().WorkspaceID))
 				);
 		}
 	}
