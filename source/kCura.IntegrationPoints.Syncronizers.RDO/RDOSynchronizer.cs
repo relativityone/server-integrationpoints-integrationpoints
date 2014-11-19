@@ -18,6 +18,25 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		    throw new NotImplementedException();
 	    }
 
+	    private List<string> IgnoredList
+	    {
+		    get
+		    {
+				// fields don't have any space in between words 
+			    var list = new List<string>
+			    {
+					"IsSystemArtifact",
+					"SystemCreatedBy",
+					"SystemCreatedOn",
+					"SystemGenerated",
+					"SystemLastModifiedBy",
+					"SystemLastModifiedOn",
+					"ArtifactID"
+			    };
+			    return list;
+		    }
+	    } 
+
 	    public IEnumerable<FieldEntry> GetFields(string options)
 	    {
 			var json = JsonConvert.DeserializeObject<Core.Models.SyncConfiguration.RelativityConfiguration>(options);
@@ -25,7 +44,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			var allFieldsForRdo = new List<FieldEntry>();
 		    foreach (var result in fields)
 		    {
-			    if (!result.Name.ToLower().Contains("system") && !result.Name.ToLower().Contains("artifact"))
+				if (!IgnoredList.Contains(result.Name))
 			    {
 				    allFieldsForRdo.Add(new FieldEntry() {DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString()});
 			    }
