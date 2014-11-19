@@ -6,13 +6,22 @@ using Relativity.API;
 
 namespace kCura.ScheduleQueueAgent
 {
-	public abstract class ScheduleQueueAgentBase : AgentBase
+	public abstract class ScheduleQueueAgentBase : AgentBase, ITaskFactory
 	{
 		private IJobService jobService = null;
 		public ScheduleQueueAgentBase()
 		{
-			//TODO: load default services
+			DBContext = base.Helper.GetDBContext(-1);
 			this.jobService = new JobService(DBContext);
+		}
+
+		//for testing
+		public ScheduleQueueAgentBase(IDBContext dbContext, IJobService jobService)
+		{
+			this.jobService = jobService;
+			this.DBContext = dbContext;
+			this.QueueTable = jobService.QueueTable;
+			this.AgentInformation = jobService.GetAgentInformation(base.AgentID);
 		}
 
 		public IDBContext DBContext { get; private set; }
@@ -25,13 +34,6 @@ namespace kCura.ScheduleQueueAgent
 			return task;
 		}
 
-		public ScheduleQueueAgentBase(IDBContext dbContext, IJobService jobService)
-		{
-			this.jobService = jobService;
-			this.DBContext = dbContext;
-			this.QueueTable = jobService.QueueTable;
-			this.AgentInformation = jobService.GetAgentInformation(base.AgentID);
-		}
 
 
 		//TODO: implement
@@ -64,14 +66,14 @@ namespace kCura.ScheduleQueueAgent
 
 		public void ProcessQueueJobs()
 		{
-			Job nextJob = jobService.GetNextJob(base.AgentID, base.GetResourceGroupIDs());
+			Job nextJob = jobService.GetNextQueueJob(AgentInformation, base.GetResourceGroupIDs());
 			while (nextJob != null)
 			{
 				TaskResult taskResult = ExecuteTask(nextJob);
 
 				FinalizeJob(nextJob, taskResult);
 
-				nextJob = jobService.GetNextJob(base.AgentID, base.GetResourceGroupIDs());
+				nextJob = jobService.GetNextQueueJob(AgentInformation, base.GetResourceGroupIDs());
 			}
 
 			if (base.ToBeRemoved)

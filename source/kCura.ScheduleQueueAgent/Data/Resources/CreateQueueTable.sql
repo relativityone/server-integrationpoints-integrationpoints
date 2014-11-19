@@ -15,7 +15,6 @@ BEGIN
 CREATE TABLE [eddsdbo].[{0}](
 	[JobID] [bigint] IDENTITY(1,1) NOT NULL,
 	[AgentTypeID] [int] NOT NULL,
-	[Status] [int] NOT NULL,
 	[LockedByAgentID] [int] NULL,
 	[WorkspaceID] [int] NOT NULL,
 	[RelatedObjectArtifactID] [int] NULL,

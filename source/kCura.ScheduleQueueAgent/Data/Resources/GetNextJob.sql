@@ -1,11 +1,10 @@
-﻿IF EXISTS(SELECT TOP 1 JobID FROM [eddsdbo].[MethodQueue] WHERE [AgentID]=@AgentID)
+﻿IF EXISTS(SELECT TOP 1 JobID FROM [eddsdbo].[{0}] WHERE [AgentID] = @AgentID)
 BEGIN
 	--This Agent has stopped before finalizing this job previously
 	--So, pick it up again and finish it.
 	SELECT TOP (1)
 				[JobID],
 				[AgentTypeID],
-				[Status],
 				[LockedByAgentID],
 				[WorkspaceID],
 				[RelatedObjectArtifactID],
@@ -26,12 +25,10 @@ ELSE
 BEGIN
 	UPDATE TOP (1) [eddsdbo].[{0}]
 	SET
-			[Status]	= @ProcessingStatus,
 			[AgentID]	= @AgentID
 	OUTPUT 
 			INSERTED.[JobID],
 			INSERTED.[AgentTypeID],
-			INSERTED.[Status],
 			INSERTED.[LockedByAgentID],
 			INSERTED.[WorkspaceID],
 			INSERTED.[RelatedObjectArtifactID],

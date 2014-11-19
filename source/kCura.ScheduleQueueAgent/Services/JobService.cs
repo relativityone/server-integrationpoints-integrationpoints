@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using kCura.ScheduleQueueAgent.Helpers;
 using kCura.ScheduleQueueAgent.Data;
 using kCura.ScheduleQueueAgent.Data.Queries;
@@ -10,6 +11,7 @@ namespace kCura.ScheduleQueueAgent.Services
 {
 	public class JobService : IJobService
 	{
+		private bool creationOfQTableHasRun = false;
 		public JobService(IDBContext dbContext)
 		{
 			this.QueueTable = new QueueTableHelper().GetQueueTableName();
@@ -19,19 +21,49 @@ namespace kCura.ScheduleQueueAgent.Services
 		public string QueueTable { get; private set; }
 		public IQueueDBContext QDBContext { get; private set; }
 
-		public Job GetNextJob(int agentId, IEnumerable<int> resourceGroupIds)
+		public Job GetNextQueueJob(AgentInformation agentInfo, IEnumerable<int> resourceGroupIds)
 		{
-			throw new NotImplementedException();
+			Job job = null;
+			DataRow row = new GetNextJob(QDBContext).Execute(agentInfo.AgentID, agentInfo.AgentTypeID, resourceGroupIds.ToArray());
+			if (row != null)
+			{
+				job = new Job(row);
+			}
+			return job;
 		}
 
 		public ITask GetTask(Job job)
 		{
-			throw new NotImplementedException();
+			//TODO: possibly implement generic way through reflection
+			return null;
 		}
 
 		public void FinalizeJob(Job job, TaskResult taskResult)
 		{
-			throw new NotImplementedException();
+			IScheduleRule scheduleRule = job.ScheduleRule;
+			DateTime? nextUtcRunDateTime = null;
+
+#if TIME_MACHINE
+			//TODO: implement
+#endif
+
+			if (scheduleRule != null)
+			{
+				nextUtcRunDateTime = scheduleRule.GetNextUTCRunDateTime(DateTime.UtcNow, taskResult.Status);
+			}
+
+			if (nextUtcRunDateTime.HasValue)
+			{
+				new Data.Queries.UpdateScheduledJob(QDBContext).Execute(job.JobId, nextUtcRunDateTime.Value);
+				//TODO: implement logging
+				//log.Log(job, JobHistoryState.Modified, null, string.Format("Job is re-scheduled for {0}", nextRunTime.ToString()));
+			}
+			else
+			{
+				DeleteJob(job.JobId);
+				//TODO: implement logging
+				//log.Log(job, JobHistoryState.Deleted);
+			}
 		}
 
 		public void UnlockJobs(int agentID)
@@ -44,6 +76,12 @@ namespace kCura.ScheduleQueueAgent.Services
 			new CreateScheduleQueueTable(QDBContext).Execute();
 		}
 
+		private void CreateQueueTableOnce()
+		{
+			if (!creationOfQTableHasRun) CreateQueueTable();
+			creationOfQTableHasRun = true;
+		}
+
 		public AgentInformation GetAgentInformation(int agentID)
 		{
 			AgentInformation agentInformation = null;
@@ -53,6 +91,29 @@ namespace kCura.ScheduleQueueAgent.Services
 				agentInformation = new AgentInformation(row);
 			}
 			return agentInformation;
+		}
+
+		public Job CreateJob(int workspaceID, int? relatedObjectArtifactID, string taskType, IScheduleRule scheduleRules, string jobDetail, int SubmittedBy)
+		{
+			CreateQueueTableOnce();
+			throw new NotImplementedException();
+		}
+
+		public void DeleteJob(long jobID)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void GetJob(long jobID)
+		{
+			CreateQueueTableOnce();
+			throw new NotImplementedException();
+		}
+
+		public void GetJob(int workspaceID, int relatedObjectArtifactID)
+		{
+			CreateQueueTableOnce();
+			throw new NotImplementedException();
 		}
 	}
 }

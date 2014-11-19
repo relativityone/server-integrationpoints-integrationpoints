@@ -77,12 +77,14 @@
     <Compile Include="BatchProcess\BatchableTaskBase.cs" />
     <Compile Include="Core\AgentInformation.cs" />
     <Compile Include="Data\Interfaces\IQueueDBContext.cs" />
+    <Compile Include="Data\Queries\UpdateScheduledJob.cs" />
     <Compile Include="Data\Queries\GetAgentInformation.cs" />
     <Compile Include="Data\Queries\GetNextJob.cs" />
     <Compile Include="Data\QueueDBContext.cs" />
     <Compile Include="Data\Queries\CreateScheduleQueueTable.cs" />
     <Compile Include="BatchProcess\IBatchableTask.cs" />
     <Compile Include="Helpers\QueueTableHelper.cs" />
+    <Compile Include="Interfaces\ITaskFactory.cs" />
     <Compile Include="Interfaces\IJobService.cs" />
     <Compile Include="Interfaces\ILogger.cs" />
     <Compile Include="Interfaces\IScheduleRule.cs" />
@@ -103,6 +105,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Data\Resources\UpdateScheduledJob.sql" />
     <Content Include="Data\Resources\GetAgentInformation.sql" />
     <Content Include="Data\Resources\CreateQueueTable.sql" />
     <Content Include="Data\Resources\GetNextJob.sql" />

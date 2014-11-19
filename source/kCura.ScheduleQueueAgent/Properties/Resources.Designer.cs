@@ -78,8 +78,8 @@ namespace kCura.ScheduleQueueAgent.Properties {
         ///CREATE TABLE [eddsdbo].[{0}](
         ///	[JobID] [bigint] IDENTITY(1,1) NOT NULL,
         ///	[AgentTypeID] [int] NOT NULL,
-        ///	[Status] [int] NOT NULL,
-        ///	[LockedByA [rest of string was truncated]&quot;;.
+        ///	[LockedByAgentID] [int] NULL,
+        ///	[Work [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CreateQueueTable {
             get {
@@ -108,14 +108,13 @@ namespace kCura.ScheduleQueueAgent.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to IF EXISTS(SELECT TOP 1 JobID FROM [eddsdbo].[MethodQueue] WHERE [AgentID]=@AgentID)
+        ///   Looks up a localized string similar to IF EXISTS(SELECT TOP 1 JobID FROM [eddsdbo].[{0}] WHERE [AgentID] = @AgentID)
         ///BEGIN
         ///	--This Agent has stopped before finalizing this job previously
         ///	--So, pick it up again and finish it.
         ///	SELECT TOP (1)
         ///				[JobID],
         ///				[AgentTypeID],
-        ///				[Status],
         ///				[LockedByAgentID],
         ///				[WorkspaceID],
         ///				[RelatedObjectArtifactID],
@@ -128,11 +127,28 @@ namespace kCura.ScheduleQueueAgent.Properties {
         ///				[SubmittedDate],
         ///				[SubmittedBy]
         ///	FROM
-        ///				[eddsdb [rest of string was truncated]&quot;;.
+        ///				[eddsdbo].[{0}]
+        ///	WHERE 
+        ///		 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetNextJob {
             get {
                 return ResourceManager.GetString("GetNextJob", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UPDATE	
+        ///					[eddsdbo].[{0}] 
+        ///SET 
+        ///					[NextRunTime] = @NextRunTime, 
+        ///					[AgentID] = NULL 
+        ///WHERE 
+        ///					[JobID] = @JobID.
+        /// </summary>
+        internal static string UpdateScheduledJob {
+            get {
+                return ResourceManager.GetString("UpdateScheduledJob", resourceCulture);
             }
         }
     }
