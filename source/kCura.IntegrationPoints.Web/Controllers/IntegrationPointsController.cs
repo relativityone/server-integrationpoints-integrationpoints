@@ -14,9 +14,14 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			
 		}
 
-		public ActionResult Edit()
+		public ActionResult Edit(int? id)
 		{
 			return View();
+		}
+
+		public ActionResult Index()
+		{
+			return View(); 
 		}
 	}
 }
