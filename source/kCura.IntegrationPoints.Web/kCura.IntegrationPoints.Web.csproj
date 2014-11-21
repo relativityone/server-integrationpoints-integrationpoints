@@ -147,7 +147,9 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Attributes\JsonNetResult.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\API\IntegrationPointsAPIController.cs" />
     <Compile Include="Controllers\IntegrationPointsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -158,8 +160,22 @@
     <Compile Include="WindsorControllerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\buttermilk.css">
+      <DependentUpon>buttermilk.scss</DependentUpon>
+    </Content>
     <Content Include="Content\fonts\integration-points.svg" />
+    <Content Include="Content\fonts\legal-hold-icons.svg" />
+    <Content Include="Content\header.css">
+      <DependentUpon>header.scss</DependentUpon>
+    </Content>
+    <Content Include="Content\Images\loading.gif" />
+    <Content Include="Content\Images\sprite.png" />
     <Content Include="Content\integration-points-fonts.css" />
+    <Content Include="Content\legal-hold-fonts.css" />
+    <Content Include="Content\normalize.css" />
+    <Content Include="Content\step-progress-bar.css">
+      <DependentUpon>step-progress-bar.scss</DependentUpon>
+    </Content>
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -215,12 +231,26 @@
     <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Global.asax" />
-    <Content Include="Content\Site.css" />
+    <Content Include="Content\site.css" />
     <Content Include="Content\fonts\integration-points.woff" />
     <Content Include="Content\fonts\integration-points.ttf" />
     <Content Include="Content\fonts\integration-points.eot" />
+    <Content Include="Content\buttermilk.scss" />
+    <Content Include="Content\step-progress-bar.scss" />
+    <Content Include="Content\fonts\legal-hold-icons.woff" />
+    <Content Include="Content\fonts\legal-hold-icons.ttf" />
+    <Content Include="Content\fonts\legal-hold-icons.eot" />
+    <Content Include="Content\header.scss" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
+    <Content Include="Scripts\Controls\step-progress.js" />
     <Content Include="Scripts\EventHandlers\test.js" />
+    <Content Include="Scripts\http.js" />
+    <Content Include="Scripts\integration-point\edit.js" />
+    <Content Include="Scripts\integration-point\step-import.js" />
+    <Content Include="Scripts\integration-point\step-mapFields.js" />
+    <Content Include="Scripts\integration-point\step-vm.js" />
+    <Content Include="Scripts\integration-point\step-details.js" />
+    <Content Include="Scripts\ip-messaging.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -234,7 +264,12 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\knockout-2.2.0.debug.js" />
     <Content Include="Scripts\knockout-2.2.0.js" />
+    <Content Include="Scripts\loading-modal.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\postal\conduit.js" />
+    <Content Include="Scripts\postal\lodash.js" />
+    <Content Include="Scripts\postal\postal.min.js" />
+    <Content Include="Scripts\postal\postal.js" />
     <Content Include="Scripts\q.js" />
     <Content Include="Scripts\q.min.js" />
     <Content Include="Scripts\_references.js" />
@@ -252,6 +287,8 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\IntegrationPoints\Edit.cshtml" />
+    <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial.cshtml" />
+    <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

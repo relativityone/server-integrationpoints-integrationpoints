@@ -18,13 +18,25 @@ namespace kCura.IntegrationPoints.Web
 									"~/Scripts/jquery.unobtrusive*",
 									"~/Scripts/jquery.validate*"));
 
+			bundles.Add(new ScriptBundle("~/bundles/messaging").Include(
+				"~/Scripts/postal/conduit.js",
+					"~/Scripts/postal/lodash.js",
+					"~/Scripts/postal/postal.js",
+					"~/Scripts/ip-messaging.js"
+				));
+
 			// Use the development version of Modernizr to develop with and learn from. Then, when you're
 			// ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
 			bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
 									"~/Scripts/modernizr-*"));
 
 			bundles.Add(new StyleBundle("~/Content/css").Include(
+				"~/Content/normalize.css",
+				"~/Content/legal-hold-fonts.css",
 				"~/Content/integration-points-fonts.css",
+				"~/Content/buttermilk.css",
+				"~/Content/header.css",
+				"~/Content/step-progress-bar.css",
 				"~/Content/site.css"));
 
 			bundles.Add(new StyleBundle("~/Content/themes/base/css").Include(

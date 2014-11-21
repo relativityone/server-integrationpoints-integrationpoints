@@ -1,5 +1,36 @@
-﻿@{
-    ViewBag.Title = "Edit";
+﻿@section header{
+	<div class="header-actions-container">
+		<button class="button secondary positive" id="cancel">Cancel</button>
+		<i class="legal-hold icon-help"></i>
+	</div>
+	<h1>Create LDAP Integration Point</h1>
 }
 
-<h2>Edit</h2>
+<div class="card ">
+	<div class="table full-width">
+		<div class="cell" id="stepProgress"></div>
+		<div class="cell v-align h-align" id="progressButtons">
+			<button class="button generic positive" id="back"><i class="icon-arrow-left"></i>Back</button>
+			<button class="button generic positive" id="next">Next<i class="icon-arrow-right"></i></button>
+		</div>
+	</div>
+</div>
+
+<div id="pointBody" data-bind="template: { name: 'currentTmpl', data: currentStep }"></div>
+
+<script id="currentTmpl" type="text/html">
+    <div data-bind="template: { name: template(), data: $data }"></div>
+</script>
+
+@section scripts
+{
+	
+	<script src="~/Scripts/http.js"></script>
+	<script src="~/Scripts/Controls/step-progress.js"></script>
+	<script src="~/Scripts/integration-point/edit.js"></script>
+	<script src="~/Scripts/integration-point/step-vm.js"></script>
+	<script src="~/Scripts/integration-point/step-details.js"></script>
+	<script src="~/Scripts/integration-point/step-mapFields.js"></script>
+	<script src="~/Scripts/integration-point/step-import.js"></script>
+	
+}
