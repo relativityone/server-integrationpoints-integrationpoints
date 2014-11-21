@@ -65,7 +65,7 @@ namespace kCura.ScheduleQueueAgent.Properties {
         ///Script Number:		1
         ///Script Date:		11/13/2014 10:10:00 
         ///Script Creator:		Art Kelenzon
-        ///Script Description:	Creating Schedule Queue table and corresponding indexes
+        ///Script Description:	Creating schedule queue table and corresponding indexes
         ///******/
         ///USE [EDDS]
         ///GO
@@ -88,22 +88,123 @@ namespace kCura.ScheduleQueueAgent.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DECLARE @job table
+        ///(
+        ///		[JobID] [bigint] IDENTITY(1,1) NOT NULL,
+        ///		[AgentTypeID] [int] NOT NULL,
+        ///		[LockedByAgentID] [int] NULL,
+        ///		[WorkspaceID] [int] NOT NULL,
+        ///		[RelatedObjectArtifactID] [int] NOT NULL,
+        ///		[TaskType] [nvarchar](255) NOT NULL,
+        ///		[NextRunTime] [datetime] NOT NULL,
+        ///		[LastRunTime] [datetime] NULL,
+        ///		[ScheduleRule] [nvarchar](max) NULL,
+        ///		[JobDetail] [nvarchar](max) NULL,
+        ///		[JobFlags] [int] NOT NULL,
+        ///		[SubmittedDate] [datetime] NOT NULL,
+        ///		[SubmittedBy] [int] NOT NULL
+        ///)
+        ///	
+        ///UPDA [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string CreateScheduledJob {
+            get {
+                return ResourceManager.GetString("CreateScheduledJob", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DELETE FROM
+        ///			[eddsdbo].[{0}] 
+        ///WHERE
+        ///			JobID = @JobID
+        ///.
+        /// </summary>
+        internal static string DeleteJob {
+            get {
+                return ResourceManager.GetString("DeleteJob", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SELECT TOP 1 
         ///			a.[ArtifactID] AS AgentID,
         ///			at.[ArtifactID] AS AgentTypeID,
-        ///      [Name],
-        ///      [Fullnamespace],
-        ///      [Guid]
+        ///      at.[Name],
+        ///      at.[Fullnamespace],
+        ///      at.[Guid]
         ///FROM 
         ///			[eddsdbo].[AgentType]at WITH(NOLOCK)
         ///JOIN
         ///			[eddsdbo].[Agent]a WITH(NOLOCK) ON at.ArtifactID=a.AgentTypeArtifactID
         ///WHERE
-        ///			a.ArtifactID = @AgentID.
+        ///			(NOT @AgentID IS NULL AND a.[ArtifactID] = @AgentID)
+        ///		OR
+        ///			(NOT @AgentGuid IS NULL AND at.[Guid] = @AgentGuid)
+        ///.
         /// </summary>
         internal static string GetAgentInformation {
             get {
                 return ResourceManager.GetString("GetAgentInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT 
+        ///			[JobID]
+        ///			,[AgentTypeID]
+        ///			,[LockedByAgentID]
+        ///			,[WorkspaceID]
+        ///			,[RelatedObjectArtifactID]
+        ///			,[TaskType]
+        ///			,[NextRunTime]
+        ///			,[LastRunTime]
+        ///			,[ScheduleRule]
+        ///			,[JobDetail]
+        ///			,[JobFlags]
+        ///			,[SubmittedDate]
+        ///			,[SubmittedBy]
+        ///FROM
+        ///			[eddsdbo].[{0}] WITH(NOLOCK)
+        ///WHERE
+        ///			JobID = @JobID
+        ///.
+        /// </summary>
+        internal static string GetJobByID {
+            get {
+                return ResourceManager.GetString("GetJobByID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT 
+        ///			[JobID]
+        ///			,[AgentTypeID]
+        ///			,[LockedByAgentID]
+        ///			,[WorkspaceID]
+        ///			,[RelatedObjectArtifactID]
+        ///			,[TaskType]
+        ///			,[NextRunTime]
+        ///			,[LastRunTime]
+        ///			,[ScheduleRule]
+        ///			,[JobDetail]
+        ///			,[JobFlags]
+        ///			,[SubmittedDate]
+        ///			,[SubmittedBy]
+        ///FROM
+        ///			[eddsdbo].[{0}] WITH(NOLOCK)
+        ///WHERE
+        ///			[WorkspaceID] = @WorkspaceID
+        ///	AND 
+        ///			[RelatedObjectArtifactID] = @RelatedObjectArtifactID
+        ///	AND 
+        ///			[TaskType] = @TaskType
+        ///
+        ///.
+        /// </summary>
+        internal static string GetJobByRelatedObjectID {
+            get {
+                return ResourceManager.GetString("GetJobByRelatedObjectID", resourceCulture);
             }
         }
         

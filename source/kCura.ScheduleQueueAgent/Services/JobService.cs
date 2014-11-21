@@ -5,6 +5,7 @@ using System.Linq;
 using kCura.ScheduleQueueAgent.Helpers;
 using kCura.ScheduleQueueAgent.Data;
 using kCura.ScheduleQueueAgent.Data.Queries;
+using kCura.ScheduleQueueAgent.ScheduleRules;
 using Relativity.API;
 
 namespace kCura.ScheduleQueueAgent.Services
@@ -93,27 +94,90 @@ namespace kCura.ScheduleQueueAgent.Services
 			return agentInformation;
 		}
 
-		public Job CreateJob(int workspaceID, int? relatedObjectArtifactID, string taskType, IScheduleRule scheduleRules, string jobDetail, int SubmittedBy)
+		public AgentInformation GetAgentInformation(Guid agentGuid)
+		{
+			AgentInformation agentInformation = null;
+			DataRow row = new GetAgentInformation(QDBContext).Execute(agentGuid);
+			if (row != null)
+			{
+				agentInformation = new AgentInformation(row);
+			}
+			return agentInformation;
+		}
+
+		public Job CreateJob(AgentInformation agentInfo, int workspaceID, int relatedObjectArtifactID, string taskType,
+													IScheduleRule scheduleRule, string jobDetail, int SubmittedBy)
 		{
 			CreateQueueTableOnce();
-			throw new NotImplementedException();
+
+			Job job = null;
+			DateTime? nextRunTime = scheduleRule.GetNextUTCRunDateTime(null, null);
+			string serializedScheduleRule = scheduleRule.ToSerializedString();
+			if (nextRunTime.HasValue)
+			{
+				DataRow row = new CreateScheduledJob(QDBContext).Execute(
+					workspaceID,
+					relatedObjectArtifactID,
+					taskType,
+					nextRunTime.Value,
+					agentInfo.AgentTypeID,
+					serializedScheduleRule,
+					jobDetail,
+					0,
+					SubmittedBy);
+
+				if (row != null) job = new Job(row);
+			}
+			return job;
+		}
+
+		public Job CreateJob(AgentInformation agentInfo, int workspaceID, int relatedObjectArtifactID, string taskType,
+													DateTime nextRunTime, string jobDetail, int SubmittedBy)
+		{
+			CreateQueueTableOnce();
+
+			Job job = null;
+			DataRow row = new CreateScheduledJob(QDBContext).Execute(
+				workspaceID,
+				relatedObjectArtifactID,
+				taskType,
+				nextRunTime,
+				agentInfo.AgentTypeID,
+				null,
+				jobDetail,
+				0,
+				SubmittedBy);
+
+			if (row != null) job = new Job(row);
+
+			return job;
 		}
 
 		public void DeleteJob(long jobID)
 		{
-			throw new NotImplementedException();
+			new DeleteJob(QDBContext).Execute(jobID);
 		}
 
-		public void GetJob(long jobID)
+		public Job GetJob(long jobID)
 		{
 			CreateQueueTableOnce();
-			throw new NotImplementedException();
+
+			Job job = null;
+			DataRow row = new GetJob(QDBContext).Execute(jobID);
+			if (row != null) job = new Job(row);
+
+			return job;
 		}
 
-		public void GetJob(int workspaceID, int relatedObjectArtifactID)
+		public Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName)
 		{
 			CreateQueueTableOnce();
-			throw new NotImplementedException();
+
+			Job job = null;
+			DataRow row = new GetJob(QDBContext).Execute(workspaceID, relatedObjectArtifactID, taskName);
+			if (row != null) job = new Job(row);
+
+			return job;
 		}
 	}
 }

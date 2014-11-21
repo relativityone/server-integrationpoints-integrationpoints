@@ -31,11 +31,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public override IEnumerable<string> GetUnbatchedIDs(Job job)
 		{
-			if (!job.RelatedObjectArtifactID.HasValue)
+			if (job.RelatedObjectArtifactID < 1)
 			{
 				throw new ArgumentNullException("Job must have a Related Object ArtifactID");
 			}
-			var integrationPointID = job.RelatedObjectArtifactID.Value;
+			var integrationPointID = job.RelatedObjectArtifactID;
 			IDataSourceProvider provider = _providerFactory.GetDataProvider();
 			FieldEntry idField = _helper.GetIdentifierFieldEntry(integrationPointID);
 			string options = _helper.GetSourceOptions(integrationPointID);
@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public override void CreateBatchJob(Job job, List<string> batchIDs)
 		{
-			_jobManager.CreateJob(batchIDs, TaskType.SyncWorker, job.RelatedObjectArtifactID.Value);
+			_jobManager.CreateJob(batchIDs, TaskType.SyncWorker, job.RelatedObjectArtifactID);
 		}
 
 		private class ReaderEnumerable : IEnumerable<string>

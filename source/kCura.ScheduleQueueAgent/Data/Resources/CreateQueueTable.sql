@@ -2,7 +2,7 @@
 Script Number:		1
 Script Date:		11/13/2014 10:10:00 
 Script Creator:		Art Kelenzon
-Script Description:	Creating Schedule Queue table and corresponding indexes
+Script Description:	Creating schedule queue table and corresponding indexes
 ******/
 USE [EDDS]
 GO
@@ -17,11 +17,11 @@ CREATE TABLE [eddsdbo].[{0}](
 	[AgentTypeID] [int] NOT NULL,
 	[LockedByAgentID] [int] NULL,
 	[WorkspaceID] [int] NOT NULL,
-	[RelatedObjectArtifactID] [int] NULL,
+	[RelatedObjectArtifactID] [int] NOT NULL,
 	[TaskType] [nvarchar](255) NOT NULL,
 	[NextRunTime] [datetime] NOT NULL,
 	[LastRunTime] [datetime] NULL,
-	[ScheduleRules] [nvarchar](max) NULL,
+	[ScheduleRule] [nvarchar](max) NULL,
 	[JobDetail] [nvarchar](max) NULL,
 	[JobFlags] [int] NOT NULL,
 	[SubmittedDate] [datetime] NOT NULL,
@@ -41,10 +41,11 @@ CREATE NONCLUSTERED INDEX [IX_{0}_LockedByAgentID_AgentTypeID_NextRunTime] ON [e
 	[NextRunTime] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 GO
-IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[eddsdbo].[{0}]') AND name = N'IX_{0}_WorkspaceID_RelatedObjectArtifactID')
-CREATE NONCLUSTERED INDEX [IX_{0}_WorkspaceID_RelatedObjectArtifactID] ON [eddsdbo].[{0}] 
+IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[eddsdbo].[{0}]') AND name = N'IX_{0}_WorkspaceID_RelatedObjectArtifactID_TaskType')
+CREATE UNIQUE NONCLUSTERED INDEX [IX_{0}_WorkspaceID_RelatedObjectArtifactID_TaskType] ON [eddsdbo].[{0}] 
 (
 	[WorkspaceID] ASC,
-	[RelatedObjectArtifactID] ASC
+	[RelatedObjectArtifactID] ASC,
+	[TaskType] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 GO

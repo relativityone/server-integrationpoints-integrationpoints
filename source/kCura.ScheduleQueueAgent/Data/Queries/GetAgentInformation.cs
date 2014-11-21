@@ -16,12 +16,27 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 
 		public DataRow Execute(int agentID)
 		{
-			string sql = Resources.GetAgentInformation;
-
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@AgentID", agentID));
+			sqlParams.Add(new SqlParameter("@AgentGuid", DBNull.Value));
 
-			var dataTable = qDBContext.DBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray());
+			return Execute(sqlParams);
+		}
+
+		public DataRow Execute(Guid agentGuid)
+		{
+			List<SqlParameter> sqlParams = new List<SqlParameter>();
+			sqlParams.Add(new SqlParameter("@AgentID", DBNull.Value));
+			sqlParams.Add(new SqlParameter("@AgentGuid", agentGuid));
+
+			return Execute(sqlParams);
+		}
+
+		public DataRow Execute(IEnumerable<SqlParameter> sqlParams)
+		{
+			string sql = Resources.GetAgentInformation;
+
+			var dataTable = qDBContext.DBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
 
 			DataRow row = null;
 			if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)
