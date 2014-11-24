@@ -148,6 +148,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\JsonNetResult.cs" />
+    <Compile Include="Controllers\API\TestController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIController.cs" />
     <Compile Include="Controllers\IntegrationPointsController.cs" />
@@ -243,9 +244,11 @@
     <Content Include="Content\header.scss" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\Controls\step-progress.js" />
+    <Content Include="Scripts\core\utils.js" />
     <Content Include="Scripts\EventHandlers\test.js" />
-    <Content Include="Scripts\http.js" />
+    <Content Include="Scripts\core\data.js" />
     <Content Include="Scripts\integration-point\edit.js" />
+    <Content Include="Scripts\integration-point\select2-binding.js" />
     <Content Include="Scripts\integration-point\step-import.js" />
     <Content Include="Scripts\integration-point\step-mapFields.js" />
     <Content Include="Scripts\integration-point\step-vm.js" />

@@ -25,6 +25,16 @@ namespace kCura.IntegrationPoints.Web
 					"~/Scripts/ip-messaging.js"
 				));
 
+			bundles.Add(new ScriptBundle("~/bundles/ipEdit").Include(
+					"~/Scripts/Controls/step-progress.js",
+					"~/Scripts/integration-point/edit.js",
+					"~/Scripts/integration-point/step-vm.js",
+					"~/Scripts/integration-point/step-details.js",
+					"~/Scripts/integration-point/step-mapFields.js",
+					"~/Scripts/integration-point/step-import.js"
+				));
+
+
 			// Use the development version of Modernizr to develop with and learn from. Then, when you're
 			// ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
 			bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(

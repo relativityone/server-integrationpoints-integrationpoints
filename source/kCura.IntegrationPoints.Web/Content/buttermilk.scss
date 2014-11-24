@@ -1,5 +1,6 @@
 $card-color : #f7f7f7;
 $card-label-color:#3471b7;
+$orange: #f59d1f;
 $default-font-color: #666666;
 $font-family:'Open Sans', sans-serif;
 
@@ -33,6 +34,12 @@ html
 		color: $card-label-color;
 		font-size: 13px;
 		font-weight: $font-bold;
+	}
+	.field-label {
+		color: #404040;
+		&.required {
+			border-right: 3px solid $orange;
+		}
 	}
 }
 
