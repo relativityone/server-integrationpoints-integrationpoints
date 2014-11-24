@@ -7,12 +7,30 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class RdoSynchronizer : kCura.IntegrationPoints.Core.Services.Syncronizer.IDataSyncronizer
 	{
-		private RelativiityFieldQuery _fieldQuery;
-		public RdoSynchronizer(RelativiityFieldQuery fieldQuery)
+		private RelativityFieldQuery _fieldQuery;
+		public RdoSynchronizer(RelativityFieldQuery fieldQuery)
 		{
 			_fieldQuery = fieldQuery;
 		}
 
+		private List<string> IgnoredList
+		{
+			get
+			{
+				// fields don't have any space in between words 
+				var list = new List<string>
+			    {
+					"IsSystemArtifact",
+					"SystemCreatedBy",
+					"SystemCreatedOn",
+					"SystemGenerated",
+					"SystemLastModifiedBy",
+					"SystemLastModifiedOn",
+					"ArtifactID"
+			    };
+				return list;
+			}
+		}
 
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
@@ -21,7 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			var allFieldsForRdo = new List<FieldEntry>();
 			foreach (var result in fields)
 			{
-				if (!result.Name.ToLower().Contains("system") && !result.Name.ToLower().Contains("artifact"))
+				if (!IgnoredList.Contains(result.Name))
 				{
 					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString() });
 				}

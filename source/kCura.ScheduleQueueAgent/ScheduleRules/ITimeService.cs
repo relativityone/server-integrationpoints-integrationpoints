@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kCura.ScheduleQueueAgent
+namespace kCura.ScheduleQueueAgent.ScheduleRules
 {
 	public interface ITimeService
 	{

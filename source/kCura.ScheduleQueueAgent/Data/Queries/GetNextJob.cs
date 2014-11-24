@@ -14,7 +14,7 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 			this.qDBContext = qDBContext;
 		}
 
-		public DataRow Execute(int agentID, int agentTypeID, int processingStatus, int[] resourceGroupArtifactID)
+		public DataRow Execute(int agentID, int agentTypeID, int[] resourceGroupArtifactID)
 		{
 			string sql = string.Format(Resources.CreateQueueTable, qDBContext.QueueTable);
 			string ResourceGroupArtifactIDs = string.Join(",", resourceGroupArtifactID);
@@ -27,7 +27,6 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@AgentID", agentID));
 			sqlParams.Add(new SqlParameter("@AgentTypeID", agentTypeID));
-			sqlParams.Add(new SqlParameter("@ProcessingStatus", processingStatus));
 
 			var dataTable = qDBContext.DBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray());
 

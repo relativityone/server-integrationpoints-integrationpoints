@@ -347,6 +347,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\IntegrationPoints\Edit.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial.cshtml" />
+    <Content Include="Views\IntegrationPoints\Index.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
   </ItemGroup>
   <ItemGroup>

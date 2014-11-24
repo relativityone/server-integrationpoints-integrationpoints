@@ -5,11 +5,11 @@ using Field = kCura.Relativity.Client.Field;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public class RelativiityFieldQuery
+	public class RelativityFieldQuery
 	{
 		private readonly IRSAPIClient _client;
 
-		public RelativiityFieldQuery(IRSAPIClient client)
+		public RelativityFieldQuery(IRSAPIClient client)
 		{
 			_client = client;
 		}

@@ -28,10 +28,14 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return PartialView("_IntegrationDetailsPartial2");
 		}
 
-		[HttpGet]
-		public ActionResult ValidationConnection()
+		public ActionResult Edit(int? id)
 		{
-			return JsonNetResult(new { success = true});
+			return View();
+		}
+
+		public ActionResult Index()
+		{
+			return View(); 
 		}
 
 	}

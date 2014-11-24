@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 				APIOptions = {WorkspaceID = 1025517}
 			};
 
-			var rdo = new RdoSynchronizer(new RelativiityFieldQuery(client));
+			var rdo = new RdoSynchronizer(new RelativityFieldQuery(client));
 			//ASSERT
 
 			rdo.GetFields(JsonConvert.SerializeObject(new RelativityConfiguration { ArtifactTypeID = 1000043 }));

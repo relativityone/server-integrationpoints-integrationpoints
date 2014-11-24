@@ -57,12 +57,21 @@
     <Reference Include="kCura.Agent">
       <HintPath>..\Dependencies\kCura\kCura.Agent.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Apps.Common.Utils, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.94.1\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.API, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -77,17 +86,20 @@
     <Compile Include="BatchProcess\BatchableTaskBase.cs" />
     <Compile Include="Core\AgentInformation.cs" />
     <Compile Include="Data\Interfaces\IQueueDBContext.cs" />
+    <Compile Include="Data\Queries\DeleteJob.cs" />
+    <Compile Include="Data\Queries\GetJob.cs" />
+    <Compile Include="Data\Queries\CreateScheduledJob.cs" />
+    <Compile Include="Data\Queries\UpdateScheduledJob.cs" />
     <Compile Include="Data\Queries\GetAgentInformation.cs" />
     <Compile Include="Data\Queries\GetNextJob.cs" />
     <Compile Include="Data\QueueDBContext.cs" />
     <Compile Include="Data\Queries\CreateScheduleQueueTable.cs" />
     <Compile Include="BatchProcess\IBatchableTask.cs" />
     <Compile Include="Helpers\QueueTableHelper.cs" />
+    <Compile Include="Interfaces\ITaskFactory.cs" />
     <Compile Include="Interfaces\IJobService.cs" />
     <Compile Include="Interfaces\ILogger.cs" />
-    <Compile Include="Interfaces\IScheduleRule.cs" />
     <Compile Include="Interfaces\ITask.cs" />
-    <Compile Include="Interfaces\ITimeService.cs" />
     <Compile Include="Core\Job.cs" />
     <Compile Include="Core\LogCategory.cs" />
     <Compile Include="CustomAttributes\QueueTableNameAttribute.cs" />
@@ -99,10 +111,23 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ScheduleRules\DefaultTimeService.cs" />
+    <Compile Include="ScheduleRules\Enums.cs" />
+    <Compile Include="ScheduleRules\IScheduleRule.cs" />
+    <Compile Include="ScheduleRules\ITimeService.cs" />
+    <Compile Include="ScheduleRules\PeriodicScheduleRule.cs" />
+    <Compile Include="ScheduleRules\ScheduleRuleBase.cs" />
     <Compile Include="Services\JobService.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\Resources\DeleteJob.sql" />
+    <Content Include="Data\Resources\GetJobByRelatedObjectID.sql" />
+    <Content Include="Data\Resources\GetJobByID.sql" />
+    <Content Include="Data\Resources\CreateScheduledJob.sql" />
+    <Content Include="Data\Resources\UpdateScheduledJob.sql" />
     <Content Include="Data\Resources\GetAgentInformation.sql" />
     <Content Include="Data\Resources\CreateQueueTable.sql" />
     <Content Include="Data\Resources\GetNextJob.sql" />
