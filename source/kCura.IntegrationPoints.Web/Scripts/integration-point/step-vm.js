@@ -40,6 +40,8 @@
 			vm.currentStep().submit().then(function () {
 				step = vm.goToStep(++step);
 				IP.messaging.publish('goToStep', step);
+			}).fail(function(err){
+				throw err;
 			});
 		});
 

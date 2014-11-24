@@ -20,9 +20,16 @@ html {
     font-size: 13px;
     font-weight: 600; }
   .card .field-label, .status-container .field-label {
-    color: #404040; }
+    color: #404040;
+    text-align: right;
+    padding-right: 5px;
+    min-width: 200px;
+    display: table-cell; }
     .card .field-label.required, .status-container .field-label.required {
       border-right: 3px solid #f59d1f; }
+  .card .field-value, .status-container .field-value {
+    display: table-cell;
+    padding-left: 5px; }
 
 .status-container .buble-container {
   background-color: #e0e0e0; }

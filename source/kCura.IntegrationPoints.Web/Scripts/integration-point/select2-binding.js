@@ -3,7 +3,6 @@
 	update: function (element) {
 		//do this on update so the value get's persisted
 		var $element = $(element);
-		debugger;
 		$element.select2({
 			dropdownAutoWidth: false,
 			dropdownCssClass: "filter-select",

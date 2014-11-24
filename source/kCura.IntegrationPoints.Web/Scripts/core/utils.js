@@ -104,14 +104,6 @@
 			return array.join('/');
 		};
 
-		utils.checkSMTPSettings = function (message) {
-			message = message || "The SMTP credentials must be entered in the Settings tab prior to sending communications.";
-			if (!!!Method.API.params["isSMTPSettingsValid"]) {
-				RLH.message.error.raise(message);
-			}
-			return !!Method.API.params["isSMTPSettingsValid"];
-		};
-
 		utils.getParameterByName = function (name, w) {
 			w = w || window;
 			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");

@@ -37,10 +37,19 @@ html
 	}
 	.field-label {
 		color: #404040;
+		text-align: right;
+		padding-right: 5px;
+		min-width: 200px;
+		display: table-cell;
 		&.required {
 			border-right: 3px solid $orange;
 		}
 	}
+	.field-value {
+		display: table-cell;
+		padding-left: 5px;
+	}
+
 }
 
 .status-container {
