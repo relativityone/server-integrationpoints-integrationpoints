@@ -85,7 +85,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-    <Folder Include="Unit\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Integration\RelativityRdoQueryTest.cs" />
+    <Compile Include="Unit\RdoGetterTest.cs" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
