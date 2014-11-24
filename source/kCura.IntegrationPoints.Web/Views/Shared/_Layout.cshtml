@@ -1,16 +1,33 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>@ViewBag.Title</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width" />
+	<link href="//fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet" type="text/css" />
+	<title>@ViewBag.Title</title>
+	@Styles.Render("~/Content/css")
+	<link href="~/Content/css/select2.css" rel="stylesheet" />
+	@Styles.Render("~/Content/themes/base/css")
+	@Scripts.Render("~/bundles/modernizr")
 </head>
-<body>
-    @RenderBody()
+	<body>
+				<div id="headerContainer">
+			@RenderSection("header", required: false)
+		</div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @RenderSection("scripts", required: false)
-</body>
+		@RenderBody()
+		@Scripts.Render("~/bundles/jquery")
+		<script src="~/Scripts/select2.min.js"></script>
+		
+		<script src="~/Scripts/q.js"></script>
+		<script src="~/Scripts/knockout-2.2.0.debug.js"></script>
+		
+		@Scripts.Render("~/bundles/jqueryui")
+		@Scripts.Render("~/bundles/messaging")
+		<script src="~/Scripts/loading-modal.js"></script>
+		@RenderSection("scripts", required: false)
+		<script>
+			Q.longStackSupport = true;
+		</script>
+	</body>
 </html>

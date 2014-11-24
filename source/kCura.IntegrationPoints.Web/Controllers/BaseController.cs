@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using kCura.IntegrationPoints.Web.Attributes;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -32,6 +33,11 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			//:( we have to do this since we are in an iframe :(
 			return Content("<html><script>window.top.location.href = '" + url + "'; </script></html>");
+		}
+
+		public JsonNetResult JsonNetResult(object data, HttpStatusCode code = HttpStatusCode.OK)
+		{
+			return new JsonNetResult().GetJsonNetResult(data, (int)code);
 		}
 
 	}

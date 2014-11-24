@@ -1,61 +1,97 @@
-﻿body {
-    font-size: .85em;
-    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
-    color: #232323;
-    background-color: #fff;
+﻿body
+{
+	font-size: .85em;
+	margin: 0;
 }
 
-header, footer, nav, section {
-    display: block;
+header, footer, nav, section
+{
+	display: block;
 }
 
-
-/* Styles for basic forms
------------------------------------------------------------*/
-fieldset {
-    border: 1px solid #ddd;
-    padding: 0 1.4em 1.4em 1.4em;
-    margin: 0 0 1.5em 0;
+i
+{
+	font-style: normal;
 }
 
-legend {
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
-textarea {
-    min-height: 75px;
-}
-
-.editor-label {
-    margin: 1em 0 0 0;
-}
-
-.editor-field {
-    margin: 0.5em 0 0 0;
+h1
+{
+	padding: 0;
+	margin: 0;
+	font-weight: 600;
+	color: #102d4f;
+	font-size: 1.0em;
 }
 
 
-/* Styles for validation helpers
------------------------------------------------------------*/
-.field-validation-error {
-    color: #f00;
+.table
+{
+	display: table;
 }
 
-.field-validation-valid {
-    display: none;
+.full-width
+{
+	width: 100%;
 }
 
-.input-validation-error {
-    border: 1px solid #f00;
-    background-color: #fee;
+.cell
+{
+	display: table-cell;
 }
 
-.validation-summary-errors {
-    font-weight: bold;
-    color: #f00;
+.v-align
+{
+	vertical-align: middle;
 }
 
-.validation-summary-valid {
-    display: none;
+.h-align
+{
+	text-align: center;
+}
+
+#stepProgress
+{
+	width: 85%;
+}
+
+.button i
+{
+	vertical-align: -2px;
+	padding: 0 5px;
+}
+
+#progressButtons button
+{
+	padding: 0 10px;
+}
+
+#pointBody
+{
+	position: absolute;
+	top: 180px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+#headerContainer button
+{
+	width: 80px;
+}
+
+.loading-dialog *
+{
+	margin: 0 auto;
+}
+
+.loading-dialog p
+{
+	padding-left: 10px;
+}
+
+.loading
+{
+	background: url("./Images/loading.gif") no-repeat center;
+	height: 80px;
+	width: 80px;
 }
