@@ -1,56 +1,67 @@
-﻿<script id="step1" type="text/html">
+﻿@using kCura.IntegrationPoints.Web.Models
+@using kCura.Method.Web.Controls.Extensions
+@using kCura.Method.Web.Controls.Models.Controls
+@using kCura.Method.Web.Controls.Models.Controls.Containers
+
+<script id="step1" type="text/html">
 	<div class="card">
 		<span class="label">General</span>
+		<div class="field-row" id="nameControl" data-bind="template: { name: 'inputTemplate', data: name }"></div>
 
-		<div class="input-edit-input input-control" id="nameControl" data-bind="template: { name: 'inputTemplate', data: name }"></div>
-
-		<div>
-			<label class="field-label" for="overwrite">Overwrite:</label>
-		</div>
-		<div class="value">
-			<select data-bind="options: overwrite, optionsText: 'displayName', optionsValue: 'value', value: selectedOverwrite, optionsCaption: 'Select...', select2: {}"></select>
+		<div class="field-row">
+			<div class="field-label">
+				<label for="overwrite">Overwrite:</label>
+			</div>
+			<div class="field-value">
+				<select data-bind="options: overwrite, optionsText: 'displayName', optionsValue: 'value', value: selectedOverwrite, optionsCaption: 'Select...', select2: {}"></select>
+			</div>
 		</div>
 	</div>
 
 	<div class="card">
 		<span class="label">Source Configuration</span>
-
 		<div data-bind="template: { name: source.templateID, data: source }"></div>
 	</div>
 
 	<div class="card">
 		<span class="label">Destination Configuration</span>
-		
 		<div data-bind="template: { name: destination.templateID, data: destination }"></div>
 	</div>
 
 	<div class="card">
 		<span class="label">Import Scheduling</span>
-		
 		<div data-bind="template: { name: scheduler.templateID, data: scheduler }"></div>
 	</div>
 </script>
 
 <script type="text/html" id="ldapSourceConfig">
-	<h1>Hello world!!</h1>
+	<select data-bind="options: sourceTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedType, optionsCaption: 'Select...', select2: {}"></select>
 </script>
 
 <script type="text/html" id="ldapDestinationConfig">
-	<h1>Hello world2!!</h1>
-
 	<select data-bind="options: rdoTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedRdo, optionsCaption: 'Select...', select2: {}"></select>
 </script>
 
 <script type="text/html" id="schedulingConfig">
+	@Html.Dragon().RenderForm(new FormPanel<ScheduleModel>(string.Empty, string.Empty, new ScheduleModel
+	{
+		Enable = false,
+		Frequency = new List<SelectListItem>
+		{
+			new SelectListItem{ Text = "Daily"},
+			new SelectListItem{ Text = "Weekly"},
+			new SelectListItem{ Text = "Monthly"},
+		}
+		
+	}))
 
 </script>
 
 <script type="text/html" id="inputTemplate">
 	<div class="field-label required">
-		<label for="ProjectName">Project/Hold Name:</label>
+		<label for="ProjectName" data-bind="text: label"></label>
 	</div>
 	<div class="field-value">
-		<input id="name" name="ProjectName" type="text" data-bind="value: $data">
+		<input id="name" name="ProjectName" type="text" data-bind="value: value">
 	</div>
-
 </script>

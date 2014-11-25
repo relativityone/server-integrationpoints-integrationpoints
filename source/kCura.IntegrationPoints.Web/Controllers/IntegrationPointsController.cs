@@ -12,12 +12,6 @@ namespace kCura.IntegrationPoints.Web.Controllers
 	public class IntegrationPointsController : BaseController
 	{
 
-		public ActionResult Edit(int? objectID)
-		{
-			return View();
-		}
-
-
 		public ActionResult StepDetails()
 		{
 			return PartialView("_IntegrationDetailsPartial");
@@ -32,11 +26,6 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			return View();
 		}
-
-		public ActionResult Index()
-		{
-			return View(); 
-		}
-
+		
 	}
 }

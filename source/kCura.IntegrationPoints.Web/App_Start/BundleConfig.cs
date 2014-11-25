@@ -46,6 +46,7 @@ namespace kCura.IntegrationPoints.Web
 				"~/Content/integration-points-fonts.css",
 				"~/Content/buttermilk.css",
 				"~/Content/header.css",
+				"~/Content/scheduler.css",
 				"~/Content/select2-overrides.css",
 				"~/Content/step-progress-bar.css",
 				"~/Content/site.css"));
