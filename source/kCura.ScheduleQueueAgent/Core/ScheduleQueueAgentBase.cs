@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.Agent;
+using kCura.ScheduleQueueAgent.Helpers;
 using kCura.ScheduleQueueAgent.Services;
 using Relativity.API;
 
@@ -9,11 +10,12 @@ namespace kCura.ScheduleQueueAgent
 	public abstract class ScheduleQueueAgentBase : AgentBase, ITaskFactory
 	{
 		private IJobService jobService = null;
-		
+
 		public ScheduleQueueAgentBase()
 		{
 			DBContext = base.Helper.GetDBContext(-1);
-			this.jobService = new JobService(DBContext);
+			Guid agentGuid = new QueueTableHelper().GetAgentGuid();
+			this.jobService = new JobService(DBContext, agentGuid);
 		}
 
 		//for testing
@@ -34,13 +36,6 @@ namespace kCura.ScheduleQueueAgent
 			ITask task = jobService.GetTask(job);
 			return task;
 		}
-
-
-
-		//TODO: implement
-		//public virtual bool UseDedicatedQueue{
-		//	get { return false; }
-		//}
 
 		public sealed override void Execute()
 		{

@@ -1,4 +1,4 @@
-﻿IF EXISTS(SELECT TOP 1 JobID FROM [eddsdbo].[{0}] WHERE [AgentID] = @AgentID)
+﻿IF EXISTS(SELECT TOP 1 JobID FROM [eddsdbo].[{0}] WHERE [LockedByAgentID] = @AgentID)
 BEGIN
 	--This Agent has stopped before finalizing this job previously
 	--So, pick it up again and finish it.
@@ -11,8 +11,8 @@ BEGIN
 				[TaskType],
 				[NextRunTime],
 				[LastRunTime],
-				[ScheduleRules],
-				[JobDetail],
+				[ScheduleRule],
+				[JobDetails],
 				[JobFlags],
 				[SubmittedDate],
 				[SubmittedBy]
@@ -25,7 +25,7 @@ ELSE
 BEGIN
 	UPDATE TOP (1) [eddsdbo].[{0}]
 	SET
-			[AgentID]	= @AgentID
+			[LockedByAgentID]	= @AgentID
 	OUTPUT 
 			INSERTED.[JobID],
 			INSERTED.[AgentTypeID],
@@ -35,8 +35,8 @@ BEGIN
 			INSERTED.[TaskType],
 			INSERTED.[NextRunTime],
 			INSERTED.[LastRunTime],
-			INSERTED.[ScheduleRules],
-			INSERTED.[JobDetail],
+			INSERTED.[ScheduleRule],
+			INSERTED.[JobDetails],
 			INSERTED.[JobFlags],
 			INSERTED.[SubmittedDate],
 			INSERTED.[SubmittedBy]

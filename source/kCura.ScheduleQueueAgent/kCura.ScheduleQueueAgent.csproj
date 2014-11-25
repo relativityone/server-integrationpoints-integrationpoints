@@ -86,6 +86,7 @@
     <Compile Include="BatchProcess\BatchableTaskBase.cs" />
     <Compile Include="Core\AgentInformation.cs" />
     <Compile Include="Data\Interfaces\IQueueDBContext.cs" />
+    <Compile Include="Data\Queries\UnlockScheduledJob.cs" />
     <Compile Include="Data\Queries\DeleteJob.cs" />
     <Compile Include="Data\Queries\GetJob.cs" />
     <Compile Include="Data\Queries\CreateScheduledJob.cs" />
@@ -123,6 +124,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\Resources\UnlockScheduledJob.sql" />
     <Content Include="Data\Resources\DeleteJob.sql" />
     <Content Include="Data\Resources\GetJobByRelatedObjectID.sql" />
     <Content Include="Data\Resources\GetJobByID.sql" />
