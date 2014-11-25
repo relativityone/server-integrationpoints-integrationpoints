@@ -24,7 +24,7 @@ namespace kCura.ScheduleQueueAgent
 		public Job(DataRow row)
 		{
 
-			JobId = row.Field<int>("AgentID");
+			JobId = row.Field<long>("JobID");
 			AgentTypeID = row.Field<int>("AgentTypeID");
 			LockedByAgentID = row.Field<int?>("LockedByAgentID");
 			WorkspaceID = row.Field<int>("WorkspaceID");

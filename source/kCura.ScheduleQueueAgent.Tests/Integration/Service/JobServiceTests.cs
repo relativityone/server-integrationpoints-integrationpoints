@@ -1,6 +1,12 @@
-﻿using kCura.ScheduleQueueAgent.Services;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using kCura.Data.RowDataGateway;
+using kCura.ScheduleQueueAgent.ScheduleRules;
+using kCura.ScheduleQueueAgent.Services;
 using NUnit.Framework;
-using Relativity.API;
+using Relativity.CustomPages;
+using IDBContext = Relativity.API.IDBContext;
 
 namespace kCura.ScheduleQueueAgent.Tests.Integration.Services
 {
@@ -9,10 +15,55 @@ namespace kCura.ScheduleQueueAgent.Tests.Integration.Services
 	{
 		[Test]
 		[Explicit]
-		public void Run_Agent()
+		public void jobService_CreateUnscheduledJob()
 		{
-			IDBContext dbContext = null;
-			var jobService = new JobService(dbContext);
+			int workspaceID = 1015641;
+			int relatedObjectArtifactID = 1111111;
+			string taskType = "MyTestTask";
+			Guid agentGuid = new Guid("D65F5774-6572-49F0-91C4-28161A75DF0D");
+
+			IDBContext dbContext = new TestDBContextHelper().GetEDDSDBContext();
+			var jobService = new JobService(dbContext, agentGuid);
+
+			//AgentInformation ai = jobService.GetAgentInformation(new Guid("08C0CE2D-8191-4E8F-B037-899CEAEE493D")); //Integration Points agent
+			AgentInformation ai = jobService.GetAgentInformation(agentGuid); //RLH agent
+			Job jobOld = jobService.GetJob(workspaceID, relatedObjectArtifactID, taskType);
+			if (jobOld != null) jobService.DeleteJob(jobOld.JobId);
+			Job job = jobService.CreateJob(ai, workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
+			Job job1 = jobService.GetJob(job.JobId);
+			Job job2 = jobService.GetJob(workspaceID, job.RelatedObjectArtifactID, taskType);
+			Job job3 = jobService.GetNextQueueJob(ai, new int[] { 1015040 });
+			jobService.UnlockJobs(ai.AgentID);
+			jobService.DeleteJob(job3.JobId);
 		}
+
+		[Test]
+		[Explicit]
+		public void jobService_CreateScheduledJob()
+		{
+			int workspaceID = 1015641;
+			int relatedObjectArtifactID = 1111111;
+			string taskType = "MyTestTask";
+			IScheduleRule sr = new PeriodicScheduleRule(ScheduleInterval.Immediate, DateTime.Parse("1/1/2001"), DateTime.Parse("1/1/2001 10:30:00").TimeOfDay);
+			Guid agentGuid = new Guid("D65F5774-6572-49F0-91C4-28161A75DF0D");
+
+			IDBContext dbContext = new TestDBContextHelper().GetEDDSDBContext();
+			var jobService = new JobService(dbContext, agentGuid);
+
+			//AgentInformation ai = jobService.GetAgentInformation(new Guid("08C0CE2D-8191-4E8F-B037-899CEAEE493D")); //Integration Points agent
+			AgentInformation ai = jobService.GetAgentInformation(agentGuid); //RLH agent
+			Job jobOld = jobService.GetJob(workspaceID, relatedObjectArtifactID, taskType);
+			if (jobOld != null) jobService.DeleteJob(jobOld.JobId);
+			Job job = jobService.CreateJob(ai, workspaceID, relatedObjectArtifactID, taskType, sr, "My Test Job Detail", 1212121);
+			Job job2 = null;
+			while (true)
+			{
+				job2 = jobService.GetNextQueueJob(ai, new int[] { 1015040 });
+				if (job2 != null) jobService.FinalizeJob(job2, new TaskResult() { Status = TaskStatusEnum.Success, Exceptions = new List<Exception>() });
+				Thread.Sleep(1000);
+			}
+			jobService.DeleteJob(job2.JobId);
+		}
+
 	}
 }

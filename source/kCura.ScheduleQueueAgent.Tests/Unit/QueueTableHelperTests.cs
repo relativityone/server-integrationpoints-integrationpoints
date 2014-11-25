@@ -1,5 +1,5 @@
-﻿using System.Runtime.InteropServices;
-using kCura.ScheduleQueueAgent.CustomAttributes;
+﻿using System;
+using System.Runtime.InteropServices;
 using kCura.ScheduleQueueAgent.Helpers;
 using NUnit.Framework;
 
@@ -8,6 +8,10 @@ namespace kCura.ScheduleQueueAgent.Tests
 	[TestFixture]
 	public class QueueTableHelperTests
 	{
+
+		private readonly string GetQueueTableNameException = "Could not retrieve Queue table name.";
+		private readonly string GetAgentGuidException = "Could not retrieve Agent Guid.";
+
 		[Test]
 		public void GetQueueTableName_NoAttributes_ReturnsDefaultName()
 		{
@@ -16,10 +20,10 @@ namespace kCura.ScheduleQueueAgent.Tests
 			object[] attributeObjects = new object[0];
 
 			//ACT
-			string returnValue = helper.GetQueueTableName(attributeObjects);
+			Exception ex = Assert.Throws<System.Exception>(delegate { helper.GetQueueTableName(attributeObjects); });
 
 			//ASSERT
-			Assert.AreEqual("ScheduleAgentQueue", returnValue);
+			Assert.AreEqual(GetQueueTableNameException, ex.Message);
 		}
 
 		[Test]
@@ -30,10 +34,10 @@ namespace kCura.ScheduleQueueAgent.Tests
 			object[] attributeObjects = new object[] { new System.FlagsAttribute() };
 
 			//ACT
-			string returnValue = helper.GetQueueTableName(attributeObjects);
+			Exception ex = Assert.Throws<System.Exception>(delegate { helper.GetQueueTableName(attributeObjects); });
 
 			//ASSERT
-			Assert.AreEqual("ScheduleAgentQueue", returnValue);
+			Assert.AreEqual(GetQueueTableNameException, ex.Message);
 		}
 
 		[Test]
@@ -48,70 +52,52 @@ namespace kCura.ScheduleQueueAgent.Tests
 			string returnValue = helper.GetQueueTableName(attributeObjects);
 
 			//ASSERT
-			Assert.AreEqual("AgentQueue_" + guid, returnValue);
+			Assert.AreEqual("ScheduleAgentQueue_" + guid, returnValue);
 		}
 
 		[Test]
-		public void GetQueueTableName_QueueTableAttributeOnly_ReturnsCorrectName()
+		public void GetAgentGuid_GuidAttributeOnly_ReturnsCorrectName()
 		{
 			//ARRANGE
-			string name = "TestQueueName";
+			Guid guid = new Guid("08C0CE2D-8191-4E8F-B037-899CEAEE493D");
 			var helper = new QueueTableHelper();
-			object[] attributeObjects = new object[] { new QueueTableAttribute() { Name = name } };
+			object[] attributeObjects = new object[] { new GuidAttribute(guid.ToString()) };
 
 			//ACT
-			string returnValue = helper.GetQueueTableName(attributeObjects);
+			Guid returnValue = helper.GetAgentGuid(attributeObjects);
 
 			//ASSERT
-			Assert.AreEqual(name, returnValue);
+			Assert.AreEqual(guid, returnValue);
 		}
 
 		[Test]
-		public void GetQueueTableName_GuidAttributeAndQueueTableAttributeOnly_ReturnsCorrectName()
+		public void GetAgentGuid_SystemAttributeOnly_ReturnsException()
 		{
 			//ARRANGE
-			string name = "TestQueueName";
-			string guid = "08C0CE2D-8191-4E8F-B037-899CEAEE493D";
 			var helper = new QueueTableHelper();
-			object[] attributeObjects = new object[] { new GuidAttribute(guid), new QueueTableAttribute() { Name = name } };
+			object[] attributeObjects = new object[] { new System.FlagsAttribute() };
 
 			//ACT
-			string returnValue = helper.GetQueueTableName(attributeObjects);
+			Exception ex = Assert.Throws<System.Exception>(delegate { helper.GetAgentGuid(attributeObjects); });
 
 			//ASSERT
-			Assert.AreEqual(name, returnValue);
+			Assert.AreEqual(GetAgentGuidException, ex.Message);
 		}
 
 		[Test]
-		public void GetQueueTableName_QueueTableAttributeAndGuidAttributeOnly_ReturnsCorrectName()
+		public void GetAgentGuid_NoGuidAttribute_ReturnsException()
 		{
 			//ARRANGE
-			string name = "TestQueueName";
-			string guid = "08C0CE2D-8191-4E8F-B037-899CEAEE493D";
 			var helper = new QueueTableHelper();
-			object[] attributeObjects = new object[] { new QueueTableAttribute() { Name = name }, new GuidAttribute(guid) };
+			object[] attributeObjects = new object[] { };
 
 			//ACT
-			string returnValue = helper.GetQueueTableName(attributeObjects);
+			Exception ex = Assert.Throws<System.Exception>(delegate { helper.GetAgentGuid(attributeObjects); });
 
 			//ASSERT
-			Assert.AreEqual(name, returnValue);
+			Assert.AreEqual("Could not retrieve Agent Guid.", ex.Message);
 		}
 
-		[Test]
-		public void GetQueueTableName_SystemAttributeAndQueueTableAttributeAndGuidAttributeOnly_ReturnsCorrectName()
-		{
-			//ARRANGE
-			string name = "TestQueueName";
-			string guid = "08C0CE2D-8191-4E8F-B037-899CEAEE493D";
-			var helper = new QueueTableHelper();
-			object[] attributeObjects = new object[] { new System.FlagsAttribute(), new QueueTableAttribute() { Name = name }, new GuidAttribute(guid) };
 
-			//ACT
-			string returnValue = helper.GetQueueTableName(attributeObjects);
-
-			//ASSERT
-			Assert.AreEqual(name, returnValue);
-		}
 	}
 }

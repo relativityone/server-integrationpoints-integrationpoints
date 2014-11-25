@@ -13,12 +13,14 @@ namespace kCura.ScheduleQueueAgent.Services
 	public class JobService : IJobService
 	{
 		private bool creationOfQTableHasRun = false;
-		public JobService(IDBContext dbContext)
+		public JobService(IDBContext dbContext, Guid agentGuid)
 		{
-			this.QueueTable = new QueueTableHelper().GetQueueTableName();
+			this.AgentGuid = agentGuid;
+			this.QueueTable = string.Format("ScheduleAgentQueue_{0}", agentGuid.ToString().ToUpper());
 			this.QDBContext = new QueueDBContext(dbContext, QueueTable);
 		}
 
+		public Guid AgentGuid { get; private set; }
 		public string QueueTable { get; private set; }
 		public IQueueDBContext QDBContext { get; private set; }
 
@@ -69,7 +71,7 @@ namespace kCura.ScheduleQueueAgent.Services
 
 		public void UnlockJobs(int agentID)
 		{
-			throw new NotImplementedException();
+			new UnlockScheduledJob(QDBContext).Execute(agentID);
 		}
 
 		public void CreateQueueTable()
@@ -106,7 +108,7 @@ namespace kCura.ScheduleQueueAgent.Services
 		}
 
 		public Job CreateJob(AgentInformation agentInfo, int workspaceID, int relatedObjectArtifactID, string taskType,
-													IScheduleRule scheduleRule, string jobDetail, int SubmittedBy)
+													IScheduleRule scheduleRule, string jobDetails, int SubmittedBy)
 		{
 			CreateQueueTableOnce();
 
@@ -122,7 +124,7 @@ namespace kCura.ScheduleQueueAgent.Services
 					nextRunTime.Value,
 					agentInfo.AgentTypeID,
 					serializedScheduleRule,
-					jobDetail,
+					jobDetails,
 					0,
 					SubmittedBy);
 
@@ -132,7 +134,7 @@ namespace kCura.ScheduleQueueAgent.Services
 		}
 
 		public Job CreateJob(AgentInformation agentInfo, int workspaceID, int relatedObjectArtifactID, string taskType,
-													DateTime nextRunTime, string jobDetail, int SubmittedBy)
+													DateTime nextRunTime, string jobDetails, int SubmittedBy)
 		{
 			CreateQueueTableOnce();
 
@@ -144,7 +146,7 @@ namespace kCura.ScheduleQueueAgent.Services
 				nextRunTime,
 				agentInfo.AgentTypeID,
 				null,
-				jobDetail,
+				jobDetails,
 				0,
 				SubmittedBy);
 

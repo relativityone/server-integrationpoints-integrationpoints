@@ -16,7 +16,7 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 
 		public DataRow Execute(int agentID, int agentTypeID, int[] resourceGroupArtifactID)
 		{
-			string sql = string.Format(Resources.CreateQueueTable, qDBContext.QueueTable);
+			string sql = string.Format(Resources.GetNextJob, qDBContext.QueueTable);
 			string ResourceGroupArtifactIDs = string.Join(",", resourceGroupArtifactID);
 			sql = sql.Replace("@ResourceGroupArtifactIDs", ResourceGroupArtifactIDs);
 
@@ -33,8 +33,6 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 			DataRow row = null;
 			if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)
 				row = dataTable.Rows[0];
-			else
-				row = null;
 
 			return row;
 		}
