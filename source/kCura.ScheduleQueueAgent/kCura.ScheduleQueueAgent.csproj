@@ -103,7 +103,6 @@
     <Compile Include="Interfaces\ITask.cs" />
     <Compile Include="Core\Job.cs" />
     <Compile Include="Core\LogCategory.cs" />
-    <Compile Include="CustomAttributes\QueueTableNameAttribute.cs" />
     <Compile Include="Interfaces\TaskResult.cs" />
     <Compile Include="Interfaces\TaskStatusEnum.cs" />
     <Compile Include="Core\ScheduleQueueAgentBase.cs" />
@@ -139,6 +138,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CustomAttributes\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

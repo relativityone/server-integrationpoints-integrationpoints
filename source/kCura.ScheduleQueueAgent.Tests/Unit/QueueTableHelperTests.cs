@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using kCura.ScheduleQueueAgent.CustomAttributes;
 using kCura.ScheduleQueueAgent.Helpers;
 using NUnit.Framework;
 
