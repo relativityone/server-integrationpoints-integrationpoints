@@ -24,7 +24,8 @@ html {
     text-align: right;
     padding-right: 5px;
     min-width: 200px;
-    display: table-cell; }
+    display: table-cell;
+    border-right: 3px solid transparent; }
     .card .field-label.required, .status-container .field-label.required {
       border-right: 3px solid #f59d1f; }
   .card .field-value, .status-container .field-value {

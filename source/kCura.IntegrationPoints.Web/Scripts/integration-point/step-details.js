@@ -126,3 +126,50 @@
 
 })(IP, ko);
 
+(function () {
+	var toggleScheduler = function (func) {
+		D('#scheduleRulesFrequencyControl')[func]();
+		D('#scheduleRulesReoccurControl')[func]();
+		D('#scheduleRulesStartDateControl')[func]();
+		D('#scheduleRulesEndDateControl')[func]();
+		D('#scheduleRulesScheduledTimeControl')[func]();
+	}
+
+
+	IP.messaging.subscribe('details-loaded', function () {
+		D('.dragon-panel').scheduleControl();
+
+		
+
+		var $el = $('#scheduleRulesFrequency, #scheduleRulesSendOnControl select');
+
+		$el.select2({
+			dropdownAutoWidth: false,
+			dropdownCssClass: "filter-select",
+			containerCssClass: "filter-container",
+		});
+		$el.parent().find('.filter-container span.select2-arrow').removeClass("select2-arrow").addClass("icon icon-chevron-down");
+
+		$el.on('change', function () {
+			D.updatePlaceholders();
+		});
+		var enabled = $('#scheduleRulesEnabled input:checked').val() === "true";
+		if (!enabled) {
+			toggleScheduler('hide');
+		} else {
+			toggleScheduler('show');
+		}
+
+		$('#scheduleRulesEnabled input').on('change', function () {
+			var enabled = $(this).val() === "true";
+			var func = enabled ? "show" : "hide";
+			toggleScheduler(func);
+
+			D.updatePlaceholders();
+		});
+
+	});
+
+
+		
+})();

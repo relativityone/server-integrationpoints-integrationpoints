@@ -17,12 +17,13 @@
 
 		@RenderBody()
 		@Scripts.Render("~/bundles/jquery")
+		<script src="~/Scripts/placeholder-shim.js"></script>
 		<script src="~/Scripts/select2.min.js"></script>
-		
 		<script src="~/Scripts/q.js"></script>
 		<script src="~/Scripts/knockout-2.2.0.debug.js"></script>
 		
 		@Scripts.Render("~/bundles/jqueryui")
+		
 		@Scripts.Render("~/bundles/messaging")
 		<script src="~/Scripts/loading-modal.js"></script>
 		@RenderSection("scripts", required: false)

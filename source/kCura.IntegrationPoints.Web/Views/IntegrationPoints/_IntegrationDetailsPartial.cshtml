@@ -19,14 +19,11 @@
 	</div>
 
 	<div class="card">
-		<span class="label">Source Configuration</span>
+		<span class="label">Integration</span>
 		<div data-bind="template: { name: source.templateID, data: source }"></div>
-	</div>
-
-	<div class="card">
-		<span class="label">Destination Configuration</span>
 		<div data-bind="template: { name: destination.templateID, data: destination }"></div>
 	</div>
+
 
 	<div class="card">
 		<span class="label">Import Scheduling</span>
@@ -35,11 +32,25 @@
 </script>
 
 <script type="text/html" id="ldapSourceConfig">
-	<select data-bind="options: sourceTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedType, optionsCaption: 'Select...', select2: {}"></select>
+	<div class="field-row">
+		<div class="field-label">
+			Source Provider:
+		</div>
+		<div class="field-value">
+			<select data-bind="options: sourceTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedType, optionsCaption: 'Select...', select2: {}"></select>
+		</div>
+	</div>
 </script>
 
 <script type="text/html" id="ldapDestinationConfig">
-	<select data-bind="options: rdoTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedRdo, optionsCaption: 'Select...', select2: {}"></select>
+	<div class="field-row">
+		<div class="field-label">
+			Destination RDO:
+		</div>
+		<div class="field-value">
+			<select data-bind="options: rdoTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedRdo, optionsCaption: 'Select...', select2: {}"></select>
+		</div>
+	</div>
 </script>
 
 <script type="text/html" id="schedulingConfig">
@@ -52,7 +63,7 @@
 			new SelectListItem{ Text = "Weekly"},
 			new SelectListItem{ Text = "Monthly"},
 		}
-		
+
 	}))
 
 </script>

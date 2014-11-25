@@ -162,6 +162,7 @@
     <Compile Include="ISessionService.cs" />
     <Compile Include="Models\ScheduleModel.cs" />
     <Compile Include="SessionService.cs" />
+    <Compile Include="WindsorCompositionRoot.cs" />
     <Compile Include="WindsorControllerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -289,6 +290,7 @@
     <Content Include="Scripts\knockout-2.2.0.js" />
     <Content Include="Scripts\loading-modal.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\placeholder-shim.js" />
     <Content Include="Scripts\postal\conduit.js" />
     <Content Include="Scripts\postal\lodash.js" />
     <Content Include="Scripts\postal\postal.min.js" />

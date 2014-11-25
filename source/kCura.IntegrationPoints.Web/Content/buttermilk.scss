@@ -41,6 +41,7 @@ html
 		padding-right: 5px;
 		min-width: 200px;
 		display: table-cell;
+		border-right: 3px solid transparent;
 		&.required {
 			border-right: 3px solid $orange;
 		}

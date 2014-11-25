@@ -28,7 +28,8 @@ html {
     text-align: right;
     padding-right: 5px;
     min-width: 200px;
-    display: table-cell; }
+    display: table-cell;
+    border-right: 3px solid transparent; }
     .card .field-label.required, .status-container .field-label.required, .card .dragon-panel .required.title, .dragon-panel .card .required.title, .status-container .dragon-panel .required.title, .dragon-panel .status-container .required.title {
       border-right: 3px solid #f59d1f; }
   .card .field-value, .status-container .field-value, .card .dragon-panel .value, .dragon-panel .card .value, .status-container .dragon-panel .value, .dragon-panel .status-container .value {

@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.Web.Models
 
 
 		[DisplayName("Enable Scheduler")]
-		[ControlDisplay(10, "ScheduleRulesFrequency", ControlTypeEnum.CheckBox)]
+		[ControlDisplay(10, "ScheduleRulesEnabled", ControlTypeEnum.CheckBox)]
 		public bool Enable { get; set; }
 		
 		[HideIcon]
@@ -173,6 +173,7 @@ namespace kCura.IntegrationPoints.Web.Models
 		public SendOnInputModel SendOn { get; set; }
 
 		[DataType(DataType.Date)]
+		[Placeholder("mm/dd/yyyy")]
 		[DisplayName("Start Date")]
 		[ControlDisplay(40, START_DATE, ControlTypeEnum.Date)]
 		[Required(ErrorMessage = "Start date is required.")]
@@ -181,6 +182,7 @@ namespace kCura.IntegrationPoints.Web.Models
 
 		[DataType(DataType.Date)]
 		[DisplayName("End Date")]
+		[Placeholder("mm/dd/yyyy")]
 		[ControlDisplay(50, "ScheduleRulesEndDate", ControlTypeEnum.Date)]
 		[CompareDate(Comparitor = Comparitor.Greater, CompareField = START_DATE, ErrorMessage = "The start date must come before the end date.")]
 		[DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = DATE_FORMAT_TEMPLATE)]

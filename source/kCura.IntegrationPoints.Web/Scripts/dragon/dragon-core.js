@@ -36,12 +36,23 @@
 		},
 		hide: function () {
 			return this.each(function () {
-				$(this).hide().find(':input').addClass(D.steps.FormControl.ignoreValidationClass);
+				D.steps = D.steps || { FormControl: { ignoreValidationClass: {} } };
+				if (D.steps.FormControl.ignoreValidationClass) {
+					$(this).hide().find(':input').addClass();
+				} else {
+					$(this).hide().find(':input');
+				}
 			});
 		},
 		show: function () {
 			return this.each(function () {
-				$(this).show().find(':input').removeClass(D.steps.FormControl.ignoreValidationClass);
+
+				D.steps = D.steps || { FormControl: { ignoreValidationClass: {} } };
+				if (D.steps.FormControl.ignoreValidationClass) {
+					$(this).show().find(':input').addClass();
+				} else {
+					$(this).show().find(':input');
+				}
 			});
 		}
 	};

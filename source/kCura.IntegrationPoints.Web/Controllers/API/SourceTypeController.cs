@@ -4,18 +4,23 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using kCura.IntegrationPoints.Core.Services;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
+	public class SourceTypeController : ApiController
+	{
+		private readonly SourceTypeFactory _factory;
+		public SourceTypeController(Core.Services.SourceTypeFactory factory)
+		{
+			_factory = factory;
+		}
 
-    public class SourceTypeController : ApiController
-    {
-	    [HttpGet]
-	    public HttpResponseMessage Get()
-	    {
-		    var list = new List<dynamic>();
-				list.Add(new { name="Ldap", value= "LDAP" });
-		    return Request.CreateResponse(HttpStatusCode.OK, list);
-	    }
-    }
+		[HttpGet]
+		public HttpResponseMessage Get()
+		{
+			var list = _factory.GetSourceTypes().Select(x => new {name = x.Name, value = x.ID});
+			return Request.CreateResponse(HttpStatusCode.OK, list);
+		}
+	}
 }
