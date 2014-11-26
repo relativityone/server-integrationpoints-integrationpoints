@@ -86,6 +86,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Integration\Service\JobLogServiceTests.cs" />
     <Compile Include="Integration\Service\JobServiceTests.cs" />
     <Compile Include="TestDBContextHelper.cs" />
     <Compile Include="Unit\PeriodicScheduleRuleTest.cs" />
