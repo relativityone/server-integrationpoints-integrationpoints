@@ -1,0 +1,62 @@
+#headerContainer
+{
+	background: #f7f7f7;
+	height: 40px;
+	padding: 0 15px;
+	position: relative;
+	border-bottom: 1px solid #c1c1c1;
+}
+
+	#headerContainer h1
+	{
+		line-height: 40px;
+		padding: 0 0;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		margin: 0;
+	}
+
+		#headerContainer h1 span.manageRoles
+		{
+			position: absolute;
+			left: 235px;
+		}
+
+		#headerContainer h1 .button,
+		#headerContainer h1 .select2-container
+		{
+			-webkit-margin-start: 5px;
+			min-height: 30px;
+			height: 30px;
+			top: 50%;
+			position: absolute;
+			margin-top: -15px;
+		}
+
+		#headerContainer h1 .button
+		{
+			line-height: 16px;
+		}
+
+		#headerContainer button{
+		
+		}
+
+	#headerContainer li .button
+	{
+		min-height: 30px;
+		height: 30px;
+	}
+
+	#headerContainer .action-bar
+	{
+		float: right;
+		line-height: 42px;
+	}
+
+	#headerContainer .header-actions-container
+	{
+		float: right;
+		margin-top: 5px;
+	}

@@ -1,61 +1,124 @@
 ﻿body {
-    font-size: .85em;
-    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
-    color: #232323;
-    background-color: #fff;
+	font-size: .85em;
+	margin: 0;
 }
 
 header, footer, nav, section {
-    display: block;
+	display: block;
+}
+
+i {
+	font-style: normal;
+}
+
+h1 {
+	padding: 0;
+	margin: 0;
+	font-weight: 600;
+	color: #102d4f;
+	font-size: 1.0em;
 }
 
 
-/* Styles for basic forms
------------------------------------------------------------*/
-fieldset {
-    border: 1px solid #ddd;
-    padding: 0 1.4em 1.4em 1.4em;
-    margin: 0 0 1.5em 0;
+.table {
+	display: table;
 }
 
-legend {
-    font-size: 1.2em;
-    font-weight: bold;
+.full-width {
+	width: 100%;
 }
 
-textarea {
-    min-height: 75px;
+.cell {
+	display: table-cell;
 }
 
-.editor-label {
-    margin: 1em 0 0 0;
+.v-align {
+	vertical-align: middle;
 }
 
-.editor-field {
-    margin: 0.5em 0 0 0;
+.h-align {
+	text-align: center;
 }
 
-
-/* Styles for validation helpers
------------------------------------------------------------*/
-.field-validation-error {
-    color: #f00;
+#stepProgress {
+	width: 85%;
 }
 
-.field-validation-valid {
-    display: none;
+.button i {
+	vertical-align: -2px;
+	padding: 0 5px;
 }
 
-.input-validation-error {
-    border: 1px solid #f00;
-    background-color: #fee;
+#progressButtons button {
+	padding: 0 10px;
 }
 
-.validation-summary-errors {
-    font-weight: bold;
-    color: #f00;
+#pointBody {
+	position: absolute;
+	top: 180px;
+	bottom: 0;
+	left: 0;
+	right: 0;
 }
 
-.validation-summary-valid {
-    display: none;
+#headerContainer button {
+	width: 80px;
+}
+
+.loading-dialog * {
+	margin: 0 auto;
+}
+
+.loading-dialog p {
+	padding-left: 10px;
+}
+
+.loading {
+	background: url("./Images/loading.gif") no-repeat center;
+	height: 80px;
+	width: 80px;
+}
+
+.detail-container {
+	position: absolute;
+	left: 0;
+	right: 200px;
+}
+
+.console-container {
+	position: absolute;
+	width: 200px;
+	right: 0;
+	bottom: 0;
+	top: 39px;
+}
+
+.console {
+	overflow: hidden;
+	height: 100%;
+	background-color: #f7f7f7!important;
+	border: thin solid #c1c1c1;
+	vertical-align: top;
+	text-align: center;
+	padding: 10px 10px 0 10px;
+}
+
+	.console button {
+		width: 100%;
+	}
+
+.section {
+	padding-top: 10px;
+}
+
+	.section.button {
+		width: 100%;
+	}
+
+.content {
+	margin: 0 auto;
+}
+
+.field-row {
+	padding-top: 10px;
 }

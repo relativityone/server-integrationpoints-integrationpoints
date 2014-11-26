@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using kCura.Relativity.Client;
 using Artifact = kCura.Relativity.Client.Artifact;
 using Field = kCura.Relativity.Client.Field;
@@ -27,12 +29,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				Condition = new ObjectCondition { Field = "Object Type Artifact Type ID", Operator = ObjectConditionEnum.AnyOfThese, Value = new List<int> { rdoTypeID } },
 				Sorts = new List<Sort>() { new Sort() { Direction = SortEnum.Ascending, Field = "ArtifactID", Order = 1 } }
 			};
-			var results = _client.Query(_client.APIOptions, q);
-			if (!results.Success)
+			var result = _client.Query(_client.APIOptions, q);
+			if (!result.Success)
 			{
-				//TODO: handle better
+				var messages = result.Message;
+				var e = messages; 
+				throw new Exception(e);
 			}
-			return results.QueryArtifacts;
+			return result.QueryArtifacts;
 		}
+
 	}
 }
