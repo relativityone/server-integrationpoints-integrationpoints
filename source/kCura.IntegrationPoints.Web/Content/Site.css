@@ -9,7 +9,7 @@ header, footer, nav, section
 	display: block;
 }
 
-i
+.icon i
 {
 	font-style: normal;
 }
@@ -22,7 +22,6 @@ h1
 	color: #102d4f;
 	font-size: 1.0em;
 }
-
 
 .table
 {
