@@ -43,9 +43,5 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return View(integrationViewModel);
 		}
 
-			return PartialView("_IntegrationDetailsPartial");
-		public ActionResult Details(int? objectID)
-			var integrationViewModel = new IntegrationViewModel()
-
 	}
 }
