@@ -1,6 +1,6 @@
 ﻿DECLARE @job table
 (
-		[JobID] [bigint] IDENTITY(1,1) NOT NULL,
+		[JobID] [bigint] NOT NULL,
 		[AgentTypeID] [int] NOT NULL,
 		[LockedByAgentID] [int] NULL,
 		[WorkspaceID] [int] NOT NULL,
@@ -9,7 +9,7 @@
 		[NextRunTime] [datetime] NOT NULL,
 		[LastRunTime] [datetime] NULL,
 		[ScheduleRule] [nvarchar](max) NULL,
-		[JobDetail] [nvarchar](max) NULL,
+		[JobDetails] [nvarchar](max) NULL,
 		[JobFlags] [int] NOT NULL,
 		[SubmittedDate] [datetime] NOT NULL,
 		[SubmittedBy] [int] NOT NULL
@@ -19,8 +19,8 @@ UPDATE
 		[eddsdbo].[{0}] WITH (UPDLOCK, ROWLOCK)
 SET 
 		[NextRunTime] = @NextRunTime
-		,[ScheduleRules] = @ScheduleRules
-		,[JobDetail] = @JobDetail
+		,[ScheduleRule] = @ScheduleRule
+		,[JobDetails] = @JobDetails
 OUTPUT 
 		Inserted.[JobID]
 		,Inserted.[AgentTypeID]
@@ -31,7 +31,7 @@ OUTPUT
 		,Inserted.[NextRunTime]
 		,Inserted.[LastRunTime]
 		,Inserted.[ScheduleRule]
-		,Inserted.[JobDetail]
+		,Inserted.[JobDetails]
 		,Inserted.[JobFlags]
 		,Inserted.[SubmittedDate]
 		,Inserted.[SubmittedBy]
@@ -46,7 +46,7 @@ WHERE
 	AND
 		(NOT @ScheduleRule IS NULL AND NOT [ScheduleRule] IS NULL)
 	AND
-		[AgentID] IS NULL
+		[LockedByAgentID] IS NULL
 
 IF @@ROWCOUNT = 0
 BEGIN
@@ -60,7 +60,7 @@ BEGIN
 		AND
 			(NOT @ScheduleRule IS NULL AND NOT [ScheduleRule] IS NULL)
 		AND
-			NOT [AgentID] IS NULL
+			NOT [LockedByAgentID] IS NULL
 	)
 	BEGIN
 		RAISERROR ('Error: Job is currently being executed by Agent and is locked for updates.', -- Message text.
@@ -80,7 +80,7 @@ BEGIN
 			,[NextRunTime]
 			,[LastRunTime]
 			,[ScheduleRule]
-			,[JobDetail]
+			,[JobDetails]
 			,[JobFlags]
 			,[SubmittedDate]
 			,[SubmittedBy]
@@ -95,7 +95,7 @@ BEGIN
 			,Inserted.[NextRunTime]
 			,Inserted.[LastRunTime]
 			,Inserted.[ScheduleRule]
-			,Inserted.[JobDetail]
+			,Inserted.[JobDetails]
 			,Inserted.[JobFlags]
 			,Inserted.[SubmittedDate]
 			,Inserted.[SubmittedBy]
@@ -104,14 +104,14 @@ BEGIN
 		VALUES
 		(
 			@AgentTypeID
-			,@LockedByAgentID
+			,NULL
 			,@WorkspaceID
 			,@RelatedObjectArtifactID
 			,@TaskType
 			,@NextRunTime
 			,NULL
 			,@ScheduleRule
-			,@JobDetail
+			,@JobDetails
 			,@JobFlags
 			,GETUTCDATE()
 			,@SubmittedBy
@@ -128,7 +128,7 @@ SELECT
 		,[NextRunTime]
 		,[LastRunTime]
 		,[ScheduleRule]
-		,[JobDetail]
+		,[JobDetails]
 		,[JobFlags]
 		,[SubmittedDate]
 		,[SubmittedBy]

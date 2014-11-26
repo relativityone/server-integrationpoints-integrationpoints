@@ -2,6 +2,6 @@
 					[eddsdbo].[{0}] 
 SET 
 					[NextRunTime] = @NextRunTime, 
-					[AgentID] = NULL 
+					[LockedByAgentID] = NULL 
 WHERE 
 					[JobID] = @JobID

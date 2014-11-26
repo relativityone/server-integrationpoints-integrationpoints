@@ -6,6 +6,7 @@ namespace kCura.ScheduleQueueAgent
 {
 	public interface IJobService
 	{
+		Guid AgentGuid { get; }
 		string QueueTable { get; }
 		AgentInformation GetAgentInformation(int agentID);
 		AgentInformation GetAgentInformation(Guid agentGuid);
@@ -15,9 +16,9 @@ namespace kCura.ScheduleQueueAgent
 		void UnlockJobs(int agentID);
 		void CreateQueueTable();
 		Job CreateJob(AgentInformation agentInfo, int workspaceID, int relatedObjectArtifactID, string taskType,
-			IScheduleRule scheduleRule, string jobDetail, int SubmittedBy);
+			IScheduleRule scheduleRule, string jobDetails, int SubmittedBy);
 		Job CreateJob(AgentInformation agentInfo, int workspaceID, int relatedObjectArtifactID, string taskType,
-			DateTime nextRunTime, string jobDetail, int SubmittedBy);
+			DateTime nextRunTime, string jobDetails, int SubmittedBy);
 		void DeleteJob(long jobID);
 		Job GetJob(long jobID);
 		Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName);

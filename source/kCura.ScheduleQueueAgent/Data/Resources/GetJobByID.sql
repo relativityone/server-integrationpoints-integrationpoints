@@ -8,7 +8,7 @@
 			,[NextRunTime]
 			,[LastRunTime]
 			,[ScheduleRule]
-			,[JobDetail]
+			,[JobDetails]
 			,[JobFlags]
 			,[SubmittedDate]
 			,[SubmittedBy]

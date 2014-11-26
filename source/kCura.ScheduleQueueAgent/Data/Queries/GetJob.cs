@@ -21,32 +21,27 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@JobID", jobID));
 
-			var dataTable = qDBContext.DBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray());
-
-			DataRow row = null;
-			if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)
-				row = dataTable.Rows[0];
-			else
-				row = null;
-
-			return row;
+			return Execute(sql, sqlParams);
 		}
 
 		public DataRow Execute(int workspaceID, int relatedObjectArtifactID, string taskType)
 		{
-			string sql = string.Format(Resources.GetJobByID, qDBContext.QueueTable);
+			string sql = string.Format(Resources.GetJobByRelatedObjectID, qDBContext.QueueTable);
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@WorkspaceID", workspaceID));
 			sqlParams.Add(new SqlParameter("@RelatedObjectArtifactID", relatedObjectArtifactID));
 			sqlParams.Add(new SqlParameter("@TaskType", taskType));
 
+			return Execute(sql, sqlParams);
+		}
+
+		private DataRow Execute(string sql, List<SqlParameter> sqlParams)
+		{
 			var dataTable = qDBContext.DBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray());
 
 			DataRow row = null;
 			if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)
 				row = dataTable.Rows[0];
-			else
-				row = null;
 
 			return row;
 		}
