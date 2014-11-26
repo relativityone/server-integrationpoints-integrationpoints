@@ -19,7 +19,7 @@
 	root.messaging.subscribe('details-loaded', function () {
 		initDatePicker($('#scheduleRulesStartDate, #scheduleRulesEndDate'))
 	});
-	
+
 
 	var Choice = function (name, value) {
 		this.displayName = name;
@@ -30,9 +30,7 @@
 		this.templateID = 'ldapSourceConfig';
 		var self = this;
 
-		this.sourceTypes = ko.observableArray([
-				new Choice('LDAP', 134)
-		]);
+		this.sourceTypes = ko.observableArray();
 
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
 			var types = $.map(result, function (entry) {
@@ -93,26 +91,17 @@
 		this.model = new Model();
 
 		this.getTemplate = function () {
-
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
 				$('body').append(result);
-				self.template(self.settings.templateID);
 				self.hasTemplate = true;
-
+				self.template(self.settings.templateID);
 				root.messaging.publish('details-loaded');
 			});
 		};
 
 		this.submit = function () {
 			var d = root.data.deferred().defer();
-			var url = IP.utils.generateWebURL('IntegrationPoints', 'ValidationConnection');
-			root.data.ajax({ type: 'get', url: url }).then(function (result) {
-				if (result.success) {
-					d.resolve();
-				} else {
-					d.reject();
-				}
-			});
+			d.resolve();
 			return d.promise;
 		};
 	};
@@ -128,18 +117,16 @@
 
 (function () {
 	var toggleScheduler = function (func) {
-		D('#scheduleRulesFrequencyControl')[func]();
-		D('#scheduleRulesReoccurControl')[func]();
-		D('#scheduleRulesStartDateControl')[func]();
-		D('#scheduleRulesEndDateControl')[func]();
-		D('#scheduleRulesScheduledTimeControl')[func]();
+		D('.dragon-panel')[func]();
 	}
-
-
+	
 	IP.messaging.subscribe('details-loaded', function () {
 		D('.dragon-panel').scheduleControl();
 
-		
+		$('.required.value').each(function () {
+			var $this = $(this);
+			$this.siblings('.title').addClass('required');
+		});
 
 		var $el = $('#scheduleRulesFrequency, #scheduleRulesSendOnControl select');
 
@@ -154,6 +141,7 @@
 			D.updatePlaceholders();
 		});
 		var enabled = $('#scheduleRulesEnabled input:checked').val() === "true";
+
 		if (!enabled) {
 			toggleScheduler('hide');
 		} else {
@@ -171,5 +159,5 @@
 	});
 
 
-		
+
 })();

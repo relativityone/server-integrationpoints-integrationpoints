@@ -123,4 +123,15 @@ html {
   margin: 0;
   padding: 0;
   list-style: none; }
+.dragon-panel .SendOn-edit-input li input[type="checkbox"] {
+  margin-right: 5px; }
+.dragon-panel .basic-padding {
+  padding: 5px; }
+
+.field-value ul, .dragon-panel .value ul {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+.field-value input[type="radio"], .dragon-panel .value input[type="radio"] {
+  margin-right: 5px; }
 

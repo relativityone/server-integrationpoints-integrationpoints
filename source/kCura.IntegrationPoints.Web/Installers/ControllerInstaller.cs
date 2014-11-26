@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Http.Controllers;
 using System.Web.Mvc;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
@@ -27,6 +28,8 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<global::Relativity.API.IDBContext>().UsingFactoryMethod<global::Relativity.API.IDBContext>(
 				(k) => ConnectionHelper.Helper().GetDBContext(k.Resolve<ISessionService>().WorkspaceID))
 				);
+			container.Register(Classes.FromThisAssembly().BasedOn<IHttpController>().LifestyleTransient());
+
 		}
 	}
 }

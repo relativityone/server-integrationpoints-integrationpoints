@@ -22,6 +22,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IDataSyncronizerFactory>().AsFactory(x => x.SelectedWith(new DataSyncronizerComponetSelector())));
 			container.Register(Component.For<IServiceContext>().ImplementedBy<ServiceContext>());
 			container.Register(Component.For<IntegrationPointHelper>().ImplementedBy<IntegrationPointHelper>());
+			container.Register(Component.For<SourceTypeFactory>().ImplementedBy<SourceTypeFactory>());
 		}
 	}
 }

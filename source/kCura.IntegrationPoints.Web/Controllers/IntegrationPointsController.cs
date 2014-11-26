@@ -26,6 +26,5 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			return View();
 		}
-		
 	}
 }

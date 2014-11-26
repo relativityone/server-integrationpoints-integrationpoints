@@ -143,17 +143,30 @@ namespace kCura.IntegrationPoints.Web.Models
 		public ScheduleModel()
 		{
 			this.SendOn = new SendOnInputModel(string.Empty,string.Empty);
-			this.SendOn.WeeksOfMonth = new List<Tuple<string, int>>();
-			this.SendOn.MonthlyWeekDays = new List<Tuple<string, int>>();
+			this.SendOn.WeeksOfMonth = new List<Tuple<string, int>>
+			{
+				new Tuple<string, int>("first",1),
+				new Tuple<string, int>("second",2),
+				new Tuple<string, int>("third",3),
+				new Tuple<string, int>("fourth",4),
+				new Tuple<string, int>("last",5)
+			};
+			this.SendOn.MonthlyWeekDays = new List<Tuple<string, int>>
+			{
+				new Tuple<string, int>("day", 1),
+				new Tuple<string, int>("Monday", 2),
+				new Tuple<string, int>("Tuesday", 3),
+				new Tuple<string, int>("Wednesday", 4),
+				new Tuple<string, int>("Thursday", 5),
+				new Tuple<string, int>("Friday", 6),
+				new Tuple<string, int>("Saturday", 7),
+				new Tuple<string, int>("Sunday", 8),
+			};
 			this.SendOn.SelectedWeeklyDays = new List<string>();
 			this.Frequency = new List<SelectListItem>();
 			this.Reoccur = new PrefixAndSuffixInputControl(string.Empty, string.Empty);
+			
 		}
-
-
-		[DisplayName("Enable Scheduler")]
-		[ControlDisplay(10, "ScheduleRulesEnabled", ControlTypeEnum.CheckBox)]
-		public bool Enable { get; set; }
 		
 		[HideIcon]
 		[DisplayName("Frequency")]

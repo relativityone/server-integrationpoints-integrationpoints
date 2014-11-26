@@ -54,14 +54,36 @@
 </script>
 
 <script type="text/html" id="schedulingConfig">
+	
+	<div class="field-row input-control">
+		<div class="field-label">
+			Enabled:
+		</div>
+		<div class="field-value value" id="scheduleRulesEnabled">
+			<ul>
+				<li>
+					<input type="radio" name="enable" value="true"/><span>Yes</span>
+				</li>
+				<li>
+					<input type="radio" name="enable" value="false"/><span>No</span>
+				</li>
+			</ul>
+		</div>
+	</div>
+
 	@Html.Dragon().RenderForm(new FormPanel<ScheduleModel>(string.Empty, string.Empty, new ScheduleModel
 	{
-		Enable = false,
 		Frequency = new List<SelectListItem>
 		{
-			new SelectListItem{ Text = "Daily"},
-			new SelectListItem{ Text = "Weekly"},
-			new SelectListItem{ Text = "Monthly"},
+			new SelectListItem{ Text = "Daily", Value = "1"},
+			new SelectListItem{ Text = "Weekly", Value = "2"},
+			new SelectListItem{ Text = "Monthly", Value = "3"},
+		},
+		Reoccur = new PrefixAndSuffixInputControl(string.Empty, string.Empty)
+		{
+			PrefixText = "Every",
+			SuffixText = "",
+			Value = 3
 		}
 
 	}))
