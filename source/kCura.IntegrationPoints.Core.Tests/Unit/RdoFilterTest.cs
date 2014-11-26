@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using core = kCura.IntegrationPoints.Core;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit
 {

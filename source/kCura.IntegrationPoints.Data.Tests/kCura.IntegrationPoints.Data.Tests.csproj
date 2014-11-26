@@ -47,7 +47,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="kCura.Relativity.Client">
-      <HintPath>..\Binaries\kCura\kCura.Relativity.Client.dll</HintPath>
+      <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
     </Reference>
     <Reference Include="NSubstitute">
       <HintPath>..\packages\NSubstitute.1.5.0.0\lib\NET40\NSubstitute.dll</HintPath>
@@ -57,9 +57,6 @@
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.API">
-      <HintPath>..\Binaries\kCura\Relativity.API.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
