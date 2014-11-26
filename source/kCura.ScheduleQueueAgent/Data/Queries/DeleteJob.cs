@@ -17,7 +17,7 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 
 		public void Execute(long jobID)
 		{
-			string sql = string.Format(Resources.DeleteJob, qDBContext.QueueTable);
+			string sql = string.Format(Resources.DeleteJob, qDBContext.TableName);
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@JobID", jobID));
 

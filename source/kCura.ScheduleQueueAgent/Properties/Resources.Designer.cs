@@ -61,6 +61,30 @@ namespace kCura.ScheduleQueueAgent.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SET ANSI_NULLS ON
+        ///SET QUOTED_IDENTIFIER ON
+        ///
+        ///IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N&apos;[eddsdbo].[{0}]&apos;) AND type in (N&apos;U&apos;))
+        ///BEGIN
+        ///	CREATE TABLE [eddsdbo].[{0}](
+        ///		[ID] [bigint] IDENTITY(1,1) NOT NULL,
+        ///		[JobID] [bigint] NOT NULL,
+        ///		[TaskType] [nvarchar](255) NOT NULL,
+        ///		[Status] [int] NOT NULL,
+        ///		[AgentID] [int] NULL,
+        ///		[RelatedObjectArtifactID] [int] NULL,
+        ///		[CreatedBy] [int] NOT NULL,
+        ///		[CreatedOn] [datetime] NOT NULL,
+        ///		[Details] [nvarchar](max) NULL,
+        ///		CONSTRA [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string CreateJobLogTable {
+            get {
+                return ResourceManager.GetString("CreateJobLogTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to /****** 
         ///Script Number:		1
         ///Script Date:		11/13/2014 10:10:00 
@@ -234,6 +258,36 @@ namespace kCura.ScheduleQueueAgent.Properties {
         internal static string GetNextJob {
             get {
                 return ResourceManager.GetString("GetNextJob", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to INSERT INTO [eddsdbo].[{0}]
+        ///		(
+        ///			[JobID],
+        ///			[TaskType],
+        ///			[Status],
+        ///			[AgentID],
+        ///			[RelatedObjectArtifactID],
+        ///			[CreatedBy],
+        ///			[CreatedOn],
+        ///			[Details]
+        ///		)
+        ///	VALUES
+        ///		(
+        ///			@JobID
+        ///			,@TaskType
+        ///			,@Status
+        ///			,@AgentID
+        ///			,@RelatedObjectArtifactID 
+        ///			,@CreatedBy
+        ///			,GETUTCDATE()
+        ///			,@Details
+        ///		).
+        /// </summary>
+        internal static string InsertJobLogEntry {
+            get {
+                return ResourceManager.GetString("InsertJobLogEntry", resourceCulture);
             }
         }
         

@@ -16,7 +16,7 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 
 		public void Execute(int agentID)
 		{
-			string sql = string.Format(Resources.UnlockScheduledJob, qDBContext.QueueTable);
+			string sql = string.Format(Resources.UnlockScheduledJob, qDBContext.TableName);
 
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@AgentID", agentID));

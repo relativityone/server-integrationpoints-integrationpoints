@@ -16,7 +16,7 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 
 		public void Execute(long jobID, DateTime nextUTCRunTime)
 		{
-			string sql = string.Format(Resources.UpdateScheduledJob, qDBContext.QueueTable);
+			string sql = string.Format(Resources.UpdateScheduledJob, qDBContext.TableName);
 
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@JobID", jobID));

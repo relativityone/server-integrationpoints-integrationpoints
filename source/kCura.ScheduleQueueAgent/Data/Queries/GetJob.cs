@@ -17,7 +17,7 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 
 		public DataRow Execute(long jobID)
 		{
-			string sql = string.Format(Resources.GetJobByID, qDBContext.QueueTable);
+			string sql = string.Format(Resources.GetJobByID, qDBContext.TableName);
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@JobID", jobID));
 
@@ -26,7 +26,7 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 
 		public DataRow Execute(int workspaceID, int relatedObjectArtifactID, string taskType)
 		{
-			string sql = string.Format(Resources.GetJobByRelatedObjectID, qDBContext.QueueTable);
+			string sql = string.Format(Resources.GetJobByRelatedObjectID, qDBContext.TableName);
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@WorkspaceID", workspaceID));
 			sqlParams.Add(new SqlParameter("@RelatedObjectArtifactID", relatedObjectArtifactID));
