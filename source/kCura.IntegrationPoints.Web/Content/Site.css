@@ -93,4 +93,44 @@ h1
 	background: url("./Images/loading.gif") no-repeat center;
 	height: 80px;
 	width: 80px;
+	left: 0;
+	right: 200px;
+}
+
+.console-container {
+	position: absolute;
+	width: 200px;
+	right: 0;
+	bottom: 0;
+	top: 39px;
+}
+
+.console {
+	overflow: hidden;
+	height: 100%;
+	background-color: #f7f7f7!important;
+	border: thin solid #c1c1c1;
+	vertical-align: top;
+	text-align: center;
+	padding: 10px 10px 0 10px;
+}
+
+	.console button {
+		width: 100%;
+	}
+
+.section {
+	padding-top: 10px;
+}
+
+	.section.button {
+		width: 100%;
+	}
+
+.content {
+	margin: 0 auto;
+}
+
+.field-row {
+	padding-top: 10px;
 }

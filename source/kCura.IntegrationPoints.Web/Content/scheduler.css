@@ -29,12 +29,17 @@ html {
     padding-right: 5px;
     min-width: 200px;
     display: table-cell;
-    border-right: 3px solid transparent; }
+    border-right: 3px solid transparent;
+    font-size: .85em; }
     .card .field-label.required, .status-container .field-label.required, .card .dragon-panel .required.title, .dragon-panel .card .required.title, .status-container .dragon-panel .required.title, .dragon-panel .status-container .required.title {
       border-right: 3px solid #f59d1f; }
   .card .field-value, .status-container .field-value, .card .dragon-panel .value, .dragon-panel .card .value, .status-container .dragon-panel .value, .dragon-panel .status-container .value {
     display: table-cell;
-    padding-left: 5px; }
+    padding-left: 5px;
+    font-size: 0.85em; }
+    .card .field-value.details, .status-container .field-value.details, .card .dragon-panel .details.value, .dragon-panel .card .details.value, .status-container .dragon-panel .details.value, .dragon-panel .status-container .details.value {
+      border-bottom: 1px solid #dadada;
+      width: 75%; }
   .card .field-row, .status-container .field-row, .card .dragon-panel .input-control, .dragon-panel .card .input-control, .status-container .dragon-panel .input-control, .dragon-panel .status-container .input-control {
     padding: 5px 0; }
 

@@ -81,6 +81,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -152,6 +153,8 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\JsonNetResult.cs" />
     <Compile Include="Controllers\API\SourceTypeController.cs" />
+    <Compile Include="Controllers\API\RdoFilter.cs" />
+    <Compile Include="Controllers\API\TestController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIController.cs" />
     <Compile Include="Controllers\IntegrationPointsController.cs" />
@@ -185,10 +188,11 @@
     <Content Include="Content\normalize.css" />
     <Content Include="Content\scheduler.css">
       <DependentUpon>scheduler.scss</DependentUpon>
-    </Content>
+      </Content>
     <Content Include="Content\select2-overrides.css">
       <DependentUpon>select2-overrides.scss</DependentUpon>
     </Content>
+
     <Content Include="Content\step-progress-bar.css">
       <DependentUpon>step-progress-bar.scss</DependentUpon>
     </Content>
@@ -362,6 +366,8 @@
     <Content Include="Views\IntegrationPoints\Edit.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
+    <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
+    <Content Include="Views\IntegrationPoints\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
