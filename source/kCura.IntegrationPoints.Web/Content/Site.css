@@ -1,21 +1,17 @@
-﻿body
-{
+﻿body {
 	font-size: .85em;
 	margin: 0;
 }
 
-header, footer, nav, section
-{
+header, footer, nav, section {
 	display: block;
 }
 
-i
-{
+i {
 	font-style: normal;
 }
 
-h1
-{
+h1 {
 	padding: 0;
 	margin: 0;
 	font-weight: 600;
@@ -24,49 +20,40 @@ h1
 }
 
 
-.table
-{
+.table {
 	display: table;
 }
 
-.full-width
-{
+.full-width {
 	width: 100%;
 }
 
-.cell
-{
+.cell {
 	display: table-cell;
 }
 
-.v-align
-{
+.v-align {
 	vertical-align: middle;
 }
 
-.h-align
-{
+.h-align {
 	text-align: center;
 }
 
-#stepProgress
-{
+#stepProgress {
 	width: 85%;
 }
 
-.button i
-{
+.button i {
 	vertical-align: -2px;
 	padding: 0 5px;
 }
 
-#progressButtons button
-{
+#progressButtons button {
 	padding: 0 10px;
 }
 
-#pointBody
-{
+#pointBody {
 	position: absolute;
 	top: 180px;
 	bottom: 0;
@@ -74,24 +61,64 @@ h1
 	right: 0;
 }
 
-#headerContainer button
-{
+#headerContainer button {
 	width: 80px;
 }
 
-.loading-dialog *
-{
+.loading-dialog * {
 	margin: 0 auto;
 }
 
-.loading-dialog p
-{
+.loading-dialog p {
 	padding-left: 10px;
 }
 
-.loading
-{
+.loading {
 	background: url("./Images/loading.gif") no-repeat center;
 	height: 80px;
 	width: 80px;
+}
+
+.detail-container {
+	position: absolute;
+	left: 0;
+	right: 200px;
+}
+
+.console-container {
+	position: absolute;
+	width: 200px;
+	right: 0;
+	bottom: 0;
+	top: 39px;
+}
+
+.console {
+	overflow: hidden;
+	height: 100%;
+	background-color: #f7f7f7!important;
+	border: thin solid #c1c1c1;
+	vertical-align: top;
+	text-align: center;
+	padding: 10px 10px 0 10px;
+}
+
+	.console button {
+		width: 100%;
+	}
+
+.section {
+	padding-top: 10px;
+}
+
+	.section.button {
+		width: 100%;
+	}
+
+.content {
+	margin: 0 auto;
+}
+
+.field-row {
+	padding-top: 10px;
 }

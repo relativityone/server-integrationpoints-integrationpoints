@@ -24,12 +24,17 @@ html {
     text-align: right;
     padding-right: 5px;
     min-width: 200px;
-    display: table-cell; }
+    display: table-cell;
+    font-size: .85em; }
     .card .field-label.required, .status-container .field-label.required {
       border-right: 3px solid #f59d1f; }
   .card .field-value, .status-container .field-value {
     display: table-cell;
-    padding-left: 5px; }
+    padding-left: 5px;
+    font-size: 0.85em; }
+    .card .field-value.details, .status-container .field-value.details {
+      border-bottom: 1px solid #dadada;
+      width: 75%; }
 
 .status-container .buble-container {
   background-color: #e0e0e0; }
