@@ -1,5 +1,7 @@
 ﻿using System;
+using kCura.ScheduleQueueAgent.Logging;
 using kCura.ScheduleQueueAgent.Services;
+using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -12,6 +14,7 @@ namespace kCura.ScheduleQueueAgent.Tests.Integration.Service
 		[Explicit]
 		public void jobService_CreateUnscheduledJob()
 		{
+			var agentHelper = NSubstitute.Substitute.For<Relativity.API.IAgentHelper>();
 
 			int caseID1 = 1015641;
 			int caseID2 = 1018513;
@@ -20,24 +23,35 @@ namespace kCura.ScheduleQueueAgent.Tests.Integration.Service
 			Guid agentGuid = new Guid("D65F5774-6572-49F0-91C4-28161A75DF0D");
 
 			IDBContext eddsContext = new TestDBContextHelper().GetEDDSDBContext();
-			IDBContext c1Context = new TestDBContextHelper().GetEDDSDBContext();
-			IDBContext c2Context = new TestDBContextHelper().GetEDDSDBContext();
-			//AgentInformation ai = jobService.GetAgentInformation(new Guid("08C0CE2D-8191-4E8F-B037-899CEAEE493D")); //Integration Points agent
+			IDBContext c1Context = new TestDBContextHelper().GetDBContext(caseID1);
+			IDBContext c2Context = new TestDBContextHelper().GetDBContext(caseID2);
 			IAgentService agentService = new AgentService(eddsContext, agentGuid); //RLH agent
-			var jobService1 = new JobService(agentService, c1Context);
-			var jobService2 = new JobService(agentService, c2Context);
+			AgentInformation ai = agentService.AgentInformation;
+			var jobService = new JobService(agentService, eddsContext);
 
-			Job jobOld = jobService1.GetJob(caseID1, relatedObjectArtifactID, taskType);
-			if (jobOld != null) jobService1.DeleteJob(jobOld.JobId);
-			jobOld = jobService1.GetJob(caseID2, relatedObjectArtifactID, taskType);
-			if (jobOld != null) jobService1.DeleteJob(jobOld.JobId);
+			Job jobOld = jobService.GetJob(caseID1, relatedObjectArtifactID, taskType);
+			if (jobOld != null) jobService.DeleteJob(jobOld.JobId);
+			jobOld = jobService.GetJob(caseID2, relatedObjectArtifactID, taskType);
+			if (jobOld != null) jobService.DeleteJob(jobOld.JobId);
+			Job job1 = jobService.CreateJob(caseID1, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
+			Job job2 = jobService.CreateJob(caseID2, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
 
-			Job job = jobService1.CreateJob(caseID1, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
-			Job job1 = jobService1.GetJob(job.JobId);
-			Job job2 = jobService1.GetJob(caseID1, job.RelatedObjectArtifactID, taskType);
-			Job job3 = jobService1.GetNextQueueJob(new int[] { 1015040 });
-			jobService1.UnlockJobs(agentService.AgentInformation.AgentID);
-			jobService1.DeleteJob(job3.JobId);
+			agentHelper.GetDBContext(Arg.Is(caseID1)).Returns(c1Context);
+			agentHelper.GetDBContext(Arg.Is(caseID2)).Returns(c2Context);
+
+			JobLogService log= new JobLogService(agentHelper);
+
+			log.Log(ai, job1, JobLogState.Created, caseID1.ToString());
+			log.Log(ai, job1, JobLogState.Error, "Test error for job1 in case" + caseID1.ToString());
+
+			log.Log(ai, job2, JobLogState.Created, caseID2.ToString());
+			log.Log(ai, job2, JobLogState.Error, "Test error for job1 in case" + caseID2.ToString());
+
+			log.Log(ai, job1, JobLogState.Finished, "Test finished for job1 in case" + caseID1.ToString());
+			log.Log(ai, job2, JobLogState.Finished, "Test finished for job1 in case" + caseID2.ToString());
+
+			jobService.DeleteJob(job1.JobId);
+			jobService.DeleteJob(job2.JobId);
 		}
 	}
 }
