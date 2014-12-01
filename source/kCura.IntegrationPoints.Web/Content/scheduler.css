@@ -1,3 +1,7 @@
+/*
+	These are the styles specific to the scheduler, although they do bleed into some of the legal hold styles
+	We have only needed the scheduler component
+*/
 * {
   box-sizing: border-box; }
 
@@ -19,7 +23,7 @@ html {
     color: #3471b7;
     font-size: 13px;
     font-weight: 600; }
-  .card .field-label, .status-container .field-label {
+  .card .field-label, .status-container .field-label, .card .dragon-panel .title, .dragon-panel .card .title, .status-container .dragon-panel .title, .dragon-panel .status-container .title {
     color: #404040;
     text-align: right;
     padding-right: 5px;
@@ -27,16 +31,16 @@ html {
     display: table-cell;
     border-right: 3px solid transparent;
     font-size: .85em; }
-    .card .field-label.required, .status-container .field-label.required {
+    .card .field-label.required, .status-container .field-label.required, .card .dragon-panel .required.title, .dragon-panel .card .required.title, .status-container .dragon-panel .required.title, .dragon-panel .status-container .required.title {
       border-right: 3px solid #f59d1f; }
-  .card .field-value, .status-container .field-value {
+  .card .field-value, .status-container .field-value, .card .dragon-panel .value, .dragon-panel .card .value, .status-container .dragon-panel .value, .dragon-panel .status-container .value {
     display: table-cell;
     padding-left: 5px;
     font-size: 0.85em; }
-    .card .field-value.details, .status-container .field-value.details {
+    .card .field-value.details, .status-container .field-value.details, .card .dragon-panel .details.value, .dragon-panel .card .details.value, .status-container .dragon-panel .details.value, .dragon-panel .status-container .details.value {
       border-bottom: 1px solid #dadada;
       width: 75%; }
-  .card .field-row, .status-container .field-row {
+  .card .field-row, .status-container .field-row, .card .dragon-panel .input-control, .dragon-panel .card .input-control, .status-container .dragon-panel .input-control, .dragon-panel .status-container .input-control {
     padding: 5px 0; }
 
 .status-container .buble-container {
@@ -115,4 +119,24 @@ html {
       color: #102d4f; }
     .console .section a:disabled {
       color: #c1cdce; }
+
+.dragon-panel .hidden {
+  display: none; }
+.dragon-panel .field-validation-valid {
+  display: none; }
+.dragon-panel .value ul {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+.dragon-panel .SendOn-edit-input li input[type="checkbox"] {
+  margin-right: 5px; }
+.dragon-panel .basic-padding {
+  padding: 5px; }
+
+.field-value ul, .dragon-panel .value ul {
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+.field-value input[type="radio"], .dragon-panel .value input[type="radio"] {
+  margin-right: 5px; }
 

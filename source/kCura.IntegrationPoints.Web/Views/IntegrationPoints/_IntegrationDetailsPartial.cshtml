@@ -1,56 +1,173 @@
-﻿<script id="step1" type="text/html">
+﻿@using kCura.IntegrationPoints.Web.Models
+@using kCura.Method.Web.Controls.Extensions
+@using kCura.Method.Web.Controls.Models.Controls
+@using kCura.Method.Web.Controls.Models.Controls.Containers
+
+<script id="step1" type="text/html">
 	<div class="card">
 		<span class="label">General</span>
+		<div class="field-row" id="nameControl" >
+			<div class="field-label required">
+				<label >Integration Name:</label>
+			</div>
+			<div class="field-value">
+				<input type="text" data-bind="value: name">
+			</div>
 
-		<div class="input-edit-input input-control" id="nameControl" data-bind="template: { name: 'inputTemplate', data: name }"></div>
-
-		<div>
-			<label class="field-label" for="overwrite">Overwrite:</label>
 		</div>
-		<div class="value">
-			<select data-bind="options: overwrite, optionsText: 'displayName', optionsValue: 'value', value: selectedOverwrite, optionsCaption: 'Select...', select2: {}"></select>
+
+		<div class="field-row">
+			<div class="field-label">
+				<label for="overwrite">Overwrite:</label>
+			</div>
+			<div class="field-value">
+				<select data-bind="options: overwrite, optionsText: 'displayName', optionsValue: 'value', value: selectedOverwrite, select2: {}"></select>
+			</div>
 		</div>
 	</div>
 
 	<div class="card">
-		<span class="label">Source Configuration</span>
-
+		<span class="label">Integration</span>
 		<div data-bind="template: { name: source.templateID, data: source }"></div>
-	</div>
-
-	<div class="card">
-		<span class="label">Destination Configuration</span>
-		
 		<div data-bind="template: { name: destination.templateID, data: destination }"></div>
 	</div>
 
+
 	<div class="card">
 		<span class="label">Import Scheduling</span>
-		
 		<div data-bind="template: { name: scheduler.templateID, data: scheduler }"></div>
 	</div>
 </script>
 
 <script type="text/html" id="ldapSourceConfig">
-	<h1>Hello world!!</h1>
+	<div class="field-row">
+		<div class="field-label">
+			Source Provider:
+		</div>
+		<div class="field-value">
+			<select data-bind="options: sourceTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedType, select2: {}"></select>
+		</div>
+	</div>
 </script>
 
 <script type="text/html" id="ldapDestinationConfig">
-	<h1>Hello world2!!</h1>
-
-	<select data-bind="options: rdoTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedRdo, optionsCaption: 'Select...', select2: {}"></select>
+	<div class="field-row">
+		<div class="field-label">
+			Destination RDO:
+		</div>
+		<div class="field-value">
+			<select data-bind="options: rdoTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedRdo, optionsCaption: 'Select...', select2: {}"></select>
+		</div>
+	</div>
 </script>
 
 <script type="text/html" id="schedulingConfig">
 
+	<div class="field-row">
+		<div class="field-label">
+			Enabled:
+		</div>
+		<div class="field-value" id="scheduleRulesEnabled">
+			<ul>
+				<li>
+					<input type="radio" name="enable" value="true" data-bind="checked: enabled" />Yes</li>
+				<li>
+					<input type="radio" name="enable" value="false" data-bind="checked: enabled" />No</li>
+			</ul>
+		</div>
+	</div>
+	<div data-bind="visible: enabled() === 'true' ">
+		<div class="field-row">
+			<div class="field-label required">
+				Frequency:
+			</div>
+			<div class="field-value">
+				<select data-bind="options: frequency, optionsText: 'displayName', optionsValue: 'value', value: selectedFrequency, optionsCaption: 'Select...', select2: {}"></select>
+			</div>
+		</div>
+
+		<div class="field-row" data-bind="visible: selectedFrequency() !== 1 && (selectedFrequency() || '') !== ''">
+			<div class="field-label required">
+				Reoccur:
+			</div>
+			<div class="field-value">
+				<label class="basic-padding">Every</label>
+				<input data-bind="value: reoccur" />
+				<label class="basic-padding" data-bind="text: reoccurEvery"></label>
+			</div>
+		</div>
+
+		<div class="field-row" data-bind="visible: selectedFrequency() !== 1 && (selectedFrequency() || '') !== ''">
+			<div class="field-label required">
+				Send On:
+			</div>
+			<div class="field-value" data-bind="template: { name: sendOn().templateID, data: sendOn }"></div>
+		</div>
+
+		<div class="field-row">
+			<div class="field-label required">
+				Start Date:
+			</div>
+			<div class="field-value">
+				<input placeholder="mm/dd/yyyy" type="date" data-bind="value: startDate, datePicker: {}" />
+			</div>
+		</div>
+
+		<div class="field-row">
+			<div class="field-label">
+				End Date:
+			</div>
+			<div class="field-value">
+				<input placeholder="mm/dd/yyyy" type="date" data-bind="value: endDate, datePicker: {}" />
+			</div>
+		</div>
+
+		<div class="field-row">
+			<div class="field-label required">
+				Scheduled Time:
+			</div>
+			<div class="field-value">
+				<input placeholder="hh:mm 24hr" data-bind="value: scheduledTime" />
+			</div>
+		</div>
+	</div>
+</script>
+
+<script type="text/html" id="weeklySendOn">
+	<ul data-bind="foreach: days">
+		<li>
+			<input type="checkbox" data-bind="attr: { value: $data,name: $data }, checked: $parent.selectedDays" />
+			<span data-bind="text: $data"></span>
+		</li>
+	</ul>
+	<div data-bind="validationMessage: selectedDays" class="icon-error legal-hold field-validation-error"></div>
+</script>
+
+<script type="text/html" id="monthlySendOn">
+	<ul>
+		<li class="field-row">
+			<input type="radio" name="monthly" value="days" data-bind="checked: monthChoice" />
+			Day
+			<select class="day-select" data-bind="options: days, optionsText: 'displayName', optionsValue: 'value', value: selectedDay, select2: {}"></select>
+			of the month
+			<i data-bind="text: overflowMessage, visible: selectedDay() > 28"></i>
+		</li>
+		<li class="field-row">
+			<input type="radio" name="monthly" value="month" data-bind="checked: monthChoice" />
+			The 
+			<select data-bind="options: dayTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedType, select2: {}"></select>
+			<select data-bind="options: daysOfMonthComputed, optionsText: 'displayName', optionsValue: 'value', value: selectedDayOfTheMonth, select2: {}"></select>
+			of the month.
+		</li>
+
+	</ul>
 </script>
 
 <script type="text/html" id="inputTemplate">
 	<div class="field-label required">
-		<label for="ProjectName">Project/Hold Name:</label>
+		<label for="ProjectName" data-bind="text: label"></label>
 	</div>
 	<div class="field-value">
-		<input id="name" name="ProjectName" type="text" data-bind="value: $data">
+		<input id="name" name="ProjectName" type="text" data-bind="value: value">
 	</div>
-
 </script>

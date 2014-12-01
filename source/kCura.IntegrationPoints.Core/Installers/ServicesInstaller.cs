@@ -7,6 +7,7 @@ using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
@@ -24,6 +25,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IntegrationPointHelper>().ImplementedBy<IntegrationPointHelper>());
 
 			container.Register(Component.For<IntegrationPointReader>().ImplementedBy<IntegrationPointReader>());
+			container.Register(Component.For<SourceTypeFactory>().ImplementedBy<SourceTypeFactory>());
+			container.Register(Component.For<RdoFilter>().ImplementedBy<RdoFilter>());
 		}
 	}
 }

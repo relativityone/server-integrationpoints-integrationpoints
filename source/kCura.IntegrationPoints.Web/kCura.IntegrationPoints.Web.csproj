@@ -48,6 +48,9 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Method.Web.Controls">
+      <HintPath>..\Dependencies\Method\kCura.Method.Web.Controls.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
@@ -149,7 +152,9 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\JsonNetResult.cs" />
-    <Compile Include="Controllers\API\RdoFilter.cs" />
+    <Compile Include="ControllerCustomPageService.cs" />
+    <Compile Include="Controllers\API\SourceTypeController.cs" />
+    <Compile Include="Controllers\API\RdoFilterController.cs" />
     <Compile Include="Controllers\API\TestController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIController.cs" />
@@ -157,9 +162,14 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="ICustomPageService.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
+    <Compile Include="RsapiClientFactory.cs" />
     <Compile Include="ISessionService.cs" />
+    <Compile Include="Models\ScheduleModel.cs" />
     <Compile Include="SessionService.cs" />
+    <Compile Include="WebAPICustomPageService.cs" />
+    <Compile Include="WindsorCompositionRoot.cs" />
     <Compile Include="WindsorControllerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -180,6 +190,9 @@
     <Content Include="Content\integration-points-fonts.css" />
     <Content Include="Content\legal-hold-fonts.css" />
     <Content Include="Content\normalize.css" />
+    <Content Include="Content\scheduler.css">
+      <DependentUpon>scheduler.scss</DependentUpon>
+    </Content>
     <Content Include="Content\select2-overrides.css">
       <DependentUpon>select2-overrides.scss</DependentUpon>
     </Content>
@@ -252,13 +265,18 @@
     <Content Include="Content\fonts\legal-hold-icons.eot" />
     <Content Include="Content\header.scss" />
     <Content Include="Content\select2-overrides.scss" />
+    <Content Include="Content\scheduler.scss" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\Controls\step-progress.js" />
     <Content Include="Scripts\core\utils.js" />
+    <Content Include="Scripts\date.js" />
+    <Content Include="Scripts\dragon\dragon-core.js" />
+    <Content Include="Scripts\dragon\dragon-schedule.js" />
+    <Content Include="Scripts\dragon\dragon-utils.js" />
     <Content Include="Scripts\EventHandlers\test.js" />
     <Content Include="Scripts\core\data.js" />
     <Content Include="Scripts\integration-point\edit.js" />
-    <Content Include="Scripts\integration-point\select2-binding.js" />
+    <Content Include="Scripts\integration-point\binding.js" />
     <Content Include="Scripts\integration-point\step-import.js" />
     <Content Include="Scripts\integration-point\step-mapFields.js" />
     <Content Include="Scripts\integration-point\step-vm.js" />
@@ -277,6 +295,8 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\knockout-2.2.0.debug.js" />
     <Content Include="Scripts\knockout-2.2.0.js" />
+    <Content Include="Scripts\knockout.validation.debug.js" />
+    <Content Include="Scripts\knockout.validation.js" />
     <Content Include="Scripts\loading-modal.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\postal\conduit.js" />
@@ -349,13 +369,12 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\IntegrationPoints\Edit.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial.cshtml" />
-    <Content Include="Views\IntegrationPoints\Index.cshtml" />
+    <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
     <Content Include="Views\IntegrationPoints\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>

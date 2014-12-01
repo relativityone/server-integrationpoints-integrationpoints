@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Dispatcher;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -28,13 +32,23 @@ namespace kCura.IntegrationPoints.Web
 			BundleConfig.RegisterBundles(BundleTable.Bundles);
 
 			CreateWindsorContainer();
+
+			var formatters = GlobalConfiguration.Configuration.Formatters;
+			var jsonFormatter = formatters.JsonFormatter;
+			var settings = jsonFormatter.SerializerSettings;
+			settings.Formatting = Formatting.Indented;
+			settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+
 		}
 
 		private void CreateWindsorContainer()
 		{
 			_container = new WindsorContainer();
+			var kernel = _container.Kernel;
+			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
 			_container.Install(FromAssembly.InThisApplication());
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));
+			GlobalConfiguration.Configuration.Services.Replace(typeof(IHttpControllerActivator), new WindsorCompositionRoot(_container));
 		}
 
 		protected void Application_End()

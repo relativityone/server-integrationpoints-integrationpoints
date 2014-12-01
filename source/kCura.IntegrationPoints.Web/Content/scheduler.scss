@@ -1,0 +1,51 @@
+/*
+	These are the styles specific to the scheduler, although they do bleed into some of the legal hold styles
+	We have only needed the scheduler component
+*/
+
+@import 'buttermilk';
+.dragon-panel{
+	.hidden{
+		display: none;
+	}
+	.title {
+		@extend .field-label;
+	}
+	.value {
+		@extend .field-value;
+	}
+
+	.field-validation-valid{
+		display: none;
+	}
+
+	.input-control {
+		@extend .field-row;
+	}
+	.value ul {
+		margin:0;
+		padding: 0;
+		list-style: none;
+	}
+	.SendOn-edit-input {
+		li {
+			input[type="checkbox"]{
+				margin-right: 5px;
+			}
+		}
+	}
+	.basic-padding {
+		padding: 5px;
+	}
+}
+
+.field-value{
+	ul{
+		margin:0;
+		padding: 0;
+		list-style: none;
+	}	
+	input[type="radio"]{
+		margin-right: 5px;
+	}
+}

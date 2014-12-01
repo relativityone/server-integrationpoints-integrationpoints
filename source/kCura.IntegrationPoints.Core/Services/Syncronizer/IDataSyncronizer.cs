@@ -7,5 +7,6 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 	public interface IDataSyncronizer: IFieldProvider
 	{
 		void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options);
+
 	}
 }
