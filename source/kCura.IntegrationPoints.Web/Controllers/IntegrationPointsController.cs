@@ -29,7 +29,6 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return PartialView("_IntegrationDetailsPartial");
 		}
 
-
 		public ActionResult Details(int id)
 		{
 			var integrationViewModel = _reader.ReadIntegrationPoint(id);

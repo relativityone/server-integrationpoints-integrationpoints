@@ -11,7 +11,7 @@
 				<label >Integration Name:</label>
 			</div>
 			<div class="field-value">
-				<input type="text" data-bind="value: name">
+				<input type="text" maxlength="255" data-bind="value: name">
 			</div>
 
 		</div>
@@ -41,7 +41,7 @@
 
 <script type="text/html" id="ldapSourceConfig">
 	<div class="field-row">
-		<div class="field-label">
+		<div class="field-label required">
 			Source Provider:
 		</div>
 		<div class="field-value">
@@ -52,7 +52,7 @@
 
 <script type="text/html" id="ldapDestinationConfig">
 	<div class="field-row">
-		<div class="field-label">
+		<div class="field-label required">
 			Destination RDO:
 		</div>
 		<div class="field-value">
@@ -109,7 +109,7 @@
 				Start Date:
 			</div>
 			<div class="field-value">
-				<input placeholder="mm/dd/yyyy" type="date" data-bind="value: startDate, datePicker: {}" />
+				<input placeholder="mm/dd/yyyy" type="text" data-bind="value: startDate, datePicker: {}" />
 			</div>
 		</div>
 
@@ -118,7 +118,7 @@
 				End Date:
 			</div>
 			<div class="field-value">
-				<input placeholder="mm/dd/yyyy" type="date" data-bind="value: endDate, datePicker: {}" />
+				<input placeholder="mm/dd/yyyy" type="text" data-bind="value: endDate, datePicker: {}" />
 			</div>
 		</div>
 

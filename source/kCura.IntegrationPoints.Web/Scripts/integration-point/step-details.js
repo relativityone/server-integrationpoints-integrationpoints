@@ -63,7 +63,7 @@ ko.validation.insertValidationMessage = function (element) {
 			self.sourceTypes(types);
 		});
 
-		this.selectedType = ko.observable();
+		this.selectedType = ko.observable().extend({ required: true });
 
 	};
 
@@ -81,15 +81,15 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.templateID = 'ldapDestinationConfig';
 		this.rdoTypes = ko.observableArray();
-		this.selectedRdo = ko.observable();
+		this.selectedRdo = ko.observable().extend({ required: true });
 	};
 
 	var Scheduler = function (model) {
 		var options = $.extend({}, {
-			enabled: 'false'
+			enabled: 'false',
+			reoccur: 1
 		}, model);
 		var stateManager = {};
-
 		var SendOnWeekly = function (state) {
 			var defaults = {
 				selectedDays: []
@@ -193,18 +193,45 @@ ko.validation.insertValidationMessage = function (element) {
 		};
 
 		var self = this;
+		this.enabled = ko.observable(options.enabled);
+		this.templateID = 'schedulingConfig';
+		this.sendOn = ko.observable({});
+
 		this.frequency = ko.observableArray([
 			new Choice("Daily", 1),
 			new Choice("Weekly", 2),
 			new Choice("Monthly", 3)
 		]);
 
-		this.selectedFrequency = ko.observable();
-		this.reoccur = ko.observable().extend({
+		this.isEnabled = ko.computed(function () {
+			return self.enabled() === "true";
+		});
+
+		this.selectedFrequency = ko.observable().extend({
 			required: {
 				onlyIf: function () {
-					return self.selectedFrequency() !== 1;
+					return self.isEnabled();
 				}
+			}
+		});
+
+		this.reoccur = ko.observable(options.reoccur).extend({
+			required: {
+				onlyIf: function () {
+					return self.selectedFrequency() !== 1 && self.isEnabled();
+				}
+			}
+		}).extend({
+			validation: {
+				validator: function (value, params) {
+					var num = parseInt(value, 10);
+					return !isNaN(num) && num >= params.min && num <= params.max
+				},
+				onlyIf:function(){
+					return self.selectedFrequency() !== 1 && self.isEnabled();
+				},
+				params:{min:1, max:999},
+				message: 'Please enter a value between 1 and 999.'
 			}
 		});
 
@@ -235,27 +262,46 @@ ko.validation.insertValidationMessage = function (element) {
 		});
 
 		this.startDate = ko.observable(options.startDate).extend({
-			required: true,
+			required: {
+				onlyIf: function () {
+					return self.isEnabled();
+				}
+			},
 			date: {
 				message: 'Invalid Date'
 			}
 		});
-		this.endDate = ko.observable(options.endDate).extend({ date: true })
-			.extend({
-				validation: {
-					validator: function (value) {
-						if (value && self.startDate() && new Date(value).compareTo(new Date(self.startDate())) < 0) {
-							return false;
-						}
-						return true;
-					},
-					message: 'The start date must come before the end date.'
+
+		this.endDate = ko.observable(options.endDate).extend({ date: true }).extend({
+			validation: {
+				validator: function (value) {
+					if (value && self.startDate() && new Date(value).compareTo(new Date(self.startDate())) < 0) {
+						return false;
+					}
+					return true;
+				},
+				message: 'The start date must come before the end date.'
+			}
+		});
+
+		this.scheduledTime = ko.observable().extend({
+			required: {
+				onlyIf: function () {
+					return self.isEnabled();
 				}
-			});
-		this.scheduledTime = ko.observable().extend({ required: true });
-		this.enabled = ko.observable(options.enabled);
-		this.templateID = 'schedulingConfig';
-		this.sendOn = ko.observable({});
+			}
+		}).extend({
+			validation: {
+				validator: function (value) {
+					if (value) {
+						return Date.parse(value) !== null;
+					}
+					return true;
+				},
+				message: 'Please enter a valid time (24-hour format).'
+			}
+		});
+
 	};
 
 	var Model = function () {
