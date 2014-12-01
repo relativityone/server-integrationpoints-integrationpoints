@@ -78,7 +78,7 @@
     </Compile>
     <Compile Include="Models\FieldEntry.cs" />
     <Compile Include="Models\FieldMap.cs" />
-    <Compile Include="Models\IntegrationViewModel.cs" />
+    <Compile Include="Models\IntegrationModel.cs" />
     <Compile Include="Models\RdoFilter.cs" />
     <Compile Include="Models\SyncConfiguration\RelativityConfiguration.cs" />
     <Compile Include="Models\RDO\IntegrationPoint.cs" />
@@ -87,6 +87,7 @@
     <Compile Include="Services\CreateError.cs" />
     <Compile Include="Services\IJobManager.cs" />
     <Compile Include="Services\IntegrationPointHelper.cs" />
+    <Compile Include="Services\IntegrationPointReader.cs" />
     <Compile Include="Services\Provider\DataProviderComponetSelector.cs" />
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />
     <Compile Include="Services\Provider\IDataSourceProvider.cs" />
