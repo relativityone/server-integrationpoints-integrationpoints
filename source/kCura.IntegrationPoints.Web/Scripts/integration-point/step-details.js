@@ -63,7 +63,7 @@ ko.validation.insertValidationMessage = function (element) {
 			self.sourceTypes(types);
 		});
 
-		this.selectedType = ko.observable();
+		this.selectedType = ko.observable().extend({required: true});
 
 	};
 
@@ -81,7 +81,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.templateID = 'ldapDestinationConfig';
 		this.rdoTypes = ko.observableArray();
-		this.selectedRdo = ko.observable();
+		this.selectedRdo = ko.observable().extend({required: true});
 	};
 
 	var Scheduler = function (model) {
@@ -240,8 +240,8 @@ ko.validation.insertValidationMessage = function (element) {
 				message: 'Invalid Date'
 			}
 		});
-		this.endDate = ko.observable(options.endDate).extend({ date: true })
-			.extend({
+
+		this.endDate = ko.observable(options.endDate).extend({ date: true }).extend({
 				validation: {
 					validator: function (value) {
 						if (value && self.startDate() && new Date(value).compareTo(new Date(self.startDate())) < 0) {
