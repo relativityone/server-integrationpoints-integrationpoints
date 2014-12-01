@@ -21,6 +21,8 @@ ko.validation.insertValidationMessage = function (element) {
 	return iconSpan;
 };
 
+
+
 (function (root, ko) {
 	var initDatePicker = function ($els) {
 		$els.datepicker({
@@ -232,8 +234,20 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		});
 
-		this.startDate = ko.observable(options.startDate).extend({ required: true });
-		this.endDate = ko.observable(options.endDate);
+		this.startDate = ko.observable(options.startDate).extend({
+			required: true
+		});
+		this.endDate = ko.observable(options.endDate).extend({
+			validation: {
+				validator: function (value) {
+					if (value && self.startDate() && new Date(value).compareTo(new Date(self.startDate())) < 0) {
+						return false;
+					}
+					return true;
+				},
+				message: 'The start date must come before the end date.'
+			}
+		});
 		this.scheduledTime = ko.observable().extend({ required: true });
 		this.enabled = ko.observable(options.enabled);
 		this.templateID = 'schedulingConfig';
