@@ -7,6 +7,7 @@ using System.Web.Http.Dispatcher;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Web
 			_container = new WindsorContainer();
 			var kernel = _container.Kernel;
 			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
-			_container.Install(FromAssembly.InThisApplication());
+			_container.Install(FromAssembly.InDirectory(new AssemblyFilter("bin")));
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));
 			GlobalConfiguration.Configuration.Services.Replace(typeof(IHttpControllerActivator), new WindsorCompositionRoot(_container));
 		}
