@@ -16,7 +16,7 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 
 		public DataRow Execute(int agentID, int agentTypeID, int[] resourceGroupArtifactID)
 		{
-			string sql = string.Format(Resources.GetNextJob, qDBContext.QueueTable);
+			string sql = string.Format(Resources.GetNextJob, qDBContext.TableName);
 			string ResourceGroupArtifactIDs = string.Join(",", resourceGroupArtifactID);
 			sql = sql.Replace("@ResourceGroupArtifactIDs", ResourceGroupArtifactIDs);
 

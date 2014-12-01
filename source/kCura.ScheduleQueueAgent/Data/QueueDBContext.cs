@@ -4,13 +4,13 @@ namespace kCura.ScheduleQueueAgent.Data
 {
 	public class QueueDBContext : IQueueDBContext
 	{
-		public QueueDBContext(IDBContext dbContext, string queueTableName)
+		public QueueDBContext(IDBContext dbContext, string tableNameName)
 		{
 			DBContext = dbContext;
-			QueueTable = queueTableName;
+			TableName = tableNameName;
 		}
 
-		public string QueueTable { get; private set; }
+		public string TableName { get; private set; }
 		public IDBContext DBContext { get; private set; }
 	}
 }

@@ -4,7 +4,7 @@ namespace kCura.ScheduleQueueAgent.Data
 {
 	public interface IQueueDBContext
 	{
-		string QueueTable { get; }
+		string TableName { get; }
 		IDBContext DBContext { get; }
 	}
 }

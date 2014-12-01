@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NSubstitute;
-using core = kCura.IntegrationPoints.Core;
+using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit
 {
-	[TestClass]
+	[TestFixture]
 	public class RdoFilterTest
 	{
-		[TestMethod]
+		[Test]
 		public void rdoFilterRemovesAllHistoryAndEvents()
 		{
 			//ARRANGEk

@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using kCura.ScheduleQueueAgent.Properties;
+using Relativity.API;
 
 namespace kCura.ScheduleQueueAgent.Data.Queries
 {
 	public class GetAgentInformation
 	{
-		private IQueueDBContext qDBContext = null;
-		public GetAgentInformation(IQueueDBContext qDBContext)
+		private IDBContext DBContext = null;
+		public GetAgentInformation(IDBContext dbContext)
 		{
-			this.qDBContext = qDBContext;
+			this.DBContext = dbContext;
 		}
 
 		public DataRow Execute(int agentID)
@@ -36,7 +37,7 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 		{
 			string sql = Resources.GetAgentInformation;
 
-			var dataTable = qDBContext.DBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
+			var dataTable = DBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
 
 			DataRow row = null;
 			if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)

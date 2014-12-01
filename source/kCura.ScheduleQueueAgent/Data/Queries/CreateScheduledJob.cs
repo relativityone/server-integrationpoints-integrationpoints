@@ -24,7 +24,7 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 												int jobFlags,
 												int SubmittedBy)
 		{
-			string sql = string.Format(Resources.CreateScheduledJob, qDBContext.QueueTable);
+			string sql = string.Format(Resources.CreateScheduledJob, qDBContext.TableName);
 
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@WorkspaceID", workspaceID));

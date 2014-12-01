@@ -7,17 +7,17 @@ using kCura.ScheduleQueueAgent.Properties;
 
 namespace kCura.ScheduleQueueAgent.Data.Queries
 {
-	public class CreateScheduleQueueTable
+	public class CreateJobLogTable
 	{
 		private IQueueDBContext qDBContext = null;
-		public CreateScheduleQueueTable(IQueueDBContext qDBContext)
+		public CreateJobLogTable(IQueueDBContext qDBContext)
 		{
 			this.qDBContext = qDBContext;
 		}
 
 		public void Execute()
 		{
-			string sql = string.Format(Resources.CreateQueueTable, qDBContext.TableName);
+			string sql = string.Format(Resources.CreateJobLogTable, qDBContext.TableName);
 			qDBContext.DBContext.ExecuteNonQuerySQLStatement(sql);
 		}
 	}

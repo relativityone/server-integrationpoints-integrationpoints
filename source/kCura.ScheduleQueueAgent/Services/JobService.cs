@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using kCura.ScheduleQueueAgent.Helpers;
 using kCura.ScheduleQueueAgent.Data;
 using kCura.ScheduleQueueAgent.Data.Queries;
 using kCura.ScheduleQueueAgent.ScheduleRules;
@@ -12,22 +11,21 @@ namespace kCura.ScheduleQueueAgent.Services
 {
 	public class JobService : IJobService
 	{
-		private bool creationOfQTableHasRun = false;
-		public JobService(IDBContext dbContext, Guid agentGuid)
+		public JobService(IAgentService agentService, IDBContext dbContext)
 		{
-			this.AgentGuid = agentGuid;
-			this.QueueTable = string.Format("ScheduleAgentQueue_{0}", agentGuid.ToString().ToUpper());
-			this.QDBContext = new QueueDBContext(dbContext, QueueTable);
+			this.AgentService = agentService;
+			this.AgentInformation = AgentService.AgentInformation;
+			this.QDBContext = new QueueDBContext(dbContext, this.AgentService.QueueTable);
 		}
 
-		public Guid AgentGuid { get; private set; }
-		public string QueueTable { get; private set; }
+		public IAgentService AgentService { get; private set; }
 		public IQueueDBContext QDBContext { get; private set; }
+		public AgentInformation AgentInformation { get; private set; }
 
-		public Job GetNextQueueJob(AgentInformation agentInfo, IEnumerable<int> resourceGroupIds)
+		public Job GetNextQueueJob(IEnumerable<int> resourceGroupIds)
 		{
 			Job job = null;
-			DataRow row = new GetNextJob(QDBContext).Execute(agentInfo.AgentID, agentInfo.AgentTypeID, resourceGroupIds.ToArray());
+			DataRow row = new GetNextJob(QDBContext).Execute(AgentInformation.AgentID, AgentInformation.AgentTypeID, resourceGroupIds.ToArray());
 			if (row != null)
 			{
 				job = new Job(row);
@@ -41,8 +39,10 @@ namespace kCura.ScheduleQueueAgent.Services
 			return null;
 		}
 
-		public void FinalizeJob(Job job, TaskResult taskResult)
+		public FinalizeJobResult FinalizeJob(Job job, TaskResult taskResult)
 		{
+			FinalizeJobResult result = new FinalizeJobResult();
+
 			IScheduleRule scheduleRule = job.ScheduleRule;
 			DateTime? nextUtcRunDateTime = null;
 
@@ -58,15 +58,15 @@ namespace kCura.ScheduleQueueAgent.Services
 			if (nextUtcRunDateTime.HasValue)
 			{
 				new Data.Queries.UpdateScheduledJob(QDBContext).Execute(job.JobId, nextUtcRunDateTime.Value);
-				//TODO: implement logging
-				//log.Log(job, JobHistoryState.Modified, null, string.Format("Job is re-scheduled for {0}", nextRunTime.ToString()));
+				result.JobState = JobLogState.Modified;
+				result.Details = string.Format("Job is re-scheduled for {0}", nextUtcRunDateTime.ToString());
 			}
 			else
 			{
 				DeleteJob(job.JobId);
-				//TODO: implement logging
-				//log.Log(job, JobHistoryState.Deleted);
+				result.JobState = JobLogState.Deleted;
 			}
+			return result;
 		}
 
 		public void UnlockJobs(int agentID)
@@ -74,43 +74,10 @@ namespace kCura.ScheduleQueueAgent.Services
 			new UnlockScheduledJob(QDBContext).Execute(agentID);
 		}
 
-		public void CreateQueueTable()
-		{
-			new CreateScheduleQueueTable(QDBContext).Execute();
-		}
-
-		private void CreateQueueTableOnce()
-		{
-			if (!creationOfQTableHasRun) CreateQueueTable();
-			creationOfQTableHasRun = true;
-		}
-
-		public AgentInformation GetAgentInformation(int agentID)
-		{
-			AgentInformation agentInformation = null;
-			DataRow row = new GetAgentInformation(QDBContext).Execute(agentID);
-			if (row != null)
-			{
-				agentInformation = new AgentInformation(row);
-			}
-			return agentInformation;
-		}
-
-		public AgentInformation GetAgentInformation(Guid agentGuid)
-		{
-			AgentInformation agentInformation = null;
-			DataRow row = new GetAgentInformation(QDBContext).Execute(agentGuid);
-			if (row != null)
-			{
-				agentInformation = new AgentInformation(row);
-			}
-			return agentInformation;
-		}
-
-		public Job CreateJob(AgentInformation agentInfo, int workspaceID, int relatedObjectArtifactID, string taskType,
+		public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType,
 													IScheduleRule scheduleRule, string jobDetails, int SubmittedBy)
 		{
-			CreateQueueTableOnce();
+			AgentService.CreateQueueTableOnce();
 
 			Job job = null;
 			DateTime? nextRunTime = scheduleRule.GetNextUTCRunDateTime(null, null);
@@ -122,7 +89,7 @@ namespace kCura.ScheduleQueueAgent.Services
 					relatedObjectArtifactID,
 					taskType,
 					nextRunTime.Value,
-					agentInfo.AgentTypeID,
+					AgentInformation.AgentTypeID,
 					serializedScheduleRule,
 					jobDetails,
 					0,
@@ -133,10 +100,10 @@ namespace kCura.ScheduleQueueAgent.Services
 			return job;
 		}
 
-		public Job CreateJob(AgentInformation agentInfo, int workspaceID, int relatedObjectArtifactID, string taskType,
+		public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType,
 													DateTime nextRunTime, string jobDetails, int SubmittedBy)
 		{
-			CreateQueueTableOnce();
+			AgentService.CreateQueueTableOnce();
 
 			Job job = null;
 			DataRow row = new CreateScheduledJob(QDBContext).Execute(
@@ -144,7 +111,7 @@ namespace kCura.ScheduleQueueAgent.Services
 				relatedObjectArtifactID,
 				taskType,
 				nextRunTime,
-				agentInfo.AgentTypeID,
+				AgentInformation.AgentTypeID,
 				null,
 				jobDetails,
 				0,
@@ -162,7 +129,7 @@ namespace kCura.ScheduleQueueAgent.Services
 
 		public Job GetJob(long jobID)
 		{
-			CreateQueueTableOnce();
+			AgentService.CreateQueueTableOnce();
 
 			Job job = null;
 			DataRow row = new GetJob(QDBContext).Execute(jobID);
@@ -173,7 +140,7 @@ namespace kCura.ScheduleQueueAgent.Services
 
 		public Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName)
 		{
-			CreateQueueTableOnce();
+			AgentService.CreateQueueTableOnce();
 
 			Job job = null;
 			DataRow row = new GetJob(QDBContext).Execute(workspaceID, relatedObjectArtifactID, taskName);
