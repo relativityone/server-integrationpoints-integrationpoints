@@ -29,6 +29,5 @@ ko.bindingHandlers.datePicker = {
 		});
 	},
 	update: function (element) {
-		
 	}
 };
