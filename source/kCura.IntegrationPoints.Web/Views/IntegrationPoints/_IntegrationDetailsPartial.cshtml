@@ -109,7 +109,7 @@
 				Start Date:
 			</div>
 			<div class="field-value">
-				<input placeholder="mm/dd/yyyy" type="date" data-bind="value: startDate" />
+				<input placeholder="mm/dd/yyyy" type="date" data-bind="value: startDate, datePicker: {}" />
 			</div>
 		</div>
 
@@ -118,7 +118,7 @@
 				End Date:
 			</div>
 			<div class="field-value">
-				<input placeholder="mm/dd/yyyy" type="date" data-bind="value: endDate" />
+				<input placeholder="mm/dd/yyyy" type="date" data-bind="value: endDate, datePicker: {}" />
 			</div>
 		</div>
 
@@ -162,197 +162,6 @@
 
 	</ul>
 </script>
-
-@*@Html.Dragon().RenderForm(new FormPanel<ScheduleModel>(string.Empty, string.Empty, new ScheduleModel
-	{
-		Frequency = new List<SelectListItem>
-		{
-			new SelectListItem{ Text = "Daily", Value = "1"},
-			new SelectListItem{ Text = "Weekly", Value = "2"},
-			new SelectListItem{ Text = "Monthly", Value = "3"},
-		},
-		Reoccur = new PrefixAndSuffixInputControl(string.Empty, string.Empty)
-		{
-			PrefixText = "Every",
-			SuffixText = "",
-			Value = 3
-		}
-
-	}))
-
-<div style="display: none">
-	<div id="scheduleRulesFrequencyControl" class="Select-edit-input input-control" sizset="false" onorientationchange="null" sizcache04479536599683409="1378 14 546">
-		<div class="title required">
-			<label for="Frequency">Frequency:</label>
-		</div>
-		<div class="required value" sizset="false" onorientationchange="null" sizcache04479536599683409="1378 14 546">
-			<div id="s2id_scheduleRulesFrequency" class="select2-container filter-container" sizset="false" sizcache04479536599683409="1378 14 546" jquery18206569519830806891="166">
-				<a class="select2-choice" tabindex="-1" href="javascript:void(0)" jquery18206569519830806891="177"><span id="select2-chosen-7" class="select2-chosen">Monthly</span><abbr class="select2-search-choice-close"></abbr>
-					<span class="icon icon-chevron-down" role="presentation"><b role="presentation"></b></span></a>
-				<label class="select2-offscreen" for="s2id_autogen7"></label>
-				<input aria-haspopup="true" id="s2id_autogen7" class="select2-focusser select2-offscreen" role="button" aria-labelledby="select2-chosen-7" type="text" jquery18206569519830806891="172">
-			</div>
-			<span class="field-validation-valid icon-error" data-valmsg-replace="true" data-valmsg-for="Frequency"></span>
-		</div>
-	</div>
-	<div style="DISPLAY: block" id="scheduleRulesReoccurControl" class="Prefix-edit-input input-control" sizset="false" sizcache04479536599683409="1378 14 557" jquery18206569519830806891="159">
-		<div class="title required">
-			<label for="Reoccur">Reoccur:</label>
-		</div>
-		<div class="required value" sizset="false" sizcache04479536599683409="1378 14 557">
-		</div>
-	</div>
-	<div style="DISPLAY: block" id="scheduleRulesSendOnControl" class="SendOn-edit-input input-control" sizset="true" sizcache04479536599683409="2622 6 286" jquery18206569519830806891="160">
-		<div class="title">
-			<label for="SendOn">Send On:</label>
-		</div>
-		<div class="value" sizset="false" sizcache04479536599683409="2622 6 286">
-			<ul style="DISPLAY: none" data-type="weekly" sizset="false" sizcache04479536599683409="1378 14 567" jquery18206569519830806891="153">
-				<li data-value="1" sizset="false" sizcache04479536599683409="1378 14 567">
-					<input id="day" name="day" value="true" type="checkbox"><input name="day" value="false" type="hidden"><span class="day-text">Monday</span></li>
-				<li data-value="2" sizset="false" sizcache04479536599683409="1378 14 571">
-					<input id="day" name="day" value="true" type="checkbox"><input name="day" value="false" type="hidden"><span class="day-text">Tuesday</span></li>
-				<li data-value="3" sizset="false" sizcache04479536599683409="1378 14 575">
-					<input id="day" name="day" value="true" type="checkbox"><input name="day" value="false" type="hidden"><span class="day-text">Wednesday</span></li>
-				<li data-value="4" sizset="false" sizcache04479536599683409="1378 14 579">
-					<input id="day" name="day" value="true" type="checkbox"><input name="day" value="false" type="hidden"><span class="day-text">Thursday</span></li>
-				<li data-value="5" sizset="false" sizcache04479536599683409="1378 14 583">
-					<input id="day" name="day" value="true" type="checkbox"><input name="day" value="false" type="hidden"><span class="day-text">Friday</span></li>
-				<li data-value="6" sizset="false" sizcache04479536599683409="1378 14 587">
-					<input id="day" name="day" value="true" type="checkbox"><input name="day" value="false" type="hidden"><span class="day-text">Saturday</span></li>
-				<li data-value="0" sizset="false" sizcache04479536599683409="1378 14 591">
-					<input id="day" name="day" value="true" type="checkbox"><input name="day" value="false" type="hidden"><span class="day-text">Sunday</span></li>
-			</ul>
-			<ul style="DISPLAY: block" data-type="monthly" sizset="false" sizcache04479536599683409="1378 14 596" jquery18206569519830806891="154">
-				<li sizset="false" sizcache04479536599683409="1378 14 596">
-					<input name="monthly" value="day" type="radio"><span class="day-text" sizset="false" sizcache04479536599683409="1378 14 605">Day 
-						<div id="s2id_dayOfMonth" class="select2-container day-select filter-container" sizset="false" sizcache04479536599683409="1378 14 605" jquery18206569519830806891="206">
-							<a class="select2-choice" tabindex="-1" href="javascript:void(0)" jquery18206569519830806891="217"><span id="select2-chosen-8" class="select2-chosen">1</span><abbr class="select2-search-choice-close"></abbr>
-								<span class="icon icon-chevron-down" role="presentation"><b role="presentation"></b></span></a>
-							<label class="select2-offscreen" for="s2id_autogen8"></label>
-							<input aria-haspopup="true" id="s2id_autogen8" class="select2-focusser select2-offscreen" role="button" aria-labelledby="select2-chosen-8" type="text" jquery18206569519830806891="212">
-							<div class="select2-drop select2-display-none select2-with-searchbox filter-select" sizset="false" sizcache04479536599683409="1378 14 609" jquery18206569519830806891="207">
-								<div class="select2-search" sizset="false" sizcache04479536599683409="1378 14 609">
-									<label class="select2-offscreen" for="s2id_autogen8_search"></label>
-									<input aria-expanded="true" id="s2id_autogen8_search" class="select2-input" role="combobox" aria-owns="select2-results-8" type="text" autocomplete="off" placeholder aria-autocomplete="list" spellcheck="false" autocapitalize="off" autocorrect="off" jquery18206569519830806891="209">
-								</div>
-								<ul id="select2-results-8" class="select2-results" role="listbox" jquery18206569519830806891="225"></ul>
-							</div>
-						</div>
-						<select style="DISPLAY: none" id="dayOfMonth" class="day-select" title="" tabindex="-1" name="dayOfMonth" readonly="false" autofocus="false" jquery18206569519830806891="157">
-							<option selected value="1">1</option>
-							<option value="2">2</option>
-							<option value="3">3</option>
-							<option value="4">4</option>
-							<option value="5">5</option>
-							<option value="6">6</option>
-							<option value="7">7</option>
-							<option value="8">8</option>
-							<option value="9">9</option>
-							<option value="10">10</option>
-							<option value="11">11</option>
-							<option value="12">12</option>
-							<option value="13">13</option>
-							<option value="14">14</option>
-							<option value="15">15</option>
-							<option value="16">16</option>
-							<option value="17">17</option>
-							<option value="18">18</option>
-							<option value="19">19</option>
-							<option value="20">20</option>
-							<option value="21">21</option>
-							<option value="22">22</option>
-							<option value="23">23</option>
-							<option value="24">24</option>
-							<option value="25">25</option>
-							<option value="26">26</option>
-							<option value="27">27</option>
-							<option value="28">28</option>
-							<option value="29">29</option>
-							<option value="30">30</option>
-							<option value="31">31</option>
-						</select>
-						of the month.</span><label style="DISPLAY: none" id="monthlyDayLabel" jquery18206569519830806891="156"></label></li>
-				<li sizset="false" sizcache04479536599683409="1378 14 645">
-					<input name="monthly" value="monthWeek" checked type="radio"><span class="day-text" sizset="false" sizcache04479536599683409="1378 14 654">The 
-						<div id="s2id_occuranceOfMonth" class="select2-container filter-container" sizset="false" sizcache04479536599683409="1378 14 654" jquery18206569519830806891="246">
-							<a class="select2-choice" tabindex="-1" href="javascript:void(0)" jquery18206569519830806891="257"><span id="select2-chosen-9" class="select2-chosen">first</span><abbr class="select2-search-choice-close"></abbr>
-								<span class="icon icon-chevron-down" role="presentation"><b role="presentation"></b></span></a>
-							<label class="select2-offscreen" for="s2id_autogen9"></label>
-							<input aria-haspopup="true" id="s2id_autogen9" class="select2-focusser select2-offscreen" role="button" aria-labelledby="select2-chosen-9" type="text" jquery18206569519830806891="252">
-							<div class="select2-drop select2-display-none select2-with-searchbox filter-select" sizset="false" sizcache04479536599683409="1378 14 658" jquery18206569519830806891="247">
-								<div class="select2-search" sizset="false" sizcache04479536599683409="1378 14 658">
-									<label class="select2-offscreen" for="s2id_autogen9_search"></label>
-									<input aria-expanded="true" id="s2id_autogen9_search" class="select2-input" role="combobox" aria-owns="select2-results-9" type="text" autocomplete="off" placeholder aria-autocomplete="list" spellcheck="false" autocapitalize="off" autocorrect="off" jquery18206569519830806891="249">
-								</div>
-								<ul id="select2-results-9" class="select2-results" role="listbox" jquery18206569519830806891="265"></ul>
-							</div>
-						</div>
-						<select style="DISPLAY: none" id="occuranceOfMonth" title="" tabindex="-1" name="occuranceOfMonth" readonly="false" autofocus="false" jquery18206569519830806891="163">
-							<option selected value="1">first</option>
-							<option value="2">second</option>
-							<option value="3">third</option>
-							<option value="4">fourth</option>
-							<option value="5">last</option>
-						</select>
-						<div id="s2id_daySelect" class="select2-container filter-container" sizset="false" sizcache04479536599683409="1378 14 673" jquery18206569519830806891="287">
-							<a class="select2-choice" tabindex="-1" href="javascript:void(0)" jquery18206569519830806891="298"><span id="select2-chosen-10" class="select2-chosen">day</span><abbr class="select2-search-choice-close"></abbr>
-								<span class="icon icon-chevron-down" role="presentation"><b role="presentation"></b></span></a>
-							<label class="select2-offscreen" for="s2id_autogen10"></label>
-							<input aria-haspopup="true" id="s2id_autogen10" class="select2-focusser select2-offscreen" role="button" aria-labelledby="select2-chosen-10" type="text" jquery18206569519830806891="293">
-							<div class="select2-drop select2-display-none select2-with-searchbox filter-select" sizset="false" sizcache04479536599683409="1378 14 677" jquery18206569519830806891="288">
-								<div class="select2-search" sizset="false" sizcache04479536599683409="1378 14 677">
-									<label class="select2-offscreen" for="s2id_autogen10_search"></label>
-									<input aria-expanded="true" id="s2id_autogen10_search" class="select2-input" role="combobox" aria-owns="select2-results-10" type="text" autocomplete="off" placeholder aria-autocomplete="list" spellcheck="false" autocapitalize="off" autocorrect="off" jquery18206569519830806891="290">
-								</div>
-								<ul id="select2-results-10" class="select2-results" role="listbox" jquery18206569519830806891="306"></ul>
-							</div>
-						</div>
-						<select style="DISPLAY: none" id="daySelect" title="" tabindex="-1" name="daySelect" readonly="false" autofocus="false" jquery18206569519830806891="286">
-							<option selected value="1">day</option>
-							<option value="2">Monday</option>
-							<option value="3">Tuesday</option>
-							<option value="4">Wednesday</option>
-							<option value="5">Thursday</option>
-							<option value="6">Friday</option>
-							<option value="7">Saturday</option>
-							<option value="8">Sunday</option>
-						</select>
-						of the month.</span></li>
-			</ul>
-			<input id="scheduleRulesSendOn" name="SendOn" value="monthly" type="hidden" data-parse="control" jquery18206569519830806891="165"></input><span class="field-validation-valid icon-error" data-valmsg-replace="true" data-valmsg-for="SendOn"></span>
-		</div>
-	</div>
-	<div id="scheduleRulesStartDateControl" class="Date-edit-input input-control" sizset="false" sizcache04479536599683409="1378 14 696">
-		<div class="title required">
-			<label for="StartDate">Start Date:</label>
-		</div>
-		<div class="required value" sizset="false" sizcache04479536599683409="1378 14 696">
-			<label style="Z-INDEX: 1; POSITION: absolute; TEXT-ALIGN: left; PADDING-BOTTOM: 0px; LINE-HEIGHT: 25px; TEXT-TRANSFORM: none; BACKGROUND-COLOR: transparent; FONT-STYLE: normal; PADDING-LEFT: 1px; WIDTH: 177px; PADDING-RIGHT: 1px; DISPLAY: inline; FONT-FAMILY: 'Open Sans', sans-serif; WHITE-SPACE: nowrap; FLOAT: none; COLOR: #888; FONT-SIZE: 14px; OVERFLOW: hidden; CURSOR: text; FONT-WEIGHT: 400; PADDING-TOP: 0px; TOP: 498px; LEFT: 228px" class="placeholder" for="scheduleRulesStartDate" jquery18206569519830806891="388">mm/dd/yyyy</label>
-			<input id="scheduleRulesStartDate" class="date hasDatepicker" name="StartDate" type="text" placeholder="mm/dd/yyyy" data-val="true" data-val-required="Start date is required." data-val-date="The field Start Date must be a date." jquery18206569519830806891="143"><span class="field-validation-valid icon-error" data-valmsg-replace="true" data-valmsg-for="StartDate"></span>
-		</div>
-	</div>
-	<div id="scheduleRulesEndDateControl" class="Date-edit-input input-control" sizset="false" sizcache04479536599683409="1378 14 703">
-		<div class="title">
-			<label for="EndDate">End Date:</label>
-		</div>
-		<div class="value" sizset="false" sizcache04479536599683409="1378 14 703">
-			<label style="Z-INDEX: 1; POSITION: absolute; TEXT-ALIGN: left; PADDING-BOTTOM: 0px; LINE-HEIGHT: 25px; TEXT-TRANSFORM: none; BACKGROUND-COLOR: transparent; FONT-STYLE: normal; PADDING-LEFT: 1px; WIDTH: 177px; PADDING-RIGHT: 1px; DISPLAY: inline; FONT-FAMILY: 'Open Sans', sans-serif; WHITE-SPACE: nowrap; FLOAT: none; COLOR: #888; FONT-SIZE: 14px; OVERFLOW: hidden; CURSOR: text; FONT-WEIGHT: 400; PADDING-TOP: 0px; TOP: 533px; LEFT: 228px" class="placeholder" for="scheduleRulesEndDate" jquery18206569519830806891="390">mm/dd/yyyy</label>
-			<input id="scheduleRulesEndDate" class="date hasDatepicker" name="EndDate" type="text" placeholder="mm/dd/yyyy" data-val="true" data-val-date="The field End Date must be a date." data-val-comparedate-field="scheduleRulesStartDate" data-val-comparedate-comparitor="greater" data-val-comparedate="The start date must come before the end date." jquery18206569519830806891="150"><span class="field-validation-valid icon-error" data-valmsg-replace="true" data-valmsg-for="EndDate"></span>
-		</div>
-	</div>
-	<div id="scheduleRulesScheduledTimeControl" class="Time-edit-input input-control" sizset="false" sizcache04479536599683409="1378 14 710">
-		<div class="title required">
-			<label for="ScheduledTime">Scheduled Time:</label>
-		</div>
-		<div class="required value" sizset="false" sizcache04479536599683409="1378 14 710">
-			<label style="Z-INDEX: 1; POSITION: absolute; TEXT-ALIGN: left; PADDING-BOTTOM: 0px; LINE-HEIGHT: 25px; TEXT-TRANSFORM: none; BACKGROUND-COLOR: transparent; FONT-STYLE: normal; PADDING-LEFT: 1px; WIDTH: 177px; PADDING-RIGHT: 1px; DISPLAY: inline; FONT-FAMILY: 'Open Sans', sans-serif; WHITE-SPACE: nowrap; FLOAT: none; COLOR: #888; FONT-SIZE: 14px; OVERFLOW: hidden; CURSOR: text; FONT-WEIGHT: 400; PADDING-TOP: 0px; TOP: 568px; LEFT: 228px" class="placeholder" for="scheduleRulesScheduledTime" jquery18206569519830806891="392">hh:mm 24hr</label>
-			<input id="scheduleRulesScheduledTime" class="time" name="ScheduledTime" type="text" placeholder="hh:mm 24hr" data-val="true" data-val-required="Scheduled time is required." data-parse="utcTime" data-val-dateverify="Please enter a valid time (24-hour format)." jquery18206569519830806891="394"><span class="field-validation-valid icon-error" data-valmsg-replace="true" data-valmsg-for="ScheduledTime"></span>
-		</div>
-	</div>
-</div>*@
-
-
 
 <script type="text/html" id="inputTemplate">
 	<div class="field-label required">
