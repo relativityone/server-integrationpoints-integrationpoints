@@ -100,14 +100,4 @@
 		}
 	};
 
-
-	//this belongs somewhere else!
-	D.updatePlaceholders = function () {
-		if (jQuery.placeholder) {
-			jQuery.placeholder.shim();
-		}
-	};
-
-
-
 })(window.Dragon, jQuery);

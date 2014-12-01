@@ -5,16 +5,15 @@ using System.Web.Http;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-	public class RdoFilter : ApiController
+	public class RdoFilterController : ApiController
 	{
 		private Core.Models.RdoFilter _rdoFilter;
 
-		public RdoFilter(Core.Models.RdoFilter rdoFilter)
+		public RdoFilterController(Core.Models.RdoFilter rdoFilter)
 		{
 			_rdoFilter = rdoFilter;
 		}
-
-
+		
 		// GET api/<controller>
 		public HttpResponseMessage Get()
 		{

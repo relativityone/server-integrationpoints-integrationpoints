@@ -153,7 +153,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\JsonNetResult.cs" />
     <Compile Include="Controllers\API\SourceTypeController.cs" />
-    <Compile Include="Controllers\API\RdoFilter.cs" />
+    <Compile Include="Controllers\API\RdoFilterController.cs" />
     <Compile Include="Controllers\API\TestController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIController.cs" />
@@ -188,11 +188,10 @@
     <Content Include="Content\normalize.css" />
     <Content Include="Content\scheduler.css">
       <DependentUpon>scheduler.scss</DependentUpon>
-      </Content>
+    </Content>
     <Content Include="Content\select2-overrides.css">
       <DependentUpon>select2-overrides.scss</DependentUpon>
     </Content>
-
     <Content Include="Content\step-progress-bar.css">
       <DependentUpon>step-progress-bar.scss</DependentUpon>
     </Content>
@@ -292,9 +291,10 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\knockout-2.2.0.debug.js" />
     <Content Include="Scripts\knockout-2.2.0.js" />
+    <Content Include="Scripts\knockout.validation.debug.js" />
+    <Content Include="Scripts\knockout.validation.js" />
     <Content Include="Scripts\loading-modal.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
-    <Content Include="Scripts\placeholder-shim.js" />
     <Content Include="Scripts\postal\conduit.js" />
     <Content Include="Scripts\postal\lodash.js" />
     <Content Include="Scripts\postal\postal.min.js" />

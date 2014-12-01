@@ -6,14 +6,22 @@
 <script id="step1" type="text/html">
 	<div class="card">
 		<span class="label">General</span>
-		<div class="field-row" id="nameControl" data-bind="template: { name: 'inputTemplate', data: name }"></div>
+		<div class="field-row" id="nameControl" >
+			<div class="field-label required">
+				<label >Integration Name:</label>
+			</div>
+			<div class="field-value">
+				<input type="text" data-bind="value: name">
+			</div>
+
+		</div>
 
 		<div class="field-row">
 			<div class="field-label">
 				<label for="overwrite">Overwrite:</label>
 			</div>
 			<div class="field-value">
-				<select data-bind="options: overwrite, optionsText: 'displayName', optionsValue: 'value', value: selectedOverwrite, optionsCaption: 'Select...', select2: {}"></select>
+				<select data-bind="options: overwrite, optionsText: 'displayName', optionsValue: 'value', value: selectedOverwrite, select2: {}"></select>
 			</div>
 		</div>
 	</div>
@@ -37,7 +45,7 @@
 			Source Provider:
 		</div>
 		<div class="field-value">
-			<select data-bind="options: sourceTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedType, optionsCaption: 'Select...', select2: {}"></select>
+			<select data-bind="options: sourceTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedType, select2: {}"></select>
 		</div>
 	</div>
 </script>
@@ -101,7 +109,7 @@
 				Start Date:
 			</div>
 			<div class="field-value">
-				<input data-bind="textInput: startDate" />
+				<input placeholder="mm/dd/yyyy" type="date" data-bind="value: startDate" />
 			</div>
 		</div>
 
@@ -110,7 +118,7 @@
 				End Date:
 			</div>
 			<div class="field-value">
-				<input data-bind="textInput: endDate" />
+				<input placeholder="mm/dd/yyyy" type="date" data-bind="value: endDate" />
 			</div>
 		</div>
 
@@ -119,7 +127,7 @@
 				Scheduled Time:
 			</div>
 			<div class="field-value">
-				<input data-bind="textInput: scheduledTime" />
+				<input placeholder="hh:mm 24hr" data-bind="value: scheduledTime" />
 			</div>
 		</div>
 	</div>
@@ -128,22 +136,23 @@
 <script type="text/html" id="weeklySendOn">
 	<ul data-bind="foreach: days">
 		<li>
-			<input type="checkbox" data-bind="attr: { value: $data }, checked: $parent.selectedDays" />
+			<input type="checkbox" data-bind="attr: { value: $data,name: $data }, checked: $parent.selectedDays" />
 			<span data-bind="text: $data"></span>
 		</li>
-
 	</ul>
+	<div data-bind="validationMessage: selectedDays" class="icon-error legal-hold field-validation-error"></div>
 </script>
+
 <script type="text/html" id="monthlySendOn">
 	<ul>
-		<li>
+		<li class="field-row">
 			<input type="radio" name="monthly" value="days" data-bind="checked: monthChoice" />
 			Day
-			<select data-bind="options: days, optionsText: 'displayName', optionsValue: 'value', value: selectedDay, select2: {}"></select>
+			<select class="day-select" data-bind="options: days, optionsText: 'displayName', optionsValue: 'value', value: selectedDay, select2: {}"></select>
 			of the month
 			<i data-bind="text: overflowMessage, visible: selectedDay() > 28"></i>
 		</li>
-		<li>
+		<li class="field-row">
 			<input type="radio" name="monthly" value="month" data-bind="checked: monthChoice" />
 			The 
 			<select data-bind="options: dayTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedType, select2: {}"></select>

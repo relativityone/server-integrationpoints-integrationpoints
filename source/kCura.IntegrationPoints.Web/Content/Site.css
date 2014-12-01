@@ -134,3 +134,36 @@ h1
 .field-row {
 	padding-top: 10px;
 }
+
+ul li .day-select {
+	width: 80px;
+	min-width: 80px;
+}
+.field-value .filter-container {
+	width: 180px;
+	height: 28px;
+	margin-right: 5px;
+}
+
+.field-validation-error
+{
+	background-color: #ac3243;
+	border: 1px solid #ac3243;
+	border-radius: 2px;
+	color: #ffffff;
+	height: 24px;
+	margin-top: 5px;
+	padding: 0 5px;
+	position: relative;
+	z-index: 1;
+	font-size: 12px;
+	font-weight: 400;
+}
+
+
+	.field-validation-error.icon-error:before,
+	.field-validation-error > span
+	{
+		display: inline-block;
+		padding: 4px 4px 0;
+	}

@@ -8,6 +8,6 @@
 			dropdownCssClass: "filter-select",
 			containerCssClass: "filter-container",
 		});
-		$element.parent().find('.filter-container span.select2-arrow').removeClass("select2-arrow").addClass("icon icon-chevron-down");
+		$element.parent().find('.filter-container span.select2-arrow').removeClass("select2-arrow").addClass("icon legal-hold icon-chevron-down");
 	}
 };

@@ -1,4 +1,26 @@
 ﻿var IP = IP || {};
+
+ko.validation.rules.pattern.message = 'Invalid.';
+
+ko.validation.configure({
+	registerExtenders: true,
+	messagesOnModified: true,
+	insertMessages: true,
+	parseInputAttributes: true,
+	messageTemplate: null
+});
+
+ko.validation.insertValidationMessage = function (element) {
+	var iconSpan = document.createElement('DIV');
+	iconSpan.className = 'icon-error legal-hold field-validation-error';
+
+	var span = document.createElement('SPAN');
+	iconSpan.appendChild(span);
+	$(element).parents('.field-value').eq(0).append(iconSpan)
+
+	return iconSpan;
+};
+
 (function (root, ko) {
 	var initDatePicker = function ($els) {
 		$els.datepicker({
@@ -46,9 +68,9 @@
 	var Destination = function () {
 		var self = this;
 
-		IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('Test') }).then(function (result) {
+		IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter') }).then(function (result) {
 			var types = $.map(result, function (entry) {
-				return new Choice(entry.m_Item1, entry.m_Item2);
+				return new Choice(entry.name, entry.value);
 			});
 			self.rdoTypes(types);
 		}, function () {
@@ -60,13 +82,17 @@
 		this.selectedRdo = ko.observable();
 	};
 
-	var Scheduler = function () {
+	var Scheduler = function (model) {
+		var options = $.extend({}, {
+			enabled: 'false'
+		}, model);
 		var stateManager = {};
 
 		var SendOnWeekly = function (state) {
 			var defaults = {
-				selectedDays: []
+				selectedDays:[]
 			};
+			var self = this;
 			var currentState = $.extend({}, defaults, state);
 			this.days = ko.observableArray([
 				"Monday",
@@ -77,13 +103,26 @@
 				"Saturday",
 				"Sunday"
 			]);
-			this.selectedDays = ko.observableArray(currentState.selectedDays);
+
+			this.selectedDays = ko.observableArray();
+			this.loadCount = 0;
+
+			this.selectedDays.extend({
+				validation: {
+					validator: function (val, someOtherVal) {
+						return (val.length !== someOtherVal);
+					},
+					message: 'This field is required.',
+					params: 0
+				}
+			});
+			this.selectedDays(currentState.selectedDays);
 			this.templateID = 'weeklySendOn';
 		};
 
 		var SendOnMonthly = function (state) {
 			var defaults = {
-				monthChoice:  'days'
+				monthChoice: 'days'
 			};
 
 			var self = this;
@@ -109,7 +148,7 @@
 				new Choice("fourth", 4),
 				new Choice("last", 5)
 			]);
-			
+
 			this.selectedType = ko.observable(currentState.selectedType);
 
 			this.selectedType.subscribe(function () {
@@ -139,27 +178,33 @@
 				var hideSpecial = type !== 1 && type !== 5;
 				return ko.utils.arrayFilter(self.daysOfMonth(), function (entry) {
 					if (hideSpecial) {
-						return entry.value >1 && entry.value < 9;
+						return entry.value > 1 && entry.value < 9;
 					}
 					return true;
 				});
 			});
 
 			this.selectedDayOfTheMonth = ko.observable(currentState.selectedDayOfTheMonth);
-			
+
 			this.monthChoice = ko.observable(currentState.monthChoice);
 
 		};
-		
+
 		var self = this;
 		this.frequency = ko.observableArray([
 			new Choice("Daily", 1),
 			new Choice("Weekly", 2),
 			new Choice("Monthly", 3)
 		]);
-		
+
 		this.selectedFrequency = ko.observable();
-		this.reoccur = ko.observable('asdf');
+		this.reoccur = ko.observable().extend({
+			required: {
+				onlyIf: function () {
+					return self.selectedFrequency() !== 1;
+				}
+			}
+		});
 
 		this.reoccurEvery = ko.computed(function () {
 			var state = self.selectedFrequency();
@@ -170,7 +215,7 @@
 			}
 			return states[state] || '';
 		});
-		
+
 		this.selectedFrequency.subscribe(function (previousValue) {
 			stateManager[previousValue] = ko.toJS(self.sendOn());
 		}, this, "beforeChange");
@@ -187,12 +232,10 @@
 			}
 		});
 
-
-
-		this.startDate = ko.observable();
-		this.endDate = ko.observable();
-		this.scheduledTime = ko.observable();
-		this.enabled = ko.observable('true');
+		this.startDate = ko.observable(options.startDate).extend({ required: true });
+		this.endDate = ko.observable(options.endDate);
+		this.scheduledTime = ko.observable().extend({ required: true });
+		this.enabled = ko.observable(options.enabled);
 		this.templateID = 'schedulingConfig';
 		this.sendOn = ko.observable({});
 	};
@@ -200,17 +243,13 @@
 	var Model = function () {
 
 		var self = this;
-		this.name = {
-			label: 'Integration Name:',
-			value: ko.observable('')
-		};
+		this.name = ko.observable().extend({ required: true });
 
 		this.source = new Source();
-
 		this.destination = new Destination();
 		this.overwrite = ko.observableArray([
-			new Choice('Append', 1234),
-			new Choice('Append Overlay', 5678)
+			new Choice('Append/Overlay', 1234),
+			new Choice('Append', 5678)
 		]);
 		this.selectedOverwrite = ko.observable();
 		this.scheduler = new Scheduler();
@@ -222,6 +261,7 @@
 		this.template = ko.observable();
 		this.hasTemplate = false;
 		this.model = new Model();
+		this.model.errors = ko.validation.group(this.model, { deep: true });
 
 		this.getTemplate = function () {
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
@@ -234,7 +274,12 @@
 
 		this.submit = function () {
 			var d = root.data.deferred().defer();
-			d.resolve();
+			if (this.model.errors().length === 0) {
+				d.resolve();
+			} else {
+				this.model.errors.showAllMessages();
+				d.reject();
+			}
 			return d.promise;
 		};
 	};
@@ -247,54 +292,3 @@
 	root.points.steps.push(step);
 
 })(IP, ko);
-
-(function () {
-	var toggleScheduler = function (func) {
-		D('.dragon-panel')[func]();
-	}
-	
-
-	IP.messaging.subscribe('details-loaded', function () {
-		//this comes before initing the drowndown filter so we will populate the state
-		//before going forward
-		
-	});
-
-	IP.messaging.subscribe('details-loaded', function () {
-		D('.dragon-panel').scheduleControl();
-
-		$('.required.value').each(function () {
-			var $this = $(this);
-			$this.siblings('.title').addClass('required');
-		});
-
-		var $el = $('#scheduleRulesFrequency, #scheduleRulesSendOnControl select');
-
-		$el.select2({
-			dropdownAutoWidth: false,
-			dropdownCssClass: "filter-select",
-			containerCssClass: "filter-container",
-		});
-		$el.parent().find('.filter-container span.select2-arrow').removeClass("select2-arrow").addClass("icon icon-chevron-down");
-
-		$el.on('change', function () {
-			D.updatePlaceholders();
-		});
-		var enabled = $('#scheduleRulesEnabled input:checked').val() === "true";
-
-		if (!enabled) {
-			toggleScheduler('hide');
-		} else {
-			toggleScheduler('show');
-		}
-
-		$('#scheduleRulesEnabled input').on('change', function () {
-			var enabled = $(this).val() === "true";
-			var func = enabled ? "show" : "hide";
-			toggleScheduler(func);
-
-			D.updatePlaceholders();
-		});
-
-	});
-})();
