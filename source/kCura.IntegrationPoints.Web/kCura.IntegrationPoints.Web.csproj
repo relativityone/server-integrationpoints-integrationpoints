@@ -152,6 +152,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\JsonNetResult.cs" />
+    <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\SourceTypeController.cs" />
     <Compile Include="Controllers\API\RdoFilterController.cs" />
     <Compile Include="Controllers\API\TestController.cs" />
@@ -161,10 +162,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="ICustomPageService.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
+    <Compile Include="RsapiClientFactory.cs" />
     <Compile Include="ISessionService.cs" />
     <Compile Include="Models\ScheduleModel.cs" />
     <Compile Include="SessionService.cs" />
+    <Compile Include="WebAPICustomPageService.cs" />
     <Compile Include="WindsorCompositionRoot.cs" />
     <Compile Include="WindsorControllerFactory.cs" />
   </ItemGroup>

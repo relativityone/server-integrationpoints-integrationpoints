@@ -15,9 +15,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 		
 		// GET api/<controller>
+		[Route("api/RdoFilter/{workspaceID}")]
 		public HttpResponseMessage Get()
 		{
-			var list = _rdoFilter.FilterRdo().Select(x => new { Name = x.Name, Value = x.ArtifactID }).ToList();
+			var list = _rdoFilter.FilterRdo().Select(x => new { name = x.Name, value = x.ArtifactID }).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, list);
 
 		}
