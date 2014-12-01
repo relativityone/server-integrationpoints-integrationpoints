@@ -24,4 +24,8 @@
 		$('#stepProgress').stepProgress('goToStep', step +1);
 	});
 
+	$('#cancel').on('click', function () {
+		window.history.go(-2);
+	});
+
 })(IP);

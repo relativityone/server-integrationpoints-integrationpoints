@@ -13,9 +13,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	{
 		public override Response PopulateScriptBlocks()
 		{
-			var appPath = GetApplicationPath(this.Application.ApplicationUrl);
-			this.RegisterLinkedClientScript(appPath + "Scripts/EventHandlers/test.js");
-
 			var response = new Response();
 			response.Success = true;
 			response.Message = string.Empty;

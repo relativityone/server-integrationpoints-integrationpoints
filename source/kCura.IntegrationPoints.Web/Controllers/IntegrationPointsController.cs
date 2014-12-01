@@ -4,10 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.Mvc;
-using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Web.Attributes;
-using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -22,7 +19,6 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			return PartialView("_IntegrationDetailsPartial");
 		}
-
 
 		public ActionResult Details(int? objectID)
 		{
