@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Helpers;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Models
 {
 	public class IntegrationModel
 	{
 		public string Name{ get; set; }
-		public string Overwrite { get; set; }
+		public Choice Overwrite { get; set; }
 		public string SourceProvider { get; set; }
 		public string Destination { get; set; }
 		public bool? EnableScheduler { get; set; }
@@ -32,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Models
 		public IntegrationModel(IntegrationPoint ip)
 		{
 			Name = ip.Name;
-			Overwrite = ip.OverwriteFields.ToString();
+			Overwrite = ip.OverwriteFields;
 			SourceProvider = ip.SourceConfiguration;
 			Destination = ip.DestinationConfiguration;
 			EnableScheduler = ip.EnableScheduler;
@@ -40,15 +42,16 @@ namespace kCura.IntegrationPoints.Core.Models
 			StartDate = ip.StartDate;
 			EndDate = ip.EndDate;
 			ScheduleTime = ip.ScheduledTime;
-			NextRun = ip.NextScheduledRuntime;
+			NextRun = ip.NextScheduledRuntime ;
 			LastRun = ip.LastRuntime;
-			ConnectionPath = "NOT HERE";
-			FilterString = "NOT HERE";
-			Authentication = "NOT HERE";
-			Username = "NOT HERE";
-			Password = "NOT HERE";
-			NestedItems = "NOT HERE";
-
+			if (ip.SourceConfiguration == null) return;
+			var json = Json.Decode(ip.SourceConfiguration);
+			ConnectionPath = json.ConnectionPath ?? "null";
+			FilterString = json.FilterString ?? "null";
+			Authentication = json.Authentication ?? "null";
+			Username = json.Username ?? "null";
+			Password = json.Password ?? "null";
+			NestedItems = json.NestedItems ?? "null";
 		}
 	}
 }
