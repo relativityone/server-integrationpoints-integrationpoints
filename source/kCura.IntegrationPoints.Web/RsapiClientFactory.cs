@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.CustomPages;
+using IDBContext = Relativity.API.IDBContext;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.Web
 			return client;
 		}
 
-		public global::Relativity.API.IDBContext CreateDbContext()
+		public IDBContext CreateDbContext()
 		{
 			var workspaceID = _services.First(x => x.GetWorkspaceID() != 0).GetWorkspaceID();
 			var context = ConnectionHelper.Helper().GetDBContext(workspaceID);

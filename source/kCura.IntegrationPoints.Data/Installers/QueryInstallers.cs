@@ -13,8 +13,8 @@ namespace kCura.IntegrationPoints.Data.Installers
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			container.Register(Component.For<Queries.CreateErrorRdo>().ImplementedBy<Queries.CreateErrorRdo>());
-			container.Register(Component.For<RelativityRdoQuery>().ImplementedBy<RelativityRdoQuery>());
+			container.Register(Component.For<Queries.CreateErrorRdo>().ImplementedBy<Queries.CreateErrorRdo>().LifestyleTransient());
+			container.Register(Component.For<RelativityRdoQuery>().ImplementedBy<RelativityRdoQuery>().LifestyleTransient());
 		}
 	}
 }

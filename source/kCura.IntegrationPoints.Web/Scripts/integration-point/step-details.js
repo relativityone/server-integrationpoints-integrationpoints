@@ -261,15 +261,11 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		});
 
-		this.startDate = ko.observable(options.startDate).extend({
+		this.startDate = ko.observable(options.startDate).extend({date: true}).extend({
 			required: {
 				onlyIf: function () {
 					return self.isEnabled();
-				},
-				message: 'asdfsf'
-			},
-			date: {
-				message: 'Invalid Date'
+				}
 			}
 		});
 
@@ -339,6 +335,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.submit = function () {
 			var d = root.data.deferred().defer();
+			debugger;
 			if (this.model.errors().length === 0) {
 				d.resolve();
 			} else {
