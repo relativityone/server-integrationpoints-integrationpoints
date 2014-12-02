@@ -8,6 +8,8 @@ using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.CustomPages;
@@ -34,6 +36,12 @@ namespace kCura.IntegrationPoints.Web.Installers
 				(k) => k.Resolve<RsapiClientFactory>().CreateDbContext()));
 
 			container.Register(Classes.FromThisAssembly().BasedOn<IHttpController>().LifestyleTransient());
+
+			container.AddFacility<TypedFactoryFacility>();
+			container.Register(Component.For<IErrorFactory>().AsFactory().UsingFactoryMethod((k) => new ErrorFactory(container)));
+			container.Register(Component.For<WebAPIFilterException>().ImplementedBy<WebAPIFilterException>());
+
+
 
 		}
 	}

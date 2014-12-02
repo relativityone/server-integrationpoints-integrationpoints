@@ -32,7 +32,9 @@ h1
 {
 	width: 100%;
 }
-
+.table.fixed {
+	table-layout: fixed;
+}
 .cell
 {
 	display: table-cell;
@@ -78,6 +80,14 @@ h1
 	width: 80px;
 }
 
+#bodyContainer {
+	position: absolute;
+	top: 39px;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
 .loading-dialog *
 {
 	margin: 0 auto;
@@ -97,27 +107,17 @@ h1
 	right: 200px;
 }
 
-.console-container {
-	position: absolute;
-	width: 200px;
-	right: 0;
-	bottom: 0;
-	top: 39px;
-}
-
 .console {
-	overflow: hidden;
 	height: 100%;
+	width: 200px;
 	background-color: #f7f7f7!important;
-	border: thin solid #c1c1c1;
-	vertical-align: top;
-	text-align: center;
+	border: 1px solid #c1c1c1;
 	padding: 10px 10px 0 10px;
 }
-
 	.console button {
 		width: 100%;
 	}
+
 
 .section {
 	padding-top: 10px;
@@ -158,9 +158,6 @@ ul li .day-select {
 	z-index: 1;
 	font-size: 12px;
 	font-weight: 400;
-}
-.detail-container .card {
-	width: 88%;
 }
 
 	.field-validation-error.icon-error:before,

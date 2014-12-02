@@ -87,19 +87,12 @@
 		};
 
 		utils.generateWebAPIURL = function () {
-			//we are assuming the route coming in looks like this /controller/action/blah...
-			//we transform this to be /controler/action/appID/blah..
 			var array = [];
 			array.push(utils.getBaseURL());
+			array.push(utils.getParameterByName('AppID', window.top));
 			array.push(settings.API_PREFIX);
 			for (var i = 0; i < arguments.length; i++) {
-				if (i === 2) {
-					array.push(root.data.params.get('appID'));
-				}
 				array.push(arguments[i]);
-			}
-			if (arguments.length == 2) {
-				array.push(root.data.params.get('appID'));
 			}
 			return array.join('/');
 		};

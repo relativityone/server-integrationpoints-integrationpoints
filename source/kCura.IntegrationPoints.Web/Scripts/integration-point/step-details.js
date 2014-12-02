@@ -271,6 +271,9 @@ ko.validation.insertValidationMessage = function (element) {
 				message: 'Invalid Date'
 			}
 		});
+		this.startDate.subscribe(function () {
+			debugger;
+		});
 
 		this.endDate = ko.observable(options.endDate).extend({ date: true }).extend({
 			validation: {

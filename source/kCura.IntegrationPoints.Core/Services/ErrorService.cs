@@ -4,10 +4,15 @@ using kCura.IntegrationPoints.Core.Models;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class CreateError
+	public interface IErrorService
+	{
+		void Log(ErrorModel error);
+	}
+
+	public class ErrorService : IErrorService
 	{
 		private readonly Data.Queries.CreateErrorRdo _createErrorRdo;
-		public CreateError(Data.Queries.CreateErrorRdo createError)
+		public ErrorService(Data.Queries.CreateErrorRdo createError)
 		{
 			_createErrorRdo = createError;
 		}

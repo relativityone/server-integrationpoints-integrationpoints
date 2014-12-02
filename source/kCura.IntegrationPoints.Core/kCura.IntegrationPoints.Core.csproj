@@ -85,7 +85,7 @@
     <Compile Include="Models\RDO\IntegrationPoint.cs" />
     <Compile Include="ServiceContext.cs" />
     <Compile Include="Services\AgentJobManager.cs" />
-    <Compile Include="Services\CreateError.cs" />
+    <Compile Include="Services\ErrorService.cs" />
     <Compile Include="Services\IJobManager.cs" />
     <Compile Include="Services\IntegrationPointHelper.cs" />
     <Compile Include="Services\IntegrationPointReader.cs" />

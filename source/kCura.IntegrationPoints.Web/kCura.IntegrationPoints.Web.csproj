@@ -157,6 +157,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\JsonNetResult.cs" />
+    <Compile Include="Attributes\WebAPIFilterException.cs" />
     <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\SourceTypeController.cs" />
     <Compile Include="Controllers\API\RdoFilterController.cs" />
@@ -168,6 +169,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="ICustomPageService.cs" />
+    <Compile Include="IErrorFactory.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
     <Compile Include="RsapiClientFactory.cs" />
     <Compile Include="ISessionService.cs" />
@@ -330,6 +332,7 @@
     <Content Include="Scripts\i18n\grid.locale-tw.js" />
     <Content Include="Scripts\i18n\grid.locale-ua.js" />
     <Content Include="Scripts\i18n\grid.locale-vi.js" />
+    <Content Include="Scripts\integration-point\details.js" />
     <Content Include="Scripts\integration-point\edit.js" />
     <Content Include="Scripts\integration-point\binding.js" />
     <Content Include="Scripts\integration-point\step-import.js" />
