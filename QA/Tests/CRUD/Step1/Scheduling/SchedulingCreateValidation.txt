@@ -282,10 +282,8 @@
 | | ... | Verify that Step 2 is displayed
 
 
-*** Keywords *** 
-
-
 *** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/BackendKeywords.txt
