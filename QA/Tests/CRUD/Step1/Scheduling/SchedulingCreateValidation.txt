@@ -1,18 +1,24 @@
 
 *** Settings ***
 | Documentation		| Verify the create process's validation is correct for the RIP Scheduler.
-| Metadata			| Authors	| Daniel Oliver
-| Force Tags		| in-progress	| manual	| team.method
-| Suite Setup		| Open the Browser and Create Project
-| Test Setup		| Open New Scheduled Report
+| Metadata			| Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| in-progress	| team.method
+#| Suite Setup		| Open the Browser and Create Project
+#| Test Setup		| Open New Scheduled Report
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
-| Suite Teardown	| Delete the Scheduled Reports and the Project then Close the Browser
+#| Suite Teardown	| Delete the Scheduled Reports and the Project then Close the Browser
 
 
 *** Variables ***
 
-| ${WorkspaceName}		| Relativity Legal Hold
-| ${Email Addresses Field}	| scheduledReportEmailAddresses
+| ${WorkspaceName}			| Relativity Legal Hold
+| ${Frequency Field}		| 
+| ${Start Date Field}		| 
+| ${Scheduled Time Field}	| 
+| ${Weekly Send On Field}	| 
+| ${Monthly Send On Field}	|
+| ${Reoccur Field}			| 
+
 
 *** Test Cases ***
 
@@ -20,184 +26,285 @@
 | | [Documentation]	| Verify that attempting to go to Step 2 with no information shows the page level Warning Message.
 | | [Tags]		    | manual
 | | Run the following manual steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... | 3. Click	| Next
+| | ... | Steps: 
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Click	| New Integration Point
+| | ... | 3. Fill out the Required fields in the General and Integration Sections
+| | ... | 4. Set the Enabled field to	| Yes
+| | ... | 5. Click	| Next
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify the current Method Page Error has the following Text	| Error: Unable to save. Please review information below.
+| | ... | Verify the current Method Page Error has the following Text	| Error: Unable to save. Please review information below.
+
 
 | Blank Required Fields show messages after clicking Next
 | | [Documentation]	| Verify that Required Fields that are blank show the correct warning message after clicking Next.
-| | [Tags]		    | manual
+| | [Tags]		    | manual	| required
 | | Run the following manual steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... | 3. Click | Yes for Enable
-| | ... | 3. Click	| Next
+| | ... | Steps: 
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Click	| New Integration Point
+| | ... | 3. Fill out the Required fields in the General and Integration Sections
+| | ... | 4. Set the Enabled field to	| Yes
+| | ... | 5. Click	| Next
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify the following Method Field has the following Error	| ${Frequency Field}		| This field is required.
-| | ... | Verify the following Method Field has the following Error	| ${Start Date Field}		| This field is required.
-| | ... | Verify the following Method Field has the following Error	| ${Scheduled Time Field}	| This field is required.
+| | ... | 1. Verify the following Method Field has the following Error	| ${Frequency Field}		| This field is required.
+| | ... | 2. Verify the following Method Field has the following Error	| ${Start Date Field}		| This field is required.
+| | ... | 3. Verify the following Method Field has the following Error	| ${Scheduled Time Field}	| This field is required.
 
-| Saving Post-blank required fields message
+
+| Proceeding Post-blank required fields message
 | | [Documentation]	| Verify that a Scheduled Report can be created after the blank required fields message is shown.
 | | [Tags]			| manual
-| | [Setup]			| Require Test Case	| Blank Required Fields show messages on Save
+| | [Setup]			| Require Test Case	| Blank Required Fields show messages after clicking Next
 | | Run the following manual steps:
+| | ... | Steps: 
 | | ... | 1. Fill out the required fields after testing the previous case.
-| | ... | 2. Click Next
+| | ... | 2. Click	| Next
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that Step 2 is displayed
 
-| Date Validation message are shown prior to saving
-| | [Documentation]	| Verify that the date fields show warning messages prior to saving when invalid values are entered.
-| | [Tags]			| manual 
+
+| Date Validation message are shown after clicking Next
+| | [Documentation]	| Verify that the date fields show warning messages after clicking Next when invalid values are entered.
+| | [Tags]			| manual	| required
 | | Run the following manual steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... | 3. Fill out the Following Fields of the Import Scheduling section	| Yes | Daily | 123	| 456	| 23:00
-| | ... | 4. Click | Next
+| | ... | Steps: 
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Click	| New Integration Point
+| | ... | 3. Fill out the Required fields in the General and Integration Sections
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Daily	| StartDate=123	| EndDate=456	| ScheduledTime=23:00
+| | ... | 5. Click	| Next
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify that the following Method Field has the following Error	| ${Start Date Field}	| The field Start Date must be a date.R
-| | ... | Verify the following Method Field has the following Error	| ${End Date Field}		| The field End Date must be a date.
+| | ... | 1. Verify that the following Method Field has the following Error	| ${Start Date Field}	| The field Start Date must be a date.
+| | ... | 2. Verify that the following Method Field has the following Error	| ${End Date Field}		| The field End Date must be a date.
 
-| Saving Post-Date Invalid message
+
+| Proceeding Post-Date Invalid message
 | | [Documentation]	| Verify that Step 2 can be reached after the invalid date fields message is shown.
 | | [Tags]			| manual
-| | [Setup]			| Require Test Case	| Date Validation message are shown prior to saving
-| | Fill out the Following Fields of the Create Integration Point form	| ${ScheduledReport2}	| StartDate=01/01/2015	| EndDate=01/01/2050 
-| | Click	| ${Save Button}
-| | Wait until you are redirected from the Create page and then select the iFrame
-| | Verify that the Following Scheduled Report's Layout is shown	| ${ScheduledReport2}
+| | [Setup]			| Require Test Case	| Date Validation message are shown after clicking Next
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Fill out the required fields after testing the previous case.
+| | ... | 2. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that Step 2 is displayed
 
-| Scheduled Time Validation message is shown prior to saving
-| | [Documentation]	| Verify that the Scheduled Time field shows a warning message prior to saving when an invalid value is entered.
-| | [Tags]			| manual	| required	
-| | Fill out the Following Fields of the Create Integration form	| 
-| | ... | ${ScheduledReport3}	| Custodians	| No	| Daily	| NULL	| NULL	| 01/01/2015	| 01/01/2051	| 11:00pm	| wsehy@lh.kcura.com
-| | Verify the following Method Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (24-hour format).
 
-| Saving Post-Time Invalid message
-| | [Documentation]	| Verify that a Scheduled Report can be created after the invalid time message is shown.
+| Start Date must be before the End Date Validation Message is displayed after clicking Next
+| | [Documentation]	| Verify that the "Start Date must be before the End Date" validation message is displayed when the End Date is before the Start Date.
+| | [Tags]			| manual	| required
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Click	| New Integration Point
+| | ... | 3. Fill out the Required fields in the General and Integration Sections
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Daily	| StartDate=1/23/2012	| EndDate=4/5/2006	| ScheduledTime=02:30
+| | ... | 5. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the following Method Field has the following Error	| ${End Date Field}		| The start date must come before the end date.
+
+
+| Proceeding Post-Start Date must be before the End Date message
+| | [Documentation]	| Verify that you can proceed to Step 2 after the "Start Date must be before the End Date" validation message has been shown.
 | | [Tags]			| manual
-| | [Setup]			| Require Test Case	| Scheduled Time Validation message is shown prior to saving
-| | Fill out the Following Fields of the Create Integration Point form	| ${ScheduledReport3}	| ScheduledTime=23:00
-| | Click	| ${Save Button}
-| | Wait until you are redirected from the Create page and then select the iFrame
-| | Verify that the Following Scheduled Report's Layout is shown	| ${ScheduledReport3}
+| | [Setup]			| Require Test Case	| Start Date must be before the End Date Validation Message is displayed after clicking Next
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Fill out the Following Fields of the Import Scheduling section	| StartDate=1/23/2012	| EndDate=4/5/2016
+| | ... | 2. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that Step 2 is displayed
+
+
+| Scheduled Time Validation message is shown after clicking Next
+| | [Documentation]	| Verify that the Scheduled Time field shows a warning message after clicking Next when an invalid value is entered.
+| | [Tags]			| manual	| required
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Click	| New Integration Point
+| | ... | 3. Fill out the Required fields in the General and Integration Sections
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Daily	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=230
+| | ... | 5. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the following Method Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (24-hour format).
+
+
+| Proceeding Post-Time Invalid message
+| | [Documentation]	| Verify that you can proceed to Step 2 after the invalid time validation message has been shown.
+| | [Tags]			| manual
+| | [Setup]			| Require Test Case	| Scheduled Time Validation message is shown after clicking Next
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Fill out the required fields after testing the previous case.
+| | ... | 2. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that Step 2 is displayed
+
 
 | Scheduled Time Validation message is shown when the hour value is greater than 23
 | | [Documentation]	| Verify that the Scheduled Time field shows is shown when the hour value is greater than 23.
 | | [Tags]			| manual
-| | Fill out the Following Fields of the Create Integration Point form	| 
-| | ... | ${ScheduledReport9}	| Custodians	| No	| Daily	| NULL	| NULL	| 01/01/2015	| 01/01/2051	| 24:11	| wsehy@lh.kcura.com
-| | Verify the following Method Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (24-hour format).
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Click	| New Integration Point
+| | ... | 3. Fill out the Required fields in the General and Integration Sections
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Daily	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=24:30
+| | ... | 5. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the following Method Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (24-hour format).
+
 
 | Scheduled Time Validation message is shown when the minute value is greater than 59
 | | [Documentation]	| Verify that the Scheduled Time field shows is shown when the hour value is greater than 59.
 | | [Tags]			| manual
-| | Fill out the Following Fields of the Create Integration Point form	| 
-| | ... | ${ScheduledReport10}	| Custodians	| No	| Daily	| NULL	| NULL	| 01/01/2015	| 01/01/2051	| 23:60	| wsehy@lh.kcura.com
-| | Verify the following Method Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (24-hour format).
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Click	| New Integration Point
+| | ... | 3. Fill out the Required fields in the General and Integration Sections
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Daily	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=23:60
+| | ... | 5. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the following Method Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (24-hour format).
 
-| Send On Weekly Validation message is shown after trying to Save with nothing selected
-| | [Documentation]	| Verify that the validation message is displayed when no Day has been selected for Weekly reports and trying to Save.
-| | [Tags]			| required	| manual
-| | Fill out the Following Fields of the Create Integration Point form	| ${ScheduledReport4}	| Custodians	| Yes	| Weekly	| 1	| NULL	| 
-| | ... | 01/01/2015	| 01/01/2050	| 23:00	| valid@format.com	| Checked	| ${Project1}
-| | Click	| ${Save Button}
-| | Verify the following Method Field has the following Error	| scheduleRulesSendOn	| The Send On field is required.
 
-| Saving Post-Weekly Validation
-| | [Documentation]	| Verify that a Scheduled Report can be created after the Send On message is shown
+| Send On Weekly Validation message is shown after trying to Proceed with nothing selected
+| | [Documentation]	| Verify that the Weekly Send On field has a validation message displayed when no Day has been selected and you try to proceed to Step 2.
+| | [Tags]			| manual	| required
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Click	| New Integration Point
+| | ... | 3. Fill out the Required fields in the General and Integration Sections
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=1	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=23:50
+| | ... | 5. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the following Method Field has the following Error	| ${Weekly Send On Field}	| This field is required.
+
+
+| Proceeding Post-Weekly Send On Validation
+| | [Documentation]	| Verify that you can proceed to Step 2 after the Weekly Send On validation message has been shown.
 | | [Tags]			| manual
 | | [Setup]			| Require Test Case	| Send On Weekly Validation message is shown after trying to Save with nothing selected
-| | Fill out the Following Fields of the Create Integration Point form	| ${ScheduledReport4}	| SendOn=Monday
-| | Click	| ${Save Button}
-| | Wait until you are redirected from the Create page and then select the iFrame
-| | Verify that the Following Scheduled Report's Layout is shown	| ${ScheduledReport4}
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Fill out the Following Fields of the Import Scheduling section	| SendOn=Monday
+| | ... | 2. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that Step 2 is displayed
 
-| Start Date must be before the End Date Message can be displayed
-| | [Documentation]	| Verify that the Start Date must be before the End Date message is displayed under the correct conditions.
-| | [Tags]			| required	| manual
-| | Fill out the Following Fields of the Create Integration Point form	| ${ScheduledReport7}	| Custodians	| Yes	| Daily	| NULL	| NULL	| 
-| | ... | 02/02/2015	| 04/04/2014	| 23:00	| valid@format.com
-| | Verify the following Method Field has the following Error	| ${End Date Field}	| The start date must come before the end date.
-
-| Saving Post-Start Date must be before the End Date message
-| | [Documentation]	| Verify that a Scheduled Report can be created after the Start Date must be before the End Date message message is shown.
-| | [Tags]			| manual
-| | [Setup]			| Require Test Case	| Start Date must be before the End Date Message can be displayed
-| | Fill out the Following Fields of the Create Integration Point form	| ${ScheduledReport7}	| StartDate=01/01/2015	| EndDate=01/01/2050	| 
-| | Click	| ${Save Button}
-| | Wait until you are redirected from the Create page and then select the iFrame
-| | Verify that the Following Scheduled Report's Layout is shown	| ${ScheduledReport7}
 
 | Reoccur Validation message is displayed for Zero
 | | [Documentation]	| Verify that the Reoccur validation does not accept Zero
 | | [Tags]			| manual
-| | Fill out the Following Fields of the Create Integration Point form	| ${ScheduledReport8}	| Frequency=Weekly	| Reoccur=0
-| | Click	| ${Save Button}
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Click	| New Integration Point
+| | ... | 3. Fill out the Required fields in the General and Integration Sections
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=0	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=23:50
+| | ... | 5. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the following Method Field has the following Error	| ${Reoccur Field}	| Please enter a value between 1 and 999.
 
-| | Verify the following Method Field has the following Error	| ${Reoccur Field}	| Please enter a value between 1 and 999.
 
 | Reoccur Validation message is displayed for negative integers
 | | [Documentation]	| Verify that the Reoccur validation does not accept negative integers.
 | | [Tags]			| manual
-| | Fill out the Following Fields of the Create Integration Point form	| ${ScheduledReport8}	| Frequency=Weekly	| Reoccur=-1
-| | Click	| ${Save Button}
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Click	| New Integration Point
+| | ... | 3. Fill out the Required fields in the General and Integration Sections
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=-1	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=23:50
+| | ... | 5. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the following Method Field has the following Error	| ${Reoccur Field}	| Please enter a value between 1 and 999.
 
-| | Verify the following Method Field has the following Error	| ${Reoccur Field}	| Please enter a value between 1 and 999.
 
 | Reoccur Validation message is displayed for integers above 999
 | | [Documentation]	| Verify that the Reoccur validation does not accept integers above 999.
 | | [Tags]			| manual
-| | Fill out the Following Fields of the Create Integration Point form	| ${ScheduledReport8}	| Frequency=Weekly	| Reoccur=1000
-| | Click	| ${Save Button}
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Click	| New Integration Point
+| | ... | 3. Fill out the Required fields in the General and Integration Sections
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=1000	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=23:50
+| | ... | 5. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the following Method Field has the following Error	| ${Reoccur Field}	| Please enter a value between 1 and 999.
 
-| | Verify the following Method Field has the following Error	| ${Reoccur Field}	| Please enter a value between 1 and 999.
 
 | Reoccur Validation message is displayed for non-integers
-| | [Documentation]	| Verify that the Reoccur validation does not accept non-integers.
-| | [Tags]			| required	| manual
-| | Fill out the Following Fields of the Create Integrationt Point form	| ${ScheduledReport8}	| Custodians	| Yes	| Weekly	| a1	| Monday	|
-| | ... | 01/01/2015	| 01/01/2050	| 23:00	| valid@format.com
-| | Click	| ${Save Button}
+| | [Documentation]	| Verify that the Reoccur field's validation does not accept non-integers.
+| | [Tags]			| manual	| required
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Click	| New Integration Point
+| | ... | 3. Fill out the Required fields in the General and Integration Sections
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=a	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=23:50
+| | ... | 5. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the following Method Field has the following Error	| ${Reoccur Field}	| Please enter a value between 1 and 999.
 
-| | Verify the following Method Field has the following Error	| ${Reoccur Field}	| Please enter a value between 1 and 999.
-
-| Saving Post-Reoccur Validation
-| | [Documentation]	| Verify that the Reoccur validation does not accept non-integers.
+| Proceeding Post-Reoccur Validation
+| | [Documentation]	| 
 | | [Tags]			| manual
 | | [Setup]			| Require Test Case	| Reoccur Validation message is displayed for non-integers
-| | Fill out the Following Fields of the Create Integration Point form	| ${ScheduledReport8}	| Reoccur=1
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Fill out the Following Fields of the Import Scheduling section	| Reoccur=1
+| | ... | 2. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that Step 2 is displayed
 
-| | Click	| ${Save Button}
-| | Wait until you are redirected from the Create page and then select the iFrame
-| | Verify that the Following Scheduled Report's Layout is shown	| ${ScheduledReport8}
 
-| Integration Points can be created with a End Date in the Past
-| | [Documentation]	| Verify that Integration Points can be created with a End Date in the Past
+| Integration Points can be created with an End Date in the Past
+| | [Documentation]	| Verify that Integration Points can be created with an End Date value that is in the Past.
 | | [Tags]			| manual
-| | Fill out the Following Fields of the Create Integration Point form	|
-| | ... | 01/01/2013	| 01/01/2014	| 23:00	| valid@format.com
-| | Click	| ${Save Button}
-| | Wait until you are redirected from the Create page and then select the iFrame
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Click	| New Integration Point
+| | ... | 3. Fill out the Required fields in the General and Integration Sections
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=1000	| StartDate=1/23/2010	| EndDate=4/5/2012	| ScheduledTime=23:50
+| | ... | 5. Click	| Next
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that Step 2 is displayed
 
-| | Verify that the Following Scheduled Report's Layout is shown	| ${ScheduledReport11}
 
 *** Keywords *** 
 
 
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/BackendKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/GridKeywords.txt
-| Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/ReportKeywords.txt
