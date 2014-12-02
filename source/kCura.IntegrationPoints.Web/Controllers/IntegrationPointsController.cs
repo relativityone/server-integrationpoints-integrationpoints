@@ -35,5 +35,11 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return View(integrationViewModel);
 		}
 
+		public ActionResult Test()
+		{
+			return View();
+		}
+
+
 	}
 }

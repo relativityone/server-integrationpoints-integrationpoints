@@ -18,14 +18,13 @@ ko.bindingHandlers.datepicker = {
 		var options = allBindingsAccessor().datepickerOptions || {},
 				$el = $(element);
 
-		$el.datepicker(options);
-
-		//handle the field changing by registering datepicker's changeDate event
-		ko.utils.registerEventHandler(element, "changeDate", function () {
+		options.onSelect = function (date) {
 			var observable = valueAccessor();
-			observable($el.datepicker("getDate"));
-		});
+			observable(date);
+		};
 
+		$el.datepicker(options);
+		
 		//handle disposal (if KO removes by the template binding)
 		ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
 			$el.datepicker("destroy");

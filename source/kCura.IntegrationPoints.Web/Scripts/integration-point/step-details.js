@@ -265,14 +265,12 @@ ko.validation.insertValidationMessage = function (element) {
 			required: {
 				onlyIf: function () {
 					return self.isEnabled();
-				}
+				},
+				message: 'asdfsf'
 			},
 			date: {
 				message: 'Invalid Date'
 			}
-		});
-		this.startDate.subscribe(function () {
-			debugger;
 		});
 
 		this.endDate = ko.observable(options.endDate).extend({ date: true }).extend({

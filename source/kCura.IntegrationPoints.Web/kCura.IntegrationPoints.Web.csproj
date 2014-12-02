@@ -432,6 +432,7 @@
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
     <Content Include="Views\IntegrationPoints\Details.cshtml" />
+    <Content Include="Views\IntegrationPoints\Test.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
