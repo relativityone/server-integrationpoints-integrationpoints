@@ -22,21 +22,6 @@
 
 *** Test Cases ***
 
-| Page Level Warning is displayed after clicking Next with blank required fields
-| | [Documentation]	| Verify that attempting to go to Step 2 with no information shows the page level Warning Message.
-| | [Tags]		    | manual
-| | Run the following manual steps:
-| | ... | Steps: 
-| | ... | 1. Go to the Tab	| Integration Points
-| | ... | 2. Click	| New Integration Point
-| | ... | 3. Fill out the Required fields in the General and Integration Sections
-| | ... | 4. Set the Enabled field to	| Yes
-| | ... | 5. Click	| Next
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify the current Method Page Error has the following Text	| Error: Unable to save. Please review information below.
-
-
 | Blank Required Fields show messages after clicking Next
 | | [Documentation]	| Verify that Required Fields that are blank show the correct warning message after clicking Next.
 | | [Tags]		    | manual	| required
