@@ -11,12 +11,13 @@ ko.validation.configure({
 });
 
 ko.validation.insertValidationMessage = function (element) {
-	var iconSpan = document.createElement('DIV');
+	var errorContainer = document.createElement('div');
+	var iconSpan = document.createElement('span');
 	iconSpan.className = 'icon-error legal-hold field-validation-error';
 
-	var span = document.createElement('SPAN');
-	iconSpan.appendChild(span);
-	$(element).parents('.field-value').eq(0).append(iconSpan)
+	errorContainer.appendChild(iconSpan);
+
+	$(element).parents('.field-value').eq(0).append(errorContainer);
 
 	return iconSpan;
 };

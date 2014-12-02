@@ -32,9 +32,12 @@ h1
 {
 	width: 100%;
 }
-.table.fixed {
+
+.table.fixed
+{
 	table-layout: fixed;
 }
+
 .cell
 {
 	display: table-cell;
@@ -80,7 +83,8 @@ h1
 	width: 80px;
 }
 
-#bodyContainer {
+#bodyContainer
+{
 	position: absolute;
 	top: 39px;
 	bottom: 0;
@@ -107,40 +111,50 @@ h1
 	right: 200px;
 }
 
-	
-.console {
+
+.console
+{
 	height: 100%;
 	width: 200px;
 	background-color: #f7f7f7!important;
 	border: 1px solid #c1c1c1;
 	padding: 10px 10px 0 10px;
 }
-	.console button {
+
+	.console button
+	{
 		width: 100%;
 	}
 
 
-.section {
+.section
+{
 	padding-top: 10px;
 }
 
-	.section.button {
+	.section.button
+	{
 		width: 100%;
 	}
 
-.content {
+.content
+{
 	margin: 0 auto;
 }
 
-.field-row {
+.field-row
+{
 	padding-top: 10px;
 }
 
-ul li .day-select {
+ul li .day-select
+{
 	width: 80px;
 	min-width: 80px;
 }
-.field-value .filter-container {
+
+.field-value .filter-container
+{
 	width: 180px;
 	height: 28px;
 	margin-right: 5px;
@@ -154,22 +168,13 @@ ul li .day-select {
 	color: #ffffff;
 	height: 24px;
 	margin-top: 5px;
-	padding: 0 5px;
 	position: relative;
 	z-index: 1;
 	font-size: 12px;
 	font-weight: 400;
-}
-.detail-container .card {
-	width: 88%;
-}
-
-	.field-validation-error.icon-error:before,
-	.field-validation-error > span
-	{
-		display: inline-block;
+	display: inline-block;
 		padding: 4px 4px 0;
-	}
-
-
-	
+}
+.field-validation-error.icon-error::before {
+	padding-right: 5px;
+}
