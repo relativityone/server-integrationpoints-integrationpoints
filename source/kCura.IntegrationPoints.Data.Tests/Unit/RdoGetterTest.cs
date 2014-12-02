@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			
 			var testRdoQuery = new RdoGetter(rdoMock);
 
-			rdoMock.GetAllRdo().Returns(x => { throw new Exception("No Relativity Dynamic Object not found"); });
+			rdoMock.GetAllRdo().Returns(x => { throw new Exception("No Relativity Dynamic Object found"); });
 			Assert.Throws<Exception>(() => testRdoQuery.getAllRdo());
 			
 		}
