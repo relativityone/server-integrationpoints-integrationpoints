@@ -24,6 +24,7 @@ ko.bindingHandlers.datepicker = {
 		};
 
 		$el.datepicker(options);
+		ko.bindingHandlers['value']['init'](element, valueAccessor, allBindingsAccessor);
 		
 		//handle disposal (if KO removes by the template binding)
 		ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
@@ -44,6 +45,7 @@ ko.bindingHandlers.datepicker = {
 
 		if (value - current !== 0) {
 			$el.datepicker("setDate", value);
-		}
+			ko.bindingHandlers['value']['update'](element, valueAccessor);
+		}		
 	}
 };

@@ -40,6 +40,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 
 			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod((k) =>
 				k.Resolve<RsapiClientFactory>().CreateClient()).LifestylePerWebRequest());
+
 			container.Register(Component.For<IDBContext>().UsingFactoryMethod((k) =>
 				k.Resolve<RsapiClientFactory>().CreateDbContext()).LifestylePerWebRequest());
 		}

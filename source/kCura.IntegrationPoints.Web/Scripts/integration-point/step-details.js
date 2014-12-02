@@ -227,10 +227,10 @@ ko.validation.insertValidationMessage = function (element) {
 					var num = parseInt(value, 10);
 					return !isNaN(num) && num >= params.min && num <= params.max
 				},
-				onlyIf:function(){
+				onlyIf: function () {
 					return self.selectedFrequency() !== 1 && self.isEnabled();
 				},
-				params:{min:1, max:999},
+				params: { min: 1, max: 999 },
 				message: 'Please enter a value between 1 and 999.'
 			}
 		});
@@ -261,7 +261,11 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		});
 
-		this.startDate = ko.observable(options.startDate).extend({date: true}).extend({
+		this.startDate = ko.observable(options.startDate).extend({
+			date: {
+				message: 'Invalid Date'
+			}
+		}).extend({
 			required: {
 				onlyIf: function () {
 					return self.isEnabled();
@@ -269,7 +273,11 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		});
 
-		this.endDate = ko.observable(options.endDate).extend({ date: true }).extend({
+		this.endDate = ko.observable(options.endDate).extend({
+			date: {
+				message: 'Invalid Date'
+			}
+		}).extend({
 			validation: {
 				validator: function (value) {
 					if (value && self.startDate() && new Date(value).compareTo(new Date(self.startDate())) < 0) {
