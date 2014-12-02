@@ -19,6 +19,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			_reader = reader;
 		}
+
+	
 		public ActionResult Edit(int? objectID)
 		{
 			return View();
