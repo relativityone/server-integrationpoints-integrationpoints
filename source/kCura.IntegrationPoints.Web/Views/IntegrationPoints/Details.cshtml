@@ -35,18 +35,22 @@
 		</div>
 		<div class="card">
 			<label class="section label">Import Scheduling</label>
-			<div class="field-row">
+			
+
+				@{if (Model.EnableScheduler == false || Model.EnableScheduler == null)
+				  {
+		  			<div class="field-row">
 				<div class="field-label">Enable Scheduler:</div>
-				<div class="field-value details">
-					@{if (Model.EnableScheduler == true)
-	   { @:Yes 
-                                   }
-	   else
-	   {@:No
-								   } }
-				</div>
-			</div>
-			<div class="field-row">
+						<div class="field-value details">No </div>
+					</div>
+				  }
+				  else
+				  { 
+						<div class="field-row">
+				<div class="field-label">Enable Scheduler:</div>
+						<div class="field-value details">Yes </div>
+					</div>
+						<div class="field-row">
 				<div class="field-label">Frequency:</div>
 				<div class="field-value details">@Model.Frequency</div>
 			</div>
@@ -61,7 +65,12 @@
 			<div class="field-row">
 				<div class="field-label">Scheduled Time:</div>
 				<div class="field-value details">@Model.ScheduleTime</div>
-			</div>
+			</div>		   
+				  } 
+				}
+
+			
+			
 		</div>
 
 		<div class="card">
