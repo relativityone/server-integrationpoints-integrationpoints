@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueueAgent;
 using kCura.ScheduleQueueAgent.Logging;
+using kCura.ScheduleQueueAgent.Services;
+using kCura.ScheduleQueueAgent.TimeMachine;
 
 namespace kCura.IntegrationPoints.Agent
 {
@@ -16,6 +18,9 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			base.RaiseException += new ExceptionEventHandler(RaiseException);
 			base.RaiseJobLogEntry += new JobLoggingEventHandler(RaiseJobLog);
+#if TIME_MACHINE
+			AgentTimeMachineProvider.Current = new DefaultAgentTimeMachineProvider(Guid.Parse("08C0CE2D-8191-4E8F-B037-899CEAEE493D"));
+#endif
 		}
 		public override string Name
 		{

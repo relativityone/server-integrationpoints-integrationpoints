@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using kCura.Apps.Common.Data;
 using kCura.Data.RowDataGateway;
 using kCura.ScheduleQueueAgent.ScheduleRules;
 using kCura.ScheduleQueueAgent.Services;
+using kCura.ScheduleQueueAgent.TimeMachine;
+using NSubstitute;
 using NUnit.Framework;
-using Relativity.CustomPages;
 using IDBContext = Relativity.API.IDBContext;
+using kCura.Apps.Common.Config;
 
 namespace kCura.ScheduleQueueAgent.Tests.Integration.Services
 {
@@ -66,5 +69,23 @@ namespace kCura.ScheduleQueueAgent.Tests.Integration.Services
 			jobService.DeleteJob(job2.JobId);
 		}
 
+		[Test]
+		[Explicit]
+		public void AgentTimeMachineProvider_Test1()
+		{
+			int caseID1 = 1015641;
+			var agentHelper = NSubstitute.Substitute.For<Relativity.API.IAgentHelper>();
+
+			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(agentHelper);
+			IDBContext c1Context = new TestDBContextHelper().GetDBContext(caseID1);
+			agentHelper.GetDBContext(Arg.Is(caseID1)).Returns(c1Context);
+
+			AgentTimeMachineProvider.Current = new DefaultAgentTimeMachineProvider(Guid.Parse("08C0CE2D-8191-4E8F-B037-899CEAEE493D"));
+
+			DateTime utcNow1 = AgentTimeMachineProvider.Current.UtcNow;
+			Thread.Sleep(1000);
+			DateTime utcNow2 = AgentTimeMachineProvider.Current.UtcNow;
+
+		}
 	}
 }

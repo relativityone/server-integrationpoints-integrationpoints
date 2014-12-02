@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.Agent;
+using kCura.Apps.Common.Config;
+using kCura.Apps.Common.Data;
+using kCura.Apps.Common.Utils;
 using kCura.ScheduleQueueAgent.Helpers;
 using kCura.ScheduleQueueAgent.Services;
 using Relativity.API;
@@ -52,11 +55,20 @@ namespace kCura.ScheduleQueueAgent
 			return task;
 		}
 
+		public TimeProvider TimeProvider
+		{
+			get { return TimeProvider.Current; }
+			set { TimeProvider.Current = value; }
+		}
+
 		public sealed override void Execute()
 		{
 			errorRaised = false;
 
 			OnRaiseAgentLogEntry(10, LogCategory.Info, "Started.");
+
+			OnRaiseAgentLogEntry(20, LogCategory.Info, "Initialize Manager Config settings factory");
+			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(base.Helper);
 
 			OnRaiseAgentLogEntry(20, LogCategory.Info, "Check for Queue Table");
 			CheckQueueTable();
@@ -120,6 +132,8 @@ namespace kCura.ScheduleQueueAgent
 					task.Execute(job);
 
 					OnRaiseJobLogEntry(job, JobLogState.Finished);
+					string msg = string.Format(FINISHED_PROCESSING_JOB_MESSAGE_TEMPLATE, job.JobId, job.WorkspaceID, job.TaskType);
+					OnRaiseAgentLogEntry(1, LogCategory.Info, msg);
 				}
 				else
 				{

@@ -35,6 +35,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -43,6 +45,18 @@
   <ItemGroup>
     <Reference Include="kCura.Agent">
       <HintPath>..\..\..\Method\Binaries\kCura\kCura.Agent.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Config, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\kCura.Apps.Common.Config.1.0.77.1\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Data, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\kCura.Apps.Common.Data.1.0.77.1\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Utils, Version=1.0.94.1, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.77.1\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

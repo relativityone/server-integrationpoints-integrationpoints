@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using kCura.Apps.Common.Utils;
 using kCura.ScheduleQueueAgent.Data;
 using kCura.ScheduleQueueAgent.Data.Queries;
 using kCura.ScheduleQueueAgent.ScheduleRules;
+using kCura.ScheduleQueueAgent.TimeMachine;
 using Relativity.API;
 
 namespace kCura.ScheduleQueueAgent.Services
@@ -45,13 +47,11 @@ namespace kCura.ScheduleQueueAgent.Services
 
 			IScheduleRule scheduleRule = job.ScheduleRule;
 			DateTime? nextUtcRunDateTime = null;
-
-#if TIME_MACHINE
-			//TODO: implement
-#endif
-
 			if (scheduleRule != null)
 			{
+#if TIME_MACHINE
+				scheduleRule.TimeService = new TimeMachineService(job.WorkspaceID);
+#endif
 				nextUtcRunDateTime = scheduleRule.GetNextUTCRunDateTime(DateTime.UtcNow, taskResult.Status);
 			}
 
@@ -80,6 +80,9 @@ namespace kCura.ScheduleQueueAgent.Services
 			AgentService.CreateQueueTableOnce();
 
 			Job job = null;
+#if TIME_MACHINE
+			scheduleRule.TimeService = new TimeMachineService(workspaceID);
+#endif
 			DateTime? nextRunTime = scheduleRule.GetNextUTCRunDateTime(null, null);
 			string serializedScheduleRule = scheduleRule.ToSerializedString();
 			if (nextRunTime.HasValue)
