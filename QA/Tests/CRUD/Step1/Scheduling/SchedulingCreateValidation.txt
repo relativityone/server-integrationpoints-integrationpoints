@@ -89,7 +89,7 @@
 | | ... | 1. Go to the Tab	| Integration Points
 | | ... | 2. Click	| New Integration Point
 | | ... | 3. Fill out the Required fields in the General and Integration Sections
-| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Daily	| StartDate=1/23/2012	| EndDate=4/5/2006	| ScheduledTime=02:30
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Daily	| StartDate=11/23/2012	| EndDate=04/15/2006	| ScheduledTime=02:30
 | | ... | 5. Click	| Next
 | | ... |
 | | ... | Expected Results:
@@ -102,7 +102,7 @@
 | | [Setup]			| Require Test Case	| Start Date must be before the End Date Validation Message is displayed after clicking Next
 | | Run the following manual steps:
 | | ... | Steps: 
-| | ... | 1. Fill out the Following Fields of the Import Scheduling section	| StartDate=1/23/2012	| EndDate=4/5/2016
+| | ... | 1. Fill out the Following Fields of the Import Scheduling section	| StartDate=11/23/2012	| EndDate=04/15/2016
 | | ... | 2. Click	| Next
 | | ... |
 | | ... | Expected Results:
@@ -117,7 +117,7 @@
 | | ... | 1. Go to the Tab	| Integration Points
 | | ... | 2. Click	| New Integration Point
 | | ... | 3. Fill out the Required fields in the General and Integration Sections
-| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Daily	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=230
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Daily	| StartDate=11/23/2012	| EndDate=04/15/2016	| ScheduledTime=230
 | | ... | 5. Click	| Next
 | | ... |
 | | ... | Expected Results:
@@ -145,7 +145,7 @@
 | | ... | 1. Go to the Tab	| Integration Points
 | | ... | 2. Click	| New Integration Point
 | | ... | 3. Fill out the Required fields in the General and Integration Sections
-| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Daily	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=24:30
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Daily	| StartDate=11/23/2012	| EndDate=04/15/2016	| ScheduledTime=24:30
 | | ... | 5. Click	| Next
 | | ... |
 | | ... | Expected Results:
@@ -160,7 +160,7 @@
 | | ... | 1. Go to the Tab	| Integration Points
 | | ... | 2. Click	| New Integration Point
 | | ... | 3. Fill out the Required fields in the General and Integration Sections
-| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Daily	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=23:60
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Daily	| StartDate=11/23/2012	| EndDate=04/15/2016	| ScheduledTime=23:60
 | | ... | 5. Click	| Next
 | | ... |
 | | ... | Expected Results:
@@ -175,7 +175,7 @@
 | | ... | 1. Go to the Tab	| Integration Points
 | | ... | 2. Click	| New Integration Point
 | | ... | 3. Fill out the Required fields in the General and Integration Sections
-| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=1	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=23:50
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=1	| StartDate=11/23/2012	| EndDate=04/15/2016	| ScheduledTime=23:50
 | | ... | 5. Click	| Next
 | | ... |
 | | ... | Expected Results:
@@ -203,7 +203,7 @@
 | | ... | 1. Go to the Tab	| Integration Points
 | | ... | 2. Click	| New Integration Point
 | | ... | 3. Fill out the Required fields in the General and Integration Sections
-| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=0	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=23:50
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=0	| StartDate=11/23/2012	| EndDate=04/15/2016	| ScheduledTime=23:50
 | | ... | 5. Click	| Next
 | | ... |
 | | ... | Expected Results:
@@ -218,7 +218,7 @@
 | | ... | 1. Go to the Tab	| Integration Points
 | | ... | 2. Click	| New Integration Point
 | | ... | 3. Fill out the Required fields in the General and Integration Sections
-| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=-1	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=23:50
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=-1	| StartDate=01/23/2012	| EndDate=04/05/2016	| ScheduledTime=23:50
 | | ... | 5. Click	| Next
 | | ... |
 | | ... | Expected Results:
@@ -233,7 +233,7 @@
 | | ... | 1. Go to the Tab	| Integration Points
 | | ... | 2. Click	| New Integration Point
 | | ... | 3. Fill out the Required fields in the General and Integration Sections
-| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=1000	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=23:50
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=1000	| StartDate=10/23/2012	| EndDate=04/05/2016	| ScheduledTime=23:50
 | | ... | 5. Click	| Next
 | | ... |
 | | ... | Expected Results:
@@ -248,7 +248,7 @@
 | | ... | 1. Go to the Tab	| Integration Points
 | | ... | 2. Click	| New Integration Point
 | | ... | 3. Fill out the Required fields in the General and Integration Sections
-| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=a	| StartDate=1/23/2012	| EndDate=4/5/2016	| ScheduledTime=23:50
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=a	| StartDate=01/23/2012	| EndDate=04/05/2016	| ScheduledTime=23:50
 | | ... | 5. Click	| Next
 | | ... |
 | | ... | Expected Results:
@@ -275,7 +275,7 @@
 | | ... | 1. Go to the Tab	| Integration Points
 | | ... | 2. Click	| New Integration Point
 | | ... | 3. Fill out the Required fields in the General and Integration Sections
-| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=1000	| StartDate=1/23/2010	| EndDate=4/5/2012	| ScheduledTime=23:50
+| | ... | 4. Fill out the Following Fields of the Import Scheduling section	| Enabled=Yes	| Frequency=Weekly	| Reoccur=100	| StartDate=1/23/2010	| EndDate=4/5/2012	| ScheduledTime=23:50
 | | ... | 5. Click	| Next
 | | ... |
 | | ... | Expected Results:
