@@ -1,0 +1,112 @@
+
+*** Settings ***
+| Documentation		| Verify the Import Scheduling section of Create Integration Point has the correct fields marked as Required on the Create screen
+| Metadata			| Authors	| Daniel Oliver
+| Force Tags		| in-progress | manual	| team.method
+| Test Setup        | Open and Log in to Method	
+| Test Teardown 	| Capture screenshot on failure and run keyword	| Close All Browsers
+
+
+*** Variables ***
+| ${WorkspaceName}		| Relativity Legal Hold
+
+
+*** Test Cases ***
+
+| Enable Scheduler is not a Required Field
+| | [Documentation] | Verify that the Required Field indicator is not shown for Enable Scheduler
+| | [Tags]		    | manual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+
+| | Verify that the Following Field does not have the Required Field Indicator | Enabled
+
+| Frequency is a Required Field when it is visible
+| | [Documentation] | Verify that the Frequency field is a required field when it is shown
+| | [Tags]		    | manual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
+
+| | Verify that the Following Field has the Required Field Indicator | Frequency
+
+| Reoccur is a Required Field for Monthly Reports
+| | [Documentation] | Verify that the Required Field indicator is shown for Send On when the Frequency option of Monthly is selected.
+| | [Tags]		    | manual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
+| | ... | 4. Fill in the following Field | Frequency=Monthly
+
+| | Verify that the Following Field has the Required Field Indicator | Reoccur
+
+| Send On is a Required Field for Monthly Reports
+| | [Documentation] | Verify that the Required Field indicator is shown for Send On when the Frequency option of Monthly is selected.
+| | [Tags]		    | manual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
+| | ... | 4. Fill in the following Field | Frequency=Monthly
+
+| | Verify that the Following Field has the Required Field Indicator | Send On
+
+| Reoccur is a Required Field for Weekly Reports
+| | [Documentation] | Verify that the Required Field indicator is shown for Send On when the Frequency option of Weekly is selected.
+| | [Tags]		    | manual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
+| | ... | 4. Fill in the following Field | Frequency=Weekly
+
+| | Verify that the Following Field has the Required Field Indicator | Reoccur
+
+| Send On is a Required Field for Weekly Reports
+| | [Documentation] | Verify that the Required Field indicator is shown for Send On when the Frequency option of Weekly is selected.
+| | [Tags]		    | automated| | [Tags]		    | manual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
+| | ... | 4. Fill in the following Field | Frequency=Weekly
+
+| | Verify that the Following Field has the Required Field Indicator	| Send On
+
+| Start Date is a Required Field
+| | [Documentation] | Verify that the Required Field indicator is shown for Start Date
+| | [Tags]		    | manual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
+| | ... | 4. Fill in the following Field | Frequency=Weekly
+
+| | Verify that the Following Field has the Required Field Indicator | Start Date
+
+| End Date is not a Required Field
+| | [Documentation] | Verify that the Required Field indicator is not shown for End Date
+| | [Tags]		    | manual
+| | Go to the Method Tab | Global Reminder
+| | Open Edit Mode
+| | Fill in the following Field | Enable Reocurring Global Reminder	| radio buttons	| Yes
+
+| | Verify that the Following Field does not have the Required Field Indicator | End Date
+
+| Schedule Time is a Required Field
+| | [Documentation] | Verify that the Required Field indicator is shown for Schedule Time
+| | [Tags]		    | manual
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
+
+| | Verify that the Following Field has the Required Field Indicator | Scheduled Time
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/FormKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt

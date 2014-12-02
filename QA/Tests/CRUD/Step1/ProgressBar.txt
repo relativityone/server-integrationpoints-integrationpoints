@@ -1,0 +1,80 @@
+
+*** Settings ***
+| Documentation 	| Testing the Progress Bar's format during the Create Integration process
+| Metadata		    | Authors	| Daniel Oliver
+| Force Tags		| manual	| in-progress	| team.method
+#| Suite Setup		| Log	| This is the suite setup keyword.
+#| Test Setup		| Open and Log in to Method
+#| Test Teardown 	| Close All Browsers
+#| Suite Teardown	| Log	| This is the suite teardown keyword.
+
+
+*** Variables ***
+
+| ${WorkspaceName}	| Relativity Legal Hold
+
+*** Test Cases ***
+| General UI Format of the Progress Bar
+| | [Documentation] | Verify the general format of the Progress Bar.
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 
+| | ... | Expected Results
+| | ... | 1. Verify that Step 1's heading is Set Integration Details 
+| | ... | 2. Verify that Step 2's heading is Connect to Source
+| | ... | 3. Verify that Step 3's heading is Map Fields
+
+| Progress Bar's Step 1 Format
+| | [Documentation] | Verify that the Progress Bar's format is correct when the Create Integration Point screen is first opened
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 
+| | ... | Expected Results
+| | ... | 1. Verify that Step 1's heading and number are in blue font 
+| | ... | 2. Verify that Step 2's heading and number are in grey font 
+| | ... | 3. Verify that Step 3's heading and number are in grey font 
+
+| Progress Bar's Step 2 Format
+| | [Documentation] | Verify that the Progress Bar's format is correct when the Integration Point screen is on step 2
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Complete the required fields 
+| | ... | 4. Click	| Next Step
+| | ... | 
+| | ... | Expected Results
+| | ... | 1. Verify that Step 1's heading uses grey font 
+| | ... | 2. Verify that Step 1's circle has the blue completed tick mark in it
+| | ... | 3. Verify that Step 2's heading and number are in blue font 
+| | ... | 4. Verify that Step 3's heading and number are in grey font 
+
+| Progress Bar's Step 3 Format
+| | [Documentation] | Verify that the Progress Bar's format is correct when the Integration Point screen is on step 3
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Complete the required fields 
+| | ... | 4. Click	| Next Step
+| | ... | 5. Complete the required fields 
+| | ... | 6. Click	| Next Step
+| | ... | 
+| | ... | Expected Results
+| | ... | 1. Verify that Step 1's heading uses grey font 
+| | ... | 2. Verify that Step 1's circle has the completed tick
+| | ... | 4. Verify that Step 2's circle has the completed tick
+| | ... | 5. Verify that Step 3's heading and number are in blue font 
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt

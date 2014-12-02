@@ -1,0 +1,133 @@
+ 
+*** Settings ***
+| Documentation 	| Verify that the Import Scheduling section of the Create Integration Points is correct with different Frequency options selected.
+| Metadata		    | Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| in-progress	| sprint-3.1.2	| team.method
+| Suite Setup		| Open the Browser and Create Project
+| Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
+| Suite Teardown	| Close All Browsers
+
+
+*** Variables ***
+
+| ${WorkspaceName}	| Relativity Legal Hold
+| ${Project1}		| Mordor
+
+*** Test Cases ***
+
+| Fields ordered correctly and are the correct type with no Frequency selected
+| | [Documentation] | Verify that the Import Scheduling fields are correctly order are of the correct type when no Frequency has been selected.
+| | [Tags]		    | golden	| manual	| visual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Scheduler
+| | ... |
+| | ... | Expected Results: 
+| | ... | 1. Verify that the Scheduled Report fields are in this order	| 
+| | ... | Frequency         | Single Choice
+| | ... | Start Date		| Date				| 
+| | ... | End Date		    | Date				| 
+| | ... | Scheduled Time	| Text				
+
+| Fields are in the correct order for Daily reports
+| | [Documentation] | Verify that the Import Scheduling fields are correctly order are of the correct type when Daily Frequency has been selected.
+| | [Tags]		    | golden	| manual	| visual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
+| | ... |
+| | ... | Expected Results: 
+| | ... | 1. Verify that the Scheduled Report fields are in this order	| 
+| | ... | Enable Scheduler	| Yes & No Radio Buttons	| 
+| | ... | Frequency         | Single Choice
+| | ... | Start Date		| Date				| 
+| | ... | End Date		    | Date				| 
+| | ... | Scheduled Time	| Text				
+
+| Fields are ordered correctly and are the correct type with a Weekly Frequency
+| | [Documentation] | Verify that the Import Scheduling layout fields are correctly order are of the correct type when Weekly Frequency has been selected.
+| | [Tags]		    | golden	| manual	| visual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
+| | ... |
+| | ... | Expected Results: 
+| | ... | 1. Verify that the Scheduled Report fields are in this order	| 
+| | ... | Enable Scheduler	| Yes & No Radio Buttons	| 
+| | ... | Frequency         | Single Choice
+| | ... | Reoccur           | Text              | 
+| | ... | Send On           | Multi Choice      | 
+| | ... | Start Date		| Date				| 
+| | ... | End Date		    | Date				| 
+| | ... | Scheduled Time	| Text				 
+
+| Fields are in the correct order for Monthly schedules
+| | [Documentation] | Verify that the Import Scheduling fields are correctly order are of the correct type when Monthly Frequency has been selected.
+| | [Tags]		    | golden	| manual	| visual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
+| | ... |
+| | ... | Expected Results: 
+| | ... | 1. Verify that the Scheduled Report fields are in this order	| 
+| | ... | Enable Scheduler	| Yes & No Radio Buttons	| 
+| | ... | Frequency         | Single Choice
+| | ... | Reoccur           | Text              | 
+| | ... | Send On           | Single Choice radio | 
+| | ... | Start Date		| Date				| 
+| | ... | End Date		    | Date				| 
+| | ... | Scheduled Time	| Text				
+
+| Place holder text is correct: Start Date
+| | [Documentation]	| Verify that placeholder text is correct for Start Date.
+| | [Tags]		    | manual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
+
+| | Verify the following Field's Placeholder Text is	| scheduleRulesStartDate	| mm/dd/yyyy
+
+| Place holder text is correct: End Date
+| | [Documentation]	| Verify that placeholder text is correct for End Date.
+| | [Tags]		    | manual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
+
+| | Verify the following Field's Placeholder Text is	| scheduleRulesEndDate	| mm/dd/yyyy
+
+| Place holder text is correct: Scheduled Time
+| | [Documentation]	| Verify that placeholder text is correct for Email Addresses.
+| | [Tags]		    | manual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
+
+| | Verify the following Field's Placeholder Text is	| scheduleRulesScheduledTime	| hh:mm 24hr
+
+| Frequency List has the correct options
+| | [Documentation]	| Verify that the Frequency dropdown list has the correct options.
+| | [Tags]		| golden	| automated
+| | [Tags]		    | manual
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
+
+| | Click	| id=s2id_scheduleRulesFrequency
+| | Verify that only the following Choices appear in the select2 Dropdown	| 
+| | ... | Select ...	| 
+| | ... | Daily		| 
+| | ... | Weekly	| 
+| | ... | Monthly
+
+*** Keywords *** 
+
+*** Settings ***
