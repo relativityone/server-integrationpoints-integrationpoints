@@ -32,7 +32,9 @@ h1
 {
 	width: 100%;
 }
-
+.table.fixed {
+	table-layout: fixed;
+}
 .cell
 {
 	display: table-cell;

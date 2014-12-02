@@ -3,107 +3,106 @@
 	ViewBag.Title = "Details";
 
 }
-<link href="~/Content/jquery.jqGrid/ui.jqgrid.css" rel="stylesheet" />
-<div class="table full-width">
-	<div class="cell">
-		<div class="card">
-			<label class="section label">General</label>
-			<div class="field-row">
-				<div class="field-label">Integration Name:</div>
-				<div class="field-value details">
-					@Model.Name
+<div class="table full-width fixed">
+		<div class="cell">
+			<div class="card">
+				<label class="section label">General</label>
+				<div class="field-row">
+					<div class="field-label">Integration Name:</div>
+					<div class="field-value details">
+						@Model.Name
+					</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">Overwrite:</div>
+					<div class="field-value details">@Model.Overwrite</div>
 				</div>
 			</div>
-			<div class="field-row">
-				<div class="field-label">Overwrite:</div>
-				<div class="field-value details">@Model.Overwrite</div>
+			<div class="card">
+				<label class="section label">Integration</label>
+				<div class="field-row">
+					<div class="field-label">Source Provider:</div>
+					<div class="field-value details">@Model.SourceProvider</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">Destination RDO:</div>
+					<div class="field-value details">@Model.Destination</div>
+				</div>
 			</div>
-		</div>
-		<div class="card">
-			<label class="section label">Integration</label>
-			<div class="field-row">
-				<div class="field-label">Source Provider:</div>
-				<div class="field-value details">@Model.SourceProvider</div>
-			</div>
-			<div class="field-row">
-				<div class="field-label">Destination RDO:</div>
-				<div class="field-value details">@Model.Destination</div>
-			</div>
-		</div>
-		<div class="card">
-			<label class="section label">Import Scheduling</label>
-			<div class="field-row">
-				<div class="field-label">Enable Scheduler:</div>
-				<div class="field-value details">@Model.EnableScheduler</div>
-			</div>
-			<div class="field-row">
-				<div class="field-label">Frequency:</div>
-				<div class="field-value details">@Model.Frequency</div>
-			</div>
-			<div class="field-row">
-				<div class="field-label">Start Date:</div>
-				<div class="field-value details">@Model.StartDate</div>
-			</div>
-			<div class="field-row">
-				<div class="field-label">End Date:</div>
-				<div class="field-value details">@Model.EndDate</div>
-			</div>
-			<div class="field-row">
-				<div class="field-label">Scheduled Time:</div>
-				<div class="field-value details">@Model.ScheduleTime</div>
-			</div>
-		</div>
-
-		<div class="card">
-			<label class="section label">Connection Path</label>
-			<div class="field-row">
-				<div class="field-label">Enable Scheduler:</div>
-				<div class="field-value details">@Model.EnableScheduler</div>
-			</div>
-			<div class="field-row">
-				<div class="field-label">Object Filter String :</div>
-				<div class="field-value details">@Model.FilterString</div>
-			</div>
-			<div class="field-row">
-				<div class="field-label">Authentication:</div>
-				<div class="field-value details">@Model.Authentication</div>
-			</div>
-			<div class="field-row">
-				<div class="field-label">Username:</div>
-				<div class="field-value details">@Model.Username</div>
-			</div>
-			<div class="field-row">
-				<div class="field-label">Password:</div>
-				<div class="field-value details">@Model.Password</div>
-			</div>
-			<div class="field-row">
-				<div class="field-label">Import Nested Items:</div>
-				<div class="field-value details">@Model.NestedItems</div>
+			<div class="card">
+				<label class="section label">Import Scheduling</label>
+				<div class="field-row">
+					<div class="field-label">Enable Scheduler:</div>
+					<div class="field-value details">@Model.EnableScheduler</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">Frequency:</div>
+					<div class="field-value details">@Model.Frequency</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">Start Date:</div>
+					<div class="field-value details">@Model.StartDate</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">End Date:</div>
+					<div class="field-value details">@Model.EndDate</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">Scheduled Time:</div>
+					<div class="field-value details">@Model.ScheduleTime</div>
+				</div>
 			</div>
 
-		</div>
+			<div class="card">
+				<label class="section label">Connection Path</label>
+				<div class="field-row">
+					<div class="field-label">Enable Scheduler:</div>
+					<div class="field-value details">@Model.EnableScheduler</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">Object Filter String :</div>
+					<div class="field-value details">@Model.FilterString</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">Authentication:</div>
+					<div class="field-value details">@Model.Authentication</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">Username:</div>
+					<div class="field-value details">@Model.Username</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">Password:</div>
+					<div class="field-value details">@Model.Password</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">Import Nested Items:</div>
+					<div class="field-value details">@Model.NestedItems</div>
+				</div>
 
-		<div class="card">
-			<label class="section label">Status</label>
-			<div class="field-row">
-				<div class="field-label">Next Scheduled Runtime:</div>
-				<div class="field-value details">@Model.NextRun</div>
 			</div>
-			<div class="field-row">
-				<div class="field-label">Last Runtime:</div>
-				<div class="field-value details">@Model.LastRun</div>
+
+			<div class="card">
+				<label class="section label">Status</label>
+				<div class="field-row">
+					<div class="field-label">Next Scheduled Runtime:</div>
+					<div class="field-value details">@Model.NextRun</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">Last Runtime:</div>
+					<div class="field-value details">@Model.LastRun</div>
+				</div>
+
 			</div>
 
+			<div class="card">
+				<label class="section label">Mapped Fields</label>
+				<table id="mappedFields"></table>
+			</div>
 		</div>
-
-		<div class="card">
-			<label class="section label">Mapped Fields</label>
-			<table id="mappedFields"></table>
-		</div>
-
-	</div>
+	
 	<div class=" cell console">
-		<div">
+		<div>
 			<label class="label">
 				IMPORT
 			</label>
@@ -114,11 +113,13 @@
 
 		</div>
 	</div>
-</div>
+		
+	</div>
 
 @section Scripts{
 	<script src="~/Scripts/i18n/grid.locale-en.js"></script>
 	<script src="~/Scripts/jquery.jqGrid.src.js"></script>
 	<script src="~/Scripts/grid/dragon-grid.js"></script>
+	<script src="~/Scripts/grid/dragon-utils.js"></script>
 	<script src="~/Scripts/integration-point/details.js"></script>
 }

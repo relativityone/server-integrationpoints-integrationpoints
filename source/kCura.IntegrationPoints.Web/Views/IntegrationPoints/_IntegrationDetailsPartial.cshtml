@@ -6,14 +6,13 @@
 <script id="step1" type="text/html">
 	<div class="card">
 		<span class="label">General</span>
-		<div class="field-row" id="nameControl" >
+		<div class="field-row">
 			<div class="field-label required">
-				<label >Integration Name:</label>
+				<label>Integration Name:</label>
 			</div>
 			<div class="field-value">
 				<input type="text" maxlength="255" data-bind="value: name">
 			</div>
-
 		</div>
 
 		<div class="field-row">
@@ -31,7 +30,6 @@
 		<div data-bind="template: { name: source.templateID, data: source }"></div>
 		<div data-bind="template: { name: destination.templateID, data: destination }"></div>
 	</div>
-
 
 	<div class="card">
 		<span class="label">Import Scheduling</span>
@@ -136,7 +134,7 @@
 <script type="text/html" id="weeklySendOn">
 	<ul data-bind="foreach: days">
 		<li>
-			<input type="checkbox" data-bind="attr: { value: $data,name: $data }, checked: $parent.selectedDays" />
+			<input type="checkbox" data-bind="attr: { value: $data, name: $data }, checked: $parent.selectedDays" />
 			<span data-bind="text: $data"></span>
 		</li>
 	</ul>
@@ -163,11 +161,3 @@
 	</ul>
 </script>
 
-<script type="text/html" id="inputTemplate">
-	<div class="field-label required">
-		<label for="ProjectName" data-bind="text: label"></label>
-	</div>
-	<div class="field-value">
-		<input id="name" name="ProjectName" type="text" data-bind="value: value">
-	</div>
-</script>

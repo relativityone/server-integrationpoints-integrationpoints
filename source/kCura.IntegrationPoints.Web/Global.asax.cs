@@ -27,13 +27,15 @@ namespace kCura.IntegrationPoints.Web
 		{
 			AreaRegistration.RegisterAllAreas();
 
+			CreateWindsorContainer();
+
 			WebApiConfig.Register(GlobalConfiguration.Configuration);
+			FilterConfig.RegisterWebAPIFilters(GlobalConfiguration.Configuration, _container);
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 			BundleConfig.RegisterBundles(BundleTable.Bundles);
-
-			CreateWindsorContainer();
-
+			
+			
 			var formatters = GlobalConfiguration.Configuration.Formatters;
 			var jsonFormatter = formatters.JsonFormatter;
 			var settings = jsonFormatter.SerializerSettings;
@@ -47,7 +49,7 @@ namespace kCura.IntegrationPoints.Web
 			_container = new WindsorContainer();
 			var kernel = _container.Kernel;
 			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
-			_container.Install(FromAssembly.InDirectory(new AssemblyFilter("bin")));
+			_container.Install(FromAssembly.InThisApplication());
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));
 			GlobalConfiguration.Configuration.Services.Replace(typeof(IHttpControllerActivator), new WindsorCompositionRoot(_container));
 		}

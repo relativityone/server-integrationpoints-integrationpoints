@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			var controller = new MockController();
 			controller.SessionService = NSubstitute.Substitute.For<ISessionService>();
 
-			controller.CreateError = NSubstitute.Substitute.For<CreateError>(NSubstitute.Substitute.For<Data.Queries.CreateErrorRdo>(NSubstitute.Substitute.For<IRSAPIClient>()));
+			controller.CreateError = NSubstitute.Substitute.For<ErrorService>(NSubstitute.Substitute.For<Data.Queries.CreateErrorRdo>(NSubstitute.Substitute.For<IRSAPIClient>()));
 			//ACT
 			controller.LogError(new Exception(), "controller", "action");
 			
