@@ -25,6 +25,7 @@ html {
     padding-right: 5px;
     min-width: 200px;
     display: table-cell;
+    border-right: 3px solid transparent;
     font-size: .85em; }
     .card .field-label.required, .status-container .field-label.required {
       border-right: 3px solid #f59d1f; }
@@ -35,6 +36,8 @@ html {
     .card .field-value.details, .status-container .field-value.details {
       border-bottom: 1px solid #dadada;
       width: 75%; }
+  .card .field-row, .status-container .field-row {
+    padding: 5px 0; }
 
 .status-container .buble-container {
   background-color: #e0e0e0; }

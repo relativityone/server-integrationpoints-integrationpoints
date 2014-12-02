@@ -1,17 +1,21 @@
-﻿body {
+﻿body
+{
 	font-size: .85em;
 	margin: 0;
 }
 
-header, footer, nav, section {
+header, footer, nav, section
+{
 	display: block;
 }
 
-i {
+.icon i
+{
 	font-style: normal;
 }
 
-h1 {
+h1
+{
 	padding: 0;
 	margin: 0;
 	font-weight: 600;
@@ -19,41 +23,49 @@ h1 {
 	font-size: 1.0em;
 }
 
-
-.table {
+.table
+{
 	display: table;
 }
 
-.full-width {
+.full-width
+{
 	width: 100%;
 }
 
-.cell {
+.cell
+{
 	display: table-cell;
 }
 
-.v-align {
+.v-align
+{
 	vertical-align: middle;
 }
 
-.h-align {
+.h-align
+{
 	text-align: center;
 }
 
-#stepProgress {
+#stepProgress
+{
 	width: 85%;
 }
 
-.button i {
+.button i
+{
 	vertical-align: -2px;
 	padding: 0 5px;
 }
 
-#progressButtons button {
+#progressButtons button
+{
 	padding: 0 10px;
 }
 
-#pointBody {
+#pointBody
+{
 	position: absolute;
 	top: 180px;
 	bottom: 0;
@@ -61,26 +73,26 @@ h1 {
 	right: 0;
 }
 
-#headerContainer button {
+#headerContainer button
+{
 	width: 80px;
 }
 
-.loading-dialog * {
+.loading-dialog *
+{
 	margin: 0 auto;
 }
 
-.loading-dialog p {
+.loading-dialog p
+{
 	padding-left: 10px;
 }
 
-.loading {
+.loading
+{
 	background: url("./Images/loading.gif") no-repeat center;
 	height: 80px;
 	width: 80px;
-}
-
-.detail-container {
-	position: absolute;
 	left: 0;
 	right: 200px;
 }
@@ -122,3 +134,38 @@ h1 {
 .field-row {
 	padding-top: 10px;
 }
+
+ul li .day-select {
+	width: 80px;
+	min-width: 80px;
+}
+.field-value .filter-container {
+	width: 180px;
+	height: 28px;
+	margin-right: 5px;
+}
+
+.field-validation-error
+{
+	background-color: #ac3243;
+	border: 1px solid #ac3243;
+	border-radius: 2px;
+	color: #ffffff;
+	height: 24px;
+	margin-top: 5px;
+	padding: 0 5px;
+	position: relative;
+	z-index: 1;
+	font-size: 12px;
+	font-weight: 400;
+}
+.detail-container .card {
+	width: 88%;
+}
+
+	.field-validation-error.icon-error:before,
+	.field-validation-error > span
+	{
+		display: inline-block;
+		padding: 4px 4px 0;
+	}

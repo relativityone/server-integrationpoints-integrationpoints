@@ -48,6 +48,14 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.EventHandler, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\kCura.EventHandler.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Method.Web.Controls, Version=3.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\Method\kCura.Method.Web.Controls.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
@@ -149,7 +157,9 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\JsonNetResult.cs" />
-    <Compile Include="Controllers\API\RdoFilter.cs" />
+    <Compile Include="ControllerCustomPageService.cs" />
+    <Compile Include="Controllers\API\SourceTypeController.cs" />
+    <Compile Include="Controllers\API\RdoFilterController.cs" />
     <Compile Include="Controllers\API\TestController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIController.cs" />
@@ -157,15 +167,21 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="ICustomPageService.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
+    <Compile Include="RsapiClientFactory.cs" />
     <Compile Include="ISessionService.cs" />
+    <Compile Include="Models\ScheduleModel.cs" />
     <Compile Include="SessionService.cs" />
+    <Compile Include="WebAPICustomPageService.cs" />
+    <Compile Include="WindsorCompositionRoot.cs" />
     <Compile Include="WindsorControllerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\buttermilk.css">
       <DependentUpon>buttermilk.scss</DependentUpon>
     </Content>
+    <Content Include="Content\controls.grid.css" />
     <Content Include="Content\css\select2-spinner.gif" />
     <Content Include="Content\css\select2.css" />
     <Content Include="Content\css\select2.png" />
@@ -178,8 +194,13 @@
     <Content Include="Content\Images\loading.gif" />
     <Content Include="Content\Images\sprite.png" />
     <Content Include="Content\integration-points-fonts.css" />
+    <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
+    <Content Include="Content\jquery.jqGrid\ui.jqgrid.css" />
     <Content Include="Content\legal-hold-fonts.css" />
     <Content Include="Content\normalize.css" />
+    <Content Include="Content\scheduler.css">
+      <DependentUpon>scheduler.scss</DependentUpon>
+    </Content>
     <Content Include="Content\select2-overrides.css">
       <DependentUpon>select2-overrides.scss</DependentUpon>
     </Content>
@@ -252,13 +273,65 @@
     <Content Include="Content\fonts\legal-hold-icons.eot" />
     <Content Include="Content\header.scss" />
     <Content Include="Content\select2-overrides.scss" />
+    <Content Include="Content\scheduler.scss" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\Controls\step-progress.js" />
     <Content Include="Scripts\core\utils.js" />
+    <Content Include="Scripts\date.js" />
+    <Content Include="Scripts\dragon\dragon-core.js" />
+    <Content Include="Scripts\dragon\dragon-schedule.js" />
+    <Content Include="Scripts\dragon\dragon-utils.js" />
     <Content Include="Scripts\EventHandlers\test.js" />
     <Content Include="Scripts\core\data.js" />
+    <Content Include="Scripts\grid\dragon-grid-filters.js" />
+    <Content Include="Scripts\grid\dragon-grid-formatters.js" />
+    <Content Include="Scripts\grid\dragon-grid.js" />
+    <Content Include="Scripts\grid\dragon-utils.js" />
+    <Content Include="Scripts\i18n\grid.locale-ar.js" />
+    <Content Include="Scripts\i18n\grid.locale-bg.js" />
+    <Content Include="Scripts\i18n\grid.locale-bg1251.js" />
+    <Content Include="Scripts\i18n\grid.locale-cat.js" />
+    <Content Include="Scripts\i18n\grid.locale-cn.js" />
+    <Content Include="Scripts\i18n\grid.locale-cs.js" />
+    <Content Include="Scripts\i18n\grid.locale-da.js" />
+    <Content Include="Scripts\i18n\grid.locale-de.js" />
+    <Content Include="Scripts\i18n\grid.locale-dk.js" />
+    <Content Include="Scripts\i18n\grid.locale-el.js" />
+    <Content Include="Scripts\i18n\grid.locale-en.js" />
+    <Content Include="Scripts\i18n\grid.locale-es.js" />
+    <Content Include="Scripts\i18n\grid.locale-fa.js" />
+    <Content Include="Scripts\i18n\grid.locale-fi.js" />
+    <Content Include="Scripts\i18n\grid.locale-fr.js" />
+    <Content Include="Scripts\i18n\grid.locale-gl.js" />
+    <Content Include="Scripts\i18n\grid.locale-he.js" />
+    <Content Include="Scripts\i18n\grid.locale-hr.js" />
+    <Content Include="Scripts\i18n\grid.locale-hr1250.js" />
+    <Content Include="Scripts\i18n\grid.locale-hu.js" />
+    <Content Include="Scripts\i18n\grid.locale-id.js" />
+    <Content Include="Scripts\i18n\grid.locale-is.js" />
+    <Content Include="Scripts\i18n\grid.locale-it.js" />
+    <Content Include="Scripts\i18n\grid.locale-ja.js" />
+    <Content Include="Scripts\i18n\grid.locale-kr.js" />
+    <Content Include="Scripts\i18n\grid.locale-lt.js" />
+    <Content Include="Scripts\i18n\grid.locale-mne.js" />
+    <Content Include="Scripts\i18n\grid.locale-nl.js" />
+    <Content Include="Scripts\i18n\grid.locale-no.js" />
+    <Content Include="Scripts\i18n\grid.locale-pl.js" />
+    <Content Include="Scripts\i18n\grid.locale-pt-br.js" />
+    <Content Include="Scripts\i18n\grid.locale-pt.js" />
+    <Content Include="Scripts\i18n\grid.locale-ro.js" />
+    <Content Include="Scripts\i18n\grid.locale-ru.js" />
+    <Content Include="Scripts\i18n\grid.locale-sk.js" />
+    <Content Include="Scripts\i18n\grid.locale-sr-latin.js" />
+    <Content Include="Scripts\i18n\grid.locale-sr.js" />
+    <Content Include="Scripts\i18n\grid.locale-sv.js" />
+    <Content Include="Scripts\i18n\grid.locale-th.js" />
+    <Content Include="Scripts\i18n\grid.locale-tr.js" />
+    <Content Include="Scripts\i18n\grid.locale-tw.js" />
+    <Content Include="Scripts\i18n\grid.locale-ua.js" />
+    <Content Include="Scripts\i18n\grid.locale-vi.js" />
     <Content Include="Scripts\integration-point\edit.js" />
-    <Content Include="Scripts\integration-point\select2-binding.js" />
+    <Content Include="Scripts\integration-point\binding.js" />
     <Content Include="Scripts\integration-point\step-import.js" />
     <Content Include="Scripts\integration-point\step-mapFields.js" />
     <Content Include="Scripts\integration-point\step-vm.js" />
@@ -269,6 +342,8 @@
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.8.24.js" />
     <Content Include="Scripts\jquery-ui-1.8.24.min.js" />
+    <Content Include="Scripts\jquery.jqGrid.min.js" />
+    <Content Include="Scripts\jquery.jqGrid.src.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
@@ -277,6 +352,8 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\knockout-2.2.0.debug.js" />
     <Content Include="Scripts\knockout-2.2.0.js" />
+    <Content Include="Scripts\knockout.validation.debug.js" />
+    <Content Include="Scripts\knockout.validation.js" />
     <Content Include="Scripts\loading-modal.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\postal\conduit.js" />
@@ -349,13 +426,12 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\IntegrationPoints\Edit.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial.cshtml" />
-    <Content Include="Views\IntegrationPoints\Index.cshtml" />
+    <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
     <Content Include="Views\IntegrationPoints\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>

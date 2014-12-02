@@ -61,6 +61,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web.Helpers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -78,7 +79,7 @@
     </Compile>
     <Compile Include="Models\FieldEntry.cs" />
     <Compile Include="Models\FieldMap.cs" />
-    <Compile Include="Models\IntegrationViewModel.cs" />
+    <Compile Include="Models\IntegrationModel.cs" />
     <Compile Include="Models\RdoFilter.cs" />
     <Compile Include="Models\SyncConfiguration\RelativityConfiguration.cs" />
     <Compile Include="Models\RDO\IntegrationPoint.cs" />
@@ -87,10 +88,12 @@
     <Compile Include="Services\CreateError.cs" />
     <Compile Include="Services\IJobManager.cs" />
     <Compile Include="Services\IntegrationPointHelper.cs" />
+    <Compile Include="Services\IntegrationPointReader.cs" />
     <Compile Include="Services\Provider\DataProviderComponetSelector.cs" />
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />
     <Compile Include="Services\Provider\IDataSourceProvider.cs" />
     <Compile Include="Services\Provider\IFieldProvider.cs" />
+    <Compile Include="Services\SourceTypeFactory.cs" />
     <Compile Include="Services\Syncronizer\DataSyncronizerComponetSelector.cs" />
     <Compile Include="Services\Syncronizer\IDataSyncronizer.cs" />
     <Compile Include="Services\Syncronizer\IDataSyncronizerFactory.cs" />

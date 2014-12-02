@@ -3,7 +3,7 @@
 		<button class="button secondary positive" id="cancel">Cancel</button>
 		<i class="legal-hold icon-help"></i>
 	</div>
-	<h1>Create LDAP Integration Point</h1>
+	<h1>Create Integration Point</h1>
 }
 
 <div class="card ">
@@ -19,13 +19,17 @@
 <div id="pointBody" data-bind="template: { name: 'currentTmpl', data: currentStep }"></div>
 
 <script id="currentTmpl" type="text/html">
-    <div data-bind="template: { name: template(), data: model }"></div>
+	<div data-bind="template: { name: template(), data: model }"></div>
 </script>
 
 @section scripts
 {
+	<script src="~/Scripts/knockout-2.2.0.debug.js"></script>
+	<script src="~/Scripts/knockout.validation.debug.js"></script>
 	<script src="~/Scripts/core/data.js"></script>
 	<script src="~/Scripts/core/utils.js"></script>
-	<script src="~/Scripts/integration-point/select2-binding.js"></script>
+	<script src="~/Scripts/integration-point/binding.js"></script>
 	@Scripts.Render("~/bundles/ipEdit")
+	<script src="~/Scripts/date.js"></script>
+	@Scripts.Render("~/bundles/dragon")
 }

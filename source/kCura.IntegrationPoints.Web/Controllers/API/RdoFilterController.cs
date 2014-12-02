@@ -5,20 +5,20 @@ using System.Web.Http;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-	public class RdoFilter : ApiController
+	public class RdoFilterController : ApiController
 	{
 		private Core.Models.RdoFilter _rdoFilter;
 
-		public RdoFilter(Core.Models.RdoFilter rdoFilter)
+		public RdoFilterController(Core.Models.RdoFilter rdoFilter)
 		{
 			_rdoFilter = rdoFilter;
 		}
-
-
+		
 		// GET api/<controller>
+		[Route("api/RdoFilter/{workspaceID}")]
 		public HttpResponseMessage Get()
 		{
-			var list = _rdoFilter.FilterRdo().Select(x => new { Name = x.Name, Value = x.ArtifactID }).ToList();
+			var list = _rdoFilter.FilterRdo().Select(x => new { name = x.Name, value = x.ArtifactID }).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, list);
 
 		}

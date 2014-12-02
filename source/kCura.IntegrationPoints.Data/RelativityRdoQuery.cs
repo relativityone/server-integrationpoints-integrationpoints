@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Data
 {
 	public class RelativityRdoQuery
 	{
-			private readonly IRSAPIClient _client;
+		private readonly IRSAPIClient _client;
 
 		public RelativityRdoQuery(IRSAPIClient client)
 		{
@@ -23,20 +23,28 @@ namespace kCura.IntegrationPoints.Data
 		public virtual List<ObjectType> GetAllRdo()
 		{
 
-		var qry = new Query<Relativity.Client.DTOs.ObjectType>();
-				qry.Fields = new List<FieldValue>()
+			var qry = new Query<Relativity.Client.DTOs.ObjectType>();
+			qry.Fields = new List<FieldValue>()
 				{
 					new FieldValue(Relativity.Client.DTOs.ObjectTypeFieldNames.DescriptorArtifactTypeID),
 					new FieldValue(Relativity.Client.DTOs.ObjectTypeFieldNames.Name),
 				};
-				
-				var result = _client.Repositories.ObjectType.Query(qry);
-				if (!result.Success)
+			qry.Sorts = new List<Sort>
+			{
+				new Sort
 				{
-					var messages = result.Results.Where(x => !x.Success).Select(x => x.Message);
-					var e = new AggregateException(result.Message, messages.Select(x => new Exception(x)));
-					throw e;
+					Field = ObjectTypeFieldNames.Name,
+					Direction = SortEnum.Ascending
 				}
+			};
+
+			var result = _client.Repositories.ObjectType.Query(qry);
+			if (!result.Success)
+			{
+				var messages = result.Results.Where(x => !x.Success).Select(x => x.Message);
+				var e = new AggregateException(result.Message, messages.Select(x => new Exception(x)));
+				throw e;
+			}
 			return result.Results.Select(x => x.Artifact).ToList();
 		}
 	}

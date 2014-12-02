@@ -20,7 +20,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				DisplayText = "Import Data Now",
 				RaisesPostBack = false,
-				OnClickEvent = "alert('hello world')",
 				Enabled = true
 			});
 			

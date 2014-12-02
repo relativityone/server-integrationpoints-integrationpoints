@@ -12,7 +12,7 @@
 		public const string URL_FOR_INTEGRATIONPOINTSCONTROLLER = "IntegrationPoints";
 
 		public const string URL_FOR_INTEGRATIONPOINTS_EDIT = "Edit";
-		public const string URL_FOR_INTEGRATIONPOINTS_VIEW = "Index";
+		public const string URL_FOR_INTEGRATIONPOINTS_VIEW = "Details";
 		// ReSharper restore InconsistentNaming
 
 
