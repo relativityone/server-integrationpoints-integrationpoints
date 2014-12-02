@@ -21,7 +21,15 @@ ko.validation.insertValidationMessage = function (element) {
 	return iconSpan;
 };
 
+ko.validation.rules["time"] = {
+	validator: function (value) {
+		var date = Date.parseExact(value, "HH:mm") || Date.parseExact(value, "H:mm");
+		return !!date;
+	},
+	message: 'Please enter a valid time (24-hour format).'
+};
 
+ko.validation.registerExtenders();
 
 (function (root, ko) {
 	var initDatePicker = function ($els) {
@@ -295,17 +303,7 @@ ko.validation.insertValidationMessage = function (element) {
 					return self.isEnabled();
 				}
 			}
-		}).extend({
-			validation: {
-				validator: function (value) {
-					if (value) {
-						return Date.parse(value) !== null;
-					}
-					return true;
-				},
-				message: 'Please enter a valid time (24-hour format).'
-			}
-		});
+		}).extend({ time: true });
 
 	};
 
