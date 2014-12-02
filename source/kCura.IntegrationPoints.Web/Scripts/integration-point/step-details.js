@@ -341,7 +341,6 @@ ko.validation.registerExtenders();
 
 		this.submit = function () {
 			var d = root.data.deferred().defer();
-			debugger;
 			if (this.model.errors().length === 0) {
 				d.resolve();
 			} else {
