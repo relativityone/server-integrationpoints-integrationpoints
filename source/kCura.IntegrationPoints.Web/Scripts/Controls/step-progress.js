@@ -60,6 +60,11 @@
 		});
 		this.options.currentStep = stepIdx;
 		this.$this.trigger('spChangeStep');
+		if (this.options.currentStep == 1) {
+			$("#back").prop('disabled', true);
+		} else {
+			$("#back").prop('disabled', false);
+		}
 	};
 
 	$.stepProgress = $.stepProgress || {};

@@ -378,7 +378,7 @@ ko.validation.registerExtenders();
 		templateID: 'step1'
 	});
 
-	$("#back").prop('disabled', true);
+
 	root.points.steps.push(step);
 
 })(IP, ko);
