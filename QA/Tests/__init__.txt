@@ -10,7 +10,7 @@
 | | [Documentation]	| Enables all Relativity Legal Hold agents on the current instance of Relativity, 
 | | ... 			| then it logs the current version of the Relativity Legal Hold application.
 | | Setup connection to the relativity database
-| | ${Version}=	| Get Application Version from Application Library	| Relativity Integration Points	| # Variable value is stored in the log automatically
+| | ${Version}=	| Get Application Version from Application Library	| Integration Points	| # Variable value is stored in the log automatically
 
 | Close remote servers if they exist
 | | [Documentation]	| First load CSharpLibrary, and run 'stop remote servers'. 
