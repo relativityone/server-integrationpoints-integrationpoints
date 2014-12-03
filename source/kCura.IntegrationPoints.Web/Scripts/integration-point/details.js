@@ -1,6 +1,4 @@
 ﻿(function () {
-	new Dragon.Grid.GridControl({
-		ID: 'mappedFields',
-		jsonReaderOptions: {}
-	});
+	debugger;
+	new Dragon.Grid.GridControl(window.grid);
 })();

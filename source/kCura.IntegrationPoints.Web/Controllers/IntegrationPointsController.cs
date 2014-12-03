@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client;
+using Relativity.DragonGrid.Core.Grid;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -39,9 +40,45 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		public ActionResult Test()
 		{
-			return View();
+			var grid = new global::Relativity.DragonGrid.Core.Grid.GridModel("mappedFields");
+			grid.colModel =new List<GridColumn>();
+			grid.colModel.Add(new GridColumn
+			{
+				name = "test"
+			});
+
+			grid.colModel.Add(new GridColumn
+			{
+				name = "name"
+			});
+
+			grid.JsonReaderOptions = JsonReaderOptions.WebOptions();
+			grid.url = Url.Action("GetData");
+			return View(grid);
 		}
 
+		public JsonNetResult GetData()
+		{
+			var gridData = new global::Relativity.DragonGrid.Core.Grid.GridData();
+			gridData.BindData(GetFakeData(),null);
+
+			return JsonNetResult(GetFakeData());
+		}
+
+
+		public IEnumerable<object> GetFakeData()
+		{
+			for (var i = 0; i < 100; i++)
+			{
+				yield return new
+				{
+					test=i,
+					name= "name"+i
+
+				};
+			}
+
+		} 
 
 	}
 }
