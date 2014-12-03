@@ -176,6 +176,7 @@
     <Compile Include="ICustomPageService.cs" />
     <Compile Include="IErrorFactory.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
+    <Compile Include="Models\IpDetailModel.cs" />
     <Compile Include="RsapiClientFactory.cs" />
     <Compile Include="ISessionService.cs" />
     <Compile Include="Models\ScheduleModel.cs" />
@@ -185,8 +186,14 @@
     <Compile Include="WindsorControllerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\buttermilk-variables.css">
+      <DependentUpon>buttermilk-variables.scss</DependentUpon>
+    </Content>
     <Content Include="Content\buttermilk.css">
       <DependentUpon>buttermilk.scss</DependentUpon>
+    </Content>
+    <Content Include="Content\controls-grid-pager.css">
+      <DependentUpon>controls-grid-pager.scss</DependentUpon>
     </Content>
     <Content Include="Content\controls.grid.css" />
     <Content Include="Content\css\select2-spinner.gif" />
@@ -254,6 +261,8 @@
     <Content Include="Content\header.scss" />
     <Content Include="Content\select2-overrides.scss" />
     <Content Include="Content\scheduler.scss" />
+    <Content Include="Content\controls-grid-pager.scss" />
+    <Content Include="Content\buttermilk-variables.scss" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\Controls\step-progress.js" />
     <Content Include="Scripts\core\utils.js" />
@@ -265,6 +274,7 @@
     <Content Include="Scripts\core\data.js" />
     <Content Include="Scripts\grid\dragon-grid-filters.js" />
     <Content Include="Scripts\grid\dragon-grid-formatters.js" />
+    <Content Include="Scripts\grid\dragon-grid-pager.js" />
     <Content Include="Scripts\grid\dragon-grid.js" />
     <Content Include="Scripts\grid\dragon-utils.js" />
     <Content Include="Scripts\i18n\grid.locale-ar.js" />

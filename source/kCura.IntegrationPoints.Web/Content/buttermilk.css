@@ -2,11 +2,25 @@
   box-sizing: border-box; }
 
 html {
-  background-color: #ffffff;
+  background-color: white;
   font-family: "Open Sans", sans-serif;
   font-weight: 400;
   font-size: 1em;
   color: #666666; }
+
+input[type="text"],
+input[type="password"],
+textarea {
+  border: 1px solid #c1c1c1;
+  color: #102d4f;
+  border-radius: 3px; }
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: #1b54ab;
+  padding: 0; }
 
 .card, .status-container {
   background-color: #f7f7f7;

@@ -116,13 +116,13 @@ var Dragon = window.Dragon;
 									ts.grid.populateVisible();
 								}
 							};
-							
+
 							var result = func.call(gridContext, postData, done);
 							if (D.isPromise(result)) {
 								result.then(function (r) {
 									done(r);
 								});
-							} else if(typeof result != "undefined"){
+							} else if (typeof result != "undefined") {
 								done(result);
 							}
 						};
@@ -1012,3 +1012,46 @@ var Dragon = window.Dragon;
 
 })(Dragon || (Dragon = {}), jQuery, storage(sessionStorage));
 
+
+
+//Added Prototypes
+
+(function () {
+	//I added these here to help merging later on
+	$.extend(Dragon.Grid.GridControl.prototype, {
+		nextPage: function () {
+			var page = this.$grid.getGridParam('page');
+			var lastPage = this.$grid.getGridParam('lastpage');
+			if (page !== lastPage) {
+				this.$grid.setGridParam({ page: page + 1 });
+				this.reload();
+			}
+		},
+		prevPage: function () {
+			var page = this.$grid.getGridParam('page');
+			if (page !== 1) {
+				this.$grid.setGridParam({ page: page - 1 });
+				this.reload();
+			}
+		},
+		firstPage: function () {
+			var page = this.$grid.getGridParam('page');
+			if (page !== 1) {
+				this.$grid.setGridParam({ page: 1 });
+				this.reload();
+			}
+		},
+		lastPage: function () {
+			var page = this.$grid.getGridParam('page');
+			var lastPage = this.$grid.getGridParam('lastpage');
+			if (page !== lastPage) {
+				this.$grid.setGridParam({ page: lastPage });
+				this.reload();
+			}
+		},
+		getPageSize: function () {
+			return parseInt(this.$grid.getGridParam('rowNum'), 10);
+		}
+
+	});
+})();

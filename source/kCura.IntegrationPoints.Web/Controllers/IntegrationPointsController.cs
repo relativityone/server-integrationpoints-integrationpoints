@@ -35,7 +35,12 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		public ActionResult Details(int id)
 		{
 			var integrationViewModel = _reader.ReadIntegrationPoint(id);
-			return View(integrationViewModel);
+
+			var model = new Models.IpDetailModel();
+			model.DataModel = integrationViewModel;
+			return View(model);
+
+
 		}
 
 		public ActionResult Test()
@@ -57,18 +62,17 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return View(grid);
 		}
 
-		public JsonNetResult GetData()
+		public JsonNetResult GetData(global::Relativity.DragonGrid.Core.Grid.GridFilterModel filter)
 		{
 			var gridData = new global::Relativity.DragonGrid.Core.Grid.GridData();
-			gridData.BindData(GetFakeData(),null);
-
-			return JsonNetResult(GetFakeData());
+			gridData.BindData(GetFakeData().ToList(), filter);
+			return JsonNetResult(gridData);
 		}
 
 
 		public IEnumerable<object> GetFakeData()
 		{
-			for (var i = 0; i < 100; i++)
+			for (var i = 0; i < 12; i++)
 			{
 				yield return new
 				{

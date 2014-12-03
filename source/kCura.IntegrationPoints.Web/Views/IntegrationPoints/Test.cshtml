@@ -4,14 +4,17 @@
 @{
 	ViewBag.Title = "Test";
 }
+<link href="~/Content/legal-hold-fonts.css" rel="stylesheet" />
 <link href="~/Content/controls.grid.css" rel="stylesheet" />
+<link href="~/Content/controls-grid-pager.css" rel="stylesheet" />
 <h2>Test</h2>
 
 <div class="card">
 	<label class="section label">Mapped Fields</label>
-	<div id="mappedFields-pager"></div>
+	<div id="mappedFieldsPager"></div>
+
 	<table id="mappedFields"></table>
-	
+	<div id="mappedFields-pager"></div>
 </div>
 
 @section Scripts{
@@ -22,6 +25,7 @@
 	<script src="~/Scripts/i18n/grid.locale-en.js"></script>
 	<script src="~/Scripts/jquery.jqGrid.src.js"></script>
 	<script src="~/Scripts/grid/dragon-grid.js"></script>
+	<script src="~/Scripts/grid/dragon-grid-pager.js"></script>
 	<script src="~/Scripts/grid/dragon-utils.js"></script>
 	<script src="~/Scripts/integration-point/details.js"></script>
 }

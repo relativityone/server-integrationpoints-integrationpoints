@@ -2,76 +2,76 @@
 @using System.Web.Services.Description
 @using kCura.Crypto
 @using Microsoft.Ajax.Utilities
-@model kCura.IntegrationPoints.Core.Models.IntegrationModel
+@model kCura.IntegrationPoints.Web.Models.IpDetailModel
 @{
 	ViewBag.Title = "Details";
-
+	var ipModel = @Model.DataModel;
 }
 
-<div class="table full-width fixed">
+<div class="table full-width fixed full-height">
 	<div class="cell">
 		<div class="card">
 			<label class="section label">General</label>
 			<div class="field-row">
 				<div class="field-label">Integration Name:</div>
 				<div class="field-value details">
-					@Model.Name
+					@ipModel.Name
 				</div>
 			</div>
 			<div class="field-row">
 				<div class="field-label">Overwrite:</div>
-				<div class="field-value details">@Model.Overwrite</div>
+				<div class="field-value details">@ipModel.Overwrite</div>
 			</div>
 		</div>
 		<div class="card">
 			<label class="section label">Integration</label>
 			<div class="field-row">
 				<div class="field-label">Source Provider:</div>
-				<div class="field-value details">@Model.SourceProvider</div>
+				<div class="field-value details">@ipModel.SourceProvider</div>
 			</div>
 			<div class="field-row">
 				<div class="field-label">Destination RDO:</div>
-				<div class="field-value details">@Model.Destination</div>
+				<div class="field-value details">@ipModel.Destination</div>
 			</div>
 		</div>
 		<div class="card">
 			<label class="section label">Import Scheduling</label>
-			
 
-				@{if (Model.EnableScheduler == false || Model.EnableScheduler == null)
-				  {
-		  			<div class="field-row">
-				<div class="field-label">Enable Scheduler:</div>
-						<div class="field-value details">No </div>
-					</div>
-				  }
-				  else
-				  { 
-						<div class="field-row">
-				<div class="field-label">Enable Scheduler:</div>
-						<div class="field-value details">Yes </div>
-					</div>
-						<div class="field-row">
-				<div class="field-label">Frequency:</div>
-				<div class="field-value details">@Model.Frequency</div>
-			</div>
-			<div class="field-row">
-				<div class="field-label">Start Date:</div>
-				<div class="field-value details">@Model.StartDate.GetValueOrDefault().ToString("MM-dd-yyyy")</div>
-			</div>
-			<div class="field-row">
-				<div class="field-label">End Date:</div>
-				<div class="field-value details">@Model.EndDate.GetValueOrDefault().ToString("MM-dd-yyyy")</div>
-			</div>
-			<div class="field-row">
-				<div class="field-label">Scheduled Time:</div>
-				<div class="field-value details">@Model.ScheduleTime</div>
-			</div>		   
-				  } 
-				}
 
-			
-			
+			@{if (ipModel.EnableScheduler == false || ipModel.EnableScheduler == null)
+		 {
+				<div class="field-row">
+					<div class="field-label">Enable Scheduler:</div>
+					<div class="field-value details">No </div>
+				</div>
+		 }
+		 else
+		 { 
+				<div class="field-row">
+					<div class="field-label">Enable Scheduler:</div>
+					<div class="field-value details">Yes </div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">Frequency:</div>
+					<div class="field-value details">@ipModel.Frequency</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">Start Date:</div>
+					<div class="field-value details">@ipModel.StartDate.GetValueOrDefault().ToString("MM-dd-yyyy")</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">End Date:</div>
+					<div class="field-value details">@ipModel.EndDate.GetValueOrDefault().ToString("MM-dd-yyyy")</div>
+				</div>
+				<div class="field-row">
+					<div class="field-label">Scheduled Time:</div>
+					<div class="field-value details">@ipModel.ScheduleTime</div>
+				</div>		   
+		 } 
+			}
+
+
+
 		</div>
 
 		<div class="card">
@@ -79,27 +79,27 @@
 
 			<div class="field-row">
 				<div class="field-label">Connection Path:</div>
-				<div class="field-value details">@Model.ConnectionPath</div>
+				<div class="field-value details">@ipModel.ConnectionPath</div>
 			</div>
 			<div class="field-row">
 				<div class="field-label">Object Filter String :</div>
-				<div class="field-value details">@Model.FilterString</div>
+				<div class="field-value details">@ipModel.FilterString</div>
 			</div>
 			<div class="field-row">
 				<div class="field-label">Authentication:</div>
-				<div class="field-value details">@Model.Authentication</div>
+				<div class="field-value details">@ipModel.Authentication</div>
 			</div>
 			<div class="field-row">
 				<div class="field-label">Username:</div>
-				<div class="field-value details">@Model.Username</div>
+				<div class="field-value details">@ipModel.Username</div>
 			</div>
 			<div class="field-row">
 				<div class="field-label">Password:</div>
-				<div class="field-value details">@Model.Password</div>
+				<div class="field-value details">@ipModel.Password</div>
 			</div>
 			<div class="field-row">
 				<div class="field-label">Import Nested Items:</div>
-				<div class="field-value details">@Model.NestedItems</div>
+				<div class="field-value details">@ipModel.NestedItems</div>
 			</div>
 
 		</div>
@@ -108,17 +108,18 @@
 			<label class="section label">Status</label>
 			<div class="field-row">
 				<div class="field-label">Next Scheduled Runtime:</div>
-				<div class="field-value details">@Model.NextRun</div>
+				<div class="field-value details">@ipModel.NextRun</div>
 			</div>
 			<div class="field-row">
 				<div class="field-label">Last Runtime:</div>
-				<div class="field-value details">@Model.LastRun</div>
+				<div class="field-value details">@ipModel.LastRun</div>
 			</div>
 
 		</div>
 
 		<div class="card">
 			<label class="section label">Mapped Fields</label>
+			<div id="mappedFieldsPager"></div>
 			<table id="mappedFields"></table>
 		</div>
 	</div>
