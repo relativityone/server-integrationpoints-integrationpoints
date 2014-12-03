@@ -63,10 +63,10 @@
 
 			function pager(settings) {
 				this._settings = $.extend({}, pagerDefaults, settings);
-				
-				this._$el = $('#' + settings.pagerID);
+				this._$el = $('#' + this._settings.pagerID);
 				this._$el.addClass('dragon-pager');
-				
+				$('#' + this._settings.grid.settings.pagerID + '_left').find('table').eq(0).hide();
+
 				_buildPageLocation.call(this);
 				_buildPager.call(this);
 				var self = this;

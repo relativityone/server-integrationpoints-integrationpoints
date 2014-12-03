@@ -1,12 +1,18 @@
 ﻿@using System.Globalization
 @using System.Web.Services.Description
 @using kCura.Crypto
+@using kCura.IntegrationPoints.Web
+@using kCura.IntegrationPoints.Web.Extensions
 @using Microsoft.Ajax.Utilities
 @model kCura.IntegrationPoints.Web.Models.IpDetailModel
 @{
 	ViewBag.Title = "Details";
 	var ipModel = @Model.DataModel;
+	var pagerID = @Model.Grid.ID + "Pager";
 }
+
+<link href="~/Content/controls.grid.css" rel="stylesheet" />
+<link href="~/Content/controls-grid-pager.css" rel="stylesheet" />
 
 <div class="table full-width fixed full-height">
 	<div class="cell">
@@ -57,11 +63,11 @@
 				</div>
 				<div class="field-row">
 					<div class="field-label">Start Date:</div>
-					<div class="field-value details">@ipModel.StartDate.GetValueOrDefault().ToString("MM-dd-yyyy")</div>
+					<div class="field-value details">@ipModel.StartDate.GetValueOrDefault().ToString(Constants.DATE_FORMAT)</div>
 				</div>
 				<div class="field-row">
 					<div class="field-label">End Date:</div>
-					<div class="field-value details">@ipModel.EndDate.GetValueOrDefault().ToString("MM-dd-yyyy")</div>
+					<div class="field-value details">@ipModel.EndDate.GetValueOrDefault().ToString(Constants.DATE_FORMAT)</div>
 				</div>
 				<div class="field-row">
 					<div class="field-label">Scheduled Time:</div>
@@ -119,8 +125,9 @@
 
 		<div class="card">
 			<label class="section label">Mapped Fields</label>
-			<div id="mappedFieldsPager"></div>
-			<table id="mappedFields"></table>
+			<div id="@pagerID"></div>
+			<table id="@Model.Grid.ID"></table>
+			<div id="@Model.Grid.pagerID"></div>
 		</div>
 	</div>
 
@@ -144,5 +151,13 @@
 	<script src="~/Scripts/jquery.jqGrid.src.js"></script>
 	<script src="~/Scripts/grid/dragon-grid.js"></script>
 	<script src="~/Scripts/grid/dragon-utils.js"></script>
+	<script src="~/Scripts/grid/dragon-grid-pager.js"></script>
+	<script>
+		var mapGrid = new Dragon.Grid.GridControl(@Html.JsonEncode(@Model.Grid));
+		new Dragon.Grid.Pager({
+			pagerID: '@Model.Grid.ID' + 'Pager',
+			grid: mapGrid
+		});
+	</script>
 	<script src="~/Scripts/integration-point/details.js"></script>
 }

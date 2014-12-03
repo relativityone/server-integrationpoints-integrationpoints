@@ -162,6 +162,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Attributes\JsonNetResult.cs" />
     <Compile Include="Attributes\WebAPIFilterException.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\SourceTypeController.cs" />
     <Compile Include="Controllers\API\RdoFilterController.cs" />
@@ -173,6 +174,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="GridModelFactory.cs" />
     <Compile Include="ICustomPageService.cs" />
     <Compile Include="IErrorFactory.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
@@ -420,7 +422,6 @@
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
     <Content Include="Views\IntegrationPoints\Details.cshtml" />
-    <Content Include="Views\IntegrationPoints\Test.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

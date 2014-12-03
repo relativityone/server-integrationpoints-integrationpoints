@@ -230,6 +230,7 @@ input[type=text]::-ms-clear {
 		.ui-subgrid.ui-state-highlight,
 		.ui-jqgrid .ui-jqgrid-bdiv .ui-jqgrid-btable .jqgrow.ui-row-ltr.ui-state-highlight
 		{
+			
 			background-color: #dfebf9;
 		}
 
@@ -238,7 +239,9 @@ input[type=text]::-ms-clear {
 			border-bottom: 1px solid #c6c6c6;
 			border-top: 1px solid #c6c6c6;
 		}
-
+		.ui-jqgrid .ui-jqgrid-bdiv .ui-jqgrid-btable .jqgrow.ui-state-hover {
+			background: none;
+		}
 		.ui-jqgrid .ui-jqgrid-bdiv .ui-jqgrid-btable .jqgrow:hover td
 		{
 			border-top: 1px solid #5d99df;

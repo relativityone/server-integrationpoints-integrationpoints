@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<ICustomPageService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
 			container.Register(Component.For<ICustomPageService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
 
-			container.Register(Component.For<ISessionService>().ImplementedBy<SessionService>().LifestyleTransient());
+			container.Register(Component.For<ISessionService>().UsingFactoryMethod(k=> SessionService.Session).LifestylePerWebRequest());
 
 			container.Register(Component.For<RsapiClientFactory>().ImplementedBy<RsapiClientFactory>().LifestyleTransient());
 
@@ -43,6 +43,8 @@ namespace kCura.IntegrationPoints.Web.Installers
 
 			container.Register(Component.For<IDBContext>().UsingFactoryMethod((k) =>
 				k.Resolve<RsapiClientFactory>().CreateDbContext()).LifestylePerWebRequest());
+
+			container.Register(Component.For<GridModelFactory>().ImplementedBy<GridModelFactory>().LifestyleTransient());
 		}
 	}
 }
