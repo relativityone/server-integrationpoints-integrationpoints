@@ -50,12 +50,12 @@
 | | ${FrequencyValue}=	| Determine the currently selected value of a select2 Dropdown	| s2id_frequency
 | | @{ConditionalSchedulerValues}=	| Create List	| ${Reoccur}	| ${SendOn}
 | | @{NullValues}=					| Create List	| NULL			| NULL
-| | Run Keyword If	| ("${FrequencyValue}" == "Monthly") or ("${FrequencyValue}" == "Weekly")	| Lists Should Be Equal	| ${ConditionalSchedulerValues}	| ${NullValues}	| The Reoccur and Send On fields cannot be changed while Frequency is set to "${FrequencyValue}".
+| | Run Keyword Unless	| ("${FrequencyValue}" == "Monthly") or ("${FrequencyValue}" == "Weekly")	| Lists Should Be Equal	| ${ConditionalSchedulerValues}	| ${NullValues}	| The Reoccur and Send On fields cannot be changed while Frequency is set to "${FrequencyValue}".
 
 | | Run Keyword Unless	| "${Reoccur}" == "NULL"	| Input Text	| id=reoccur	| ${Reoccur}
 
-| | Run Keyword If	| ("${FrequencyValue}" == "Weekly") and ("${SendOn}" != "NULL")		| Fill out the Send On field for a Weekly Frequency		| ${SendOn}	| 
-| | ... | ELSE IF	| ("${FrequencyValue}" == "Monthly") and ("${SendOn}" != "NULL")	| Fill out the Send On field for a Monthly Frequency	| ${SendOn}
+| | Run Keyword If	| ("${FrequencyValue}" == "Weekly") and ("${SendOn}" != "NULL")		| IntegrationPointKeywords.Fill out the Send On field for a Weekly Frequency	| ${SendOn}	| 
+| | ... | ELSE IF	| ("${FrequencyValue}" == "Monthly") and ("${SendOn}" != "NULL")	| IntegrationPointKeywords.Fill out the Send On field for a Monthly Frequency	| ${SendOn}
 
 | | Run Keyword Unless	| "${StartDate}" == "NULL"	| Input Text	| id=startDate	| ${StartDate}
 
@@ -68,15 +68,16 @@
 | | ... 			| [Tags] private
 | | [ARGUMENTS] 	| ${SendOn}
 | | ${SendOn}=	| Replace String	| ${SendOn}	| ${SPACE}	| ${EMPTY}
-| | Clear the Weekly Send On Field
-| | Run Keyword Unless	| '${SendOn.lower()}' == 'clear'	| Populate the Weekly Send On Field	| ${SendOn}
+| | IntegrationPointKeywords.Clear the Weekly Send On Field
+| | Run Keyword Unless	| '${SendOn.lower()}' == 'clear'	| IntegrationPointKeywords.Populate the Weekly Send On Field	| ${SendOn}
 
 | Clear the Weekly Send On Field
 | | [Documentation]	| Unselects all of the Weekly Send On field's checkboxes.
 | | ... 			| [Tags] private
+| | Click	| id=name	| # The cursor can get stuck on the Reoccur field. This just clicks out of the field and has no other effects.
 | | @{DaysOfTheWeek}=	| Create List	| Monday	| Tuesday	| Wednesday	| Thursday	| Friday	| Saturday	| Sunday
 | | :FOR	| ${Locator}	| IN RANGE	| 7	| # Run for values 0 to 6
-| | | Unselect Checkbox	| xpath=//li[@type='checkbox' and @value=${DaysOfTheWeek[${Locator}]}
+| | | Unselect Checkbox	| xpath=//input[@type='checkbox' and @value='${DaysOfTheWeek[${Locator}]}']
 
 | Populate the Weekly Send On Field
 | | [Documentation]	| This keywords splits up the given string, which should be a semicolon seperated list of days. 
@@ -85,16 +86,16 @@
 | | [ARGUMENTS] 	| ${SendOn}
 | | @{Days}=	| Split String	| ${SendOn}	| ;	| 6
 | | :FOR	| ${Day}	| IN	| @{Days}
-| | | Element Should Be Visible	| xpath=//li[@type='checkbox' and @value='${Day}']	| Could not find the checkbox for "${Day}". 
-| | | Select Checkbox	| xpath=//li[@type='checkbox' and @value='${Day}']
+| | | Element Should Be Visible	| xpath=//input[@type='checkbox' and @value='${Day}']	| Could not find the checkbox for "${Day}". 
+| | | Select Checkbox	| xpath=//input[@type='checkbox' and @value='${Day}']
 
 | Fill out the Send On field for a Monthly Frequency
 | | [Documentation]	| Fills out the Send On fields present when the Frequency is set to Monthly. 
 | | ... 			| [Tags] private
 | | [ARGUMENTS] 	| ${SendOn}
 | | ${FirstWord}=	| Fetch from Left	| ${SendOn}	| ${Space}
-| | Run Keyword If	| '${FirstWord.lower()}' == 'the'	| Select the radio button for The X X of the month	| ${SendOn}
-| | ... | ELSE IF	| '${FirstWord.lower()}' == 'day'	| Select the day X of the month radio button		| ${SendOn}
+| | Run Keyword If	| '${FirstWord.lower()}' == 'the'	| IntegrationPointKeywords.Select the radio button for The X X of the month	| ${SendOn}
+| | ... | ELSE IF	| '${FirstWord.lower()}' == 'day'	| IntegrationPointKeywords.Select the day X of the month radio button		| ${SendOn}
 | | ... | ELSE		| Fail	| The Send On field could not be filled out. The value "${SendOn}" was not valid.
 
 | Select the day X of the month radio button
