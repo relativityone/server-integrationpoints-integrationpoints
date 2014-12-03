@@ -8,7 +8,7 @@
 		<span class="label">General</span>
 		<div class="field-row">
 			<div class="field-label required">
-				<label>Integration Name:</label>
+				Integration Name:
 			</div>
 			<div class="field-value">
 				<input type="text" maxlength="255" data-bind="value: name" id="name">
@@ -17,7 +17,7 @@
 
 		<div class="field-row">
 			<div class="field-label">
-				<label for="overwrite">Overwrite:</label>
+				Overwrite:
 			</div>
 			<div class="field-value">
 				<select id="overwrite" data-bind="options: overwrite, optionsText: 'displayName', optionsValue: 'value', value: selectedOverwrite, select2: {}"></select>
@@ -107,7 +107,7 @@
 				Start Date:
 			</div>
 			<div class="field-value">
-				<input id="startDate" placeholder="mm/dd/yyyy" type="text" data-bind="value: startDate" />
+				<input id="scheduleRulesStartDate" placeholder="mm/dd/yyyy" type="text" data-bind="value: startDate" />
 			</div>
 		</div>
 
@@ -116,7 +116,7 @@
 				End Date:
 			</div>
 			<div class="field-value">
-				<input id="endDate" placeholder="mm/dd/yyyy" type="text" data-bind="value: endDate" />
+				<input id="scheduleRulesEndDate" placeholder="mm/dd/yyyy" type="text" data-bind="value: endDate" />
 			</div>
 		</div>
 
