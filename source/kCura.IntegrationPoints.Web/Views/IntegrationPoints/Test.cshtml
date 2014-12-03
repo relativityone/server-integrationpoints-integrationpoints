@@ -1,15 +1,24 @@
-﻿@{
+﻿@using kCura.IntegrationPoints.Web.Extensions
+@model global::Relativity.DragonGrid.Core.Grid.GridModel
+
+@{
 	ViewBag.Title = "Test";
 }
-
+<link href="~/Content/controls.grid.css" rel="stylesheet" />
 <h2>Test</h2>
 
 <div class="card">
 	<label class="section label">Mapped Fields</label>
+	<div id="mappedFields-pager"></div>
 	<table id="mappedFields"></table>
+	
 </div>
 
 @section Scripts{
+	
+	<script>
+		window.grid = @Html.JsonEncode(@Model);
+	</script>
 	<script src="~/Scripts/i18n/grid.locale-en.js"></script>
 	<script src="~/Scripts/jquery.jqGrid.src.js"></script>
 	<script src="~/Scripts/grid/dragon-grid.js"></script>

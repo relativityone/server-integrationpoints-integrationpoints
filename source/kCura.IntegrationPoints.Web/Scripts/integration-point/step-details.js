@@ -30,6 +30,13 @@ ko.validation.rules["time"] = {
 	message: 'Please enter a valid time (24-hour format).'
 };
 
+ko.validation.rules["arrayMin"] = {
+	validator: function (value, params) {
+		return value.length > params;
+	},
+	message: 'Bad :('
+};
+
 ko.validation.registerExtenders();
 
 (function (root, ko) {
@@ -117,16 +124,20 @@ ko.validation.registerExtenders();
 
 			this.selectedDays = ko.observableArray();
 			this.loadCount = 0;
+			this.showErrors = ko.observable(false);
+			this.submit = function () {
+				this.showErrors(true);
+			};
 
 			this.selectedDays.extend({
-				validation: {
-					validator: function (val, someOtherVal) {
-						return (val.length !== someOtherVal);
-					},
+				arrayMin: {
+					params: 0,
 					message: 'This field is required.',
-					params: 0
+					onlyIf: function () {
+						return self.showErrors();
+					}
 				}
-			});
+			})
 			this.selectedDays(currentState.selectedDays);
 			this.templateID = 'weeklySendOn';
 		};
@@ -205,6 +216,12 @@ ko.validation.registerExtenders();
 		this.enabled = ko.observable(options.enabled);
 		this.templateID = 'schedulingConfig';
 		this.sendOn = ko.observable({});
+
+		this.submit = function () {
+			if (this.sendOn().submit) {
+				this.sendOn().submit();
+			}
+		};
 
 		this.frequency = ko.observableArray([
 			new Choice("Daily", 1),
@@ -321,6 +338,9 @@ ko.validation.registerExtenders();
 		]);
 		this.selectedOverwrite = ko.observable();
 		this.scheduler = new Scheduler();
+		this.submit = function () {
+			this.scheduler.submit();
+		};
 	};
 
 	var Step = function (settings) {
@@ -342,6 +362,7 @@ ko.validation.registerExtenders();
 
 		this.submit = function () {
 			var d = root.data.deferred().defer();
+			this.model.submit();
 			if (this.model.errors().length === 0) {
 				d.resolve();
 			} else {

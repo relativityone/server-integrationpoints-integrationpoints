@@ -23,8 +23,13 @@ ko.bindingHandlers.datepicker = {
 			observable(date);
 		};
 
+		//$el.on('change', function (e) {
+		//	var date = $(e.srcElement).val();
+		//	var observable = valueAccessor();
+		//	observable(date);
+		//});
+
 		$el.datepicker(options);
-		ko.bindingHandlers['value']['init'](element, valueAccessor, allBindingsAccessor);
 		
 		//handle disposal (if KO removes by the template binding)
 		ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
@@ -42,10 +47,8 @@ ko.bindingHandlers.datepicker = {
 		}
 
 		var current = $el.datepicker("getDate");
-
-		if (value - current !== 0) {
+		if (value - current !== 0 && !/Invalid|NaN/.test(new Date(value))) {
 			$el.datepicker("setDate", value);
-			ko.bindingHandlers['value']['update'](element, valueAccessor);
-		}		
+		}
 	}
 };
