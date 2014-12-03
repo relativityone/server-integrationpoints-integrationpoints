@@ -24,8 +24,11 @@ ko.validation.insertValidationMessage = function (element) {
 
 ko.validation.rules["time"] = {
 	validator: function (value) {
-		var date = Date.parseExact(value, "HH:mm") || Date.parseExact(value, "H:mm");
-		return !!date;
+		if (value !== undefined) {
+			var date = Date.parseExact(value, "HH:mm") || Date.parseExact(value, "H:mm");
+			return !!date;
+		}
+		return true;
 	},
 	message: 'Please enter a valid time (24-hour format).'
 };
