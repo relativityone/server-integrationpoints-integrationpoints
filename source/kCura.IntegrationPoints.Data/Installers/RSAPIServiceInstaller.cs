@@ -13,6 +13,7 @@ namespace kCura.IntegrationPoints.Data.Installers
 		{
 			container.Register(Component.For<IRSAPIService>().ImplementedBy<RSAPIService>());
 			container.Register(Component.For<IGenericLibrary<IntegrationPoint>>().ImplementedBy<RsapiClientLibrary<IntegrationPoint>>().LifestyleTransient());
+			container.Register(Component.For<IGenericLibrary<SourceProvider>>().ImplementedBy<RsapiClientLibrary<SourceProvider>>().LifestyleTransient());
 		}
 	}
 }

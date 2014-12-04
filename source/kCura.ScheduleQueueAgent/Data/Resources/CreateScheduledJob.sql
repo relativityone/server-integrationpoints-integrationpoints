@@ -8,6 +8,7 @@
 		[TaskType] [nvarchar](255) NOT NULL,
 		[NextRunTime] [datetime] NOT NULL,
 		[LastRunTime] [datetime] NULL,
+		[ScheduleRuleType] [nvarchar](max) NULL,
 		[ScheduleRule] [nvarchar](max) NULL,
 		[JobDetails] [nvarchar](max) NULL,
 		[JobFlags] [int] NOT NULL,
@@ -30,6 +31,7 @@ OUTPUT
 		,Inserted.[TaskType]
 		,Inserted.[NextRunTime]
 		,Inserted.[LastRunTime]
+		,Inserted.[ScheduleRuleType]
 		,Inserted.[ScheduleRule]
 		,Inserted.[JobDetails]
 		,Inserted.[JobFlags]
@@ -79,6 +81,7 @@ BEGIN
 			,[TaskType]
 			,[NextRunTime]
 			,[LastRunTime]
+			,[ScheduleRuleType]
 			,[ScheduleRule]
 			,[JobDetails]
 			,[JobFlags]
@@ -94,6 +97,7 @@ BEGIN
 			,Inserted.[TaskType]
 			,Inserted.[NextRunTime]
 			,Inserted.[LastRunTime]
+			,Inserted.[ScheduleRuleType]
 			,Inserted.[ScheduleRule]
 			,Inserted.[JobDetails]
 			,Inserted.[JobFlags]
@@ -110,6 +114,7 @@ BEGIN
 			,@TaskType
 			,@NextRunTime
 			,NULL
+			,@ScheduleRuleType
 			,@ScheduleRule
 			,@JobDetails
 			,@JobFlags

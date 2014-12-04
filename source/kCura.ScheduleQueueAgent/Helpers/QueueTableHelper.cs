@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace kCura.ScheduleQueueAgent.Helpers
 {
@@ -9,10 +11,7 @@ namespace kCura.ScheduleQueueAgent.Helpers
 	{
 		public string GetQueueTableName()
 		{
-			string tableName = string.Empty;
-			object tableAttribute = null;
-
-			List<Type> agentTypes = AppDomain.CurrentDomain.GetAssemblies()
+			List<Type> agentTypes = System.AppDomain.CurrentDomain.GetAssemblies()
 											 .SelectMany(assembly => assembly.GetTypes())
 											 .Where(type => type.IsSubclassOf(typeof(kCura.ScheduleQueueAgent.ScheduleQueueAgentBase))).ToList();
 			Object[] attributeObjects = agentTypes.SelectMany(t => t.GetCustomAttributes(true)).ToArray();
@@ -39,14 +38,48 @@ namespace kCura.ScheduleQueueAgent.Helpers
 
 		public Guid GetAgentGuid()
 		{
-			string tableName = string.Empty;
-			object tableAttribute = null;
-
-			List<Type> agentTypes = AppDomain.CurrentDomain.GetAssemblies()
-											 .SelectMany(assembly => assembly.GetTypes())
-											 .Where(type => type.IsSubclassOf(typeof(kCura.ScheduleQueueAgent.ScheduleQueueAgentBase))).ToList();
-			Object[] attributeObjects = agentTypes.SelectMany(t => t.GetCustomAttributes(true)).ToArray();
+			Object[] attributeObjects = null;
+			try
+			{
+				AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
+				AppDomain appDomain = System.AppDomain.CurrentDomain;
+				List<Type> agentTypes = appDomain.GetAssemblies()
+					.SelectMany(assembly => assembly.GetTypes()).ToList();
+				agentTypes = agentTypes.Where(type => type.IsSubclassOf(typeof(kCura.ScheduleQueueAgent.ScheduleQueueAgentBase))).ToList();
+				attributeObjects = agentTypes.SelectMany(t => t.GetCustomAttributes(true)).ToArray();
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+			}
 			return GetAgentGuid(attributeObjects);
+		}
+
+		static Assembly ResolveAssembly(object sender, ResolveEventArgs args)
+		{
+			Assembly assembly = null;
+
+			string[] assemblyString = args.Name.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+			if (assemblyString.Length > 1)
+			{
+				Assembly[] loadedAssemblies = Thread.GetDomain().GetAssemblies();
+				for (int i = 0; i < loadedAssemblies.Length; i++)
+				{
+					if (String.Compare(loadedAssemblies[i].GetName().Name, assemblyString.First()) == 0)
+					{
+						assembly = loadedAssemblies[i];
+						break;
+					}
+				}
+
+				if (assembly == null)
+				{
+					try { assembly = Assembly.Load(assemblyString.First()); }
+					catch
+					{ }
+				}
+			}
+			return assembly;
 		}
 
 		public Guid GetAgentGuid(Object[] attributeObjects)

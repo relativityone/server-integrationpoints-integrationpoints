@@ -189,7 +189,6 @@
 
 
 *** Keywords *** 
-
 | Get an Alphabetically Sorted List of all Source Providers in the current Workspace
 | | [Documentation]	| Returns the Names of every Source Provider in the workspace in an alphabetically sorted list.
 | | ${SourceProviders}=	| Query workspace database	| 
@@ -201,7 +200,6 @@
 | | | Append to List	| ${FlatList}	| ${SourceProviders[${i}][0]}
 | | Sort List	| ${FlatList}
 | | [Return]		| @{FlatList}
-
 | Verify the sections are ordered correctly
 | | [Documentation] | A keyword that compares the actual section headings to the expected section headings
 | | [Arguments] | @{ExpectedSections}

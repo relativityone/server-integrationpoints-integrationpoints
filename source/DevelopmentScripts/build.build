@@ -28,7 +28,7 @@
 	<property name="source.reference.CastleWindsor.directory" value="${source.packages.directory}\Castle.Windsor.3.3.0\lib\net45" />
 	<property name="source.reference.kCuraAppsCommonConfig.directory" value="${source.packages.directory}\kCura.Apps.Common.Config.1.0.77.1\lib\net45" />
 	<property name="source.reference.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.1.0.77.1\lib\net45\" />
-	<property name="source.reference.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.94.1\lib\net45\" />
+	<property name="source.reference.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.106.2\lib\net45\" />
 	<property name="target.code.directory" value="${root}\bin\${buildconfig}" />
 	<property name="ldap.build.server.share" value="\\tt-img-app-8-2.testing.corp\BuildShare\LDAPSync\default" unless="${property::exists('ldap.build.server.share')}"/>
 	<property name="buildType" value="DEV" unless="${property::exists('buildType')}" />
@@ -134,13 +134,13 @@
 			<arg line="/property:NoWarn=${ignorewarnings}" />
 			<arg line='/logger:"${logger}"'/>
 			<arg line='/logger:"${buildLogger}";"${buildLoggerLogFile}"'/>
-			<arg value="/noconsolelogger" />
-			<arg value="/filelogger" />
-			<arg value='/flp:LogFile="${logfile}";Verbosity=${verbosity}' />      
-			<arg value="/target:BuildMethod" />
-			<arg value="/verbosity:${verbosity}" />
-			<arg value='/p:DefineConstants="${TimeMachine},${Injections}"' />
-			<arg value="/nologo" />
+			<arg line="/noconsolelogger" />
+			<arg line="/filelogger" />
+			<arg line='/flp:LogFile="${logfile}";Verbosity=${verbosity}' />      
+			<arg line="/target:BuildMethod" />
+			<arg line="/verbosity:${verbosity}" />
+			<arg line='/p:DefineConstants="${TimeMachine},${Injections}"' />
+			<arg line="/nologo" />
 		</exec>
 	</target>
 	
