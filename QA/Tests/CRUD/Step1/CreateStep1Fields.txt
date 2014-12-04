@@ -183,8 +183,6 @@
 
 *** Keywords *** 
 
-
-
 | Verify the sections are ordered correctly
 | | [Documentation] | A keyword that compares the actual section headings to the expected section headings
 | | [Arguments] | @{ExpectedSections}
