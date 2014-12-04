@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Helpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using Newtonsoft.Json;
@@ -47,8 +48,9 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public IEnumerable<FieldMap> GetFieldMap(int objectId)
 		{
-			_context.RsapiService.IntegrationPointLibrary.Read(objectId, new Guid(Data.IntegrationPointFieldGuids.FieldMappings));
-			return null;
+			var fieldmapjson= _context.RsapiService.IntegrationPointLibrary.Read(objectId, new Guid(Data.IntegrationPointFieldGuids.FieldMappings)).FieldMappings;
+			var fieldmap = Json.Decode<IEnumerable<FieldMap>>(fieldmapjson);
+			return fieldmap;
 
 		} 
 
