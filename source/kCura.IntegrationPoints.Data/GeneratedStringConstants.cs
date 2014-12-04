@@ -32,11 +32,13 @@ namespace kCura.IntegrationPoints.Data
 		public const string Workspace = "Workspace";
 		public const string Folder = "Folder";
 		public const string IntegrationPoint = @"Integration Point";
+		public const string SourceProvider = @"Source Provider";
 		}
 
 	public partial class ObjectTypeGuids
 	{
 		public const string IntegrationPoint = @"03d4f67e-22c9-488c-bee6-411f05c52e01";
+		public const string SourceProvider = @"5be4a1f7-87a8-4cbe-a53f-5027d4f70b80";
 		}
 
 	#region "Field Constants"
@@ -56,6 +58,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string ScheduledTime = @"Scheduled Time";
 		public const string SourceConfiguration = @"Source Configuration";
 		public const string DestinationConfiguration = @"Destination Configuration";
+		public const string SourceProvider = @"Source Provider";
 		public const string Name = @"Name";
 	}
 
@@ -74,7 +77,22 @@ namespace kCura.IntegrationPoints.Data
 		public const string ScheduledTime = @"6a38caa0-c3fc-4d66-b915-aaf30d41399b";
 		public const string SourceConfiguration = @"b5000e91-82bd-475a-86e9-32fefc04f4b8";
 		public const string DestinationConfiguration = @"b1323ca7-34e5-4e6b-8ff1-e8d3b1a5fd0a";
+		public const string SourceProvider = @"dc902551-2c9c-4f41-a917-41f4a3ef7409";
 		public const string Name = @"d534f433-dd92-4a53-b12d-bf85472e6d7a";
+	}
+
+
+
+	public partial class SourceProviderFields : BaseFields
+	{
+		public const string Identifier = @"Identifier";
+		public const string Name = @"Name";
+	}
+
+	public partial class SourceProviderFieldGuids 
+	{
+		public const string Identifier = @"d0ecc6c9-472c-4296-83e1-0906f0c0fbb9";
+		public const string Name = @"9073997b-319e-482f-92fe-67e0b5860c1b";
 	}
 
 
@@ -110,6 +128,16 @@ namespace kCura.IntegrationPoints.Data
 		public const string IntegrationPointsLayout = @"Integration Points Layout";
 	}
 
+	public partial class SourceProviderLayoutGuids
+	{
+		public const string SourceProviderLayout = @"6d2ecb5d-ec2d-4b4b-b631-47fada8af8d4";
+	}
+
+	public partial class SourceProviderLayouts
+	{
+		public const string SourceProviderLayout = @"Source Provider Layout";
+	}
+
 	#endregion
 	
 	
@@ -125,6 +153,16 @@ namespace kCura.IntegrationPoints.Data
 		public const string IntegrationPoints = @"Integration Points";
 	}
 
+	public partial class SourceProviderTabGuids
+	{
+		public const string SourceProvider = @"72b6d3c7-1827-4b52-b16d-fdfa1b8fc898";
+	}
+
+	public partial class SourceProviderTabs
+	{
+		public const string SourceProvider = @"Source Provider";
+	}
+
 	#endregion
 	
 	#region "Views"
@@ -137,6 +175,16 @@ namespace kCura.IntegrationPoints.Data
 	public partial class IntegrationPointViews
 	{
 		public const string AllIntegrationPointss = @"All Integration Pointss";
+	}
+
+	public partial class SourceProviderViewGuids
+	{
+		public const string AllSourceProviders = @"f4e2c372-da19-4bb2-9c46-a1d6fa037136";
+	}
+
+	public partial class SourceProviderViews
+	{
+		public const string AllSourceProviders = @"All Source Providers";
 	}
 
 	#endregion									

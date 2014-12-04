@@ -20,6 +20,7 @@ CREATE TABLE [eddsdbo].[{0}](
 	[TaskType] [nvarchar](255) NOT NULL,
 	[NextRunTime] [datetime] NOT NULL,
 	[LastRunTime] [datetime] NULL,
+	[ScheduleRuleType] [nvarchar](max) NULL,
 	[ScheduleRule] [nvarchar](max) NULL,
 	[JobDetails] [nvarchar](max) NULL,
 	[JobFlags] [int] NOT NULL,

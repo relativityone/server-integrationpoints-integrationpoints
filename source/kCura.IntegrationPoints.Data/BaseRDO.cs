@@ -9,7 +9,24 @@ namespace kCura.IntegrationPoints.Data
 	public abstract class BaseRdo : IBaseRdo
 	{
 		private static System.Text.UnicodeEncoding _enc = new System.Text.UnicodeEncoding();
-		internal RDO Rdo { get; set; }
+
+		private RDO _rdo;
+
+		internal RDO Rdo
+		{
+			get
+			{
+				if (_rdo == null)
+				{
+					_rdo = new RDO();
+					_rdo.ArtifactTypeGuids.Add(Guid.Parse(ObjectMetadata.ArtifactTypeGuid));
+				}
+				return _rdo;
+			}
+			set { _rdo = value; }
+		}
+
+		protected BaseRdo(){}
 
 		public virtual T GetField<T>(Guid fieldGuid)
 		{
@@ -23,7 +40,15 @@ namespace kCura.IntegrationPoints.Data
 
 		public virtual void SetField<T>(Guid fieldName, T fieldValue, Boolean markAsUpdated = true)
 		{
-			Rdo[fieldName].Value = fieldValue;
+			if (!Rdo.Fields.Contains(new FieldValue(fieldName)))
+			{
+				Rdo.Fields.Add(new FieldValue(fieldName, fieldValue));
+			}
+			else
+			{
+				Rdo[fieldName].Value = fieldValue;	
+			}
+			
 		}
 
 		public static Dictionary<Guid, DynamicFieldAttribute> GetFieldMetadata(Type t)

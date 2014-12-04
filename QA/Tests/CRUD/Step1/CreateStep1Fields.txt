@@ -1,140 +1,133 @@
 *** Settings ***
 | Documentation 	| Verify that the Set Intergration Details step of Integration Points shows the correct fields and data
-| Metadata		    | Authors	| Daniel Oliver
-| Force Tags		| in-progress | manual | team.method
-#| Suite Setup		| Create Suite Setup Data
-#| Test Teardown     | capture screenshot if test fails
-#| Suite Teardown	| Delete Suite Setup Data
+| Metadata		    | Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| in-progress | team.method
+| Suite Setup		| Open and Log in to Method
+| Test Setup        | Open Create Integration Point
+| Test Teardown 	| Capture screenshot if test fails
+| Suite Teardown	| Close all browsers
 
 *** Variables ***
 
 | ${WorkspaceName}	    | Relativity Legal Hold
+| ${IntegrationNameField}   | name
+| ${OverwriteDropDown}    | s2id_overwrite
+| ${SourceProviderDropDown}  | s2id_sourceProvider
+| ${DestinationRDODropDown}  | s2id_destinationRdo
+| ${EnableSchedulerRadioButtonsID}      | scheduleRulesEnabled
+| ${EnableSchedulerButtonName}          | enable
 
 *** Test Cases ***
 
 | Clicking New Integration Point Shows the Create Integration Point Detail screen
 | | [Documentation]	| Verify that clicking New Integration Point from the List view Shows the Create Integration Point Detail screen
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the screen's name is Create Integration Points
-
-| The correct Buttons appear in the Header
-| | [Documentation]	| Verify that the correct buttons appear on the right handside of the header.
-| | [Tags]		| manual
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... |
-| | ... | Expected Result:
-| | ... | 1. Element should be visible	| id=cancel	| The Cancel button was not visible.
+| | [Tags] | automated
+| | Wait until keyword succeeds | 20s | 2s | Verify that the Header has the following text | Create Integration Point
 
 | The Set Integration Details sections are in the correct order
 | | [Documentation]	| Verify that the Set Integration Details sections are sorted correctly.
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Integration Sections are in the following Order:
-| | ... | - General
-| | ... | - Integration
-| | ... | - Import Scheduling
+| | [Tags] | automated
+| | Verify the sections are ordered correctly  | General  | Integration | Import Scheduling
 
 | The General fields are in the correct order
 | | [Documentation]	| Verify that the fields in the General section are sorted correctly.
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the General Fields are in the following Order:
-| | ... | Integration Name
-| | ... | Overwrite
+| | [Tags] | automated
+| | Verify that the following section contains the following fields | General | 
+| | ... | Integration Name: | 
+| | ... | Overwrite:
 
 | The Integration fields are in the correct order
 | | [Documentation]	| Verify that the fields in the Integration section are sorted correctly.
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Integration Fields are in the following Order:
-| | ... | Source Provider
-| | ... | Destination RDO
+| | [Tags] | automated
+| | Verify that the following section contains the following fields | Integration | 
+| | ... | Source Provider: | 
+| | ... | Destination RDO:
 
 | The Import Scheduling fields are in the correct order
 | | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly.
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the  Import Scheduling Fields are in the following Order:
-| | ... | Enable Scheduler 
-
-| The Set Integration Details Fields are of the correct type
-| | [Documentation]	| Verify that the Set Integration Details Fields are the correct type
-| | [Tags]		| manual	
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the General Fields are in the following Order:
-| | ... | Integration Name  | Text
-| | ... | Overwrite         | List
-| | ... | Source Provider   | List
-| | ... | Destination RDO   | List
-| | ... | Enable Scheduler  | Yes & No Radio Buttons
+| | [Tags] | automated
+| | Verify that the following section contains the following fields | Import Scheduling | Enable Scheduler:
 
 | The Overwrite list has the correct values
 | | [Documentation]	| Verify that the Overwrite List has the correct options
-| | [Tags]		| manual	
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... | 3. Click Overwrite List
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that the options are:
-| | ... | - Append/Overlay
-| | ... | - Append
+| | [Tags] | automated	
+| | Click  | ${OverwriteDropDown}
+| | Verify that the currently opened select2 Dropdown has the following choices in order | Append/Overlay | Append
 
-| The Source Provider list has the correct values
-| | [Documentation]	| Verify that the Source Provider List has the correct options
-| | [Tags]		| manual	
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... | 3. Click Source Provider List
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that the options are:
-| | ... | - LDAP
+| The Source Provider dropdown contains an alphabetically sorted list of Source Providers
+| | [Documentation]	| Verify that the Source Provider dropdown contains an alphabetically sorted list of Source Providers.
+| | [Tags]			| automated
+| | @{SourceProviders}=	| Get an Alphabetically Sorted List of all Source Providers in the current Workspace
+| | Click	| ${SourceProviderDropDown}
+| | Verify that the currently opened select2 Dropdown has the following choices in order | @{SourceProviders}
 
-| The Destination RDO list has the correct values
-| | [Documentation]	| Verify that the Destination RDO  List has the correct options
-| | [Tags]		| manual	
+| The Overwrite Field's default value is Append/Overlay
+| | [Documentation]	| Verify that the Overwrite Field's default value is Append/Overlay.
+| | [Tags] | automated
+| | Verify that the following select2 Dropdown currently has the following value selected |  ${OverwriteDropDown} | Append/Overlay
+
+| The Source Provider Field defaults to the first alphabetical Source Provider
+| | [Documentation]	| Verify that the Source Provider Field defaults to the first alphabetical Source Provider in the workspace.
+| | [Tags]			| automated
+| | @{SourceProviders}=	| Get an Alphabetically Sorted List of all Source Providers in the current Workspace
+| | Verify that the following select2 Dropdown currently has the following value selected |  ${SourceProviderDropDown} | ${SourceProviders[0]}	| # The first value in the list
+
+| The Destination RDO's default value is Select
+| | [Documentation]	| Verify that the Destination RDO's default value is Select
+| | [Tags] | automated
+| | Verify that the following select2 Dropdown currently has the following value selected |  ${DestinationRDODropDown} | Select...
+
+| The Enable Scheduler's default value is No
+| | [Documentation]	| Verify that the Enable Scheduler's default value is No (false)
+| | [Tags] | automated
+| | Radio button should be set to | ${EnableSchedulerButtonName} | false
+
+| Integration Name has the Required Field indicator
+| | [Documentation]	| Verify that the Required Field indicator is present for the correct fields.
+| | [Tags] | automated
+| | Verify that the following field is required | Integration Name:
+
+| Source Provider has the Required Field indicator
+| | [Documentation]	| Verify that the Required Field indicator is present for the correct fields.
+| | [Tags] | automated
+| | Verify that the following field is required | Source Provider:
+
+| Destination RDO has the Required Field indicator
+| | [Documentation]	| Verify that the Required Field indicator is present for the correct fields.
+| | [Tags] | automated
+| | Verify that the following field is required | Destination RDO:
+
+| Overwrite is not a Required Field
+| | [Documentation]	| Verify that the Required Field indicator is not present for the correct fields.
+| | [Tags] | automated
+| | Verify that the following field is not required | Overwrite:
+
+| Enable Scheduler is not a Required Field
+| | [Documentation]	| Verify that the Required Field indicator is not present for the correct fields.
+| | [Tags] | automated
+| | Verify that the following field is not required | Enable Scheduler:
+
+| The Set Integration Details Fields are of the correct type
+| | [Documentation]	| Verify that the Set Integration Details Fields are the correct type
+| | [Tags]		| automated	
+| | Verify that the following field ID has a text input | ${IntegrationNameField}
+| | Verify that the following field ID has a droplist input | ${OverwriteDropDown}
+| | Verify that the following field ID has a droplist input | ${SourceProviderDropDown}
+| | Verify that the following field ID has a droplist input | ${DestinationRDODropDown}
+| | Verify that the following field ID has a YesNo Radio button input | ${EnableSchedulerRadioButtonsID}
+
+| The Enable Scheduler options are Yes and No
+| | [Documentation]	| Verify that the Enable Scheduler radio button options are Yes and No
+| | [Tags]		| automated
+| | Verify that the following radio buttons are grouped together | ${EnableSchedulerButtonName}  | Yes | No
+
+| The Complete Destination RDO list has the correct values
+| | [Documentation]	| Verify that the complete Destination RDO  List has the correct options (i.e. you are a user with Admin permission)
+| | [Tags]			| manual	| automateable
 | | Run the following manual steps:
 | | ... | Notes:
 | | ... | - The Destination RDO only shows values that you have Add permissions for.
-| | ... | - All Destination RDO's show except for Event Handler, and History.
+| | ... | - The Event Handler and History RDOs are never shown.
 | | ... |
 | | ... | Steps:
 | | ... | 1. Go to the Method Tab	| Integration Points
@@ -178,66 +171,48 @@
 | | ... | - Transform
 | | ... | - Transform Set
 
-| The Required Field indicator is on the correct Fields
-| | [Documentation]	| Verify that the Required Field indicator is present for the correct fields.
-| | [Tags] | manual
+| The Partial Destination RDO list has the correct values
+| | [Documentation]	| Verify that the partial Destination RDO  List has the correct options (i.e. you are a user without permission to some RDOs)
+| | [Tags]			| manual	| automateable?
 | | Run the following manual steps:
+| | ... | Notes:
+| | ... | - The Destination RDO only shows values that you have Add permissions for.
+| | ... | - The Event Handler and History RDOs are never shown.
+| | ... |
 | | ... | Steps:
 | | ... | 1. Go to the Method Tab	| Integration Points
 | | ... | 2. Click | New Integration Point
-| | ... |
+| | ... | 3. Click Destination RDO List
+| | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the following Fields have the required field indicator
-| | ... | - Integration Name
-| | ... | - Source Provider
-| | ... | - Destination RDO
-| | ... | Overwrite field is not required
-
-| The Overwrite Field's default value is Append/Overlay
-| | [Documentation]	| Verify that the Overwrite Field's default value is Append/Overlay.
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Overwrite Field's default value is Append/Overlay.
+| | ... | 1. Verify that the RDOs that you do not have permission for are not visible.
 
 
-| The Source Provider Field's default value is LDAP
-| | [Documentation]	| Verify that the Source Provider Field's default value is LDAP
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Source Provider Field's default value is LDAP.
+*** Keywords *** 
 
-| The Destination RDO's default value is Select
-| | [Documentation]	| Verify that the Destination RDO's default value is Select
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Destination RDO's default value is Select...
+| Get an Alphabetically Sorted List of all Source Providers in the current Workspace
+| | [Documentation]	| Returns the Names of every Source Provider in the workspace in an alphabetically sorted list.
+| | ${SourceProviders}=	| Query workspace database	| 
+| | ... | SELECT Name
+| | ... | FROM EDDSDBO.SourceProvider
+| | ${ResultCount}=	| Get Length	| ${SourceProviders}
+| | @{FlatList}=	| Create List
+| | :FOR	| ${i}	| IN RANGE	| ${ResultCount}
+| | | Append to List	| ${FlatList}	| ${SourceProviders[${i}][0]}
+| | Sort List	| ${FlatList}
+| | [Return]		| @{FlatList}
 
-| The Enable Scheduler's default value is No
-| | [Documentation]	| Verify that the Enable Scheduler's default value is No
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Enable Scheduler's default value is No.
+| Verify the sections are ordered correctly
+| | [Documentation] | A keyword that compares the actual section headings to the expected section headings
+| | [Arguments] | @{ExpectedSections}
+| | @{ActualSections}= | Get Element Text  | xpath=//div[@class="card"]/child::span[@class="label"] | False 
+| | Lists should be Equal  | ${ActualSections} | ${ExpectedSections}
 
-*** Keywords ***
 
 *** Settings ***
+| Library   | Collections
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource  | C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt

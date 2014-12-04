@@ -7,6 +7,7 @@
 			,[TaskType]
 			,[NextRunTime]
 			,[LastRunTime]
+			,[ScheduleRuleType]
 			,[ScheduleRule]
 			,[JobDetails]
 			,[JobFlags]

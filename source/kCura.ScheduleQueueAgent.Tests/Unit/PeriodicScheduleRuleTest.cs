@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.ScheduleQueueAgent.ScheduleRules;
 using NSubstitute;
 using NUnit.Framework;
@@ -416,7 +417,8 @@ namespace kCura.ScheduleQueueAgent.Tests
 		{
 			//TODO: when we start using this scheduler in Method, we need to convert namespaces in serialized xml:
 			string xml = dailyRuleOldXML.Replace("kCura.Method.Data.ScheduleRules", "kCura.ScheduleQueueAgent.ScheduleRules");
-			PeriodicScheduleRule rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(xml);
+			PeriodicScheduleRule rule = (PeriodicScheduleRule)SerializerHelper.DeserializeUsingTypeName(System.AppDomain.CurrentDomain, typeof(PeriodicScheduleRule).FullName, xml);
+			//PeriodicScheduleRule rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(xml);
 			var utcNow = DateTime.Parse("12/30/2010 21:00:00");
 			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
 			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
@@ -432,7 +434,8 @@ namespace kCura.ScheduleQueueAgent.Tests
 		{
 			//TODO: when we start using this scheduler in Method, we need to convert namespaces in serialized xml:
 			string xml = weeklyRuleOldXML.Replace("kCura.Method.Data.ScheduleRules", "kCura.ScheduleQueueAgent.ScheduleRules");
-			PeriodicScheduleRule rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(xml);
+			PeriodicScheduleRule rule = (PeriodicScheduleRule)SerializerHelper.DeserializeUsingTypeName(System.AppDomain.CurrentDomain, typeof(PeriodicScheduleRule).FullName, xml);
+			//PeriodicScheduleRule rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(xml);
 			var utcNow = DateTime.Parse("01/08/2011 21:00:00"); //--Saturday
 			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
 			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);
@@ -448,7 +451,8 @@ namespace kCura.ScheduleQueueAgent.Tests
 		{
 			//TODO: when we start using this scheduler in Method, we need to convert namespaces in serialized xml:
 			string xml = monthlyRuleOldXML.Replace("kCura.Method.Data.ScheduleRules", "kCura.ScheduleQueueAgent.ScheduleRules");
-			PeriodicScheduleRule rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(xml);
+			PeriodicScheduleRule rule = (PeriodicScheduleRule)SerializerHelper.DeserializeUsingTypeName(System.AppDomain.CurrentDomain, typeof(PeriodicScheduleRule).FullName, xml);
+			//PeriodicScheduleRule rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(xml);
 			var utcNow = DateTime.Parse("05/01/2010 10:00:00");
 			rule.TimeService = NSubstitute.Substitute.For<ITimeService>();
 			rule.TimeService.UtcNow.ReturnsForAnyArgs(utcNow);

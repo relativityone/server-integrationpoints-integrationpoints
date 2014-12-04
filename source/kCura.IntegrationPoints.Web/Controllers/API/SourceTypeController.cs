@@ -5,13 +5,14 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.SourceTypes;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class SourceTypeController : ApiController
 	{
 		private readonly SourceTypeFactory _factory;
-		public SourceTypeController(Core.Services.SourceTypeFactory factory)
+		public SourceTypeController(SourceTypeFactory factory)
 		{
 			_factory = factory;
 		}

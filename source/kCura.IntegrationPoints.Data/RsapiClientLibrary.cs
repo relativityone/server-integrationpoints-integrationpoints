@@ -144,7 +144,12 @@ namespace kCura.IntegrationPoints.Data
 
 		public List<T> Query(Query<RDO> q, int pageSize = 0)
 		{
+			if (!q.ArtifactTypeGuid.HasValue)
+			{
+				q.ArtifactTypeGuid = Guid.Parse(BaseRdo.GetObjectMetadata(typeof (T)).ArtifactTypeGuid);
+			}
 			var result = _client.Query(q);
+			
 			CheckResult(result);
 			return result.Results.Select(x => new T { Rdo = x.Artifact }).ToList();
 		}

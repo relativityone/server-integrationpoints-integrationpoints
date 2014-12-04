@@ -13,11 +13,8 @@ namespace kCura.IntegrationPoints.EventHandlers
 
 		public IServiceContext ServiceContext
 		{
-			get { return _context ?? (_context = new ServiceContext
-			{
-				SqlContext = base.Helper.GetDBContext(base.Helper.GetActiveCaseID()),
-				WorkspaceID = base.Application.ArtifactID
-			}); }
+			get { return _context ?? (_context = ServiceContextFactory.CreateServiceContext(base.Helper, this.Application.ArtifactID)); }
+			set { _context = value; }
 		}
 	}
 }

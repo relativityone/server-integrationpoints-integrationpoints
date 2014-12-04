@@ -167,6 +167,18 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(IntegrationPointFieldGuids.DestinationConfiguration), value);
 			}
 		}
+		[DynamicField(IntegrationPointFields.SourceProvider, IntegrationPointFieldGuids.SourceProvider, FieldTypes.SingleObject)]
+		public int? SourceProvider
+		{
+			get
+			{
+				return GetField<int?>(new System.Guid(IntegrationPointFieldGuids.SourceProvider));
+			}
+			set
+			{
+				SetField<int?>(new System.Guid(IntegrationPointFieldGuids.SourceProvider), value);
+			}
+		}
 		public const int NameFieldLength = 255;
 		[DynamicField(IntegrationPointFields.Name, IntegrationPointFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
 		public string Name
@@ -199,6 +211,59 @@ namespace kCura.IntegrationPoints.Data
 				if (!(_objectMetadata == null))
 					return _objectMetadata;
 				_objectMetadata = GetObjectMetadata(typeof(IntegrationPoint));
+				return _objectMetadata;
+			}
+		}
+	}
+ 
+	[DynamicObject(ObjectTypes.SourceProvider, ObjectTypes.Workspace, "", ObjectTypeGuids.SourceProvider)]
+	public partial class SourceProvider : BaseRdo
+	{
+		public const int IdentifierFieldLength = 40;
+		[DynamicField(SourceProviderFields.Identifier, SourceProviderFieldGuids.Identifier, FieldTypes.FixedLengthText, 40)]
+		public string Identifier
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(SourceProviderFieldGuids.Identifier));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(SourceProviderFieldGuids.Identifier), value);
+			}
+		}
+		public const int NameFieldLength = 255;
+		[DynamicField(SourceProviderFields.Name, SourceProviderFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
+		public string Name
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(SourceProviderFieldGuids.Name));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(SourceProviderFieldGuids.Name), value);
+			}
+		}
+		private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
+		public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
+		{
+			get
+			{
+				if (!(_fieldMetadata == null))
+					return _fieldMetadata;
+				_fieldMetadata = GetFieldMetadata(typeof(SourceProvider));
+				return _fieldMetadata;
+			}
+		}
+		private static DynamicObjectAttribute _objectMetadata;
+		public override DynamicObjectAttribute ObjectMetadata
+		{
+			get
+			{
+				if (!(_objectMetadata == null))
+					return _objectMetadata;
+				_objectMetadata = GetObjectMetadata(typeof(SourceProvider));
 				return _objectMetadata;
 			}
 		}
