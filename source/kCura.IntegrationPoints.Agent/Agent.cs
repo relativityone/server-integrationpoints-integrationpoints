@@ -8,18 +8,24 @@ using kCura.ScheduleQueueAgent.TimeMachine;
 
 namespace kCura.IntegrationPoints.Agent
 {
+	public static class GlobalConst
+	{
+		public const string AGENT_GUID = "08C0CE2D-8191-4E8F-B037-899CEAEE493D";
+	}
+
 	[kCura.Agent.CustomAttributes.Name("Relativity Integration Points Agent")]
-	[Guid("08C0CE2D-8191-4E8F-B037-899CEAEE493D")]
+	[Guid(GlobalConst.AGENT_GUID)]
 	public class Agent : ScheduleQueueAgentBase
 	{
 		private IRSAPIClient rsapiClient;
 		private AgentInformation agentInformation = null;
 		public Agent()
+			: base(Guid.Parse(GlobalConst.AGENT_GUID))
 		{
 			base.RaiseException += new ExceptionEventHandler(RaiseException);
 			base.RaiseJobLogEntry += new JobLoggingEventHandler(RaiseJobLog);
 #if TIME_MACHINE
-			AgentTimeMachineProvider.Current = new DefaultAgentTimeMachineProvider(Guid.Parse("08C0CE2D-8191-4E8F-B037-899CEAEE493D"));
+			AgentTimeMachineProvider.Current = new DefaultAgentTimeMachineProvider(Guid.Parse(GlobalConst.AGENT_GUID));
 #endif
 		}
 		public override string Name

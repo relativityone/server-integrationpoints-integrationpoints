@@ -15,7 +15,8 @@ namespace kCura.ScheduleQueueAgent
 		public string TaskType { get; private set; }
 		public DateTime NextRunTime { get; set; }
 		public DateTime? LastRunTime { get; set; }
-		public IScheduleRule ScheduleRule { get; set; }
+		public string ScheduleRuleType { get; set; }
+		public string SerializedScheduleRule { get; set; }
 		public string JobDetails { get; set; }
 		public Int32 JobFlags { get; set; }
 		public DateTime SubmittedDate { get; set; }
@@ -36,16 +37,8 @@ namespace kCura.ScheduleQueueAgent
 			JobFlags = row.Field<int>("JobFlags");
 			SubmittedDate = row.Field<DateTime>("SubmittedDate");
 			SubmittedBy = row.Field<int>("SubmittedBy");
-
-			string serializedScheduleRule = row.Field<string>("ScheduleRule");
-			if (string.IsNullOrEmpty(serializedScheduleRule))
-			{
-				ScheduleRule = null;
-			}
-			else
-			{
-				ScheduleRule = SerializerHelper.DeserializeUsingInterface<IScheduleRule>(AppDomain.CurrentDomain, serializedScheduleRule);
-			}
+			ScheduleRuleType = row.Field<string>("ScheduleRuleType");
+			SerializedScheduleRule = row.Field<string>("ScheduleRule");
 		}
 	}
 }

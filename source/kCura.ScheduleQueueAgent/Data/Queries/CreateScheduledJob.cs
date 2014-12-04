@@ -19,6 +19,7 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 												string taskType,
 												DateTime nextRunTime,
 												int AgentTypeID,
+												string scheduleRuleType,
 												string serializedScheduleRule,
 												string jobDetails,
 												int jobFlags,
@@ -37,6 +38,9 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 			sqlParams.Add(jobDetails == null
 											? new SqlParameter("@JobDetails", DBNull.Value)
 											: new SqlParameter("@JobDetails", jobDetails));
+			sqlParams.Add(string.IsNullOrEmpty(scheduleRuleType)
+											? new SqlParameter("@ScheduleRuleType", DBNull.Value)
+											: new SqlParameter("@ScheduleRuleType", scheduleRuleType));
 			sqlParams.Add(string.IsNullOrEmpty(serializedScheduleRule)
 											? new SqlParameter("@ScheduleRule", DBNull.Value)
 											: new SqlParameter("@ScheduleRule", serializedScheduleRule));

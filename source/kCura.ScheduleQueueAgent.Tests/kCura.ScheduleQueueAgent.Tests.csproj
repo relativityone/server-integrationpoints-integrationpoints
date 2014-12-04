@@ -66,9 +66,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\kCura.Apps.Common.Data.1.0.77.1\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Apps.Common.Utils, Version=1.0.94.1, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.Apps.Common.Utils, Version=1.0.106.2, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.94.1\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+      <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.106.2\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Data.RowDataGateway, Version=8.2.259.3, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>

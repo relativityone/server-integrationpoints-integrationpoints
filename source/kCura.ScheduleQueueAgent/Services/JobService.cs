@@ -41,11 +41,11 @@ namespace kCura.ScheduleQueueAgent.Services
 			return null;
 		}
 
-		public FinalizeJobResult FinalizeJob(Job job, TaskResult taskResult)
+		public FinalizeJobResult FinalizeJob(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
 		{
 			FinalizeJobResult result = new FinalizeJobResult();
 
-			IScheduleRule scheduleRule = job.ScheduleRule;
+			IScheduleRule scheduleRule = scheduleRuleFactory.Deserialize(job);
 			DateTime? nextUtcRunDateTime = null;
 			if (scheduleRule != null)
 			{
@@ -93,6 +93,7 @@ namespace kCura.ScheduleQueueAgent.Services
 					taskType,
 					nextRunTime.Value,
 					AgentInformation.AgentTypeID,
+					scheduleRule.GetType().AssemblyQualifiedName,
 					serializedScheduleRule,
 					jobDetails,
 					0,
@@ -115,6 +116,7 @@ namespace kCura.ScheduleQueueAgent.Services
 				taskType,
 				nextRunTime,
 				AgentInformation.AgentTypeID,
+				null,
 				null,
 				jobDetails,
 				0,

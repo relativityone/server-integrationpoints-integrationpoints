@@ -5,6 +5,7 @@ using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils;
 using kCura.ScheduleQueueAgent.Helpers;
+using kCura.ScheduleQueueAgent.ScheduleRules;
 using kCura.ScheduleQueueAgent.Services;
 using Relativity.API;
 
@@ -20,7 +21,9 @@ namespace kCura.ScheduleQueueAgent
 		public event JobLoggingEventHandler RaiseJobLogEntry;
 		public event ExceptionEventHandler RaiseException;
 
+		private Guid agentGuid = Guid.Empty;
 		private IJobService jobService = null;
+		private IScheduleRuleFactory scheduleRuleFactory = null;
 		private bool errorRaised = false;
 
 		#region Constants
@@ -30,20 +33,26 @@ namespace kCura.ScheduleQueueAgent
 		private const int MAX_MESSAGE_LENGTH = 10000;
 		#endregion
 
-		public ScheduleQueueAgentBase()
+		public ScheduleQueueAgentBase(Guid agentGuid, 
+																	IDBContext dbContext = null, 
+																	IAgentService agentService = null, 
+																	IJobService jobService = null, 
+																	IScheduleRuleFactory scheduleRuleFactory = null)
 		{
-			DBContext = base.Helper.GetDBContext(-1);
-			Guid agentGuid = new QueueTableHelper().GetAgentGuid();
-			this.AgentService = new AgentService(DBContext, agentGuid);
-			this.jobService = new JobService(AgentService, DBContext);
-		}
-
-		//for testing
-		public ScheduleQueueAgentBase(IDBContext dbContext, IAgentService agentService, IJobService jobService)
-		{
+			this.agentGuid = agentGuid;
 			this.AgentService = agentService;
 			this.jobService = jobService;
+			this.scheduleRuleFactory = scheduleRuleFactory;
 			this.DBContext = dbContext;
+		}
+
+		public void Initialize()
+		{
+			//Guid agentGuid = new QueueTableHelper().GetAgentGuid();
+			if (this.DBContext == null) this.DBContext = base.Helper.GetDBContext(-1);
+			if (this.AgentService == null) this.AgentService = new AgentService(DBContext, agentGuid);
+			if (this.jobService == null) this.jobService = new JobService(AgentService, DBContext);
+			if (this.scheduleRuleFactory == null) this.scheduleRuleFactory = new DefaultScheduleRuleFactory();
 		}
 
 		public IDBContext DBContext { get; private set; }
@@ -66,6 +75,9 @@ namespace kCura.ScheduleQueueAgent
 			errorRaised = false;
 
 			OnRaiseAgentLogEntry(10, LogCategory.Info, "Started.");
+
+			OnRaiseAgentLogEntry(20, LogCategory.Info, "Initialize Local Services");
+			Initialize();
 
 			OnRaiseAgentLogEntry(20, LogCategory.Info, "Initialize Manager Config settings factory");
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(base.Helper);
@@ -154,7 +166,7 @@ namespace kCura.ScheduleQueueAgent
 		{
 			try
 			{
-				FinalizeJobResult result = jobService.FinalizeJob(job, taskResult);
+				FinalizeJobResult result = jobService.FinalizeJob(job, this.scheduleRuleFactory, taskResult);
 				OnRaiseJobLogEntry(job, result.JobState, null, result.Details);
 			}
 			catch (Exception ex)
@@ -166,7 +178,7 @@ namespace kCura.ScheduleQueueAgent
 
 		protected virtual void OnRaiseAgentLogEntry(int level, LogCategory category, string message, string detailmessage = null)
 		{
-			string msg = message.Substring(0, MAX_MESSAGE_LENGTH);
+			string msg = message.Substring(0, Math.Min(message.Length, MAX_MESSAGE_LENGTH));
 			switch (category)
 			{
 				case LogCategory.Info:
