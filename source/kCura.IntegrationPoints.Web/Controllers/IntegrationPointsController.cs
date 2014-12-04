@@ -54,11 +54,13 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			grid.JsonReaderOptions = JsonReaderOptions.WebOptions();
 			grid.url = Url.Action("GetData", new{id});
 			model.Grid = grid;
+			var result = _reader.GetFieldMap(id);
 			return View(model);
 		}
 		
 		public JsonNetResult GetData(int id, GridFilterModel filter)
 		{
+			_reader.ReadIntegrationPoint(id);
 			var gridData = new GridData();
 			gridData.BindData(GetFakeData().ToList(), filter);
 			return JsonNetResult(gridData);
