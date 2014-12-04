@@ -90,9 +90,10 @@
 | End Date is not a Required Field
 | | [Documentation] | Verify that the Required Field indicator is not shown for End Date
 | | [Tags]		    | manual
-| | Go to the Method Tab | Global Reminder
-| | Open Edit Mode
-| | Fill in the following Field | Enable Reocurring Global Reminder	| radio buttons	| Yes
+| | Run the following manual steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click | New Integration Point
+| | ... | 3. Click | Yes for Enable Schedule
 
 | | Verify that the Following Field does not have the Required Field Indicator | End Date
 
