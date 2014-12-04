@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Data.Installers
 	foreach  (ObjectTypeDTO objType in objTypes)
 	{
 	#>
-		container.Register(Component.For<IGenericLibrary<<#=objType.Name.ToPascalCase()#>>>().ImplementedBy<RsapiClientLibrary<<#=objType.Name.ToPascalCase()#>>>());
+		container.Register(Component.For<IGenericLibrary<<#=objType.Name.ToPascalCase()#>>>().ImplementedBy<RsapiClientLibrary<<#=objType.Name.ToPascalCase()#>>>().LifestyleTransient());
 	<#
 	}
 	#>

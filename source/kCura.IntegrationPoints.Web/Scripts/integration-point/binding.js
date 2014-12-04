@@ -12,22 +12,43 @@
 	}
 };
 
-ko.bindingHandlers.datePicker = {
-	init: function (element) {
-		$(element).datepicker({
-			beforeShow: function (el, inst) {
-				if ($(el).attr('readonly')) {
-					return false;
-				}
-				inst.dpDiv.css({ marginTop: -el.offsetHeight + 'px', marginLeft: el.offsetWidth + 5 + 'px' });
-				return true;
-			},
-			onSelect: function () {
-				//get the shim to work properly
-				$(this).blur();
-			}
+ko.bindingHandlers.datepicker = {
+	init: function (element, valueAccessor, allBindingsAccessor) {
+		//initialize datepicker with some optional options
+		var options = allBindingsAccessor().datepickerOptions || {},
+				$el = $(element);
+
+		options.onSelect = function (date) {
+			var observable = valueAccessor();
+			observable(date);
+		};
+
+		//$el.on('change', function (e) {
+		//	var date = $(e.srcElement).val();
+		//	var observable = valueAccessor();
+		//	observable(date);
+		//});
+
+		$el.datepicker(options);
+		
+		//handle disposal (if KO removes by the template binding)
+		ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
+			$el.datepicker("destroy");
 		});
+
 	},
-	update: function (element) {
+	update: function (element, valueAccessor) {
+		var value = ko.utils.unwrapObservable(valueAccessor()),
+				$el = $(element);
+
+		//handle date data coming via json from Microsoft
+		if (String(value).indexOf('/Date(') == 0) {
+			value = new Date(parseInt(value.replace(/\/Date\((.*?)\)\//gi, "$1")));
+		}
+
+		var current = $el.datepicker("getDate");
+		if (value - current !== 0 && !/Invalid|NaN/.test(new Date(value))) {
+			$el.datepicker("setDate", value);
+		}
 	}
 };

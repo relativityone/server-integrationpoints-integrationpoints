@@ -15,9 +15,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	{
 		private readonly IDataProviderFactory _providerFactory;
 		private readonly IJobManager _jobManager;
-		private readonly IntegrationPointHelper _helper;
+		private readonly IntegrationPointReader _helper;
 
-		public SyncManager(IDataProviderFactory providerFactory, IJobManager jobManager, IntegrationPointHelper helper)
+		public SyncManager(IDataProviderFactory providerFactory, IJobManager jobManager, IntegrationPointReader helper)
 		{
 			_providerFactory = providerFactory;
 			_jobManager = jobManager;

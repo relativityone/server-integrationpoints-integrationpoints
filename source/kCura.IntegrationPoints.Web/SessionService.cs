@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.SessionState;
+using kCura.IntegrationPoints.Core.Models;
 
 namespace kCura.IntegrationPoints.Web
 {
 	public class SessionService : ISessionService
 	{
 		public const string SESSION_KEY = "__WEB_SESSION_KEY__";
-
-		private ISessionService Session
+		
+		public static ISessionService Session
 		{
 			get
 			{
@@ -24,11 +25,17 @@ namespace kCura.IntegrationPoints.Web
 			}
 		}
 
-		public SessionService() {}
+		public SessionService()
+		{
+			Fields = new Dictionary<string, IEnumerable<FieldMap>>();
+		}
 
 		public int WorkspaceID
 		{
 			get { return (int) HttpContext.Current.Session["workspaceID"]; }
 		}
+
+		
+		public Dictionary<string, IEnumerable<FieldMap>> Fields{ get; set; }
 	}
 }

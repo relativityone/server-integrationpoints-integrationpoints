@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.CustomPages;
+using IDBContext = Relativity.API.IDBContext;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -21,12 +22,20 @@ namespace kCura.IntegrationPoints.Web
 		public IRSAPIClient CreateClient()
 		{
 			var workspaceID = _services.First(x => x.GetWorkspaceID() != 0).GetWorkspaceID();
-			var client = ConnectionHelper.Helper().GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
+			IRSAPIClient client;
+			try
+			{
+				client = ConnectionHelper.Helper().GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
+			}
+			catch (NullReferenceException)
+			{
+				client = ConnectionHelper.Helper().GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
+			}
 			client.APIOptions.WorkspaceID = workspaceID;
 			return client;
 		}
 
-		public global::Relativity.API.IDBContext CreateDbContext()
+		public IDBContext CreateDbContext()
 		{
 			var workspaceID = _services.First(x => x.GetWorkspaceID() != 0).GetWorkspaceID();
 			var context = ConnectionHelper.Helper().GetDBContext(workspaceID);

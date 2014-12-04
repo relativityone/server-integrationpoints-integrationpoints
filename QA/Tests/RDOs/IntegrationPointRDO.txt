@@ -19,7 +19,7 @@
 | The Correct Number of Fields have an Object Type of Integration Point
 | | [Documentation]	| This test verifies that the correct number of fields exist with an Object Type of Integration Point.
 | | ${Fields}=		| Get the Number of Items in the ItemList
-| | Run Keyword Unless	| '${Fields}' == '19'	| Fail	| There should have been 19 fields, but instead there were ${Fields}.
+| | Run Keyword Unless	| '${Fields}' == '20'	| Fail	| There should have been 20 fields, but instead there were ${Fields}.
 
 # The below tests each verify that a Field with the given data is present on the table.
 
@@ -135,6 +135,14 @@
 | | ... | Associative Object Type	| ${EMPTY}
 
 
+| Source Provider
+| | Find A Row With The Following Data	|
+| | ... | Name						| Source Provider	|
+| | ... | Field Type				| Single Object		|
+| | ... | Is Required				| No				|
+| | ... | Associative Object Type	| SourceProvider
+
+
 | Start Date
 | | Find A Row With The Following Data	|
 | | ... | Name						| Start Date	|
@@ -177,5 +185,4 @@
 
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${KEYWORD_DIR}/Relativity/Shared/RelativityKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt

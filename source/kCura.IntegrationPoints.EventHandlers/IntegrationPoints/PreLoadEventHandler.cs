@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				action = Constant.URL_FOR_INTEGRATIONPOINTS_VIEW;
 			}
 
-			var id = ActiveArtifact.ArtifactID == 0 ? ActiveArtifact.ArtifactID.ToString() : string.Empty;
+			var id = ActiveArtifact.ArtifactID != 0 ? ActiveArtifact.ArtifactID.ToString() : string.Empty;
 			var url = String.Format(@"{0}/{1}/{2}/{3}?StandardsCompliance=true", Constant.URL_FOR_WEB,
 										Constant.URL_FOR_INTEGRATIONPOINTSCONTROLLER,
 										action,

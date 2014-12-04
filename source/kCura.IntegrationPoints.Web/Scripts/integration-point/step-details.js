@@ -11,17 +11,36 @@ ko.validation.configure({
 });
 
 ko.validation.insertValidationMessage = function (element) {
-	var iconSpan = document.createElement('DIV');
+	var errorContainer = document.createElement('div');
+	var iconSpan = document.createElement('span');
 	iconSpan.className = 'icon-error legal-hold field-validation-error';
 
-	var span = document.createElement('SPAN');
-	iconSpan.appendChild(span);
-	$(element).parents('.field-value').eq(0).append(iconSpan)
+	errorContainer.appendChild(iconSpan);
+
+	$(element).parents('.field-value').eq(0).append(errorContainer);
 
 	return iconSpan;
 };
 
+ko.validation.rules["time"] = {
+	validator: function (value) {
+		if (value !== undefined) {
+			var date = Date.parseExact(value, "HH:mm") || Date.parseExact(value, "H:mm");
+			return !!date;
+		}
+		return true;
+	},
+	message: 'Please enter a valid time (24-hour format).'
+};
 
+ko.validation.rules["arrayMin"] = {
+	validator: function (value, params) {
+		return value.length > params;
+	},
+	message: 'Bad :('
+};
+
+ko.validation.registerExtenders();
 
 (function (root, ko) {
 	var initDatePicker = function ($els) {
@@ -108,16 +127,20 @@ ko.validation.insertValidationMessage = function (element) {
 
 			this.selectedDays = ko.observableArray();
 			this.loadCount = 0;
+			this.showErrors = ko.observable(false);
+			this.submit = function () {
+				this.showErrors(true);
+			};
 
 			this.selectedDays.extend({
-				validation: {
-					validator: function (val, someOtherVal) {
-						return (val.length !== someOtherVal);
-					},
+				arrayMin: {
+					params: 0,
 					message: 'This field is required.',
-					params: 0
+					onlyIf: function () {
+						return self.showErrors();
+					}
 				}
-			});
+			})
 			this.selectedDays(currentState.selectedDays);
 			this.templateID = 'weeklySendOn';
 		};
@@ -197,6 +220,12 @@ ko.validation.insertValidationMessage = function (element) {
 		this.templateID = 'schedulingConfig';
 		this.sendOn = ko.observable({});
 
+		this.submit = function () {
+			if (this.sendOn().submit) {
+				this.sendOn().submit();
+			}
+		};
+
 		this.frequency = ko.observableArray([
 			new Choice("Daily", 1),
 			new Choice("Weekly", 2),
@@ -227,10 +256,10 @@ ko.validation.insertValidationMessage = function (element) {
 					var num = parseInt(value, 10);
 					return !isNaN(num) && num >= params.min && num <= params.max
 				},
-				onlyIf:function(){
+				onlyIf: function () {
 					return self.selectedFrequency() !== 1 && self.isEnabled();
 				},
-				params:{min:1, max:999},
+				params: { min: 1, max: 999 },
 				message: 'Please enter a value between 1 and 999.'
 			}
 		});
@@ -262,17 +291,22 @@ ko.validation.insertValidationMessage = function (element) {
 		});
 
 		this.startDate = ko.observable(options.startDate).extend({
+			date: {
+				message: 'Invalid Date'
+			}
+		}).extend({
 			required: {
 				onlyIf: function () {
 					return self.isEnabled();
 				}
-			},
-			date: {
-				message: 'Invalid Date'
 			}
 		});
 
-		this.endDate = ko.observable(options.endDate).extend({ date: true }).extend({
+		this.endDate = ko.observable(options.endDate).extend({
+			date: {
+				message: 'Invalid Date'
+			}
+		}).extend({
 			validation: {
 				validator: function (value) {
 					if (value && self.startDate() && new Date(value).compareTo(new Date(self.startDate())) < 0) {
@@ -290,17 +324,7 @@ ko.validation.insertValidationMessage = function (element) {
 					return self.isEnabled();
 				}
 			}
-		}).extend({
-			validation: {
-				validator: function (value) {
-					if (value) {
-						return Date.parse(value) !== null;
-					}
-					return true;
-				},
-				message: 'Please enter a valid time (24-hour format).'
-			}
-		});
+		}).extend({ time: true });
 
 	};
 
@@ -317,6 +341,9 @@ ko.validation.insertValidationMessage = function (element) {
 		]);
 		this.selectedOverwrite = ko.observable();
 		this.scheduler = new Scheduler();
+		this.submit = function () {
+			this.scheduler.submit();
+		};
 	};
 
 	var Step = function (settings) {
@@ -338,6 +365,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.submit = function () {
 			var d = root.data.deferred().defer();
+			this.model.submit();
 			if (this.model.errors().length === 0) {
 				d.resolve();
 			} else {
@@ -352,6 +380,7 @@ ko.validation.insertValidationMessage = function (element) {
 		url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails'),
 		templateID: 'step1'
 	});
+
 
 	root.points.steps.push(step);
 

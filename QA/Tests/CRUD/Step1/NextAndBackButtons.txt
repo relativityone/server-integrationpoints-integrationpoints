@@ -1,0 +1,21 @@
+
+*** Settings ***
+| Documentation 	| Verify that the Create Project's Next Step button and Skip Remaining Steps link both function correctly.
+| Metadata		    | Authors	| Daniel Oliver
+| Force Tags		| in-progress	| manual | team.method
+#| Suite Setup		| 
+#| Test Setup		| 
+#| Test Teardown 	| 
+#| Suite Teardown	| 
+
+*** Variables ***
+
+| ${WorkspaceName}	| Relativity Legal Hold
+| ${The Next Button}	
+| ${The Back Button}
+
+*** Test Cases ***
+
+*** Keywords ***
+
+*** Settings ***

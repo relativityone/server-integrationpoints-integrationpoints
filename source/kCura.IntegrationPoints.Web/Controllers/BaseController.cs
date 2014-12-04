@@ -12,7 +12,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
 	{
 		public ISessionService SessionService { get; set; }
 
-		public Core.Services.CreateError CreateError { get; set; }
+		public Core.Services.ErrorService CreateError { get; set; }
+
+		public GridModelFactory ModelFactory { get; set; }
 
 		protected void LogException(Exception e, string controller = null, string action = null)
 		{

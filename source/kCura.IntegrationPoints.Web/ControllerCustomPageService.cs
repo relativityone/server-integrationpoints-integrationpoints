@@ -11,7 +11,15 @@ namespace kCura.IntegrationPoints.Web
 
 		public int GetWorkspaceID()
 		{
-			return Service.WorkspaceID;
+			try
+			{
+				return Service.WorkspaceID;
+			}
+			catch (NullReferenceException e)
+			{
+				return 0;
+			}
+			
 		}
 	}
 }

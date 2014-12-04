@@ -1,0 +1,175 @@
+
+*** Settings ***
+| Documentation	| This suite of keywords deals with the Integration Point object and its associated pages and actions.
+
+
+*** Variables ***
+
+
+
+*** Keywords ***
+
+#------------------------------------------------------------------------------------------------------------------------
+# Step 1 Section 
+
+| Fill out the Following Fields of the Integration Point Step 1 form
+| | [Documentation]	| This keyword fills out the Integration Point Step 1 fields.
+| | ... 			| The value of ${Overwrite} should be Append or Append/Overlay.
+| | ... 			| The value of ${Frequency} should be Select.../Daily/Weekly/Monthly.
+| | ... 			| The acceptable values ${SendOn} vary by the selected ${Frequency}.
+| | ... 			| - When ${Frequency} is 'Weekly' then ${SendOn} should be a semicolon seperated list of the desired days of the week (Note: Each day of the week should begin with a capital letter).
+| | ... 			| -- Alternatively, you can clear the checkboxes by passing in the value 'Clear' for ${SendOn}
+| | ... 			| - When ${Frequency} is 'Monthly' then ${SendOn} should be one of two strings: 
+| | ...				| -- 'The <X> <Y> of the month' where X is First, Second, Third, Fourth, or Last, and Y is any day Monday-Sunday or just 'day'.
+| | ...				| -- 'Day <X> of the month' where X is any value from 1-31.
+| | ...				| The value of ${ScheduledTime} should be expressed in military time. I.E. in the format HH:MM.
+| | [ARGUMENTS]		| ${IntegrationName}=NULL	| ${Overwrite}=NULL	| ${SourceProvider}=NULL	| ${DestinationRDO}=NULL	| ${EnableScheduler}=NULL	| ${Frequency}=NULL		| 
+| | ...				| ${Reoccur}=NULL			| ${SendOn}=NULL	| ${StartDate}=NULL			| ${EndDate}=NULL			| ${ScheduledTime}=NULL
+| | Run Keyword Unless	| "${IntegrationName}" == "NULL"	| Input Text	| id=name	| ${IntegrationName}
+| | Run Keyword Unless	| "${Overwrite}" == "NULL"			| Select from Select2 Dropdown	| s2id_overwrite	| ${Overwrite}
+| | Run Keyword Unless	| "${SourceProvider}" == "NULL"		| Select from Select2 Dropdown	| s2id_sourceProvider	| ${SourceProvider}
+| | Run Keyword Unless	| "${DestinationRDO}" == "NULL"		| Select from Select2 Dropdown	| s2id_destinationRdo	| ${DestinationRDO}
+
+| | Run Keyword If		| "${EnableScheduler.lower()}" == "yes"		| Select Radio Button	| enable	| true	| 
+| | ... | ELSE IF		| "${EnableScheduler.lower()}" == "no"		| Select Radio Button	| enable	| false	| 
+| | ... | ELSE IF		| "${EnableScheduler.lower()}" != "null"	| Fail	| The variable "EnableScheduler" expected "Yes", "No", or "NULL", but got "${EnableScheduler}".
+
+| | ${SchedulerEnabled}=	| Get Selected Radio Button Value	| enable
+| | @{SchedulerValues}=	| Create List	| ${Frequency}	| ${Reoccur}	| ${SendOn}	| ${StartDate}	| ${EndDate}	| ${ScheduledTime}
+| | @{NullValues}=		| Create List	| NULL			| NULL			| NULL		| NULL			| NULL			| NULL
+| | Run Keyword Unless	| ${${SchedulerEnabled}}	| Lists Should Be Equal	| ${SchedulerValues}	| ${NullValues}	| The Scheduler fields cannot be changed while Enable Scheduler is set to No.
+
+| | Run Keyword Unless	| "${Frequency}" == "NULL"		| Select from Select2 Dropdown	| s2id_frequency	| ${Frequency}
+
+| | ${FrequencyValue}=	| Determine the currently selected value of a select2 Dropdown	| s2id_frequency
+| | @{ConditionalSchedulerValues}=	| Create List	| ${Reoccur}	| ${SendOn}
+| | @{NullValues}=					| Create List	| NULL			| NULL
+| | Run Keyword Unless	| ("${FrequencyValue}" == "Monthly") or ("${FrequencyValue}" == "Weekly")	| Lists Should Be Equal	| ${ConditionalSchedulerValues}	| ${NullValues}	| The Reoccur and Send On fields cannot be changed while Frequency is set to "${FrequencyValue}".
+
+| | Run Keyword Unless	| "${Reoccur}" == "NULL"	| Input Text	| id=reoccur	| ${Reoccur}
+
+| | Run Keyword If	| ("${FrequencyValue}" == "Weekly") and ("${SendOn}" != "NULL")		| IntegrationPointKeywords.Fill out the Send On field for a Weekly Frequency	| ${SendOn}	| 
+| | ... | ELSE IF	| ("${FrequencyValue}" == "Monthly") and ("${SendOn}" != "NULL")	| IntegrationPointKeywords.Fill out the Send On field for a Monthly Frequency	| ${SendOn}
+
+| | Run Keyword Unless	| "${StartDate}" == "NULL"	| Input Text	| id=startDate	| ${StartDate}
+
+| | Run Keyword Unless	| "${EndDate}" == "NULL"	| Input Text	| id=endDate	| ${EndDate}
+
+| | Run Keyword Unless	| "${ScheduledTime}" == "NULL"	| Input Text	| id=scheduledTime	| ${ScheduledTime}
+
+| Fill out the Send On field for a Weekly Frequency
+| | [Documentation]	| Selects the given checkboxes of the Weekly Send On field's checkboxes.
+| | ... 			| [Tags] private
+| | [ARGUMENTS] 	| ${SendOn}
+| | ${SendOn}=	| Replace String	| ${SendOn}	| ${SPACE}	| ${EMPTY}
+| | IntegrationPointKeywords.Clear the Weekly Send On Field
+| | Run Keyword Unless	| '${SendOn.lower()}' == 'clear'	| IntegrationPointKeywords.Populate the Weekly Send On Field	| ${SendOn}
+
+| Clear the Weekly Send On Field
+| | [Documentation]	| Unselects all of the Weekly Send On field's checkboxes.
+| | ... 			| [Tags] private
+| | Click	| id=name	| # The cursor can get stuck on the Reoccur field. This just clicks out of the field and has no other effects.
+| | @{DaysOfTheWeek}=	| Create List	| Monday	| Tuesday	| Wednesday	| Thursday	| Friday	| Saturday	| Sunday
+| | :FOR	| ${Locator}	| IN RANGE	| 7	| # Run for values 0 to 6
+| | | Unselect Checkbox	| xpath=//input[@type='checkbox' and @value='${DaysOfTheWeek[${Locator}]}']
+
+| Populate the Weekly Send On Field
+| | [Documentation]	| This keywords splits up the given string, which should be a semicolon seperated list of days. 
+| | ... 			| It then selects the Send On field checkboxes for the given days.
+| | ... 			| [Tags] private
+| | [ARGUMENTS] 	| ${SendOn}
+| | @{Days}=	| Split String	| ${SendOn}	| ;	| 6
+| | :FOR	| ${Day}	| IN	| @{Days}
+| | | Element Should Be Visible	| xpath=//input[@type='checkbox' and @value='${Day}']	| Could not find the checkbox for "${Day}". 
+| | | Select Checkbox	| xpath=//input[@type='checkbox' and @value='${Day}']
+
+| Fill out the Send On field for a Monthly Frequency
+| | [Documentation]	| Fills out the Send On fields present when the Frequency is set to Monthly. 
+| | ... 			| [Tags] private
+| | [ARGUMENTS] 	| ${SendOn}
+| | ${FirstWord}=	| Fetch from Left	| ${SendOn}	| ${Space}
+| | Run Keyword If	| '${FirstWord.lower()}' == 'the'	| IntegrationPointKeywords.Select the radio button for The X X of the month	| ${SendOn}
+| | ... | ELSE IF	| '${FirstWord.lower()}' == 'day'	| IntegrationPointKeywords.Select the day X of the month radio button		| ${SendOn}
+| | ... | ELSE		| Fail	| The Send On field could not be filled out. The value "${SendOn}" was not valid.
+
+| Select the day X of the month radio button
+| | [Documentation]	| Selects the values for the Day X of the month option. This includes both setting the dropdown value and the radio button.
+| | ... 			| [Tags] private
+| | [ARGUMENTS] 	| ${SendOn}
+| | ${DayValue}=	| Fetch from Left	| ${SendOn}	| ${Space}of the month
+| | ${DayValue}=	| Fetch from Right	| ${DayValue}	| Day${Space}
+| | Select from select2 Dropdown	| id=s2id_day-select	| ${DayValue}	| # The Send On dropdown
+| | Select Radio Button	| monthly	| days
+
+| Select the radio button for The X X of the month
+| | [Documentation]	| Selects the values for the "The X X of the month." option. This includes setting both the dropdown values and the radio button.
+| | ... 			| [Tags] private
+| | [ARGUMENTS] 	| ${SendOn}
+| | ${BothValues}=	| Fetch from Left	| ${SendOn}	| ${Space}of the month
+| | ${BothValues}=	| Fetch from Right	| ${BothValues}	| The${Space}
+| | ${Occurance}	| ${Day}=	| Split String	| ${BothValues}	| ${Space}
+| | Select from select2 Dropdown	| id=s2id_dayType		| ${Occurance}
+| | Select from select2 Dropdown	| id=s2id_dayOfMonth	| ${Day}
+| | Select Radio Button	| monthly	| month
+
+#------------------------------------------------------------------------------------------------------------------------
+# Step 2 Section
+
+
+#------------------------------------------------------------------------------------------------------------------------
+# Generic Keywords
+
+| Open Create Integration Point
+| | [Documentation]	| Opens the create Integration Point page. Must be called from the All Integration Points page.
+| | Go to the Tab	| Integration Points
+| | Click	| New Integration Point
+| | Wait for then Select iFrame	| id=_externalPage	| 10s	| The Page never redirected after clicking "New Integration Point".
+
+| Verify that the following field is not required
+| | [Documentation]	| A keyword that verifies the specified field does not have the required field indicator (orange line).
+| | [ARGUMENTS] 	| ${FieldName}
+| | Page Should Not Contain Element	| xpath=//div[@class="field-label required" and contains(text(), "${FieldName}")]	| "${FieldName}" is required when it should not have been.
+| | Page Should Contain Element		| xpath=//div[@class="field-label" and contains(text(), "${FieldName}")]			| "${FieldName}" was not present on the page.
+
+| Verify that the following field is required
+| | [Documentation]	| A keyword that verifies that the specified field has the required field indicator (orange line).
+| | [ARGUMENTS] 	| ${FieldName}
+| | Page Should Not Contain Element	| xpath=//div[@class="field-label" and contains(text(), "${FieldName}")]			| "${FieldName}" is not required when it should have been.
+| | Page Should Contain Element		| xpath=//div[@class="field-label required" and contains(text(), "${FieldName}")]	| "${FieldName}" was not present on the page.
+
+| Verify that the following radio buttons are grouped together
+| | [Documentation]	| A keyword that verifies that a radio buttons set of options are correct.
+| | ...				| [Tags] mainstream?
+| | [ARGUMENTS] 	| ${GroupName}	| @{ExpectedOptions}
+| | Page Should Contain Element	| xpath=//input[@type="radio" and @name="${GroupName}"]	| No radio button group with the name attribute "${GroupName}" was present on the page.
+| | @{ActualOptions}=	| Get Element Text	| xpath=//input[@type="radio" and @name="${GroupName}"]/parent::*	| False
+| | Sort List	| ${ActualOptions}
+| | Sort List	| ${ExpectedOptions}
+| | Lists Should Be Equal	| ${ExpectedOptions}	| ${ActualOptions}
+
+| Verify that the following field ID has a text input
+| | [Documentation]	| A keyword that verifies the specified field has an input type of Text.
+| | [ARGUMENTS] 	| ${FieldID}
+| | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
+| | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@type="text" and @id="${FieldID}"]	| The "${FieldID}" field does not have an input type of Text.
+
+| Verify that the following field ID has a droplist input
+| | [Documentation]	| A keyword that verifies the specified field has an input type of a drop down list.
+| | [ARGUMENTS]		| ${FieldID}
+| | Page Should Contain Element	| xpath=//div[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
+| | Page Should Contain Element	| xpath=//div[@class="select2-container filter-container" and @id="${FieldID}"]	| The field ID of "${FieldID}" does not have an input type of a drop down list.
+
+| Verify that the following section contains the following fields
+| | [Documentation]	| A keyword that verifies that a Section contains the specified fields in the specified order
+| | [ARGUMENTS]		| ${SectionHeading}	| @{ExpectedFields}
+| | Element Should be Visible	| xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]	| The Section "${SectionHeading}" was not found
+| | @{ActualFields}=	| Get Element Text	| xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]/descendant::div[contains(@class, "field-label")]	| False 
+| | Remove values from list	| ${ActualFields}	| ${EMPTY}
+| | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
+
+
+*** Settings ***
+| Library	| String
+| Library	| Collections
+| Library 	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
