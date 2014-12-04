@@ -1,0 +1,35 @@
+@import "buttermilk-variables";
+.dragon-pager{
+	float: right;
+	color: $color-darkest-blue;
+	> span{
+		display: inline-block;
+	}
+	ul {
+		display: inline-block;
+		padding: 0 5px;
+		margin: 0 0 10px;
+		li {
+			display: inline-block;
+			a {
+				padding: 3px 4px 2px;
+				margin: 1px;
+				border:1px solid $color-ligther-blue;
+				border-radius: 3px;
+				font-size: .5em;
+				color: $color-ligther-blue;
+				text-decoration: none;
+				vertical-align: middle;
+				&.disabled:hover{
+					cursor: default;
+				}
+			}
+
+		}
+	}
+	input[type="text"]{
+		width: 30px;
+		text-align: center;
+	}
+}
+

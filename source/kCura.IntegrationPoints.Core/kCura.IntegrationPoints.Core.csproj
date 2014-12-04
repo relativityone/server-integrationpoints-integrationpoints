@@ -97,6 +97,7 @@
     <Compile Include="Services\Syncronizer\DataSyncronizerComponetSelector.cs" />
     <Compile Include="Services\Syncronizer\IDataSyncronizer.cs" />
     <Compile Include="Services\Syncronizer\IDataSyncronizerFactory.cs" />
+    <Compile Include="Services\UserService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

@@ -27,6 +27,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IntegrationPointReader>().ImplementedBy<IntegrationPointReader>().LifestyleTransient());
 			container.Register(Component.For<SourceTypeFactory>().ImplementedBy<SourceTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<RdoFilter>().ImplementedBy<RdoFilter>().LifestyleTransient());
+
+			container.Register(Component.For<UserService>().ImplementedBy<UserService>().LifestyleTransient());
 		}
 	}
 }

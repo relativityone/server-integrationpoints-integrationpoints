@@ -14,6 +14,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		public Core.Services.ErrorService CreateError { get; set; }
 
+		public GridModelFactory ModelFactory { get; set; }
+
 		protected void LogException(Exception e, string controller = null, string action = null)
 		{
 			if (string.IsNullOrEmpty(controller))
