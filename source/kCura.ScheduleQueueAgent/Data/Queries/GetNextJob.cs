@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using kCura.ScheduleQueueAgent.Properties;
+using kCura.ScheduleQueueAgent.TimeMachine;
 
 namespace kCura.ScheduleQueueAgent.Data.Queries
 {
@@ -21,7 +22,17 @@ namespace kCura.ScheduleQueueAgent.Data.Queries
 			sql = sql.Replace("@ResourceGroupArtifactIDs", ResourceGroupArtifactIDs);
 
 #if TIME_MACHINE
-             //TODO: implement Time Machine. see Legal Hold
+			if (AgentTimeMachineProvider.Current.Enabled)
+			{
+				if (AgentTimeMachineProvider.Current.WorkspaceID > 0)
+				{
+					sql = sql.Replace("q.[NextRunTime] <= GETUTCDATE()", String.Format("((q.[NextRunTime] <= GETUTCDATE() AND q.[WorkspaceID]<>{0}) OR (q.[NextRunTime] <= CAST('{1}' AS DATETIME) AND q.[WorkspaceID]={0}))", AgentTimeMachineProvider.Current.WorkspaceID, AgentTimeMachineProvider.Current.UtcNow));
+				}
+				else
+				{
+					sql = sql.Replace("GETUTCDATE()", String.Format("CAST('{0}' AS DATETIME)", AgentTimeMachineProvider.Current.UtcNow));
+				}
+			}
 #endif
 
 			List<SqlParameter> sqlParams = new List<SqlParameter>();

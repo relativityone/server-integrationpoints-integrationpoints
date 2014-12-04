@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			//TODO: Get this to work
 			var result = _reader.GetFieldMap(id);
-			return JsonNetResult(null);
+			return JsonNetResult(result);
 		}
 
 		public IEnumerable<object> GetFakeData()

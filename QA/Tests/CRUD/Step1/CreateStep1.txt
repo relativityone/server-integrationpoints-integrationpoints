@@ -135,33 +135,6 @@
 | | ... | Expected Results:
 | | ... | 1. Verify that step 2 is now shown.
 
-| Clicking Cancel returns to the list
-| | [Documentation]	| Verify that clicking Cancel returns to the Integratrion Points list view
-| | [Tags] | manual | not yet implemented
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... | 3. Fill out the Integration Name filled with "Testing Cancel"
-| | ... | 4. Click | Cancel
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Integratrion Points list view is shown
-
-| Clicking Cancel does not create a new Integration Point
-| | [Documentation]	| Verify that clicking Cancel does not save the Integration Point
-| | [Tags] | manual | not yet implemented
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
-| | ... | 3. Fill out the Integration Name filled with "Testing Cancel"
-| | ... | 4. Click | Cancel
-| | ... | 5. Filter the Integration Point list for "Testing Cancel"
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Integratrion Point of "Testing Cancel" is not present
-
 *** Keywords ***
 
 *** Settings ***
