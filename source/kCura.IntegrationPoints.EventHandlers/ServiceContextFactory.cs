@@ -12,13 +12,13 @@ namespace kCura.IntegrationPoints.EventHandlers
 {
 	public class ServiceContextFactory
 	{
-		public static IServiceContext CreateServiceContext(IEHHelper helper)
+		public static IServiceContext CreateServiceContext(IEHHelper helper, int workspaceID)
 		{
 			return new ServiceContext
 		 {
-			 SqlContext = helper.GetDBContext(helper.GetActiveCaseID()),
+			 SqlContext = helper.GetDBContext(workspaceID),
 			 RsapiService = CreateRSAPIService(helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser)),
-			 WorkspaceID = helper.GetActiveCaseID()
+			 WorkspaceID = workspaceID
 		 };
 		}
 

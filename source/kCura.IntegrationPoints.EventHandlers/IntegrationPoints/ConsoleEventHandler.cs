@@ -20,7 +20,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				DisplayText = "Import Data Now",
 				RaisesPostBack = false,
-				Enabled = true
+				Enabled = true,
+				OnClickEvent = "IP.importNow(" + this.ActiveArtifact.ArtifactID + ")"
 			});
 			
 			return console;

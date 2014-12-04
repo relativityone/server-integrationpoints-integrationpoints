@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 
 		public IServiceContext ServiceContext
 		{
-			get { return _context ?? (_context = ServiceContextFactory.CreateServiceContext(base.Helper)); }
+			get { return _context ?? (_context = ServiceContextFactory.CreateServiceContext(base.Helper, this.ApplicationArtifactId)); }
 			set { _context = value; }
 		}
 
