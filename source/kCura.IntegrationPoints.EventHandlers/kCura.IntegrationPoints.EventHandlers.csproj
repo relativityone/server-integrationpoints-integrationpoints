@@ -78,11 +78,13 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ConsoleEventHandlerBase.cs" />
+    <Compile Include="Installers\RunEveryTimeInstaller.cs" />
     <Compile Include="IntegrationPoints\ConsoleEventHandler.cs" />
     <Compile Include="Constant.cs" />
     <Compile Include="ExternalTabURLService.cs" />
     <Compile Include="IntegrationPoints\PageInteractionEventHandler.cs" />
     <Compile Include="IntegrationPoints\PreLoadEventHandler.cs" />
+    <Compile Include="ServiceContextFactory.cs" />
     <Compile Include="TagBuilder.cs" />
     <Compile Include="PreLoadEventHandlerBase.cs" />
   </ItemGroup>
