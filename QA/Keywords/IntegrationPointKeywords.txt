@@ -151,6 +151,21 @@
 # Step 2 Section
 
 
+#------------------------------------------------------------------------------------------------------------------------
+# Generic Keywords
+| Verify that the following field is not required
+| | [Documentation] | A keyword that verifies the specified field does not have the required field indicator (orange line).
+| | [Arguments] | ${FieldName}
+| | Page Should Not Contain Element  | xpath=//div[@class="field-label required" and contains(text(), "${FieldName}")] | "${FieldName}" is required when it should not have been.
+| | Page Should Contain Element  | xpath=//div[@class="field-label" and contains(text(), "${FieldName}")] | "${FieldName}" was not present on the page.
+
+| Verify that the following field is required
+| | [Documentation] | A keyword that verifies that the specified field has the required field indicator (orange line).
+| | [Arguments] | ${FieldName}
+| | Page Should Not Contain Element  | xpath=//div[@class="field-label" and contains(text(), "${FieldName}")]  | "${FieldName}" is not required when it should have been.
+| | Page Should Contain Element  | xpath=//div[@class="field-label required" and contains(text(), "${FieldName}")] |  "${FieldName}" was not present on the page.
+
+
 *** Settings ***
 | Library	| String
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
