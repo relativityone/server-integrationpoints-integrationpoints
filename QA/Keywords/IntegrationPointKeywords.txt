@@ -15,37 +15,8 @@
 | | Click 		| New Integration Point
 | | Wait for then Select iFrame	| id=_externalPage	| 10s	| The Page never redirected after clicking "New Integration Point".
 
-| Verify that you are on the following Step of the Create Integration Point Process
-| | [Documentation]	| Verifies that you are on the given step of the Create Integration Point process.
-| | ...				| Currently, the acceptable values are: Set Integration Details, Map Fields, Preview Import
-| | [ARGUMENTS] 	| ${ExpectedStep}
-| | Verify that the Header has the Following Text	| Create Integration Point
-| | ${ActualStep}=	| Get Text	| xpath=//div[@id='stepProgress']/descendant::li[@class='in-progress']
-| | ${ActualStep}=	| Fetch From Left	| ${ActualStep}	| \n
-| | Run Keyword Unless	| "${ExpectedStep}" == "${ActualStep}"	| Fail	| The current step was not "${ExpectedStep}", it was "${ActualStep}".
-
-| Verify the following Integration Point Field has the following Error
-| | [Documentation]	| Verifies that the given field has the given error.
-| | ... 			| Must be called from the Integration Point Create/Edit pages.
-| | [ARGUMENTS] 	| ${FieldID}	| ${ErrorText}
-| | ${FieldID}= | fetch from right | ${FieldID} | s2id_
-| | Element Should Be Visible	| xpath=//*[@id='${FieldID}']/following-sibling::div/child::*[contains(@class, 'icon-error') and contains(@class, 'field-validation-error')]	| No error was found on the field with the ID "${FieldID}".
-| | ${ActualText}=	| Get Text	| xpath=//*[@id='${FieldID}']/following-sibling::div/child::*[contains(@class, 'icon-error') and contains(@class, 'field-validation-error')]
-| | Run Keyword Unless	| '${ActualText}' == '${ErrorText}'	| Fail	| The error was incorrect. It should have been "${ErrorText}" but it was actually "${ActualText}".
-
-| Verify the following Method Field has the following Error
-| | [Documentation]	| Verifies that the given field has the given error.
-| | ... 			| Must be called from a Method Create/Edit page.
-| | ...				| This does not work on HTML fields, due to their lack of IDs.
-| | [ARGUMENTS] 	| ${FieldID}	| ${ErrorText}
-| | ${FieldID}= | fetch from right | ${FieldID} | s2id_
-| | Wait Until Element is Visible	| xpath=//*[contains(@class, 'icon-error field-validation-error')]	| 10s	| No field errors were triggered.
-| | Element Should Be Visible	| xpath=//*[@id='${FieldID}']/following-sibling::*[contains(@class, 'icon-error field-validation-error')]	| No error was found on the field with the ID "${FieldID}".
-| | ${ActualText}=	| Get Text	| xpath=//*[@id='${FieldID}']/following-sibling::*[contains(@class, 'icon-error field-validation-error')]
-| | Run Keyword Unless	| '${ActualText}' == '${ErrorText}'	| Fail	| The error was incorrect. It should have been "${ErrorText}" but it was actually "${ActualText}".
-
 #------------------------------------------------------------------------------------------------------------------------
-# Step 1 Section
+# Step 1 Section 
 
 | Fill out the Following Fields of the Integration Point Step 1 form
 | | [Documentation]	| This keyword fills out the Integration Point Step 1 fields.
@@ -86,9 +57,9 @@
 | | Run Keyword If	| ("${FrequencyValue}" == "Weekly") and ("${SendOn}" != "NULL")		| IntegrationPointKeywords.Fill out the Send On field for a Weekly Frequency	| ${SendOn}	| 
 | | ... | ELSE IF	| ("${FrequencyValue}" == "Monthly") and ("${SendOn}" != "NULL")	| IntegrationPointKeywords.Fill out the Send On field for a Monthly Frequency	| ${SendOn}
 
-| | Run Keyword Unless	| "${StartDate}" == "NULL"	| Input Text	| id=scheduleRulesStartDate	| ${StartDate}
+| | Run Keyword Unless	| "${StartDate}" == "NULL"	| Input Text	| id=startDate	| ${StartDate}
 
-| | Run Keyword Unless	| "${EndDate}" == "NULL"	| Input Text	| id=scheduleRulesEndDate	| ${EndDate}
+| | Run Keyword Unless	| "${EndDate}" == "NULL"	| Input Text	| id=endDate	| ${EndDate}
 
 | | Run Keyword Unless	| "${ScheduledTime}" == "NULL"	| Input Text	| id=scheduledTime	| ${ScheduledTime}
 
@@ -165,6 +136,34 @@
 | | Page Should Not Contain Element  | xpath=//div[@class="field-label" and contains(text(), "${FieldName}")]  | "${FieldName}" is not required when it should have been.
 | | Page Should Contain Element  | xpath=//div[@class="field-label required" and contains(text(), "${FieldName}")] |  "${FieldName}" was not present on the page.
 
+| Verify that the following radio buttons are grouped together
+| | [Documentation] | A keyword that verifies that a radio buttons set of options are correct.
+| | [ARGUMENTS]           | ${GroupName}              | @{ExpectedOptions}
+| | Page Should Contain Element              | xpath=//input[@type="radio" and @name="${GroupName}"] | No radio button group with the name attribute "${GroupName}" was present on the page.
+| | @{ActualOptions}=  | Get Element Text         | xpath=//input[@type="radio" and @name="${GroupName}"]/parent::* | False
+| | Sort List         | ${ActualOptions}
+| | Sort List         | ${ExpectedOptions}
+| | Lists Should Be Equal               | ${ExpectedOptions}    | ${ActualOptions}
+
+| Verify that the following field ID has a text input
+| | [Documentation] | A keyword that verifies the specified field has an input type of Text.
+| | [Arguments] | ${FieldID}
+| | Page Should Contain Element  | xpath=//div[@class="field-value"]/child::input[@id="${FieldID}"] | The field ID of "${FieldID}" was not present on the page.
+| | Page Should Contain Element | xpath=//div[@class="field-value"]/child::input[@type="text" and @id="${FieldID}"] | The "${FieldID}" field does not have an input type of Text.
+
+| Verify that the following field ID has a droplist input
+| | [Documentation] | A keyword that verifies the specified field has an input type of a drop down list.
+| | [Arguments] | ${FieldID}
+| | Page Should Contain Element  | xpath=//div[@id="${FieldID}"] | The field ID of "${FieldID}" was not present on the page.
+| | Page Should Contain Element  | xpath=//div[@class="select2-container filter-container" and @id="${FieldID}"] | The field ID of "${FieldID}" does not have an input type of a drop down list.
+
+| Verify that the following section contains the following fields
+| | [Documentation] | A keyword that verifies that a Section contains the specified fields in the specified order
+| | [Arguments] | ${SectionHeading} | @{ExpectedFields}
+| | Element Should be Visible  | xpath=//div[@class="card" and descendant::text()="${SectionHeading}"] | The Section "${SectionHeading}" was not found
+| | @{ActualFields}= | Get Element Text  | xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]/descendant::div[contains(@class, "field-label")] | False 
+| | Remove values from list | ${ActualFields} | ${EMPTY}
+| | Lists should be Equal  | ${ActualFields} | ${ExpectedFields}
 
 *** Settings ***
 | Library	| String
