@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Extensions;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -14,14 +15,16 @@ namespace kCura.IntegrationPoints.Core.Services
 
 	public class SourceTypeFactory
 	{
+		private readonly IServiceContext _context;
+		public SourceTypeFactory(IServiceContext context)
+		{
+			_context = context;
+		}
+
 		public virtual IEnumerable<SourceType> GetSourceTypes()
 		{
-			//hardcoded for now but you could use reflection to get the types
-			yield return new SourceType
-				{
-					Name = "LDAP",
-					ID = "ldap"
-				};
+			var types = _context.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(Data.SourceProviderFieldGuids.Name), Guid.Parse(Data.SourceProviderFieldGuids.Identifier));
+			return types.Select(x => new SourceType { Name = x.Name, ID = x.Identifier });
 		}
 	}
 }
