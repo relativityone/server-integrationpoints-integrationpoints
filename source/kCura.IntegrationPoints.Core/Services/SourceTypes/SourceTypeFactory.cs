@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 		public virtual IEnumerable<SourceType> GetSourceTypes()
 		{
 			var types = _context.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(Data.SourceProviderFieldGuids.Name), Guid.Parse(Data.SourceProviderFieldGuids.Identifier));
-			return types.Select(x => new SourceType { Name = x.Name, ID = x.Identifier });
+			return types.Select(x => new SourceType { Name = x.Name, ID = x.Identifier }).OrderBy(x=>x.Name).ToList();
 		}
 	}
 }

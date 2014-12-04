@@ -11,6 +11,6 @@ namespace kCura.IntegrationPoints.Data
 
 		public IGenericLibrary<IntegrationPoint> IntegrationPointLibrary { get; set; }
 		public IGenericLibrary<SourceProvider> SourceProviderLibrary { get; set; }
-	
+
 	}
 }
