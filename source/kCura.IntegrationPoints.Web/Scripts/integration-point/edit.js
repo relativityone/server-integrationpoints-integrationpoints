@@ -5,10 +5,10 @@
 				text: 'Set Integration Details'
 			},
 			{
-				text: 'Map Fields'
+				text: 'Connect to Source' //Map Fields
 			},
 			{
-				text: 'Preview Import'
+				text: 'Map Fields' //Preview Import
 			}
 		]
 	});
