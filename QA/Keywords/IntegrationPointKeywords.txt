@@ -3,17 +3,11 @@
 | Documentation	| This suite of keywords deals with the Integration Point object and its associated pages and actions.
 
 
-***Variables***
+*** Variables ***
 
 
 
 *** Keywords ***
-
-| Open Create Integration Point
-| | [Documentation]	| Opens the create Integration Point page. Must be called from the All Integration Points page.
-| | Go to the Tab	| Integration Points
-| | Click 		| New Integration Point
-| | Wait for then Select iFrame	| id=_externalPage	| 10s	| The Page never redirected after clicking "New Integration Point".
 
 #------------------------------------------------------------------------------------------------------------------------
 # Step 1 Section 
@@ -124,48 +118,58 @@
 
 #------------------------------------------------------------------------------------------------------------------------
 # Generic Keywords
+
+| Open Create Integration Point
+| | [Documentation]	| Opens the create Integration Point page. Must be called from the All Integration Points page.
+| | Go to the Tab	| Integration Points
+| | Click	| New Integration Point
+| | Wait for then Select iFrame	| id=_externalPage	| 10s	| The Page never redirected after clicking "New Integration Point".
+
 | Verify that the following field is not required
-| | [Documentation] | A keyword that verifies the specified field does not have the required field indicator (orange line).
-| | [Arguments] | ${FieldName}
-| | Page Should Not Contain Element  | xpath=//div[@class="field-label required" and contains(text(), "${FieldName}")] | "${FieldName}" is required when it should not have been.
-| | Page Should Contain Element  | xpath=//div[@class="field-label" and contains(text(), "${FieldName}")] | "${FieldName}" was not present on the page.
+| | [Documentation]	| A keyword that verifies the specified field does not have the required field indicator (orange line).
+| | [ARGUMENTS] 	| ${FieldName}
+| | Page Should Not Contain Element	| xpath=//div[@class="field-label required" and contains(text(), "${FieldName}")]	| "${FieldName}" is required when it should not have been.
+| | Page Should Contain Element		| xpath=//div[@class="field-label" and contains(text(), "${FieldName}")]			| "${FieldName}" was not present on the page.
 
 | Verify that the following field is required
-| | [Documentation] | A keyword that verifies that the specified field has the required field indicator (orange line).
-| | [Arguments] | ${FieldName}
-| | Page Should Not Contain Element  | xpath=//div[@class="field-label" and contains(text(), "${FieldName}")]  | "${FieldName}" is not required when it should have been.
-| | Page Should Contain Element  | xpath=//div[@class="field-label required" and contains(text(), "${FieldName}")] |  "${FieldName}" was not present on the page.
+| | [Documentation]	| A keyword that verifies that the specified field has the required field indicator (orange line).
+| | [ARGUMENTS] 	| ${FieldName}
+| | Page Should Not Contain Element	| xpath=//div[@class="field-label" and contains(text(), "${FieldName}")]			| "${FieldName}" is not required when it should have been.
+| | Page Should Contain Element		| xpath=//div[@class="field-label required" and contains(text(), "${FieldName}")]	| "${FieldName}" was not present on the page.
 
 | Verify that the following radio buttons are grouped together
-| | [Documentation] | A keyword that verifies that a radio buttons set of options are correct.
-| | [ARGUMENTS]           | ${GroupName}              | @{ExpectedOptions}
-| | Page Should Contain Element              | xpath=//input[@type="radio" and @name="${GroupName}"] | No radio button group with the name attribute "${GroupName}" was present on the page.
-| | @{ActualOptions}=  | Get Element Text         | xpath=//input[@type="radio" and @name="${GroupName}"]/parent::* | False
-| | Sort List         | ${ActualOptions}
-| | Sort List         | ${ExpectedOptions}
-| | Lists Should Be Equal               | ${ExpectedOptions}    | ${ActualOptions}
+| | [Documentation]	| A keyword that verifies that a radio buttons set of options are correct.
+| | ...				| [Tags] mainstream?
+| | [ARGUMENTS] 	| ${GroupName}	| @{ExpectedOptions}
+| | Page Should Contain Element	| xpath=//input[@type="radio" and @name="${GroupName}"]	| No radio button group with the name attribute "${GroupName}" was present on the page.
+| | @{ActualOptions}=	| Get Element Text	| xpath=//input[@type="radio" and @name="${GroupName}"]/parent::*	| False
+| | Sort List	| ${ActualOptions}
+| | Sort List	| ${ExpectedOptions}
+| | Lists Should Be Equal	| ${ExpectedOptions}	| ${ActualOptions}
 
 | Verify that the following field ID has a text input
-| | [Documentation] | A keyword that verifies the specified field has an input type of Text.
-| | [Arguments] | ${FieldID}
-| | Page Should Contain Element  | xpath=//div[@class="field-value"]/child::input[@id="${FieldID}"] | The field ID of "${FieldID}" was not present on the page.
-| | Page Should Contain Element | xpath=//div[@class="field-value"]/child::input[@type="text" and @id="${FieldID}"] | The "${FieldID}" field does not have an input type of Text.
+| | [Documentation]	| A keyword that verifies the specified field has an input type of Text.
+| | [ARGUMENTS] 	| ${FieldID}
+| | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
+| | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@type="text" and @id="${FieldID}"]	| The "${FieldID}" field does not have an input type of Text.
 
 | Verify that the following field ID has a droplist input
-| | [Documentation] | A keyword that verifies the specified field has an input type of a drop down list.
-| | [Arguments] | ${FieldID}
-| | Page Should Contain Element  | xpath=//div[@id="${FieldID}"] | The field ID of "${FieldID}" was not present on the page.
-| | Page Should Contain Element  | xpath=//div[@class="select2-container filter-container" and @id="${FieldID}"] | The field ID of "${FieldID}" does not have an input type of a drop down list.
+| | [Documentation]	| A keyword that verifies the specified field has an input type of a drop down list.
+| | [ARGUMENTS]	| ${FieldID}
+| | Page Should Contain Element	| xpath=//div[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
+| | Page Should Contain Element	| xpath=//div[@class="select2-container filter-container" and @id="${FieldID}"]	| The field ID of "${FieldID}" does not have an input type of a drop down list.
 
 | Verify that the following section contains the following fields
-| | [Documentation] | A keyword that verifies that a Section contains the specified fields in the specified order
-| | [Arguments] | ${SectionHeading} | @{ExpectedFields}
-| | Element Should be Visible  | xpath=//div[@class="card" and descendant::text()="${SectionHeading}"] | The Section "${SectionHeading}" was not found
-| | @{ActualFields}= | Get Element Text  | xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]/descendant::div[contains(@class, "field-label")] | False 
-| | Remove values from list | ${ActualFields} | ${EMPTY}
-| | Lists should be Equal  | ${ActualFields} | ${ExpectedFields}
+| | [Documentation]	| A keyword that verifies that a Section contains the specified fields in the specified order
+| | [ARGUMENTS]		| ${SectionHeading}	| @{ExpectedFields}
+| | Element Should be Visible	| xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]	| The Section "${SectionHeading}" was not found
+| | @{ActualFields}=	| Get Element Text	| xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]/descendant::div[contains(@class, "field-label")]	| False 
+| | Remove values from list	| ${ActualFields}	| ${EMPTY}
+| | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
+
 
 *** Settings ***
 | Library	| String
+| Library	| Collections
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
