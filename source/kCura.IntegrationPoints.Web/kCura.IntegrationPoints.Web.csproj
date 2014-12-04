@@ -276,7 +276,7 @@
     <Content Include="Scripts\dragon\dragon-core.js" />
     <Content Include="Scripts\dragon\dragon-schedule.js" />
     <Content Include="Scripts\dragon\dragon-utils.js" />
-    <Content Include="Scripts\EventHandlers\test.js" />
+    <Content Include="Scripts\EventHandlers\integration-points-view.js" />
     <Content Include="Scripts\core\data.js" />
     <Content Include="Scripts\grid\dragon-grid-filters.js" />
     <Content Include="Scripts\grid\dragon-grid-formatters.js" />
