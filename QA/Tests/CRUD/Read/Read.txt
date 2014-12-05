@@ -1,3 +1,4 @@
+
 *** Settings ***
 | Documentation 	| Verify that 
 | Metadata		    | Authors	| Daniel Oliver
@@ -7,6 +8,7 @@
 #| Test Teardown     | capture screenshot if test fails
 #| Suite Teardown	| Delete Suite Setup Data
 
+
 *** Variables ***
 
 | ${WorkspaceName}	   | Relativity Legal Hold
@@ -14,6 +16,7 @@
 | ${IP2}               | Integration Point 1 | #Daily Schedule
 | ${IP3}               | Integration Point 1 | #Weekly Schedule
 | ${IP4}               | Integration Point 1 | #Monthly Schedule
+
 
 *** Test Cases ***
 
@@ -212,3 +215,10 @@
 | | ... | Next Scheduled Runtime | Date Time
 | | ... | Last Run Time      | Date Time
 
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt

@@ -197,13 +197,6 @@
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Map Fields
 
 
-*** Keywords ***
-
-| Proceed to the Next Page
-| | Click	| id=stepProgress	| # Click out of any given field
-| | Click	| id=next
-
-
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt

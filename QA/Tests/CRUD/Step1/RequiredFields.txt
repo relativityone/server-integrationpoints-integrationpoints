@@ -1,3 +1,4 @@
+
 *** Settings ***
 | Documentation 	| Verify that Step 1 can be completed in the Create Integration Point wizard
 | Metadata		    | Authors	| Daniel Oliver	| William Sehy
