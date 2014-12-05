@@ -9,6 +9,10 @@
 
 *** Keywords ***
 
+| Proceed to the Next Page
+| | Click	| id=stepProgress	| # Click out of any given field
+| | Click	| id=next
+
 #------------------------------------------------------------------------------------------------------------------------
 # Step 1 Section 
 
@@ -166,6 +170,24 @@
 | | @{ActualFields}=	| Get Element Text	| xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]/descendant::div[contains(@class, "field-label")]	| False 
 | | Remove values from list	| ${ActualFields}	| ${EMPTY}
 | | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
+
+| Verify that you are on the following Step of the Create Integration Point Process
+| | [Documentation]	| Verifies that you are on the given step of the Create Integration Point process.
+| | ...				| Currently, the acceptable values are: Set Integration Details, Map Fields, Preview Import
+| | [ARGUMENTS] 	| ${ExpectedStep}
+| | Verify that the Header has the Following Text	| Create Integration Point
+| | ${ActualStep}=	| Get Text	| xpath=//div[@id='stepProgress']/descendant::li[@class='in-progress']
+| | ${ActualStep}=	| Fetch From Left	| ${ActualStep}	| \n
+| | Run Keyword Unless	| "${ExpectedStep}" == "${ActualStep}"	| Fail	| The current step was not "${ExpectedStep}", it was "${ActualStep}".
+
+| Verify the following Integration Point Field has the following Error
+| | [Documentation]	| Verifies that the given field has the given error.
+| | ... 			| Must be called from the Integration Point Create/Edit pages.
+| | [ARGUMENTS] 	| ${FieldID}	| ${ErrorText}
+| | ${FieldID}= | fetch from right | ${FieldID} | s2id_
+| | Element Should Be Visible	| xpath=//*[@id='${FieldID}']/following-sibling::div/child::*[contains(@class, 'icon-error') and contains(@class, 'field-validation-error')]	| No error was found on the field with the ID "${FieldID}".
+| | ${ActualText}=	| Get Text	| xpath=//*[@id='${FieldID}']/following-sibling::div/child::*[contains(@class, 'icon-error') and contains(@class, 'field-validation-error')]
+| | Run Keyword Unless	| '${ActualText}' == '${ErrorText}'	| Fail	| The error was incorrect. It should have been "${ErrorText}" but it was actually "${ActualText}".
 
 
 *** Settings ***
