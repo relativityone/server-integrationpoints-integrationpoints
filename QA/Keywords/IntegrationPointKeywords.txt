@@ -55,9 +55,9 @@
 | | Run Keyword If	| ("${FrequencyValue}" == "Weekly") and ("${SendOn}" != "NULL")		| IntegrationPointKeywords.Fill out the Send On field for a Weekly Frequency	| ${SendOn}	| 
 | | ... | ELSE IF	| ("${FrequencyValue}" == "Monthly") and ("${SendOn}" != "NULL")	| IntegrationPointKeywords.Fill out the Send On field for a Monthly Frequency	| ${SendOn}
 
-| | Run Keyword Unless	| "${StartDate}" == "NULL"	| Input Text	| id=startDate	| ${StartDate}
+| | Run Keyword Unless	| "${StartDate}" == "NULL"	| Input Text	| id=scheduleRulesStartDate	| ${StartDate}
 
-| | Run Keyword Unless	| "${EndDate}" == "NULL"	| Input Text	| id=endDate	| ${EndDate}
+| | Run Keyword Unless	| "${EndDate}" == "NULL"	| Input Text	| id=scheduleRulesEndDate	| ${EndDate}
 
 | | Run Keyword Unless	| "${ScheduledTime}" == "NULL"	| Input Text	| id=scheduledTime	| ${ScheduledTime}
 
