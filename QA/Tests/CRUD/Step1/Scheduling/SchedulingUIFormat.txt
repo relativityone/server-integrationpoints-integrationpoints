@@ -139,6 +139,7 @@
 | | ... | End Date		    | Date					| 
 | | ... | Scheduled Time	| Text
 
+
 | The Import Scheduling Section's Fields are of the correct Types when Frequency is set to Monthly
 | | [Tags]		    | manual	| visual
 | | Run the following manual steps:

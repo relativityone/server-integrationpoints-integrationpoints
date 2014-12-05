@@ -23,7 +23,7 @@
 
 # The below tests each verify that a Field with the given data is present on the table.
 
-| Acknowledgement Date 
+| Artifact ID
 | | Find A Row With The Following Data	|
 | | ... | Name						| Artifact ID 	|
 | | ... | Field Type				| Whole Number	|
