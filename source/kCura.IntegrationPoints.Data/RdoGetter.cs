@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Data
 		{
 			_RdoQuery = rdoQuery; 
 		}
-		public List<ObjectType> getAllRdo()
+		public List<ObjectType> GetAllRdo()
 		{
 			return _RdoQuery.GetAllRdo();
 		}

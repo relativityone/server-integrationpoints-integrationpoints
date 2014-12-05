@@ -14,5 +14,10 @@ namespace kCura.IntegrationPoints.Core
 		public int WorkspaceID { get; set; }
 		public IRSAPIService RsapiService { get; set; }
 		public IDBContext SqlContext { get; set; }
+
+		public ServiceContext(IRSAPIService service)
+		{
+			
+		}
 	}
 }

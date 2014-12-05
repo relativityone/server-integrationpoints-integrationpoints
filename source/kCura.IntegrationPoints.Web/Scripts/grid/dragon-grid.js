@@ -775,7 +775,7 @@ var Dragon = Dragon || {};
 				if (this.settings.SubGridSettings && typeof this.settings.SubGridSettings === "object") {
 					this.settings.subGrid = true;
 				}
-				this.settings.ID = this.settings.ID || this.settings.iD; //this is bad :(
+				this.settings.ID = this.settings.ID || this.settings.iD || this.settings.id; //this is bad :(
 				if (this.settings.pagerID === '-pager') {
 					this.settings.pagerID = this.settings.ID + this.settings.pagerID;
 				}
