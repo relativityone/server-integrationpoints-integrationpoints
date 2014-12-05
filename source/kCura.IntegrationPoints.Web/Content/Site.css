@@ -181,3 +181,24 @@ ul li .day-select
 .field-validation-error.icon-error::before {
 	padding-right: 5px;
 }
+
+.clear {
+	clear: both;
+}
+.list-box {
+	position: relative;
+	float:left;
+
+width: 322px;
+height: 426px;
+font-family: 'Open Sans Regular', 'Open Sans';
+font-weight: 400;
+font-style: normal;
+font-size: 13px;
+text-decoration: none;
+color: #000000;
+}
+
+.list-box select {
+	width: 322px; 
+}
