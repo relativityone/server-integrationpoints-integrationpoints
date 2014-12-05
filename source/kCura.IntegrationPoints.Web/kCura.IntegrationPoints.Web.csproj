@@ -183,11 +183,11 @@
     <Compile Include="IErrorFactory.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
     <Compile Include="Models\IpDetailModel.cs" />
-    <Compile Include="RsapiClientFactory.cs" />
     <Compile Include="ISessionService.cs" />
     <Compile Include="Models\ScheduleModel.cs" />
     <Compile Include="SessionService.cs" />
     <Compile Include="WebAPICustomPageService.cs" />
+    <Compile Include="WebClientFactory.cs" />
     <Compile Include="WindsorCompositionRoot.cs" />
     <Compile Include="WindsorControllerFactory.cs" />
   </ItemGroup>
@@ -276,6 +276,7 @@
     <Content Include="Scripts\dragon\dragon-core.js" />
     <Content Include="Scripts\dragon\dragon-schedule.js" />
     <Content Include="Scripts\dragon\dragon-utils.js" />
+    <Content Include="Scripts\EventHandlers\integration-points-grid.js" />
     <Content Include="Scripts\EventHandlers\integration-points-view.js" />
     <Content Include="Scripts\core\data.js" />
     <Content Include="Scripts\grid\dragon-grid-filters.js" />

@@ -18,11 +18,19 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			var response = new Response();
 			response.Success = true;
 			response.Message = string.Empty;
-			
-			String applicationPath = getApplicationPath(this.Application.ApplicationUrl);
 
-			this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-view.js");
-			
+			String applicationPath = GetApplicationPath(this.Application.ApplicationUrl);
+
+			if (base.PageMode == EventHandler.Helper.PageMode.View)
+			{
+				this.RegisterLinkedCss(applicationPath + "/Content/jquery.jqGrid/ui.jqgrid.css");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-grid.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-view.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/i18n/grid.locale-en.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/jquery.jqGrid.min.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/select2.min.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/grid/dragon-grid.js");
+			}
 			return response;
 		}
 
@@ -31,14 +39,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		/// </summary>
 		/// <param name="currentUrl">The current http request url</param>
 		/// <returns>Returns the path to the custom page application</returns>
-		private string getApplicationPath(string currentUrl)
+		private string GetApplicationPath(string currentUrl)
 		{
 			string retVal = null;
 
 			string[] urlSplit = System.Text.RegularExpressions.Regex.Split(currentUrl, "/Case/", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 			retVal = urlSplit[0] + string.Format("/CustomPages/{0}", Core.Application.GUID);
 			return retVal;
-			
+
 		}
 
 	}

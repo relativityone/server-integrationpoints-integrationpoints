@@ -8,6 +8,7 @@
 		this.hasTemplate = false;
 		this.model = {};
 		this.getTemplate = function () {
+			
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
 				$('body').append(result);
 				self.template(self.settings.templateID);

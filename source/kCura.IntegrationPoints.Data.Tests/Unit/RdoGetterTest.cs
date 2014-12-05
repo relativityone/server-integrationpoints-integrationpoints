@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ObjectType{ArtifactTypeID =  2}
 			}); 
 		
-			Assert.AreEqual(testRdoQuery.getAllRdo().Count, 2);
+			Assert.AreEqual(testRdoQuery.GetAllRdo().Count, 2);
 		}
 
 
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			var testRdoQuery = new RdoGetter(rdoMock);
 
 			rdoMock.GetAllRdo().Returns(x => { throw new Exception("No Relativity Dynamic Object found"); });
-			Assert.Throws<Exception>(() => testRdoQuery.getAllRdo());
+			Assert.Throws<Exception>(() => testRdoQuery.GetAllRdo());
 			
 		}
 	}
