@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Helpers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using Newtonsoft.Json;
@@ -15,6 +14,8 @@ namespace kCura.IntegrationPoints.Core.Services
 	{
 		private readonly IServiceContext _context;
 		private Data.IntegrationPoint _rdo;
+		private readonly kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
+		
 		private Data.IntegrationPoint GetRDO(int rdoID)
 		{
 			if (_rdo == null)
@@ -23,10 +24,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			return _rdo;
 		}
-
-		public IntegrationPointReader(IServiceContext context)
+		
+		public IntegrationPointReader(IServiceContext context, kCura.Apps.Common.Utils.Serializers.ISerializer serializer)
 		{
 			_context = context;
+			_serializer = serializer;
 		}
 
 		public virtual string GetSourceOptions(int artifactID)
@@ -37,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		public virtual FieldEntry GetIdentifierFieldEntry(int artifactID)
 		{
 			var rdo = GetRDO(artifactID);
-			var fields = JsonConvert.DeserializeObject<List<FieldMap>>(rdo.FieldMappings);
+			var fields = _serializer.Deserialize<List<FieldMap>>(rdo.FieldMappings);
 			return fields.First(x => x.IsIdentifier).SourceField;
 		}
 
@@ -49,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		public IEnumerable<FieldMap> GetFieldMap(int objectId)
 		{
 			var fieldmapjson= _context.RsapiService.IntegrationPointLibrary.Read(objectId, new Guid(Data.IntegrationPointFieldGuids.FieldMappings)).FieldMappings;
-			var fieldmap = Json.Decode<IEnumerable<FieldMap>>(fieldmapjson);
+			var fieldmap = _serializer.Deserialize<IEnumerable<FieldMap>>(fieldmapjson);
 			return fieldmap;
 
 		} 
