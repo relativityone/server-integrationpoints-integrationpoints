@@ -83,6 +83,7 @@
     <Compile Include="Models\RdoFilter.cs" />
     <Compile Include="Models\SyncConfiguration\RelativityConfiguration.cs" />
     <Compile Include="Models\RDO\IntegrationPoint.cs" />
+    <Compile Include="RsapiClientFactory.cs" />
     <Compile Include="ServiceContext.cs" />
     <Compile Include="Services\AgentJobManager.cs" />
     <Compile Include="Services\ErrorService.cs" />

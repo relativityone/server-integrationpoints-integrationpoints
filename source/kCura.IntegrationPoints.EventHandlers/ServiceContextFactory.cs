@@ -14,17 +14,17 @@ namespace kCura.IntegrationPoints.EventHandlers
 	{
 		public static IServiceContext CreateServiceContext(IEHHelper helper, int workspaceID)
 		{
-			return new ServiceContext
+			return new ServiceContext(null)
 		 {
 			 SqlContext = helper.GetDBContext(workspaceID),
-			 RsapiService = CreateRSAPIService(helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser)),
+			 RsapiService = CreateRSAPIService(new RsapiClientFactory(helper).CreateClientForWorkspace(helper.GetActiveCaseID())),
 			 WorkspaceID = workspaceID
 		 };
 		}
 
 		private static IRSAPIService CreateRSAPIService(IRSAPIClient client)
 		{
-			return new RSAPIService
+			return new RSAPIService(client)
 			{
 				IntegrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(client),
 				SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(client)

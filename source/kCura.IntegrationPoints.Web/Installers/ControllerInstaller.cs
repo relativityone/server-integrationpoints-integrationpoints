@@ -11,10 +11,12 @@ using Castle.MicroKernel.Context;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client;
 using Newtonsoft.Json.Converters;
+using Relativity.API;
 using IDBContext = Relativity.API.IDBContext;
 using Relativity.CustomPages;
 
@@ -30,19 +32,21 @@ namespace kCura.IntegrationPoints.Web.Installers
 
 			container.Register(Component.For<ISessionService>().UsingFactoryMethod(k=> SessionService.Session).LifestylePerWebRequest());
 
-			container.Register(Component.For<RsapiClientFactory>().ImplementedBy<RsapiClientFactory>().LifestyleTransient());
+			container.Register(Component.For<WebClientFactory>().ImplementedBy<WebClientFactory>().LifestyleTransient());
 
 			container.Register(Classes.FromThisAssembly().BasedOn<IHttpController>().LifestyleTransient());
+
+			container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => ConnectionHelper.Helper()).LifestylePerWebRequest());
 
 			container.AddFacility<TypedFactoryFacility>();
 			container.Register(Component.For<IErrorFactory>().AsFactory().UsingFactoryMethod((k) => new ErrorFactory(container)));
 			container.Register(Component.For<WebAPIFilterException>().ImplementedBy<WebAPIFilterException>());
 
 			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod((k) =>
-				k.Resolve<RsapiClientFactory>().CreateClient()).LifestylePerWebRequest());
+				k.Resolve<WebClientFactory>().CreateClient()).LifestyleTransient());
 
 			container.Register(Component.For<IDBContext>().UsingFactoryMethod((k) =>
-				k.Resolve<RsapiClientFactory>().CreateDbContext()).LifestylePerWebRequest());
+				k.Resolve<WebClientFactory>().CreateDbContext()).LifestyleTransient());
 
 			container.Register(Component.For<GridModelFactory>().ImplementedBy<GridModelFactory>().LifestyleTransient());
 		}
