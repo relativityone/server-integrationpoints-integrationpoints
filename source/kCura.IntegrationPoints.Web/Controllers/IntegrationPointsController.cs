@@ -30,6 +30,11 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			return PartialView("_IntegrationDetailsPartial");
 		}
+
+		public ActionResult StepDetails2()
+		{
+			return PartialView("_IntegrationDetailsPartial2");
+		}
 		
 		public ActionResult StepDetails3()
 		{
