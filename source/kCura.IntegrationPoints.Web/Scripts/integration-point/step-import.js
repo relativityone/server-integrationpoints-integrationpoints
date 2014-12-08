@@ -23,7 +23,7 @@
 	};
 
 	var step = new step({
-		url: 'http://localhost/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/IntegrationPoints/StepDetails2',
+		url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails2'),//'http://localhost/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/IntegrationPoints/StepDetails2',
 		templateID: 'step2'
 	});
 
