@@ -1,21 +1,17 @@
-﻿body
-{
+﻿body {
 	font-size: .85em;
 	margin: 0;
 }
 
-header, footer, nav, section
-{
+header, footer, nav, section {
 	display: block;
 }
 
-.icon i
-{
+.icon i {
 	font-style: normal;
 }
 
-h1
-{
+h1 {
 	padding: 0;
 	margin: 0;
 	font-weight: 600;
@@ -23,57 +19,48 @@ h1
 	font-size: 1.0em;
 }
 
-.table
-{
+.table {
 	display: table;
 }
 
-.full-width
-{
+.full-width {
 	width: 100%;
 }
+
 .full-height {
 	height: 100%;
 }
 
-.table.fixed
-{
+.table.fixed {
 	table-layout: fixed;
 }
 
-.cell
-{
+.cell {
 	display: table-cell;
 }
 
-.v-align
-{
+.v-align {
 	vertical-align: middle;
 }
 
-.h-align
-{
+.h-align {
 	text-align: center;
 }
 
-#stepProgress
-{
+#stepProgress {
 	width: 85%;
 }
 
-.button i
-{
+.button i {
 	vertical-align: -2px;
 	padding: 0 5px;
 }
 
-#progressButtons button
-{
+#progressButtons button {
 	padding: 0 10px;
 }
 
-#pointBody
-{
+#pointBody {
 	position: absolute;
 	top: 180px;
 	bottom: 0;
@@ -81,13 +68,11 @@ h1
 	right: 0;
 }
 
-#headerContainer button
-{
+#headerContainer button {
 	width: 80px;
 }
 
-#bodyContainer
-{
+#bodyContainer {
 	position: absolute;
 	top: 39px;
 	bottom: 0;
@@ -95,18 +80,15 @@ h1
 	right: 0;
 }
 
-.loading-dialog *
-{
+.loading-dialog * {
 	margin: 0 auto;
 }
 
-.loading-dialog p
-{
+.loading-dialog p {
 	padding-left: 10px;
 }
 
-.loading
-{
+.loading {
 	background: url("./Images/loading.gif") no-repeat center;
 	height: 80px;
 	width: 80px;
@@ -115,8 +97,7 @@ h1
 }
 
 
-.console
-{
+.console {
 	height: 100%;
 	width: 200px;
 	background-color: #f7f7f7!important;
@@ -124,47 +105,39 @@ h1
 	padding: 10px 10px 0 10px;
 }
 
-	.console button
-	{
+	.console button {
 		width: 100%;
 	}
 
 
-.section
-{
+.section {
 	padding-top: 10px;
 }
 
-	.section.button
-	{
+	.section.button {
 		width: 100%;
 	}
 
-.content
-{
+.content {
 	margin: 0 auto;
 }
 
-.field-row
-{
+.field-row {
 	padding-top: 10px;
 }
 
-ul li .day-select
-{
+ul li .day-select {
 	width: 80px;
 	min-width: 80px;
 }
 
-.field-value .filter-container
-{
+.field-value .filter-container {
 	width: 180px;
 	height: 28px;
 	margin-right: 5px;
 }
 
-.field-validation-error
-{
+.field-validation-error {
 	background-color: #ac3243;
 	border: 1px solid #ac3243;
 	border-radius: 2px;
@@ -176,29 +149,45 @@ ul li .day-select
 	font-size: 12px;
 	font-weight: 400;
 	display: inline-block;
-		padding: 4px 4px 0;
-}
-.field-validation-error.icon-error::before {
-	padding-right: 5px;
+	padding: 4px 4px 0;
 }
 
-.clear {
-	clear: both;
-}
+	.field-validation-error.icon-error::before {
+		padding-right: 5px;
+	}
+
+
+
 .list-box {
 	position: relative;
-	float:left;
-
-width: 322px;
-height: 426px;
-font-family: 'Open Sans Regular', 'Open Sans';
-font-weight: 400;
-font-style: normal;
-font-size: 13px;
-text-decoration: none;
-color: #000000;
+	float: left;
+	font-family: 'Open Sans Regular', 'Open Sans';
+	font-weight: 400;
+	font-style: normal;
+	font-size: 13px;
+	text-decoration: none;
+	color: #000000;
+	/*width: 322px;
+	height: 426px;*/
 }
 
-.list-box select {
-	width: 322px; 
+#selectedWorkspaceFields, #selectedSourceFields {
+	margin-top: 15px;
 }
+
+/*.selection {
+	float: right;
+	vertical-align: middle;
+	padding-left: 25px;
+	padding-right: 25px;
+}*/
+
+	/*.selection .legal-hold {
+		margin: 10px;
+		border: 1px solid black;
+		padding: 1px;
+		-moz-border-radius: 3px;
+		-webkit-border-radius: 3px;
+		border-radius: 3px;
+	}*/
+
