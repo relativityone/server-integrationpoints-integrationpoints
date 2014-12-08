@@ -159,21 +159,19 @@ ul li .day-select {
 
 
 .list-box {
-	position: relative;
-	float: left;
 	font-family: 'Open Sans Regular', 'Open Sans';
 	font-weight: 400;
 	font-style: normal;
 	font-size: 13px;
 	text-decoration: none;
 	color: #000000;
-	/*width: 322px;
-	height: 426px;*/
+	width: 322px;
+	height: 426px;
 }
 
-#selectedWorkspaceFields, #selectedSourceFields {
+/*#selectedWorkspaceFields, #selectedSourceFields {
 	margin-top: 15px;
-}
+}*/
 
 /*.selection {
 	float: right;
