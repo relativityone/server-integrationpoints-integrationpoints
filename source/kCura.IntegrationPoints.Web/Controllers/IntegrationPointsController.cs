@@ -66,7 +66,17 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			
 			return View(model);
 		}
-		
+
+		public JsonResult GetWorkspaceFields()
+		{
+			return Json("[{'name':'jame','identifier':'1'},{'name':'jame','identifier':'1'},{'name':'jame','identifier':'1'}]");
+		}
+
+		public JsonResult getSourcefields()
+		{
+			return null;
+		}
+
 		public JsonNetResult GetData(int id, GridFilterModel filter)
 		{
 			//TODO: Get this to work

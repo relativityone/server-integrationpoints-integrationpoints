@@ -165,27 +165,28 @@ ul li .day-select {
 	font-size: 13px;
 	text-decoration: none;
 	color: #000000;
-	width: 322px;
-	height: 426px;
+	width: 405px;
+	height: 400px;
+
+}	
+.overlay-identifier {
+	margin-top: 20px;
 }
-
-/*#selectedWorkspaceFields, #selectedSourceFields {
-	margin-top: 15px;
-}*/
-
-/*.selection {
+.map-field-title {
+	padding-top: 20px;
+	display: block;
+}
+.workspace-field {
+	float: left;
+	padding-bottom: 10px;
+}
+.source-field {
 	float: right;
+	padding-bottom: 10px; 
+	margin-right: 330px;
+}
+.selection {
 	vertical-align: middle;
-	padding-left: 25px;
 	padding-right: 25px;
-}*/
-
-	/*.selection .legal-hold {
-		margin: 10px;
-		border: 1px solid black;
-		padding: 1px;
-		-moz-border-radius: 3px;
-		-webkit-border-radius: 3px;
-		border-radius: 3px;
-	}*/
-
+	
+}
