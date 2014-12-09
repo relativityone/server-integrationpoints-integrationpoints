@@ -432,10 +432,11 @@
     <Content Include="Views\IntegrationPoints\Edit.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
-    <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
+    <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial3.cshtml" />
     <Content Include="Views\IntegrationPoints\Details.cshtml" />
     <Content Include="Views\IntegrationPoints\_Configuration.cshtml" />
     <Content Include="Views\IntegrationPoints\LDAPConfiguration.cshtml" />
+    <Content Include="Views\Shared\_StepLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

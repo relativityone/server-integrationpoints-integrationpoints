@@ -8,6 +8,7 @@
 		this.hasTemplate = false;
 		this.model = {};
 		this.getTemplate = function () {
+			
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
 				$('body').append(result);
 				self.template(self.settings.templateID);
@@ -23,8 +24,8 @@
 	};
 
 	var step = new step({
-		url: 'http://localhost/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/IntegrationPoints/StepDetails2',
-		templateID: 'step2'
+		url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3'),//'http://localhost/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/IntegrationPoints/StepDetails3',
+		templateID: 'step3'
 	});
 
 	root.points.steps.push(step);

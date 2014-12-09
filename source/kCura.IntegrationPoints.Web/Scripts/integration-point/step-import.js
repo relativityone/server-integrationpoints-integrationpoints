@@ -15,6 +15,7 @@
 				self.template(self.settings.templateID);
 				self.hasTemplate = true;
 				$('#' + frameName).iFrameResize({ heightCalculationMethod: 'max' });
+				//debugger;
 				self.frameBus = IP.frameMessaging({ source: window[frameName].contentWindow });
 			});
 		};
@@ -31,11 +32,10 @@
 	};
 
 	var step = new step({
-		url: 'http://localhost/Relativity/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/IntegrationPoints/ConfigurationDetail',
+		url: IP.utils.generateWebURL('IntegrationPoints', 'ConfigurationDetail'),
 		templateID: 'configuration'
 	});
 
 	root.points.steps.push(step);
-
 
 })(IP, ko);

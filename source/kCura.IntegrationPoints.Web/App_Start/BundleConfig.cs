@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Web
 					"~/Scripts/integration-point/edit.js",
 					"~/Scripts/integration-point/step-vm.js",
 					"~/Scripts/integration-point/step-details.js",
-					"~/Scripts/integration-point/step-import.js",
+					"~/Scripts/integration-point/step-import.js ",
 					"~/Scripts/integration-point/step-mapFields.js"
 				));
 

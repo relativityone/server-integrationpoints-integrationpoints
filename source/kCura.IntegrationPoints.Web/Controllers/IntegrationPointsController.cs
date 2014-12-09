@@ -30,18 +30,14 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			return PartialView("_IntegrationDetailsPartial");
 		}
-
 		public ActionResult ConfigurationDetail()
 		{
 			return PartialView("_Configuration");
 		}
-
 		public ActionResult LDAPConfiguration()
 		{
-			return View();
+			return View("LDAPConfiguration", "_StepLayout");
 		}
-
-
 		public ActionResult Details(int id)
 		{
 			var integrationViewModel = _reader.ReadIntegrationPoint(id);

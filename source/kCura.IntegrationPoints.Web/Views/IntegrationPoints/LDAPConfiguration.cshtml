@@ -1,12 +1,87 @@
 ﻿<div class="card">
-	<h1>Hello world!!</h1>
+	<label class="label">Source Connection</label>
+	<div class="field-row">
+		<div class="field-label required">
+			Connection Path:
+		</div>
+		<div class="field-value">
+			<input type="text" maxlength="255" data-bind="value: name" id="name">
+		</div>
+	</div>
+	
+	<div class="field-row">
+		<div class="field-label">
+			Object Filter String:
+		</div>
+		<div class="field-value">
+			<input type="text" maxlength="255" data-bind="value: name" id="name">
+		</div>
+	</div>
+	
+	<div class="field-row">
+		<div class="field-label">
+			Authentication:
+		</div>
+		<div class="field-value">
+			<select>
+				<option>1</option>
+				<option>2</option>
+				<option>2</option>
+			</select>
+		</div>
+	</div>
+	
+	<div class="field-row">
+		<div class="field-label">
+			Username:
+		</div>
+		<div class="field-value">
+			<input type="text" maxlength="255" data-bind="value: name" id="name">
+		</div>
+	</div>
+	
+	<div class="field-row">
+		<div class="field-label">
+			Password:
+		</div>
+		<div class="field-value">
+			<input type="password" maxlength="255" data-bind="value: name" id="name">
+		</div>
+	</div>
+	
+	<div class="field-row">
+		<div class="field-label">
+			Import Nested Items:
+		</div>
+		<div class="field-value">
+			<ul>
+				<li>
+					<input type="radio" name="enable" value="true" data-bind="checked: enabled" />Yes</li>
+				<li>
+					<input type="radio" name="enable" value="false" data-bind="checked: enabled" />No</li>
+			</ul>
+		</div>
+	</div>
 </div>
+
 <script src="~/Scripts/jquery-1.8.2.js"></script>
 <script src="~/Scripts/frame-messaging.js"></script>
 <script>
-	
+
 	var message = IP.frameMessaging();
 	message.subscribe('submit', function () {
 		this.publish('saveComplete', 'hello world!!!');
 	});
+
+	debugger;
+	
+	var auth = [
+		{ name: 'Anonymous' },
+		{ name: 'Encryption' },
+		{ name: 'FastBind' },
+		{ name: 'Secure' },
+		{ name: 'Secure Socket Layer' },
+		{ name: 'Readonly server' },
+	];
+
 </script>
