@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.EventHandlers
 
 		private static IRSAPIService CreateRSAPIService(IRSAPIClient client)
 		{
-			return new RSAPIService(client)
+			return new RSAPIService()
 			{
 				IntegrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(client),
 				SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(client)

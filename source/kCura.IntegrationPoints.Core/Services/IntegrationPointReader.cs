@@ -50,9 +50,13 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public IEnumerable<FieldMap> GetFieldMap(int objectId)
 		{
-			var fieldmapjson= _context.RsapiService.IntegrationPointLibrary.Read(objectId, new Guid(Data.IntegrationPointFieldGuids.FieldMappings)).FieldMappings;
-			var fieldmap = _serializer.Deserialize<IEnumerable<FieldMap>>(fieldmapjson);
-			return fieldmap;
+			var fieldmap= _context.RsapiService.IntegrationPointLibrary.Read(objectId, new Guid(Data.IntegrationPointFieldGuids.FieldMappings)).FieldMappings;
+			IEnumerable<FieldMap> mapping = new List<FieldMap>();
+			if (!string.IsNullOrEmpty(fieldmap))
+			{
+				mapping = _serializer.Deserialize<IEnumerable<FieldMap>>(fieldmap);	
+			}
+			return mapping;
 
 		} 
 

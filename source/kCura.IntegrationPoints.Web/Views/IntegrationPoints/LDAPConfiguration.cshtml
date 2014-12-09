@@ -1,0 +1,12 @@
+﻿<div class="card">
+	<h1>Hello world!!</h1>
+</div>
+<script src="~/Scripts/jquery-1.8.2.js"></script>
+<script src="~/Scripts/frame-messaging.js"></script>
+<script>
+	
+	var message = IP.frameMessaging();
+	message.subscribe('submit', function () {
+		this.publish('saveComplete', 'hello world!!!');
+	});
+</script>

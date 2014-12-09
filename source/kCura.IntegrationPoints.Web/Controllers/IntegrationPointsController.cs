@@ -31,38 +31,56 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return PartialView("_IntegrationDetailsPartial");
 		}
 
+		public ActionResult ConfigurationDetail()
+		{
+			return PartialView("_Configuration");
+		}
+
+		public ActionResult LDAPConfiguration()
+		{
+			return View();
+		}
+
+
 		public ActionResult Details(int id)
 		{
 			var integrationViewModel = _reader.ReadIntegrationPoint(id);
 
 			var model = new Models.IpDetailModel();
 			model.DataModel = integrationViewModel;
-			var grid = ModelFactory.CreateModel("mappedFields", (int) Session["UserID"]);
+			
+			return View(model);
+		}
+
+		public JsonNetResult GetGridModel(int id)
+		{
+			var grid = ModelFactory.CreateModel("mapFieldsGrid", (int)Session["UserID"]);
 			grid.colModel = new List<GridColumn>();
 			grid.colModel.Add(new GridColumn
 			{
-				name = "test",
+				name = "workspace",
 				label = "Workspace Field"
 			});
 
 			grid.colModel.Add(new GridColumn
 			{
-				name = "name",
+				name = "source",
 				label = "Source Attribute"
 			});
-
-			grid.JsonReaderOptions = JsonReaderOptions.WebOptions();
-			grid.url = Url.Action("GetData", new{id});
-			model.Grid = grid;
 			
-			return View(model);
+			grid.JsonReaderOptions = JsonReaderOptions.WebOptions();
+			grid.url = Url.Action("GetData", new { id });
+			return JsonNetResult(grid);
 		}
-		
+
 		public JsonNetResult GetData(int id, GridFilterModel filter)
 		{
 			//TODO: Get this to work
 			var result = _reader.GetFieldMap(id);
-			return JsonNetResult(result);
+			var mappings = result.Select(x => new {workspace = x.DestinationField.DisplayName, source = x.SourceField.DisplayName});
+			var data = new GridData();
+			data.BindData(mappings, filter);
+			return JsonNetResult(data);
 		}
 
 		public IEnumerable<object> GetFakeData()

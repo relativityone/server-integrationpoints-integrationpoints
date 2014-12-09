@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 
 			var eh = new EventHandlers.Installers.RunEveryTimeInstaller();
 			eh.ServiceContext = new global::kCura.IntegrationPoints.Core.ServiceContext(null);
-			eh.ServiceContext.RsapiService = new RSAPIService(service);
+			eh.ServiceContext.RsapiService = new RSAPIService();
 			eh.ServiceContext.RsapiService.SourceProviderLibrary=new RsapiClientLibrary<SourceProvider>(service);
 
 			eh.Execute();
