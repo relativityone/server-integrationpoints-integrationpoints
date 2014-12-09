@@ -71,10 +71,9 @@
 		}
 
 		/********** Source Attribute control  **********/
-		this.addtoMappedSource  = function () {
+		this.addToMappedSource = function () {
 			var requested = this.mappedWorkspace;
-			$.each(self.selectedWorkspaceFields(), function (n, item) {
-
+			$.each(self.selectedSourceField(), function (n, item) {
 				requested.push(item);
 			});
 			this.workspaceFields.removeAll(self.selectedWorkspaceFields());
@@ -91,7 +90,7 @@
 			this.selectedWorkspaceFields.splice(0, this.selectedWorkspaceFields().length);
 		}
 
-		this.addToWorkspaceField = function () {
+		this.addToSourceField = function () {
 			var requested = this.workspaceFields;
 			$.each(self.selectedMappedWorkspace(), function (n, item) {
 
@@ -101,7 +100,7 @@
 			this.selectedMappedWorkspace.splice(0, this.selectedMappedWorkspace().length);
 		}
 
-		this.addAlltoWorkspaceField = function () {
+		this.addAlltoSourceField = function () {
 			var requested = this.workspaceFields;
 			$.each(self.mappedWorkspace(), function (n, item) {
 				requested.push(item);

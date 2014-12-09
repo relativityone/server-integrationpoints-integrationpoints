@@ -40,10 +40,10 @@
 			</div>
 			<div class="cell selection">
 				<div>
-					<div id="add-all-source-fields" class="legal-hold icon-paging-last"></div>
-					<div id="add-source-field" class="legal-hold icon-paging-next"></div>
-					<div id="remove-source-field" class="legal-hold icon-paging-previous"></div>
-					<div id="remove-all-source-fields" class="legal-hold icon-paging-first"></div>
+					<div id="add-all-source-fields" class="legal-hold icon-paging-last" data-bind="click: addAlltoSourceField"></div>
+					<div id="add-source-field" class="legal-hold icon-paging-next" data-bind="click:addToSourceField"></div>
+					<div id="remove-source-field" class="legal-hold icon-paging-previous" data-bind="click: addToSourceField"></div>
+					<div id="remove-all-source-fields" class="legal-hold icon-paging-first" data-bind="click: addToMappedSource"></div>
 
 				</div>
 			</div>
@@ -60,10 +60,10 @@
 		</div>
 
 
-		<div class="field-row overlay-identifier">
+		<div class="field-row overlay-identifier" >
 			<div class="field-label required">Overlay Identifier:</div>
 			<div class="field-value ">
-				<select>
+				<select id="overlay-identifier">
 					<option value="Document">Document</option>
 					<option value="Object">Object</option>
 					<option value="Name">Name</option>
