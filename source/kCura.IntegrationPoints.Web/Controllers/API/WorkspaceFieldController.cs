@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			[Route("{workspaceID}/api/WorkspaceField/")]
 			public HttpResponseMessage Get()
 			{
+			
 				var list = new List<FieldEntry>()
 				{
 					new FieldEntry() {DisplayName = "Object", FieldIdentifier= "1"},
