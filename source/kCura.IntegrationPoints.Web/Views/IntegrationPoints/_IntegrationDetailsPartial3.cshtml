@@ -1,81 +1,77 @@
 ﻿<script id="step3" type="text/html">
-	<div class="card">
-		<span class="label">Field Mappings</span>
-		<div class="clear"></div>
+	<div class="card" id="fieldMappings">
+		<span class="label title">Field Mappings</span>
 
-		<div class="table full-width">
-			<div class="cell" >
-				@*<p class="field-label">Workspace Fields</p>*@
-				<label for="workspace-field" >Workspace Fields</label>
-				<select id="workspace-fields" class="list-box" name="workspace-field" size="5">
-					<option>text1</option>
-					<option>text2</option>
-					<option>text3</option>
-					<option>text4</option>
-					<option>text5</option>
-				</select>
+		<div class="map-field-title">
+			<label  class="label workspace-field">Workspace Fields</label>
+			<label class="label source-field" >Source Attributes</label>
+
+		</div>
+		<div class="table full-width" id="mapFields">
+		
+			
+			<div class="cell">
+				
+				<select id="workspace-fields" class="list-box" name="workspace-field"  data-bind="options:workspaceFields, selectedOptions: selectedWorkspaceField, optionsText: 'name'" id="AvailableSelectedMembers"  multiple="multiple" name="AvailableSelectedMembers"></select>
+			
+				
+			</div>
+			<div class="cell selection">
+				<div id="add-all-workspace-fields" class="legal-hold icon-paging-last" data-bind="click: addAllWorkspaceFields"></div>
+				<div id="add-workspace-field" class="legal-hold icon-paging-next"  data-bind="click: addSelectFields"></div>
+				<div id="remove-workspace-field" class="legal-hold icon-paging-previous" data-bind="click: addToWorkspaceField"></div>
+				<div id="remove-all-workspace-fields" class="legal-hold icon-paging-first" data-bind="click:addAlltoWorkspaceField"></div>
+
 			</div>
 			<div class="cell">
-				<div >
-					<div id="add-all-workspace-fields" class="legal-hold icon-paging-last"></div>
-					<div id="add-workspace-field" class="legal-hold icon-paging-next"></div>
-					<div id="remove-workspace-field" class="legal-hold icon-paging-previous"></div>
-					<div id="remove-all-workspace-fields" class="legal-hold icon-paging-first"></div>
+				<select class="list-box" name="sometext" size="5" id="selected-workspace-fields" data-bind="options:mappedWorkspace, selectedOptions: selectedMappedWorkspace, optionsText: 'name'" multiple="multiple"></select>
 
+			</div>
+			<div class="cell selection">
+				<div>
+					<div id="workspace-field-up" class="legal-hold icon-chevron-up "data-bind="click:moveUp"></div>
+					<div id="workspace-field-down" class="legal-hold icon-chevron-down" data-bind="click:moveDown"></div>
 				</div>
 			</div>
 			<div class="cell">
-				<select class="list-box" name="sometext" size="5" id="selected-workspace-fields">
-					<option>text1</option>
-					<option>text2</option>
-					<option>text3</option>
-					<option>text4</option>
-					<option>text5</option>
+				<select class="list-box" name="sometext" size="5" id="selected-source-fields" multiple="multiple" data-bind="options: sourceMapped, selectedOptions: selectedMappedSource, optionsText: 'name'">
+					
 				</select>
-
 			</div>
+			<div class="cell selection">
+				<div>
+					<div id="add-all-source-fields" class="legal-hold icon-paging-last" data-bind="click: addAlltoSourceField"></div>
+					<div id="add-source-field" class="legal-hold icon-paging-next" data-bind="click:addToSourceField"></div>
+					<div id="remove-source-field" class="legal-hold icon-paging-previous" data-bind="click: addToMappedSource"></div>
+					<div id="remove-all-source-fields" class="legal-hold icon-paging-first" data-bind="click: addSourceToMapped"></div>
+
+				</div>
+			</div>
+
 			<div class="cell">
 				<div>
-
-					<div id="workspace-field-up"class="legal-hold icon-chevron-up "></div>
-					<div id="workspace-field-down" class="legal-hold icon-chevron-down"></div>
-
-				</div>
-			</div>
-			<div class="cell">
-				<select class="list-box" name="sometext" size="5" id="selected-source-fields">
-					<option>text1</option>
-					<option>text2</option>
-					<option>text3</option>
-					<option>text4</option>
-					<option>text5</option>
-				</select>
-
-			</div>
-			<div class="cell">
-				<div >
-					<div id="add-all-source-fields" class="legal-hold icon-paging-last"></div>
-					<div id="add-source-field" class="legal-hold icon-paging-next"></div>
-					<div id="remove-source-field" class="legal-hold icon-paging-previous"></div>
-					<div id="remove-all-source-fields" class="legal-hold icon-paging-first"></div>
-
-				</div>
-			</div>
-
-			<div class="cell">
-				<div >
-					<label for="source-attribute" class="label">Source Attributes</label>
-					<select class="list-box" id="source-attributes" name="source-attribute" size="5">
-						<option>text1</option>
-						<option>text2</option>
-						<option>text3</option>
-						<option>text4</option>
-						<option>text5</option>
+					
+					<select class="list-box" id="source-attributes" name="source-attribe" size="5" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'name'" >
+						
 					</select>
 				</div>
 			</div>
 
 		</div>
 
-	</div>
+
+		<div class="field-row overlay-identifier" >
+			<div class="field-label required">Overlay Identifier:</div>
+			<div class="field-value ">
+				<select id="overlay-identifier" data-bind="options: overlay, selectedOptions: selectedOverlay, optionsText: 'name'" >
+				</select>
+			</div>
+		</div>
+	
+	
+
+	
+    
+	
+</div>
 </script>

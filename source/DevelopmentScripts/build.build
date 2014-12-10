@@ -174,7 +174,7 @@
 	</target>
 
 	<target name="embed_binaries_into_application" description="Embed binary files into LDAPSync application">
-		<exec program="${ldap.scripts.directory}\EmbedMethodBinariesIntoApplication.bat" >
+		<exec program="${ldap.scripts.directory}\EmbedLDAPSyncBinariesIntoApplication.bat" >
 			<arg line='${buildconfig}' />
 			<environment>
 				<variable name="root" value="${root}" />
