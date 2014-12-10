@@ -10,7 +10,8 @@
 		this.selectedMappedWorkspace = ko.observableArray([]);
 		this.selectedSourceField = ko.observableArray([]);
 		this.selectedMappedSource = ko.observableArray([]);
-
+		this.overlay = ko.observableArray([]);
+		this.selectedOverlay = ko.observableArray([]);
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField') }).then(function (result) {
 			var types = $.map(result, function (entry) {
 				return { name: entry.displayName, identifier: entry.fieldIdentifier };
@@ -23,6 +24,13 @@
 				return {name: entry.displayName, identifier: entry.fieldIdentifier};
 			});
 			self.sourceField(types);
+		});
+
+		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField') }).then(function (result) {
+			var types = $.map(result, function (entry) {
+				return { name: entry.displayName, identifier: entry.fieldIdentifier };
+			});
+			self.overlay(types);
 		});
 
 		/********** WorkspaceFields control  **********/
