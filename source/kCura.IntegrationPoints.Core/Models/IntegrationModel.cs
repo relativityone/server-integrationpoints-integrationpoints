@@ -20,16 +20,15 @@ namespace kCura.IntegrationPoints.Core.Models
 		public DateTime? StartDate{ get; set; }
 		public DateTime? EndDate { get; set; }
 		public string ScheduleTime{ get; set; }
-		public string ConnectionPath { get; set; }
-		public string FilterString { get; set; }
-		public string Authentication { get; set; }
-		public string Username { get; set; }
-		public string Password { get; set; }
-		public string NestedItems { get; set; }
 		public DateTime? NextRun { get; set; }
 		public DateTime? LastRun { get; set; }
 		public string SourceConfiguration { get; set; }
-		
+
+		public IntegrationModel()
+		{
+			this.SourceConfiguration = string.Empty;
+		}
+
 		public IntegrationModel(IntegrationPoint ip)
 		{
 			Name = ip.Name;
