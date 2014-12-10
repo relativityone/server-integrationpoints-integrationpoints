@@ -12,7 +12,7 @@
 			
 			<div class="cell">
 				
-				<select id="workspace-fields" class="list-box" name="workspace-field"  data-bind="options:workspaceFields, selectedOptions: selectedWorkspaceFields, optionsText: 'name'" id="AvailableSelectedMembers"  multiple="multiple" name="AvailableSelectedMembers"></select>
+				<select id="workspace-fields" class="list-box" name="workspace-field"  data-bind="options:workspaceFields, selectedOptions: selectedWorkspaceField, optionsText: 'name'" id="AvailableSelectedMembers"  multiple="multiple" name="AvailableSelectedMembers"></select>
 			
 				
 			</div>
@@ -29,12 +29,12 @@
 			</div>
 			<div class="cell selection">
 				<div>
-					<div id="workspace-field-up" class="legal-hold icon-chevron-up "></div>
-					<div id="workspace-field-down" class="legal-hold icon-chevron-down"></div>
+					<div id="workspace-field-up" class="legal-hold icon-chevron-up "data-bind="click:moveUp"></div>
+					<div id="workspace-field-down" class="legal-hold icon-chevron-down" data-bind="click:moveDown"></div>
 				</div>
 			</div>
 			<div class="cell">
-				<select class="list-box" name="sometext" size="5" id="selected-source-fields" multiple="multiple">
+				<select class="list-box" name="sometext" size="5" id="selected-source-fields" multiple="multiple" data-bind="options: sourceMapped, selectedOptions: selectedMappedSource, optionsText: 'name'">
 					
 				</select>
 			</div>
@@ -42,8 +42,8 @@
 				<div>
 					<div id="add-all-source-fields" class="legal-hold icon-paging-last" data-bind="click: addAlltoSourceField"></div>
 					<div id="add-source-field" class="legal-hold icon-paging-next" data-bind="click:addToSourceField"></div>
-					<div id="remove-source-field" class="legal-hold icon-paging-previous" data-bind="click: addToSourceField"></div>
-					<div id="remove-all-source-fields" class="legal-hold icon-paging-first" data-bind="click: addToMappedSource"></div>
+					<div id="remove-source-field" class="legal-hold icon-paging-previous" data-bind="click: addToMappedSource"></div>
+					<div id="remove-all-source-fields" class="legal-hold icon-paging-first" data-bind="click: addSourceToMapped"></div>
 
 				</div>
 			</div>
@@ -51,7 +51,7 @@
 			<div class="cell">
 				<div>
 					
-					<select class="list-box" id="source-attributes" name="source-attribe" size="5" multiple="multiple">
+					<select class="list-box" id="source-attributes" name="source-attribe" size="5" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'name'" >
 						
 					</select>
 				</div>
