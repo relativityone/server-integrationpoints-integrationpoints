@@ -63,10 +63,7 @@
 		<div class="field-row overlay-identifier" >
 			<div class="field-label required">Overlay Identifier:</div>
 			<div class="field-value ">
-				<select id="overlay-identifier">
-					<option value="Document">Document</option>
-					<option value="Object">Object</option>
-					<option value="Name">Name</option>
+				<select id="overlay-identifier" data-bind="options: overlay, selectedOptions: selectedOverlay, optionsText: 'name'" >
 				</select>
 			</div>
 		</div>

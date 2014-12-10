@@ -10,10 +10,11 @@
 		this.selectedMappedWorkspace = ko.observableArray([]);
 		this.selectedSourceField = ko.observableArray([]);
 		this.selectedMappedSource = ko.observableArray([]);
-
-		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField') }).then(function (result) {
+		this.overlay = ko.observableArray([]);
+		this.selectedOverlay = ko.observableArray([]);
+		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('RdoFilter') }).then(function (result) {
 			var types = $.map(result, function (entry) {
-				return { name: entry.displayName, identifier: entry.fieldIdentifier };
+				return { name: entry.name, identifier: entry.value };
 			});
 			self.workspaceFields(types);
 		});
@@ -23,6 +24,13 @@
 				return {name: entry.displayName, identifier: entry.fieldIdentifier};
 			});
 			self.sourceField(types);
+		});
+
+		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('RdoFilter') }).then(function (result) {
+			var types = $.map(result, function (entry) {
+				return { name: entry.name, identifier: entry.value };
+			});
+			self.overlay(types);
 		});
 
 		/********** WorkspaceFields control  **********/
@@ -94,7 +102,6 @@
 				requested.push(item);
 			});
 			this.sourceMapped.removeAll();
-			alert(this.selectedMappedSource().length);
 			this.selectedMappedSource.splice(0, this.selectedMappedSource().length);
 			
 		}
@@ -105,7 +112,6 @@
 			if (i >= 1) {
 				var array = this.mappedWorkspace();
 				this.mappedWorkspace.splice(i - 1, 2, array[i], array[i - 1]);
-				this.selectedMappedWorkspace.splice(0, this.selectedMappedWorkspace().length);
 			}	
 		}
 		
@@ -114,7 +120,6 @@
 			if (i >= this.mappedWorkspace.length) {
 				var array = this.mappedWorkspace();
 				this.mappedWorkspace.splice(i, 2, array[i + 1], array[i]);
-				this.selectedMappedWorkspace.splice(0, this.selectedMappedWorkspace().length);
 			}
 			
 		}
