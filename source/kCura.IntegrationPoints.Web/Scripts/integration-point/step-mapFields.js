@@ -18,7 +18,7 @@
 	var viewModel = function (model) {
 		var self = this;
 		var artifactTypeId = model.destination.selectedRdo;
-		debugger;
+		var artifactId = model.artifactID || 0; 
 		this.workspaceFields = ko.observableArray([]);
 		this.mappedWorkspace = ko.observableArray([]);
 		this.sourceMapped = ko.observableArray([]);
@@ -35,18 +35,19 @@
 			self.workspaceFields(types); 
 		});
 		
-		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/1000030') }).then(function (result) {
+		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/'+artifactTypeId) }).then(function (result) {
 			var types = mapFields(result);
 			self.sourceField(types); 
 		});
 
-		var overlay = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/1000031') }).then(function (result) {
+		var overlay = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/' + artifactTypeId) }).then(function (result) {
 			var types = mapFields(result);
 			
 			self.overlay(types);
 		});
 
-		var mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap/1039538') }).then(function (result) {
+		var mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap/' + artifactId) }).then(function (result) {
+			debugger;
 			var source = $.map(result, function (entry) {
 				return {
 					 name: entry.sourceField.displayName, identifier: entry.sourceField.fieldIdentifier

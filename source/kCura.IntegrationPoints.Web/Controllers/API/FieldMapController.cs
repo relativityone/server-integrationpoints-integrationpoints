@@ -25,11 +25,16 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 	public HttpResponseMessage Get(string id)
 		{
+			
 			int _id = 0; 
 			Int32.TryParse(id,out _id);
-			var fieldsmap = _integrationPointReader.GetFieldMap(_id);
-			return Request.CreateResponse(HttpStatusCode.OK, fieldsmap, Configuration.Formatters.JsonFormatter);
+			if (_id != 0)
+			{
+				var fieldsmap = _integrationPointReader.GetFieldMap(_id);
+				return Request.CreateResponse(HttpStatusCode.OK, fieldsmap, Configuration.Formatters.JsonFormatter);
+			}
 
+			return Request.CreateResponse(HttpStatusCode.OK, string.Empty, Configuration.Formatters.JsonFormatter); 
 		}
 
     }
