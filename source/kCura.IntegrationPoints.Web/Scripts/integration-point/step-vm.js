@@ -55,11 +55,10 @@
 				model = result;
 				IP.messaging.publish('goToStep', step);
 			}).fail(function (err) {
-				alert(err);
-				throw err;
+				IP.message.error.raise(err);
 			});
 		});
-
+				
 		IP.messaging.subscribe('back', function () {
 			if (typeof (vm.currentStep().back) !== "function") {
 				vm.currentStep().back = function () {

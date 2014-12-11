@@ -275,6 +275,7 @@
     <Content Include="Content\controls-grid-pager.scss" />
     <Content Include="Content\buttermilk-variables.scss" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
+    <Content Include="Scripts\core\messaging.js" />
     <Content Include="Scripts\frame-messaging.js" />
     <Content Include="Scripts\iframeResizer.min.js" />
     <Content Include="Scripts\Controls\step-progress.js" />
