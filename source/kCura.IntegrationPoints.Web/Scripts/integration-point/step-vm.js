@@ -53,6 +53,7 @@
 			vm.currentStep().submit().then(function (result) {
 				step = vm.goToStep(++step, result);
 				model = result;
+				debugger;
 				IP.messaging.publish('goToStep', step);
 			}).fail(function (err) {
 				IP.message.error.raise(err);

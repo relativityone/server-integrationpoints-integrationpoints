@@ -24,13 +24,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		public ActionResult Edit(int? objectID)
 		{
-			var model = new IntegrationModel();
-			if (objectID.HasValue)
-			{
-				model = _reader.ReadIntegrationPoint(objectID.Value);
-			}
-			
-			return View(model);
+			return View();
 		}
 
 		public ActionResult StepDetails()

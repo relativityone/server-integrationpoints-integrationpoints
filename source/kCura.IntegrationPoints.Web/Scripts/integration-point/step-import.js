@@ -82,7 +82,8 @@
 			this.frameBus.publish('submit');
 			//this is sketchy at best
 			this.bus.subscribe('saveComplete', function (data) {
-				d.resolve(data);
+				self.model.sourceConfiguration = data;
+				d.resolve(self.model);
 			});
 			this.bus.subscribe('saveError', function (error) {
 				d.reject(error);
