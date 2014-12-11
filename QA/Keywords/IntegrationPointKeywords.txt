@@ -163,6 +163,12 @@
 | | Page Should Contain Element	| xpath=//div[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
 | | Page Should Contain Element	| xpath=//div[@class="select2-container filter-container" and @id="${FieldID}"]	| The field ID of "${FieldID}" does not have an input type of a drop down list.
 
+| Verify that the following field ID has a listbox input
+| | [Documentation]	| A keyword that verifies the specified field has an input type of a list box.
+| | [ARGUMENTS]		| ${FieldID}
+| | Page Should Contain Element	| xpath=//div[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
+| | Page Should Contain Element	| xpath=//div[@class="list-box" and @id="${FieldID}"]	| The field ID of "${FieldID}" does not have an input type of a list box list.
+
 | Verify that the following section contains the following fields
 | | [Documentation]	| A keyword that verifies that a Section contains the specified fields in the specified order
 | | [ARGUMENTS]		| ${SectionHeading}	| @{ExpectedFields}

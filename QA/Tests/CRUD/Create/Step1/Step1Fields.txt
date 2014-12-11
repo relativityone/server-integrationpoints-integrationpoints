@@ -110,11 +110,11 @@
 | The Set Integration Details Fields are of the correct type
 | | [Documentation]	| Verify that the Set Integration Details Fields are the correct type
 | | [Tags]		| automated	
-| | Verify that the following field ID has a text input | ${IntegrationNameField}
-| | Verify that the following field ID has a droplist input | ${OverwriteDropDown}
-| | Verify that the following field ID has a droplist input | ${SourceProviderDropDown}
-| | Verify that the following field ID has a droplist input | ${DestinationRDODropDown}
-| | Verify that the following field ID has a YesNo Radio button input | ${EnableSchedulerRadioButtonsID}
+| | Run keyword and continue on failure | Verify that the following field ID has a text input | ${IntegrationNameField}
+| | Run keyword and continue on failure | Verify that the following field ID has a droplist input | ${OverwriteDropDown}
+| | Run keyword and continue on failure | Verify that the following field ID has a droplist input | ${SourceProviderDropDown}
+| | Run keyword and continue on failure | Verify that the following field ID has a droplist input | ${DestinationRDODropDown}
+| | Run keyword and continue on failure | Verify that the following field ID has a YesNo Radio button input | ${EnableSchedulerRadioButtonsID}
 
 | The Enable Scheduler options are Yes and No
 | | [Documentation]	| Verify that the Enable Scheduler radio button options are Yes and No

@@ -1,0 +1,80 @@
+*** Settings ***
+| Documentation 	| Verify that the Map Fields step of Integration Points shows the correct error messages, and that the record can be saved after correcting the errors
+| Metadata		    | Authors	| Daniel Oliver
+| Force Tags		| in-progress | team.method
+| Suite Setup		| Open and Log in to Method
+| Test Setup        | Go to Step 3 of the Create Integration Point Process
+| Test Teardown 	| Capture screenshot if test fails
+| Suite Teardown	| Close all browsers
+
+*** Variables ***
+
+| ${WorkspaceName}	     | Relativity Legal Hold
+| ${ValidConnectionPath} | 
+| ${OverlayIdentifierID} | 
+| ${WorkspaceFieldListID}   | workspace-fields
+| ${SelectedFieldListID}    | selected-workspace-fields
+| ${SelectedAttributeListID}    | selected-source-fields
+| ${SourceAttributeListID}      | source-attributes
+| ${AddAllWorkspaceFieldsIcon}   | add-all-workspace-fields
+| ${AddWorkspaceFieldIcon}       | add-workspace-field
+| ${RemoveWorkspaceFieldIcon}    | remove-workspace-field
+| ${RemoveWAllWorkspaceFieldsIcon} | remove-all-workspace-fields
+| ${MoveWorkspaceFieldUpIcon}        | workspace-field-up
+| ${MoveWorkspaceFieldDownIcon}      | workspace-field-down
+| ${AddAllSourceFieldsIcon}   | add-all-source-fields
+| ${AddSourceFieldIcon}       | add-workspace-field
+| ${RemoveSourceFieldIcon}    | remove-source-field
+| ${RemoveAllSourceFieldsIcon} | remove-all-source-fields
+
+*** Test Cases ***
+
+| The message "The overlay identifier must be mapped." is displayed under the correct conditions
+| | [Documentation] | Verify that when the Selected Overlay identifier is not in the Selected Field list and Save is clicked, that the message 
+ "The overlay identifier must be mapped." is displayed.
+| | [Tags] | untested
+ 
+| The message "All selected items have not been mapped." is displayed under the correct conditions for too few Fields
+| | [Documentation] | Verify that when the selected fields count is less than the selected attributes count, that the message "All selected items have not been mapped." is displayed.
+| | [Tags] | untested
+
+| The message "All selected items have not been mapped." is displayed under the correct conditions for too many Fields
+| | [Documentation] | Verify that when the selected fields count is greater than the selected attributes count, that the message "All selected items have not been mapped." is displayed.
+| | [Tags] | untested
+
+| Saving post "The overlay identifier must be mapped." message works by adding the Overlay Identifier to the Selected list
+| | [Documentation] | Verify that the Integration Point can be saved after the "The overlay identifier must be mapped." message is displayed
+| | [Tags] | untested
+
+| Saving post "All selected items have not been mapped." message
+| | [Documentation] | Verify that the Integration Point can be saved after the "All selected items have not been mapped." message is displayed
+| | [Tags] | untested
+
+| Saving Post "The overlay identifier must be mapped." message is displayed works by changing the Overlay value
+| | [Documentation] | Verify that the Integration Point can be saved after the
+| | [Tags] | untested
+
+| When the conditions for both invalid messages are met, the "All selected items have not been mapped" message is displayed
+| | [Documentation] | Verify that the conditions are met for both messages (Overlay not mapped, and Uneven field count), that only the "All selected items have not been mapped" message is displayed
+| | [Tags] | untested
+
+| When the conditions for both invalid messages are met and then the initial message is cleared, the second message can be displayed
+| | [Documentation] | Verify that the conditions are met for both messages (Overlay not mapped, and Uneven field count), and then the the user makes adjustments to remove the "All selected items have not been mapped" message and clicks Save, that the "The overlay identifier must be mapped." message is displayed
+| | [Tags] | untested
+
+*** Keywords *** 
+
+| Go to Step 3 of the Create Integration Point Process
+| | Open Create Integration Point
+| | Fill out the Following Fields of the Integration Point Step 1 form | Generic Selectable Field tests | Append/Overlay | LDAP | Custodian | no
+#| | Fill out the Following Fields of the Integration Point Step 2 form | ${ValidConnectionPath}
+| | Click | next
+| | Wait until keyword succeeds | 20s | 2s | Click | next
+
+*** Settings ***
+| Library   | Collections
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource  | C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
