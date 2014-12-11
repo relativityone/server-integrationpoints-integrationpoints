@@ -172,6 +172,7 @@
     <Compile Include="Attributes\WebAPIFilterException.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ControllerCustomPageService.cs" />
+    <Compile Include="Controllers\API\FieldMapController.cs" />
     <Compile Include="Controllers\API\SourceTypeController.cs" />
     <Compile Include="Controllers\API\RdoFilterController.cs" />
     <Compile Include="Controllers\API\TestController.cs" />
@@ -451,6 +452,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
       <Name>kCura.IntegrationPoints.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Syncronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
+      <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
+      <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
