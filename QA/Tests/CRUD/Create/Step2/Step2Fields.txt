@@ -17,6 +17,8 @@
 | ${PasswordID}           | 
 | ${ImportNestedItemsButtonID}   | 
 | ${ImportNestedItemsButtonName} |
+| ${ValidConnectionPath}         | 
+| ${InvalidConnectionPath}       | 
 
 *** Test Cases ***
 
@@ -79,12 +81,12 @@
 | The Source Connection Fields are of the correct type
 | | [Documentation]	| Verify that the Set Integration Details Fields are the correct type
 | | [Tags]		| untested	
-| | Verify that the following field ID has a text input | ${ConnectionPathID}
-| | Verify that the following field ID has a droplist input | ${ObjectFilterStringID}
-| | Verify that the following field ID has a droplist input | ${AuthenticationDropID}
-| | Verify that the following field ID has a text input | ${UsernameID} 
-| | Verify that the following field ID has a text input | ${PasswordID} 
-| | Verify that the following field ID has a YesNo Radio button input | ${EnableSchedulerRadioButtonsID}
+| | Run keyword and continue on failure | Verify that the following field ID has a text input | ${ConnectionPathID}
+| | Run keyword and continue on failure | Verify that the following field ID has a droplist input | ${ObjectFilterStringID}
+| | Run keyword and continue on failure | Verify that the following field ID has a droplist input | ${AuthenticationDropID}
+| | Run keyword and continue on failure | Verify that the following field ID has a text input | ${UsernameID} 
+| | Run keyword and continue on failure | Verify that the following field ID has a text input | ${PasswordID} 
+| | Run keyword and continue on failure | Verify that the following field ID has a YesNo Radio button input | ${EnableSchedulerRadioButtonsID}
 
 | The Import Nested Items options are Yes and No
 | | [Documentation]	| Verify that the Enable Scheduler radio button options are Yes and No

@@ -1,0 +1,130 @@
+*** Settings ***
+| Documentation 	| Verify that the Map Fields step of Integration Points allows RDO fields to be selected
+| Metadata		    | Authors	| Daniel Oliver
+| Force Tags		| in-progress | team.method
+| Suite Setup		| Open and Log in to Method
+| Test Setup        | Go to Step 3 of the Create Integration Point Process
+| Test Teardown 	| Capture screenshot if test fails
+| Suite Teardown	| Close all browsers
+
+*** Variables ***
+
+| ${WorkspaceName}	     | Relativity Legal Hold
+| ${ValidConnectionPath} | 
+| ${OverlayIdentifierID} | 
+| ${Workspace Field List}   | workspace-fields
+| ${Selected Workspace List ID}    | selected-workspace-fields
+| ${SelectedAttributeListID}    | selected-source-fields
+| ${SourceAttributeListID}      | source-attributes
+| ${AddAllWorkspaceFieldsIcon}   | add-all-workspace-fields
+| ${Add Workspace Field Icon}       | add-workspace-field
+| ${RemoveWorkspaceFieldIcon}    | remove-workspace-field
+| ${RemoveWAllWorkspaceFieldsIcon} | remove-all-workspace-fields
+| ${MoveWorkspaceFieldUpIcon}        | workspace-field-up
+| ${MoveWorkspaceFieldDownIcon}      | workspace-field-down
+| ${AddAllSourceFieldsIcon}   | add-all-source-fields
+| ${AddSourceFieldIcon}       | add-workspace-field
+| ${RemoveSourceFieldIcon}    | remove-source-field
+| ${RemoveAllSourceFieldsIcon} | remove-all-source-fields
+| ${Field1}                    | Communication
+| ${Field2}                    | Batch Set
+
+*** Test Cases ***
+
+| An Individual Field can be selected and put into the Selected list
+| | [Documentation] | Verify that one field can be moved from the Workspace list to the Selected Workspace list
+| | [Tags] | automated1
+| | Select Workspace Field  | ${Field1}
+| | Move fields to the Selected Workspace list
+
+| | Verify that the Selected Workspace fields are in the following order | ${Field1}
+
+| Fields are removed from the current list when they are put into another list
+| | [Documentation] | Verify that moving a field from one list to another list, actually removes it from the initial list
+| | [Tags] | automated1
+| | Select Workspace Field  | ${Field1}
+| | Move fields to the Selected Workspace list
+
+| | Verify that the following field is not in the following list  | ${Field1} | ${Workspace Field List} 
+
+| Individual fields can be selected and moved individually
+| | [Documentation] | Verify that one field can be moved to the Selected Workspace list, and the process can then be repeated for another field with the newly moved field placed at the end of the list.
+| | [Tags] | automated
+| | Select Workspace Field  | ${Field1}
+| | Move fields to the Selected Workspace list
+| | Select Workspace Field  | ${Field2}
+| | Move fields to the Selected Workspace list
+
+| | Verify that the Selected Workspace fields are in the following order | ${Field1} | ${Field2}
+
+| Mutliple Fields can be selected and moved with one click 
+| | [Documentation] | Verify that mutliple Fields can be selected, and then they are all moved by clicking the Move to Selected list icon. The sort order of the newly moved fields is then alphabetical (assuming they were just in alphabetical order).
+| | [Tags] | automated
+| | Select Workspace Field  | ${Field2}
+| | Select Workspace Field  | ${Field1}
+| | Move fields to the Selected Workspace list
+
+| | Verify that the Selected Workspace fields are in the following order | ${Field2} | ${Field1}
+
+| Moving a field back to Workspace Fields adds it to the bottom of the list
+| | xpath=//select[@id='${ListName}']/option[text()='${FieldName}'] 
+field does not have any following-sibling
+
+| All fields can be moved from the Workspace Fields to Selected Fields
+
+| All fields can be moved from the Selected Fields to Workspace Fields
+
+| Move some, then move all to the Selected Fields list
+
+| Move some, then all to the Workspace Fields list
+
+#-------------------Manual-------------------------------
+
+| Multiple Fields can be "Click and dragged"
+
+| Mutliple Fields can be Control Clicked
+
+| Selecting a field turns the row blue
+
+| Clicking off the area turns the row grey
+
+| Individual Fields can be double clicked to move to other list
+
+*** Keywords *** 
+
+| Verify that the following field is not in the following list
+| | [Documentation] | A keyword that verifies that the specified field is not present in the specified list.
+| | [Arguments] | ${FieldName} | ${ListName}
+| | Element should not be visible  |  xpath=//select[@id='${ListName}']/option[text()='${FieldName}']
+
+| Move fields to the Selected Workspace list
+| | [Documentation] | A keyword that clicks the "Move to Selected list" icon
+| | Click | ${Add Workspace Field Icon}
+
+| Verify that the Selected Workspace fields are in the following order
+| | [Documentation] | A keyword that verifies the fields in the Selected Workspace list are in the desired order.
+| | [Arguments] | @{ExpectedFields}
+| | Wait until keyword succeeds | 20s | 2s | Element Should be Visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Fields list box was not visible.
+| | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-workspace-fields']/option | False 
+| | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
+
+| Select Workspace Field 
+| | [Documentation] | A keyword that selects an item from the Workspace Field list. Multiple calls of select can be used with a single Click of Move.
+| | [Arguments] | ${Field}
+| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='workspace-fields'] | The Workspace Fields list box was not visible.
+| | Click | xpath=//select[@id='workspace-fields']/option[text()='${Field}']
+
+| Go to Step 3 of the Create Integration Point Process
+| | Open Create Integration Point
+| | Fill out the Following Fields of the Integration Point Step 1 form | Moving Workspace Field tests | Append/Overlay | LDAP | Custodian | no
+#| | Fill out the Following Fields of the Integration Point Step 2 form | ${ValidConnectionPath}
+| | Click | next
+| | Wait until keyword succeeds | 20s | 2s | Click | next
+
+*** Settings ***
+| Library   | Collections
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource  | C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
