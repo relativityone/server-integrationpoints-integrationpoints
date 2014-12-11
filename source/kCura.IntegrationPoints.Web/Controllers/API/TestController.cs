@@ -18,6 +18,5 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 				return Request.CreateResponse(HttpStatusCode.OK, list);
 			}
-
     }
 }

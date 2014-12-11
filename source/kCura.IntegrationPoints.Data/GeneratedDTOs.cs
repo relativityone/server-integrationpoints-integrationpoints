@@ -232,6 +232,30 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(SourceProviderFieldGuids.Identifier), value);
 			}
 		}
+		[DynamicField(SourceProviderFields.SourceConfigurationUrl, SourceProviderFieldGuids.SourceConfigurationUrl, FieldTypes.LongText)]
+		public string SourceConfigurationUrl
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(SourceProviderFieldGuids.SourceConfigurationUrl));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(SourceProviderFieldGuids.SourceConfigurationUrl), value);
+			}
+		}
+		[DynamicField(SourceProviderFields.ConfigurationSource, SourceProviderFieldGuids.ConfigurationSource, FieldTypes.LongText)]
+		public string ConfigurationSource
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(SourceProviderFieldGuids.ConfigurationSource));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(SourceProviderFieldGuids.ConfigurationSource), value);
+			}
+		}
 		public const int NameFieldLength = 255;
 		[DynamicField(SourceProviderFields.Name, SourceProviderFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
 		public string Name

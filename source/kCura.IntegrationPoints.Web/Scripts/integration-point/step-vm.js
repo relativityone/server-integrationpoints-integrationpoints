@@ -16,6 +16,8 @@
 			this.currentStep().getTemplate();
 		}, this);
 
+		this.ipModel = {};
+
 		this.goToStep = function (step) {
 			var totalSteps = this.steps().length - 1;
 			if (step > totalSteps) {
@@ -24,13 +26,21 @@
 			if (step < 0) {
 				step = 0;
 			}
-			this.currentStep(this.steps()[step]);
+			var nextStep = this.steps()[step];
+			if (nextStep.loadModel) {
+				nextStep.loadModel($.extend({}, this.ipModel));
+			}
+			this.currentStep(nextStep);
 			return step;
 		};
 
-		this.currentStep(this.steps()[0]);
+		var nextStep = this.steps()[0];
+		if (nextStep.loadModel) {
+			nextStep.loadModel($.extend({}, this.ipModel));
+		}
+		this.currentStep(nextStep);
 	};
-	
+
 	$(function () {
 		var vm = new viewModel();
 		ko.applyBindings(vm, document.getElementById('pointBody'));
@@ -40,14 +50,25 @@
 			vm.currentStep().submit().then(function () {
 				step = vm.goToStep(++step);
 				IP.messaging.publish('goToStep', step);
-			}).fail(function(err){
+			}).fail(function (err) {
+				alert(err);
 				throw err;
 			});
 		});
 
 		IP.messaging.subscribe('back', function () {
-			step = vm.goToStep(--step);
-			IP.messaging.publish('goToStep', step);
+			if (typeof (vm.currentStep().back) !== "function") {
+				vm.currentStep().back = function () {
+					var d = root.data.deferred().defer();
+					d.resolve();
+					return d.promise();
+				};
+
+			}
+			vm.currentStep().back().then(function () {
+				step = vm.goToStep(--step);
+				IP.messaging.publish('goToStep', step);
+			});
 		});
 
 	});

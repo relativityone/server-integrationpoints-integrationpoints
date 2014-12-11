@@ -80,19 +80,6 @@
 
 | The Overlay Identifier for the Custodian RDO defaults to UniqueID
 
-#-------------------Mappable Fields --------------------
-
-| The selected Overlay must be mapped; error "The overlay identifier must be mapped."
-
-| Uneven number of selected fields in both columns:  "All selected items have not been mapped."
-
-| System Fields are hidden
-
-| Single Object fields are hidden
-
-| Multi Object fields are hidden
-
-| Going from Step 3 to Step 2 and back to Step 3 preserves field mappings if it can. If anything changes, un-map everything.
 
 
 *** Keywords *** 

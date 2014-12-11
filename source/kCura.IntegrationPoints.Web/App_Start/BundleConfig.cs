@@ -34,6 +34,14 @@ namespace kCura.IntegrationPoints.Web
 					"~/Scripts/integration-point/step-mapFields.js"
 				));
 
+			bundles.Add(new ScriptBundle("~/bundles/grid").Include(
+				"~/Scripts/grid/dragon-utils.js",
+				"~/Scripts/i18n/grid.locale-en.js",
+				"~/Scripts/jquery.jqGrid.min.js",
+				"~/Scripts/select2.min.js",
+				"~/Scripts/grid/dragon-grid.js"
+				));
+
 			bundles.Add(new ScriptBundle("~/bundles/dragon").Include(
 				"~/Scripts/dragon/dragon-core.js",
 				"~/Scripts/dragon/dragon-utils.js",
@@ -69,5 +77,6 @@ namespace kCura.IntegrationPoints.Web
 									"~/Content/themes/base/jquery.ui.progressbar.css",
 									"~/Content/themes/base/jquery.ui.theme.css"));
 		}
+
 	}
 }

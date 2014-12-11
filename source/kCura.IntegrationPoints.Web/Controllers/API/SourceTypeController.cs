@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -20,7 +19,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpGet]
 		public HttpResponseMessage Get()
 		{
-			var list = _factory.GetSourceTypes().Select(x => new {name = x.Name, value = x.ID});
+			var list = _factory.GetSourceTypes().Select(x => new {name = x.Name, value = x.ID, url= x.SourceURL});
 			return Request.CreateResponse(HttpStatusCode.OK, list);
 		}
 	}
