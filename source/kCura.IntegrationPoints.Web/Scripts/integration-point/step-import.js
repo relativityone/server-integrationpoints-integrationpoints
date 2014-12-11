@@ -7,6 +7,20 @@
 		return url;		
 	};
 
+	var parseURL = function (url, obj) {
+		var urlFormat = url;
+		if (urlFormat[0] === '/') {
+			urlFormat = urlFormat.slice(1, urlFormat.length);
+		}
+		for (var key in obj) {
+			if (obj.hasOwnProperty(key)) {
+				var regEx = new RegExp('%' + key + '%', "ig")
+				urlFormat = urlFormat.replace(regEx, obj[key]);
+			}
+		}
+		return urlFormat;
+	};
+
 	var Step = function (settings) {
 		var self = this;
 		var frameName = 'configurationFrame';
@@ -15,39 +29,35 @@
 		this.hasTemplate = false;
 		this.model = {};
 		this.frameBus = {};
-		this.stepKey = 'test'
 		this.hasBeenLoaded = false;
 		this.bus =IP.frameMessaging(); 
 		this.loadModel = function (model) {//loads a readonly version of the ipmodel
-			if(!this.hasBeenLoaded){
+			this.stepKey = model.source.selectedType;
+			if (!this.hasBeenLoaded) {
 				this.model = model;
-				stepCache[this.stepKey] = self.model;
+				stepCache[model.source.selectedType] = self.model;
 				this.hasBeenLoaded = true;
+				this.source = $.grep(model.source.sourceTypes, function(item){
+					return item.value === model.source.selectedType;
+				})[0].href;
 			}
 		};
 
-		this.source = '%applicationPath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/IntegrationPoints/LDAPConfiguration/%appID%';
 		
 		var FRAME_KEY = 'syncType';
 		var stepCache = {};
 
 		this.getTemplate = function () {
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
-				var applicationPath = _getAppPath();
 				var appID = IP.utils.getParameterByName('AppID', window.top);
-				var artifactID = 1037306;
+				var artifactID = self.model.artifactID;
 				var obj = {
-					applicationPath: applicationPath,
+					applicationPath: _getAppPath(),
 					appID: appID,
 					artifactID: artifactID
 				};
-				var urlFormat = self.source;
-				for (var key in obj) {
-					if (obj.hasOwnProperty(key)) {
-						urlFormat = urlFormat.replace('%' + key + '%', obj[key]);
-					}
-				}
-				self.source = urlFormat;
+				self.source = parseURL(self.source, obj);
+
 				$('body').append(result);
 				self.template(self.settings.templateID);
 				self.hasTemplate = true;

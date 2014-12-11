@@ -16,9 +16,8 @@
 			this.currentStep().getTemplate();
 		}, this);
 
-		this.ipModel = {};
-
-		this.goToStep = function (step) {
+		
+		this.goToStep = function (step, model) {
 			var totalSteps = this.steps().length - 1;
 			if (step > totalSteps) {
 				step = totalSteps;
@@ -28,27 +27,32 @@
 			}
 			var nextStep = this.steps()[step];
 			if (nextStep.loadModel) {
-				nextStep.loadModel($.extend({}, this.ipModel));
+				nextStep.loadModel($.extend({}, model));
 			}
 			this.currentStep(nextStep);
 			return step;
 		};
 
-		var nextStep = this.steps()[0];
-		if (nextStep.loadModel) {
-			nextStep.loadModel($.extend({}, this.ipModel));
-		}
-		this.currentStep(nextStep);
 	};
 
 	$(function () {
+
 		var vm = new viewModel();
-		ko.applyBindings(vm, document.getElementById('pointBody'));
 		var step = 0;
+		var model = {};
+		IP.data.ajax({
+			url: IP.utils.generateWebAPIURL('IntegrationPointsAPI', 0),
+			type: 'Get'
+		}).then(function (result) {
+			vm = new viewModel();
+			vm.goToStep(0, result);
+			ko.applyBindings(vm, document.getElementById('pointBody'));
+		});
 
 		IP.messaging.subscribe('next', function () {
-			vm.currentStep().submit().then(function () {
-				step = vm.goToStep(++step);
+			vm.currentStep().submit().then(function (result) {
+				step = vm.goToStep(++step, result);
+				model = result;
 				IP.messaging.publish('goToStep', step);
 			}).fail(function (err) {
 				alert(err);
@@ -66,7 +70,7 @@
 
 			}
 			vm.currentStep().back().then(function () {
-				step = vm.goToStep(--step);
+				step = vm.goToStep(--step, model);
 				IP.messaging.publish('goToStep', step);
 			});
 		});
