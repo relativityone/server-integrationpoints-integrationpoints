@@ -1,0 +1,157 @@
+﻿<div class="card" id="ldapConfiguration">
+	<label class="label">Source Connection</label>
+	<div class="field-row">
+		<div class="field-label required">
+			Connection Path:
+		</div>
+		<div class="field-value">
+			<input type="text" maxlength="255" data-bind="value: path" id="connectionPath">
+		</div>
+	</div>
+
+	<div class="field-row">
+		<div class="field-label">
+			Object Filter String:
+		</div>
+		<div class="field-value">
+			<input type="text" maxlength="255" data-bind="value: filter" id="connectionFiltet">
+		</div>
+	</div>
+
+	<div class="field-row">
+		<div class="field-label">
+			Authentication:
+		</div>
+		<div class="field-value">
+			<select data-bind="options: auth, optionsText: 'name', optionsValue: 'id', value: selectedAuth, optionsCaption: 'Select...', select2: {}">
+			</select>
+		</div>
+	</div>
+
+	<div class="field-row">
+		<div class="field-label">
+			Username:
+		</div>
+		<div class="field-value">
+			<input type="text" maxlength="255" data-bind="value: userName" id="connectionUsername">
+		</div>
+	</div>
+
+	<div class="field-row">
+		<div class="field-label">
+			Password:
+		</div>
+		<div class="field-value">
+			<input type="password" maxlength="255" data-bind="value: password" id="connectionPassword">
+		</div>
+	</div>
+
+	<div class="field-row">
+		<div class="field-label">
+			Import Nested Items:
+		</div>
+		<div class="field-value">
+			<ul>
+				<li>
+					<input type="radio" name="enable" value="true" data-bind="checked: importNested" />Yes</li>
+				<li>
+					<input type="radio" name="enable" value="false" data-bind="checked: importNested" />No</li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+@section scripts
+{
+	<script src="~/Scripts/core/data.js"></script>
+	<script src="~/Scripts/core/utils.js"></script>
+	<script src="~/Scripts/knockout-2.2.0.js"></script>
+	<script src="~/Scripts/knockout.validation.js"></script>
+	<script src="~/Scripts/jquery-1.8.2.js"></script>
+	<script src="~/Scripts/frame-messaging.js"></script>
+	<script>
+		ko.validation.configure({
+			registerExtenders: true,
+			messagesOnModified: true,
+			insertMessages: true,
+			parseInputAttributes: true,
+			messageTemplate: null
+		});
+
+		ko.validation.insertValidationMessage = function (element) {
+			var errorContainer = document.createElement('div');
+			var iconSpan = document.createElement('span');
+			iconSpan.className = 'icon-error legal-hold field-validation-error';
+
+			errorContainer.appendChild(iconSpan);
+
+			$(element).parents('.field-value').eq(0).append(errorContainer);
+
+			return iconSpan;
+		};
+
+		(function () {
+			var message = IP.frameMessaging();
+			var pageModel = {};
+			message.subscribe('submit', function () {
+				this.publish("saveState", ko.toJS(pageModel)); //save the model incase of error
+				var self = this;
+				if (pageModel.errors().length === 0) {
+					IP.data.ajax({
+						url: IP.utils.generateWebURL('IntegrationPoints', 'CheckLdap'),
+						data: {},
+					}).then(function () {
+						self.publish('saveComplete', ko.toJS(pageModel));
+					},
+					function (e) {
+						self.publish('saveError', e.responseText);
+					});
+
+				} else {
+					pageModel.errors.showAllMessages();
+				}
+			});
+			var viewModel = function (model) {
+				
+				var state = $.extend({}, {}, model);
+				this.path = ko.observable(state.path).extend({
+					required: true
+				});
+				this.filter = ko.observable(state.filter);
+				this.auth = ko.observableArray([
+					{ name: 'Anonymous', id: 1 },
+					{ name: 'Encryption', id: 2 },
+					{ name: 'FastBind', id: 3 },
+					{ name: 'Secure', id: 4 },
+					{ name: 'Secure Socket Layer', id: 5 },
+					{ name: 'Readonly server', id: 6 }
+				]);
+				this.userName = ko.observable(state.userName);
+				this.password = ko.observable(state.password);
+				this.selectedAuth = ko.observable(state.selectedAuth);
+				this.importNested = ko.observable(state.importNested || 'false');
+
+				this.errors = ko.validation.group(this, { deep: true });
+
+			};
+
+			message.subscribe("back", function () {
+				this.publish("saveState", ko.toJS(pageModel));
+			});
+
+			message.subscribe('load', function (model) {
+				if (typeof (model) === "string") {
+					try {
+
+						model = JSON.parse(model);
+					} catch (e) {
+						model = {};
+					}
+				}
+				pageModel = new viewModel(model);
+				ko.applyBindings(pageModel, document.getElementById('ldapConfiguration'));
+			});
+
+		})();
+	</script>
+}

@@ -20,7 +20,8 @@ var storage = (function (storageLocation) {
 	};
 });
 
-var Dragon = Dragon || {};
+
+var Dragon = window.Dragon;
 (function (D, $, storage, undefined) {
 	(function (Grid) {
 		var gridSettings = {
@@ -49,7 +50,7 @@ var Dragon = Dragon || {};
 							resultURL: settings.ResultURL,
 							grid: grid
 						};
-					var isValidIDs = false;
+					isValidIDs = false;
 					options.type = parseInt($this.parents('.mass-action').children('select').val());
 					if (options.type === 1) {
 						options.ids = grid.getSelected().keys;
@@ -90,6 +91,49 @@ var Dragon = Dragon || {};
 
 			H.findObj = function (root, string) {
 				return D.findObj(string, root);
+			};
+
+			H.findFunctionOrDefault = function (funcString, gridContext) {
+				var dataType;
+
+				try {
+					var func = H.findFunction(funcString);
+					if (typeof func === "function") {
+						dataType = function (postData, _, rcnt, npage, adjust) {
+							var ts = this;
+							var done = function (data) {
+								if (typeof data != "undefined") {
+									ts.addJSONData(data, ts.grid.bDiv, rcnt, npage > 1, adjust);
+								}
+								gridContext.$grid.triggerHandler("jqGridLoadComplete", [data]);
+								var lcf = $.isFunction(ts.p.loadComplete),
+										lc = lcf ? ts.p.loadComplete : null;
+								if (lcf) {
+									lc.call(ts, data);
+								}
+								gridContext.$grid.triggerHandler("jqGridAfterLoadComplete", [data]);
+								if (ts.p.scroll && npage === false) {
+									ts.grid.populateVisible();
+								}
+							};
+
+							var result = func.call(gridContext, postData, done);
+							if (D.isPromise(result)) {
+								result.then(function (r) {
+									done(r);
+								});
+							} else if (typeof result != "undefined") {
+								done(result);
+							}
+						};
+					} else {
+						dataType = funcString;
+					}
+				} catch (e) {
+					//we are just a string so return JSON instead
+					dataType = funcString;
+				}
+				return dataType;
 			};
 
 			H.findFunction = function findFunction(funcString) {
@@ -224,24 +268,6 @@ var Dragon = Dragon || {};
 				return $grid.data(gridSettings.DATA_KEY);
 			};
 
-			H.setFilterState = function () {
-
-				var $filterToggle = $('#' + this.settings.toggleID);
-				var $gbox = $('#gbox_' + this.settings.ID);
-				var $filterBar = $gbox.find('.ui-search-toolbar');
-				var showBar = this.settings.showFilterToolbar === true;
-				//is(':visible') isn't good enough due to the fact that the grid could be on a subtab
-				var isFilterVisible = $filterBar.css('display') !== 'none';
-				if (!showBar && isFilterVisible) {
-					this.toggleFilter();
-				} else if (showBar && !isFilterVisible) {
-					this.toggleFilter();
-				} else {
-					//do nothing the bar is in the correct state
-				}
-			};
-
-
 		})(Helpers);
 		Grid.utils = {
 			getCommandColumn: function ($grid, rowID) {
@@ -254,16 +280,20 @@ var Dragon = Dragon || {};
 				return $input;
 			}
 		};
+
+
+
 		Grid.GridControl = (function (Helpers) {
 
 			function initGrid() {
 				var self = this;
 				//here we go create a new grid object and have a whole bunch of fun!
 				this.$grid.jqGrid({
+					data: self.settings.data === null ? undefined : self.settings.data,
 					url: self.settings.url,
 					mtype: 'Post',
 					//serializeGridData: function (postData) {return JSON.stringify(postData);},
-					datatype: 'JSON',
+					datatype: Helpers.findFunctionOrDefault(self.settings.dataType || 'JSON', self),
 					ajaxGridOptions: {
 						contentType: "application/json; charset=utf-8",
 						beforeSend: function () {
@@ -440,11 +470,19 @@ var Dragon = Dragon || {};
 						$sel.append($option);
 					});
 
-					$sel.select2({
-						containerCssClass: "pager-container",
-						dropdownCssClass: "pager-select",
-						dropdownAutoWidth: false
-					});
+					if (typeof self.settings.subGrid !== "undefined" && self.settings.subGrid === false) {
+						$sel.select2({
+							containerCssClass: "subgrid-pager-container",
+							dropdownCssClass: "subgrid-select",
+							dropdownAutoWidth: false
+						});
+					} else {
+						$sel.select2({
+							containerCssClass: "pager-container",
+							dropdownCssClass: "pager-select",
+							dropdownAutoWidth: false
+						});
+					}
 
 					$selContainer.find('span.select2-arrow').removeClass("select2-arrow").addClass("icon icon-chevron-down");
 
@@ -456,10 +494,6 @@ var Dragon = Dragon || {};
 				$(window).resize(function () {
 					Helpers.sizeGrid(self.$grid, self.settings.subGrid);
 				});
-
-				//				$('.ui-jqgrid-resize.ui-jqgrid-resize-ltr').on('keyup', function() {
-				//					Helpers.sizeGrid(self.$grid);
-				//				});
 
 				Helpers.sizeGrid(self.$grid);
 				//on tab expansion trigger reload
@@ -480,8 +514,24 @@ var Dragon = Dragon || {};
 				//});
 			};
 
-			function setFilterState() {
-				Helpers.setFilterState.call(this);
+			function setupFilterToggle() {
+				var $filterToggle = $('#' + this.settings.toggleID),
+						self = this,
+						$toggleSpan = $filterToggle.find('>span');
+
+				$filterToggle.on('click', function () {
+					var result = self.raise({ type: 'beforeFilterToggle', target: 'grid' }, arguments);
+					$toggleSpan.toggleClass('icon-filter-collapse');
+					$toggleSpan.toggleClass('icon-filter-expand');
+
+					if (typeof result === "undefined") {
+						result = true;
+					}
+					if (result) {
+						self.$grid[0].toggleToolbar();
+						self.raise({ type: 'afterFilterToggle', target: 'grid' }, arguments);
+					}
+				});
 			}
 
 			function setupResetCol() {
@@ -505,11 +555,7 @@ var Dragon = Dragon || {};
 				}
 
 				exportedFilters = $.map(this.customFilters, function (filter) {
-					var rule = filter.getRule();
-					if ($.isEmptyObject(rule)) {
-						rule = undefined;
-					}
-					return rule;
+					return filter.getRule();
 				});
 				Array.prototype.push.apply(searchData.rules, exportedFilters.concat(this.layoutFilters));
 				this.$grid.jqGrid('setGridParam', { postData: { filters: searchData } });
@@ -675,14 +721,11 @@ var Dragon = Dragon || {};
 				this.on('loadComplete', function (records) {
 					var root = records.root;
 					this.records = root;
-					//do not use this function anymore if you need to prepopulate the grid use selectedKeys instead
 					if (records.selection && this.settings.addSelectedItems) {
 						setSelectedItemsOnGrid(this, root, records.selection);
 					}
 
 					updateSelectedItemsOnGrid(this, root, records.selectedKeys);
-
-
 				});
 
 				this.on("gridVisible", function () {
@@ -701,7 +744,6 @@ var Dragon = Dragon || {};
 					self.firstLoad = false;
 					self.resize();
 					$("body").removeClass("grid-request-wait");
-
 				});
 
 				this.on('onSortCol', function (field, _, sort) {
@@ -798,29 +840,20 @@ var Dragon = Dragon || {};
 				this.$grid.data(gridSettings.DATA_KEY, {
 					selectedItems: {}
 				});
-
 				//this has to be first to ensure we capture every event
 				setupGridEvents.call(this);
 				setupFiltersAndFormatters.call(this);
 				initGrid.call(this);
 				setupFilterToolbar.call(this);
 				setupResetCol.call(this);
+
 				if (this.settings.showFilterToggle) {
 					setupFilterToggle.call(this);
 				}
-
-				Helpers.setFilterState.call(this);
 				Helpers.setUpPagerStyles.call(this);
 				Helpers.setUpMassActions.call(this);
 				getDefaultGridWidths.call(this);
 			};
-
-			function setupFilterToggle() {
-				var self = this;
-				$('#' + this.settings.toggleID).on('click', function () {
-					self.toggleFilter();
-				});
-			}
 
 			control.prototype.on = function (name, func) {
 				if (typeof this.events[name] === "undefined") {
@@ -977,41 +1010,12 @@ var Dragon = Dragon || {};
 				this.raise({ type: 'gridResize', target: 'grid' }, arguments)
 			};
 
-			control.prototype.triggerSearch = function () {
-				this.$grid[0].triggerToolbar();
-			};
-
-			control.prototype.toggleFilter = function () {
-				var $filterToggle = $('#' + this.settings.toggleID);
-				var $toggleSpan = $filterToggle.find('>span');
-
-				$toggleSpan.toggleClass('icon-filter-collapse');
-				$toggleSpan.toggleClass('icon-filter-expand');
-				for (var key in this.subGrids) {
-					if (this.subGrids.hasOwnProperty(key)) {
-						this.subGrids[key].toggleFilter();
-					}
-				}
-				var result = this.raise({ type: 'beforeFilterToggle', target: 'grid' }, arguments);
-				if (typeof result === "undefined") {
-					result = true;
-				}
-				if (result) {
-					this.$grid[0].toggleToolbar();
-					this.raise({ type: 'afterFilterToggle', target: 'grid' }, arguments);
-				}
-			};
-
-
 			return control;
 		})(Helpers);
 
-		Grid.GridControl.Helpers = Helpers;
-
 	})(D.Grid || (D.Grid = {}));
 
-})(window.Dragon || (window.Dragon = {}), jQuery, storage(sessionStorage));
-
+})(Dragon || (Dragon = {}), jQuery, storage(sessionStorage));
 //Added Prototypes
 
 (function () {

@@ -96,7 +96,7 @@ ko.validation.registerExtenders();
 			self.rdoTypes(types);
 		}, function () {
 
-		})
+		});
 
 		this.templateID = 'ldapDestinationConfig';
 		this.rdoTypes = ko.observableArray();

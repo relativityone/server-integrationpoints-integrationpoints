@@ -62,7 +62,7 @@ h1 {
 
 #pointBody {
 	position: absolute;
-	top: 180px;
+	top: 140px;
 	bottom: 0;
 	left: 0;
 	right: 0;
@@ -154,6 +154,10 @@ ul li .day-select {
 
 	.field-validation-error.icon-error::before {
 		padding-right: 5px;
+}
+
+#configurationFrame {
+	border: none;
 	}
 
 

@@ -737,7 +737,8 @@ $.extend($.jgrid,{
 	}
 });
 
-$.fn.jqGrid = function( pin ) {
+$.fn.jqGrid = function (pin) {
+	
 	if (typeof pin === 'string') {
 		var fn = $.jgrid.getMethod(pin);
 		if (!fn) {
@@ -3126,7 +3127,8 @@ $.jgrid.extend({
 							}
 						}
 					});
-					if(t.p.datatype === 'local') {
+					if (t.p.datatype === 'local') {
+						
 						var id = $.jgrid.stripPref(t.p.idPrefix, rowid),
 						pos = t.p._index[id], key;
 						if(t.p.treeGrid) {
@@ -3256,7 +3258,8 @@ $.jgrid.extend({
 					$(t).triggerHandler("jqGridAfterInsertRow", [rowid,data,data]);
 					if(air) { t.p.afterInsertRow.call(t,rowid,data,data); }
 					k++;
-					if(t.p.datatype === 'local') {
+					if (t.p.datatype === 'local') {
+						debugger;
 						lcdata[t.p.localReader.id] = id;
 						t.p._index[id] = t.p.data.length;
 						t.p.data.push(lcdata);

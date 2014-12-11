@@ -24,12 +24,21 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			if (base.PageMode == EventHandler.Helper.PageMode.View)
 			{
 				this.RegisterLinkedCss(applicationPath + "/Content/jquery.jqGrid/ui.jqgrid.css");
+				this.RegisterLinkedCss(applicationPath + "/Content/legal-hold-fonts.css");
+				this.RegisterLinkedCss(applicationPath + "/Content/controls.grid.css");
+				this.RegisterLinkedCss(applicationPath + "/Content/controls-grid-pager.css");
+
+				this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL234324324", Script = "<script>var IP = IP ||{};IP.cpPath = '" + applicationPath + "';</script>" });
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-grid.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-view.js");
+				
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/i18n/grid.locale-en.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/jquery.jqGrid.min.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/select2.min.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/grid/dragon-grid.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/grid/dragon-grid-pager.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/grid/dragon-utils.js");
+				
 			}
 			return response;
 		}

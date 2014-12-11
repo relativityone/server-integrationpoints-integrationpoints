@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Web;
 using System.Web.Mvc;
@@ -15,7 +16,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 {
 	public class IntegrationPointsController : BaseController
 	{
-		private IntegrationPointReader _reader;
+		private readonly IntegrationPointReader _reader;
 		public IntegrationPointsController(IntegrationPointReader reader)
 		{
 			_reader = reader;
@@ -23,7 +24,13 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		public ActionResult Edit(int? objectID)
 		{
-			return View();
+			var model = new IntegrationModel();
+			if (objectID.HasValue)
+			{
+				model = _reader.ReadIntegrationPoint(objectID.Value);
+			}
+			
+			return View(model);
 		}
 
 		public ActionResult StepDetails()
@@ -31,40 +38,55 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return PartialView("_IntegrationDetailsPartial");
 		}
 
-		public ActionResult StepDetails2()
-		{
-			return PartialView("_IntegrationDetailsPartial2");
-		}
-		
 		public ActionResult StepDetails3()
 		{
 			return PartialView("_IntegrationDetailsPartial3");
 		}
+
+		public ActionResult ConfigurationDetail()
+		{
+			return PartialView("_Configuration");
+		}
+
+		public ActionResult LDAPConfiguration()
+		{
+			return View("LDAPConfiguration", "_StepLayout");
+		}
+
 		public ActionResult Details(int id)
 		{
 			var integrationViewModel = _reader.ReadIntegrationPoint(id);
 
 			var model = new Models.IpDetailModel();
 			model.DataModel = integrationViewModel;
-			var grid = ModelFactory.CreateModel("mappedFields", (int) Session["UserID"]);
+
+			return View(model);
+		}
+
+		public JsonNetResult GetGridModel(int id)
+		{
+			var grid = ModelFactory.CreateModel("mapFieldsGrid", (int)Session["UserID"]);
 			grid.colModel = new List<GridColumn>();
 			grid.colModel.Add(new GridColumn
 			{
-				name = "test",
+				name = "workspace",
 				label = "Workspace Field"
 			});
 
 			grid.colModel.Add(new GridColumn
 			{
-				name = "name",
+				name = "source",
 				label = "Source Attribute"
 			});
 
 			grid.JsonReaderOptions = JsonReaderOptions.WebOptions();
-			grid.url = Url.Action("GetData", new{id});
-			model.Grid = grid;
-			
-			return View(model);
+			grid.url = Url.Action("GetData", new { id });
+			return JsonNetResult(grid);
+		}
+
+		public ActionResult CheckLdap(object model)
+		{
+			return base.JsonNetResult("error");
 		}
 
 		public JsonResult GetWorkspaceFields()
@@ -81,7 +103,10 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			//TODO: Get this to work
 			var result = _reader.GetFieldMap(id);
-			return JsonNetResult(result);
+			var mappings = result.Select(x => new { workspace = x.DestinationField.DisplayName, source = x.SourceField.DisplayName });
+			var data = new GridData();
+			data.BindData(mappings, filter);
+			return JsonNetResult(data);
 		}
 
 		public IEnumerable<object> GetFakeData()

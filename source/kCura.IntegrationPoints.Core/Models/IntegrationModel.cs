@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Helpers;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
@@ -21,16 +20,15 @@ namespace kCura.IntegrationPoints.Core.Models
 		public DateTime? StartDate{ get; set; }
 		public DateTime? EndDate { get; set; }
 		public string ScheduleTime{ get; set; }
-		public string ConnectionPath { get; set; }
-		public string FilterString { get; set; }
-		public string Authentication { get; set; }
-		public string Username { get; set; }
-		public string Password { get; set; }
-		public string NestedItems { get; set; }
 		public DateTime? NextRun { get; set; }
 		public DateTime? LastRun { get; set; }
+		public string SourceConfiguration { get; set; }
 
-		
+		public IntegrationModel()
+		{
+			this.SourceConfiguration = string.Empty;
+		}
+
 		public IntegrationModel(IntegrationPoint ip)
 		{
 			Name = ip.Name;
@@ -42,16 +40,9 @@ namespace kCura.IntegrationPoints.Core.Models
 			StartDate = ip.StartDate;
 			EndDate = ip.EndDate;
 			ScheduleTime = ip.ScheduledTime;
-			NextRun = ip.NextScheduledRuntime ;
+			NextRun = ip.NextScheduledRuntime;
 			LastRun = ip.LastRuntime;
-			if (ip.SourceConfiguration == null) return;
-			var json = Json.Decode(ip.SourceConfiguration);
-			ConnectionPath = json.ConnectionPath ?? "null";
-			FilterString = json.FilterString ?? "null";
-			Authentication = json.Authentication ?? "null";
-			Username = json.Username ?? "null";
-			Password = json.Password ?? "null";
-			NestedItems = json.NestedItems ?? "null";
+			this.SourceConfiguration = ip.SourceConfiguration;
 		}
 	}
 }

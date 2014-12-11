@@ -86,12 +86,16 @@ namespace kCura.IntegrationPoints.Data
 	public partial class SourceProviderFields : BaseFields
 	{
 		public const string Identifier = @"Identifier";
+		public const string SourceConfigurationUrl = @"Source Configuration Url";
+		public const string ConfigurationSource = @"Configuration Source";
 		public const string Name = @"Name";
 	}
 
 	public partial class SourceProviderFieldGuids 
 	{
 		public const string Identifier = @"d0ecc6c9-472c-4296-83e1-0906f0c0fbb9";
+		public const string SourceConfigurationUrl = @"b1b34def-3e77-48c3-97d4-eae7b5ee2213";
+		public const string ConfigurationSource = @"8f730e9a-e06f-427a-8c28-21b708a2cf88";
 		public const string Name = @"9073997b-319e-482f-92fe-67e0b5860c1b";
 	}
 
@@ -121,11 +125,13 @@ namespace kCura.IntegrationPoints.Data
 	public partial class IntegrationPointLayoutGuids
 	{
 		public const string IntegrationPointsLayout = @"d8bf50c1-ace1-488b-8781-54133a5794be";
+		public const string IntegrationPointDetails = @"f4a9ed1f-d874-4b07-b127-043e8ad0d506";
 	}
 
 	public partial class IntegrationPointLayouts
 	{
 		public const string IntegrationPointsLayout = @"Integration Points Layout";
+		public const string IntegrationPointDetails = @"Integration Point Details";
 	}
 
 	public partial class SourceProviderLayoutGuids
