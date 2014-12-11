@@ -53,7 +53,6 @@
 
 		IP.messaging.subscribe('next', function () {
 			vm.currentStep().submit().then(function (result) {
-				debugger;
 				result.artifactID = artifactID;
 				step = vm.goToStep(++step, result);
 				model = result;

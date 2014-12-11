@@ -170,7 +170,7 @@ ul li .day-select {
 	font-size: 13px;
 	text-decoration: none;
 	color: #000000;
-	width: 405px;
+	min-width: 405px;
 	height: 400px;
 
 }	
