@@ -1,3 +1,4 @@
+
 *** Settings ***
 | Documentation 	| Verify that the Connect to Source step of Integration Points shows the correct fields and data
 | Metadata		    | Authors	| Daniel Oliver
@@ -10,94 +11,97 @@
 *** Variables ***
 
 | ${WorkspaceName}	      | Relativity Legal Hold
-| ${ConnectionPathID}     | 
-| ${ObjectFilterStringID} | 
-| ${AuthenticationDropID} | 
-| ${UsernameID}           | 
-| ${PasswordID}           | 
-| ${ImportNestedItemsButtonID}   | 
-| ${ImportNestedItemsButtonName} |
-| ${ValidConnectionPath}         | 
-| ${InvalidConnectionPath}       | 
+| ${Connection Path ID}     | 
+| ${Object Filter String ID} | 
+| ${Authentication Drop ID} | 
+| ${Username ID}           | 
+| ${Password ID}           | 
+| ${Import Nested Items Button ID}   | 
+| ${Import Nested Items Button Name} |
+| ${Overwrite Dropdown}				| 
+
 
 *** Test Cases ***
 
-| Clicking Next from the Set Integration Details screen shows the Connect to Source screen
-| | [Documentation]	| Verify that clicking Next from the Set Ingetration Details screen shows the Connect to Source screen
-| | [Tags] | untested
-| | Wait until keyword succeeds | 20s | 2s | Verify that the Header has the following text | Connect to Source
-
 | The Set Connection fields are in the correct order
 | | [Documentation]	| Verify that the fields in the Source Connection section are sorted correctly.
-| | [Tags] | untested
+| | [Tags]			| untested
 | | Verify that the following section contains the following fields | Source Connection | Connection Path: | Object Filter String: | Authentication: | Username: | Password: | Import Nested Items:
+
 
 | The Authentication list has the correct values
 | | [Documentation]	| Verify that the Overwrite List has the correct options
-| | [Tags] | untested	
-| | Click  | ${OverwriteDropDown}
+| | [Tags]			 | untested	
+| | Click  | ${Overwrite Dropdown}
 | | Verify that the currently opened select2 Dropdown has the following choices in order | Anonymous | Encryption | FastBind  | ReadonlyServer | Secure | SecureSocketsLayer
+
 
 | The Authentication list's default value is Fastbind
 | | [Documentation]	| Verify that the Source Provider Field's default value is LDAP
 | | [Tags] | untested
-| | Verify that the following select2 Dropdown currently has the following value selected |  ${AuthenticationDropID} | FastBind
+| | Verify that the following select2 Dropdown currently has the following value selected | ${Authentication Drop ID} | FastBind
+
 
 | Import Nested Items default value is Yes
-| | [Documentation]	| Verify that the Enable Scheduler's default value is No (false)
-| | [Tags] | untested
-| | Radio button should be set to | ${ImportNestedItemsButtonID} | false
+| | [Documentation]	| Verify that the Import Nested Items' default value is Yes (true).
+| | [Tags]			| untested
+| | Radio button should be set to | ${Import Nested Items Button ID} | true
+
 
 | Connection Path has the Required Field indicator
 | | [Documentation]	| Verify that the Required Field indicator is present for the Connection Path field.
-| | [Tags] | untested
+| | [Tags]			| untested
 | | Verify that the following field is required | Connection Path:
+
 
 | Object Filter String is not a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is not present for the Object Filter String field.
-| | [Tags] | untested
+| | [Tags]			| untested
 | | Verify that the following field is not required | Object Filter String:
+
 
 | Authentication is not a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is not present for the Authentication field.
-| | [Tags] | untested
+| | [Tags]			| untested
 | | Verify that the following field is not required | Authentication:
 
 | Username is not a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is not present for the Username field.
-| | [Tags] | untested
+| | [Tags]			| untested
 | | Verify that the following field is not required | Username:
 
 | Password is not a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is not present for the Password field.
-| | [Tags] | untested
+| | [Tags]			| untested
 | | Verify that the following field is not required | Password:
 
 | Import Nested Items is not a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is not present for the correct fields.
-| | [Tags] | untested
+| | [Tags]			| untested
 | | Verify that the following field is not required | Import Nested Items:
 
 | The Source Connection Fields are of the correct type
 | | [Documentation]	| Verify that the Set Integration Details Fields are the correct type
-| | [Tags]		| untested	
-| | Run keyword and continue on failure | Verify that the following field ID has a text input | ${ConnectionPathID}
-| | Run keyword and continue on failure | Verify that the following field ID has a droplist input | ${ObjectFilterStringID}
-| | Run keyword and continue on failure | Verify that the following field ID has a droplist input | ${AuthenticationDropID}
-| | Run keyword and continue on failure | Verify that the following field ID has a text input | ${UsernameID} 
-| | Run keyword and continue on failure | Verify that the following field ID has a text input | ${PasswordID} 
-| | Run keyword and continue on failure | Verify that the following field ID has a YesNo Radio button input | ${EnableSchedulerRadioButtonsID}
+| | [Tags]			| untested	
+| | Verify that the following field ID has a text input				| ${Connection Path ID}
+| | Verify that the following field ID has a droplist input			| ${Object Filter String ID}
+| | Verify that the following field ID has a droplist input			| ${Authentication Drop ID}
+| | Verify that the following field ID has a text input				| ${Username ID} 
+| | Verify that the following field ID has a text input				| ${Password ID} 
+| | Verify that the following field ID has a YesNo Radio button input	| ${EnableSchedulerRadioButtonsID}
 
 | The Import Nested Items options are Yes and No
 | | [Documentation]	| Verify that the Enable Scheduler radio button options are Yes and No
-| | [Tags]		| untested
-| | Verify that the following radio buttons are grouped together | ${ImportNestedItemsButtonName}  | Yes | No
+| | [Tags]			| untested
+| | Verify that the following radio buttons are grouped together | ${Import Nested Items Button Name}  | Yes | No
+
 
 *** Keywords *** 
 
 | Go to Step 2 of the Create Integration Point Process
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Testing | Append/Overlay | LDAP | Custodian | no
+
 
 *** Settings ***
 | Library   | Collections
