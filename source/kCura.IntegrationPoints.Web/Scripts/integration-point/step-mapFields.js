@@ -47,7 +47,6 @@
 		});
 
 		var mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap/' + artifactId) }).then(function (result) {
-			debugger;
 			var source = $.map(result, function (entry) {
 				return {
 					 name: entry.sourceField.displayName, identifier: entry.sourceField.fieldIdentifier
