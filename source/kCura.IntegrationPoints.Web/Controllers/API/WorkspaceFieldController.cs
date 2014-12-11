@@ -18,11 +18,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			[Route("{workspaceID}/api/WorkspaceField/")]
 			public HttpResponseMessage Get()
 			{
+			
 				var list = new List<FieldEntry>()
 				{
 					new FieldEntry() {DisplayName = "Object", FieldIdentifier= "1"},
 					new FieldEntry() {DisplayName= "Document", FieldIdentifier= "3"},
 					new FieldEntry() {DisplayName= "Rdo", FieldIdentifier= "2"},
+					new FieldEntry() {DisplayName= "User", FieldIdentifier= "4"},
+					new FieldEntry() {DisplayName= "Workspace", FieldIdentifier= "5"}
 				};
 					return Request.CreateResponse(HttpStatusCode.OK, list,Configuration.Formatters.JsonFormatter);
 			}
