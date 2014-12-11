@@ -29,6 +29,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			{
 				model = _reader.ReadIntegrationPoint(objectID.Value);
 			}
+			
 			return View(model);
 		}
 
@@ -80,7 +81,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		public ActionResult CheckLdap(object model)
 		{
-			return base.JsonNetResult("error", HttpStatusCode.InternalServerError);
+			return base.JsonNetResult("error");
 		}
 
 		public JsonResult GetWorkspaceFields()

@@ -1,6 +1,12 @@
 ﻿var IP = IP || {};
 (function (root, ko) {
 
+	var _getAppPath = function () {
+		var newPath = window.location.pathname.split('/')[1];
+		var url = window.location.protocol + '//' + window.location.host +'/'+ newPath;
+		return url;		
+	};
+
 	var Step = function (settings) {
 		var self = this;
 		var frameName = 'configurationFrame';
@@ -20,15 +26,32 @@
 			}
 		};
 
+		this.source = '%applicationPath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/IntegrationPoints/LDAPConfiguration/%appID%';
+		
 		var FRAME_KEY = 'syncType';
 		var stepCache = {};
 
 		this.getTemplate = function () {
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
+				var applicationPath = _getAppPath();
+				var appID = IP.utils.getParameterByName('AppID', window.top);
+				var artifactID = 1037306;
+				var obj = {
+					applicationPath: applicationPath,
+					appID: appID,
+					artifactID: artifactID
+				};
+				var urlFormat = self.source;
+				for (var key in obj) {
+					if (obj.hasOwnProperty(key)) {
+						urlFormat = urlFormat.replace('%' + key + '%', obj[key]);
+					}
+				}
+				self.source = urlFormat;
 				$('body').append(result);
 				self.template(self.settings.templateID);
 				self.hasTemplate = true;
-				var $frame = $('#' + frameName);
+				var $frame = $('#' + frameName).attr('src', self.source);
 				$frame.iFrameResize({ heightCalculationMethod: 'max' }).load(function () {
 					self.frameBus = IP.frameMessaging({ source: window[frameName].contentWindow });
 					var state = stepCache[self.stepKey];

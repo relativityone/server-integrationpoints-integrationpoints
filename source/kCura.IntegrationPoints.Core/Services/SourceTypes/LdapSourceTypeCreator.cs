@@ -35,6 +35,8 @@ namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 			}
 			else
 			{
+				s.SourceConfigurationUrl = "/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/IntegrationPoints/LDAPConfiguration/%appID%/%artifactID%";
+				_context.RsapiService.SourceProviderLibrary.Update(s);
 				//edit
 			}
 		}
