@@ -33,7 +33,7 @@
 
 | An Individual Field can be selected and put into the Selected list
 | | [Documentation] | Verify that one field can be moved from the Workspace list to the Selected Workspace list
-| | [Tags] | automated1
+| | [Tags] | automated
 | | Select Workspace Field  | ${Field1}
 | | Move fields to the Selected Workspace list
 
@@ -41,7 +41,7 @@
 
 | Fields are removed from the current list when they are put into another list
 | | [Documentation] | Verify that moving a field from one list to another list, actually removes it from the initial list
-| | [Tags] | automated1
+| | [Tags] | automated
 | | Select Workspace Field  | ${Field1}
 | | Move fields to the Selected Workspace list
 
