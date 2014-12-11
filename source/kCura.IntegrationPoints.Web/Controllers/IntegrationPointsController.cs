@@ -22,9 +22,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			_reader = reader;
 		}
 
-		public ActionResult Edit(int? objectID)
+		public ActionResult Edit(int? id)
 		{
-			return View();
+			return View(id ?? 0);
 		}
 
 		public ActionResult StepDetails()

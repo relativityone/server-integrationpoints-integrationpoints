@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.Core.Models
 {
 	public class IntegrationModel
 	{
+		public int ArtifactID { get; set; }
 		public string Name{ get; set; }
 		public Choice Overwrite { get; set; }
 		public string SourceProvider { get; set; }
@@ -31,6 +32,7 @@ namespace kCura.IntegrationPoints.Core.Models
 
 		public IntegrationModel(IntegrationPoint ip)
 		{
+			this.ArtifactID = ip.ArtifactId;
 			Name = ip.Name;
 			Overwrite = ip.OverwriteFields;
 			SourceProvider = ip.SourceConfiguration;

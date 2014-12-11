@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public HttpResponseMessage Get(int id)
 		{
 			var model = new IntegrationModel();
+			model.ArtifactID = id;
 			if (id> 0)
 			{
 				model = _reader.ReadIntegrationPoint(id);

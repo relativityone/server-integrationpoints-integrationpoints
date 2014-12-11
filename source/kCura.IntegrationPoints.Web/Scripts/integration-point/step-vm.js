@@ -40,20 +40,23 @@
 		var vm = new viewModel();
 		var step = 0;
 		var model = {};
+		var artifactID = 0;
 		IP.data.ajax({
-			url: IP.utils.generateWebAPIURL('IntegrationPointsAPI', 0),
+			url: IP.utils.generateWebAPIURL('IntegrationPointsAPI', IP.data.params['artifactID']),
 			type: 'Get'
 		}).then(function (result) {
 			vm = new viewModel();
 			vm.goToStep(0, result);
+			artifactID = result.artifactID;
 			ko.applyBindings(vm, document.getElementById('pointBody'));
 		});
 
 		IP.messaging.subscribe('next', function () {
 			vm.currentStep().submit().then(function (result) {
+				debugger;
+				result.artifactID = artifactID;
 				step = vm.goToStep(++step, result);
 				model = result;
-				debugger;
 				IP.messaging.publish('goToStep', step);
 			}).fail(function (err) {
 				IP.message.error.raise(err);
