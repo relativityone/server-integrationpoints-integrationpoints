@@ -22,10 +22,14 @@
 | ${RemoveWAllWorkspaceFieldsIcon} | remove-all-workspace-fields
 | ${MoveWorkspaceFieldUpIcon}        | workspace-field-up
 | ${MoveWorkspaceFieldDownIcon}      | workspace-field-down
+| ${MoveAttributeFieldUpIcon}        | attribute-field-up
+| ${MoveAttributeFieldDownIcon}      | attribute-field-down
 | ${AddAllSourceFieldsIcon}   | add-all-source-fields
 | ${AddSourceFieldIcon}       | add-workspace-field
 | ${RemoveSourceFieldIcon}    | remove-source-field
 | ${RemoveAllSourceFieldsIcon} | remove-all-source-fields
+| ${OverlayID} | 
+| ${ParentAttributeID} | 
 
 *** Test Cases ***
 
@@ -34,10 +38,10 @@
 | | [Tags] | untested
 | | Wait until keyword succeeds | 20s | 2s | Verify that the Header has the following text | Map Fields
 
-| The Set Connection fields are in the correct order
+| The Field Mappings fields are in the correct order
 | | [Documentation]	| Verify that the fields in the Source Connection section are sorted correctly.
 | | [Tags] | untested
-| | Verify that the following section contains the following fields | Field Mappings | ${WorkspaceFieldListID} | ${SelectedFieldListID}  | ${SelectedAttributeListID} | ${SourceAttributeListID}
+| | Verify that the following section contains the following fields | Field Mappings | ${WorkspaceFieldListID} | ${SelectedFieldListID}  | ${SelectedAttributeListID} | ${SourceAttributeListID} | ${OverlayID} | ${ParentAttributeID}
 
 | The Overlay Identifer is a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is present for the  Overlay Identifer field.
@@ -45,7 +49,7 @@
 | | Verify that the following field is required | ${OverlayIdentifierID}
 
 | The Fields are of the correct type
-| | [Documentation]	| Verify that the Fields are the correct type
+| | [Documentation]	| Verify that the Fields on the Map Fields screen are the correct type. Note that the Parent Attribute field is excluded from this test case.
 | | [Tags]		| untested	
 | | Run keyword and continue on failure | Verify that the following field ID has a listbox input | ${WorkspaceFieldListID}
 | | Run keyword and continue on failure | Verify that the following field ID has a listbox input | ${SelectedFieldListID} 
@@ -63,24 +67,15 @@
 | | [Tags]		| untested	
 | | Verify that the following icons are present and sorted correctly | ${AddAllSourceFieldsIcon} | ${AddSourceFieldIcon}  | ${RemoveSourceFieldIcon} | ${RemoveAllSourceFieldsIcon}
 
-| Up and Down Buttons are present and sorted correctly
+| Workspace Up and Down Buttons are present and sorted correctly
 | | [Documentation]	| Verify that the Up and Down movement Buttons present and sorted correctly
 | | [Tags]		| untested	
 | | Verify that the following icons are present and sorted correctly | ${MoveWorkspaceFieldUpIcon} | ${MoveWorkspaceFieldDownIcon}
 
-#----------------New Suite for OVerlay ----------------------------------
-
-| The Overlay Identifier list has the correct values per RDO
-| | [Documentation]	| Verify that the Overlay Identifier List has the correct options, i.e. all Fixed Length Text fields that are both non system and not relational
-| | [Tags] | untested	
-| | Click  | ${OverlayIdentifierID}
-| | Verify that the currently opened select2 Dropdown has the following choices in order |
-
-| The Overlay Identifier defaults to the RDO Identifier
-
-| The Overlay Identifier for the Custodian RDO defaults to UniqueID
-
-
+| Source Attribute Up and Down Buttons are present and sorted correctly
+| | [Documentation]	| Verify that the Up and Down movement Buttons present and sorted correctly
+| | [Tags]		| untested	
+| | Verify that the following icons are present and sorted correctly | ${MoveAttributeFieldUpIcon} | ${MoveAttributeFieldDownIcon}
 
 *** Keywords *** 
 
