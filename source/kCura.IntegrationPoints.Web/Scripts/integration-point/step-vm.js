@@ -65,9 +65,9 @@
 		IP.messaging.subscribe('back', function () {
 			if (typeof (vm.currentStep().back) !== "function") {
 				vm.currentStep().back = function () {
-					var d = root.data.deferred().defer();
+					var d = IP.data.deferred().defer();
 					d.resolve();
-					return d.promise();
+					return d.promise;
 				};
 
 			}
