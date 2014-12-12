@@ -75,6 +75,23 @@
 
 *** Keywords *** 
 
+| Get the Non-Object and Non-System Fields for the following Object Type
+| | [Documentation]	| Gets a list of all of the Fields on the given object that are not Single Object or Multi Object fields, strips out the four system fields, and then returns the remaining fields. 
+| | [ARGUMENTS]		| ${ObjectType}
+| | ${2DGrid}=	| Query Workspace Database	|  
+| | ... | SELECT DisplayName
+| | ... | FROM [EDDSDBO].[Field] f
+| | ... | JOIN [ArtifactType] at on at.ArtifactTypeID = f.FieldArtifactTypeID
+| | ... | WHERE at.ArtifactType = '${ObjectType}'
+| | ... | AND F.FieldTypeID != 10	| # Single Object
+| | ... | AND F.FieldTypeID != 12	| # Multi Object
+| | Should Not Be Empty	| ${2DGrid}	| No fields were found for the Object Type "${ObjectType}".
+| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
+| | @{NonObjectFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
+| | @{SystemFields}=	| Create List	| System Created By	| System Created On	| System Last Modified By	| System Last Modified On
+| | Remove Values From List	| ${NonObjectFields}	| @{SystemFields}
+| | [Return]		| @{NonObjectFields}
+
 | Go to Step 3 of the Create Integration Point Process
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Testing | Append/Overlay | LDAP | Custodian | no
