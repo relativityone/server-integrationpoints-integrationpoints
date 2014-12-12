@@ -119,6 +119,47 @@
 #------------------------------------------------------------------------------------------------------------------------
 # Step 2 Section
 
+| Fill out the Following Fields of the Integration Point Step 2 form
+| | [Documentation]	| This keyword fills out the Integration Point Step 2 fields.
+| | ... 			| The value of ${Authentication} should be Select.../Anonymous/Encryption/FastBind/Secure/Secure Socket Layer/Readonly server.
+| | ... 			| The value of ${ImportNestedItems} should be Yes or No.
+| | [ARGUMENTS]		| ${ConnectionPath}=NULL	| ${ObjectFilterString}=NULL	| ${Authentication}=NULL	| ${Username}=NULL	| ${Password}=NULL	| ${ImportNestedItems}=NULL
+| | Wait for then Select iFrame	| id=configurationFrame	| 10s	| The page was not on Step 2 of the Integration Point form.
+| | Wait Until Page Contains Element	| id=connectionPath	| 10s	| The page was not on Step 2.
+| | Run Keyword Unless	| "${ConnectionPath}" == "NULL"		| Input Text	| id=connectionPath		| ${ConnectionPath}
+| | Run Keyword Unless	| "${ObjectFilterString}" == "NULL"	| Input Text	| id=connectionFilter	| ${ObjectFilterString}
+| | Run Keyword Unless	| "${Authentication}" == "NULL"		| Select from Select2 Dropdown	| s2id_authentication	| ${Authentication}
+| | Run Keyword Unless	| "${Username}" == "NULL"			| Input Text	| id=connectionUsername	| ${Username}
+| | Run Keyword Unless	| "${Password}" == "NULL"			| Input Text	| id=connectionPassword	| ${Password}
+
+| | Run Keyword If		| "${ImportNestedItems.lower()}" == "yes"	| Select Radio Button	| enable	| true	| 
+| | ... | ELSE IF		| "${ImportNestedItems.lower()}" == "no"	| Select Radio Button	| enable	| false	| 
+| | ... | ELSE IF		| "${ImportNestedItems.lower()}" != "null"	| Fail	| The variable "ImportNestedItems" expected "Yes", "No", or "NULL", but got "${ImportNestedItems}".
+| | Unselect Frame
+| | Select iFrame	| id=_externalPage
+
+#------------------------------------------------------------------------------------------------------------------------
+# Step 3 Section
+
+| Get the Unassigned Workspace Fields
+| | [Documentation]	| Returns a list of the Workspace Fields from the Unassigned Workspace Fields list box on Step 3 of the Integration Point creation process.
+| | @{WorkspaceFields}=	| Get Element Text	| xpath=//@id='workspace-fields']/child::option	| False
+| | [Return]		| @{WorkspaceFields}
+
+| Get the Assigned Workspace Fields
+| | [Documentation]	| Returns a list of the Workspace Fields from the Assigned Workspace Fields list box on Step 3 of the Integration Point creation process.
+| | @{WorkspaceFields}=	| Get Element Text	| xpath=//@id='selected-workspace-fields']/child::option	| False
+| | [Return]		| @{WorkspaceFields}
+
+| Get the Assigned Source Attributes
+| | [Documentation]	| Returns a list of the Workspace Fields from the Assigned Source Attributes list box on Step 3 of the Integration Point creation process.
+| | @{SourceAttributes}=	| Get Element Text	| xpath=//@id='selected-source-fields']/child::option	| False
+| | [Return]		| @{SourceAttributes}
+
+| Get the Unassigned Source Attributes
+| | [Documentation]	| Returns a list of the Workspace Fields from the Unassigned Source Attributes list box on Step 3 of the Integration Point creation process.
+| | @{SourceAttributes}=	| Get Element Text	| xpath=//@id='source-attributes']/child::option	| False
+| | [Return]		| @{SourceAttributes}
 
 #------------------------------------------------------------------------------------------------------------------------
 # Generic Keywords

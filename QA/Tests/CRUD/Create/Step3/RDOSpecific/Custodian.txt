@@ -1,79 +1,84 @@
+
 *** Settings ***
 | Documentation 	| Verify that the correct fields are shown in the Workspace Fields and Overlay lists when the Destination RDO is Custodians
-| Metadata		    | Authors	| Daniel Oliver
-| Force Tags		| in-progress | team.method
-| Suite Setup		| Open and Log in to Method
-| Test Setup        | Go to Step 3 of the Create Integration Point Process
+| Metadata		    | Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| in-progress	| team.method
+| Suite Setup		| Run Keywords	| Open and Log in to Method	| Make the Object Type List a Suite Variable
+#| Test Setup		| Go to Step 3 of the Create Integration Point Process
 | Test Teardown 	| Capture screenshot if test fails
 | Suite Teardown	| Close all browsers
+
 
 *** Variables ***
 
 | ${WorkspaceName}	     | Relativity Legal Hold
-| ${ValidConnectionPath} | 
-| ${OverlayIdentifierID} | 
-| ${WorkspaceFieldListID}   | workspace-fields
+| ${ValidConnectionPath}	| 
+
 
 *** Test Cases ***
 
-| The Fields are present and sorted correctly in the Workspace Fields list box
-| | [Documentation] | Verify that the correct Custodian RDO fields are populated and sorted alphabetically in the Workspace Fields list. 
-| | Verify that the following list-box has the following fields | ${WorkspaceFieldListID} |
-| | ... | Artifact ID | 
-| | ... | BCC People | 
-| | ... | Current Title | 
-| | ... | Department | 
-| | ... | Document numbering prefix | 
-| | ... | Domain | 
-| | ... | Email | 
-| | ... | Employee Number | 
-| | ... | Employee Status | 
-| | ... | Employment End Date | 
-| | ... | Employment Start Date | 
-| | ... | First Name | 
-| | ... | Full Name | 
-| | ... | Last Name | 
-| | ... | Manager | 
-| | ... | Notes | 
-| | ... | Past Department | 
-| | ... | Past Manager | 
-| | ... | Past Title | 
-| | ... | Phone Number | 
-| | ... | Related Custodians | 
-| | ... | Relativity Legal Hold Job ID | 
-| | ... | Respondents | 
-| | ... | Secondary Email | 
-| | ... | UniqueID
+| Run on All Objects
+| | [Template]	| Verify that the fields for the Object Type "${ObjectType}" populate correctly on the Unassigned Workspace Fields List Box on Step 3 of the Create Integration Point Process
+| | Custodian
+#| | :FOR	| ${ObjectType}	| IN | @{ObjectTypes}
+#| | | ${ObjectType}
 
-| The Fields are present and sorted correctly in the Overlay Identifier list
-| | [Documentation] | Verify that the Overlay Identifier List has the correct options, i.e. all Fixed Length Text fields that are both non system and not relational
-| | [Tags] | untested	
-| | Click  | ${OverlayIdentifierID}
-| | Verify that the currently opened select2 Dropdown has the following choices in order |
-| | ... |	Current Title
-| | ... |	Department
-| | ... |	Document numbering prefix
-| | ... |	Domain
-| | ... |	Email
-| | ... |	Employee Number
-| | ... |	Employee Status
-| | ... |	First Name
-| | ... |	Full Name
-| | ... |	Last Name
-| | ... |	Past Department
-| | ... |	Past Manager
-| | ... |	Past Title
-| | ... |	Phone Number
-| | ... |	Secondary Email
-| | ... |	UniqueID
-
-| The Default Overlay Identifier is UniqueID
-| | [Documentation] | Verify that the default Overlay Identifier is UniqueID
-| | [Tags] | untested	
-| | Click  | ${OverlayIdentifierID}
-| | Verify that the following select2 Dropdown currently has the following value selected | UniqueID
 
 *** Keywords *** 
+
+| Verify that the fields for the Object Type "${ObjectType}" populate correctly on the Unassigned Workspace Fields List Box on Step 3 of the Create Integration Point Process
+| | Open Create Integration Point
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${ObjectType} Step 3 Test	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${ObjectType}	| EnableScheduler=No
+| | Proceed to the Next Page
+| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=Dummy1	| Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| # ObjectFilterString=Dummy2	| Authentication=Secure	
+| | Proceed to the Next Page
+| | @{WorkspaceFields}=	| Get the Unassigned Workspace Fields
+| | @{ExpectedFields}=	| Get the Non-Object and Non-System Fields for the following Object Type	| ${ObjectType}
+| | Sort List	| ${WorkspaceFields}	| # Temporary. Just until UAH066
+| | Sort List	| ${ExpectedFields}
+| | Lists Should Be Equal	| ${WorkspaceFields}	| ${ExpectedFields}
+| | [Teardown]		| Run Keyword If Keyword Failed	| Capture Page Screenshot
+
+| Make the Object Type List a Suite Variable
+| | ${ObjectTypeList}=	| Get a List of All Object Types to Run Against
+| | Set Suite Variable	| ${ObjectTypes}	| ${ObjectTypeList}
+
+| Get a List of All Object Types to Run Against
+| | ${2DGrid}=	| Query Workspace Database	|  
+| | ... | SELECT DISTINCT ArtifactType
+| | ... | FROM [EDDSDBO].[Field] f
+| | ... | JOIN [ArtifactType] at on at.ArtifactTypeID = f.FieldArtifactTypeID
+| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
+| | @{ObjectFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
+| | @{SystemFields}=	| Create List	| 
+| | ... | Agent Type			|
+| | ... | Batch					|
+| | ... | Batch Set				|
+| | ... | Code					|
+| | ... | Event Handler			|
+| | ... | Field					|
+| | ... | Folder				|
+| | ... | Group					|
+| | ... | History				|
+| | ... | Install Event Handler	|
+| | ... | Integration Point		| 
+| | ... | Layout				|
+| | ... | Markup Set			|
+| | ... | Mass Operation		|
+| | ... | Object Rule			|
+| | ... | Object Type			|
+| | ... | Production			|
+| | ... | Relativity Script		|
+| | ... | Report				|
+| | ... | Search				|
+| | ... | Search Container		|
+| | ... | Search Index			|
+| | ... | Source Provider		| 
+| | ... | Tab					|
+| | ... | View					|
+| | ... | Workspace
+| | Remove Values From List	| ${ObjectFields}	| @{SystemFields}
+| | [Return]		| ${ObjectFields}
 
 | Get the Non-Object and Non-System Fields for the following Object Type
 | | [Documentation]	| Gets a list of all of the Fields on the given object that are not Single Object or Multi Object fields, strips out the four system fields, and then returns the remaining fields. 
@@ -90,6 +95,7 @@
 | | @{NonObjectFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
 | | @{SystemFields}=	| Create List	| System Created By	| System Created On	| System Last Modified By	| System Last Modified On
 | | Remove Values From List	| ${NonObjectFields}	| @{SystemFields}
+| | Should Not Be Empty	| ${NonObjectFields}	| No non-object and non-system fields were found for the Object Type "${ObjectType}".
 | | [Return]		| @{NonObjectFields}
 
 | Go to Step 3 of the Create Integration Point Process
