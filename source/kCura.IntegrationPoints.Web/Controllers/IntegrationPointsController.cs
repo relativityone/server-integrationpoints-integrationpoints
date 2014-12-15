@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Core.Models;
@@ -78,6 +79,10 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return JsonNetResult(grid);
 		}
 
+		public JsonNetResult IsIdentifier()
+		{
+			return JsonNetResult("hello ");
+		}
 		public ActionResult CheckLdap(object model)
 		{
 			return base.JsonNetResult("error");
