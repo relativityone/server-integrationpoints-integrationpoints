@@ -162,6 +162,7 @@
 			<arg line='"${source.reference.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />
 			<arg line='"${source.reference.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
 			<arg line='"${source.reference.Injection.directory}\kCura.Injection.dll"' />
+			<arg line='"${source.reference.kCura.directory}\Relativity.ImportAPI.Wrapper.dll"' />
 			<arg line='"${target.code.directory}\kCura.ScheduleQueueAgent.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Config.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.dll"' />
