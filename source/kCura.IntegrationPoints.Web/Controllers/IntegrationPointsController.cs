@@ -22,15 +22,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			_reader = reader;
 		}
 
-		public ActionResult Edit(int? objectID)
+		public ActionResult Edit(int? id)
 		{
-			var model = new IntegrationModel();
-			if (objectID.HasValue)
-			{
-				model = _reader.ReadIntegrationPoint(objectID.Value);
-			}
-			
-			return View(model);
+			return View(id ?? 0);
 		}
 
 		public ActionResult StepDetails()

@@ -16,9 +16,8 @@
 			this.currentStep().getTemplate();
 		}, this);
 
-		this.ipModel = {};
-
-		this.goToStep = function (step) {
+		
+		this.goToStep = function (step, model) {
 			var totalSteps = this.steps().length - 1;
 			if (step > totalSteps) {
 				step = totalSteps;
@@ -28,45 +27,52 @@
 			}
 			var nextStep = this.steps()[step];
 			if (nextStep.loadModel) {
-				nextStep.loadModel($.extend({}, this.ipModel));
+				nextStep.loadModel($.extend({}, model));
 			}
 			this.currentStep(nextStep);
 			return step;
 		};
 
-		var nextStep = this.steps()[0];
-		if (nextStep.loadModel) {
-			nextStep.loadModel($.extend({}, this.ipModel));
-		}
-		this.currentStep(nextStep);
 	};
 
 	$(function () {
-		var vm = new viewModel();
-		ko.applyBindings(vm, document.getElementById('pointBody'));
-		var step = 0;
 
-		IP.messaging.subscribe('next', function () {
-			vm.currentStep().submit().then(function () {
-				step = vm.goToStep(++step);
-				IP.messaging.publish('goToStep', step);
-			}).fail(function (err) {
-				alert(err);
-				throw err;
-			});
+		var vm = new viewModel();
+		var step = 0;
+		var model = {};
+		var artifactID = 0;
+		IP.data.ajax({
+			url: IP.utils.generateWebAPIURL('IntegrationPointsAPI', IP.data.params['artifactID']),
+			type: 'Get'
+		}).then(function (result) {
+			vm = new viewModel();
+			vm.goToStep(0, result);
+			artifactID = result.artifactID;
+			ko.applyBindings(vm, document.getElementById('pointBody'));
 		});
 
+		IP.messaging.subscribe('next', function () {
+			vm.currentStep().submit().then(function (result) {
+				result.artifactID = artifactID;
+				step = vm.goToStep(++step, result);
+				model = result;
+				IP.messaging.publish('goToStep', step);
+			}).fail(function (err) {
+				IP.message.error.raise(err);
+			});
+		});
+				
 		IP.messaging.subscribe('back', function () {
 			if (typeof (vm.currentStep().back) !== "function") {
 				vm.currentStep().back = function () {
-					var d = root.data.deferred().defer();
+					var d = IP.data.deferred().defer();
 					d.resolve();
-					return d.promise();
+					return d.promise;
 				};
 
 			}
 			vm.currentStep().back().then(function () {
-				step = vm.goToStep(--step);
+				step = vm.goToStep(--step, model);
 				IP.messaging.publish('goToStep', step);
 			});
 		});

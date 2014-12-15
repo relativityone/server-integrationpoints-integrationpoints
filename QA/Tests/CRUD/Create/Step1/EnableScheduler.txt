@@ -49,7 +49,7 @@
 
 | Step 2 can be reached with the Enabled field set to Yes
 | | [Documentation]	| Verify that Step 2 can be shown after filling out the required fields and providing valid Scheduler settings
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Agent Type	| 
 | | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2020	| EndDate=04/15/2021	| ScheduledTime=23:32
 | | Proceed to the Next Page

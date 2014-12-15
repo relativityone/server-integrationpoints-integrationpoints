@@ -28,6 +28,7 @@ namespace kCura.IntegrationPoints.Data
 
 		protected BaseRdo(){}
 
+
 		public virtual T GetField<T>(Guid fieldGuid)
 		{
 			return (T) Rdo[fieldGuid].Value;
@@ -64,7 +65,15 @@ namespace kCura.IntegrationPoints.Data
 			return (DynamicObjectAttribute)t.GetCustomAttributes(typeof(DynamicObjectAttribute), false).First();
 		}
 
-		public int ArtifactId { get; set; }
+		public int ArtifactId
+		{
+			get
+			{
+				return this.Rdo.ArtifactID;
+			}
+			set {  }
+		}
+
 		public int? ParentArtifactId { get; set; }
 		public abstract Dictionary<Guid, DynamicFieldAttribute> FieldMetadata { get; }
 		public abstract DynamicObjectAttribute ObjectMetadata { get; }

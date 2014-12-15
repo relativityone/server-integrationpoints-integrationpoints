@@ -1,7 +1,7 @@
 *** Settings ***
 | Documentation 	| Verify that the Map Fields step of Integration Points shows the correct error messages, and that the record can be saved after correcting the errors
 | Metadata		    | Authors	| Daniel Oliver
-| Force Tags		| in-progress | team.method
+| Force Tags		| manual | in-progress | team.method
 | Suite Setup		| Open and Log in to Method
 | Test Setup        | Go to Step 3 of the Create Integration Point Process
 | Test Teardown 	| Capture screenshot if test fails
@@ -33,34 +33,111 @@
 | | [Documentation] | Verify that when the Selected Overlay identifier is not in the Selected Field list and Save is clicked, that the message 
  "The overlay identifier must be mapped." is displayed.
 | | [Tags] | untested
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Move one field to the Selected Workspace list
+| | ... | 2. Move one field to the Selected Attributes list
+| | ... | 3. Have a different field selected in the Overlay Identifer than the field in the Selected Workspace list
+| | ... | 4. Click Save
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the message "The overlay identifier must be mapped." is displayed
  
-| The message "All selected items have not been mapped." is displayed under the correct conditions for too few Fields
+| The message "All selected items have not been mapped." is displayed under the correct conditions for too few Workspace Fields
 | | [Documentation] | Verify that when the selected fields count is less than the selected attributes count, that the message "All selected items have not been mapped." is displayed.
 | | [Tags] | untested
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Move one field to the Selected Attributes list
+| | ... | 2. Click Save
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the message "All selected items have not been mapped." is displayed
 
-| The message "All selected items have not been mapped." is displayed under the correct conditions for too many Fields
+| The message "All selected items have not been mapped." is displayed under the correct conditions for too many Workspace Fields
 | | [Documentation] | Verify that when the selected fields count is greater than the selected attributes count, that the message "All selected items have not been mapped." is displayed.
 | | [Tags] | untested
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Move one field to the Selected Workspace list
+| | ... | 2. Click Save
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the message "All selected items have not been mapped." is displayed
 
 | Saving post "The overlay identifier must be mapped." message works by adding the Overlay Identifier to the Selected list
-| | [Documentation] | Verify that the Integration Point can be saved after the "The overlay identifier must be mapped." message is displayed
+| | [Documentation] | Verify that the Integration Point can be saved after the "The overlay identifier must be mapped." message is displayed by adding the Overlay Identifier to the Selected Lists.
 | | [Tags] | untested
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Move one field to the Selected Workspace list
+| | ... | 2. Move one field to the Selected Attributes list
+| | ... | 3. Have a different field selected in the Overlay Identifer than the field in the Selected Workspace list
+| | ... | 4. Click Save
+| | ... | 5. Move the the Overlay Identifier field to the Selected Workspace list
+| | ... | 6. Move another field to the Selected Attributes list
+| | ... | 7. Click Save
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Integration Point is created
+
+| Saving Post "The overlay identifier must be mapped." message is displayed works by changing the Overlay value
+| | [Documentation] | Verify that the Integration Point can be saved after the "The overlay identifier must be mapped." message is displayed works by changing the Overlay value
+| | [Tags] | untested
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Move one field to the Selected Workspace list
+| | ... | 2. Move one field to the Selected Attributes list
+| | ... | 3. Have a different field selected in the Overlay Identifer than the field in the Selected Workspace list
+| | ... | 4. Click Save
+| | ... | 5. Change the Overlay Identifier field to be the same as the field from step1.
+| | ... | 6. Click Save
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Integration Point is created
 
 | Saving post "All selected items have not been mapped." message
 | | [Documentation] | Verify that the Integration Point can be saved after the "All selected items have not been mapped." message is displayed
 | | [Tags] | untested
-
-| Saving Post "The overlay identifier must be mapped." message is displayed works by changing the Overlay value
-| | [Documentation] | Verify that the Integration Point can be saved after the
-| | [Tags] | untested
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Move one field to the Selected Workspace list
+| | ... | 2. Click Save
+| | ... | 3. Move one field to the Selected Attributes list
+| | ... | 4. Click Save
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Integration Point is created
 
 | When the conditions for both invalid messages are met, the "All selected items have not been mapped" message is displayed
-| | [Documentation] | Verify that the conditions are met for both messages (Overlay not mapped, and Uneven field count), that only the "All selected items have not been mapped" message is displayed
+| | [Documentation] | Verify that the conditions are met for both messages (Overlay not mapped, and Uneven field count), that only the "All selected items have not been mapped" message is displayed.
 | | [Tags] | untested
+| | ... | 1. Move one field to the Selected Workspace list
+| | ... | 2. Have a different field selected in the Overlay Identifer than the field in the Selected Workspace list
+| | ... | 3. Click Save
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the message "All selected items have not been mapped." is displayed
 
 | When the conditions for both invalid messages are met and then the initial message is cleared, the second message can be displayed
-| | [Documentation] | Verify that the conditions are met for both messages (Overlay not mapped, and Uneven field count), and then the the user makes adjustments to remove the "All selected items have not been mapped" message and clicks Save, that the "The overlay identifier must be mapped." message is displayed
+| | [Documentation] | Verify that the conditions are met for both messages (Overlay not mapped, and Uneven field count), and then the the user makes adjustments to remove the "All selected items have not been mapped" message and clicks Save, that the "The overlay identifier must be mapped." message is displayed.
 | | [Tags] | untested
+| | ... | 1. Move one field to the Selected Workspace list
+| | ... | 2. Have a different field selected in the Overlay Identifer than the field in the Selected Workspace list
+| | ... | 3. Click Save
+| | ... | 4. Move one field to the Selected Attributes list
+| | ... | 5. Click Save
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the message "The overlay identifier must be mapped." is displayed
+
+| Clicking Save with no fields mapped shows the "The overlay identifier must be mapped." message
+| | [Documentation] | Verify that clicking Save with no fields mapped shows the "The overlay identifier must be mapped." message 
+| | [Tags] | untested
+| | ... | 1. Click Save
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the message "The overlay identifier must be mapped." is displayed
 
 *** Keywords *** 
 

@@ -36,7 +36,7 @@
 | | ... |	Name	
 
 | The Default Overlay Identifier is Name
-| | [Documentation] | Verify that the default Overlay Identifier is Name
+| | [Documentation] | Verify that the default Overlay Identifier is Name (RDO Identifier)
 | | [Tags] | untested	
 | | Click  | ${OverlayIdentifierID}
 | | Verify that the following select2 Dropdown currently has the following value selected | Name

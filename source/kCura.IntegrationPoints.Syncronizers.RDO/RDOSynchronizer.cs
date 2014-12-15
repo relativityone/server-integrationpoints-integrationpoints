@@ -27,13 +27,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				// fields don't have any space in between words 
 				var list = new List<string>
 			    {
-					"IsSystemArtifact",
-					"SystemCreatedBy",
-					"SystemCreatedOn",
-					"SystemGenerated",
-					"SystemLastModifiedBy",
-					"SystemLastModifiedOn",
-					"ArtifactID"
+					"Is System Artifact",
+					"System Created By",
+					"System Created On",
+					"System Generated",
+					"System Last Modified By",
+					"System Last Modified On",
+					"Artifact ID"
 			    };
 				return list;
 			}

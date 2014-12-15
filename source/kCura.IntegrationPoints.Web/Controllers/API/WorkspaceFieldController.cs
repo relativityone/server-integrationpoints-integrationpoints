@@ -6,6 +6,8 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Client;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -13,21 +15,22 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class WorkspaceFieldController : ApiController
     {
 
+		private readonly RdoSynchronizer _rdosynchronizer;
 
-			// GET api/<controller>
-			[Route("{workspaceID}/api/WorkspaceField/")]
-			public HttpResponseMessage Get()
+		public WorkspaceFieldController(RdoSynchronizer rdosynchronizer)
 			{
-			
-				var list = new List<FieldEntry>()
-				{
-					new FieldEntry() {DisplayName = "Object", FieldIdentifier= "1"},
-					new FieldEntry() {DisplayName= "Document", FieldIdentifier= "3"},
-					new FieldEntry() {DisplayName= "Rdo", FieldIdentifier= "2"},
-					new FieldEntry() {DisplayName= "User", FieldIdentifier= "4"},
-					new FieldEntry() {DisplayName= "Workspace", FieldIdentifier= "5"}
-				};
-					return Request.CreateResponse(HttpStatusCode.OK, list,Configuration.Formatters.JsonFormatter);
+				_rdosynchronizer = rdosynchronizer;
+				
+			}
+			// GET api/<controller
+			[Route("{workspaceID}/api/WorkspaceField/{id}")]
+			public HttpResponseMessage Get(string id)
+			{
+				int artifactid = 0;
+				Int32.TryParse(id, out artifactid);
+
+				var fieldsForRdo = _rdosynchronizer.GetFields("{'ArtifactTypeID':'" +  artifactid + "'}"); 
+				return Request.CreateResponse(HttpStatusCode.OK, fieldsForRdo, Configuration.Formatters.JsonFormatter);
 			}
 
     }

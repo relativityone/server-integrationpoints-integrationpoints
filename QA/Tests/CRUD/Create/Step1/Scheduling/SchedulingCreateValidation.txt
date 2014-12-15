@@ -44,7 +44,7 @@
 
 | Date Validation message are shown after clicking Next
 | | [Documentation]	| Verify that the date fields show warning messages after clicking Next when invalid values are entered.
-| | [Tags]		    | required	| untested
+| | [Tags]		    | required	| broken	| dam795
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Agent Type	| 
 | | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=1234		| EndDate=5678	| ScheduledTime=23:00
 | | Click	| id=next
@@ -55,7 +55,7 @@
 
 | Proceeding Post-Date Invalid message
 | | [Documentation]	| Verify that Step 2 can be reached after the invalid date fields message is shown.
-| | [Tags]			| untested
+| | [Tags]			| broken	| dam795
 | | [Setup]			| Require Test Case	| Date Validation message are shown after clicking Next
 | | Fill out the Following Fields of the Integration Point Step 1 form	| StartDate=11/23/2012	| EndDate=04/15/2026
 | | Proceed to the Next Page
@@ -118,7 +118,7 @@
 
 | Send On Weekly Validation message is shown after trying to Proceed with nothing selected
 | | [Documentation]	| Verify that the Weekly Send On field has a validation message displayed when no Day has been selected and you try to proceed to Step 2.
-| | [Tags]			| required	| untested
+| | [Tags]			| required	| broken	| dam853
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Agent Type		| EnableScheduler=Yes	| 
 | | ... 																| Frequency=Weekly	| Reoccur=1				| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=23:50
 | | Click	| id=next
@@ -127,7 +127,7 @@
 
 | Proceeding Post-Weekly Send On Validation
 | | [Documentation]	| Verify that you can proceed to Step 2 after the Weekly Send On validation message has been shown.
-| | [Tags]			| untested
+| | [Tags]			| broken	| dam853
 | | [Setup]			| Require Test Case	| Send On Weekly Validation message is shown after trying to Proceed with nothing selected
 | | Fill out the Following Fields of the Integration Point Step 1 form	| SendOn=Monday
 | | Proceed to the Next Page

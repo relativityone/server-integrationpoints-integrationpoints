@@ -69,7 +69,8 @@ ko.validation.registerExtenders();
 		this.value = value;
 	};
 
-	var Source = function () {
+	var Source = function (s) {
+		var settings = $.extend({}, s);
 		this.templateID = 'ldapSourceConfig';
 		var self = this;
 
@@ -77,16 +78,19 @@ ko.validation.registerExtenders();
 
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
 			var types = $.map(result, function (entry) {
-				return new Choice(entry.name, entry.value);
+				var c = new Choice(entry.name, entry.value);
+				c.href = entry.url;
+				return c;
 			});
 			self.sourceTypes(types);
 		});
 
-		this.selectedType = ko.observable().extend({ required: true });
+		this.selectedType = ko.observable(settings.selectedType).extend({ required: true });
 
 	};
 
-	var Destination = function () {
+	var Destination = function (d) {
+		var settings = $.extend({}, d);
 		var self = this;
 
 		IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter') }).then(function (result) {
@@ -99,14 +103,15 @@ ko.validation.registerExtenders();
 		});
 
 		this.templateID = 'ldapDestinationConfig';
-		this.rdoTypes = ko.observableArray();
-		this.selectedRdo = ko.observable().extend({ required: true });
+		this.rdoTypes = ko.observableArray(settings.rdoTypes);
+		this.selectedRdo = ko.observable(settings.selectedRdo).extend({ required: true });
 	};
 
 	var Scheduler = function (model) {
 		var options = $.extend({}, {
 			enabled: 'false',
-			reoccur: 1
+			reoccur: 1,
+			sendOn: {}
 		}, model);
 		var stateManager = {};
 		var SendOnWeekly = function (state) {
@@ -124,7 +129,7 @@ ko.validation.registerExtenders();
 				"Saturday",
 				"Sunday"
 			]);
-
+			
 			this.selectedDays = ko.observableArray();
 			this.loadCount = 0;
 			this.showErrors = ko.observable(false);
@@ -140,7 +145,7 @@ ko.validation.registerExtenders();
 						return self.showErrors();
 					}
 				}
-			})
+			});
 			this.selectedDays(currentState.selectedDays);
 			this.templateID = 'weeklySendOn';
 		};
@@ -218,7 +223,13 @@ ko.validation.registerExtenders();
 		var self = this;
 		this.enabled = ko.observable(options.enabled);
 		this.templateID = 'schedulingConfig';
-		this.sendOn = ko.observable({});
+		this.sendOn = ko.observable(options.sendOn);
+
+		if (options.sendOn.templateID === "weeklySendOn") {
+			this.sendOn(new SendOnWeekly(options.sendOn));
+		} else if (options.sendOn.templateID === "monthlySendOn") {
+			this.sendOn(new SendOnMonthly(options.sendOn));
+		}
 
 		this.submit = function () {
 			if (this.sendOn().submit) {
@@ -235,7 +246,7 @@ ko.validation.registerExtenders();
 		this.isEnabled = ko.computed(function () {
 			return self.enabled() === "true";
 		});
-
+		
 		this.selectedFrequency = ko.observable().extend({
 			required: {
 				onlyIf: function () {
@@ -278,6 +289,9 @@ ko.validation.registerExtenders();
 			stateManager[previousValue] = ko.toJS(self.sendOn());
 		}, this, "beforeChange");
 
+		
+		this.selectedFrequency(options.selectedFrequency);
+
 		this.selectedFrequency.subscribe(function () {
 			var value = this.target();
 			var oldState = stateManager[value];
@@ -318,7 +332,7 @@ ko.validation.registerExtenders();
 			}
 		});
 
-		this.scheduledTime = ko.observable().extend({
+		this.scheduledTime = ko.observable(options.scheduledTime).extend({
 			required: {
 				onlyIf: function () {
 					return self.isEnabled();
@@ -328,19 +342,21 @@ ko.validation.registerExtenders();
 
 	};
 
-	var Model = function () {
-
+	var Model = function (m) {
+		var settings = $.extend({}, m);
 		var self = this;
-		this.name = ko.observable().extend({ required: true });
+		this.name = ko.observable(settings.name).extend({ required: true });
+		this.load = function () {
 
-		this.source = new Source();
-		this.destination = new Destination();
+		};
+		this.source = new Source(settings.source);
+		this.destination = new Destination(settings.destination);
 		this.overwrite = ko.observableArray([
 			new Choice('Append/Overlay', 1234),
 			new Choice('Append', 5678)
 		]);
-		this.selectedOverwrite = ko.observable();
-		this.scheduler = new Scheduler();
+		this.selectedOverwrite = ko.observable(settings.selectedOverwrite);
+		this.scheduler = new Scheduler(settings.scheduler);
 		this.submit = function () {
 			this.scheduler.submit();
 		};
@@ -352,7 +368,10 @@ ko.validation.registerExtenders();
 		this.template = ko.observable();
 		this.hasTemplate = false;
 		this.model = new Model();
-		this.model.errors = ko.validation.group(this.model, { deep: true });
+		this.loadModel = function (ip) {
+			this.model = new Model(ip);
+			this.model.errors = ko.validation.group(this.model, { deep: true });
+		};
 
 		this.getTemplate = function () {
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
@@ -367,7 +386,7 @@ ko.validation.registerExtenders();
 			var d = root.data.deferred().defer();
 			this.model.submit();
 			if (this.model.errors().length === 0) {
-				d.resolve();
+				d.resolve(ko.toJS(this.model));
 			} else {
 				this.model.errors.showAllMessages();
 				d.reject();
