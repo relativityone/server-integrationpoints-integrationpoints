@@ -84,6 +84,7 @@
     </Compile>
     <Compile Include="Models\FieldEntry.cs" />
     <Compile Include="Models\FieldMap.cs" />
+    <Compile Include="Models\FieldMapTypeEnum.cs" />
     <Compile Include="Models\IntegrationModel.cs" />
     <Compile Include="Models\RdoFilter.cs" />
     <Compile Include="Models\SyncConfiguration\RelativityConfiguration.cs" />

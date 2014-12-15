@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly IServiceContext _context;
 		private Data.IntegrationPoint _rdo;
 		private readonly kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
-		
+
 		private Data.IntegrationPoint GetRDO(int rdoID)
 		{
 			if (_rdo == null)
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			return _rdo;
 		}
-		
+
 		public IntegrationPointReader(IServiceContext context, kCura.Apps.Common.Utils.Serializers.ISerializer serializer)
 		{
 			_context = context;
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			var rdo = GetRDO(artifactID);
 			var fields = _serializer.Deserialize<List<FieldMap>>(rdo.FieldMappings);
-			return fields.First(x => x.IsIdentifier).SourceField;
+			return fields.First(x => x.FieldMapType == FieldMapTypeEnum.Identifier).SourceField;
 		}
 
 		public IntegrationModel ReadIntegrationPoint(int objectId)
@@ -50,15 +50,15 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public IEnumerable<FieldMap> GetFieldMap(int objectId)
 		{
-			var fieldmap= _context.RsapiService.IntegrationPointLibrary.Read(objectId, new Guid(Data.IntegrationPointFieldGuids.FieldMappings)).FieldMappings;
+			var fieldmap = _context.RsapiService.IntegrationPointLibrary.Read(objectId, new Guid(Data.IntegrationPointFieldGuids.FieldMappings)).FieldMappings;
 			IEnumerable<FieldMap> mapping = new List<FieldMap>();
 			if (!string.IsNullOrEmpty(fieldmap))
 			{
-				mapping = _serializer.Deserialize<IEnumerable<FieldMap>>(fieldmap);	
+				mapping = _serializer.Deserialize<IEnumerable<FieldMap>>(fieldmap);
 			}
 			return mapping;
 
-		} 
+		}
 
 	}
 }

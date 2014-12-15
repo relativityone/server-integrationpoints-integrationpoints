@@ -20,6 +20,9 @@ namespace kCura.IntegrationPoints.Core.Models
 		/// </summary>
 		public FieldEntry DestinationField { get; set; }
 
-		public bool IsIdentifier { get; set; }
+		/// <summary>
+		/// Type of map: None, Identifier, Parent
+		/// </summary>
+		public FieldMapTypeEnum FieldMapType { get; set; }
 	}
 }
