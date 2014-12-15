@@ -53,12 +53,23 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			return allFieldsForRdo;
 		}
+		public IEnumerable<FieldEntry> HasParent(string options)
+		{
+			var json = JsonConvert.DeserializeObject<Core.Models.SyncConfiguration.RelativityConfiguration>(options);
+			var fields = _fieldQuery.GetFieldsForRDO(json.ArtifactTypeID);
 
+			
 
-		private IImportService _importService;
-		private bool _isJobComplete = false;
-		private Exception _jobError;
-		private List<KeyValuePair<string, string>> _rowErrors;
+			var allFieldsForRdo = new List<FieldEntry>();
+			foreach (var result in fields)
+			{
+				if (!IgnoredList.Contains(result.Name))
+				{
+					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString() });
+				}
+			}
+			return allFieldsForRdo;
+		}
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{
 

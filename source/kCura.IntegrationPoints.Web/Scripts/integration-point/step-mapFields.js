@@ -29,20 +29,20 @@
 		this.selectedMappedSource = ko.observableArray([]);
 		this.overlay = ko.observableArray([]);
 		this.selectedOverlay = ko.observableArray([]);
-
-		var workspaceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/'+artifactTypeId) }).then(function (result) {
-			var types = mapFields(result);
-			self.workspaceFields(types); 
-		});
 		
-		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/'+artifactTypeId) }).then(function (result) {
-			var types = mapFields(result);
-			self.sourceField(types); 
-		});
-
-		var overlay = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/' + artifactTypeId) }).then(function (result) {
+		var workspaceFieldPromise = root.data.ajax({ type: 'Get', url: root.utils.generateWebAPIURL('WorkspaceField/'), data: { 'json': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
 			var types = mapFields(result);
 			
+			self.workspaceFields(types); 
+		});
+
+		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/'), data: { 'json': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
+			var types = mapFields(result);
+			self.sourceField(types);
+		});
+
+		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/'), data: { 'json': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
+			var types = mapFields(result);
 			self.overlay(types);
 		});
 

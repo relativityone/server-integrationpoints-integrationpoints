@@ -21,13 +21,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 
-		[Route("{workspaceID}/api/FieldMap/{id}")]
+		[Route("{workspaceID}/api/FieldMap/{string}")]
 
-	public HttpResponseMessage Get(string id)
+		public HttpResponseMessage Get(string artifactTypeId)
 		{
 			
-			int _id = 0; 
-			Int32.TryParse(id,out _id);
+			int _id = 0;
+			Int32.TryParse(artifactTypeId, out _id);
 			if (_id != 0)
 			{
 				var fieldsmap = _integrationPointReader.GetFieldMap(_id);
