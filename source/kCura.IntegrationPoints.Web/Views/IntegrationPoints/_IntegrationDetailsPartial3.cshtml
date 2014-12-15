@@ -39,7 +39,7 @@
 				<div>
 					<div id="attribute-field-up" class="legal-hold icon-chevron-up "data-bind="click: moveMappedSourceUp"></div>
 					<div id="attributes-field-down" class="legal-hold icon-chevron-down" data-bind="click: moveMappedSourceDown"></div>
-					</div>
+				</div>
 			</div>
 			<div class="cell">
 				<select class="list-box"  id="selected-source-fields" multiple="multiple" data-bind="options: sourceMapped, selectedOptions: selectedMappedSource, optionsText: 'name'">
@@ -75,7 +75,7 @@
 				</select>
 			</div>
 		</div>
-		<div class="field-row parent-identifier" >
+		<div class="field-row parent-identifier" data-bind="visible: hasParent">
 			<div class="field-label required">Parent Attribute</div>
 			<div class="field-value ">
 				<select id="parent-identifier" data-bind="options: overlay, selectedOptions: selectedOverlay, optionsText: 'name'" >

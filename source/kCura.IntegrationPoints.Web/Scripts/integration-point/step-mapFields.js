@@ -29,6 +29,7 @@
 		this.selectedMappedSource = ko.observableArray([]);
 		this.overlay = ko.observableArray([]);
 		this.selectedOverlay = ko.observableArray([]);
+		this.hasParent = ko.observable(true);
 		
 		var workspaceFieldPromise = root.data.ajax({ type: 'Get', url: root.utils.generateWebAPIURL('WorkspaceField/'), data: { 'json': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
 			var types = mapFields(result);
@@ -163,6 +164,7 @@
 			}
 		}
 
+		this.hasParent(true);
 		this.moveMappedSourceUp = function () {
 			for (var j = 0; j < this.selectedMappedSource().length ; j++) {
 				var i = this.sourceMapped.indexOf(this.selectedMappedSource()[j]);

@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			var client = NSubstitute.Substitute.For<IRSAPIClient>();
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client);
 			//
-			var rdoSyncronizer = new RdoSynchronizer(client, fieldMock);
+			var rdoSyncronizer = new RdoSynchronizer(fieldMock);
 			var options = new Core.Models.SyncConfiguration.RelativityConfiguration();
 			options.ArtifactTypeID = 1268820;
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			//ARRANGE
 			var client = NSubstitute.Substitute.For<IRSAPIClient>();
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client);
-			var rdoSyncronizer = new RdoSynchronizer(client, fieldMock);
+			var rdoSyncronizer = new RdoSynchronizer(fieldMock);
 			var options = new Core.Models.SyncConfiguration.RelativityConfiguration { ArtifactTypeID = 1268820 };
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			var client = NSubstitute.Substitute.For<IRSAPIClient>();
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client);
 			//
-			var rdoSyncronizer = new RdoSynchronizer(client, fieldMock);
+			var rdoSyncronizer = new RdoSynchronizer(fieldMock);
 			var options = new Core.Models.SyncConfiguration.RelativityConfiguration();
 			options.ArtifactTypeID = 1268820;
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			//ARRANGEk
 			var client = NSubstitute.Substitute.For<IRSAPIClient>();
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client);
-			var rdoSyncronizer = new RdoSynchronizer(client, fieldMock);
+			var rdoSyncronizer = new RdoSynchronizer(fieldMock);
 			var options = new Core.Models.SyncConfiguration.RelativityConfiguration { ArtifactTypeID = 1268820 };
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{

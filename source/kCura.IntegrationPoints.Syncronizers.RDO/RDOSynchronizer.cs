@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
-using kCura.Relativity.Client;
+using kCura.Relativity.DataReaderClient;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
@@ -12,11 +13,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 	public class RdoSynchronizer : kCura.IntegrationPoints.Core.Services.Syncronizer.IDataSyncronizer
 	{
 		private RelativityFieldQuery _fieldQuery;
-		private readonly IRSAPIClient _rsapiClient;
 
-		public RdoSynchronizer(IRSAPIClient rsapiClient, RelativityFieldQuery fieldQuery)
+		public RdoSynchronizer(RelativityFieldQuery fieldQuery)
 		{
-			_rsapiClient = rsapiClient;
 			_fieldQuery = fieldQuery;
 		}
 
@@ -70,6 +69,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			return allFieldsForRdo;
 		}
+
+
+		private IImportService _importService;
+		private bool _isJobComplete = false;
+		private Exception _jobError;
+		private List<KeyValuePair<string, string>> _rowErrors;
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{
 
@@ -116,10 +121,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				Thread.Sleep(1000);
 			} while (!isJobDone);
 
-			ProcessExceptions();
+			ProcessExceptions(settings);
 		}
 
-		private void ProcessExceptions()
+		private void ProcessExceptions(ImportSettings settings)
 		{
 			if (_jobError != null)
 			{
@@ -127,9 +132,28 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			else
 			{
-				foreach (var _rowError in _rowErrors)
+				string errorMessage = string.Empty;
+				foreach (var rowError in _rowErrors)
 				{
-					//TODO:					
+					if (settings.OverwriteMode == OverwriteModeEnum.Overlay
+						&& rowError.Value.Contains("no document to overwrite"))
+					{
+						//skip
+					}
+					else if (settings.OverwriteMode == OverwriteModeEnum.Append
+						&& rowError.Value.Contains("document with identifier")
+						&& rowError.Value.Contains("already exists in the workspace"))
+					{
+						//skip
+					}
+					else
+					{
+						errorMessage = string.Format("{0}{1}(Id: {2}){3}", errorMessage, Environment.NewLine, rowError.Key, rowError.Value);
+					}
+				}
+				if (!string.IsNullOrEmpty(errorMessage))
+				{
+					throw new Exception(errorMessage);
 				}
 			}
 		}
