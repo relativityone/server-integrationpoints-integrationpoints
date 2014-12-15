@@ -1,6 +1,6 @@
 
 *** Settings ***
-| Documentation 	| Verify that the correct fields are shown in the Workspace Fields and Overlay lists when the Destination RDO is Custodians
+| Documentation 	| Verify that the correct fields are shown in the Workspace Fields list for each Destination RDO.
 | Metadata		    | Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.method
 | Suite Setup		| Run Keywords	| Open and Log in to Method	| Make the Object Type List a Suite Variable
@@ -19,9 +19,8 @@
 
 | Run on All Objects
 | | [Template]	| Verify that the fields for the Object Type "${ObjectType}" populate correctly on the Unassigned Workspace Fields List Box on Step 3 of the Create Integration Point Process
-| | Custodian
-#| | :FOR	| ${ObjectType}	| IN | @{ObjectTypes}
-#| | | ${ObjectType}
+| | :FOR	| ${ObjectType}	| IN | @{ObjectTypes}
+| | | ${ObjectType}
 
 
 *** Keywords *** 
