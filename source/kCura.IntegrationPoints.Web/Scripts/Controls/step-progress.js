@@ -10,7 +10,7 @@
 		var container = '<li class="' + last + '">';
 		container += step.options.text;
 		var div = "<div class='step'>";
-		div += "<i class='" + settings.pendingClass +"'></i>";
+		div += "<i class='" + settings.pendingClass + "'></i>";
 		div += "<span class='" + settings.pendingClass + "'>" + step.step + "</span>";
 		div += "</div>";
 		container += div;
@@ -67,27 +67,32 @@
 		}
 	};
 
+	var _isLast = function () {
+		return this.options.currentStep >= this.$this.find('li').length;
+	};
+
 	$.stepProgress = $.stepProgress || {};
 
 	$.extend($.stepProgress, {
 		buildStep: _buildStep,
 		next: _next,
 		back: _back,
-		goToStep: _goToStep
+		goToStep: _goToStep,
+		last: _isLast
 	});
 
 	$.fn.stepProgress = function (options) {
 		var callArgs = arguments;
-		return this.each(function () {
-			if (typeof options === "string") {
-				var fn = $.stepProgress[options];
-				if (!fn) {
-					throw 'stepProgress - No such method' + options;
-				}
-				var args = $.makeArray(callArgs).slice(1);
-				return fn.apply(this, args);
+		if (typeof options === "string") {
+			var fn = $.stepProgress[options];
+			if (!fn) {
+				throw 'stepProgress - No such method' + options;
 			}
-			
+			var args = $.makeArray(callArgs).slice(1);
+			return fn.apply(this[0], args); //if you want more than just ID you will have to fix this
+		}
+		return this.each(function () {
+
 			if (this.$this) { return; } //already inited no work for us to do
 
 			$.fn.stepProgress.defaults = {

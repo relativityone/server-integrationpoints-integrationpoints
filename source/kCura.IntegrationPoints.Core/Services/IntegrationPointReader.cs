@@ -45,7 +45,8 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public IntegrationModel ReadIntegrationPoint(int objectId)
 		{
-			return new IntegrationModel(_context.RsapiService.IntegrationPointLibrary.Read(objectId));
+			var point = _context.RsapiService.IntegrationPointLibrary.Read(objectId);
+			return new IntegrationModel(point);
 		}
 
 		public IEnumerable<FieldMap> GetFieldMap(int objectId)

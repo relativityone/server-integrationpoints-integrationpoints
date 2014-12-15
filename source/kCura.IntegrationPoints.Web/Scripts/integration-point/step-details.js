@@ -33,12 +33,13 @@ ko.validation.rules["time"] = {
 	message: 'Please enter a valid time (24-hour format).'
 };
 
-ko.validation.rules["arrayMin"] = {
+ko.validation.rules['arrayRange'] = {
 	validator: function (value, params) {
-		return value.length > params;
+		var num = parseInt(value, 10);
+		return !isNaN(num) && num >= params.min && num <= params.max
 	},
-	message: 'Bad :('
-};
+	message: 'Please enter a value between 1 and 999.'
+}
 
 ko.validation.registerExtenders();
 
@@ -90,6 +91,11 @@ ko.validation.registerExtenders();
 	};
 
 	var Destination = function (d) {
+		try{
+			d = JSON.parse(d);
+		} catch (e) {
+			d = d;
+		}
 		var settings = $.extend({}, d);
 		var self = this;
 
@@ -98,13 +104,14 @@ ko.validation.registerExtenders();
 				return new Choice(entry.name, entry.value);
 			});
 			self.rdoTypes(types);
+			self.artifactTypeID(settings.artifactTypeID);
 		}, function () {
 
 		});
-
+		
 		this.templateID = 'ldapDestinationConfig';
-		this.rdoTypes = ko.observableArray(settings.rdoTypes);
-		this.selectedRdo = ko.observable(settings.selectedRdo).extend({ required: true });
+		this.rdoTypes = ko.observableArray();
+		self.artifactTypeID = ko.observable().extend({ required: true });
 	};
 
 	var Scheduler = function (model) {
@@ -221,7 +228,8 @@ ko.validation.registerExtenders();
 		};
 
 		var self = this;
-		this.enabled = ko.observable(options.enabled);
+
+		this.enableScheduler = ko.observable((options.enableScheduler == 'true').toString());
 		this.templateID = 'schedulingConfig';
 		this.sendOn = ko.observable(options.sendOn);
 
@@ -237,14 +245,10 @@ ko.validation.registerExtenders();
 			}
 		};
 
-		this.frequency = ko.observableArray([
-			new Choice("Daily", 1),
-			new Choice("Weekly", 2),
-			new Choice("Monthly", 3)
-		]);
+		this.frequency = ko.observableArray(["Daily","Weekly","Monthly"]);
 
 		this.isEnabled = ko.computed(function () {
-			return self.enabled() === "true";
+			return self.enableScheduler() === "true";
 		});
 		
 		this.selectedFrequency = ko.observable().extend({
@@ -262,16 +266,11 @@ ko.validation.registerExtenders();
 				}
 			}
 		}).extend({
-			validation: {
-				validator: function (value, params) {
-					var num = parseInt(value, 10);
-					return !isNaN(num) && num >= params.min && num <= params.max
-				},
+			arrayRange:{
 				onlyIf: function () {
 					return self.selectedFrequency() !== 1 && self.isEnabled();
 				},
 				params: { min: 1, max: 999 },
-				message: 'Please enter a value between 1 and 999.'
 			}
 		});
 
@@ -346,15 +345,11 @@ ko.validation.registerExtenders();
 		var settings = $.extend({}, m);
 		var self = this;
 		this.name = ko.observable(settings.name).extend({ required: true });
-		this.load = function () {
 
-		};
 		this.source = new Source(settings.source);
 		this.destination = new Destination(settings.destination);
-		this.overwrite = ko.observableArray([
-			new Choice('Append/Overlay', 1234),
-			new Choice('Append', 5678)
-		]);
+		this.overwrite = ko.observableArray(['Append/Overlay','Append']);
+
 		this.selectedOverwrite = ko.observable(settings.selectedOverwrite);
 		this.scheduler = new Scheduler(settings.scheduler);
 		this.submit = function () {
@@ -385,6 +380,7 @@ ko.validation.registerExtenders();
 		this.submit = function () {
 			var d = root.data.deferred().defer();
 			this.model.submit();
+			this.model.destination = JSON.stringify(ko.toJS(this.model.destination));
 			if (this.model.errors().length === 0) {
 				d.resolve(ko.toJS(this.model));
 			} else {

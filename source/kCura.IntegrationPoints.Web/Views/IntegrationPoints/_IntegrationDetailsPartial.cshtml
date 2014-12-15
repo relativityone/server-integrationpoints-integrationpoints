@@ -20,7 +20,7 @@
 				Overwrite:
 			</div>
 			<div class="field-value">
-				<select id="overwrite" data-bind="options: overwrite, optionsText: 'displayName', optionsValue: 'value', value: selectedOverwrite, select2: {}"></select>
+				<select id="overwrite" data-bind="options: overwrite, value: selectedOverwrite, select2: {}"></select>
 			</div>
 		</div>
 	</div>
@@ -54,7 +54,7 @@
 			Destination RDO:
 		</div>
 		<div class="field-value">
-			<select id="destinationRdo" data-bind="options: rdoTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedRdo, optionsCaption: 'Select...', select2: {}"></select>
+			<select id="destinationRdo" data-bind="options: rdoTypes, optionsText: 'displayName', optionsValue: 'value', value: artifactTypeID, optionsCaption: 'Select...', select2: {}"></select>
 		</div>
 	</div>
 </script>
@@ -68,19 +68,19 @@
 		<div class="field-value" id="scheduleRulesEnabled">
 			<ul>
 				<li>
-					<input type="radio" name="enable" value="true" data-bind="checked: enabled" />Yes</li>
+					<input type="radio" name="enable" value="true" data-bind="checked: enableScheduler" />Yes</li>
 				<li>
-					<input type="radio" name="enable" value="false" data-bind="checked: enabled" />No</li>
+					<input type="radio" name="enable" value="false" data-bind="checked: enableScheduler" />No</li>
 			</ul>
 		</div>
 	</div>
-	<div data-bind="visible: enabled() === 'true' ">
+	<div data-bind="visible: enableScheduler() === 'true' ">
 		<div class="field-row">
 			<div class="field-label required">
 				Frequency:
 			</div>
 			<div class="field-value">
-				<select id="frequency" data-bind="options: frequency, optionsText: 'displayName', optionsValue: 'value', value: selectedFrequency, optionsCaption: 'Select...', select2: {}"></select>
+				<select id="frequency" data-bind="options: frequency, value: selectedFrequency, optionsCaption: 'Select...', select2: {}"></select>
 			</div>
 		</div>
 

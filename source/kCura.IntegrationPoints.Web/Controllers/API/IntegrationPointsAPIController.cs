@@ -22,11 +22,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				model = _reader.ReadIntegrationPoint(id);
 			}
+
 			return Request.CreateResponse(HttpStatusCode.Accepted, model);
 		}
 
-		[HttpPut]
-		public HttpResponseMessage Update()
+		[HttpPost]
+		public HttpResponseMessage Update(IntegrationModel model)
 		{
 			return Request.CreateResponse(HttpStatusCode.Accepted);
 		}

@@ -2,23 +2,23 @@
 (function (root, ko) {
 
 
-	var mapFields = function(result) {
-		return  $.map(result, function (entry) {
+	var mapFields = function (result) {
+		return $.map(result, function (entry) {
 			return { name: entry.displayName, identifier: entry.fieldIdentifier };
 		});
 	}
 
-	var moveItemFromField = function(from, to) {
+	var moveItemFromField = function (from, to) {
 		$.each(from, function () {
 			to.push(this);
 		});
 	}
-	
+
 
 	var viewModel = function (model) {
 		var self = this;
 		var artifactTypeId = model.destination.selectedRdo;
-		var artifactId = model.artifactID || 0; 
+		var artifactId = model.artifactID || 0;
 		this.workspaceFields = ko.observableArray([]);
 		this.mappedWorkspace = ko.observableArray([]);
 		this.sourceMapped = ko.observableArray([]);
@@ -30,36 +30,36 @@
 		this.overlay = ko.observableArray([]);
 		this.selectedOverlay = ko.observableArray([]);
 
-		var workspaceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/'+artifactTypeId) }).then(function (result) {
+		var workspaceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/' + artifactTypeId) }).then(function (result) {
 			var types = mapFields(result);
-			self.workspaceFields(types); 
+			self.workspaceFields(types);
 		});
-		
-		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/'+artifactTypeId) }).then(function (result) {
+
+		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/' + artifactTypeId) }).then(function (result) {
 			var types = mapFields(result);
-			self.sourceField(types); 
+			self.sourceField(types);
 		});
 
 		var overlay = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/' + artifactTypeId) }).then(function (result) {
 			var types = mapFields(result);
-			
+
 			self.overlay(types);
 		});
 
 		var mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap/' + artifactId) }).then(function (result) {
 			var source = $.map(result, function (entry) {
 				return {
-					 name: entry.sourceField.displayName, identifier: entry.sourceField.fieldIdentifier
+					name: entry.sourceField.displayName, identifier: entry.sourceField.fieldIdentifier
 				};
 			});
-			var workspace = $.map(result, function(entry) {
+			var workspace = $.map(result, function (entry) {
 				return {
-					name: entry.destinationField.displayName, identifier: entry.destinationField.fieldIdentifier 
+					name: entry.destinationField.displayName, identifier: entry.destinationField.fieldIdentifier
 				};
 			});
 			self.mappedWorkspace(workspace);
 			self.sourceMapped(source);
-			});
+		});
 
 		Q.all([workspaceFieldPromise, sourceFieldPromise, mappedSourcePromise]).done(
 			function () {
@@ -71,7 +71,7 @@
 						}
 					});
 				});
-	
+
 				$.each(self.workspaceFields(), function (index, entry) {
 					$.each(self.mappedWorkspace(), function (index2, mapped) {
 						if (mapped.name === entry.name) {
@@ -79,9 +79,9 @@
 						}
 					});
 				});
-				
+
 			});
-		
+
 		/********** WorkspaceFields control  **********/
 
 		this.addSelectFields = function () {
@@ -103,8 +103,8 @@
 			this.selectedWorkspaceField.splice(0, this.selectedWorkspaceField().length);
 		}
 
-		this.addAlltoWorkspaceField = function() {
-			var requested = this.workspaceFields ;
+		this.addAlltoWorkspaceField = function () {
+			var requested = this.workspaceFields;
 			moveItemFromField(self.mappedWorkspace(), requested);
 			this.mappedWorkspace.removeAll();
 			this.selectedMappedWorkspace.splice(0, this.selectedMappedWorkspace().length);
@@ -130,7 +130,7 @@
 			this.sourceField.removeAll();
 			this.selectedSourceField.splice(0, this.selectedSourceField.length);
 		}
-		
+
 		this.addAlltoSourceField = function (addAll) {
 			var requested = this.sourceField;
 			moveItemFromField(self.sourceMapped(), requested);
@@ -149,11 +149,11 @@
 				}
 			}
 		}
-		
+
 		this.moveMappedWorkspaceDown = function () {
-			for (var j = this.selectedMappedWorkspace().length-1; j >=0 ; j--) {
+			for (var j = this.selectedMappedWorkspace().length - 1; j >= 0 ; j--) {
 				var i = this.mappedWorkspace().indexOf(this.selectedMappedWorkspace()[j]);
-				var length = this.mappedWorkspace().length-1;  
+				var length = this.mappedWorkspace().length - 1;
 				if ((i + 1) <= length) {
 					var array = this.mappedWorkspace();
 					this.mappedWorkspace.splice(i, 2, array[i + 1], array[i]);
@@ -166,7 +166,7 @@
 		this.moveMappedSourceUp = function () {
 			for (var j = 0; j < this.selectedMappedSource().length ; j++) {
 				var i = this.sourceMapped.indexOf(this.selectedMappedSource()[j]);
-				if (i  >= 1) {
+				if (i >= 1) {
 					var array = this.sourceMapped();
 					this.sourceMapped.splice(i - 1, 2, array[i], array[i - 1]);
 				} else {
@@ -180,7 +180,7 @@
 				var i = this.sourceMapped().indexOf(this.selectedMappedSource()[j]);
 				var length = this.sourceMapped().length - 1;
 				var itemsSelected = this.selectedMappedSource().length;
-				if ( (i + 1) <= length) {
+				if ((i + 1) <= length) {
 					var array = this.sourceMapped();
 					this.sourceMapped.splice(i, 2, array[i + 1], array[i]);
 				} else {
@@ -198,11 +198,13 @@
 		self.settings = settings;
 		this.template = ko.observable();
 		this.hasTemplate = false;
+		this.returnModel = {};
 		this.loadModel = function (model) {
 			this.selectedRdo = model.destination.selectedRdo;
-			this.model = new viewModel(model);
+			this.returnModel = model;
+			this.model = new viewModel(this.returnModel);
 		};
-		
+
 		this.getTemplate = function () {
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
 				$('body').append(result);
@@ -213,19 +215,18 @@
 
 		this.submit = function () {
 			var d = root.data.deferred().defer();
-			d.resolve();
+			this.returnModel.map = ko.toJS(this.model);
+			d.resolve(this.returnModel);
 			return d.promise;
 		};
 	};
 
-
-	
 	var step = new Step({
 		url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3'),
 		templateID: 'step3'
 	});
-	
+
 	root.points.steps.push(step);
-	
+
 
 })(IP, ko);

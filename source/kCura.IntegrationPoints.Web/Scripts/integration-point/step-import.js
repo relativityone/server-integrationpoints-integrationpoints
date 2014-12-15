@@ -82,7 +82,7 @@
 			this.frameBus.publish('submit');
 			//this is sketchy at best
 			this.bus.subscribe('saveComplete', function (data) {
-				self.model.sourceConfiguration = data;
+				self.model.sourceConfiguration = JSON.stringify(data);
 				d.resolve(self.model);
 			});
 			this.bus.subscribe('saveError', function (error) {

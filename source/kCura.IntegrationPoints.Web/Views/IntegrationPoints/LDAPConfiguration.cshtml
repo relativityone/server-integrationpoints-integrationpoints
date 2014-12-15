@@ -14,7 +14,7 @@
 			Object Filter String:
 		</div>
 		<div class="field-value">
-			<input type="text" maxlength="255" data-bind="value: filter" id="connectionFiltet">
+			<input type="text" maxlength="255" data-bind="value: filter" id="connectionFilter">
 		</div>
 	</div>
 
@@ -23,7 +23,7 @@
 			Authentication:
 		</div>
 		<div class="field-value">
-			<select data-bind="options: auth, optionsText: 'name', optionsValue: 'id', value: selectedAuth, optionsCaption: 'Select...', select2: {}">
+			<select id="authentication" data-bind="options: auth, optionsText: 'name', optionsValue: 'id', value: selectedAuth, optionsCaption: 'Select...', select2: {}">
 			</select>
 		</div>
 	</div>
@@ -123,9 +123,7 @@
 					{ name: 'Anonymous', id: 1 },
 					{ name: 'Encryption', id: 2 },
 					{ name: 'FastBind', id: 3 },
-					{ name: 'Secure', id: 4 },
-					{ name: 'Secure Socket Layer', id: 5 },
-					{ name: 'Readonly server', id: 6 }
+					{ name: 'Secure Socket Layer', id: 4 }
 				]);
 				this.userName = ko.observable(state.userName);
 				this.password = ko.observable(state.password);
@@ -143,7 +141,6 @@
 			message.subscribe('load', function (model) {
 				if (typeof (model) === "string") {
 					try {
-
 						model = JSON.parse(model);
 					} catch (e) {
 						model = {};
