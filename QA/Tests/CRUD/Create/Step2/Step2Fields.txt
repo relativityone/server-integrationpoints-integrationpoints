@@ -13,7 +13,7 @@
 
 | ${WorkspaceName}				| Relativity Legal Hold
 | ${Connection Path}			| connectionPath
-| ${Object Filter String}		| connectionFiltet
+| ${Object Filter String}		| connectionFilter
 | ${Authentication Dropdown}	| 
 | ${Username}					| connectionUsername
 | ${Password}					| connectionPassword

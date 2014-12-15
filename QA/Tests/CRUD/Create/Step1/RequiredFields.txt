@@ -20,7 +20,7 @@
 
 | The Integration Name field display an error message when empty
 | | [Documentation]	| Verify that leaving the Integration Name field blank displays a warning message after clicking Next.
-| | [Tags]			| required	| untested 
+| | [Tags]			| required	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Agent Type	| EnableScheduler=No
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Integration Name Field}	| This field is required.
@@ -28,7 +28,7 @@
 
 | Proceeding Post-Integration Name Validation
 | | [Documentation]	| Verify that you can proceed to Step 2 after the Integration Name validation message has been shown.
-| | [Tags]			| untested 
+| | [Tags]			| automated
 | | [Setup]			| Require Test Case	| The Integration Name field display an error message when empty
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing
 | | Proceed to the Next Page
@@ -37,7 +37,7 @@
 
 | The Destination RDO field displays an error message when empty
 | | [Documentation]	| Verify that leaving the Integration Name field as Select... displays a warning message after clicking Next.
-| | [Tags]			| required	| untested 
+| | [Tags]			| required	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| EnableScheduler=No
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Destination RDO Field}	| This field is required.
@@ -45,7 +45,7 @@
 
 | Proceeding Post-Destination RDO Validation
 | | [Documentation]	| Verify that you can proceed to Step 2 after the Destination RDO validation message has been shown.
-| | [Tags]			| untested 
+| | [Tags]			| automated
 | | [Setup]			| Require Test Case	| The Destination RDO field displays an error message when empty
 | | Fill out the Following Fields of the Integration Point Step 1 form	| DestinationRDO=Agent Type
 | | Proceed to the Next Page

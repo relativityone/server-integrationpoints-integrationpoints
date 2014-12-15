@@ -1,0 +1,118 @@
+
+*** Settings ***
+| Documentation 	| Verify that the correct fields are shown in the Workspace Fields list for each Destination RDO.
+| Metadata		    | Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| in-progress	| team.method
+| Suite Setup		| Run Keywords	| Open and Log in to Method	| Make the Object Type List a Suite Variable
+#| Test Setup		| Go to Step 3 of the Create Integration Point Process
+| Test Teardown 	| Capture screenshot if test fails
+| Suite Teardown	| Close all browsers
+
+
+*** Variables ***
+
+| ${WorkspaceName}	     | Relativity Legal Hold
+| ${ValidConnectionPath}	| 
+
+
+*** Test Cases ***
+
+| Run on All Objects
+| | [Template]	| Verify that the fields for the Object Type "${ObjectType}" populate correctly on the Unassigned Workspace Fields List Box on Step 3 of the Create Integration Point Process
+| | :FOR	| ${ObjectType}	| IN | @{ObjectTypes}
+| | | ${ObjectType}
+
+
+*** Keywords *** 
+
+| Verify that the fields for the Object Type "${ObjectType}" populate correctly on the Unassigned Workspace Fields List Box on Step 3 of the Create Integration Point Process
+| | Open Create Integration Point
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${ObjectType} Step 3 Test	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${ObjectType}	| EnableScheduler=No
+| | Proceed to the Next Page
+| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=Dummy1	| Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| # ObjectFilterString=Dummy2	| Authentication=Secure	
+| | Proceed to the Next Page
+| | @{WorkspaceFields}=	| Get the Unassigned Workspace Fields
+| | @{ExpectedFields}=	| Get the Non-Object and Non-System Fields for the following Object Type	| ${ObjectType}
+| | Sort List	| ${WorkspaceFields}	| # Temporary. Just until UAH066
+| | Sort List	| ${ExpectedFields}
+| | Lists Should Be Equal	| ${WorkspaceFields}	| ${ExpectedFields}
+| | [Teardown]		| Run Keyword If Keyword Failed	| Capture Page Screenshot
+
+| Make the Object Type List a Suite Variable
+| | ${ObjectTypeList}=	| Get a List of All Object Types to Run Against
+| | Set Suite Variable	| ${ObjectTypes}	| ${ObjectTypeList}
+
+| Get a List of All Object Types to Run Against
+| | ${2DGrid}=	| Query Workspace Database	|  
+| | ... | SELECT DISTINCT ArtifactType
+| | ... | FROM [EDDSDBO].[Field] f
+| | ... | JOIN [ArtifactType] at on at.ArtifactTypeID = f.FieldArtifactTypeID
+| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
+| | @{ObjectFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
+| | @{SystemFields}=	| Create List	| 
+| | ... | Agent Type			|
+| | ... | Batch					|
+| | ... | Batch Set				|
+| | ... | Code					|
+| | ... | Event Handler			|
+| | ... | Field					|
+| | ... | Folder				|
+| | ... | Group					|
+| | ... | History				|
+| | ... | Install Event Handler	|
+| | ... | Integration Point		| 
+| | ... | Layout				|
+| | ... | Markup Set			|
+| | ... | Mass Operation		|
+| | ... | Object Rule			|
+| | ... | Object Type			|
+| | ... | Production			|
+| | ... | Relativity Script		|
+| | ... | Report				|
+| | ... | Search				|
+| | ... | Search Container		|
+| | ... | Search Index			|
+| | ... | Source Provider		| 
+| | ... | Tab					|
+| | ... | View					|
+| | ... | Workspace
+| | Remove Values From List	| ${ObjectFields}	| @{SystemFields}
+| | [Return]		| ${ObjectFields}
+
+| Get the Non-Object and Non-System Fields for the following Object Type
+| | [Documentation]	| Gets a list of all of the Fields on the given object that are not Single Object or Multi Object fields, strips out the four system fields, and then returns the remaining fields. 
+| | [ARGUMENTS]		| ${ObjectType}
+| | ${2DGrid}=	| Query Workspace Database	|  
+| | ... | SELECT DisplayName
+| | ... | FROM [EDDSDBO].[Field] f
+| | ... | JOIN [ArtifactType] at on at.ArtifactTypeID = f.FieldArtifactTypeID
+| | ... | WHERE at.ArtifactType = '${ObjectType}'
+| | ... | AND F.FieldTypeID != 10	| # Single Object
+| | ... | AND F.FieldTypeID != 12	| # Multi Object
+| | Should Not Be Empty	| ${2DGrid}	| No fields were found for the Object Type "${ObjectType}".
+| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
+| | @{NonObjectFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
+| | @{SystemFields}=	| Create List	| System Created By	| System Created On	| System Last Modified By	| System Last Modified On
+| | Remove Values From List	| ${NonObjectFields}	| @{SystemFields}
+| | Should Not Be Empty	| ${NonObjectFields}	| No non-object and non-system fields were found for the Object Type "${ObjectType}".
+| | [Return]		| @{NonObjectFields}
+
+| Go to Step 3 of the Create Integration Point Process
+| | Open Create Integration Point
+| | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Testing | Append/Overlay | LDAP | Custodian | no
+| | Fill out the Following Fields of the Integration Point Step 2 form | ${ValidConnectionPath}
+
+| Verify that the following list-box has the following fields
+| | [Documentation] | A keyword that verifies that the specified list box has the specified fields in the listed order
+| | [Arguments] | ${ListBoxID} | @{ExpectedFields}
+| | Wait until Page Contains Element	| xpath=//select[@id='${ListBoxID}']	| 10s	| The ${ListBox} list was not present.
+| | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='${ListBoxID}']/child::option	| False
+| | Lists Should Be Equal	| ${ExpectedFields}	| ${ActualFields}
+
+*** Settings ***
+| Library   | Collections
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource  | C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
