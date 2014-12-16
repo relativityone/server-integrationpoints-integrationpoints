@@ -1,59 +1,61 @@
 
 *** Settings ***
-| Documentation 	| Verify that the Map Fields step of Integration Points shows the correct fields
-| Metadata		    | Authors	| Daniel Oliver
-| Force Tags		| in-progress | team.method
+| Documentation 	| Verify that the Map Fields step of Integration Points shows the correct fields, card, and icons.
+| Metadata			| Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| in-progress	| team.method
 | Suite Setup		| Open and Log in to Method
-| Test Setup        | Go to Step 3 of the Create Integration Point Process
+| Test Setup		| Go to Step 3 of the Create Integration Point Process
 | Test Teardown 	| Capture screenshot if test fails
-| Suite Teardown	| Close all browsers
+| Suite Teardown	| Close All Browsers
 
 
 *** Variables ***
 
-| ${WorkspaceName}	     | Relativity Legal Hold
-| ${ValidConnectionPath} | 
-| ${WorkspaceFieldListID}   | workspace-fields
-| ${SelectedFieldListID}    | selected-workspace-fields
-| ${SelectedAttributeListID}    | selected-source-fields
-| ${SourceAttributeListID}      | source-attributes
-| ${AddAllWorkspaceFieldsIcon}   | add-all-workspace-fields
-| ${AddWorkspaceFieldIcon}       | add-workspace-field
-| ${RemoveWorkspaceFieldIcon}    | remove-workspace-field
-| ${RemoveWAllWorkspaceFieldsIcon} | remove-all-workspace-fields
-| ${MoveWorkspaceFieldUpIcon}        | workspace-field-up
-| ${MoveWorkspaceFieldDownIcon}      | workspace-field-down
-| ${MoveAttributeFieldUpIcon}        | attribute-field-up
-| ${MoveAttributeFieldDownIcon}      | attribute-field-down
-| ${AddAllSourceFieldsIcon}   | add-all-source-fields
-| ${AddSourceFieldIcon}       | add-workspace-field
-| ${RemoveSourceFieldIcon}    | remove-source-field
-| ${RemoveAllSourceFieldsIcon} | remove-all-source-fields
-| ${OverlayIdentifierID} | 
-| ${ParentAttributeID} | 
+| ${WorkspaceName}		| Relativity Legal Hold
+| ${ValidConnectionPath}		| Dummy Data
+| ${WorkspaceFieldListID}		| workspace-fields
+| ${SelectedFieldListID}		| selected-workspace-fields
+| ${SelectedAttributeListID}	| selected-source-fields
+| ${SourceAttributeListID}		| source-attributes
+| ${AddAllWorkspaceFieldsIcon}		| add-all-workspace-fields
+| ${AddWorkspaceFieldIcon}			| add-workspace-field
+| ${RemoveWorkspaceFieldIcon}		| remove-workspace-field
+| ${RemoveWAllWorkspaceFieldsIcon}	| remove-all-workspace-fields
+| ${MoveWorkspaceFieldUpIcon}	| workspace-field-up
+| ${MoveWorkspaceFieldDownIcon}	| workspace-field-down
+| ${MoveAttributeFieldUpIcon}	| attribute-field-up
+| ${MoveAttributeFieldDownIcon}	| attribute-field-down
+| ${AddAllSourceFieldsIcon}		| add-all-source-fields
+| ${AddSourceFieldIcon}			| add-source-field
+| ${RemoveSourceFieldIcon}		| remove-source-field
+| ${RemoveAllSourceFieldsIcon}	| remove-all-source-fields
+| ${OverlayIdentifierID}	| 
+| ${ParentAttributeID}		| 
+| ${Field Mappings Card}	| fieldMappings
 
 
 *** Test Cases ***
 
-| Clicking Next from the Connect to Source screen shows the Map Fields screen
-| | [Documentation]	| Verify that clicking Next from the Connect to Source screen shows the Map Fields screen
-| | [Tags] | untested
-| | Wait until keyword succeeds | 20s | 2s | Verify that the Header has the following text | Map Fields
+| The Map Fields screen has a card with the Title Field Mappings
+| | [Documentation]	| Verify that the Map Fields screen has a card with the title text "Field Mappings".
+| | [Tags]			| automated
+| | Wait until keyword succeeds	| 10s	| 2s	| Verify that the following Card has the following Title Text	| ${Field Mappings Card}	| Field Mappings
+
 
 | The Field Mappings fields are in the correct order
 | | [Documentation]	| Verify that the fields in the Source Connection section are sorted correctly.
-| | [Tags] | untested
+| | [Tags]			| manual	| unwritten
 | | Verify that the following section contains the following fields | Field Mappings | ${WorkspaceFieldListID} | ${SelectedFieldListID}	| ${SelectedAttributeListID} | ${SourceAttributeListID} | ${OverlayIdentifierID} | ${ParentAttributeID}
 
 | The Overlay Identifer is a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is present for the Overlay Identifer field.
-| | [Tags] | untested
+| | [Tags]			| manual	| unwritten
 | | Verify that the following field is required		| ${OverlayIdentifierID}
 | | Verify that the following field is not required | ${ParentAttributeID}
 
 | The Fields are of the correct type
 | | [Documentation]	| Verify that the Fields on the Map Fields screen are the correct type. Note that the Parent Attribute field is excluded from this test case.
-| | [Tags]		| untested	
+| | [Tags]			| manual	| unwritten
 | | Run keyword and continue on failure | Verify that the following field ID has a listbox input | ${WorkspaceFieldListID}
 | | Run keyword and continue on failure | Verify that the following field ID has a listbox input | ${SelectedFieldListID} 
 | | Run keyword and continue on failure | Verify that the following field ID has a listbox input | ${SelectedAttributeListID} 
@@ -61,43 +63,57 @@
 | | Run keyword and continue on failure | Verify that the following field ID has a droplist input | ${OverlayIdentifierID}
 | | Run keyword and continue on failure | Verify that the following field ID has a droplist input | ${ParentAttributeID}
 
-| Workspace Buttons are present and sorted correctly
-| | [Documentation]	| Verify that the Workspace movement Buttons present and sorted correctly
-| | [Tags]		| untested	
-| | Verify that the following icons are present and sorted correctly | ${AddAllWorkspaceFieldsIcon} | ${AddWorkspaceFieldIcon}	| ${RemoveWorkspaceFieldIcon} | ${RemoveWAllWorkspaceFieldsIcon}
 
-| Source Attribute Buttons are present and sorted correctly
-| | [Documentation]	| Verify that the Source Attributes movement Buttons present and sorted correctly
-| | [Tags]		| untested	
-| | Verify that the following icons are present and sorted correctly | ${AddAllSourceFieldsIcon} | ${AddSourceFieldIcon}	| ${RemoveSourceFieldIcon} | ${RemoveAllSourceFieldsIcon}
+| The Workspace Fields List Change Icons are present and sorted correctly
+| | [Documentation]	| Verify that the Workspace Fields listbox movement Icons are present and sorted correctly.
+| | [Tags]			| automated
+| | Verify that the following icons are present and sorted correctly	| 
+| | ... | ${AddAllWorkspaceFieldsIcon}	| ${AddWorkspaceFieldIcon}	| ${RemoveWorkspaceFieldIcon}	| ${RemoveWAllWorkspaceFieldsIcon}
 
-| Workspace Up and Down Buttons are present and sorted correctly
-| | [Documentation]	| Verify that the Up and Down movement Buttons present and sorted correctly
-| | [Tags]		| untested	
-| | Verify that the following icons are present and sorted correctly | ${MoveWorkspaceFieldUpIcon} | ${MoveWorkspaceFieldDownIcon}
 
-| Source Attribute Up and Down Buttons are present and sorted correctly
-| | [Documentation]	| Verify that the Up and Down movement Buttons present and sorted correctly
-| | [Tags]		| untested	
-| | Verify that the following icons are present and sorted correctly | ${MoveAttributeFieldUpIcon} | ${MoveAttributeFieldDownIcon}
+| The Source Attribute List Change Icons are present and sorted correctly
+| | [Documentation]	| Verify that the Source Attributes listbox movement Icons are present and sorted correctly.
+| | [Tags]			| automated
+| | Verify that the following icons are present and sorted correctly	| 
+| | ... | ${AddAllSourceFieldsIcon}	| ${AddSourceFieldIcon}	| ${RemoveSourceFieldIcon}	| ${RemoveAllSourceFieldsIcon}
+
+
+| Workspace Fields Up and Down Icons are present and sorted correctly
+| | [Documentation]	| Verify that the Workspace Fields Up and Down movement icons are present and sorted correctly.
+| | [Tags]			| automated
+| | Verify that the following icons are present and sorted correctly	| ${MoveWorkspaceFieldUpIcon}	| ${MoveWorkspaceFieldDownIcon}
+
+
+| Source Attribute Up and Down Icons are present and sorted correctly
+| | [Documentation]	| Verify that the Source Attributes Up and Down movement icons are present and sorted correctly.
+| | [Tags]			| automated
+| | Verify that the following icons are present and sorted correctly	| ${MoveAttributeFieldUpIcon}	| ${MoveAttributeFieldDownIcon}
 
 
 *** Keywords *** 
 
+| Verify that the following Card has the following Title Text
+| | [Documentation]	| 
+| | [ARGUMENTS]		| ${CardID}	| ${ExpectedText}
+| | Element Text Should Be	| xpath=//*[@class='card' and @id='${CardID}']/child::*[@class='label title']	| ${ExpectedText}
+
 | Verify that the following icons are present and sorted correctly
 | | [Documentation]	| A keyword that verifies that a set of icons, on the same element, are present and in the specified order
-| | [ARGUMENTS]		| @{ExpectedFields}
-| | ${ExpectedXpath} | Set Variable  | xpath=//*[@id='${ExpectedFields[0]}']
+| | [ARGUMENTS]		| @{ExpectedIconIDs}
+| | ${ExpectedXpath}=	| Set Variable  | xpath=//*[@id='${ExpectedIconIDs[0]}']
 | | Page Should Contain Element | ${ExpectedXpath}  | Could not find the first icon.
-| | ${FieldCount} | Get Length  | ${ExpectedFields}
-| | :FOR  | ${i}  | IN RANGE  | 1 | ${FieldCount}
-| | | ${ExpectedXpath}= | Set Variable   | ${ExpectedXpath}/following-sibling::*[@id='${ExpectedFields[${i}]}']
+| | ${IconCount}=	| Get Length	| ${ExpectedIconIDs}
+| | :FOR  | ${i}  | IN RANGE  | 1 | ${IconCount}
+| | | ${ExpectedXpath}= | Set Variable   | ${ExpectedXpath}/following-sibling::*[@id='${ExpectedIconIDs[${i}]}']
 | | | Page should contain element	| ${ExpectedXpath} | The icons are not in the desired order.
 
 | Go to Step 3 of the Create Integration Point Process
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Testing | Append/Overlay | LDAP | Custodian | no
-| | Fill out the Following Fields of the Integration Point Step 2 form | ${ValidConnectionPath}
+| | Fill out the Following Fields of the Integration Point Step 1 form	| 
+| | ... | IntegrationName=Step 3 Testing	| Overwrite=Append/Overlay	| SourceProvider=LDAP	| DestinationRDO=Custodian | EnableScheduler=No
+| | Proceed to the Next Step of the Integration Point wizard
+| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ValidConnectionPath}	| Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| # ObjectFilterString=Dummy2	| Authentication=Secure	
+| | Proceed to the Next Step of the Integration Point wizard
 
 
 *** Settings ***

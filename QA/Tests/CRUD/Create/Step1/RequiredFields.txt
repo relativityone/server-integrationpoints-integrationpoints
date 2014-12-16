@@ -31,7 +31,7 @@
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| The Integration Name field display an error message when empty
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing
-| | Proceed to the Next Page
+| | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
 
@@ -48,7 +48,7 @@
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| The Destination RDO field displays an error message when empty
 | | Fill out the Following Fields of the Integration Point Step 1 form	| DestinationRDO=Agent Type
-| | Proceed to the Next Page
+| | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
 

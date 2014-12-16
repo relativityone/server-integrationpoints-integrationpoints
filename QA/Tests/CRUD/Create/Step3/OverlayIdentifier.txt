@@ -13,21 +13,18 @@
 
 | ${WorkspaceName}			| Relativity Legal Hold
 | ${ValidConnectionPath}	| 
-| ${Overlay Identifier Dropdown}	| overlay-identifier
+| ${Overlay Identifier Dropdown}	| s2id_overlay-identifier
 
 
 *** Test Cases ***
 
 | The Default Value of Overlay Identifier is correct for all Object Types
 | | [Template]	| Verify that the default Overlay Identifier populates correctly for the Object Type "${ObjectType}"
-#| | Analytics Categorization Result
 | | :FOR	| ${ObjectType}	| IN | @{ObjectTypes}
 | | | ${ObjectType}
 
 | The Options on the Overlay Identifier dropdown are correct for all Object Types
-| | [Tags]		| broken	| uah066
 | | [Template]	| Verify that the Overlay Identifier dropdown populates the correct fields for the Object Type "${ObjectType}"
-#| | Analytics Categorization Result
 | | :FOR	| ${ObjectType}	| IN | @{ObjectTypes}
 | | | ${ObjectType}
 
@@ -49,9 +46,9 @@
 | Verify that the default Overlay Identifier populates correctly for the Object Type "${ObjectType}"
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${ObjectType} Overlay Options Test	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${ObjectType}	| EnableScheduler=No
-| | Proceed to the Next Page
+| | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=Dummy1	| Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| # ObjectFilterString=Dummy2	| Authentication=Secure	
-| | Proceed to the Next Page
+| | Proceed to the Next Step of the Integration Point wizard
 | | ${UniqueField}=	| Determine the Unique Field on the following Object Type	| ${ObjectType}
 | | Verify that the following select2 Dropdown currently has the following value selected	| ${Overlay Identifier Dropdown}	| ${UniqueField}
 | | [Teardown]		| Run Keyword If Keyword Failed	| Capture Page Screenshot
@@ -59,9 +56,9 @@
 | Verify that the Overlay Identifier dropdown populates the correct fields for the Object Type "${ObjectType}"
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${ObjectType} Overlay Default Test	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${ObjectType}	| EnableScheduler=No
-| | Proceed to the Next Page
+| | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=Dummy1	| Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| # ObjectFilterString=Dummy2	| Authentication=Secure	
-| | Proceed to the Next Page
+| | Proceed to the Next Step of the Integration Point wizard
 | | @{ExpectedFields}=	| Get the Non-System Fields for the following Object Type	| ${ObjectType}
 | | Sort List	| ${ExpectedFields}
 | | Click	| ${Overlay Identifier Dropdown}
