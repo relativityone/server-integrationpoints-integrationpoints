@@ -34,16 +34,7 @@
 		var workspaceFieldPromise = root.data.ajax({ type: 'Get', url: root.utils.generateWebAPIURL('WorkspaceField/'), data: { 'json': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
 			var types = mapFields(result.data);
 			
-			self.workspaceFields(types); 
-		});
-
-		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/'), data: { 'json': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
-			var types = mapFields(result.data);
-			self.sourceField(types);
-		});
-
-		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/'), data: { 'json': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
-			var types = mapFields(result.data);
+			self.workspaceFields(types);
 			self.overlay(types);
 			var selected = result.selected.fieldIdentifier;
 			$.each(self.overlay(), function (index, entry) {
@@ -52,7 +43,13 @@
 				}
 			});
 		});
-	
+
+		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/'), data: { 'json': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
+			var types = mapFields(result.data);
+			self.sourceField(types);
+		});
+
+		
 		var mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap/' + artifactId) }).then(function (result) {
 			var source = $.map(result, function (entry) {
 				return {
