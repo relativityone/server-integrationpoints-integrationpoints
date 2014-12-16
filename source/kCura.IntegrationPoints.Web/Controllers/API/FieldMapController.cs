@@ -14,8 +14,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
     {
         //
         // GET: /FieldMap/
-		private readonly IntegrationPointReader _integrationPointReader;
-		public FieldMapController(IntegrationPointReader integrationPointReader)
+		private readonly IntegrationPointService _integrationPointReader;
+		public FieldMapController(IntegrationPointService integrationPointReader)
 		{
 			_integrationPointReader = integrationPointReader;
 		}

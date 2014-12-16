@@ -18,15 +18,19 @@ namespace kCura.IntegrationPoints.Core.Models
 		public Scheduler(IntegrationPoint ip)
 		{
 			this.EnableScheduler = ip.EnableScheduler.GetValueOrDefault(false);
+			this.EndDate = ip.EndDate;
+			this.StartDate = ip.StartDate;
+			this.SendOn = string.Empty;
 			//this.StartDate = ip.StartDate.
 		}
 
 		public bool EnableScheduler { get; set; }
 		public DateTime? EndDate { get; set; }
-		public DateTime StartDate { get; set; }
+		public DateTime? StartDate { get; set; }
 		public string SelectedFrequency { get; set; }
 		public int Reoccur { get; set; }
-		public TimeSpan ScheduleTime { get; set; }
+		public TimeSpan ScheduledTime { get; set; }
+		public string SendOn { get; set; }
 
 	}
 
@@ -39,9 +43,6 @@ namespace kCura.IntegrationPoints.Core.Models
 		public string Destination { get; set; }
 		public Scheduler Scheduler { get; set; }
 		public string SelectedFrequency { get; set; }
-		public string StartDate { get; set; }
-		public DateTime? EndDate { get; set; }
-		public string ScheduleTime { get; set; }
 		public DateTime? NextRun { get; set; }
 		public DateTime? LastRun { get; set; }
 		public string SourceConfiguration { get; set; }
@@ -68,14 +69,6 @@ namespace kCura.IntegrationPoints.Core.Models
 			{
 				SelectedFrequency = ip.Frequency.Name;
 			}
-			StartDate = string.Empty;
-			if (ip.StartDate.HasValue)
-			{
-				StartDate = ip.StartDate.Value.ToString("MM-dd-yyyy");
-			}
-
-			EndDate = ip.EndDate;
-			ScheduleTime = ip.ScheduledTime;
 			NextRun = ip.NextScheduledRuntime;
 			LastRun = ip.LastRuntime;
 			this.SourceConfiguration = ip.SourceConfiguration;

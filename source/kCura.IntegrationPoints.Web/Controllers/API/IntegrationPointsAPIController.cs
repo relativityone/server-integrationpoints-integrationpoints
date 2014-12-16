@@ -8,8 +8,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class IntegrationPointsAPIController : ApiController
 	{
-		private readonly IntegrationPointReader _reader;
-		public IntegrationPointsAPIController(IntegrationPointReader reader)
+		private readonly IntegrationPointService _reader;
+		public IntegrationPointsAPIController(IntegrationPointService reader)
 		{
 			_reader = reader;
 		}

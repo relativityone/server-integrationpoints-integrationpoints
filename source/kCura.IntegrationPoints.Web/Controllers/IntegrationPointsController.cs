@@ -17,8 +17,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
 {
 	public class IntegrationPointsController : BaseController
 	{
-		private readonly IntegrationPointReader _reader;
-		public IntegrationPointsController(IntegrationPointReader reader)
+		private readonly IntegrationPointService _reader;
+		public IntegrationPointsController(IntegrationPointService reader)
 		{
 			_reader = reader;
 		}

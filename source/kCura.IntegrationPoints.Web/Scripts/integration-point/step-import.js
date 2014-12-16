@@ -33,9 +33,11 @@
 		this.bus =IP.frameMessaging(); 
 		this.loadModel = function (model) {//loads a readonly version of the ipmodel
 			this.stepKey = model.source.selectedType;
+			this.model = model;
+			if(typeof(stepCache[model.source.selectedType]) === "undefined"){
+				stepCache[model.source.selectedType]	= self.model;
+			}
 			if (!this.hasBeenLoaded) {
-				this.model = model;
-				stepCache[model.source.selectedType] = self.model;
 				this.hasBeenLoaded = true;
 				this.source = $.grep(model.source.sourceTypes, function(item){
 					return item.value === model.source.selectedType;

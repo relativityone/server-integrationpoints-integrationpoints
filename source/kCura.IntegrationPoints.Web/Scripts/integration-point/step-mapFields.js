@@ -17,7 +17,7 @@
 
 	var viewModel = function (model) {
 		var self = this;
-		var artifactTypeId = model.destination.selectedRdo;
+		var artifactTypeId = model.destination.artifactTypeId;
 		var artifactId = model.artifactID || 0;
 		this.workspaceFields = ko.observableArray([]);
 		this.mappedWorkspace = ko.observableArray([]);
@@ -217,6 +217,7 @@
 
 		this.submit = function () {
 			var d = root.data.deferred().defer();
+			debugger;
 			this.returnModel.map = ko.toJS(this.model);
 			d.resolve(this.returnModel);
 			return d.promise;

@@ -10,7 +10,7 @@ using kCura.IntegrationPoints.Data.Extensions;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class IntegrationPointReader
+	public class IntegrationPointService
 	{
 		private readonly IServiceContext _context;
 		private Data.IntegrationPoint _rdo;
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			return _rdo;
 		}
 
-		public IntegrationPointReader(IServiceContext context, kCura.Apps.Common.Utils.Serializers.ISerializer serializer)
+		public IntegrationPointService(IServiceContext context, kCura.Apps.Common.Utils.Serializers.ISerializer serializer)
 		{
 			_context = context;
 			_serializer = serializer;
