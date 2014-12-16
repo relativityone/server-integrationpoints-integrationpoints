@@ -91,10 +91,18 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return base.JsonNetResult("error");
 		}
 
-	
-		public JsonResult getSourcefields()
+
+		public JsonNetResult GetSourceFields(string json)
 		{
-			return null;
+			var list = new List<FieldEntry>()
+			{
+				new FieldEntry() {DisplayName = "Age", FieldIdentifier = "2"},
+				new FieldEntry() {DisplayName = "Database Name", FieldIdentifier = "1"},
+				new FieldEntry() {DisplayName = "Date", FieldIdentifier = "4"},
+				new FieldEntry() {DisplayName = "Department", FieldIdentifier = "3"},
+				new FieldEntry() {DisplayName = "Field", FieldIdentifier = "5"},
+			};
+			return JsonNetResult(list);
 		}
 
 		public JsonNetResult GetData(int id, GridFilterModel filter)

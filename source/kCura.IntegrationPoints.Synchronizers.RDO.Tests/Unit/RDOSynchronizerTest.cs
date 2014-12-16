@@ -30,10 +30,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
 				 new Artifact {Name = "Name", ArtifactID = 1},
-				new Artifact {Name = "SystemCreatedOn", ArtifactID = 2},
-				new Artifact {Name = "DateModifiedOn", ArtifactID = 3},
+				new Artifact {Name = "System Created On", ArtifactID = 2},
+				new Artifact {Name = "Date Modified On", ArtifactID = 3},
 				new Artifact {Name = "User", ArtifactID = 4},
-				new Artifact {Name = "ArtifactID", ArtifactID = 5}
+				new Artifact {Name = "Artifact ID", ArtifactID = 5}
 			});
 
 			//ACT
@@ -56,15 +56,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
 				new Artifact {Name = "Name", ArtifactID = 1},
-				new Artifact {Name = "SystemCreatedOn", ArtifactID = 2},
-				new Artifact {Name = "DateModifiedOn", ArtifactID = 3},
+				new Artifact {Name = "System Created On", ArtifactID = 2},
+				new Artifact {Name = "Date Modified On", ArtifactID = 3},
 				new Artifact {Name = "User", ArtifactID = 4},
-				new Artifact {Name = "ArtifactID", ArtifactID = 5}
+				new Artifact {Name = "Artifact ID", ArtifactID = 5}
 			});
 			var expectedFieldEntry = new List<FieldEntry>
 			{
 				new FieldEntry {DisplayName = "Name", FieldIdentifier = "1"},
-				new FieldEntry {DisplayName = "DateModifiedOn", FieldIdentifier = "3"},
+				new FieldEntry {DisplayName = "Date Modified On", FieldIdentifier = "3"},
 				new FieldEntry {DisplayName = "User", FieldIdentifier = "4"},
 			};
 
@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			{
 				 new Artifact {Name = "Name", ArtifactID = 1},
 				new Artifact {Name = "Value", ArtifactID = 2},
-				new Artifact {Name = "DateModifiedOn", ArtifactID = 3},
+				new Artifact {Name = "Date Modified On", ArtifactID = 3},
 				new Artifact {Name = "User", ArtifactID = 4},
 				new Artifact {Name = "FirstName", ArtifactID = 5}
 			});
@@ -123,7 +123,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				new Artifact {Name = "Name", ArtifactID = 1},
 
 				new Artifact {Name = "Value", ArtifactID = 2},
-				new Artifact {Name = "DateModifiedOn", ArtifactID = 3},
+				new Artifact {Name = "Date Modified On", ArtifactID = 3},
 				new Artifact {Name = "User", ArtifactID = 4},
 				new Artifact {Name = "FirstName", ArtifactID = 5}
 			});
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			{
 				new FieldEntry {DisplayName = "Name", FieldIdentifier = "1"},
 				new FieldEntry {DisplayName = "Value", FieldIdentifier = "2"},
-				new FieldEntry {DisplayName = "DateModifiedOn", FieldIdentifier = "3"},
+				new FieldEntry {DisplayName = "Date Modified On", FieldIdentifier = "3"},
 				new FieldEntry {DisplayName = "User", FieldIdentifier = "4"},
 				new FieldEntry {DisplayName = "FirstName", FieldIdentifier = "5"}
 			};

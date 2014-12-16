@@ -38,6 +38,5 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			return result.QueryArtifacts;
 		}
-
 	}
 }
