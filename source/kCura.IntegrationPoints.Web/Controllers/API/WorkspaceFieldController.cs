@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
+using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -23,14 +24,15 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				
 			}
 			// GET api/<controller
-			[Route("{workspaceID}/api/WorkspaceField/")]
+		[Route("{workspaceID}/api/WorkspaceField/")]
 		public HttpResponseMessage Get(string json)
-			{
-				//int artifactid = 0;
-				//Int32.TryParse(artifactTypeId, out artifactid);
-
-				var fieldsForRdo = _rdosynchronizer.GetFields(json); 
-				return Request.CreateResponse(HttpStatusCode.OK, fieldsForRdo, Configuration.Formatters.JsonFormatter);
+		{
+			var fieldsForRdo = _rdosynchronizer.GetFields(json).OrderBy(x => x.DisplayName);
+			var select = _rdosynchronizer.GetIdentifier(json);
+			
+			var data = new { data = fieldsForRdo, selected = select};
+				
+				return Request.CreateResponse(HttpStatusCode.OK, data, Configuration.Formatters.JsonFormatter);
 			}
 
 

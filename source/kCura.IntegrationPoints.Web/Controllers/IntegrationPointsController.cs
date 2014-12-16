@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client;
+using Newtonsoft.Json;
 using Relativity.DragonGrid.Core.Grid;
 
 namespace kCura.IntegrationPoints.Web.Controllers
@@ -18,8 +23,10 @@ namespace kCura.IntegrationPoints.Web.Controllers
 	public class IntegrationPointsController : BaseController
 	{
 		private readonly IntegrationPointReader _reader;
-		public IntegrationPointsController(IntegrationPointReader reader)
+		private readonly RdoSynchronizer _rdosynchronizer;
+		public IntegrationPointsController(IntegrationPointReader reader, RdoSynchronizer rdosynchronizer)
 		{
+			_rdosynchronizer = rdosynchronizer; 
 			_reader = reader;
 		}
 
@@ -79,20 +86,12 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return JsonNetResult(grid);
 		}
 
-		public JsonNetResult IsIdentifier()
-		{
-			return JsonNetResult("hello ");
-		}
 		public ActionResult CheckLdap(object model)
 		{
 			return base.JsonNetResult("error");
 		}
 
-		public JsonResult GetWorkspaceFields()
-		{
-			return Json("[{'name':'jame','identifier':'1'},{'name':'jame','identifier':'1'},{'name':'jame','identifier':'1'}]");
-		}
-
+	
 		public JsonResult getSourcefields()
 		{
 			return null;
