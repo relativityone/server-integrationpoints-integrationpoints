@@ -52,7 +52,6 @@
 					<div id="add-source-field" class="legal-hold icon-paging-next" data-bind="click:addToSourceField"></div>
 					<div id="remove-source-field" class="legal-hold icon-paging-previous" data-bind="click: addToMappedSource"></div>
 					<div id="remove-all-source-fields" class="legal-hold icon-paging-first" data-bind="click: addSourceToMapped"></div>
-
 				</div>
 			</div>
 
@@ -71,14 +70,14 @@
 		<div class="field-row overlay-identifier" >
 			<div class="field-label required">Overlay Identifier</div>
 			<div class="field-value ">
-				<select id="overlay-identifier" data-bind="options: overlay, selectedOptions: selectedOverlay, optionsText: 'name'" >
+				<select id="overlay-identifier" data-bind="options: overlay, value: selectedOverlay, optionsText: 'name', select2: {}" >
 				</select>
 			</div>
 		</div>
 		<div class="field-row parent-identifier" data-bind="visible: hasParent">
 			<div class="field-label required">Parent Attribute</div>
 			<div class="field-value ">
-				<select id="parent-identifier" data-bind="options: overlay, selectedOptions: selectedOverlay, optionsText: 'name'" >
+				<select id="parent-identifier" data-bind="options: overlay,  value: selectedOverlay, optionsText: 'name', select2: {}" >
 				</select>
 			</div>
 		</div>

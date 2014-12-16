@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			Query q = new Query()
 			{
 				ArtifactTypeName = "Field",
-				Fields = new List<Field>() { new Field("Name"), new Field("Choices"), new Field("Object Type Artifact Type ID"), new Field("Field Type"), new Field("Field Type ID") },
+				Fields = new List<Field>() { new Field("Name"), new Field("Choices"), new Field("Object Type Artifact Type ID"), new Field("Field Type"), new Field("Field Type ID"), new Field("Field Category ID") },
 				Condition = new ObjectCondition { Field = "Object Type Artifact Type ID", Operator = ObjectConditionEnum.AnyOfThese, Value = new List<int> { rdoTypeID } },
 				Sorts = new List<Sort>() { new Sort() { Direction = SortEnum.Ascending, Field = "ArtifactID", Order = 1 } }
 			};
