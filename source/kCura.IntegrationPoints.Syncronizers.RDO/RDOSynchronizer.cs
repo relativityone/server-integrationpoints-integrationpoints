@@ -52,6 +52,23 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			return allFieldsForRdo;
 		}
+		public IEnumerable<FieldEntry> HasParent(string options)
+		{
+			var json = JsonConvert.DeserializeObject<Core.Models.SyncConfiguration.RelativityConfiguration>(options);
+			var fields = _fieldQuery.GetFieldsForRDO(json.ArtifactTypeID);
+
+			
+
+			var allFieldsForRdo = new List<FieldEntry>();
+			foreach (var result in fields)
+			{
+				if (!IgnoredList.Contains(result.Name))
+				{
+					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString() });
+				}
+			}
+			return allFieldsForRdo;
+		}
 
 
 		private IImportService _importService;
@@ -118,12 +135,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				string errorMessage = string.Empty;
 				foreach (var rowError in _rowErrors)
 				{
-					if (settings.OverwriteMode == OverwriteModeEnum.Overlay 
+					if (settings.OverwriteMode == OverwriteModeEnum.Overlay
 						&& rowError.Value.Contains("no document to overwrite"))
 					{
 						//skip
 					}
-					else if (settings.OverwriteMode == OverwriteModeEnum.Append 
+					else if (settings.OverwriteMode == OverwriteModeEnum.Append
 						&& rowError.Value.Contains("document with identifier")
 						&& rowError.Value.Contains("already exists in the workspace"))
 					{

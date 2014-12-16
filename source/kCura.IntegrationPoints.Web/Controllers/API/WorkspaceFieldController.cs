@@ -23,15 +23,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				
 			}
 			// GET api/<controller
-			[Route("{workspaceID}/api/WorkspaceField/{id}")]
-			public HttpResponseMessage Get(string id)
+			[Route("{workspaceID}/api/WorkspaceField/")]
+		public HttpResponseMessage Get(string json)
 			{
-				int artifactid = 0;
-				Int32.TryParse(id, out artifactid);
+				//int artifactid = 0;
+				//Int32.TryParse(artifactTypeId, out artifactid);
 
-				var fieldsForRdo = _rdosynchronizer.GetFields("{'ArtifactTypeID':'" +  artifactid + "'}"); 
+				var fieldsForRdo = _rdosynchronizer.GetFields(json); 
 				return Request.CreateResponse(HttpStatusCode.OK, fieldsForRdo, Configuration.Formatters.JsonFormatter);
 			}
+
+
+		
 
     }
 
