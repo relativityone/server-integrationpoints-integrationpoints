@@ -1,0 +1,60 @@
+
+*** Settings ***
+| Documentation 	| Verify that the Overlay Identifier dropdown has correct default field selected for each Object Type.
+| Metadata		    | Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| in-progress	| team.method
+| Suite Setup		| Run Keywords	| Open and Log in to Method	| Make the Object Type List a Suite Variable
+#| Test Setup		| Go to Step 3 of the Create Integration Point Process
+| Test Teardown 	| Capture screenshot if test fails
+| Suite Teardown	| Close All Browsers
+
+
+*** Variables ***
+
+| ${WorkspaceName}			| Relativity Legal Hold
+| ${ValidConnectionPath}	| 
+| ${Overlay Identifier Dropdown}	| s2id_overlay-identifier
+
+
+*** Test Cases ***
+
+| The Default Value of Overlay Identifier is correct for all Object Types
+| | [Template]	| Verify that the default Overlay Identifier populates correctly for the Object Type "${ObjectType}"
+| | :FOR	| ${ObjectType}	| IN | @{ObjectTypes}
+| | | ${ObjectType}
+
+
+*** Keywords *** 
+
+| Determine the Unique Field on the following Object Type
+| | [Documentation]	| Returns the Unique field for the given Object Type.
+| | [ARGUMENTS]		| ${ObjectType}
+| | ${2DGrid}=	| Query Workspace Database	|  
+| | ... | SELECT f.DisplayName
+| | ... | FROM [EDDSDBO].[Field] f
+| | ... | JOIN [ObjectType] ot on ot.DescriptorArtifactTypeID = f.FieldArtifactTypeID
+| | ... | WHERE ot.Name = '${ObjectType}'
+| | ... | AND f.FieldCategoryID = 2	| # Unique Value
+| | Should Not Be Empty	| ${2DGrid}	| No Unique fields were found for the Object Type "${ObjectType}".
+| | [Return]		| ${2DGrid[0][0]}
+
+| Verify that the default Overlay Identifier populates correctly for the Object Type "${ObjectType}"
+| | Open Create Integration Point
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${ObjectType} Overlay Options Test	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${ObjectType}	| EnableScheduler=No
+| | Proceed to the Next Step of the Integration Point wizard
+| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=Dummy1	| # Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| ObjectFilterString=Dummy2	| Authentication=Secure	
+| | Proceed to the Next Step of the Integration Point wizard
+| | ${UniqueField}=	| Determine the Unique Field on the following Object Type	| ${ObjectType}
+| | Verify that the following select2 Dropdown currently has the following value selected	| ${Overlay Identifier Dropdown}	| ${UniqueField}
+| | [Teardown]		| Run Keyword If Keyword Failed	| Capture Page Screenshot
+
+| Make the Object Type List a Suite Variable
+| | @{ObjectTypeList}=	| Get a List of All Non-System Object Types in the Workspace
+| | Set Suite Variable	| ${ObjectTypes}	| ${ObjectTypeList}
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource  | C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
