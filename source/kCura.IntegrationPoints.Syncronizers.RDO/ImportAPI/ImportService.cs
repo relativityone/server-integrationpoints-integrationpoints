@@ -22,12 +22,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public event RowError OnDocumentError;
 
 
-		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager)
+		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, IImportAPI importAPI = null)
 		{
 			this.Settings = settings;
 			this._batchManager = batchManager;
 			this._inputMappings = fieldMappings;
-			_batchManager.OnBatchCreate += ImportService_OnBatchCreate;
+			this._importAPI = importAPI;
+			if (_batchManager != null) _batchManager.OnBatchCreate += ImportService_OnBatchCreate;
 		}
 
 		public ImportSettings Settings { get; private set; }
@@ -47,6 +48,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			Dictionary<string, object> importFields = GenerateImportFields(sourceFields, FieldMappings);
 			_batchManager.Add(importFields);
+			PushBatchIfFull(false);
 		}
 
 		public bool PushBatchIfFull(bool forcePush)
@@ -107,7 +109,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.Settings.ParentObjectIdSourceFieldName = Settings.ParentObjectIdSourceFieldName;
 			importJob.Settings.SendEmailOnLoadCompletion = Settings.SendEmailOnLoadCompletion;
 			importJob.Settings.StartRecordNumber = Settings.StartRecordNumber;
-			importJob.Settings.SelectedIdentifierFieldName =_idToFieldDictionary[Settings.IdentityFieldId].Name;
+			importJob.Settings.SelectedIdentifierFieldName = _idToFieldDictionary[Settings.IdentityFieldId].Name;
 
 			importJob.OnComplete += new IImportNotifier.OnCompleteEventHandler(ImportJob_OnComplete);
 			ImportService_OnBatchSubmit(_batchManager.CurrentSize, _batchManager.MinimumBatchSize);
