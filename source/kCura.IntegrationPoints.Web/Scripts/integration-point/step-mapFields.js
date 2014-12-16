@@ -31,8 +31,9 @@
 		this.selectedOverlay = ko.observable();
 		this.hasParent = ko.observable(false);
 		this.parentIdentifier = ko.observable();
-		
+
 		var workspaceFieldPromise = root.data.ajax({ type: 'Get', url: root.utils.generateWebAPIURL('WorkspaceField/'), data: { 'json': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
+			
 			var types = mapFields(result.data);
 			self.workspaceFields(types);
 			self.overlay(types);
@@ -42,7 +43,8 @@
 					self.selectedOverlay(self.overlay()[index]);
 				}
 			});
-			if (result.hasParent == true) {
+			
+			if (result.hasParent) {
 				self.hasParent(true);
 			}
 

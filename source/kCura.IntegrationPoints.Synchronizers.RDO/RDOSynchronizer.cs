@@ -31,7 +31,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					"Is System Artifact",
 					"System Created By",
 					"System Created On",
-					"System Generated",
 					"System Last Modified By",
 					"System Last Modified On",
 					"Artifact ID"
@@ -77,19 +76,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public bool HasParent(string options)
 		{
-			var json = JsonConvert.DeserializeObject<Core.Models.SyncConfiguration.RelativityConfiguration>(options);
-			var fields = _fieldQuery.GetFieldsForRDO(json.ArtifactTypeID);
-
-			foreach (var result in fields)
-			{
-				foreach (var items in result.Fields)
-				{
-					if (items.FieldCategory == FieldCategory.ParentArtifact && !IgnoredList.Contains(result.Name))
-					{
-						return true;
-					}
-				}
-			}
+			int id = 0;
+			Int32.TryParse(options, out id);
 			return false;
 		}
 
