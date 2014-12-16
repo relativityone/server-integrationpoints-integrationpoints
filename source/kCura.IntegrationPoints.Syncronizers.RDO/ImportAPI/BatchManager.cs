@@ -57,11 +57,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		}
 
 		/// <summary>
-		/// Convert a list of strings to table columns
+		/// Convert a list of data rows to data table
 		/// </summary>
 		/// <param name="columnNames"></param>
 		/// <returns></returns>
-		internal static DataTable ConfigureTable(IEnumerable<string> columnNames, List<IDictionary<string, object>> dataSource)
+		public DataTable ConfigureTable(IEnumerable<string> columnNames, List<IDictionary<string, object>> dataSource)
 		{
 			var finalDt = new DataTable();
 			foreach (var column in columnNames)
