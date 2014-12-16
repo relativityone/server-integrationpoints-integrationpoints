@@ -33,18 +33,79 @@
 
 *** Test Cases ***
 
-| The Parent Attribute list is present only when the RDO is a Child
+| The Parent Attribute list is present when the RDO is a Child
+| | [Documentation] | Verify that RDO's that are have a parent show the Parent Attribute list on the Map Fields screen
+| | [Tags] | untested | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Parent Attribute list is present under the Overlay Identifier field
 
-| Parent Attribute is a drop list
-| | Verify that the following field ID has a droplist input | ${ParentAttributeID}
+| The Parent Attribute list is not present when the RDO is not a child
+| | [Documentation] | Verify that RDO's that are do not have parent, do not show the Parent Attribute list on the Map Fields screen
+| | [Tags] | untested | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 using the Destination RDO of Document
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Parent Attribute list is not present under the Overlay Identifier field
+
+| The Parent Attribute field is a drop list
+| | [Documentation] | Verify that the Parent Attribute list is a select2 drop list
+| | [Tags] | untested | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the following field ID has a droplist input | ${ParentAttributeID}
 
 | The Parent Attribute list is required
+| | [Documentation] | Verify that the Parent Attribute list is a required field
+| | [Tags] | untested | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the following field is required    | ${ParentAttributeID}
 
-| Parent Attribute's Default value is x
+| Parent Attribute's Default value is Select...
+| | [Documentation] | Verify that the Parent Attribute's Default value is "Select..."
+| | [Tags] | untested | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Parent Attribute's Default value is "Select..."
 
 | Parent Attribute list has the correct values
+| | [Documentation] | Verify that the Parent Attribute list values are correct
+| | [Tags] | untested | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian
+| | ... | 2. Click the Parent Attribute list
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the currently opened select2 Dropdown has the following choices in order | ${ParentAttributeID} | 
 
 | Can create when Parent Attribute is hidden
+| | [Documentation] | Verify that when the Parent Attribute list hidden, that the Create IP Process can be completed
+| | [Tags] | untested | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian
+| | ... | 2. Complete the required fields for this screen
+| | ... | 3. Click | Save
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the IP has been created.
+
 
 *** Keywords *** 
 
