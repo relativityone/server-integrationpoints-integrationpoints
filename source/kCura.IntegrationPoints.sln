@@ -54,9 +54,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueueAgent.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Config", "kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj", "{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Synchronizers.RDO", "kCura.IntegrationPoints.Syncronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj", "{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Synchronizers.RDO", "kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj", "{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Synchronizers.RDO.Tests", "kCura.IntegrationPoints.Syncronizers.RDO.Tests\kCura.IntegrationPoints.Synchronizers.RDO.Tests.csproj", "{3E549337-A9B9-4C77-8B12-4E31EFAA53F8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Synchronizers.RDO.Tests", "kCura.IntegrationPoints.Synchronizers.RDO.Tests\kCura.IntegrationPoints.Synchronizers.RDO.Tests.csproj", "{3E549337-A9B9-4C77-8B12-4E31EFAA53F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

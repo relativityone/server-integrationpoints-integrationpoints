@@ -86,7 +86,7 @@
       <Project>{A1AE667B-1B6E-4BB9-AF1D-912620292283}</Project>
       <Name>kCura.IntegrationPoints.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Syncronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
+    <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
     </ProjectReference>
