@@ -29,11 +29,11 @@
 		this.selectedMappedSource = ko.observableArray([]);
 		this.overlay = ko.observableArray([]);
 		this.selectedOverlay = ko.observable();
-		this.hasParent = ko.observable(true);
+		this.hasParent = ko.observable(false);
+		this.parentIdentifier = ko.observable();
 		
 		var workspaceFieldPromise = root.data.ajax({ type: 'Get', url: root.utils.generateWebAPIURL('WorkspaceField/'), data: { 'json': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
 			var types = mapFields(result.data);
-			
 			self.workspaceFields(types);
 			self.overlay(types);
 			var selected = result.selected.fieldIdentifier;
@@ -42,10 +42,14 @@
 					self.selectedOverlay(self.overlay()[index]);
 				}
 			});
+			if (result.hasParent == true) {
+				self.hasParent(true);
+			}
+
 		});
 
-		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('WorkspaceField/'), data: { 'json': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
-			var types = mapFields(result.data);
+		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebURL('IntegrationPoints/GetSourceFields/'), data: { 'json': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
+			var types = mapFields(result);
 			self.sourceField(types);
 		});
 
@@ -86,6 +90,11 @@
 				
 			});
 		
+
+		/********** Submit Validation**********/
+		this.submit = function () {
+
+		}
 		/********** WorkspaceFields control  **********/
 
 		this.addSelectFields = function () {

@@ -57,9 +57,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					}
 					}
 				}
-
 			return null;
-
 		}
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
@@ -75,19 +73,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			return allFieldsForRdo;
 		}
-		public IEnumerable<FieldEntry> HasParent(string options)
+
+
+		public bool HasParent(string options)
 		{
 			var json = JsonConvert.DeserializeObject<Core.Models.SyncConfiguration.RelativityConfiguration>(options);
 			var fields = _fieldQuery.GetFieldsForRDO(json.ArtifactTypeID);
-			var allFieldsForRdo = new List<FieldEntry>();
+
 			foreach (var result in fields)
 			{
-				if (!IgnoredList.Contains(result.Name))
+				foreach (var items in result.Fields)
 				{
-					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString()});
+					if (items.FieldCategory == FieldCategory.ParentArtifact && !IgnoredList.Contains(result.Name))
+					{
+						return true;
+					}
 				}
 			}
-			return allFieldsForRdo;
+			return false;
 		}
 
 

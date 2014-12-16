@@ -29,8 +29,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			var fieldsForRdo = _rdosynchronizer.GetFields(json).OrderBy(x => x.DisplayName);
 			var select = _rdosynchronizer.GetIdentifier(json);
-			
-			var data = new { data = fieldsForRdo, selected = select};
+			var parent= _rdosynchronizer.HasParent(json);
+			var data = new { data = fieldsForRdo, selected = select, hasParent = parent};
 				
 				return Request.CreateResponse(HttpStatusCode.OK, data, Configuration.Formatters.JsonFormatter);
 			}
