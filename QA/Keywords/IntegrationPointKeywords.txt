@@ -9,9 +9,17 @@
 
 *** Keywords ***
 
-| Proceed to the Next Page
+| Proceed to the Next Step of the Integration Point wizard
+| | [Documentation]	| This keyword proceeds to the Next Step of the Integration Point wizard.
 | | Click	| id=stepProgress	| # Click out of any given field
+| | ${PreviousStep}=	| Determine the current Step of the Create Integration Point Process
+| | ${NextStep}=	| Set Variable If	| 
+| | ... | "${PreviousStep}" == "Set Integration Details"	| Connect to Source	| 
+| | ... | "${PreviousStep}" == "Connect to Source"			| Map Fields		| 
+| | ... | "${PreviousStep}" == "Map Fields"					| User Error: Wrong keyword.	| 
+| | ... | Outdated Keyword. Please update step names.	| # Else
 | | Click	| id=next
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${NextStep}
 
 #------------------------------------------------------------------------------------------------------------------------
 # Step 1 Section 
@@ -173,6 +181,68 @@
 #------------------------------------------------------------------------------------------------------------------------
 # Generic Keywords
 
+| Get a List of All Non-System Object Types in the Workspace
+| | [Documentation]	| Gets a list of all of the Object types in the Workspace, removes the System Object types, and then return the remainder. 
+| | ${2DGrid}=	| Query Workspace Database	|  
+| | ... | SELECT Name
+| | ... | FROM [EDDSDBO].[ObjectType]
+| | ... | ORDER BY Name
+| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
+| | @{ObjectFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
+| | @{SystemFields}=	| Create List	| 
+| | ... | Agent Type			|
+| | ... | Batch					|
+| | ... | Batch Set				|
+| | ... | Code					|
+| | ... | Event Handler			|
+| | ... | Field					|
+| | ... | Folder				|
+| | ... | Group					|
+| | ... | History				|
+| | ... | Install Event Handler	|
+| | ... | Integration Point		| 
+| | ... | Layout				|
+| | ... | Markup Set			|
+| | ... | Mass Operation		|
+| | ... | Object Rule			|
+| | ... | Object Type			|
+| | ... | Production			|
+| | ... | Relativity Script		|
+| | ... | Report				|
+| | ... | Search				|
+| | ... | Search Container		|
+| | ... | Search Index			|
+| | ... | Source Provider		| 
+| | ... | Tab					|
+| | ... | View					|
+| | ... | Workspace
+| | Remove Values From List	| ${ObjectFields}	| @{SystemFields}
+| | [Return]		| @{ObjectFields}
+
+| Get the Non-System Fields for the following Object Type
+| | [Documentation]	| Gets a list of all of the fields on the given object, removes the five system fields, and then returns the remaining fields.
+| | [ARGUMENTS]		| ${ObjectType}
+| | ${2DGrid}=	| Query Workspace Database	|  
+| | ... | SELECT DisplayName
+| | ... | FROM [EDDSDBO].[Field] f
+| | ... | JOIN [ObjectType] ot on ot.DescriptorArtifactTypeID = f.FieldArtifactTypeID
+| | ... | WHERE ot.Name = '${ObjectType}'
+#| | ... | ORDER BY DisplayName
+| | Should Not Be Empty	| ${2DGrid}	| No fields were found for the Object Type "${ObjectType}".
+| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
+| | @{NonSystemFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
+| | @{SystemFields}=	| Create List	| System Created By	| System Created On	| System Last Modified By	| System Last Modified On	| Artifact ID
+| | Remove Values From List	| ${NonSystemFields}	| @{SystemFields}
+| | Should Not Be Empty	| ${NonSystemFields}	| No non-object and non-system fields were found for the Object Type "${ObjectType}".
+| | [Return]		| @{NonSystemFields}
+
+| Determine the current Step of the Create Integration Point Process
+| | [Documentation]	| This keyword determines and returns which Step you are in on the Create Integration Point Process.
+| | ...				| The returned value is in text form ("Set Integration Details", "Connect to Source", or "Map Fields"). 
+| | ${ActualStep}=	| Get Text	| xpath=//div[@id='stepProgress']/descendant::li[contains(@class, 'in-progress')]
+| | ${ActualStep}=	| Fetch From Left	| ${ActualStep}	| \n
+| | [Return]		| ${ActualStep}
+
 | Open Create Integration Point
 | | [Documentation]	| Opens the create Integration Point page. Must be called from the All Integration Points page.
 | | Go to the Tab	| Integration Points
@@ -229,11 +299,10 @@
 
 | Verify that you are on the following Step of the Create Integration Point Process
 | | [Documentation]	| Verifies that you are on the given step of the Create Integration Point process.
-| | ...				| Currently, the acceptable values are: Set Integration Details, Map Fields, Preview Import
+| | ...				| Currently, the acceptable values are: "Set Integration Details", "Connect to Source", and "Map Fields"
 | | [ARGUMENTS] 	| ${ExpectedStep}
 | | Verify that the Header has the Following Text	| Create Integration Point
-| | ${ActualStep}=	| Get Text	| xpath=//div[@id='stepProgress']/descendant::li[@class='in-progress']
-| | ${ActualStep}=	| Fetch From Left	| ${ActualStep}	| \n
+| | ${ActualStep}=	| Determine the current Step of the Create Integration Point Process
 | | Run Keyword Unless	| "${ExpectedStep}" == "${ActualStep}"	| Fail	| The current step was not "${ExpectedStep}", it was "${ActualStep}".
 
 | Verify the following Integration Point Field has the following Error

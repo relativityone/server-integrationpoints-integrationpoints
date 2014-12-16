@@ -38,7 +38,7 @@
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| Blank Required Fields show messages after clicking Next
 | | Fill out the Following Fields of the Integration Point Step 1 form	| Frequency=Daily	| StartDate=11/23/2012	| EndDate=04/15/2016	| ScheduledTime=23:00
-| | Proceed to the Next Page
+| | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
 
@@ -58,7 +58,7 @@
 | | [Tags]			| broken	| dam795
 | | [Setup]			| Require Test Case	| Date Validation message are shown after clicking Next
 | | Fill out the Following Fields of the Integration Point Step 1 form	| StartDate=11/23/2012	| EndDate=04/15/2026
-| | Proceed to the Next Page
+| | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
 
@@ -76,7 +76,7 @@
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| Start Date must be before the End Date Validation Message is displayed after clicking Next
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EndDate=04/15/2026
-| | Proceed to the Next Page
+| | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
 
@@ -94,7 +94,7 @@
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| Scheduled Time Validation message is shown after clicking Next
 | | Fill out the Following Fields of the Integration Point Step 1 form	| ScheduledTime=23:40
-| | Proceed to the Next Page
+| | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
 
@@ -130,7 +130,7 @@
 | | [Tags]			| broken	| dam853
 | | [Setup]			| Require Test Case	| Send On Weekly Validation message is shown after trying to Proceed with nothing selected
 | | Fill out the Following Fields of the Integration Point Step 1 form	| SendOn=Monday
-| | Proceed to the Next Page
+| | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
 
@@ -184,7 +184,7 @@
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| Reoccur Validation message is displayed for non-integers
 | | Fill out the Following Fields of the Integration Point Step 1 form	| Reoccur=2
-| | Proceed to the Next Page
+| | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
 
@@ -193,7 +193,7 @@
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Agent Type	| EnableScheduler=Yes	| 
 | | ... 																| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2006	| ScheduledTime=23:50
-| | Proceed to the Next Page
+| | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
 

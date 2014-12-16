@@ -1,6 +1,6 @@
 
 *** Settings ***
-| Documentation 	| Verify that the correct fields are shown in the Workspace Fields list for each Destination RDO.
+| Documentation 	| Verify that the Overlay Identifier dropdown has the correct field choices for each Object Type.
 | Metadata		    | Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.method
 | Suite Setup		| Run Keywords	| Open and Log in to Method	| Make the Object Type List a Suite Variable
@@ -13,31 +13,29 @@
 
 | ${WorkspaceName}			| Relativity Legal Hold
 | ${ValidConnectionPath}	| 
+| ${Overlay Identifier Dropdown}	| s2id_overlay-identifier
 
 
 *** Test Cases ***
 
-| The Workspace Fields for each Object Type populate correctly
-| | [Template]	| Verify that the fields for the Object Type "${ObjectType}" populate correctly on the Unassigned Workspace Fields List Box on Step 3 of the Create Integration Point Process
+| The Options on the Overlay Identifier dropdown are correct for all Object Types
+| | [Template]	| Verify that the Overlay Identifier dropdown populates the correct fields for the Object Type "${ObjectType}"
 | | :FOR	| ${ObjectType}	| IN | @{ObjectTypes}
 | | | ${ObjectType}
 
 
 *** Keywords *** 
 
-| Verify that the fields for the Object Type "${ObjectType}" populate correctly on the Unassigned Workspace Fields List Box on Step 3 of the Create Integration Point Process
+| Verify that the Overlay Identifier dropdown populates the correct fields for the Object Type "${ObjectType}"
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${ObjectType} Step 3 Test	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${ObjectType}	| EnableScheduler=No
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${ObjectType} Overlay Default Test	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${ObjectType}	| EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=Dummy1	| Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| # ObjectFilterString=Dummy2	| Authentication=Secure	
+| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=Dummy1	| # Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| ObjectFilterString=Dummy2	| Authentication=Secure	
 | | Proceed to the Next Step of the Integration Point wizard
-| | @{WorkspaceFields}=	| Get the Unassigned Workspace Fields
 | | @{ExpectedFields}=	| Get the Non-System Fields for the following Object Type	| ${ObjectType}
-| | Sort List	| ${WorkspaceFields}	| # Temporary. Just until UAH066
 | | Sort List	| ${ExpectedFields}
-| | Log	| Workspace Fields: ${WorkspaceFields}
-| | Log	| Expected Fields: ${ExpectedFields}
-| | Lists Should Be Equal	| ${WorkspaceFields}	| ${ExpectedFields}
+| | Click	| ${Overlay Identifier Dropdown}
+| | Verify that the currently opened select2 Dropdown has the following choices in order	| @{ExpectedFields}
 | | [Teardown]		| Run Keyword If Keyword Failed	| Capture Page Screenshot
 
 | Make the Object Type List a Suite Variable

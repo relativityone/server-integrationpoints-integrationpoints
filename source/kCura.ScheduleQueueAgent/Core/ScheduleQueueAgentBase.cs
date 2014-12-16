@@ -33,10 +33,10 @@ namespace kCura.ScheduleQueueAgent
 		private const int MAX_MESSAGE_LENGTH = 10000;
 		#endregion
 
-		public ScheduleQueueAgentBase(Guid agentGuid, 
-																	IDBContext dbContext = null, 
-																	IAgentService agentService = null, 
-																	IJobService jobService = null, 
+		public ScheduleQueueAgentBase(Guid agentGuid,
+																	IDBContext dbContext = null,
+																	IAgentService agentService = null,
+																	IJobService jobService = null,
 																	IScheduleRuleFactory scheduleRuleFactory = null)
 		{
 			this.agentGuid = agentGuid;
@@ -94,6 +94,8 @@ namespace kCura.ScheduleQueueAgent
 			}
 		}
 
+		protected virtual void ReleaseTask(ITask task) { }
+
 		private void CheckQueueTable()
 		{
 			AgentService.CreateQueueTable();
@@ -135,10 +137,11 @@ namespace kCura.ScheduleQueueAgent
 		private TaskResult ExecuteTask(Job job)
 		{
 			TaskResult result = new TaskResult() { Status = TaskStatusEnum.Success, Exceptions = null };
+			ITask task = null;
 			try
 			{
 				OnRaiseJobLogEntry(job, JobLogState.Started);
-				ITask task = GetTask(job);
+				task = GetTask(job);
 				if (task != null)
 				{
 					task.Execute(job);
@@ -158,6 +161,10 @@ namespace kCura.ScheduleQueueAgent
 				result.Exceptions = new List<Exception>() { ex };
 				OnRaiseException(job, ex);
 				OnRaiseJobLogEntry(job, JobLogState.Error, ex);
+			}
+			finally
+			{
+				if (task != null) ReleaseTask(task);
 			}
 			return result;
 		}
