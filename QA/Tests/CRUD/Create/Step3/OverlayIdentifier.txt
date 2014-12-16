@@ -66,61 +66,8 @@
 | | [Teardown]		| Run Keyword If Keyword Failed	| Capture Page Screenshot
 
 | Make the Object Type List a Suite Variable
-| | @{ObjectTypeList}=	| Get a List of All Object Types to Run Against
+| | @{ObjectTypeList}=	| Get a List of All Non-System Object Types in the Workspace
 | | Set Suite Variable	| ${ObjectTypes}	| ${ObjectTypeList}
-
-| Get a List of All Object Types to Run Against
-| | ${2DGrid}=	| Query Workspace Database	|  
-| | ... | SELECT Name
-| | ... | FROM [EDDSDBO].[ObjectType]
-| | ... | ORDER BY Name
-| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
-| | @{ObjectFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
-| | @{SystemFields}=	| Create List	| 
-| | ... | Agent Type			|
-| | ... | Batch					|
-| | ... | Batch Set				|
-| | ... | Code					|
-| | ... | Event Handler			|
-| | ... | Field					|
-| | ... | Folder				|
-| | ... | Group					|
-| | ... | History				|
-| | ... | Install Event Handler	|
-| | ... | Integration Point		| 
-| | ... | Layout				|
-| | ... | Markup Set			|
-| | ... | Mass Operation		|
-| | ... | Object Rule			|
-| | ... | Object Type			|
-| | ... | Production			|
-| | ... | Relativity Script		|
-| | ... | Report				|
-| | ... | Search				|
-| | ... | Search Container		|
-| | ... | Search Index			|
-| | ... | Source Provider		| 
-| | ... | Tab					|
-| | ... | View					|
-| | ... | Workspace
-| | Remove Values From List	| ${ObjectFields}	| @{SystemFields}
-| | [Return]		| @{ObjectFields}
-
-| Get the Non-System Fields for the following Object Type
-| | [Documentation]	| Gets a list of all of the fields on the given object, removes the five system fields, and then returns the remaining fields.
-| | [ARGUMENTS]		| ${ObjectType}
-| | ${2DGrid}=	| Query Workspace Database	|  
-| | ... | SELECT DisplayName
-| | ... | FROM [EDDSDBO].[Field] f
-| | ... | JOIN [ObjectType] ot on ot.DescriptorArtifactTypeID = f.FieldArtifactTypeID
-| | ... | WHERE ot.Name = '${ObjectType}'
-| | Should Not Be Empty	| ${2DGrid}	| No fields were found for the Object Type "${ObjectType}".
-| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
-| | @{NonSystemFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
-| | @{SystemFields}=	| Create List	| System Created By	| System Created On	| System Last Modified By	| System Last Modified On	| Artifact ID
-| | Remove Values From List	| ${NonSystemFields}	| @{SystemFields}
-| | Should Not Be Empty	| ${NonSystemFields}	| No non-object and non-system fields were found for the Object Type "${ObjectType}".
-| | [Return]		| @{NonSystemFields}
 
 
 *** Settings ***
