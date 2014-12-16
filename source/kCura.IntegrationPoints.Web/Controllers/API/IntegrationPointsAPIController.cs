@@ -29,6 +29,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpPost]
 		public HttpResponseMessage Update(IntegrationModel model)
 		{
+			_reader.SaveIntegration(model);
 			return Request.CreateResponse(HttpStatusCode.Accepted);
 		}
 

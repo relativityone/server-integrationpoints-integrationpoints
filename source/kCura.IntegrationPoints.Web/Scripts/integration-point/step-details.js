@@ -230,12 +230,15 @@ ko.validation.registerExtenders();
 
 		var self = this;
 
-		this.enableScheduler = ko.observable((options.enableScheduler == 'true').toString());
+		this.enableScheduler = ko.observable((options.enableScheduler == 'true' || options.enableScheduler == true).toString());
 		this.templateID = 'schedulingConfig';
 		var sendOn = {};
 		try{
 			sendOn = JSON.parse(options.sendOn);
 		} catch (e) {
+			sendOn = {};
+		}
+		if (typeof (sendOn) === "undefined" || sendOn === null) {
 			sendOn = {};
 		}
 		this.sendOn = ko.observable(sendOn);

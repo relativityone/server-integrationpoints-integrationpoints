@@ -58,8 +58,25 @@ namespace kCura.IntegrationPoints.Core.Services
 				mapping = _serializer.Deserialize<IEnumerable<FieldMap>>(fieldmap);
 			}
 			return mapping;
-
 		}
+
+		public void SaveIntegration(IntegrationModel model)
+		{
+			var ip = model.ToRdo();
+			if (ip.ArtifactId > 0)
+			{
+				_context.RsapiService.IntegrationPointLibrary.Update(ip);
+			}
+			else
+			{
+				_context.RsapiService.IntegrationPointLibrary.Create(ip);
+			}
+			//create job
+
+			//save RDO
+		}
+
+
 
 	}
 }

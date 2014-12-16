@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			this.EnableScheduler = ip.EnableScheduler.GetValueOrDefault(false);
 			this.EndDate = ip.EndDate;
 			this.StartDate = ip.StartDate;
-			this.SendOn = string.Empty;
+			this.SendOn = ip.SendOn;
 			//this.StartDate = ip.StartDate.
 		}
 
@@ -52,6 +52,27 @@ namespace kCura.IntegrationPoints.Core.Models
 			this.SourceConfiguration = string.Empty;
 		}
 
+		public IntegrationPoint ToRdo()
+		{
+			var point = new IntegrationPoint();
+			point.ArtifactId = this.ArtifactID;
+			point.Name = this.Name;
+			//point.OverwriteFields = new Choice(Guid.Parse(Data.OverwriteFieldsChoiceGuids.APPEND_AND_OVERLAY_GUID), Data.OverwriteFieldsChoices.IntegrationPointAppend.Name);
+			point.SourceConfiguration = this.SourceConfiguration;
+			point.SourceProvider = null;
+
+			point.DestinationConfiguration = this.Destination;
+
+			point.EnableScheduler = this.Scheduler.EnableScheduler;
+			point.StartDate = this.Scheduler.StartDate;
+			point.EndDate = this.Scheduler.EndDate;
+			point.Frequency = new Choice(Guid.Parse(Data.FrequencyChoiceGuids.Daily), Data.FrequencyChoices.IntegrationPointDaily.Name); //TODO // this.Scheduler.SelectedFrequency;
+			point.Reoccur = this.Scheduler.Reoccur;
+			//point.ScheduledTime = this.Scheduler.ScheduledTime;
+			point.SendOn = this.Scheduler.SendOn;
+			return point;
+		}
+
 		public IntegrationModel(IntegrationPoint ip)
 		{
 			this.ArtifactID = ip.ArtifactId;
@@ -64,7 +85,10 @@ namespace kCura.IntegrationPoints.Core.Models
 			SourceProvider = ip.SourceConfiguration;
 			Destination = ip.DestinationConfiguration;
 			Scheduler = new Scheduler(ip);
-			SelectedFrequency = string.Empty;
+			if (ip.Frequency != null)
+			{
+				SelectedFrequency = ip.Frequency.Name;
+			}
 			if (ip.Frequency != null)
 			{
 				SelectedFrequency = ip.Frequency.Name;
@@ -72,6 +96,9 @@ namespace kCura.IntegrationPoints.Core.Models
 			NextRun = ip.NextScheduledRuntime;
 			LastRun = ip.LastRuntime;
 			this.SourceConfiguration = ip.SourceConfiguration;
+
 		}
+
+
 	}
 }

@@ -71,7 +71,14 @@ namespace kCura.IntegrationPoints.Data
 			{
 				return this.Rdo.ArtifactID;
 			}
-			set {  }
+			set
+			{
+				//this is the shittiest hack ever
+				var newRdo = new RDO(value);
+				newRdo.ArtifactTypeGuids.AddRange(this.Rdo.ArtifactTypeGuids);
+				newRdo.Fields.AddRange(this.Rdo.Fields);
+				this.Rdo = newRdo;
+			}
 		}
 
 		public int? ParentArtifactId { get; set; }
