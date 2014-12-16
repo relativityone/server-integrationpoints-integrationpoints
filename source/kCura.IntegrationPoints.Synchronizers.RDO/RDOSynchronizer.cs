@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
+using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;
+using kCura.Utility.Extensions;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
@@ -38,6 +40,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
+		public FieldEntry GetIdentifier(string options)
+		{
+			var json = JsonConvert.DeserializeObject<Core.Models.SyncConfiguration.RelativityConfiguration>(options);
+			var fields = _fieldQuery.GetFieldsForRDO(json.ArtifactTypeID);
+			var identifierField = new FieldEntry();
+			foreach (var result in fields)
+			{
+				foreach (var items in result.Fields)
+				{
+					if (items.FieldCategory == FieldCategory.Identifier && !IgnoredList.Contains(result.Name))
+					{
+						identifierField.DisplayName = result.Name;
+						identifierField.FieldIdentifier = result.ArtifactID.ToString();
+						return identifierField;
+					}
+					}
+				}
+
+			return null;
+
+		}
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
 			var json = JsonConvert.DeserializeObject<Core.Models.SyncConfiguration.RelativityConfiguration>(options);
@@ -47,7 +70,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				if (!IgnoredList.Contains(result.Name))
 				{
-					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString() });
+					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString()});
 				}
 			}
 			return allFieldsForRdo;
@@ -56,15 +79,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			var json = JsonConvert.DeserializeObject<Core.Models.SyncConfiguration.RelativityConfiguration>(options);
 			var fields = _fieldQuery.GetFieldsForRDO(json.ArtifactTypeID);
-
-			
-
 			var allFieldsForRdo = new List<FieldEntry>();
 			foreach (var result in fields)
 			{
 				if (!IgnoredList.Contains(result.Name))
 				{
-					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString() });
+					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString()});
 				}
 			}
 			return allFieldsForRdo;
