@@ -9,6 +9,7 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public enum TaskType
 	{
+		None,
 		SyncManager,
 		SyncWorker
 	}
