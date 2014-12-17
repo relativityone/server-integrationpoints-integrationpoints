@@ -45,11 +45,22 @@
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=Dummy1	| # Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| ObjectFilterString=Dummy2	| Authentication=Secure	
 | | Proceed to the Next Step of the Integration Point wizard
 | | ${UniqueField}=	| Determine the Unique Field on the following Object Type	| ${ObjectType}
-| | Verify that the following select2 Dropdown currently has the following value selected	| ${Overlay Identifier Dropdown}	| ${UniqueField}
+| | Wait Until Page Contains Element	| ${Overlay Identifier Dropdown}
+| | Verify that the following select2 Dropdown currently has the following value selected	| ${Overlay Identifier Dropdown}	| ${UniqueField}	| 
+| | ... | The Default Overlay Identifier for the Object Type "${ObjectType}" was not "${UniqueField}".
 | | [Teardown]		| Run Keyword If Keyword Failed	| Capture Page Screenshot
 
 | Make the Object Type List a Suite Variable
-| | @{ObjectTypeList}=	| Get a List of All Non-System Object Types in the Workspace
+#| | @{ObjectTypeList}=	| Get a List of All Non-System Object Types in the Workspace
+| | @{ObjectTypeList}=	| Create List	| 
+| | ... | Custodian Role
+| | ... | Custodian Status
+| | ... | LDAP Field Mapping
+| | ... | Message
+| | ... | Native Type
+| | ... | Password Entry 
+| | ... | Questionnaire Question 
+| | ... | Questionnaire Response 
 | | Set Suite Variable	| ${ObjectTypes}	| ${ObjectTypeList}
 
 

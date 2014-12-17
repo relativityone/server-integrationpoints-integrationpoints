@@ -28,18 +28,26 @@
 
 | Verify that the Overlay Identifier dropdown populates the correct fields for the Object Type "${ObjectType}"
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${ObjectType} Overlay Default Test	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${ObjectType}	| EnableScheduler=No
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${ObjectType} Overlay Fields Test	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${ObjectType}	| EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=Dummy1	| # Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| ObjectFilterString=Dummy2	| Authentication=Secure	
 | | Proceed to the Next Step of the Integration Point wizard
 | | @{ExpectedFields}=	| Get the Non-System Fields for the following Object Type	| ${ObjectType}
-| | Sort List	| ${ExpectedFields}
 | | Click	| ${Overlay Identifier Dropdown}
 | | Verify that the currently opened select2 Dropdown has the following choices in order	| @{ExpectedFields}
 | | [Teardown]		| Run Keyword If Keyword Failed	| Capture Page Screenshot
 
 | Make the Object Type List a Suite Variable
-| | @{ObjectTypeList}=	| Get a List of All Non-System Object Types in the Workspace
+#| | @{ObjectTypeList}=	| Get a List of All Non-System Object Types in the Workspace
+| | @{ObjectTypeList}=	| Create List	| 
+| | ... | Analytics Categorization Set	| 
+| | ... | Analytics Category 
+| | ... | Analytics Example 
+| | ... | Analytics Profile 
+| | ... | Attachments
+| | ... | Document
+| | ... | MTD Configuration 
+| | ... | Relativity Application
 | | Set Suite Variable	| ${ObjectTypes}	| ${ObjectTypeList}
 
 
