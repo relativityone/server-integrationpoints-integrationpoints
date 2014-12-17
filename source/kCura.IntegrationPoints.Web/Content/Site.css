@@ -187,16 +187,16 @@ ul li .day-select {
 	padding-bottom: 10px;
 }
 .source-field {
-	float: right;
+	float: left;
 	padding-bottom: 10px; 
-	margin-right: 16%;
+	margin-left: 835px;
 }
 .list-title {
 	font-size: 13px;
 }
 
 #fieldMappings {
-	width: 1250px;
+	min-width: 1250px;
 }
 .selection {
 	vertical-align: middle;
