@@ -47,10 +47,9 @@
 | | ... | - General
 | | ... | - Integration
 | | ... | - Import Scheduling
-| | ... | - Source Connection
+#| | ... | - Source Connection
 | | ... | - Status
 #| | ... | - Mapped Fields
-#| | ... | - Import  | #right of screen
 
 
 | The General fields are in the correct order
@@ -136,33 +135,6 @@
 | | ... | - End Date
 | | ... | - Scheduled Time
 
-| The Source Connection fields are in the correct order
-| | [Documentation]	| Verify that the fields in the Source section are sorted correctly.
-| | [Tags]			| manual
-| | Run the following manual steps:
-| | ... | Steps: 
-| | ... | 1. View Integration Point | ${IP1}
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Source Fields are in the following Order:
-| | ... | - Connection Path
-| | ... | - Object Filter String
-| | ... | - Authenication
-| | ... | - Username
-| | ... | - Password 
-| | ... | - Import Nested Items
-
-
-| The Password field is displayed as a series of asterixes
-| | [Documentation]	| Verify that the Password field only displays a series of asterixes.
-| | [Tags]			| manual
-| | Run the following manual steps:
-| | ... | Steps: 
-| | ... | 1. View Integration Point | ${IP1}
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Password field has the following value	| ******	| # Guessing on the number
-
 | The Status fields are in the correct order
 | | [Documentation]	| Verify that the fields in the Status section are sorted correctly.
 | | [Tags]			| manual
@@ -196,17 +168,43 @@
 | | ... | Start Date        | Date
 | | ... | End Date          | Date
 | | ... | Scheduled Time    | Time in the form (HH:MM)
-| | ... | 4. Verify that the following Section has the following fields of the following Types	| Source Connection	| 
-| | ... | Communication Path | Text
-| | ... | Object Filter String | Text
-| | ... | Authenication      | Text
-| | ... | Username           | Text
-| | ... | Password           | Asterixes
-| | ... | Import Nested Item | Yes/No
+#| | ... | 4. Verify that the following Section has the following fields of the following Types	| Source Connection	| 
+#| | ... | Communication Path | Text
+#| | ... | Object Filter String | Text
+#| | ... | Authenication      | Text
+#| | ... | Username           | Text
+#| | ... | Password           | Asterixes
+#| | ... | Import Nested Item | Yes/No
 | | ... | 5. Verify that the following Section has the following fields of the following Types	| Status	| 
 | | ... | Next Scheduled Runtime | Date Time
 | | ... | Last Run Time      | Date Time
 
+
+#| The Source Connection fields are in the correct order
+#| | [Documentation]	| Verify that the fields in the Source section are sorted correctly.
+#| | [Tags]			| manual
+#| | Run the following manual steps:
+#| | ... | Steps: 
+#| | ... | 1. View Integration Point | ${IP1}
+#| | ... |
+#| | ... | Expected Results:
+#| | ... | Verify that the Source Fields are in the following Order:
+#| | ... | - Connection Path
+#| | ... | - Object Filter String
+#| | ... | - Authenication
+#| | ... | - Username
+#| | ... | - Password 
+#| | ... | - Import Nested Items
+
+#| The Password field is displayed as a series of asterixes
+#| | [Documentation]	| Verify that the Password field only displays a series of asterixes.
+#| | [Tags]			| manual
+#| | Run the following manual steps:
+#| | ... | Steps: 
+#| | ... | 1. View Integration Point | ${IP1}
+#| | ... |
+#| | ... | Expected Results:
+#| | ... | Verify that the Password field has the following value	| ******	| # Guessing on the number
 
 #| The Import Data Now button is present
 #| | [Documentation]	| Verify that the Import Data Now button is present in a column to the right
