@@ -170,7 +170,8 @@ ul li .day-select {
 	font-size: 13px;
 	text-decoration: none;
 	color: #000000;
-	min-width: 405px;
+	min-width: 250px;
+	width: 25%;
 	height: 400px;
 
 }	
@@ -188,10 +189,13 @@ ul li .day-select {
 .source-field {
 	float: right;
 	padding-bottom: 10px; 
-	margin-right: 330px;
+	margin-right: 14%;
+}
+.list-title {
+	font-size: 13px;
 }
 .selection {
 	vertical-align: middle;
-	padding-right: 25px;
+	padding-right: 17px;
 	
 }

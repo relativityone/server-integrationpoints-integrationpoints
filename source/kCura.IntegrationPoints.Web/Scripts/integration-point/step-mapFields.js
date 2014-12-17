@@ -75,7 +75,6 @@ ko.validation.insertValidationMessage = function (element) {
 		});
 		
 		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceFields/'), data: { 'options': JSON.stringify({ artifactTypeID: artifactTypeId }), 'type': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
-			debugger;
 			var types = mapFields(result);
 			self.sourceField(types);
 		});

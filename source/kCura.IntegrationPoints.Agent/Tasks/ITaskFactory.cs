@@ -10,8 +10,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	public interface ITaskFactory
 	{
 		ITask CreateTask(Job job);
-
 		void Release(ITask task);
-
 	}
 }

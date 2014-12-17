@@ -46,18 +46,6 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(IntegrationPointFieldGuids.FieldMappings), value);
 			}
 		}
-		[DynamicField(IntegrationPointFields.OverwriteFields, IntegrationPointFieldGuids.OverwriteFields, FieldTypes.SingleChoice)]
-		public Choice OverwriteFields
-		{
-			get
-			{
-				return GetField<Choice>(new System.Guid(IntegrationPointFieldGuids.OverwriteFields));
-			}
-			set
-			{
-				SetField<Choice>(new System.Guid(IntegrationPointFieldGuids.OverwriteFields), value);
-			}
-		}
 		[DynamicField(IntegrationPointFields.EnableScheduler, IntegrationPointFieldGuids.EnableScheduler, FieldTypes.YesNo)]
 		public bool? EnableScheduler
 		{
@@ -68,79 +56,6 @@ namespace kCura.IntegrationPoints.Data
 			set
 			{
 				SetField<bool?>(new System.Guid(IntegrationPointFieldGuids.EnableScheduler), value);
-			}
-		}
-		[DynamicField(IntegrationPointFields.Frequency, IntegrationPointFieldGuids.Frequency, FieldTypes.SingleChoice)]
-		public Choice Frequency
-		{
-			get
-			{
-				return GetField<Choice>(new System.Guid(IntegrationPointFieldGuids.Frequency));
-			}
-			set
-			{
-				SetField<Choice>(new System.Guid(IntegrationPointFieldGuids.Frequency), value);
-			}
-		}
-		[DynamicField(IntegrationPointFields.Reoccur, IntegrationPointFieldGuids.Reoccur, FieldTypes.WholeNumber)]
-		public int? Reoccur
-		{
-			get
-			{
-				return GetField<int?>(new System.Guid(IntegrationPointFieldGuids.Reoccur));
-			}
-			set
-			{
-				SetField<int?>(new System.Guid(IntegrationPointFieldGuids.Reoccur), value);
-			}
-		}
-		[DynamicField(IntegrationPointFields.SendOn, IntegrationPointFieldGuids.SendOn, FieldTypes.LongText)]
-		public string SendOn
-		{
-			get
-			{
-				return GetField<string>(new System.Guid(IntegrationPointFieldGuids.SendOn));
-			}
-			set
-			{
-				SetField<string>(new System.Guid(IntegrationPointFieldGuids.SendOn), value);
-			}
-		}
-		[DynamicField(IntegrationPointFields.StartDate, IntegrationPointFieldGuids.StartDate, FieldTypes.Date)]
-		public DateTime? StartDate
-		{
-			get
-			{
-				return GetField<DateTime?>(new System.Guid(IntegrationPointFieldGuids.StartDate));
-			}
-			set
-			{
-				SetField<DateTime?>(new System.Guid(IntegrationPointFieldGuids.StartDate), value);
-			}
-		}
-		[DynamicField(IntegrationPointFields.EndDate, IntegrationPointFieldGuids.EndDate, FieldTypes.Date)]
-		public DateTime? EndDate
-		{
-			get
-			{
-				return GetField<DateTime?>(new System.Guid(IntegrationPointFieldGuids.EndDate));
-			}
-			set
-			{
-				SetField<DateTime?>(new System.Guid(IntegrationPointFieldGuids.EndDate), value);
-			}
-		}
-		public const int ScheduledTimeFieldLength = 10;
-		[DynamicField(IntegrationPointFields.ScheduledTime, IntegrationPointFieldGuids.ScheduledTime, FieldTypes.FixedLengthText, 10)]
-		public string ScheduledTime
-		{
-			get
-			{
-				return GetField<string>(new System.Guid(IntegrationPointFieldGuids.ScheduledTime));
-			}
-			set
-			{
-				SetField<string>(new System.Guid(IntegrationPointFieldGuids.ScheduledTime), value);
 			}
 		}
 		[DynamicField(IntegrationPointFields.SourceConfiguration, IntegrationPointFieldGuids.SourceConfiguration, FieldTypes.LongText)]
@@ -177,6 +92,30 @@ namespace kCura.IntegrationPoints.Data
 			set
 			{
 				SetField<int?>(new System.Guid(IntegrationPointFieldGuids.SourceProvider), value);
+			}
+		}
+		[DynamicField(IntegrationPointFields.DestinationProvider, IntegrationPointFieldGuids.DestinationProvider, FieldTypes.SingleObject)]
+		public int? DestinationProvider
+		{
+			get
+			{
+				return GetField<int?>(new System.Guid(IntegrationPointFieldGuids.DestinationProvider));
+			}
+			set
+			{
+				SetField<int?>(new System.Guid(IntegrationPointFieldGuids.DestinationProvider), value);
+			}
+		}
+		[DynamicField(IntegrationPointFields.ScheduleRule, IntegrationPointFieldGuids.ScheduleRule, FieldTypes.LongText)]
+		public string ScheduleRule
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(IntegrationPointFieldGuids.ScheduleRule));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(IntegrationPointFieldGuids.ScheduleRule), value);
 			}
 		}
 		public const int NameFieldLength = 255;
@@ -242,18 +181,6 @@ namespace kCura.IntegrationPoints.Data
 			set
 			{
 				SetField<string>(new System.Guid(SourceProviderFieldGuids.SourceConfigurationUrl), value);
-			}
-		}
-		[DynamicField(SourceProviderFields.ConfigurationSource, SourceProviderFieldGuids.ConfigurationSource, FieldTypes.LongText)]
-		public string ConfigurationSource
-		{
-			get
-			{
-				return GetField<string>(new System.Guid(SourceProviderFieldGuids.ConfigurationSource));
-			}
-			set
-			{
-				SetField<string>(new System.Guid(SourceProviderFieldGuids.ConfigurationSource), value);
 			}
 		}
 		public const int NameFieldLength = 255;

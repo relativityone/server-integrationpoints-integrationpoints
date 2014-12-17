@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Core.Models;
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		private readonly RdoSynchronizer _rdosynchronizer;
 		public IntegrationPointsController(IntegrationPointReader reader, RdoSynchronizer rdosynchronizer)
 		{
-			_rdosynchronizer = rdosynchronizer; 
+			_rdosynchronizer = rdosynchronizer;
 			_reader = reader;
 		}
 

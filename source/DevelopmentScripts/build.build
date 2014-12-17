@@ -157,6 +157,7 @@
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
 			<arg line='/lib:"${source.reference.NewtonsoftJson.directory}"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Contracts.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Data.dll"' />
 			<arg line='"${source.reference.kCuraAppsCommonConfig.directory}\kCura.Apps.Common.Config.dll"' />
 			<arg line='"${source.reference.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />
