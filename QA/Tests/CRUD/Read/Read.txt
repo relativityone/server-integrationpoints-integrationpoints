@@ -61,8 +61,9 @@
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the General Fields are in the following Order:
-| | ... | - Integration Name
-| | ... | - Overwrite
+| | ... | - Integration Name:
+| | ... | - Overwrite:
+
 
 | The Integration fields are in the correct order
 | | [Documentation]	| Verify that the fields in the Integration section are sorted correctly.
@@ -73,8 +74,9 @@
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Integration Fields are in the following Order:
-| | ... | - Source Provider
-| | ... | - Destination RDO
+| | ... | - Source Provider:
+| | ... | - Destination RDO:
+
 
 | The Import Scheduling fields are in the correct order for a disabled Integration Point
 | | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the schedule is disabled.
@@ -85,7 +87,8 @@
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Import Scheduling Fields are in the following Order:
-| | ... | - Enable Scheduler 
+| | ... | - Enable Scheduler:
+
 
 | The Import Scheduling fields are in the correct order for a Daily Integration Point
 | | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the schedule is Daily.
@@ -96,11 +99,12 @@
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Import Scheduling Fields are in the following Order:
-| | ... | - Enable Scheduler 
-| | ... | - Frequency
-| | ... | - Start Date
-| | ... | - End Date
-| | ... | - Scheduled Time
+| | ... | - Enable Scheduler: 
+| | ... | - Frequency:
+| | ... | - Start Date:
+| | ... | - End Date:
+| | ... | - Scheduled Time:
+
 
 | The Import Scheduling fields are in the correct order for a Weekly Integration Point
 | | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the schedule is Weekly.
@@ -111,13 +115,14 @@
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Import Scheduling Fields are in the following Order:
-| | ... | - Enable Scheduler 
-| | ... | - Frequency
-| | ... | - Reoccur
-| | ... | - Send On
-| | ... | - Start Date
-| | ... | - End Date
-| | ... | - Scheduled Time
+| | ... | - Enable Scheduler:
+| | ... | - Frequency:
+| | ... | - Reoccur:
+| | ... | - Send On:
+| | ... | - Start Date:
+| | ... | - End Date:
+| | ... | - Scheduled Time:
+
 
 | The Import Scheduling fields are in the correct order for a Monthly Integration Point
 | | [Tags]			| manual
@@ -127,16 +132,29 @@
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Import Scheduling Fields are in the following Order:
-| | ... | - Enable Scheduler 
-| | ... | - Frequency
-| | ... | - Reoccur
-| | ... | - Send On
-| | ... | - Start Date
-| | ... | - End Date
-| | ... | - Scheduled Time
+| | ... | - Enable Scheduler:
+| | ... | - Frequency:
+| | ... | - Reoccur:
+| | ... | - Send On:
+| | ... | - Start Date:
+| | ... | - End Date:
+| | ... | - Scheduled Time:
 
-| The Status fields are in the correct order
-| | [Documentation]	| Verify that the fields in the Status section are sorted correctly.
+
+| The Status fields are in the correct order when Enable Scheduler is set to No
+| | [Documentation]	| Verify that the fields in the Status section are sorted correctly when Enable Scheduler is set to No.
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. View Integration Point | ${IP1}
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Status Fields are in the following Order:
+| | ... | - Last Runtime:
+
+
+| The Status fields are in the correct order when Enable Scheduler is set to Yes
+| | [Documentation]	| Verify that the fields in the Status section are sorted correctly when Enable Scheduler is set to Yes.
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps: 
@@ -144,40 +162,8 @@
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Status Fields are in the following Order:
-| | ... | - Next Scheduled Runtime
-| | ... | - Last Runtime
-
-| The Integration Point Fields show the correct type of data
-| | [Documentation]	| Verify that the Set Integration Details Fields are the correct type
-| | [Tags]			| manual	| # unnecessary?
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. View Integration Point | ${IP3}
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the following Section has the following fields of the following Types	| General	| 
-| | ... | Integration Name  | Text
-| | ... | Overwrite         | Text
-| | ... | 2. Verify that the following Section has the following fields of the following Types	| Integration	| 
-| | ... | Source Provider   | Text
-| | ... | Destination RDO   | Text
-| | ... | 3. Verify that the following Section has the following fields of the following Types	| Import Scheduling	| 
-| | ... | Enable Scheduler  | Yes/No
-| | ... | Frequency         | Text
-| | ... | Send On			| # Description needed
-| | ... | Start Date        | Date
-| | ... | End Date          | Date
-| | ... | Scheduled Time    | Time in the form (HH:MM)
-#| | ... | 4. Verify that the following Section has the following fields of the following Types	| Source Connection	| 
-#| | ... | Communication Path | Text
-#| | ... | Object Filter String | Text
-#| | ... | Authenication      | Text
-#| | ... | Username           | Text
-#| | ... | Password           | Asterixes
-#| | ... | Import Nested Item | Yes/No
-| | ... | 5. Verify that the following Section has the following fields of the following Types	| Status	| 
-| | ... | Next Scheduled Runtime | Date Time
-| | ... | Last Run Time      | Date Time
+| | ... | - Next Scheduled Runtime:
+| | ... | - Last Runtime:
 
 
 #| The Source Connection fields are in the correct order
@@ -206,15 +192,6 @@
 #| | ... | Expected Results:
 #| | ... | Verify that the Password field has the following value	| ******	| # Guessing on the number
 
-#| The Import Data Now button is present
-#| | [Documentation]	| Verify that the Import Data Now button is present in a column to the right
-#| | [Tags]		| manual
-#| | Run the following manual steps:
-#| | ... | 1. View Integration Point | ${IP1}
-#| | ... |
-#| | ... | Expected Result:
-#| | ... | 1. Verify that the Import Data Now button is present in the Import column on the right of the screen.
-
 #| The Mapped Fields table's has the correct columns
 #| | [Documentation]	| Verify that the Mapped Fields table's has the correct columns
 #| | [Tags] | manual
@@ -239,6 +216,15 @@
 #| | ... | Next Page icon
 #| | ... | Las Page 
 #| | ... | Records per page list
+
+#| The Import Data Now button is present
+#| | [Documentation]	| Verify that the Import Data Now button is present in a column to the right
+#| | [Tags]		| manual
+#| | Run the following manual steps:
+#| | ... | 1. View Integration Point | ${IP1}
+#| | ... |
+#| | ... | Expected Result:
+#| | ... | 1. Verify that the Import Data Now button is present in the Import column on the right of the screen.
 
 
 *** Settings ***
