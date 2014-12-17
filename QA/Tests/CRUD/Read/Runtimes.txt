@@ -1,0 +1,212 @@
+
+*** Settings ***
+| Documentation		| Testing the Runtime fields on the of the Status Card's of the Integration Point's View Mode.
+| Metadata	     	| Authors	| William Sehy
+| Force Tags		| manual	| in-progress	| team.method
+#| Suite Setup		| Log	| This is the suite setup keyword.
+#| Test Setup		| Open Browser	| ${ROOT}
+#| Test Teardown	| Close All Browsers
+#| Suite Teardown	| Log	| This is the suite teardown keyword.
+
+
+*** Variables ***
+
+| ${WorkspaceName}	| Relativity Legal Hold
+
+ 
+*** Test Cases ***
+
+| The Next Scheduled Runtime calculates correctly for Daily Jobs
+| | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is calculated correctly for Schedulers with a Frequency of Daily.
+| | [Tags]			| manual	| dates
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Import Scheduling settings are as follows:
+| | ... | - Enable Scheduler: Yes
+| | ... | - Frequency: Daily
+| | ... | - Start Date: <Today's Date>
+| | ... | - Scheduled Time: 22:11
+| | ... | 2. The rest of the Integration Points' data is valid
+| | ... | 
+| | ... | Steps:
+| | ... | 1. View the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Next Scheduled Runtime is set to "<Today's Date> 10:11 PM"
+
+
+| The Next Scheduled Runtime calculates correctly for Weekly Jobs
+| | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is calculated correctly for Schedulers with a Frequency of Weekly.
+| | [Tags]			| manual	| dates
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Import Scheduling settings are as follows:
+| | ... | - Enable Scheduler: Yes
+| | ... | - Frequency: Weekly
+| | ... | - Reoccur: 1
+| | ... | - Send On: Saturday
+| | ... | - Start Date: <Today's Date>
+| | ... | - Scheduled Time: 22:11
+| | ... | 2. The rest of the Integration Points' data is valid
+| | ... | 
+| | ... | Steps:
+| | ... | 1. View the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Next Scheduled Runtime is set to "<Next Saturday's Date> 10:11 PM"
+
+
+| The Next Scheduled Runtime calculates correctly for Monthly Jobs on X day
+| | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is calculated correctly for Schedulers with a Frequency of Monthly and a Send On value of a given day of the month.
+| | [Tags]			| manual	| dates
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Import Scheduling settings are as follows:
+| | ... | - Enable Scheduler: Yes
+| | ... | - Frequency: Monthly
+| | ... | - Reoccur: 1
+| | ... | - Send On: Day 28 of the month
+| | ... | - Start Date: <Today's Date>
+| | ... | - Scheduled Time: 22:11
+| | ... | 2. The rest of the Integration Points' data is valid
+| | ... | 
+| | ... | Steps:
+| | ... | 1. View the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Next Scheduled Runtime is set to "<The date of the next day 28 of the month> 10:11 PM"
+
+
+| The Next Scheduled Runtime calculates correctly for Monthly Jobs on the X Y of the Month
+| | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is calculated correctly for Schedulers with a Frequency of Monthly and a Send On value of a given occurance of a given day of the week.
+| | [Tags]			| manual	| dates
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Import Scheduling settings are as follows:
+| | ... | - Enable Scheduler: Yes
+| | ... | - Frequency: Monthly
+| | ... | - Reoccur: 1
+| | ... | - Send On: The second Tuesday of the month
+| | ... | - Start Date: <Today's Date>
+| | ... | - Scheduled Time: 22:11
+| | ... | 2. The rest of the Integration Points' data is valid
+| | ... | 
+| | ... | Steps:
+| | ... | 1. View the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Next Scheduled Runtime is set to "<The date of the next second Tuesday the month> 10:11 PM"
+
+
+| The Next Scheduled Runtime calculates correctly when the scheduled time uses single digit values
+| | [Documentation]	| Verify that 
+| | [Tags]			| manual	| dates
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Import Scheduling settings are as follows:
+| | ... | - Enable Scheduler: Yes
+| | ... | - Frequency: Daily
+| | ... | - Start Date: <Today's Date>
+| | ... | - Scheduled Time: 1:02
+| | ... | 2. The rest of the Integration Points' data is valid
+| | ... | 
+| | ... | Steps:
+| | ... | 1. View the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Next Scheduled Runtime is set to "<Today's Date> 1:02 AM"
+
+
+| The Next Scheduled Runtime updates correctly when the scheduled job runs
+| | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is updated correctly when its Scheduled Job runs.
+| | [Tags]			| manual	| dates	| timing
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Import Scheduling settings are as follows:
+| | ... | - Enable Scheduler: Yes
+| | ... | - Frequency: Daily
+| | ... | - Start Date: <Today's Date>
+| | ... | - Scheduled Time: <2 minutes from now>
+| | ... | 2. The rest of the Integration Points' data is valid
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Wait 3 minutes
+| | ... | 2. View the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Next Scheduled Runtime is set to "<Tomorrow's Date> <The Scheduled Time>"
+
+
+| The Next Scheduled Runtime displays the correct message when the End Date has passed
+| | [Documentation]	| Verify that 
+| | [Tags]			| manual	| dates
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Import Scheduling settings are as follows:
+| | ... | - Enable Scheduler: Yes
+| | ... | - Frequency: Daily
+| | ... | - Start Date: <Two days ago's Date>
+| | ... | - End Date: <Yesterday's Date>
+| | ... | - Scheduled Time: 22:11
+| | ... | 2. The rest of the Integration Points' data is valid
+| | ... | 
+| | ... | Steps:
+| | ... | 1. View the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Next Scheduled Runtime is set to "There are no upcoming runs scheduled."
+
+
+| The Last Runtime field is empty when the Integration Point has never been Imported
+| | [Documentation]	| Verify that when an Integration Point has never been Imported it has a blank Last Runtime field. 
+| | [Tags]			| manual	| dates	| workspace_state
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Create a New Integration Point and DO NOT Import it
+| | ... | 2. View that Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Last Runtime is set to "${EMPTY}"
+
+
+| The Last Runtime is updated when a scheduled job runs
+| | [Documentation]	| Verify that 
+| | [Tags]			| manual	| dates	| timing
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Import Scheduling settings are as follows:
+| | ... | - Enable Scheduler: Yes
+| | ... | - Frequency: Daily
+| | ... | - Start Date: <Today's Date>
+| | ... | - Scheduled Time: <2 minutes from now>
+| | ... | 2. The rest of the Integration Points' data is valid
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Wait three minutes
+| | ... | 2. View the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Last Runtime is set to "<Today's Date> <Roughly the Scheduled Time>"
+ 
+
+#| The Last Runtime is updated when Import Data Now is used 
+#| | [Documentation]	| Verify that 
+#| | [Tags]			| manual	| automateable
+#| | Run the following manual steps:
+#| | ... | Preconditions:
+#| | ... | 1. The Integration Points' data is valid
+#| | ... | 
+#| | ... | Steps:
+#| | ... | 1. View the Integration Point
+#| | ... | 2. Click	| Import Data Now
+#| | ... | 3. If needed, confirm the action
+#| | ... | 4. Refresh the page
+#| | ... | 
+#| | ... | Expected Results:
+#| | ... | Verify that the Last Runtime is set to "<Today's Date> <Roughly Now>"
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
