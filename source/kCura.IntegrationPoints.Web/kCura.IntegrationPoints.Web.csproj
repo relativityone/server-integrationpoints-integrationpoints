@@ -172,6 +172,7 @@
     <Compile Include="Attributes\WebAPIFilterException.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ControllerCustomPageService.cs" />
+    <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\FieldMapController.cs" />
     <Compile Include="Controllers\API\SourceTypeController.cs" />
     <Compile Include="Controllers\API\RdoFilterController.cs" />

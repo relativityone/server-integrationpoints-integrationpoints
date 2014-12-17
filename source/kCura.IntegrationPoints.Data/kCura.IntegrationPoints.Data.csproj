@@ -77,6 +77,7 @@
     <Compile Include="BaseRDO.cs" />
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
+    <Compile Include="ChoiceQuery.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="Extensions\GenericLibraryExtensions.cs" />

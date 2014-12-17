@@ -92,6 +92,7 @@
     <Compile Include="RsapiClientFactory.cs" />
     <Compile Include="ServiceContext.cs" />
     <Compile Include="Services\AgentJobManager.cs" />
+    <Compile Include="Services\ChoiceService.cs" />
     <Compile Include="Services\ErrorService.cs" />
     <Compile Include="Services\IJobManager.cs" />
     <Compile Include="Services\IntegrationPointService.cs" />
@@ -116,6 +117,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.ScheduleQueueAgent\kCura.ScheduleQueueAgent.csproj">
+      <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
+      <Name>kCura.ScheduleQueueAgent</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

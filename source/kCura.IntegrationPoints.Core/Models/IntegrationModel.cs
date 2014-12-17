@@ -18,21 +18,34 @@ namespace kCura.IntegrationPoints.Core.Models
 		public Scheduler(IntegrationPoint ip)
 		{
 			this.EnableScheduler = ip.EnableScheduler.GetValueOrDefault(false);
-			this.EndDate = ip.EndDate;
-			this.StartDate = ip.StartDate;
+			if(ip.EndDate.HasValue){
+				this.EndDate = ip.EndDate.Value.ToString("MM/dd/yyyy");
+			}
+			if (ip.StartDate.HasValue)
+			{
+				this.StartDate = ip.StartDate.Value.ToString("MM/dd/yyyy");
+			}
 			this.SendOn = ip.SendOn;
 			//this.StartDate = ip.StartDate.
+			this.Reoccur = ip.Reoccur.GetValueOrDefault(0);
+			if (ip.Frequency != null)
+			{
+				SelectedFrequency = ip.Frequency.Name;
+			}
+			this.ScheduledTime = ip.ScheduledTime ?? string.Empty;
 		}
 
 		public bool EnableScheduler { get; set; }
-		public DateTime? EndDate { get; set; }
-		public DateTime? StartDate { get; set; }
+		public string EndDate { get; set; }
+		public string StartDate { get; set; }
 		public string SelectedFrequency { get; set; }
 		public int Reoccur { get; set; }
-		public TimeSpan ScheduledTime { get; set; }
+		public string ScheduledTime { get; set; }
 		public string SendOn { get; set; }
 
 	}
+
+
 
 	public class IntegrationModel
 	{
@@ -42,7 +55,6 @@ namespace kCura.IntegrationPoints.Core.Models
 		public string SourceProvider { get; set; }
 		public string Destination { get; set; }
 		public Scheduler Scheduler { get; set; }
-		public string SelectedFrequency { get; set; }
 		public DateTime? NextRun { get; set; }
 		public DateTime? LastRun { get; set; }
 		public string SourceConfiguration { get; set; }
@@ -64,11 +76,26 @@ namespace kCura.IntegrationPoints.Core.Models
 			point.DestinationConfiguration = this.Destination;
 
 			point.EnableScheduler = this.Scheduler.EnableScheduler;
-			point.StartDate = this.Scheduler.StartDate;
-			point.EndDate = this.Scheduler.EndDate;
-			point.Frequency = new Choice(Guid.Parse(Data.FrequencyChoiceGuids.Daily), Data.FrequencyChoices.IntegrationPointDaily.Name); //TODO // this.Scheduler.SelectedFrequency;
+			DateTime startDate;
+			if (DateTime.TryParse(this.Scheduler.StartDate, out startDate))
+			{
+				point.StartDate = startDate;		
+			}
+
+			DateTime endDate;
+			if (DateTime.TryParse(this.Scheduler.EndDate, out endDate))
+			{
+				point.EndDate = endDate;
+			}
+			//point.Frequency = new Choice(Guid.Parse(Data.FrequencyChoiceGuids.Daily), Data.FrequencyChoices.IntegrationPointDaily.Name); //TODO // this.Scheduler.SelectedFrequency;
 			point.Reoccur = this.Scheduler.Reoccur;
-			//point.ScheduledTime = this.Scheduler.ScheduledTime;
+			TimeSpan time;
+			if (TimeSpan.TryParse(this.Scheduler.ScheduledTime, out time))
+			{
+				var localTime = DateTime.UtcNow.Date.Add(new DateTime(time.Ticks, DateTimeKind.Utc).TimeOfDay).ToLocalTime().TimeOfDay;
+				point.ScheduledTime = localTime.Hours.ToString() + ":" + localTime.Minutes.ToString();
+			}
+
 			point.SendOn = this.Scheduler.SendOn;
 			return point;
 		}
@@ -85,14 +112,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			SourceProvider = ip.SourceConfiguration;
 			Destination = ip.DestinationConfiguration;
 			Scheduler = new Scheduler(ip);
-			if (ip.Frequency != null)
-			{
-				SelectedFrequency = ip.Frequency.Name;
-			}
-			if (ip.Frequency != null)
-			{
-				SelectedFrequency = ip.Frequency.Name;
-			}
+
 			NextRun = ip.NextScheduledRuntime;
 			LastRun = ip.LastRuntime;
 			this.SourceConfiguration = ip.SourceConfiguration;

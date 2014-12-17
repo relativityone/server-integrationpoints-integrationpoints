@@ -42,6 +42,15 @@ ko.validation.rules['arrayRange'] = {
 }
 
 ko.validation.registerExtenders();
+var IP = IP || {};
+(function (root) {
+	root.services = root.services || {};
+
+	root.services.getChoice = function (fieldGuid) {
+		return root.data.ajax({type: 'Get', url: root.utils.generateWebAPIURL('Choice', fieldGuid)});
+	};
+
+})(IP);
 
 (function (root, ko) {
 	var initDatePicker = function ($els) {
@@ -63,7 +72,6 @@ ko.validation.registerExtenders();
 	root.messaging.subscribe('details-loaded', function () {
 		initDatePicker($('#scheduleRulesStartDate, #scheduleRulesEndDate'))
 	});
-
 
 	var Choice = function (name, value) {
 		this.displayName = name;
@@ -200,15 +208,14 @@ ko.validation.registerExtenders();
 			});
 
 			this.daysOfMonth = ko.observableArray([
-				new Choice("day", 1),
-				new Choice("Monday", 2),
-				new Choice("Tuesday", 3),
+				new Choice("day", 128),
+				new Choice("Monday", 1),
+				new Choice("Tuesday", 2),
 				new Choice("Wednesday", 4),
-				new Choice("Thursday", 5),
-				new Choice("Friday", 6),
-				new Choice("Saturday", 7),
-				new Choice("Sunday", 8),
-				new Choice("last", 9),
+				new Choice("Thursday", 8),
+				new Choice("Friday", 16),
+				new Choice("Saturday", 32),
+				new Choice("Sunday", 64)
 			]);
 
 			this.daysOfMonthComputed = ko.computed(function () {
@@ -216,7 +223,7 @@ ko.validation.registerExtenders();
 				var hideSpecial = type !== 1 && type !== 5;
 				return ko.utils.arrayFilter(self.daysOfMonth(), function (entry) {
 					if (hideSpecial) {
-						return entry.value > 1 && entry.value < 9;
+						return entry.value >= 1 && entry.value <= 64;
 					}
 					return true;
 				});
@@ -254,8 +261,15 @@ ko.validation.registerExtenders();
 				this.sendOn().submit();
 			}
 		};
-
+				
 		this.frequency = ko.observableArray(["Daily", "Weekly", "Monthly"]);
+		//root.services.getChoice("a2c2c3c5-a350-4617-a3e9-ddd284bed868").then(function () {
+		//	self.frequency()
+		//});
+
+		
+
+
 
 		this.isEnabled = ko.computed(function () {
 			return self.enableScheduler() === "true";
