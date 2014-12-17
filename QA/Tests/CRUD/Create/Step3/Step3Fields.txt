@@ -112,7 +112,7 @@
 | | Fill out the Following Fields of the Integration Point Step 1 form	| 
 | | ... | IntegrationName=Step 3 Testing	| Overwrite=Append/Overlay	| SourceProvider=LDAP	| DestinationRDO=Questionnaire Question | EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ValidConnectionPath}	| Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| # ObjectFilterString=Dummy2	| Authentication=Secure	
+| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ValidConnectionPath}	| # Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| ObjectFilterString=Dummy2	| Authentication=Secure	
 | | Proceed to the Next Step of the Integration Point wizard
 
 

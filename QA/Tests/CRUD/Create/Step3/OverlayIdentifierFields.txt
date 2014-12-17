@@ -1,7 +1,7 @@
 
 *** Settings ***
 | Documentation 	| Verify that the Overlay Identifier dropdown has the correct field choices for each Object Type.
-| Metadata		    | Authors	| Daniel Oliver	| William Sehy
+| Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.method
 | Suite Setup		| Run Keywords	| Open and Log in to Method	| Make the Object Type List a Suite Variable
 #| Test Setup		| Go to Step 3 of the Create Integration Point Process
@@ -19,8 +19,9 @@
 *** Test Cases ***
 
 | The Options on the Overlay Identifier dropdown are correct for all Object Types
+| | [Tags]		| automated
 | | [Template]	| Verify that the Overlay Identifier dropdown populates the correct fields for the Object Type "${ObjectType}"
-| | :FOR	| ${ObjectType}	| IN | @{ObjectTypes}
+| | :FOR	| ${ObjectType}	| IN	| @{ObjectTypes}
 | | | ${ObjectType}
 
 
@@ -38,22 +39,12 @@
 | | [Teardown]		| Run Keyword If Keyword Failed	| Capture Page Screenshot
 
 | Make the Object Type List a Suite Variable
-#| | @{ObjectTypeList}=	| Get a List of All Non-System Object Types in the Workspace
-| | @{ObjectTypeList}=	| Create List	| 
-| | ... | Analytics Categorization Set	| 
-| | ... | Analytics Category 
-| | ... | Analytics Example 
-| | ... | Analytics Profile 
-| | ... | Attachments
-| | ... | Document
-| | ... | MTD Configuration 
-| | ... | Relativity Application
+| | @{ObjectTypeList}=	| Get a List of All Non-System Object Types in the Workspace
 | | Set Suite Variable	| ${ObjectTypes}	| ${ObjectTypeList}
 
 
 *** Settings ***
-| Library   | Collections
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource  | C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
