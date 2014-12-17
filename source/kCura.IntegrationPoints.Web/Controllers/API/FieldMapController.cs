@@ -11,9 +11,9 @@ using kCura.IntegrationPoints.Core.Services;
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class FieldMapController : ApiController
-    {
-        //
-        // GET: /FieldMap/
+	{
+		//
+		// GET: /FieldMap/
 		private readonly IntegrationPointService _integrationPointReader;
 		public FieldMapController(IntegrationPointService integrationPointReader)
 		{
@@ -21,21 +21,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 
-		[Route("{workspaceID}/api/FieldMap/{string}")]
-
-		public HttpResponseMessage Get(string artifactTypeId)
+		[Route("{workspaceID}/api/FieldMap/{id}")]
+		public HttpResponseMessage Get(string id)
 		{
-			
 			int _id = 0;
-			Int32.TryParse(artifactTypeId, out _id);
+			Int32.TryParse(id, out _id);
 			if (_id != 0)
 			{
 				var fieldsmap = _integrationPointReader.GetFieldMap(_id);
 				return Request.CreateResponse(HttpStatusCode.OK, fieldsmap, Configuration.Formatters.JsonFormatter);
 			}
 
-			return Request.CreateResponse(HttpStatusCode.OK, string.Empty, Configuration.Formatters.JsonFormatter); 
+			return Request.CreateResponse(HttpStatusCode.OK, string.Empty, Configuration.Formatters.JsonFormatter);
 		}
 
-    }
+	}
 }

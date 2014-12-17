@@ -193,6 +193,7 @@
     <Compile Include="Models\IpDetailModel.cs" />
     <Compile Include="ISessionService.cs" />
     <Compile Include="Models\ScheduleModel.cs" />
+    <Compile Include="Models\SyncronizerSettings.cs" />
     <Compile Include="SessionService.cs" />
     <Compile Include="WebAPICustomPageService.cs" />
     <Compile Include="WebClientFactory.cs" />

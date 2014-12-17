@@ -2,9 +2,10 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using System.Web.Mvc;
+using kCura.IntegrationPoints.Core.Services.Syncronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.IntegrationPoints.Web.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -12,28 +13,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class WorkspaceFieldController : ApiController
 	{
-		private readonly RdoSynchronizer _rdosynchronizer;
-		private readonly RelativityRdoQuery _rdoQuery;
-		
-		public WorkspaceFieldController(RdoSynchronizer rdosynchronizer, RelativityRdoQuery rdoQuery)
+		private readonly IDataSyncronizerFactory _factory;
+		public WorkspaceFieldController(IDataSyncronizerFactory factory)
 		{
-			_rdosynchronizer = rdosynchronizer;
-
-			_rdoQuery = rdoQuery;
+			_factory = factory;
 		}
-		// GET api/<controller
+		
+		[HttpPost]
 		[Route("{workspaceID}/api/WorkspaceField/")]
-		public HttpResponseMessage Get(string json)
+		public HttpResponseMessage Post([FromBody] SyncronizerSettings settings)
 		{
-			//int artifactid = 0;
-			//Int32.TryParse(artifactTypeId, out artifactid);
-			var fieldsForRdo = _rdosynchronizer.GetFields(json).OrderBy(x => x.DisplayName);
-			var select = _rdosynchronizer.GetIdentifier(json);
-			var id = JsonConvert.DeserializeObject<ImportSettings>(json);
-
-			var parent = _rdoQuery.hasParent(id.ArtifactTypeId);
-			var data = new { data = fieldsForRdo, selected = select, hasParent = parent };
-			return Request.CreateResponse(HttpStatusCode.OK, data, Configuration.Formatters.JsonFormatter);
+			var syncronizer = _factory.GetSyncronizer();
+			var fields = syncronizer.GetFields(settings.Settings);
+			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
 		}
 	}
 

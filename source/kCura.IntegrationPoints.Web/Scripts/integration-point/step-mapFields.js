@@ -56,31 +56,31 @@ ko.validation.insertValidationMessage = function (element) {
 		this.hasParent = ko.observable(false);
 		this.parentIdentifier = ko.observable();
 
-		var workspaceFieldPromise = root.data.ajax({ type: 'Get', url: root.utils.generateWebAPIURL('WorkspaceField/'), data: { 'json': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
-			
-			var types = mapFields(result.data);
-			self.workspaceFields(types);
-			self.overlay(types);
-			var selected = result.selected.fieldIdentifier;
-			$.each(self.overlay(), function (index, entry) {
-				if (entry.identifier === selected) {
-					self.selectedOverlay(self.overlay()[index]);
+		var workspaceFieldPromise = root.data.ajax({ type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({ settings: model.destination }) })
+			.then(function (result) {
+				debugger;
+				var types = mapFields(result);
+				self.workspaceFields(types);
+				self.overlay(types);
+				var selected = result.selected.fieldIdentifier;
+				$.each(self.overlay(), function (index, entry) {
+					if (entry.identifier === selected) {
+						self.selectedOverlay(self.overlay()[index]);
+					}
+				});
+				if (result.hasParent) {
+					self.hasParent(true);
 				}
-			});
-			
-			if (result.hasParent) {
-				self.hasParent(true);
-			}
 
-		});
-		
-		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceFields/'), data: { 'options': JSON.stringify({ artifactTypeID: artifactTypeId }), 'type': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
+			});
+
+		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceFields'), data: { 'options': JSON.stringify({ artifactTypeID: artifactTypeId }), 'type': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
 			var types = mapFields(result);
 			self.sourceField(types);
 		});
 
-		
-		var mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap/' + artifactId) }).then(function (result) {
+
+		var mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap', artifactId) }).then(function (result) {
 			var source = $.map(result, function (entry) {
 				return {
 					name: entry.sourceField.displayName, identifier: entry.sourceField.fieldIdentifier
@@ -202,8 +202,8 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		}
 
-		
-		
+
+
 
 		this.moveMappedSourceUp = function () {
 			for (var j = 0; j < this.selectedMappedSource().length ; j++) {
@@ -221,7 +221,7 @@ ko.validation.insertValidationMessage = function (element) {
 			for (var j = this.selectedMappedSource().length - 1; j >= 0 ; j--) {
 				var i = this.sourceMapped().indexOf(this.selectedMappedSource()[j]);
 				var length = this.sourceMapped().length - 1;
-				
+
 				if ((i + 1) <= length) {
 					var array = this.sourceMapped();
 					this.sourceMapped.splice(i, 2, array[i + 1], array[i]);
