@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace kCura.IntegrationPoints.Core.Models
+namespace kCura.IntegrationPoints.Contracts.Models
 {
 	public enum FieldType
 	{
@@ -27,7 +27,5 @@ namespace kCura.IntegrationPoints.Core.Models
 		public string FieldIdentifier { get; set; }
 
 		public FieldType FieldType { get; set; }
-
-
 	}
 }

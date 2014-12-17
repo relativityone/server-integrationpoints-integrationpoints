@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Models.SyncConfiguration;
-using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
-using kCura.Relativity.DataReaderClient;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
-using FieldType = kCura.IntegrationPoints.Core.Models.FieldType;
+using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 {
@@ -25,13 +20,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			//ARRANGE
 			var client = new RSAPIClient(new Uri("http://localhost/Relativity.Services"), new IntegratedAuthCredentials())
 			{
-				APIOptions = {WorkspaceID = 1025517}
+				APIOptions = { WorkspaceID = 1025517 }
 			};
 
 			var rdo = new RdoSynchronizer(new RelativityFieldQuery(client));
 			//ASSERT
 
-			rdo.GetFields(JsonConvert.SerializeObject(new RelativityConfiguration { ArtifactTypeID = 1000043 }));
+			rdo.GetFields(JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1000043 }));
 
 		}
 
@@ -55,7 +50,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			settings.WebServiceURL = "http://localhost/RelativityWebAPI/";
 			settings.ArtifactTypeId = 1000044; //Custodian
 			settings.CaseArtifactId = CaseArtifactId;
-			settings.OverwriteMode = OverwriteModeEnum.Append;
+			settings.ImportOverwriteMode = ImportOverwriteModeEnum.Append;
 			settings.IdentityFieldId = FieldID_UniqueID;
 			//settings.ParentObjectIdSourceFieldName= "parent";
 
@@ -82,7 +77,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			};
 
 			List<Dictionary<FieldEntry, object>> sourceFields = new List<Dictionary<FieldEntry, object>>();
-			
+
 			sourceFields.Add(new Dictionary<FieldEntry, object>()
 			{
 				{new FieldEntry(){DisplayName = "guid",FieldIdentifier = "guid",FieldType = FieldType.String},Guid.Parse("6703F851-C653-40E0-B249-AB4A7C879E6B")},
@@ -101,7 +96,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 				{new FieldEntry(){DisplayName = "myname",FieldIdentifier = "myname",FieldType = FieldType.String},"New"},
 				{new FieldEntry(){DisplayName = "dept",FieldIdentifier = "dept",FieldType = FieldType.String},"HR"}
 			});
-			rdo.SyncData(sourceFields,map,JsonConvert.SerializeObject(settings));
+			rdo.SyncData(sourceFields, map, JsonConvert.SerializeObject(settings));
 		}
 	}
 }

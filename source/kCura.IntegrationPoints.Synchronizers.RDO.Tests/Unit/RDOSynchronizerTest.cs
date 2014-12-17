@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Models.SyncConfiguration;
-using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -25,8 +21,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client);
 			//
 			var rdoSyncronizer = new RdoSynchronizer(fieldMock);
-			var options = new Core.Models.SyncConfiguration.RelativityConfiguration();
-			options.ArtifactTypeID = 1268820;
+			var options = new ImportSettings();
+			options.ArtifactTypeId = 1268820;
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
 				 new Artifact {Name = "Name", ArtifactID = 1},
@@ -52,7 +48,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			var client = NSubstitute.Substitute.For<IRSAPIClient>();
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client);
 			var rdoSyncronizer = new RdoSynchronizer(fieldMock);
-			var options = new Core.Models.SyncConfiguration.RelativityConfiguration { ArtifactTypeID = 1268820 };
+			var options = new ImportSettings { ArtifactTypeId = 1268820 };
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
 				new Artifact {Name = "Name", ArtifactID = 1},
@@ -90,8 +86,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client);
 			//
 			var rdoSyncronizer = new RdoSynchronizer(fieldMock);
-			var options = new Core.Models.SyncConfiguration.RelativityConfiguration();
-			options.ArtifactTypeID = 1268820;
+			var options = new ImportSettings();
+			options.ArtifactTypeId = 1268820;
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
 				 new Artifact {Name = "Name", ArtifactID = 1},
@@ -117,11 +113,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			var client = NSubstitute.Substitute.For<IRSAPIClient>();
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client);
 			var rdoSyncronizer = new RdoSynchronizer(fieldMock);
-			var options = new Core.Models.SyncConfiguration.RelativityConfiguration { ArtifactTypeID = 1268820 };
+			var options = new ImportSettings { ArtifactTypeId = 1268820 };
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
 				new Artifact {Name = "Name", ArtifactID = 1},
-
 				new Artifact {Name = "Value", ArtifactID = 2},
 				new Artifact {Name = "DateModifiedOn", ArtifactID = 3},
 				new Artifact {Name = "User", ArtifactID = 4},

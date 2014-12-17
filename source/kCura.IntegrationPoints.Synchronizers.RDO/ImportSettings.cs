@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using kCura.EDDS.WebAPI.BulkImportManagerBase;
-using kCura.Relativity.DataReaderClient;
 
-namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
+namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class ImportSettings
 	{
@@ -14,17 +10,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		#region "Constructors"
 		public ImportSettings()
 		{
-			AuditLevel = ImportAuditLevel.FullAudit;
+			ImportAuditLevel = ImportAuditLevelEnum.FullAudit;
 			ExtractedTextFieldContainsFilePath = false;
 			MultiValueDelimiter = Convert.ToChar(";");
-			NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
+			ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles;
 			NestedValueDelimiter = Convert.ToChar("\\");
-			OverwriteMode = OverwriteModeEnum.Append;
-			OverlayBehavior = OverlayBehavior.UseRelativityDefaults;
+			ImportOverwriteMode = ImportOverwriteModeEnum.Append;
+			ImportOverlayBehavior = ImportOverlayBehaviorEnum.UseRelativityDefaults;
 		}
 		#endregion
 
-		#region "Properties"
+		#region "Public Properties"
 		public int ArtifactTypeId { get; set; }
 		public string BulkLoadFileFieldDelimiter { get; set; }
 		public bool DisableControlNumberCompatibilityMode { get; set; }
@@ -41,7 +37,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public string OIFileTypeColumnName { get; set; }
 		public bool FileSizeMapped { get; set; }
 		public string FileSizeColumn { get; set; }
-		public ImportAuditLevel AuditLevel { get; set; }
+		public ImportAuditLevelEnum ImportAuditLevel { get; set; }
 		public int CaseArtifactId { get; set; }
 		public bool CopyFilesToDocumentRepository { get; set; }
 		public int DestinationFolderArtifactID { get; set; }
@@ -51,8 +47,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public bool ExtractedTextFieldContainsFilePath { get; set; }
 		public int IdentityFieldId { get; set; }
 		public int MaximumErrorCount { get; set; }
-		public NativeFileCopyModeEnum NativeFileCopyMode { get; set; }
-		public OverwriteModeEnum OverwriteMode { get; set; }
+		public ImportNativeFileCopyModeEnum ImportNativeFileCopyMode { get; set; }
+		public ImportOverwriteModeEnum ImportOverwriteMode { get; set; }
 		public string ParentObjectIdSourceFieldName { get; set; }
 		public string RelativityPassword { get; set; }
 		public string RelativityUsername { get; set; }
@@ -60,8 +56,26 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public string WebServiceURL { get; set; }
 		public int StartRecordNumber { get; set; }
 		public IList<int> ObjectFieldIdListContainsArtifactId { get; set; }
-		public OverlayBehavior OverlayBehavior { get; set; }
+		public ImportOverlayBehaviorEnum ImportOverlayBehavior { get; set; }
+		#endregion
 
+		#region "Internal Properties"
+		internal kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel AuditLevel
+		{
+			get { return (kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel)this.ImportAuditLevel; }
+		}
+		internal kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum NativeFileCopyMode
+		{
+			get { return (kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum)this.ImportNativeFileCopyMode; }
+		}
+		internal kCura.Relativity.DataReaderClient.OverwriteModeEnum OverwriteMode
+		{
+			get { return (kCura.Relativity.DataReaderClient.OverwriteModeEnum)this.ImportOverwriteMode; }
+		}
+		internal kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior OverlayBehavior
+		{
+			get { return (kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior)this.ImportOverlayBehavior; }
+		}
 		#endregion
 
 	}

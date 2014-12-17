@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
-using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;
-using kCura.Utility.Extensions;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public class RdoSynchronizer : kCura.IntegrationPoints.Core.Services.Syncronizer.IDataSyncronizer
+	public class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Syncronizer.IDataSyncronizer
 	{
 		private RelativityFieldQuery _fieldQuery;
 
@@ -42,8 +40,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public FieldEntry GetIdentifier(string options)
 		{
-			var json = JsonConvert.DeserializeObject<Core.Models.SyncConfiguration.RelativityConfiguration>(options);
-			var fields = _fieldQuery.GetFieldsForRDO(json.ArtifactTypeID);
+			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
+			var fields = _fieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
 			var identifierField = new FieldEntry();
 			foreach (var result in fields)
 			{
@@ -61,10 +59,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return null;
 
 		}
+	
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
-			var json = JsonConvert.DeserializeObject<Core.Models.SyncConfiguration.RelativityConfiguration>(options);
-			var fields = _fieldQuery.GetFieldsForRDO(json.ArtifactTypeID);
+			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
+			var fields = _fieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
 			var allFieldsForRdo = new List<FieldEntry>();
 			foreach (var result in fields)
 			{
@@ -75,10 +74,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			return allFieldsForRdo;
 		}
+	
 		public IEnumerable<FieldEntry> HasParent(string options)
 		{
-			var json = JsonConvert.DeserializeObject<Core.Models.SyncConfiguration.RelativityConfiguration>(options);
-			var fields = _fieldQuery.GetFieldsForRDO(json.ArtifactTypeID);
+			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
+			var fields = _fieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
 			var allFieldsForRdo = new List<FieldEntry>();
 			foreach (var result in fields)
 			{

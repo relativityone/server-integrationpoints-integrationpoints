@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Core.Models;
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Web
 {
