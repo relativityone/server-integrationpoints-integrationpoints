@@ -1,0 +1,46 @@
+
+*** Settings ***
+| Documentation 	| Verify that Next and Back buttons on the Integration Point Wizard affect the data correctly.
+| Metadata		    | Authors	| William Sehy
+| Force Tags		| in-progress	| team.method
+#| Suite Setup		| Log	| This is the suite setup keyword.
+#| Test Setup		| Open and Log in to Method
+#| Test Teardown 	| Close All Browsers
+#| Suite Teardown	| Log	| This is the suite teardown keyword.
+
+
+*** Variables ***
+
+| ${WorkspaceName}	| Relativity Legal Hold
+
+
+*** Test Cases ***
+
+| Returning to Step 2 from Step 1 without changing anything Saves all Step 2 data
+| | [Documentation]	| Verify that if you fill out steps 1 and 2, go back to step 1, then return to step 2, that all of the previously entered data on step 2 will still be present.
+
+| Returning to Step 3 from Step 2 without changing anything Saves all Step 3 data
+| | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 2, then return to step 3, that all of the previously entered data on step 3 will still be present.
+
+| Returning to Step 3 from Step 1 without changing anything Saves all Step 3 data
+| | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 1, then return to step 3, that all of the previously entered data on step 3 will still be present.
+
+| Returning to Step 2 from Step 1 after changing the Source Provider clears all fields on Step 2
+| | [Documentation]	| Verify that if you fill out steps 1 and 2, go back to step 1, change the Source Provider, then return to step 2, that all the step 2fields will be cleared.
+
+| Reverting a Source Provider change restores the original data on Step 2
+| | [Documentation]	| Verify that if you fill out steps 1 and 2, go back to step 1, change the Source Provider, then return to step 2, that all the step 2 fields will be cleared,
+| | ...				| but your previous data can be restored if you go back to step 1, reselect the original Source Provider, and then go back to step 2.
+
+
+# Step 3 Testing ---------------------------------------------------------------------------
+# - Change Step 2
+# - Undoing a Change to Step 2
+# - Change Step 1's Destination RDO
+# - Undoing a Change to Step 1's Destination RDO
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt

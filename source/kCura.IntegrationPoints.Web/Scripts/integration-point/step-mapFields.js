@@ -135,7 +135,7 @@ ko.validation.insertValidationMessage = function (element) {
 			this.mappedWorkspace.removeAll(self.selectedMappedWorkspace());
 			this.selectedMappedWorkspace.splice(0, this.selectedMappedWorkspace().length);
 		}
-		this.addAllWorkspaceFields = function (addAll) {
+		this.addAllWorkspaceFields = function () {
 			var requested = this.mappedWorkspace;
 			moveItemFromField(self.workspaceFields(), requested);
 			this.workspaceFields.removeAll();
@@ -170,7 +170,7 @@ ko.validation.insertValidationMessage = function (element) {
 			this.selectedSourceField.splice(0, this.selectedSourceField.length);
 		}
 
-		this.addAlltoSourceField = function (addAll) {
+		this.addAlltoSourceField = function () {
 			var requested = this.sourceField;
 			moveItemFromField(self.sourceMapped(), requested);
 			this.sourceMapped.removeAll();
@@ -221,7 +221,7 @@ ko.validation.insertValidationMessage = function (element) {
 			for (var j = this.selectedMappedSource().length - 1; j >= 0 ; j--) {
 				var i = this.sourceMapped().indexOf(this.selectedMappedSource()[j]);
 				var length = this.sourceMapped().length - 1;
-				var itemsSelected = this.selectedMappedSource().length;
+				
 				if ((i + 1) <= length) {
 					var array = this.sourceMapped();
 					this.sourceMapped.splice(i, 2, array[i + 1], array[i]);
