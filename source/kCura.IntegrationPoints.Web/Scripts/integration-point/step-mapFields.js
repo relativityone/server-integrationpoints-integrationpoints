@@ -1,4 +1,28 @@
 ﻿var IP = IP || {};
+
+ko.validation.rules.pattern.message = 'Invalid.';
+
+ko.validation.configure({
+	registerExtenders: true,
+	messagesOnModified: true,
+	insertMessages: true,
+	parseInputAttributes: true,
+	messageTemplate: null
+});
+ko.validation.registerExtenders();
+
+ko.validation.insertValidationMessage = function (element) {
+	var errorContainer = document.createElement('div');
+	var iconSpan = document.createElement('span');
+	iconSpan.className = 'icon-error legal-hold field-validation-error';
+
+	errorContainer.appendChild(iconSpan);
+
+	$(element).parents('.field-value').eq(0).append(errorContainer);
+
+	return iconSpan;
+};
+
 (function (root, ko) {
 
 
@@ -26,7 +50,7 @@
 		this.selectedWorkspaceField = ko.observableArray([]);
 		this.selectedMappedWorkspace = ko.observableArray([]);
 		this.selectedSourceField = ko.observableArray([]);
-		this.selectedMappedSource = ko.observableArray([]);
+		this.selectedMappedSource = ko.observableArray([]);//.extend({ equal: selectedMappedWorkspace });
 		this.overlay = ko.observableArray([]);
 		this.selectedOverlay = ko.observable();
 		this.hasParent = ko.observable(false);
@@ -49,8 +73,9 @@
 			}
 
 		});
-
-		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebURL('IntegrationPoints/GetSourceFields/'), data: { 'json': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
+		
+		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceFields/'), data: { 'options': JSON.stringify({ artifactTypeID: artifactTypeId }), 'type': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
+			debugger;
 			var types = mapFields(result);
 			self.sourceField(types);
 		});
