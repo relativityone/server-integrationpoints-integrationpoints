@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
@@ -153,6 +154,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			return periodicScheduleRule;
 		}
+
 		private static DaysOfWeek FromDayOfWeek(List<DayOfWeek> days)
 		{
 			var map = kCura.ScheduleQueueAgent.ScheduleRules.ScheduleRuleBase.DaysOfWeekMap.ToDictionary(x => x.Value, x => x.Key);

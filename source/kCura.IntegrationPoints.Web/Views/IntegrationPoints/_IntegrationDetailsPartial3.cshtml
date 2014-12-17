@@ -3,8 +3,8 @@
 		<span class="label title">Field Mappings</span>
 
 		<div class="map-field-title">
-			<label  class="label workspace-field">Workspace Fields</label>
-			<label class="label source-field" >Source Attributes</label>
+			<label  class="list-title workspace-field">Workspace Fields</label>
+			<label class="list-title source-field" >Source Attributes</label>
 
 		</div>
 		<div class="table full-width" id="mapFields">
@@ -77,7 +77,7 @@
 		<div class="field-row parent-identifier" data-bind="visible: hasParent">
 			<div class="field-label required">Parent Attribute</div>
 			<div class="field-value ">
-				<select id="parent-identifier" data-bind="options: overlay,  value: selectedOverlay, optionsText: 'name', select2: {}" >
+				<select id="parent-identifier" data-bind="options: sourceField, value: parentIdentifier, optionsText: 'name', optionsCaption: 'Select...', select2: {}" >
 				</select>
 			</div>
 		</div>

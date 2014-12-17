@@ -10,7 +10,7 @@
 *** Variables ***
 
 | ${WorkspaceName}	     | Relativity Legal Hold
-| ${ValidConnectionPath} | 
+| ${ValidConnectionPath} | c:\123
 | ${OverlayIdentifierID} | 
 | ${Workspace Field List}   | workspace-fields
 | ${Selected Workspace List}    | selected-workspace-fields
@@ -26,8 +26,8 @@
 | ${AddSourceFieldIcon}       | add-workspace-field
 | ${RemoveSourceFieldIcon}    | remove-source-field
 | ${RemoveAllSourceFieldsIcon} | remove-all-source-fields
-| ${Field1}                    | Communication
-| ${Field2}                    | Batch Set
+| ${Field1}                    | Email
+| ${Field2}                    | Notes
 
 *** Test Cases ***
 
@@ -64,33 +64,33 @@
 | | Click Workspace Field  | ${Field1}
 | | Move fields to the Selected Workspace list
 
-| | Verify that the Selected Workspace fields are in the following order | ${Field2} | ${Field1}
+| | Verify that the Selected Workspace fields are in the following order | ${Field1} | ${Field2}
+
+| Fields are removed from the Selected Workspace list when they are put into the Workspace list
+| | [Documentation] | Verify that moving a field from the Selected Workspace list to the Workspace list, removes the field from the Selected Workspace list
+| | [Tags] | automated
+| | Click Workspace Field  | ${Field1}
+| | Move fields to the Selected Workspace list
+| | Click Selected Workspace Field | ${Field1}
+| | Move fields to the Workspace list
+
+| | Verify that the following field is not in the following list  | ${Field1} | ${Selected Workspace List} 
 
 | Moving a field back to Workspace Fields adds it to the bottom of the list
 | | [Documentation] | Verify that moving a field back to the Workspace field list places the field at the bottom of the list
-| | [Tags] | untested | manual | automateable
+| | [Tags] |  manual | automateable
 | | Click Workspace Field  | ${Field1}
 | | Move fields to the Selected Workspace list
-| | Click Selected Workspace Field 
+| | Click Selected Workspace Field | ${Field1}
 | | Move fields to the Workspace list
 
 | | Run the following manual steps:
 | | ... | Expected Results:
 | | ... | 1. Verify that ${Field1} has is at the end of the Workspace list
 
-| Fields are removed from the Selected Workspace list when they are put into the Workspace list
-| | [Documentation] | Verify that moving a field from the Selected Workspace list to the Workspace list, removes the field from the Selected Workspace list
-| | [Tags] | untested
-| | Click Workspace Field  | ${Field1}
-| | Move fields to the Selected Workspace list
-| | Click Selected Workspace Field 
-| | Move fields to the Workspace list
-
-| | Verify that the following field is not in the following list  | ${Field1} | ${Selected Workspace List} 
-
 | Clicking the Move All Workspace icon moves all fields from the Workspace Fields to Selected Fields 
 | | [Documentation] | Verify that clicking the Move All Workspace icon moves all fields from the Workspace Fields to Selected Fields 
-| | [Tags] | untested | manual
+| | [Tags] | manual | | automateable
 | | Click | ${Add All Workspace Fields Icon}
 
 | | Run the following manual steps:
@@ -100,7 +100,7 @@
 
 | Clicking the Move All Selected icon moves all fields from the Selected Fields list to the 
 | | [Documentation] | Verify that clicking the Move All Workspace icon moves all fields from the Selected Fields list to the Workspace Field list
-| | [Tags] | untested | manual
+| | [Tags] | manual | automateable
 | | Click | ${Add All Workspace Fields Icon}
 | | Click | ${Remove All Workspace Fields Icon}
 
@@ -111,23 +111,23 @@
 
 | Multiple Fields can be selected be clicking and dragging
 | | [Documentation] | Verify that multiple fields can be seleted by clicking one field and dragging.
-| | [Tags] | untested | manual
+| | [Tags] | manual
 | | Run the following manual steps:
 | | ... | 1. Click one field in the Workspace Fields list.
 | | ... | 2. Drag over several other fields.
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that each field that was dragged over is selected
+| | ... | 1. Verify that each field that was dragged over is highlighted (selected)
 
 | Mutliple Fields can be Control Clicked
 | | [Documentation] | Verify that multiple fields can be seleted by control clicking
-| | [Tags] | untested | manual
+| | [Tags] | manual
 | | Run the following manual steps:
 | | ... | 1. Click one field in the Workspace Fields list.
 | | ... | 2. Control click several other fields.
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that each field that was clicked  is selected
+| | ... | 1. Verify that each field that was clicked ishighlighted (selected)
 
 | Selected field rows are blue
 | | [Documentation] | Verify that clicking a field turns its row blue
@@ -140,22 +140,13 @@
 
 | Selected field rows on inactive lists are grey
 | | [Documentation] | Verify that a selected row turns grey when clicking anywhere else on the screen
-| | [Tags] | untested | manual
+| | [Tags] | manual
 | | Run the following manual steps:
 | | ... | 1. Click one field in the Workspace Fields list.
 | | ... | 2. Click any whitespace
 | | ... | 
 | | ... | Expected Results:
 | | ... | 1. Verify that the row color for the selected field is grey
-
-| Doubling clinking an Individual Field moves it to other list
-| | [Documentation] | Verify that a selected row turns grey when clicking anywhere else on the screen
-| | [Tags] | untested | manual
-| | Run the following manual steps:
-| | ... | 1. Double click a field in the Workspace Fields list.
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that the field is now in the Selected Workspace Fields list.
 
 *** Keywords *** 
 
@@ -188,14 +179,15 @@
 | Click Selected Workspace Field 
 | | [Documentation] | A keyword that clicks an item from the Selected Workspace Field list. Multiple calls of select can be used with a single Click of Move.
 | | [Arguments] | ${Field}
-| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='slected-workspace-fields'] | The Selected Workspace Fields list box was not visible.
+| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='selected-workspace-fields'] | The Selected Workspace Fields list box was not visible.
 | | Click | xpath=//select[@id='selected-workspace-fields']/option[text()='${Field}']
 
 | Go to Step 3 of the Create Integration Point Process
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form | Moving Workspace Field tests | Append/Overlay | LDAP | Custodian | no
-#| | Fill out the Following Fields of the Integration Point Step 2 form | ${ValidConnectionPath}
-| | Click | next
+| | Proceed to the Next Step of the Integration Point wizard
+| | Fill out the Following Fields of the Integration Point Step 2 form | ${ValidConnectionPath}
+| | Proceed to the Next Step of the Integration Point wizard
 | | Wait until keyword succeeds | 20s | 2s | Click | next
 
 *** Settings ***

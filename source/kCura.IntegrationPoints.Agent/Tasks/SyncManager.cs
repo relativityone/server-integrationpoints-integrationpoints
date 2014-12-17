@@ -2,9 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.ScheduleQueueAgent;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.ScheduleQueueAgent.BatchProcess;

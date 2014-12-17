@@ -38,7 +38,7 @@
 | | [Tags] | untested | manual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Custodian
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
 | | ... |
 | | ... | Expected Results:
 | | ... | 1. Verify that the Parent Attribute list is present under the Overlay Identifier field
@@ -58,7 +58,7 @@
 | | [Tags] | untested | manual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Custodian
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
 | | ... |
 | | ... | Expected Results:
 | | ... | 1. Verify that the following field ID has a droplist input | ${ParentAttributeID}
@@ -68,7 +68,7 @@
 | | [Tags] | untested | manual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Custodian
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
 | | ... |
 | | ... | Expected Results:
 | | ... | 1. Verify that the following field is required    | ${ParentAttributeID}
@@ -78,7 +78,7 @@
 | | [Tags] | untested | manual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Custodian
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
 | | ... |
 | | ... | Expected Results:
 | | ... | 1. Verify that the Parent Attribute's Default value is "Select..."
@@ -88,24 +88,24 @@
 | | [Tags] | untested | manual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Custodian
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
 | | ... | 2. Click the Parent Attribute list
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that the currently opened select2 Dropdown has the following choices in order | ${ParentAttributeID} | 
+| | ... | 1. Verify that the currently opened select2 Dropdown has the following choices in order | ${ParentAttributeID} | Every field from the Source Attribute list 
+| | ... | 2. Verify that the list is sorted alphabetically.
 
 | Can create when Parent Attribute is hidden
 | | [Documentation] | Verify that when the Parent Attribute list hidden, that the Create IP Process can be completed
 | | [Tags] | untested | manual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Custodian
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
 | | ... | 2. Complete the required fields for this screen
 | | ... | 3. Click | Save
 | | ... |
 | | ... | Expected Results:
 | | ... | 1. Verify that the IP has been created.
-
 
 *** Keywords *** 
 
@@ -121,7 +121,7 @@
 
 | Go to Step 3 of the Create Integration Point Process
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Testing | Append/Overlay | LDAP | Custodian | no
+| | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Testing | Append/Overlay | LDAP | Custodian Role | no
 | | Fill out the Following Fields of the Integration Point Step 2 form | ${ValidConnectionPath}
 
 *** Settings ***

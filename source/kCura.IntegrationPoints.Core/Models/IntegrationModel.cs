@@ -102,20 +102,17 @@ namespace kCura.IntegrationPoints.Core.Models
 
 		public IntegrationModel(IntegrationPoint ip)
 		{
-			this.ArtifactID = ip.ArtifactId;
-			Name = ip.Name;
+			//this.ArtifactID = ip.ArtifactId;
+			//Name = ip.Name;
 			SelectedOverwrite = string.Empty;
 			if (ip.OverwriteFields != null)
 			{
 				SelectedOverwrite = ip.OverwriteFields.Name;
 			}
-			SourceProvider = ip.SourceConfiguration;
-			Destination = ip.DestinationConfiguration;
+			//StartDate = ip.StartDate;
+			//EndDate = ip.EndDate;
 			Scheduler = new Scheduler(ip);
 
-			NextRun = ip.NextScheduledRuntime;
-			LastRun = ip.LastRuntime;
-			this.SourceConfiguration = ip.SourceConfiguration;
 
 		}
 

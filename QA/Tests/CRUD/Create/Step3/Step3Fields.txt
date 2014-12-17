@@ -47,11 +47,11 @@
 | | [Tags]			| manual	| unwritten
 | | Verify that the following section contains the following fields | Field Mappings | ${WorkspaceFieldListID} | ${SelectedFieldListID}	| ${SelectedAttributeListID} | ${SourceAttributeListID} | ${OverlayIdentifierID} | ${ParentAttributeID}
 
-| The Overlay Identifer is a Required Field
-| | [Documentation]	| Verify that the Required Field indicator is present for the Overlay Identifer field.
+| The Step 3 Fields are Required
+| | [Documentation]	| Verify that the Required Field indicator is present for both the Overlay Identifer  and Parent Attribute fields.
 | | [Tags]			| manual	| unwritten
-| | Verify that the following field is required		| ${OverlayIdentifierID}
-| | Verify that the following field is not required | ${ParentAttributeID}
+| | Verify that the following field is required	| ${OverlayIdentifierID}
+| | Verify that the following field is required | ${ParentAttributeID}
 
 | The Fields are of the correct type
 | | [Documentation]	| Verify that the Fields on the Map Fields screen are the correct type. Note that the Parent Attribute field is excluded from this test case.
@@ -110,9 +110,9 @@
 | Go to Step 3 of the Create Integration Point Process
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| 
-| | ... | IntegrationName=Step 3 Testing	| Overwrite=Append/Overlay	| SourceProvider=LDAP	| DestinationRDO=Custodian | EnableScheduler=No
+| | ... | IntegrationName=Step 3 Testing	| Overwrite=Append/Overlay	| SourceProvider=LDAP	| DestinationRDO=Questionnaire Question | EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ValidConnectionPath}	| Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| # ObjectFilterString=Dummy2	| Authentication=Secure	
+| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ValidConnectionPath}	| # Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| ObjectFilterString=Dummy2	| Authentication=Secure	
 | | Proceed to the Next Step of the Integration Point wizard
 
 
