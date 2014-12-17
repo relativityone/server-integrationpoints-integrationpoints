@@ -94,6 +94,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		public JsonNetResult GetSourceFields(string json)
 		{
+
+
 			var list = new List<FieldEntry>()
 			{
 				new FieldEntry() {DisplayName = "Age", FieldIdentifier = "2"},
