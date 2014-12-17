@@ -35,7 +35,6 @@
 	});
 	
 	$('#save').on('click', function () {
-		debugger;
 		IP.messaging.publish('save');
 	});
 

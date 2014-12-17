@@ -249,7 +249,6 @@ var IP = IP || {};
 			sendOn = {};
 		}
 		this.sendOn = ko.observable(sendOn);
-
 		if (sendOn.templateID === "weeklySendOn") {
 			this.sendOn(new SendOnWeekly(sendOn));
 		} else if (sendOn.templateID === "monthlySendOn") {
@@ -266,10 +265,6 @@ var IP = IP || {};
 		//root.services.getChoice("a2c2c3c5-a350-4617-a3e9-ddd284bed868").then(function () {
 		//	self.frequency()
 		//});
-
-		
-
-
 
 		this.isEnabled = ko.computed(function () {
 			return self.enableScheduler() === "true";
@@ -399,6 +394,7 @@ var IP = IP || {};
 		this.loadModel = function (ip) {
 			this.model = new Model(ip);
 			this.model.errors = ko.validation.group(this.model, { deep: true });
+			this.model.sourceConfiguration = ip.sourceConfiguration;
 		};
 
 		this.getTemplate = function () {
@@ -415,6 +411,7 @@ var IP = IP || {};
 			this.model.submit();
 			this.model.destination = JSON.stringify({ artifactTypeID: ko.toJS(this.model.destination).artifactTypeID });
 			this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
+			
 			if (this.model.errors().length === 0) {
 				d.resolve(ko.toJS(this.model));
 			} else {

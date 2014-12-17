@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
+using kCura.ScheduleQueueAgent.ScheduleRules;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace kCura.IntegrationPoints.Core.Models
 {
@@ -18,21 +18,58 @@ namespace kCura.IntegrationPoints.Core.Models
 		public Scheduler(IntegrationPoint ip)
 		{
 			this.EnableScheduler = ip.EnableScheduler.GetValueOrDefault(false);
-			if(ip.EndDate.HasValue){
-				this.EndDate = ip.EndDate.Value.ToString("MM/dd/yyyy");
-			}
-			if (ip.StartDate.HasValue)
+
+			var rule = ScheduleRuleBase.Deserialize<PeriodicScheduleRule>(ip.ScheduleRule);
+			if (rule != null)
 			{
-				this.StartDate = ip.StartDate.Value.ToString("MM/dd/yyyy");
+
+				if (rule.EndDate.HasValue)
+				{
+					this.EndDate = rule.EndDate.Value.ToString("MM/dd/yyyy");
+				}
+				if (rule.StartDate.HasValue)
+				{
+					this.StartDate = rule.StartDate.Value.ToString("MM/dd/yyyy");
+				}
+				if (rule.OccuranceInMonth.HasValue)
+				{
+					//we are the more complex month selector
+
+				}
+				switch (rule.Interval)
+				{
+					case ScheduleInterval.Daily:
+						this.SendOn = string.Empty;
+						break;
+					case ScheduleInterval.Weekly:
+						this.SendOn =
+							JsonConvert.SerializeObject(new IntegrationPointService.Weekly()
+							{
+								SelectedDays = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday)  == DaysOfWeek.Day ? new List<string>{ DaysOfWeek.Day.ToString().ToLower()} : IntegrationPointService.FromDaysOfWeek(rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday)).Select(x=>x.ToString()).ToList()
+
+							}, Formatting.None, new JsonSerializerSettings{ ContractResolver = new CamelCasePropertyNamesContractResolver()});
+						break;
+					case ScheduleInterval.Monthly:
+						var type = rule.OccuranceInMonth.HasValue ? IntegrationPointService.MonthlyType.Month : IntegrationPointService.MonthlyType.Days;
+						this.SendOn = JsonConvert.SerializeObject(new IntegrationPointService.Monthly()
+						{
+							MonthChoice = type,
+							SelectedDay = rule.DayOfMonth.GetValueOrDefault(1),
+							SelectedDayOfTheMonth =  rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday),
+							SelectedType = rule.OccuranceInMonth
+						}, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });						
+
+						break;
+				}
+
+				this.Reoccur = rule.Reoccur.GetValueOrDefault(0);
+				SelectedFrequency = rule.Interval.ToString();
+				if (rule.LocalTimeOfDay.HasValue)
+				{
+					var time = rule.LocalTimeOfDay.Value;
+					this.ScheduledTime = time.Hours + ":" + time.Minutes;
+				}
 			}
-			this.SendOn = ip.SendOn;
-			//this.StartDate = ip.StartDate.
-			this.Reoccur = ip.Reoccur.GetValueOrDefault(0);
-			if (ip.Frequency != null)
-			{
-				SelectedFrequency = ip.Frequency.Name;
-			}
-			this.ScheduledTime = ip.ScheduledTime ?? string.Empty;
 		}
 
 		public bool EnableScheduler { get; set; }
@@ -76,41 +113,24 @@ namespace kCura.IntegrationPoints.Core.Models
 			point.DestinationConfiguration = this.Destination;
 
 			point.EnableScheduler = this.Scheduler.EnableScheduler;
-			DateTime startDate;
-			if (DateTime.TryParse(this.Scheduler.StartDate, out startDate))
-			{
-				point.StartDate = startDate;		
-			}
-
-			DateTime endDate;
-			if (DateTime.TryParse(this.Scheduler.EndDate, out endDate))
-			{
-				point.EndDate = endDate;
-			}
-			//point.Frequency = new Choice(Guid.Parse(Data.FrequencyChoiceGuids.Daily), Data.FrequencyChoices.IntegrationPointDaily.Name); //TODO // this.Scheduler.SelectedFrequency;
-			point.Reoccur = this.Scheduler.Reoccur;
-			TimeSpan time;
-			if (TimeSpan.TryParse(this.Scheduler.ScheduledTime, out time))
-			{
-				var localTime = DateTime.UtcNow.Date.Add(new DateTime(time.Ticks, DateTimeKind.Utc).TimeOfDay).ToLocalTime().TimeOfDay;
-				point.ScheduledTime = localTime.Hours.ToString() + ":" + localTime.Minutes.ToString();
-			}
-
-			point.SendOn = this.Scheduler.SendOn;
 			return point;
 		}
 
 		public IntegrationModel(IntegrationPoint ip)
 		{
-			//this.ArtifactID = ip.ArtifactId;
-			//Name = ip.Name;
+			this.ArtifactID = ip.ArtifactId;
+			Name = ip.Name;
 			SelectedOverwrite = string.Empty;
-			if (ip.OverwriteFields != null)
-			{
-				SelectedOverwrite = ip.OverwriteFields.Name;
-			}
+
+			//if (ip.OverwriteFields != null)
+			//{
+			//	SelectedOverwrite = ip.OverwriteFields.Name;
+			//}
 			//StartDate = ip.StartDate;
 			//EndDate = ip.EndDate;
+			this.Destination = ip.DestinationConfiguration;
+			this.SourceConfiguration = ip.SourceConfiguration;
+
 			Scheduler = new Scheduler(ip);
 
 

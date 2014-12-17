@@ -67,10 +67,9 @@ namespace kCura.IntegrationPoints.Core.Services
 		public void SaveIntegration(IntegrationModel model)
 		{
 			var ip = model.ToRdo();
-			var choices = _choiceQuery.GetChoicesOnField(Guid.Parse(Data.IntegrationPointFieldGuids.Frequency));
-			var choiceDto = choices.First(x => x.Name.Equals(model.Scheduler.SelectedFrequency));
-			ip.Frequency = new Choice(choiceDto.ArtifactID, choiceDto.Name);
 			var rule = this.ToScheduleRule(model);
+			ip.ScheduleRule = rule.ToSerializedString();
+			
 			//save RDO
 			if (ip.ArtifactId > 0)
 			{
@@ -86,11 +85,17 @@ namespace kCura.IntegrationPoints.Core.Services
 		public class Weekly
 		{
 			public List<string> SelectedDays { get; set; }
+			public string TemplateID { get; set; }
+
+			public Weekly()
+			{
+				this.TemplateID = "weeklySendOn";
+			}
 		}
 
 		public enum MonthlyType
 		{
-			None = 0,
+
 			Month = 1,
 			Days = 2
 		}
@@ -102,6 +107,12 @@ namespace kCura.IntegrationPoints.Core.Services
 			public int SelectedDay { get; set; }
 			public OccuranceInMonth? SelectedType { get; set; }
 			public DaysOfWeek SelectedDayOfTheMonth { get; set; }
+			public string TemplateID { get; set; }
+
+			public Monthly()
+			{
+				this.TemplateID = "monthlySendOn";
+			}
 		}
 
 		private PeriodicScheduleRule ToScheduleRule(IntegrationModel model)
@@ -159,6 +170,16 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			var map = kCura.ScheduleQueueAgent.ScheduleRules.ScheduleRuleBase.DaysOfWeekMap.ToDictionary(x => x.Value, x => x.Key);
 			return days.Aggregate(DaysOfWeek.None, (current, dayOfWeek) => current | map[dayOfWeek]);
+		}
+		public static List<DayOfWeek> FromDaysOfWeek(DaysOfWeek days)
+		{
+			var map = ScheduleRuleBase.DaysOfWeekMap;
+			if (days == DaysOfWeek.None)
+			{
+				return new List<DayOfWeek>();
+			}
+			var values = (DaysOfWeek[])Enum.GetValues(typeof(DaysOfWeek));
+			return (from value in values where (days & value) == value && map.ContainsKey(value) select map[value]).ToList();
 		}
 
 	}

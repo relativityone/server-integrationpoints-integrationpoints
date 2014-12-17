@@ -35,7 +35,7 @@
 			this.stepKey = model.source.selectedType;
 			this.model = model;
 			if(typeof(stepCache[model.source.selectedType]) === "undefined"){
-				stepCache[model.source.selectedType]	= self.model;
+				stepCache[model.source.selectedType] = self.model.sourceConfiguration || '';
 			}
 			if (!this.hasBeenLoaded) {
 				this.hasBeenLoaded = true;
@@ -85,6 +85,7 @@
 			//this is sketchy at best
 			this.bus.subscribe('saveComplete', function (data) {
 				self.model.sourceConfiguration = JSON.stringify(data);
+				stepCache[self.model.source.selectedType] = self.model.sourceConfiguration;
 				d.resolve(self.model);
 			});
 			this.bus.subscribe('saveError', function (error) {

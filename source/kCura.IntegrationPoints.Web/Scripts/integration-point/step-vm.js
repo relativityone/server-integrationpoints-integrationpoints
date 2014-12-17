@@ -80,7 +80,6 @@
 		});
 
 		IP.messaging.subscribe('saveComplete', function (model) {
-			debugger;
 			IP.data.ajax({ type: 'POST', url: IP.utils.generateWebAPIURL('IntegrationPointsAPI'), data: JSON.stringify(model)}).then(function () {
 
 			}, function () {

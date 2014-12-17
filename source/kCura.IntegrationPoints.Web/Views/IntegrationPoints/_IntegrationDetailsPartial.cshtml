@@ -144,14 +144,14 @@
 <script type="text/html" id="monthlySendOn">
 	<ul>
 		<li class="field-row">
-			<input id="monthly" type="radio" name="monthly" value="days" data-bind="checked: monthChoice" />
+			<input id="monthly" type="radio" name="monthly" value="2" data-bind="checked: monthChoice" />
 			Day
 			<select id="day-select" class="day-select" data-bind="options: days, optionsText: 'displayName', optionsValue: 'value', value: selectedDay, select2: {}"></select>
 			of the month
 			<i data-bind="text: overflowMessage, visible: selectedDay() > 28"></i>
 		</li>
 		<li class="field-row">
-			<input type="radio" name="monthly" value="month" data-bind="checked: monthChoice" />
+			<input type="radio" name="monthly" value="1" data-bind="checked: monthChoice" />
 			The 
 			<select id="dayType" data-bind="options: dayTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedType, select2: {}"></select>
 			<select id="dayOfMonth" data-bind="options: daysOfMonthComputed, optionsText: 'displayName', optionsValue: 'value', value: selectedDayOfTheMonth, select2: {}"></select>

@@ -1,30 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Web;
-using System.Web.Helpers;
 using System.Web.Mvc;
-using System.Web.Script.Serialization;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Web.Attributes;
-using kCura.Relativity.Client;
-using Newtonsoft.Json;
 using Relativity.DragonGrid.Core.Grid;
 namespace kCura.IntegrationPoints.Web.Controllers
 {
 	public class IntegrationPointsController : BaseController
 	{
 		private readonly IntegrationPointService _reader;
-		public IntegrationPointsController(IntegrationPointService reader)
+		private readonly RdoSynchronizer _rdoSynchronizer;
+		public IntegrationPointsController(IntegrationPointService reader, RdoSynchronizer rdosynchronizer)
 		{
-			_rdosynchronizer = rdosynchronizer;
+			_rdoSynchronizer = rdosynchronizer;
 			_reader = reader;
 		}
 

@@ -257,7 +257,6 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.submit = function () {
 			var d = root.data.deferred().defer();
-			debugger;
 			this.returnModel.map = ko.toJS(this.model);
 			d.resolve(this.returnModel);
 			return d.promise;
