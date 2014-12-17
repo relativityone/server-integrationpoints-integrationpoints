@@ -185,6 +185,7 @@ ul li .day-select {
 .workspace-field {
 	float: left;
 	padding-bottom: 10px;
+	padding-left: 15px;
 }
 .source-field {
 	float: right;
@@ -194,8 +195,14 @@ ul li .day-select {
 .list-title {
 	font-size: 13px;
 }
+#fieldMappings,#mapFields {
+	margin: 0 auto; 
+}
+#fieldMappings {
+	width: 1250px;
+}
 .selection {
 	vertical-align: middle;
 	padding-right: 17px;
-	
+	padding-left: 17px;
 }
