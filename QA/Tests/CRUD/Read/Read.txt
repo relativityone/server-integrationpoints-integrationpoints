@@ -1,6 +1,6 @@
 
 *** Settings ***
-| Documentation 	| Verify that 
+| Documentation 	| Verify that the Read pages for Integration Point objects have the fields and sections for given situations.
 | Metadata		    | Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress | team.method
 #| Suite Setup		| Create Suite Setup Data
@@ -78,8 +78,8 @@
 | | ... | - Destination RDO:
 
 
-| The Import Scheduling fields are in the correct order for a disabled Integration Point
-| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the schedule is disabled.
+| The Import Scheduling fields are in the correct order for an Integration Point with a disabled Scheduler
+| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the Scheduler is disabled.
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps: 
@@ -91,7 +91,7 @@
 
 
 | The Import Scheduling fields are in the correct order for a Daily Integration Point
-| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the schedule is Daily.
+| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the Frequency is Daily.
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps: 
@@ -107,7 +107,7 @@
 
 
 | The Import Scheduling fields are in the correct order for a Weekly Integration Point
-| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the schedule is Weekly.
+| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the Frequency is Weekly.
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps: 
@@ -125,6 +125,7 @@
 
 
 | The Import Scheduling fields are in the correct order for a Monthly Integration Point
+| | [Documentation]	|  Verify that the fields in the Import Scheduling section are sorted correctly when the Frequency is Monthly.
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps: 

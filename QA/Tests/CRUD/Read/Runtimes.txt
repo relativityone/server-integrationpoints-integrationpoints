@@ -5,7 +5,7 @@
 | Force Tags		| manual	| in-progress	| team.method
 #| Suite Setup		| Log	| This is the suite setup keyword.
 #| Test Setup		| Open Browser	| ${ROOT}
-#| Test Teardown		| Close All Browsers
+#| Test Teardown	| Close All Browsers
 #| Suite Teardown	| Log	| This is the suite teardown keyword.
 
 
@@ -17,7 +17,7 @@
 *** Test Cases ***
 
 | The Next Scheduled Runtime calculates correctly for Daily Jobs
-| | [Documentation]	| Verify that 
+| | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is calculated correctly for Schedulers with a Frequency of Daily.
 | | [Tags]			| manual	| dates
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -36,7 +36,7 @@
 
 
 | The Next Scheduled Runtime calculates correctly for Weekly Jobs
-| | [Documentation]	| Verify that 
+| | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is calculated correctly for Schedulers with a Frequency of Weekly.
 | | [Tags]			| manual	| dates
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -57,7 +57,7 @@
 
 
 | The Next Scheduled Runtime calculates correctly for Monthly Jobs on X day
-| | [Documentation]	| Verify that 
+| | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is calculated correctly for Schedulers with a Frequency of Monthly and a Send On value of a given day of the month.
 | | [Tags]			| manual	| dates
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -77,8 +77,8 @@
 | | ... | Verify that the Next Scheduled Runtime is set to "<The date of the next day 28 of the month> 10:11 PM"
 
 
-| The Next Scheduled Runtime calculates correctly for Monthly Jobs on the X Yday of the Month
-| | [Documentation]	| Verify that 
+| The Next Scheduled Runtime calculates correctly for Monthly Jobs on the X Y of the Month
+| | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is calculated correctly for Schedulers with a Frequency of Monthly and a Send On value of a given occurance of a given day of the week.
 | | [Tags]			| manual	| dates
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -118,7 +118,7 @@
 
 
 | The Next Scheduled Runtime updates correctly when the scheduled job runs
-| | [Documentation]	| Verify that 
+| | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is updated correctly when its Scheduled Job runs.
 | | [Tags]			| manual	| dates	| timing
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -157,15 +157,13 @@
 | | ... | Verify that the Next Scheduled Runtime is set to "There are no upcoming runs scheduled."
 
 
-| The Last Runtime field is empty when the Reminder has never been sent
-| | [Documentation]	| Verify that 
+| The Last Runtime field is empty when the Integration Point has never been Imported
+| | [Documentation]	| Verify that when an Integration Point has never been Imported it has a blank Last Runtime field. 
 | | [Tags]			| manual	| dates	| workspace_state
 | | Run the following manual steps:
-| | ... | Preconditions:
-| | ... | 1. This Integration Point has never been run
-| | ... | 
 | | ... | Steps:
-| | ... | 1. View the Integration Point
+| | ... | 1. Create a New Integration Point and DO NOT Import it
+| | ... | 2. View that Integration Point
 | | ... | 
 | | ... | Expected Results:
 | | ... | Verify that the Last Runtime is set to "${EMPTY}"
