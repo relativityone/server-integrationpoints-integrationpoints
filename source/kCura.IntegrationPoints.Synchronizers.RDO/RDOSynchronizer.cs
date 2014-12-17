@@ -29,7 +29,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					"Is System Artifact",
 					"System Created By",
 					"System Created On",
-					"System Generated",
 					"System Last Modified By",
 					"System Last Modified On",
 					"Artifact ID"
@@ -55,9 +54,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					}
 					}
 				}
-
 			return null;
-
 		}
 	
 		public IEnumerable<FieldEntry> GetFields(string options)
@@ -74,20 +71,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			return allFieldsForRdo;
 		}
-	
-		public IEnumerable<FieldEntry> HasParent(string options)
+
+
+		public bool HasParent(string options)
 		{
-			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
-			var fields = _fieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
-			var allFieldsForRdo = new List<FieldEntry>();
-			foreach (var result in fields)
-			{
-				if (!IgnoredList.Contains(result.Name))
-				{
-					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString()});
-				}
-			}
-			return allFieldsForRdo;
+			int id = 0;
+			Int32.TryParse(options, out id);
+			return false;
 		}
 
 

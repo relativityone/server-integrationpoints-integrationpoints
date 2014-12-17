@@ -173,6 +173,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\FieldMapController.cs" />
+    <Compile Include="Controllers\API\SourceFieldsController.cs" />
     <Compile Include="Controllers\API\SourceTypeController.cs" />
     <Compile Include="Controllers\API\RdoFilterController.cs" />
     <Compile Include="Controllers\API\TestController.cs" />
@@ -346,6 +347,15 @@
     <Content Include="Scripts\ip-messaging.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
+    <Content Include="Scripts\jquery-1.8.2.min.js.map">
+      <DependentUpon>jquery-1.8.2.js</DependentUpon>
+    </Content>
+    <Content Include="Scripts\jquery-ui-1.8.11.min.js.map">
+      <DependentUpon>jquery-ui-1.8.11.js</DependentUpon>
+    </Content>
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js.map">
+      <DependentUpon>jquery.unobtrusive-ajax.js</DependentUpon>
+    </Content>
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-ui-1.8.11.js" />
     <Content Include="Scripts\jquery-ui-1.8.11.min.js" />
@@ -440,6 +450,21 @@
     <Content Include="Views\IntegrationPoints\_Configuration.cshtml" />
     <Content Include="Views\IntegrationPoints\LDAPConfiguration.cshtml" />
     <Content Include="Views\Shared\_StepLayout.cshtml" />
+    <Content Include="Scripts\jquery.validate.min.js.map">
+      <DependentUpon>jquery.validate.js</DependentUpon>
+    </Content>
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js.map">
+      <DependentUpon>jquery.validate.unobtrusive.js</DependentUpon>
+    </Content>
+    <Content Include="Scripts\q.min.js.map">
+      <DependentUpon>q.js</DependentUpon>
+    </Content>
+    <Content Include="Scripts\select2.min.js.map">
+      <DependentUpon>select2.js</DependentUpon>
+    </Content>
+    <Content Include="Scripts\postal\postal.min.js.map">
+      <DependentUpon>postal.js</DependentUpon>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -456,6 +481,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
       <Name>kCura.IntegrationPoints.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
+      <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
+      <Name>kCura.IntegrationPoints.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>

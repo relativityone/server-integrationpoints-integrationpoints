@@ -77,7 +77,7 @@
 		<div class="field-row parent-identifier" data-bind="visible: hasParent">
 			<div class="field-label required">Parent Attribute</div>
 			<div class="field-value ">
-				<select id="parent-identifier" data-bind="options: overlay,  value: selectedOverlay, optionsText: 'name', select2: {}" >
+				<select id="parent-identifier" data-bind="options: sourceField, value: parentIdentifier, optionsText: 'name', optionsCaption: 'Select...', select2: {}" >
 				</select>
 			</div>
 		</div>

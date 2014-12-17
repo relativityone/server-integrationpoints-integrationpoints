@@ -92,7 +92,7 @@
 | | ... | 2. Click the Parent Attribute list
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that the currently opened select2 Dropdown has the following choices in order | ${ParentAttributeID} | 
+| | ... | 1. Verify that the currently opened select2 Dropdown has the following choices in order | ${ParentAttributeID} | Every field from the Source Attribute list 
 
 | Can create when Parent Attribute is hidden
 | | [Documentation] | Verify that when the Parent Attribute list hidden, that the Create IP Process can be completed
