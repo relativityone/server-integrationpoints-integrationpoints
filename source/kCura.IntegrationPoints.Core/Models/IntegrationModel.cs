@@ -32,19 +32,19 @@ namespace kCura.IntegrationPoints.Core.Models
 
 		public IntegrationModel(IntegrationPoint ip)
 		{
-			this.ArtifactID = ip.ArtifactId;
-			Name = ip.Name;
-			Overwrite = ip.OverwriteFields;
-			SourceProvider = ip.SourceConfiguration;
-			Destination = ip.DestinationConfiguration;
-			EnableScheduler = ip.EnableScheduler;
-			Frequency = ip.Frequency;
-			StartDate = ip.StartDate;
-			EndDate = ip.EndDate;
-			ScheduleTime = ip.ScheduledTime;
-			NextRun = ip.NextScheduledRuntime;
-			LastRun = ip.LastRuntime;
-			this.SourceConfiguration = ip.SourceConfiguration;
+			//this.ArtifactID = ip.ArtifactId;
+			//Name = ip.Name;
+			//Overwrite = ip.OverwriteFields;
+			//SourceProvider = ip.SourceConfiguration;
+			//Destination = ip.DestinationConfiguration;
+			//EnableScheduler = ip.EnableScheduler;
+			//Frequency = ip.Frequency;
+			//StartDate = ip.StartDate;
+			//EndDate = ip.EndDate;
+			//ScheduleTime = ip.ScheduledTime;
+			//NextRun = ip.NextScheduledRuntime;
+			//LastRun = ip.LastRuntime;
+			//this.SourceConfiguration = ip.SourceConfiguration;
 		}
 	}
 }

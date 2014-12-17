@@ -48,17 +48,12 @@ namespace kCura.IntegrationPoints.Data
 		public const string NextScheduledRuntime = @"Next Scheduled Runtime";
 		public const string LastRuntime = @"Last Runtime";
 		public const string FieldMappings = @"Field Mappings";
-		public const string OverwriteFields = @"Overwrite Fields";
 		public const string EnableScheduler = @"Enable Scheduler";
-		public const string Frequency = @"Frequency";
-		public const string Reoccur = @"Reoccur";
-		public const string SendOn = @"Send On";
-		public const string StartDate = @"Start Date";
-		public const string EndDate = @"End Date";
-		public const string ScheduledTime = @"Scheduled Time";
 		public const string SourceConfiguration = @"Source Configuration";
 		public const string DestinationConfiguration = @"Destination Configuration";
 		public const string SourceProvider = @"Source Provider";
+		public const string DestinationProvider = @"Destination Provider";
+		public const string ScheduleRule = @"Schedule Rule";
 		public const string Name = @"Name";
 	}
 
@@ -67,17 +62,12 @@ namespace kCura.IntegrationPoints.Data
 		public const string NextScheduledRuntime = @"5b1c9986-f166-40e4-a0dd-a56f185ff30b";
 		public const string LastRuntime = @"90d58af1-f79f-40ae-85fc-7e42f84dbcc1";
 		public const string FieldMappings = @"1b065787-a6e4-4d70-a7ed-f49d770f0bc7";
-		public const string OverwriteFields = @"0c0bbc57-b88c-4b3a-9250-7beb0252adbb";
 		public const string EnableScheduler = @"bcdafc41-311e-4b66-8084-4a8e0f56ca00";
-		public const string Frequency = @"a2c2c3c5-a350-4617-a3e9-ddd284bed868";
-		public const string Reoccur = @"bc50bfc6-8ddf-4476-ad12-d99140a8f6dd";
-		public const string SendOn = @"d3b03a4d-9e80-492f-bdb7-ecc5f0227bde";
-		public const string StartDate = @"05449a69-1923-4aae-936c-63d42ee3248d";
-		public const string EndDate = @"8d904115-d503-4a27-98e9-98d442f5ef37";
-		public const string ScheduledTime = @"6a38caa0-c3fc-4d66-b915-aaf30d41399b";
 		public const string SourceConfiguration = @"b5000e91-82bd-475a-86e9-32fefc04f4b8";
 		public const string DestinationConfiguration = @"b1323ca7-34e5-4e6b-8ff1-e8d3b1a5fd0a";
 		public const string SourceProvider = @"dc902551-2c9c-4f41-a917-41f4a3ef7409";
+		public const string DestinationProvider = @"4e63a5cc-8af8-49d0-8bf7-04e57f8c148c";
+		public const string ScheduleRule = @"000f25ef-d714-4671-8075-d2a71cac396b";
 		public const string Name = @"d534f433-dd92-4a53-b12d-bf85472e6d7a";
 	}
 
@@ -87,7 +77,6 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public const string Identifier = @"Identifier";
 		public const string SourceConfigurationUrl = @"Source Configuration Url";
-		public const string ConfigurationSource = @"Configuration Source";
 		public const string Name = @"Name";
 	}
 
@@ -95,7 +84,6 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public const string Identifier = @"d0ecc6c9-472c-4296-83e1-0906f0c0fbb9";
 		public const string SourceConfigurationUrl = @"b1b34def-3e77-48c3-97d4-eae7b5ee2213";
-		public const string ConfigurationSource = @"8f730e9a-e06f-427a-8c28-21b708a2cf88";
 		public const string Name = @"9073997b-319e-482f-92fe-67e0b5860c1b";
 	}
 
@@ -104,19 +92,6 @@ namespace kCura.IntegrationPoints.Data
 	#endregion
 
 	#region "Choice Constants"
-
-	public partial class OverwriteFieldsChoices
-	{
-		public static Choice IntegrationPointAppend = new Choice(0, @"Append");
-		public static Choice IntegrationPointAppendAndOverlay = new Choice(0, @"Append and overlay");
-	}
-
-	public partial class FrequencyChoices
-	{
-		public static Choice IntegrationPointDaily = new Choice(0, @"Daily");
-		public static Choice IntegrationPointWeekly = new Choice(0, @"Weekly");
-		public static Choice IntegrationPointMonthly = new Choice(0, @"Monthly");
-	}
 
 	#endregion								
 
