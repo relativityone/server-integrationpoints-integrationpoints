@@ -148,6 +148,15 @@
 | | ... | Expected Results:
 | | ... | 1. Verify that the row color for the selected field is grey
 
+| Double clicking a field moves it
+| | [Documentation] | Verify that a double clicking a field moves it to the other field, in this case from Workspace to Selected Workspace.
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | 1. Double clicking one field in the Workspace Fields list.
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the field has been moved to the Selected Workspace list
+
 *** Keywords *** 
 
 | Verify that the following field is not in the following list
