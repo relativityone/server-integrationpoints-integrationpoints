@@ -36,27 +36,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				return list;
 			}
 		}
-
-		//public FieldEntry GetIdentifier(string options)
-		//{
-		//	ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
-		//	var fields = _fieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
-		//	var identifierField = new FieldEntry();
-		//	foreach (var result in fields)
-		//	{
-		//		var items = result.Fields;
-
-		//		if (items[0].FieldCategory == FieldCategory.Identifier && !items[2].Value.Equals("Single Object")
-		//				&& !items[2].Value.Equals("Multiple Object") && !IgnoredList.Contains(result.Name))
-		//		{
-		//			identifierField.DisplayName = result.Name;
-		//			identifierField.FieldIdentifier = result.ArtifactID.ToString();
-		//			return identifierField;
-		//		}
-
-		//	}
-		//	return null;
-		//}
 	
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
@@ -94,7 +73,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private List<KeyValuePair<string, string>> _rowErrors;
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{
-
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
 			Dictionary<string, int> importFieldMap = fieldMap.ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
 
