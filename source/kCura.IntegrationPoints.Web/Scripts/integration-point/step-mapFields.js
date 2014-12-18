@@ -59,43 +59,15 @@ ko.validation.insertValidationMessage = function (element) {
 		this.hasParent = ko.observable(false);
 		this.parentIdentifier = ko.observable();
 
-		var workspaceFieldPromise = root.data.ajax({ type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({ settings: model.destination }) });
-		//var types = mapFields(result);
-		//fields.workspaceFields = types;
-		//self.overlay(types);
-		//var idfield = {};
-		//$.each(result, function () {
-		//	idfield = this;
-		//	return !this.isIdentifier;
-		//});
-
-		//$.each(self.overlay(), function (index, entry) {
-		//	if (entry.identifier === idfield.fieldIdentifier) {
-		//		self.selectedOverlay(entry);
-		//		return false;
-		//	}
-		//});
-
-		//return result;
-
+		var workspaceFieldPromise = root.data.ajax({ type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({ settings: model.destination }) }).then(function (result) {
+			var types = mapFields(result);
+			self.overlay(types);
+			return result;
+		});
 		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceFields'), data: { 'options': JSON.stringify({ artifactTypeID: artifactTypeId }), 'type': JSON.stringify({ artifactTypeID: artifactTypeId }) } });
-		//var types = mapFields(result);
-		//self.sourceField(types);
-		//return result;
-
+		
 		var mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap', artifactId) });
-
-		//var sourceArray = [];
-		//var destinationArray = [];
-		//$.each(result || [], function () {
-		//	sourceArray.push(mapField(this.sourceField));
-		//	destinationArray.push(mapField(this.destinationField));
-		//});
-		//self.mappedWorkspace(destinationArray);
-		//self.sourceMapped(sourceArray);
-		//return result;
-
-
+				
 		var destination = JSON.parse(model.destination);
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('rdometa', destination.artifactTypeID) }).then(function (result) {
 			self.hasParent(result.hasParent);
@@ -147,8 +119,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.sourceField(mapFields(sourceNotMapped));
 				self.sourceMapped(mapFields(sourceMapped));
 			});
-
-
+		
 		/********** Submit Validation**********/
 		this.submit = function () {
 
@@ -262,7 +233,7 @@ ko.validation.insertValidationMessage = function (element) {
 		}
 
 	};// end of the viewmodel
-		
+
 
 	var Step = function (settings) {
 		var self = this;
