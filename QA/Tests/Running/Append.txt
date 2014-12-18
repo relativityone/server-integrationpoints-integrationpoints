@@ -1,0 +1,65 @@
+*** Settings ***
+| Documentation 	| Verify that running an Append RIP creates new records, but does not update existing records.
+| Metadata		    | Authors	| Daniel Oliver
+| Force Tags		| in-progress | team.method
+#| Suite Setup		| Open and Log in to Method
+#| Test Setup        | 
+#| Test Teardown 	| Capture screenshot if test fails
+#| Suite Teardown	| Close all browsers
+
+*** Variables ***
+
+| ${WorkspaceName}	    | Relativity Legal Hold
+| ${RIPOverlay1}        | New records in the source | #One new record, one record that matches an existing record in the Target.
+
+*** Test Cases ***
+
+| An Append import Creates new records
+| | [Documentation] | Verify that when an Append RIP is run which has new Source records, that it creates new records in the target RDO.
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. A RIP exists where the source has new records that do not exist in the Target.
+| | ... |
+| | ... | Steps:
+| | ... | 1. Run import ${RIPOverlay1} 
+| | ... | 2. Go to the Target tab where the records should be imported to
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the correct new records have are created.
+
+| An Append import Creates new History records
+| | [Documentation] | Verify that when an Append RIP is run which has new source recods, that there are history entries for the newly created records in the target RDO.
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The "An Append import can Create new records" case has been run
+| | ... |
+| | ... | Steps:
+| | ... | 1. View the History records for ${RIPOverlay1} 
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that there are Create entries for the newly created records
+
+| An Append import does not update existing records
+| | [Documentation] | Verify that when an Append RIP is run which has new source records and has matches to existing records, that it does not update the existing records in the target RDO.
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The "An Append import can Create new records" case has been run
+| | ... |
+| | ... | Steps:
+| | ... | 1. View the History records for ${RIPOverlay1}
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that there are no Update entries for the existing records that matched the Source.
+
+*** Keywords *** 
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource  | C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
+
