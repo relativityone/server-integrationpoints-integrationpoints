@@ -55,11 +55,15 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public IEnumerable<FieldMap> GetFieldMap(int objectId)
 		{
-			var fieldmap = _context.RsapiService.IntegrationPointLibrary.Read(objectId, new Guid(Data.IntegrationPointFieldGuids.FieldMappings)).FieldMappings;
 			IEnumerable<FieldMap> mapping = new List<FieldMap>();
-			if (!string.IsNullOrEmpty(fieldmap))
+			if (objectId > 0)
 			{
-				mapping = _serializer.Deserialize<IEnumerable<FieldMap>>(fieldmap);
+				var fieldmap = _context.RsapiService.IntegrationPointLibrary.Read(objectId, new Guid(Data.IntegrationPointFieldGuids.FieldMappings)).FieldMappings;
+
+				if (!string.IsNullOrEmpty(fieldmap))
+				{
+					mapping = _serializer.Deserialize<IEnumerable<FieldMap>>(fieldmap);
+				}
 			}
 			return mapping;
 		}
@@ -69,7 +73,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			var ip = model.ToRdo();
 			var rule = this.ToScheduleRule(model);
 			ip.ScheduleRule = rule.ToSerializedString();
-			
+
 			//save RDO
 			if (ip.ArtifactId > 0)
 			{
@@ -118,13 +122,17 @@ namespace kCura.IntegrationPoints.Core.Services
 		private PeriodicScheduleRule ToScheduleRule(IntegrationModel model)
 		{
 			var periodicScheduleRule = new PeriodicScheduleRule();
-			var startDate = DateTime.Parse(model.Scheduler.StartDate);
-			periodicScheduleRule.StartDate = startDate;
-			if (!string.IsNullOrEmpty(model.Scheduler.EndDate))
+			DateTime startDate = DateTime.Now;
+			if (DateTime.TryParse(model.Scheduler.StartDate, out startDate))
 			{
-				var endDate = DateTime.Parse(model.Scheduler.EndDate);
+				periodicScheduleRule.StartDate = startDate;
+			}
+			DateTime endDate = DateTime.Now;
+			if (DateTime.TryParse(model.Scheduler.EndDate, out endDate))
+			{
 				periodicScheduleRule.EndDate = endDate;
 			}
+
 			//since we do not know what user local time is, time is passed in UTC
 			TimeSpan time;
 			if (TimeSpan.TryParse(model.Scheduler.ScheduledTime, out time))
@@ -150,10 +158,11 @@ namespace kCura.IntegrationPoints.Core.Services
 					if (monthlySendOn.MonthChoice == MonthlyType.Days)
 					{
 						periodicScheduleRule.DayOfMonth = monthlySendOn.SelectedDay;
-					}else if (monthlySendOn.MonthChoice == MonthlyType.Month)
+					}
+					else if (monthlySendOn.MonthChoice == MonthlyType.Month)
 					{
 						periodicScheduleRule.DaysToRun = monthlySendOn.SelectedDayOfTheMonth;
-						periodicScheduleRule.SetLastDayOfMonth = monthlySendOn.SelectedType == OccuranceInMonth.Last; 
+						periodicScheduleRule.SetLastDayOfMonth = monthlySendOn.SelectedType == OccuranceInMonth.Last;
 						periodicScheduleRule.OccuranceInMonth = monthlySendOn.SelectedType;
 					}
 					//if (this.SendOn.DayOfTheMonth > 0) periodicScheduleRule.DayOfMonth = this.SendOn.DayOfTheMonth;
