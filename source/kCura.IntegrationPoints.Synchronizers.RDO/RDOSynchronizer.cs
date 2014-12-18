@@ -67,8 +67,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				if (!IgnoredList.Contains(result.Name))
 				{
-					var idField = Convert.ToInt32(result.Fields.First(x => x.Name.Equals("Is Identifier")).Value);
-					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = idField == 1});
+					var idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
+					bool isIdentifier = false;
+					if (idField != null)
+					{
+						isIdentifier = Convert.ToInt32(idField.Value) == 1;
+					}
+					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier});
 				}
 			}
 			return allFieldsForRdo;
