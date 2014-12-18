@@ -21,12 +21,23 @@
 	});
 
 	root.messaging.subscribe("goToStep", function (step) {
-		$('#stepProgress').stepProgress('goToStep', step +1);
+		$('#stepProgress').stepProgress('goToStep', step + 1);
 	});
 
-	$('#cancel').on('click', function () {
-		window.history.go(-2);
+	root.messaging.subscribe("goToStep", function (step) {
+		if ($('#stepProgress').stepProgress('last')) {
+			$('#next').hide();
+			$('#save').show();
+		} else {
+			$('#next').show();
+			$('#save').hide();
+		}
 	});
+	
+	$('#save').on('click', function () {
+		IP.messaging.publish('save');
+	});
+
 
 
 })(IP);

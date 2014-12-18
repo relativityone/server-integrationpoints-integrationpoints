@@ -15,6 +15,8 @@ namespace kCura.IntegrationPoints.Data.Installers
 		{
 			container.Register(Component.For<Queries.CreateErrorRdo>().ImplementedBy<Queries.CreateErrorRdo>().LifestyleTransient());
 			container.Register(Component.For<RelativityRdoQuery>().ImplementedBy<RelativityRdoQuery>().LifestyleTransient());
+			container.Register(Component.For<ChoiceQuery>().ImplementedBy<ChoiceQuery>().LifeStyle.Transient);
+
 		}
 	}
 }

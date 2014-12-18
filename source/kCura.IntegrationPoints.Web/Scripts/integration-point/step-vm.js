@@ -16,14 +16,14 @@
 			this.currentStep().getTemplate();
 		}, this);
 
-		
+
 		this.goToStep = function (step, model) {
 			var totalSteps = this.steps().length - 1;
 			if (step > totalSteps) {
-				step = totalSteps;
+				return totalSteps;
 			}
 			if (step < 0) {
-				step = 0;
+				return 0;
 			}
 			var nextStep = this.steps()[step];
 			if (nextStep.loadModel) {
@@ -51,17 +51,43 @@
 			ko.applyBindings(vm, document.getElementById('pointBody'));
 		});
 
-		IP.messaging.subscribe('next', function () {
+		var _next = function () {
+			var d = IP.data.deferred().defer();
 			vm.currentStep().submit().then(function (result) {
 				result.artifactID = artifactID;
 				step = vm.goToStep(++step, result);
 				model = result;
 				IP.messaging.publish('goToStep', step);
+				d.resolve(result);
 			}).fail(function (err) {
 				IP.message.error.raise(err);
+				d.reject(err);
+			});
+			return d.promise;
+		};
+
+		IP.messaging.subscribe('next', function () {
+			_next();
+		});
+
+		IP.messaging.subscribe('save', function () {
+			_next().then(function (result) {
+				IP.messaging.publish('saveComplete', result);
+			}, function (error) {
+				IP.message.error.raise(error);
+			});
+
+		});
+
+		IP.messaging.subscribe('saveComplete', function (model) {
+			IP.data.ajax({ type: 'POST', url: IP.utils.generateWebAPIURL('IntegrationPointsAPI'), data: JSON.stringify(model)}).then(function () {
+
+			}, function () {
+
 			});
 		});
-				
+
+
 		IP.messaging.subscribe('back', function () {
 			if (typeof (vm.currentStep().back) !== "function") {
 				vm.currentStep().back = function () {
@@ -69,13 +95,14 @@
 					d.resolve();
 					return d.promise;
 				};
-
 			}
+
 			vm.currentStep().back().then(function () {
 				step = vm.goToStep(--step, model);
 				IP.messaging.publish('goToStep', step);
 			});
 		});
+
 
 	});
 })(ko);

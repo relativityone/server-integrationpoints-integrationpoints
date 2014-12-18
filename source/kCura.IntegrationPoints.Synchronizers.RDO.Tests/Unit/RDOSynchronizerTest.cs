@@ -97,6 +97,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				new Artifact {Name = "FirstName", ArtifactID = 5}
 			});
 
+
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
 			var numberOfFields = rdoSyncronizer.GetFields(str).Count();

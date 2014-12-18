@@ -180,22 +180,26 @@ ul li .day-select {
 }
 .map-field-title {
 	padding-top: 20px;
-	display: block;
+	display: flex;
 }
 .workspace-field {
 	float: left;
 	padding-bottom: 10px;
 }
 .source-field {
-	float: right;
+	float: left;
 	padding-bottom: 10px; 
-	margin-right: 14%;
+	margin-left: 835px;
 }
 .list-title {
 	font-size: 13px;
 }
+
+#fieldMappings {
+	min-width: 1250px;
+}
 .selection {
 	vertical-align: middle;
 	padding-right: 17px;
-	
+	padding-left: 17px;
 }

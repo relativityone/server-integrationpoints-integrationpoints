@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Castle.Facilities.TypedFactory;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 {
@@ -10,7 +11,7 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 		{
 			if (method.Name.Equals("GetSyncronizer"))
 			{
-
+				return typeof (RdoSynchronizer);
 			}
 			return base.GetComponentType(method, arguments);
 		}

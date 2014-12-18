@@ -33,9 +33,11 @@
 		this.bus =IP.frameMessaging(); 
 		this.loadModel = function (model) {//loads a readonly version of the ipmodel
 			this.stepKey = model.source.selectedType;
+			this.model = model;
+			if(typeof(stepCache[model.source.selectedType]) === "undefined"){
+				stepCache[model.source.selectedType] = self.model.sourceConfiguration || '';
+			}
 			if (!this.hasBeenLoaded) {
-				this.model = model;
-				stepCache[model.source.selectedType] = self.model;
 				this.hasBeenLoaded = true;
 				this.source = $.grep(model.source.sourceTypes, function(item){
 					return item.value === model.source.selectedType;
@@ -82,7 +84,8 @@
 			this.frameBus.publish('submit');
 			//this is sketchy at best
 			this.bus.subscribe('saveComplete', function (data) {
-				self.model.sourceConfiguration = data;
+				self.model.sourceConfiguration = JSON.stringify(data);
+				stepCache[self.model.source.selectedType] = self.model.sourceConfiguration;
 				d.resolve(self.model);
 			});
 			this.bus.subscribe('saveError', function (error) {

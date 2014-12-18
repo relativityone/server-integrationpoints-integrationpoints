@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management.Instrumentation;
 using kCura.IntegrationPoints.Data.Attributes;
 using kCura.Relativity.Client.DTOs;
+using Choice = kCura.Relativity.Client.Choice;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -31,7 +33,13 @@ namespace kCura.IntegrationPoints.Data
 
 		public virtual T GetField<T>(Guid fieldGuid)
 		{
-			return (T) Rdo[fieldGuid].Value;
+			var value = Rdo[fieldGuid].Value;
+			var choice = value as Relativity.Client.DTOs.Choice;
+			if (choice != null)
+			{
+				value = new Choice(choice.ArtifactID, choice.Name);
+			}
+			return (T) value;
 		}
 
 		public string GetFieldName(Guid fieldGuid)
@@ -41,13 +49,21 @@ namespace kCura.IntegrationPoints.Data
 
 		public virtual void SetField<T>(Guid fieldName, T fieldValue, Boolean markAsUpdated = true)
 		{
-			if (!Rdo.Fields.Contains(new FieldValue(fieldName)))
+			object value = fieldValue;
+			var choice = fieldValue as Choice;
+			if (choice != null)
 			{
-				Rdo.Fields.Add(new FieldValue(fieldName, fieldValue));
+				var choiceDto = new Relativity.Client.DTOs.Choice(choice.ArtifactID);
+				choiceDto.Name = choice.Name;
+				value = choiceDto;
+			}
+			if (!Rdo.Fields.Any(x=>x.Guids.Contains(fieldName)))
+			{
+				Rdo.Fields.Add(new FieldValue(fieldName, value));
 			}
 			else
 			{
-				Rdo[fieldName].Value = fieldValue;	
+				Rdo[fieldName].Value = value;	
 			}
 			
 		}
@@ -71,7 +87,14 @@ namespace kCura.IntegrationPoints.Data
 			{
 				return this.Rdo.ArtifactID;
 			}
-			set {  }
+			set
+			{
+				//this is the shittiest hack ever
+				var newRdo = new RDO(value);
+				newRdo.ArtifactTypeGuids.AddRange(this.Rdo.ArtifactTypeGuids);
+				newRdo.Fields.AddRange(this.Rdo.Fields);
+				this.Rdo = newRdo;
+			}
 		}
 
 		public int? ParentArtifactId { get; set; }

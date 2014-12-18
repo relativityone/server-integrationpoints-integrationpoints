@@ -8,8 +8,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class IntegrationPointsAPIController : ApiController
 	{
-		private readonly IntegrationPointReader _reader;
-		public IntegrationPointsAPIController(IntegrationPointReader reader)
+		private readonly IntegrationPointService _reader;
+		public IntegrationPointsAPIController(IntegrationPointService reader)
 		{
 			_reader = reader;
 		}
@@ -22,12 +22,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				model = _reader.ReadIntegrationPoint(id);
 			}
+
 			return Request.CreateResponse(HttpStatusCode.Accepted, model);
 		}
 
-		[HttpPut]
-		public HttpResponseMessage Update()
+		[HttpPost]
+		public HttpResponseMessage Update(IntegrationModel model)
 		{
+			_reader.SaveIntegration(model);
 			return Request.CreateResponse(HttpStatusCode.Accepted);
 		}
 
