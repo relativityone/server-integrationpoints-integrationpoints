@@ -7,7 +7,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;
 using Newtonsoft.Json;
-using FieldType = kCura.Relativity.Client.FieldType;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
@@ -38,26 +37,26 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		public FieldEntry GetIdentifier(string options)
-		{
-			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
-			var fields = _fieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
-			var identifierField=new FieldEntry();
-			foreach (var result in fields)
-			{
-				var items = result.Fields;
+		//public FieldEntry GetIdentifier(string options)
+		//{
+		//	ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
+		//	var fields = _fieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
+		//	var identifierField = new FieldEntry();
+		//	foreach (var result in fields)
+		//	{
+		//		var items = result.Fields;
 
-				if (items[0].FieldCategory == FieldCategory.Identifier && !items[2].Value.Equals("Single Object") 
-						&& !items[2].Value.Equals("Multiple Object")  && !IgnoredList.Contains(result.Name))
-					{
-						identifierField.DisplayName = result.Name;
-						identifierField.FieldIdentifier = result.ArtifactID.ToString();
-						return identifierField; 
-					}
-					
-				}
-			return null;
-		}
+		//		if (items[0].FieldCategory == FieldCategory.Identifier && !items[2].Value.Equals("Single Object")
+		//				&& !items[2].Value.Equals("Multiple Object") && !IgnoredList.Contains(result.Name))
+		//		{
+		//			identifierField.DisplayName = result.Name;
+		//			identifierField.FieldIdentifier = result.ArtifactID.ToString();
+		//			return identifierField;
+		//		}
+
+		//	}
+		//	return null;
+		//}
 	
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
@@ -68,19 +67,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				if (!IgnoredList.Contains(result.Name))
 				{
-					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString()});
+					var idField = Convert.ToInt32(result.Fields.First(x => x.Name.Equals("Is Identifier")).Value);
+					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = idField == 1});
 				}
 			}
 			return allFieldsForRdo;
 		}
 
 
-		public bool HasParent(string options)
-		{
-			int id = 0;
-			Int32.TryParse(options, out id);
-			return false;
-		}
+		//public bool HasParent(string options)
+		//{
+		//	int id = 0;
+		//	Int32.TryParse(options, out id);
+		//	return false;
+		//}
 
 
 		private IImportService _importService;

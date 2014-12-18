@@ -95,6 +95,7 @@ namespace kCura.IntegrationPoints.Core.Models
 		public DateTime? NextRun { get; set; }
 		public DateTime? LastRun { get; set; }
 		public string SourceConfiguration { get; set; }
+		public string Map { get; set; }
 
 		public IntegrationModel()
 		{
@@ -111,7 +112,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			point.SourceProvider = null;
 
 			point.DestinationConfiguration = this.Destination;
-
+			point.FieldMappings = this.Map;
 			point.EnableScheduler = this.Scheduler.EnableScheduler;
 			return point;
 		}

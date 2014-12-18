@@ -92,6 +92,7 @@
     <Compile Include="Services\ErrorService.cs" />
     <Compile Include="Services\IJobManager.cs" />
     <Compile Include="Services\IntegrationPointService.cs" />
+    <Compile Include="Services\ObjectTypeService.cs" />
     <Compile Include="Services\Provider\DataProviderComponetSelector.cs" />
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />
     <Compile Include="Services\Provider\IDataSourceProvider.cs" />

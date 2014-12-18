@@ -9,11 +9,13 @@ namespace kCura.IntegrationPoints.Web
 	{
 		public static void Register(HttpConfiguration config)
 		{
+			
 			config.Routes.MapHttpRoute(
 					name: "DefaultApi",
 					routeTemplate: "{workspaceID}/api/{controller}/{id}",
 					defaults: new { id = RouteParameter.Optional }
 			);
+			//config.MapHttpAttributeRoutes();
 		}
 	}
 }

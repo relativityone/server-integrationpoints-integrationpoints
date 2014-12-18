@@ -25,10 +25,13 @@ ko.validation.insertValidationMessage = function (element) {
 
 (function (root, ko) {
 
+	function mapField(entry) {
+		return { name: entry.displayName, identifer: entry.fieldIdentifier };
+	}
 
 	var mapFields = function (result) {
 		return $.map(result, function (entry) {
-			return { name: entry.displayName, identifier: entry.fieldIdentifier };
+			return mapField(entry);
 		});
 	}
 
@@ -58,61 +61,64 @@ ko.validation.insertValidationMessage = function (element) {
 
 		var workspaceFieldPromise = root.data.ajax({ type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({ settings: model.destination }) })
 			.then(function (result) {
-				debugger;
 				var types = mapFields(result);
 				self.workspaceFields(types);
 				self.overlay(types);
-				var selected = result.selected.fieldIdentifier;
+				var idfield = {};
+				$.each(result, function () {
+					idfield = this;
+					return !this.isIdentifier;
+				});
+
 				$.each(self.overlay(), function (index, entry) {
-					if (entry.identifier === selected) {
+					if (entry.identifier === idfield.fieldIdentifier) {
 						self.selectedOverlay(self.overlay()[index]);
+						return false;
 					}
 				});
-				if (result.hasParent) {
-					self.hasParent(true);
-				}
-
 			});
 
 		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceFields'), data: { 'options': JSON.stringify({ artifactTypeID: artifactTypeId }), 'type': JSON.stringify({ artifactTypeID: artifactTypeId }) } }).then(function (result) {
 			var types = mapFields(result);
 			self.sourceField(types);
 		});
-
-
 		var mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap', artifactId) }).then(function (result) {
-			var source = $.map(result, function (entry) {
-				return {
-					name: entry.sourceField.displayName, identifier: entry.sourceField.fieldIdentifier
-				};
+			var sourceArray = [];
+			var destinationArray = [];
+			$.each(result || [], function () {
+				sourceArray.push(mapField(this.sourceField));
+				destinationArray.push(mapField(this.destinationField));
 			});
-			var workspace = $.map(result, function (entry) {
-				return {
-					name: entry.destinationField.displayName, identifier: entry.destinationField.fieldIdentifier
-				};
-			});
-			self.mappedWorkspace(workspace);
-			self.sourceMapped(source);
+			self.mappedWorkspace(destinationArray);
+			self.sourceMapped(sourceArray);
 		});
 
-		Q.all([workspaceFieldPromise, sourceFieldPromise, mappedSourcePromise]).done(
-			function () {
-				// remove the already source mapped fields 
-				$.each(self.sourceField(), function (index, entry) {
-					$.each(self.sourceMapped(), function (index2, mapped) {
-						if (mapped.name === entry.name) {
-							self.sourceField.remove(self.sourceField()[index]);
-						}
-					});
-				});
+		var destination = JSON.parse(model.destination);
+		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('rdometa', destination.artifactTypeID) }).then(function (result) {
+			self.hasParent(result.hasParent);
+		});
+		var promises = [workspaceFieldPromise, sourceFieldPromise, mappedSourcePromise];
 
-				$.each(self.workspaceFields(), function (index, entry) {
-					$.each(self.mappedWorkspace(), function (index2, mapped) {
-						if (mapped.name === entry.name) {
-							self.workspaceFields.remove(self.workspaceFields()[index]);
-						}
+		root.data.deferred().all(promises).done(
+			function () {
+
+				function filter(source, destination) {
+					var fieldsToRemove = [];
+					$.each(source(), function (_, entry) {
+						$.each(destination(), function (_, mapped) {
+							if (entry.identifer === mapped.identifer) {
+								fieldsToRemove.push(entry);
+							}
+						});
 					});
-				});
+
+					$.each(fieldsToRemove, function () {
+						source.remove(this);
+					});
+				}
+				//removed mapped fields
+				filter(self.sourceField, self.sourceMapped);
+				filter(self.workspaceFields, self.mappedWorkspace);
 
 			});
 
@@ -156,6 +162,7 @@ ko.validation.insertValidationMessage = function (element) {
 			this.sourceField.removeAll(self.selectedSourceField());
 			this.selectedSourceField.splice(0, this.selectedSourceField().length);
 		}
+
 		this.addToSourceField = function () {
 			var requested = this.sourceField;
 			moveItemFromField(self.selectedMappedSource(), requested);
@@ -201,9 +208,6 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 			}
 		}
-
-
-
 
 		this.moveMappedSourceUp = function () {
 			for (var j = 0; j < this.selectedMappedSource().length ; j++) {
@@ -257,7 +261,23 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.submit = function () {
 			var d = root.data.deferred().defer();
-			this.returnModel.map = ko.toJS(this.model);
+			var mapping = ko.toJS(this.model);
+			var map = [];
+			for (var i = 0; i < mapping.sourceMapped.length; i++) {
+				var source = mapping.sourceMapped[i];
+				var destination = mapping.mappedWorkspace[i];
+				map.push({
+					sourceField: {
+						displayName: source.name,
+						fieldIdentifier: source.identifier
+					},
+					destinationField: {
+						displayName: destination.name,
+						fieldIdentifier: destination.identifier
+					}
+				});
+			}
+			this.returnModel.map = JSON.stringify(map);
 			d.resolve(this.returnModel);
 			return d.promise;
 		};
