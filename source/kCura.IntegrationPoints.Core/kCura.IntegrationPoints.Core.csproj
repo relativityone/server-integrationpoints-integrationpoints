@@ -93,7 +93,6 @@
     <Compile Include="Services\IntegrationPointReader.cs" />
     <Compile Include="Services\Provider\DataProviderComponetSelector.cs" />
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />
-    <Compile Include="Services\Provider\IDataSourceProvider.cs" />
     <Compile Include="Services\Provider\MockProviderFactory.cs" />
     <Compile Include="Services\SourceTypes\LdapSourceTypeCreator.cs" />
     <Compile Include="Services\SourceTypes\SourceTypeFactory.cs" />

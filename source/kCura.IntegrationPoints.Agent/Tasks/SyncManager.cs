@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.ScheduleQueueAgent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;

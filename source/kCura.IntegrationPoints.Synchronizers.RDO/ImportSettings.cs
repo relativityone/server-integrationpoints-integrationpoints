@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
@@ -60,18 +61,22 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		#endregion
 
 		#region "Internal Properties"
+		[JsonIgnore]
 		internal kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel AuditLevel
 		{
 			get { return (kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel)this.ImportAuditLevel; }
 		}
+		[JsonIgnore]
 		internal kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum NativeFileCopyMode
 		{
 			get { return (kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum)this.ImportNativeFileCopyMode; }
 		}
+		[JsonIgnore]
 		internal kCura.Relativity.DataReaderClient.OverwriteModeEnum OverwriteMode
 		{
 			get { return (kCura.Relativity.DataReaderClient.OverwriteModeEnum)this.ImportOverwriteMode; }
 		}
+		[JsonIgnore]
 		internal kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior OverlayBehavior
 		{
 			get { return (kCura.EDDS.WebAPI.BulkImportManagerBase.OverlayBehavior)this.ImportOverlayBehavior; }
