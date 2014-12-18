@@ -1,6 +1,6 @@
 
 *** Settings ***
-| Documentation 	| Verify that the Next and Back buttons on the Integration Point Wizard have the correct text on each Step.
+| Documentation 	| Verify that the Integration Points work correctly when multiple Jobs are run together.
 | Metadata		    | Authors	| William Sehy
 | Force Tags		| in-progress	| team.method	| manual
 #| Suite Setup		| Log	| This is the suite setup keyword.
@@ -11,13 +11,15 @@
 
 *** Variables ***
 
-| ${WorkspaceName}	| Relativity Legal Hold
+| ${WorkspaceName}		| Relativity Legal Hold
 | ${IntegrationPoint1}	| 
 | ${IntegrationPoint2}	| 
 | ${IntegrationPoint3}	| 
 | ${IntegrationPoint4}	| 
 | ${Source1}			| 
 | ${Source2}			| 
+| ${ObjectType1}		| 
+| ${ObjectType2}		| 
 
 
 *** Test Cases ***
@@ -26,29 +28,29 @@
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Preconditions:
-| | ... | 1. ${IntegrationPoint1} uses ${Source1} to import Custodians
-| | ... | 2. ${IntegrationPoint1} has [X] Custodians to import
-| | ... | 3. ${IntegrationPoint2} uses ${Source2} to import Custodians
-| | ... | 4. ${IntegrationPoint2} has [Y] Custodians to import
-| | ... | 5. [X] and [Y] are both at least one
+| | ... | 1. ${IntegrationPoint1} uses ${Source1} to import ${ObjectType1}
+| | ... | 2. ${IntegrationPoint1} has [X] Objects to import
+| | ... | 3. ${IntegrationPoint2} uses ${Source2} to import ${ObjectType1}
+| | ... | 4. ${IntegrationPoint2} has [Y] Objects to import
+| | ... | 5. [X] and [Y] are both at least one, and are not the exact same Object (they have different UniqueID values)
 | | ... | 
 | | ... | Steps:
 | | ... | 1. Set both ${IntegrationPoint1} and ${IntegrationPoint2} to import five minutes from now
 | | ... | 2. Wait until the Jobs finish
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the ${IntegrationPoint1} imported all [X] Custodians correctly
-| | ... | 2. Verify that the ${IntegrationPoint2} imported all [Y] Custodians correctly
+| | ... | 1. Verify that the ${IntegrationPoint1} imported all [X] Objects correctly
+| | ... | 2. Verify that the ${IntegrationPoint2} imported all [Y] Objects correctly
 
 
 | Importing different Object Types from the same Source
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Preconditions:
-| | ... | 1. ${IntegrationPoint1} uses ${Source1} to import Custodians
-| | ... | 2. ${IntegrationPoint1} has [X] Custodians to import
-| | ... | 3. ${IntegrationPoint3} uses ${Source1} to import Projects
-| | ... | 4. ${IntegrationPoint3} has [Y] Projects to import
+| | ... | 1. ${IntegrationPoint1} uses ${Source1} to import ${ObjectType1}
+| | ... | 2. ${IntegrationPoint1} has [X] Objects to import
+| | ... | 3. ${IntegrationPoint3} uses ${Source1} to import ${ObjectType2}
+| | ... | 4. ${IntegrationPoint3} has [Y] Objects to import
 | | ... | 5. [X] and [Y] are both at least one
 | | ... | 
 | | ... | Steps:
@@ -56,37 +58,37 @@
 | | ... | 2. Wait until the Jobs finish
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the ${IntegrationPoint1} imported all [X] Custodians correctly
-| | ... | 2. Verify that the ${IntegrationPoint3} imported all [Y] Projects correctly
+| | ... | 1. Verify that the ${IntegrationPoint1} imported all [X] Objects correctly
+| | ... | 2. Verify that the ${IntegrationPoint3} imported all [Y] Objects correctly
 
 
 | Importing the same Object Type from the same Source
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Preconditions:
-| | ... | 1. ${IntegrationPoint1} uses ${Source1} to import Custodians
-| | ... | 2. ${IntegrationPoint1} has [X] Custodians to import
-| | ... | 3. ${IntegrationPoint4} uses ${Source1} to import Custodians
-| | ... | 4. ${IntegrationPoint4} has [Y] Custodians to import
-| | ... | 5. [X] and [Y] are both at least one
+| | ... | 1. ${IntegrationPoint1} uses ${Source1} to import ${ObjectType1}
+| | ... | 2. ${IntegrationPoint1} has [X] Objects to import
+| | ... | 3. ${IntegrationPoint4} uses ${Source1} to import ${ObjectType1}
+| | ... | 4. ${IntegrationPoint4} has [Y] Objects to import
+| | ... | 5. [X] and [Y] are both at least one, and are not the exact same Object (they have different UniqueID values)
 | | ... | 
 | | ... | Steps:
 | | ... | 1. Set both ${IntegrationPoint1} and ${IntegrationPoint4} to import five minutes from now
 | | ... | 2. Wait until the Jobs finish
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the ${IntegrationPoint1} imported all [X] Custodians correctly
-| | ... | 2. Verify that the ${IntegrationPoint4} imported all [Y] Custodians correctly
+| | ... | 1. Verify that the ${IntegrationPoint1} imported all [X] Objects correctly
+| | ... | 2. Verify that the ${IntegrationPoint4} imported all [Y] Objects correctly
 
 
 | Importing different Object Types from different Sources
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Preconditions:
-| | ... | 1. ${IntegrationPoint2} uses ${Source2} to import Custodians
-| | ... | 2. ${IntegrationPoint2} has [X] Custodians to import
-| | ... | 3. ${IntegrationPoint3} uses ${Source1} to import Projects
-| | ... | 4. ${IntegrationPoint3} has [Y] Projects to import
+| | ... | 1. ${IntegrationPoint2} uses ${Source2} to import ${ObjectType1}
+| | ... | 2. ${IntegrationPoint2} has [X] Objects to import
+| | ... | 3. ${IntegrationPoint3} uses ${Source1} to import ${ObjectType2}
+| | ... | 4. ${IntegrationPoint3} has [Y] Objects to import
 | | ... | 5. [X] and [Y] are both at least one
 | | ... | 
 | | ... | Steps:
@@ -94,8 +96,8 @@
 | | ... | 2. Wait until the Jobs finish
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the ${IntegrationPoint2} imported all [X] Custodians correctly
-| | ... | 2. Verify that the ${IntegrationPoint3} imported all [Y] Projects correctly
+| | ... | 1. Verify that the ${IntegrationPoint2} imported all [X] Objects correctly
+| | ... | 2. Verify that the ${IntegrationPoint3} imported all [Y] Objects correctly
 
 
 *** Settings ***
