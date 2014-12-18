@@ -37,25 +37,26 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		public FieldEntry GetIdentifier(string options)
-		{
-			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
-			var fields = _fieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
-			var identifierField = new FieldEntry();
-			foreach (var result in fields)
-			{
-				foreach (var items in result.Fields)
-				{
-					if (items.FieldCategory == FieldCategory.Identifier && !IgnoredList.Contains(result.Name))
-					{
-						identifierField.DisplayName = result.Name;
-						identifierField.FieldIdentifier = result.ArtifactID.ToString();
-						return identifierField;
-					}
-					}
-				}
-			return null;
-		}
+		//public FieldEntry GetIdentifier(string options)
+		//{
+		//	ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
+		//	var fields = _fieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
+		//	var identifierField = new FieldEntry();
+		//	foreach (var result in fields)
+		//	{
+		//		var items = result.Fields;
+
+		//		if (items[0].FieldCategory == FieldCategory.Identifier && !items[2].Value.Equals("Single Object")
+		//				&& !items[2].Value.Equals("Multiple Object") && !IgnoredList.Contains(result.Name))
+		//		{
+		//			identifierField.DisplayName = result.Name;
+		//			identifierField.FieldIdentifier = result.ArtifactID.ToString();
+		//			return identifierField;
+		//		}
+
+		//	}
+		//	return null;
+		//}
 	
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
@@ -66,19 +67,25 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				if (!IgnoredList.Contains(result.Name))
 				{
-					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString()});
+					var idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
+					bool isIdentifier = false;
+					if (idField != null)
+					{
+						isIdentifier = Convert.ToInt32(idField.Value) == 1;
+					}
+					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier});
 				}
 			}
 			return allFieldsForRdo;
 		}
 
 
-		public bool HasParent(string options)
-		{
-			int id = 0;
-			Int32.TryParse(options, out id);
-			return false;
-		}
+		//public bool HasParent(string options)
+		//{
+		//	int id = 0;
+		//	Int32.TryParse(options, out id);
+		//	return false;
+		//}
 
 
 		private IImportService _importService;

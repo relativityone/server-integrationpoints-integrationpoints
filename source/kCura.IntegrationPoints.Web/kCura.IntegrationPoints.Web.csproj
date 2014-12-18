@@ -172,7 +172,9 @@
     <Compile Include="Attributes\WebAPIFilterException.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ControllerCustomPageService.cs" />
+    <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\FieldMapController.cs" />
+    <Compile Include="Controllers\API\RdoMetaController.cs" />
     <Compile Include="Controllers\API\SourceFieldsController.cs" />
     <Compile Include="Controllers\API\SourceTypeController.cs" />
     <Compile Include="Controllers\API\RdoFilterController.cs" />
@@ -192,6 +194,7 @@
     <Compile Include="Models\IpDetailModel.cs" />
     <Compile Include="ISessionService.cs" />
     <Compile Include="Models\ScheduleModel.cs" />
+    <Compile Include="Models\SyncronizerSettings.cs" />
     <Compile Include="SessionService.cs" />
     <Compile Include="WebAPICustomPageService.cs" />
     <Compile Include="WebClientFactory.cs" />

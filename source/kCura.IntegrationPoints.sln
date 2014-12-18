@@ -48,9 +48,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A34000
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueueAgent", "kCura.ScheduleQueueAgent\kCura.ScheduleQueueAgent.csproj", "{C831C856-E74F-48B4-AEBC-1CF15576E082}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueue.Core", "kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj", "{C831C856-E74F-48B4-AEBC-1CF15576E082}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueueAgent.Tests", "kCura.ScheduleQueueAgent.Tests\kCura.ScheduleQueueAgent.Tests.csproj", "{B14533FD-8C47-4292-8C01-2FB008FBF76E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueue.Core.Tests", "kCura.ScheduleQueue.Core.Tests\kCura.ScheduleQueue.Core.Tests.csproj", "{B14533FD-8C47-4292-8C01-2FB008FBF76E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Config", "kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj", "{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}"
 EndProject
@@ -61,6 +61,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Contracts", "kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj", "{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.LDAPProvider", "kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj", "{8398B06F-3716-4834-9593-A017F2714261}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueue.AgentBase", "kCura.ScheduleQueue.AgentBase\kCura.ScheduleQueue.AgentBase.csproj", "{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -276,6 +278,18 @@ Global
 		{8398B06F-3716-4834-9593-A017F2714261}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{8398B06F-3716-4834-9593-A017F2714261}.Release|x64.ActiveCfg = Release|x64
 		{8398B06F-3716-4834-9593-A017F2714261}.Release|x64.Build.0 = Release|x64
+		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Debug|x64.ActiveCfg = Debug|x64
+		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Debug|x64.Build.0 = Debug|x64
+		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Release|x64.ActiveCfg = Release|x64
+		{6E7E31EA-393B-4B70-AA8F-51B12A7CA211}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

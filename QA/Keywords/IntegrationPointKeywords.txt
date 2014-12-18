@@ -227,7 +227,8 @@
 | | ... | FROM [EDDSDBO].[Field] f
 | | ... | JOIN [ObjectType] ot on ot.DescriptorArtifactTypeID = f.FieldArtifactTypeID
 | | ... | WHERE ot.Name = '${ObjectType}'
-| | ... | ORDER BY DisplayName
+| | ... | AND f.isVisible != 0	| # Field is not hidden
+| | ... | ORDER BY DisplayName	| # Sort list
 | | Should Not Be Empty	| ${2DGrid}	| No fields were found for the Object Type "${ObjectType}".
 | | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
 | | @{NonSystemFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List

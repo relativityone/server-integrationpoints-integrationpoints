@@ -21,9 +21,8 @@ namespace kCura.IntegrationPoints.Data
 
 		}
 
-		public virtual List<ObjectType> GetAllRdo()
+		public virtual List<ObjectType> GetAllRdo(List<int> typeIds = null)
 		{
-
 			var qry = new Query<Relativity.Client.DTOs.ObjectType>();
 			qry.Fields = new List<FieldValue>()
 				{
@@ -39,6 +38,16 @@ namespace kCura.IntegrationPoints.Data
 					Direction = SortEnum.Ascending
 				}
 			};
+
+			if (typeIds != null)
+			{
+				qry.Condition = new ObjectCondition
+				{
+					Field = Relativity.Client.DTOs.ObjectTypeFieldNames.DescriptorArtifactTypeID,
+					Operator = ObjectConditionEnum.AnyOfThese,
+					Value = typeIds
+				};
+			}
 
 			var result = _client.Repositories.ObjectType.Query(qry);
 			if (!result.Success)
@@ -50,39 +59,10 @@ namespace kCura.IntegrationPoints.Data
 			return result.Results.Select(x => x.Artifact).ToList();
 		}
 
-		public virtual ObjectType hasParent(int id)
+		public virtual ObjectType GetType(int typeId)
 		{
-			
-			var qry = new Query<Relativity.Client.DTOs.ObjectType>();
-			qry.Fields = new List<FieldValue>()
-				{
-					new FieldValue(Relativity.Client.DTOs.ObjectTypeFieldNames.DescriptorArtifactTypeID),
-					new FieldValue(Relativity.Client.DTOs.ObjectTypeFieldNames.Name),
-					new FieldValue(Relativity.Client.DTOs.ObjectTypeFieldNames.ParentArtifactTypeID)
-				};
-			qry.Condition = new ObjectCondition
-			{
-				Field = Relativity.Client.DTOs.ObjectTypeFieldNames.DescriptorArtifactTypeID,
-				Operator = ObjectConditionEnum.EqualTo,
-				Value = new List<int> { id }
-			};
-			qry.Sorts = new List<Sort>
-			{
-				new Sort
-				{
-					Field = ObjectTypeFieldNames.Name,
-					Direction = SortEnum.Ascending
-				}
-			};
+			return this.GetAllRdo(new List<int> {typeId}).FirstOrDefault();
+		}
 
-			var result = _client.Repositories.ObjectType.Query(qry);
-			if (!result.Success)
-			{
-				var messages = result.Results.Where(x => !x.Success).Select(x => x.Message);
-				var e = new AggregateException(result.Message, messages.Select(x => new Exception(x)));
-				throw e;
-			}
-			return result.Results.Select(x => x.Artifact).FirstOrDefault(y => y.ParentArtifactTypeID > 1000000);
-		} 
 	}
 }

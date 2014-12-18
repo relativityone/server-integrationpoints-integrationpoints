@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 		public string ID { get; set; }
 		public string SourceURL { get; set; }
 	}
-
+	
 	public class SourceTypeFactory
 	{
 		private readonly IServiceContext _context;
