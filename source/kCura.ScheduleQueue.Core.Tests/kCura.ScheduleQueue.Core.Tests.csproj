@@ -7,8 +7,8 @@
     <ProjectGuid>{B14533FD-8C47-4292-8C01-2FB008FBF76E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>kCura.ScheduleQueueAgent.Tests</RootNamespace>
-    <AssemblyName>kCura.ScheduleQueueAgent.Tests</AssemblyName>
+    <RootNamespace>kCura.ScheduleQueue.Core.Tests</RootNamespace>
+    <AssemblyName>kCura.ScheduleQueue.Core.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
