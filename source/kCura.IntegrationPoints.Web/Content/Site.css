@@ -180,7 +180,7 @@ ul li .day-select {
 }
 .map-field-title {
 	padding-top: 20px;
-	display: block;
+	display: flex;
 }
 .workspace-field {
 	float: left;
