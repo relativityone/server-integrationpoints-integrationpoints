@@ -95,7 +95,6 @@
     <Compile Include="Services\ObjectTypeService.cs" />
     <Compile Include="Services\Provider\DataProviderComponetSelector.cs" />
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />
-    <Compile Include="Services\Provider\IDataSourceProvider.cs" />
     <Compile Include="Services\Provider\MockProviderFactory.cs" />
     <Compile Include="Services\SourceTypes\LdapSourceTypeCreator.cs" />
     <Compile Include="Services\SourceTypes\SourceTypeFactory.cs" />
@@ -123,9 +122,9 @@
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.ScheduleQueueAgent\kCura.ScheduleQueueAgent.csproj">
+    <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
       <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
-      <Name>kCura.ScheduleQueueAgent</Name>
+      <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

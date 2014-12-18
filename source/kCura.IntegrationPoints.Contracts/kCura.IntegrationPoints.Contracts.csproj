@@ -67,6 +67,7 @@
     <Compile Include="Models\FieldMapTypeEnum.cs" />
     <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Models\FieldEntry.cs" />
+    <Compile Include="Provider\IDataSourceProvider.cs" />
     <Compile Include="Provider\IFieldProvider.cs" />
     <Compile Include="Syncronizer\IDataSyncronizer.cs" />
   </ItemGroup>

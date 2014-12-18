@@ -3,10 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.ScheduleQueueAgent;
+using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.ScheduleQueue.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
-using kCura.ScheduleQueueAgent.BatchProcess;
+using kCura.ScheduleQueue.Core.BatchProcess;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {

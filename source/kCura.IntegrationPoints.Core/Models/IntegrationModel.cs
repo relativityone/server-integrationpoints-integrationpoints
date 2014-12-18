@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
-using kCura.ScheduleQueueAgent.ScheduleRules;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
