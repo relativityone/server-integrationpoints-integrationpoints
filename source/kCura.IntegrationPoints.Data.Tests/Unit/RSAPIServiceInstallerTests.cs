@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Castle.Core;
 using Castle.MicroKernel;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Data.Installers;
-using kCura.Vendor.Castle.Windsor;
 using NUnit.Framework;
-using IWindsorContainer = Castle.Windsor.IWindsorContainer;
-using WindsorContainer = Castle.Windsor.WindsorContainer;
 
 namespace kCura.IntegrationPoints.Data.Tests.Unit
 {
@@ -28,7 +22,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			var handlers = GetHandlersFor(typeof(IRSAPIService), container);
 
 			//ASSERT
-			
 			Assert.IsTrue(handlers.All(x => x.ComponentModel.LifestyleType == LifestyleType.Transient), "RSAPI Service needs to be a transient lifestyle");
 
 		}

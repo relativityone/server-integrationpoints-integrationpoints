@@ -50,9 +50,3 @@
 	})();
 })(IP || (IP = {}), jQuery);
 
-$(function () {
-	setTimeout(function () {
-		IP.modal.open(200);
-	}, 2000);
-	
-});
