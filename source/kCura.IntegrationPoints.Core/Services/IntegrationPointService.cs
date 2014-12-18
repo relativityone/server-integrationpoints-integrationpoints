@@ -92,6 +92,8 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobService.CreateJob<object>(null, TaskType.SyncManager, ip.ArtifactId, rule);
 		}
 
+
+		#region Please refactor
 		public class Weekly
 		{
 			public List<string> SelectedDays { get; set; }
@@ -109,8 +111,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			Month = 1,
 			Days = 2
 		}
-
-
+		
 		public class Monthly
 		{
 			public MonthlyType MonthChoice { get; set; }
@@ -124,6 +125,25 @@ namespace kCura.IntegrationPoints.Core.Services
 				this.TemplateID = "monthlySendOn";
 			}
 		}
+
+		private static DaysOfWeek FromDayOfWeek(List<DayOfWeek> days)
+		{
+			var map = kCura.ScheduleQueue.Core.ScheduleRules.ScheduleRuleBase.DaysOfWeekMap.ToDictionary(x => x.Value, x => x.Key);
+			return days.Aggregate(DaysOfWeek.None, (current, dayOfWeek) => current | map[dayOfWeek]);
+		}
+
+		public static List<DayOfWeek> FromDaysOfWeek(DaysOfWeek days)
+		{
+			var map = ScheduleRuleBase.DaysOfWeekMap;
+			if (days == DaysOfWeek.None)
+			{
+				return new List<DayOfWeek>();
+			}
+			var values = (DaysOfWeek[])Enum.GetValues(typeof(DaysOfWeek));
+			return (from value in values where (days & value) == value && map.ContainsKey(value) select map[value]).ToList();
+		}
+
+		#endregion
 
 		private PeriodicScheduleRule ToScheduleRule(IntegrationModel model)
 		{
@@ -179,22 +199,6 @@ namespace kCura.IntegrationPoints.Core.Services
 					break;
 			}
 			return periodicScheduleRule;
-		}
-
-		private static DaysOfWeek FromDayOfWeek(List<DayOfWeek> days)
-		{
-			var map = kCura.ScheduleQueue.Core.ScheduleRules.ScheduleRuleBase.DaysOfWeekMap.ToDictionary(x => x.Value, x => x.Key);
-			return days.Aggregate(DaysOfWeek.None, (current, dayOfWeek) => current | map[dayOfWeek]);
-		}
-		public static List<DayOfWeek> FromDaysOfWeek(DaysOfWeek days)
-		{
-			var map = ScheduleRuleBase.DaysOfWeekMap;
-			if (days == DaysOfWeek.None)
-			{
-				return new List<DayOfWeek>();
-			}
-			var values = (DaysOfWeek[])Enum.GetValues(typeof(DaysOfWeek));
-			return (from value in values where (days & value) == value && map.ContainsKey(value) select map[value]).ToList();
 		}
 
 	}
