@@ -3,13 +3,10 @@ using System.Runtime.InteropServices;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
-using kCura.IntegrationPoints.Agent.Tasks;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.Relativity.Client;
-using kCura.ScheduleQueueAgent;
-using kCura.ScheduleQueueAgent.Logging;
-using kCura.ScheduleQueueAgent.Services;
-using kCura.ScheduleQueueAgent.TimeMachine;
+using kCura.ScheduleQueue.AgentBase;
+using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Logging;
 using ITaskFactory = kCura.IntegrationPoints.Agent.Tasks.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent
@@ -21,7 +18,7 @@ namespace kCura.IntegrationPoints.Agent
 
 	[kCura.Agent.CustomAttributes.Name("Relativity Integration Points Agent")]
 	[Guid(GlobalConst.AGENT_GUID)]
-	public class Agent : ScheduleQueueAgentBase
+	public class Agent : kCura.ScheduleQueue.AgentBase.ScheduleQueueAgentBase
 	{
 		private IRSAPIClient rsapiClient;
 		private AgentInformation agentInformation = null;

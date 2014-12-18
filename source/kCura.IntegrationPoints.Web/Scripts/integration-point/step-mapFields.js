@@ -15,18 +15,15 @@ ko.validation.insertValidationMessage = function (element) {
 	var errorContainer = document.createElement('div');
 	var iconSpan = document.createElement('span');
 	iconSpan.className = 'icon-error legal-hold field-validation-error';
-
 	errorContainer.appendChild(iconSpan);
-
 	$(element).parents('.field-value').eq(0).append(errorContainer);
-
 	return iconSpan;
 };
 
 (function (root, ko) {
 
 	function mapField(entry) {
-		return { name: entry.displayName, identifer: entry.fieldIdentifier };
+		return { name: entry.displayName, identifer: entry.fieldIdentifier, isIdentifier :   entry.isIdentifier};
 	}
 
 	var mapFields = function (result) {
@@ -62,6 +59,12 @@ ko.validation.insertValidationMessage = function (element) {
 		var workspaceFieldPromise = root.data.ajax({ type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({ settings: model.destination }) }).then(function (result) {
 			var types = mapFields(result);
 			self.overlay(types);
+			
+			$.each(self.overlay(), function () {
+				if (this.isIdentifier) {
+					self.selectedOverlay(this);
+				}				
+			});
 			return result;
 		});
 		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceFields'), data: { 'options': JSON.stringify({ artifactTypeID: artifactTypeId }), 'type': JSON.stringify({ artifactTypeID: artifactTypeId }) } });

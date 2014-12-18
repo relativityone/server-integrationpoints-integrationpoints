@@ -7,7 +7,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
-using kCura.ScheduleQueueAgent.ScheduleRules;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using kCura.IntegrationPoints.Data.Extensions;
 
@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private static DaysOfWeek FromDayOfWeek(List<DayOfWeek> days)
 		{
-			var map = kCura.ScheduleQueueAgent.ScheduleRules.ScheduleRuleBase.DaysOfWeekMap.ToDictionary(x => x.Value, x => x.Key);
+			var map = kCura.ScheduleQueue.Core.ScheduleRules.ScheduleRuleBase.DaysOfWeekMap.ToDictionary(x => x.Value, x => x.Key);
 			return days.Aggregate(DaysOfWeek.None, (current, dayOfWeek) => current | map[dayOfWeek]);
 		}
 		public static List<DayOfWeek> FromDaysOfWeek(DaysOfWeek days)
