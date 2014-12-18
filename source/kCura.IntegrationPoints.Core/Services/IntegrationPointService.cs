@@ -7,7 +7,9 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
+using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using kCura.ScheduleQueue.Core.Services;
 using Newtonsoft.Json;
 using kCura.IntegrationPoints.Data.Extensions;
 
@@ -19,6 +21,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private Data.IntegrationPoint _rdo;
 		private readonly kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private readonly ChoiceQuery _choiceQuery;
+		private readonly IJobManager _jobService;
 
 		private Data.IntegrationPoint GetRDO(int rdoID)
 		{
@@ -28,11 +31,13 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			return _rdo;
 		}
-		public IntegrationPointService(IServiceContext context, kCura.Apps.Common.Utils.Serializers.ISerializer serializer, ChoiceQuery choiceQuery)
+
+		public IntegrationPointService(IServiceContext context, kCura.Apps.Common.Utils.Serializers.ISerializer serializer, ChoiceQuery choiceQuery, IJobManager jobService)
 		{
 			_context = context;
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
+			_jobService = jobService;
 		}
 
 		public virtual string GetSourceOptions(int artifactID)
@@ -81,9 +86,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			else
 			{
-				_context.RsapiService.IntegrationPointLibrary.Create(ip);
+				ip.ArtifactId = _context.RsapiService.IntegrationPointLibrary.Create(ip);
 			}
 			//create job
+			_jobService.CreateJob<object>(null, TaskType.SyncManager, ip.ArtifactId, rule);
 		}
 
 		public class Weekly
