@@ -7,6 +7,7 @@ using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Logging;
+using kCura.ScheduleQueue.Core.TimeMachine;
 using ITaskFactory = kCura.IntegrationPoints.Agent.Tasks.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent
