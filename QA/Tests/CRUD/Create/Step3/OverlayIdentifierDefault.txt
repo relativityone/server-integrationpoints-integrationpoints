@@ -55,13 +55,6 @@
 #| | @{ObjectTypeList}=	| Get a List of All Non-System Object Types in the Workspace
 | | @{ObjectTypeList}=	| Create List	| 
 | | ... | Custodian
-| | ... | Custodian Role
-| | ... | Custodian Status
-| | ... | LDAP Field Mapping
-| | ... | Message
-| | ... | Password Entry
-| | ... | Questionnaire Question
-| | ... | Questionnaire Response
 | | Set Suite Variable	| ${ObjectTypes}	| ${ObjectTypeList}
 
 
