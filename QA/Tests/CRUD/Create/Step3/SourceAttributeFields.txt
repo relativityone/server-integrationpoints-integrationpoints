@@ -1,166 +1,60 @@
 
 *** Settings ***
-| Documentation 	| Verify that the Map Fields step of Integration Points allows Source Attribute fields to be selected.
-| Metadata			| Authors	| Daniel Oliver	| William Sehy
-| Force Tags		| in-progress | team.method
+| Documentation 	| Verify that the Map Fields step of the Integration Points wizard populates the correct Source Attributes.
+| Metadata			| Authors	| William Sehy
+| Force Tags		| in-progress	| team.method
 | Suite Setup		| Open and Log in to Method
 #| Test Setup		| 
 | Test Teardown 	| Capture screenshot if test fails
-| Suite Teardown	| Close all browsers
+| Suite Teardown	| Close All Browsers
 
 
 *** Variables ***
 
-| ${WorkspaceName}			| Relativity Legal Hold
-| ${ValidConnectionPath}	| c:\123
+| ${WorkspaceName}	| Relativity Legal Hold
+| ${Source1}		| LDAP Source
 
 
 *** Test Cases ***
 
-| A Field on the unselected Source Attribute list can be selected
-| | [Documentation] | Verify that one field can be selected from the unselected Source Attribute list.
-| | [Tags]			| manual	| source_attributes
+| The Source Attributes are populated correctly when using LDAP
 | | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. You are able to determine which attributes to expect from ${Source1}
+| | ... | 2. ${Source1} uses LDAP
+| | ... | 
 | | ... | Steps:
-| | ... | 1. Go to Step 3 of the Integration Points wizard
-| | ... | 2. Click one field in the unselected Source Attribute list
+| | ... | 1. Go to Step 3 of the Create Integration Point Process, using the Source ${Source1}
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that each field that was clicked is highlighted
+| | ... | 1. Verify that the unselected Source Attributes list contains all of the attributes from ${Source1}
+| | ... | 2. Verify that the selected Source Attributes list is empty
 
 
-| A Field on the unselected Source Attribute list can be moved to the selected list
-| | [Documentation] | Verify that moving a field from the unselected Source Attribute list to the selected list removes the field from the unselected list.
-| | [Tags]			| manual	| source_attributes
+| Custom Attributes appear in the Source Attributes List
 | | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. You are able to create attributes on ${Source1}
+| | ... | 
 | | ... | Steps:
-| | ... | 1. Go to Step 3 of the Integration Points wizard
-| | ... | 2. Click one field in the unselected Source Attribute list
-| | ... | 3. Click the Source Attribute '<' icon
+| | ... | 1. Create an attribute on ${Source1}
+| | ... | 2. Go to Step 3 of the Create Integration Point Process, using the Source ${Source1}
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the field appears in the selected Source Attribute list
-| | ... | 2. Verify that the field is removed from the unselected Source Attribute list
+| | ... | Verify that the new attribute was present on the unselected Source Attributes list
 
 
-| Multiple Individual fields can be selected and moved individually
-| | [Documentation] | Verify that multiple fields from the unselected Source Attribute list can be moved to the selected list, over multiple icon actions.
-| | [Tags]			| manual	| source_attributes
+| Deleted Attributes appear in the Source Attributes List
 | | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. You are able to delete attributes on ${Source1}
+| | ... | 
 | | ... | Steps:
-| | ... | 1. Go to Step 3 of the Integration Points wizard
-| | ... | 2. Click one field in the unselected Source Attribute list
-| | ... | 3. Click the Source Attribute '<' icon
-| | ... | 4. Click another field in the unselected Source Attribute list
-| | ... | 5. Click the Source Attribute '<' icon
+| | ... | 1. Delete an attribute on ${Source1}
+| | ... | 2. Go to Step 3 of the Create Integration Point Process, using the Source ${Source1}
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that both fields appear in the selected Source Attribute list
-| | ... | 2. Verify that both fields are removed from the unselected Source Attribute list
-
-
-| Mutliple Fields can be selected and moved with one click 
-| | [Documentation] | Verify that multiple fields from the unselected Source Attribute list can be moved to the selected list, using only one icon action.
-| | [Tags]			| manual	| source_attributes
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to Step 3 of the Integration Points wizard
-| | ... | 2. Click one field in the unselected Source Attribute list
-| | ... | 3. Click another field in the unselected Source Attribute list
-| | ... | 4. Click the Source Attribute '<' icon
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that both fields appear in the selected Source Attribute list
-| | ... | 2. Verify that both fields are removed from the unselected Source Attribute list
-
-
-| A field can be moved back to the unselected List
-| | [Documentation] | Verify that fields can be moved from the selected Source Attribute list back to the selected list.
-| | [Tags]			| manual	| source_attributes
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to Step 3 of the Integration Points wizard
-| | ... | 2. Click one field in the unselected Source Attribute list
-| | ... | 3. Click the Source Attribute '<' icon
-| | ... | 4. Click the field in the selected Source Attribute list
-| | ... | 5. Click the Source Attribute '>' icon
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that the field appears in the unselected Source Attribute list
-| | ... | 2. Verify that the field is removed from the selected Source Attribute list
-
-
-| Clicking the Source Attribute list's << icon moves all fields from the unselected list to the selected list
-| | [Documentation] | Verify that all of the fields from the unselected Source Attribute list are moved to the selected list when using the "<<" icon.
-| | [Tags]			| manual	| source_attributes
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to Step 3 of the Integration Points wizard
-| | ... | 2. Click the Source Attribute '<<' icon
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that all of the fields in the unselected Source Attribute list are removed
-| | ... | 2. Verify that all of the fields appear in the selected Source Attribute list
-
-
-| Clicking the Source Attribute list's >> icon moves all fields from the selected list to the unselected list
-| | [Documentation] | Verify that all of the fields from the selected Source Attribute list are moved to the unselected list when using the ">>" icon.
-| | [Tags]			| manual	| source_attributes
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to Step 3 of the Integration Points wizard
-| | ... | 2. Click the Source Attribute '<<' icon
-| | ... | 3. Click the Source Attribute '>>' icon
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that all of the fields in the selected Source Attribute list are removed
-| | ... | 2. Verify that all of the fields appear in the unselected Source Attribute list
-
-
-| Multiple Fields can be selected be clicking and dragging
-| | [Documentation] | Verify that multiple Source Attribute fields can be seleted by clicking one field and dragging.
-| | [Tags]			| manual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Click and drag over one field in a Source Attribute list
-| | ... | 
-| | ... | Expected Results:
-| | ... | Verify that the row of each field that was dragged over is highlighted in blue
-
-
-| Mutliple Fields can be Control Clicked
-| | [Documentation] | Verify that multiple Source Attribute fields can be seleted by control clicking.
-| | [Tags]			| manual	| visual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Click one field in a Source Attribute list
-| | ... | 2. Control click several other fields
-| | ... | 
-| | ... | Expected Results:
-| | ... | Verify that the row of each field that was clicked is highlighted in blue
-
-
-| Double clicking a field moves it to the other list
-| | [Documentation] | Verify that a double clicking a field moves it from Source Attribute one list to the other.
-| | [Tags]			| manual	| source_attributes
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Double clicking one field in the Workspace Fields list
-| | ... | 
-| | ... | Expected Results:
-| | ... | Verify that the field has been moved to the Selected Workspace list
-
-
-| Selected field rows on inactive Source Attribute lists are grey
-| | [Documentation] | Verify that a selected row turns grey when clicking anywhere else on the screen besides that Source Attribute list.
-| | [Tags]			| manual	| source_attributes
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Click one field in a Source Attribute list
-| | ... | 2. Click out of the list
-| | ... | 
-| | ... | Expected Results:
-| | ... | Verify that the row color for the selected field is grey
+| | ... | Verify that the deleted attribute was not present on the unselected Source Attributes list
 
 
 *** Settings ***
