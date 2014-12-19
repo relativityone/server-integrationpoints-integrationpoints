@@ -1,0 +1,824 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit http://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword />
+    <_PublishTargetUrl>C:\SourceCode\LDAPSync\source\kCura.IntegrationPoints.Web\bin</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="bin/Antlr3.Runtime.dll">
+      <publishTime>11/06/2014 08:58:30</publishTime>
+    </File>
+    <File Include="bin/BCryptNET.dll">
+      <publishTime>09/09/2014 19:20:54</publishTime>
+    </File>
+    <File Include="bin/Castle.Core.dll">
+      <publishTime>11/06/2014 08:58:28</publishTime>
+    </File>
+    <File Include="bin/Castle.Windsor.dll">
+      <publishTime>11/06/2014 08:58:28</publishTime>
+    </File>
+    <File Include="bin/FreeImageNET.dll">
+      <publishTime>10/21/2014 02:01:22</publishTime>
+    </File>
+    <File Include="bin/Ionic.Zip.dll">
+      <publishTime>09/09/2014 19:20:58</publishTime>
+    </File>
+    <File Include="bin/itextsharp.dll">
+      <publishTime>10/21/2014 02:01:34</publishTime>
+    </File>
+    <File Include="bin/kCura.Apps.Common.Config.dll">
+      <publishTime>11/19/2014 15:49:01</publishTime>
+    </File>
+    <File Include="bin/kCura.Apps.Common.Data.dll">
+      <publishTime>11/19/2014 15:49:01</publishTime>
+    </File>
+    <File Include="bin/kCura.Apps.Common.Utils.dll">
+      <publishTime>12/11/2014 12:00:32</publishTime>
+    </File>
+    <File Include="bin/kCura.Config.dll">
+      <publishTime>10/21/2014 02:02:12</publishTime>
+    </File>
+    <File Include="bin/kCura.Crypto.dll">
+      <publishTime>10/21/2014 02:02:06</publishTime>
+    </File>
+    <File Include="bin/kCura.Data.RowDataGateway.dll">
+      <publishTime>10/21/2014 02:02:26</publishTime>
+    </File>
+    <File Include="bin/kCura.EventHandler.dll">
+      <publishTime>10/21/2014 02:02:34</publishTime>
+    </File>
+    <File Include="bin/kCura.Injection.dll">
+      <publishTime>10/21/2014 02:02:04</publishTime>
+    </File>
+    <File Include="bin/kCura.IntegrationPoints.Contracts.dll">
+      <publishTime>12/19/2014 11:20:06</publishTime>
+    </File>
+    <File Include="bin/kCura.IntegrationPoints.Core.dll">
+      <publishTime>12/19/2014 11:20:07</publishTime>
+    </File>
+    <File Include="bin/kCura.IntegrationPoints.Data.dll">
+      <publishTime>12/19/2014 11:20:06</publishTime>
+    </File>
+    <File Include="bin/kCura.IntegrationPoints.LDAPProvider.dll">
+      <publishTime>12/19/2014 11:20:06</publishTime>
+    </File>
+    <File Include="bin/kCura.IntegrationPoints.Synchronizers.RDO.dll">
+      <publishTime>12/19/2014 11:20:06</publishTime>
+    </File>
+    <File Include="bin/kCura.IntegrationPoints.Web.dll">
+      <publishTime>12/19/2014 11:20:07</publishTime>
+    </File>
+    <File Include="bin/kCura.Method.Web.Controls.dll">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="bin/kCura.Relativity.Client.dll">
+      <publishTime>10/21/2014 02:03:14</publishTime>
+    </File>
+    <File Include="bin/kCura.ScheduleQueue.Core.dll">
+      <publishTime>12/19/2014 11:20:06</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Web.Infrastructure.dll">
+      <publishTime>11/06/2014 08:58:29</publishTime>
+    </File>
+    <File Include="bin/Microsoft.Web.Mvc.FixedDisplayModes.dll">
+      <publishTime>11/06/2014 08:58:28</publishTime>
+    </File>
+    <File Include="bin/Newtonsoft.Json.dll">
+      <publishTime>11/06/2014 08:58:30</publishTime>
+    </File>
+    <File Include="bin/nunit.framework.dll">
+      <publishTime>11/06/2014 08:58:29</publishTime>
+    </File>
+    <File Include="bin/Relativity.API.dll">
+      <publishTime>10/21/2014 02:02:30</publishTime>
+    </File>
+    <File Include="bin/Relativity.CustomPages.dll">
+      <publishTime>10/21/2014 02:03:16</publishTime>
+    </File>
+    <File Include="bin/Relativity.DragonGrid.Core.dll">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="bin/Relativity.ImportAPI.Wrapper.dll">
+      <publishTime>09/26/2014 04:01:06</publishTime>
+    </File>
+    <File Include="bin/System.Net.Http.Formatting.dll">
+      <publishTime>11/16/2014 22:16:21</publishTime>
+    </File>
+    <File Include="bin/System.Web.Helpers.dll">
+      <publishTime>11/06/2014 08:58:29</publishTime>
+    </File>
+    <File Include="bin/System.Web.Http.dll">
+      <publishTime>11/18/2014 11:26:43</publishTime>
+    </File>
+    <File Include="bin/System.Web.Http.WebHost.dll">
+      <publishTime>11/18/2014 11:26:43</publishTime>
+    </File>
+    <File Include="bin/System.Web.Mvc.dll">
+      <publishTime>11/06/2014 08:58:28</publishTime>
+    </File>
+    <File Include="bin/System.Web.Optimization.dll">
+      <publishTime>11/06/2014 08:58:29</publishTime>
+    </File>
+    <File Include="bin/System.Web.Razor.dll">
+      <publishTime>11/06/2014 08:58:29</publishTime>
+    </File>
+    <File Include="bin/System.Web.WebPages.Deployment.dll">
+      <publishTime>11/06/2014 08:58:29</publishTime>
+    </File>
+    <File Include="bin/System.Web.WebPages.dll">
+      <publishTime>11/06/2014 08:58:29</publishTime>
+    </File>
+    <File Include="bin/System.Web.WebPages.Razor.dll">
+      <publishTime>11/06/2014 08:58:29</publishTime>
+    </File>
+    <File Include="bin/WebGrease.dll">
+      <publishTime>11/06/2014 08:58:30</publishTime>
+    </File>
+    <File Include="Content/buttermilk-variables.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/buttermilk-variables.scss">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/buttermilk.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/buttermilk.scss">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/controls-grid-pager.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/controls-grid-pager.scss">
+      <publishTime>12/11/2014 12:00:32</publishTime>
+    </File>
+    <File Include="Content/controls.grid.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/css/select2-spinner.gif">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Content/css/select2.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/css/select2.png">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Content/css/select2x2.png">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Content/fonts/integration-points.eot">
+      <publishTime>11/16/2014 22:16:21</publishTime>
+    </File>
+    <File Include="Content/fonts/integration-points.svg">
+      <publishTime>11/16/2014 22:16:21</publishTime>
+    </File>
+    <File Include="Content/fonts/integration-points.ttf">
+      <publishTime>11/16/2014 22:16:21</publishTime>
+    </File>
+    <File Include="Content/fonts/integration-points.woff">
+      <publishTime>11/16/2014 22:16:21</publishTime>
+    </File>
+    <File Include="Content/fonts/legal-hold-icons.eot">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Content/fonts/legal-hold-icons.svg">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Content/fonts/legal-hold-icons.ttf">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Content/fonts/legal-hold-icons.woff">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Content/header.css">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Content/header.scss">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Content/Images/loading.gif">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Content/Images/sprite.png">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Content/integration-points-fonts.css">
+      <publishTime>11/16/2014 22:16:21</publishTime>
+    </File>
+    <File Include="Content/jquery.jqGrid/ellipsis-xbl.xml">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Content/jquery.jqGrid/ui.jqgrid.css">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Content/legal-hold-fonts.css">
+      <publishTime>12/10/2014 10:12:37</publishTime>
+    </File>
+    <File Include="Content/normalize.css">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Content/scheduler.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/scheduler.scss">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Content/select2-overrides.css">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Content/select2-overrides.scss">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Content/site.css">
+      <publishTime>12/18/2014 09:39:31</publishTime>
+    </File>
+    <File Include="Content/step-progress-bar.css">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Content/step-progress-bar.scss">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Content/themes/base/images/ui-bg_flat_0_aaaaaa_40x100.png">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Content/themes/base/images/ui-bg_flat_75_ffffff_40x100.png">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Content/themes/base/images/ui-bg_glass_55_fbf9ee_1x400.png">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Content/themes/base/images/ui-bg_glass_65_ffffff_1x400.png">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Content/themes/base/images/ui-bg_glass_75_dadada_1x400.png">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Content/themes/base/images/ui-bg_glass_75_e6e6e6_1x400.png">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Content/themes/base/images/ui-bg_glass_95_fef1ec_1x400.png">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Content/themes/base/images/ui-bg_highlight-soft_75_cccccc_1x100.png">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Content/themes/base/images/ui-icons_222222_256x240.png">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Content/themes/base/images/ui-icons_2e83ff_256x240.png">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Content/themes/base/images/ui-icons_454545_256x240.png">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Content/themes/base/images/ui-icons_888888_256x240.png">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Content/themes/base/images/ui-icons_cd0a0a_256x240.png">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Content/themes/base/jquery.ui.accordion.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/themes/base/jquery.ui.all.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/themes/base/jquery.ui.autocomplete.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/themes/base/jquery.ui.base.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/themes/base/jquery.ui.button.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/themes/base/jquery.ui.core.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/themes/base/jquery.ui.datepicker.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/themes/base/jquery.ui.dialog.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/themes/base/jquery.ui.progressbar.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/themes/base/jquery.ui.resizable.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/themes/base/jquery.ui.selectable.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/themes/base/jquery.ui.slider.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/themes/base/jquery.ui.tabs.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Content/themes/base/jquery.ui.theme.css">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Global.asax">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="packages.config">
+      <publishTime>12/11/2014 12:00:32</publishTime>
+    </File>
+    <File Include="Scripts/Controls/step-progress.js">
+      <publishTime>12/18/2014 09:39:31</publishTime>
+    </File>
+    <File Include="Scripts/core/data.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/core/messaging.js">
+      <publishTime>12/15/2014 08:41:16</publishTime>
+    </File>
+    <File Include="Scripts/core/utils.js">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Scripts/date.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/dragon/dragon-core.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/dragon/dragon-schedule.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/dragon/dragon-utils.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/EventHandlers/integration-points-grid.js">
+      <publishTime>12/11/2014 12:00:32</publishTime>
+    </File>
+    <File Include="Scripts/EventHandlers/integration-points-view.js">
+      <publishTime>12/11/2014 12:00:32</publishTime>
+    </File>
+    <File Include="Scripts/frame-messaging.js">
+      <publishTime>12/11/2014 12:00:32</publishTime>
+    </File>
+    <File Include="Scripts/grid/dragon-grid-filters.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/grid/dragon-grid-formatters.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/grid/dragon-grid-pager.js">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Scripts/grid/dragon-grid.js">
+      <publishTime>12/11/2014 12:00:32</publishTime>
+    </File>
+    <File Include="Scripts/grid/dragon-utils.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-ar.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-bg.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-bg1251.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-cat.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-cn.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-cs.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-da.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-de.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-dk.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-el.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-en.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-es.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-fa.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-fi.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-fr.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-gl.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-he.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-hr.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-hr1250.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-hu.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-id.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-is.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-it.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-ja.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-kr.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-lt.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-mne.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-nl.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-no.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-pl.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-pt-br.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-pt.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-ro.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-ru.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-sk.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-sr-latin.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-sr.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-sv.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-th.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-tr.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-tw.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-ua.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/i18n/grid.locale-vi.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/iframeResizer.contentWindow.min.js">
+      <publishTime>12/11/2014 12:00:32</publishTime>
+    </File>
+    <File Include="Scripts/iframeResizer.min.js">
+      <publishTime>12/11/2014 12:00:32</publishTime>
+    </File>
+    <File Include="Scripts/integration-point/binding.js">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Scripts/integration-point/details.js">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Scripts/integration-point/edit.js">
+      <publishTime>12/18/2014 09:39:31</publishTime>
+    </File>
+    <File Include="Scripts/integration-point/step-details.js">
+      <publishTime>12/18/2014 09:39:31</publishTime>
+    </File>
+    <File Include="Scripts/integration-point/step-import.js">
+      <publishTime>12/18/2014 16:10:39</publishTime>
+    </File>
+    <File Include="Scripts/integration-point/step-mapFields.js">
+      <publishTime>12/18/2014 11:21:37</publishTime>
+    </File>
+    <File Include="Scripts/integration-point/step-vm.js">
+      <publishTime>12/18/2014 09:39:31</publishTime>
+    </File>
+    <File Include="Scripts/ip-messaging.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/jquery-1.8.2.js">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Scripts/jquery-1.8.2.min.js">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/jquery-1.8.2.min.js.map">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/jquery-ui-1.8.11.js">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Scripts/jquery-ui-1.8.11.min.js">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/jquery-ui-1.8.11.min.js.map">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/jquery.jqGrid.min.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/jquery.jqGrid.src.js">
+      <publishTime>12/11/2014 12:00:32</publishTime>
+    </File>
+    <File Include="Scripts/jquery.unobtrusive-ajax.js">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Scripts/jquery.unobtrusive-ajax.min.js">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/jquery.unobtrusive-ajax.min.js.map">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/jquery.validate.js">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Scripts/jquery.validate.min.js">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/jquery.validate.min.js.map">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/jquery.validate.unobtrusive.js">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Scripts/jquery.validate.unobtrusive.min.js">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/jquery.validate.unobtrusive.min.js.map">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/knockout-2.2.0.debug.js">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Scripts/knockout-2.2.0.js">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Scripts/knockout.validation.debug.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/knockout.validation.js">
+      <publishTime>12/02/2014 08:49:10</publishTime>
+    </File>
+    <File Include="Scripts/loading-modal.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/modernizr-2.6.2.js">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Scripts/postal/conduit.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/postal/lodash.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/postal/postal.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/postal/postal.min.js">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/postal/postal.min.js.map">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/q.js">
+      <publishTime>11/06/2014 20:32:48</publishTime>
+    </File>
+    <File Include="Scripts/q.min.js">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/q.min.js.map">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_ar.js">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_az.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_bg.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_ca.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_cs.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_da.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_de.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_el.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_es.js">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_et.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_eu.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_fa.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_fi.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_fr.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_gl.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_he.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_hr.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_hu.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_id.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_is.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_it.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_ja.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_ka.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_ko.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_lt.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_lv.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_mk.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_ms.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_nl.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_no.js">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_pl.js">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_pt-BR.js">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_pt-PT.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_ro.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_rs.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_ru.js">
+      <publishTime>11/26/2014 14:37:55</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_sk.js">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_sv.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_th.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_tr.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_ua.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_ug-CN.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_uk.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_vi.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_zh-CN.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/Select2-locales/select2_locale_zh-TW.js">
+      <publishTime>11/26/2014 14:37:56</publishTime>
+    </File>
+    <File Include="Scripts/select2.js">
+      <publishTime>12/04/2014 15:21:32</publishTime>
+    </File>
+    <File Include="Scripts/select2.min.js">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/select2.min.js.map">
+      <publishTime>12/17/2014 10:02:43</publishTime>
+    </File>
+    <File Include="Scripts/_references.js">
+      <publishTime>11/06/2014 08:58:27</publishTime>
+    </File>
+    <File Include="Views/IntegrationPoints/Details.cshtml">
+      <publishTime>12/18/2014 09:39:31</publishTime>
+    </File>
+    <File Include="Views/IntegrationPoints/Edit.cshtml">
+      <publishTime>12/18/2014 09:39:31</publishTime>
+    </File>
+    <File Include="Views/IntegrationPoints/LDAPConfiguration.cshtml">
+      <publishTime>12/18/2014 16:11:10</publishTime>
+    </File>
+    <File Include="Views/IntegrationPoints/_Configuration.cshtml">
+      <publishTime>12/11/2014 12:00:32</publishTime>
+    </File>
+    <File Include="Views/IntegrationPoints/_IntegrationDetailsPartial.cshtml">
+      <publishTime>12/18/2014 09:39:31</publishTime>
+    </File>
+    <File Include="Views/IntegrationPoints/_IntegrationDetailsPartial2.cshtml">
+      <publishTime>12/11/2014 12:00:32</publishTime>
+    </File>
+    <File Include="Views/IntegrationPoints/_IntegrationDetailsPartial3.cshtml">
+      <publishTime>12/18/2014 09:39:31</publishTime>
+    </File>
+    <File Include="Views/Shared/Error.cshtml">
+      <publishTime>11/06/2014 08:58:28</publishTime>
+    </File>
+    <File Include="Views/Shared/_Layout.cshtml">
+      <publishTime>12/15/2014 08:41:16</publishTime>
+    </File>
+    <File Include="Views/Shared/_StepLayout.cshtml">
+      <publishTime>12/15/2014 08:41:16</publishTime>
+    </File>
+    <File Include="Views/Web.config">
+      <publishTime>11/06/2014 08:58:28</publishTime>
+    </File>
+    <File Include="Views/_ViewStart.cshtml">
+      <publishTime>11/06/2014 08:58:28</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>12/19/2014 11:20:08</publishTime>
+    </File>
+  </ItemGroup>
+</Project>
