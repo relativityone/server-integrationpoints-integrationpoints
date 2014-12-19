@@ -354,14 +354,14 @@
       <DependentUpon>jquery-1.8.2.js</DependentUpon>
     </Content>
     <Content Include="Scripts\jquery-ui-1.8.11.min.js.map">
-      <DependentUpon>jquery-ui-1.8.11.js</DependentUpon>
+      <DependentUpon>jquery-ui-1.9.2.js</DependentUpon>
     </Content>
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js.map">
       <DependentUpon>jquery.unobtrusive-ajax.js</DependentUpon>
     </Content>
     <None Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery-ui-1.8.11.js" />
-    <Content Include="Scripts\jquery-ui-1.8.11.min.js" />
+    <Content Include="Scripts\jquery-ui-1.9.2.js" />
+    <Content Include="Scripts\jquery-ui-1.9.2.min.js" />
     <Content Include="Scripts\jquery.jqGrid.min.js" />
     <Content Include="Scripts\jquery.jqGrid.src.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
