@@ -35,7 +35,7 @@
 
 | The Parent Attribute list is present when the RDO is a Child
 | | [Documentation] | Verify that RDO's that are have a parent show the Parent Attribute list on the Map Fields screen
-| | [Tags] | untested | manual
+| | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Go to step 3 using the Destination RDO of Custodian Role

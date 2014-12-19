@@ -62,7 +62,7 @@
 		message.error = (function () {
 			function raiseError(messageBody, $container) {
 				var $el = getElement($container, $main),
-						$error = $('<div class="page-message page-error"/>').append('<span class="icon-error"></span>').append($('<div/>').append(messageBody)).hide();
+						$error = $('<div class="page-message page-error"/>').append('<span class="legal-hold icon-error"></span>').append($('<div/>').append(messageBody)).hide();
 
 				clearError($el);
 
