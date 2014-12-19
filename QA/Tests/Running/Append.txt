@@ -1,58 +1,74 @@
 *** Settings ***
-| Documentation 	| Verify that running an Append RIP creates new records, but does not update existing records.
+| Documentation 	| Verify that running an Append RIP creates new objects, but does not update existing objects.
 | Metadata		    | Authors	| Daniel Oliver
 | Force Tags		| in-progress | team.method
-#| Suite Setup		| Open and Log in to Method
-#| Test Setup        | 
-#| Test Teardown 	| Capture screenshot if test fails
-#| Suite Teardown	| Close all browsers
 
 *** Variables ***
 
 | ${WorkspaceName}	    | Relativity Legal Hold
-| ${RIPOverlay1}        | New records in the source | #One new record, one record that matches an existing record in the Target.
+| ${RIPAppend1}         | Append and Overlay RIP  
+| ${NewObject}                | New Object not in Target 
+| ${ExistingAndUpdatedObject} | Existing Object with Update    
+| ${ExistingNoChangeObject}   | Existing Object no Update     
 
 *** Test Cases ***
 
-| An Append import Creates new records
-| | [Documentation] | Verify that when an Append RIP is run which has new Source records, that it creates new records in the target RDO.
-| | [Tags] | manual
+| An Append import Creates new objects
+| | [Documentation] | Verify that when an Append RIP is run which has new Source objects, that it creates new objects in the Target RDO.
+| | [Tags] | manual  | required
 | | Run the following manual steps:
 | | ... | Preconditions:
-| | ... | 1. A RIP exists where the source has new records that do not exist in the Target.
+| | ... | 1. ${NewObject} does not exist in the Target RDO
+| | ... | 2. ${ExistingAndUpdatedObject} exists in the Target RDO, but has updated details in the Source
+| | ... | 3. ${ExistingNoChangeObject} exists in the Target RDO and has the same details as the Source
+| | ... | 4. The ${RIPAppendOverlay1} RIP is set to Append/Overlay
 | | ... |
 | | ... | Steps:
-| | ... | 1. Run import ${RIPOverlay1} 
-| | ... | 2. Go to the Target tab where the records should be imported to
+| | ... | 1. Import Integration Point ${RIPAppend1} 
+| | ... | 2. Go to the Target RDO's tab
+| | ... | 3. Search for ${NewObject}
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that the correct new records have are created.
+| | ... | 1. Verify that the object ${NewObject} is present
 
-| An Append import Creates new History records
-| | [Documentation] | Verify that when an Append RIP is run which has new source recods, that there are history entries for the newly created records in the target RDO.
+| An Append import Creates new History objects
+| | [Documentation] | Verify that when an Append RIP is run which has new source recods, that there are history entries for the newly created objects in the target RDO.
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Preconditions:
-| | ... | 1. The "An Append import can Create new records" case has been run
+| | ... | 1. Require Test Case: The "An Append import can Create new objects" case has been run
 | | ... |
 | | ... | Steps:
-| | ... | 1. View the History records for ${RIPOverlay1} 
+| | ... | 1. View the History objects for ${RIPOverlay1} 
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that there are Create entries for the newly created records
+| | ... | 1. Verify that the object ${NewObject} is present
 
-| An Append import does not update existing records
-| | [Documentation] | Verify that when an Append RIP is run which has new source records and has matches to existing records, that it does not update the existing records in the target RDO.
+| An Append import does not update existing objects
+| | [Documentation] | Verify that when an Append RIP is run which has updated Source objects that match to existing objects, that it does not update the existing objects in the target RDO.
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Preconditions:
-| | ... | 1. The "An Append import can Create new records" case has been run
+| | ... | 1. Require Test Case: The "An Append import can Create new objects" case has been run
 | | ... |
 | | ... | Steps:
-| | ... | 1. View the History records for ${RIPOverlay1}
+| | ... | 1. View the History objects for ${RIPOverlay1}
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that there are no Update entries for the existing records that matched the Source.
+| | ... | 1. Verify that there is no Update entry for the object ${ExistingAndUpdatedObject}
+
+| An Append and Overlay import does not update existing unmodified objects
+| | [Documentation] | Verify that when an Append RIP is run which has Source objects that match to existing objects with no changes, that it does not update the existing objects in the target RDO.
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. Require Test Case: An Append and Overlay import Creates new objects
+| | ... |
+| | ... | Steps:
+| | ... | 1. View the History objects for the ${RIPAppendOverlay1} import
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that there is no Update entry for the object ${ExistingNoChangeObject}
 
 *** Keywords *** 
 
