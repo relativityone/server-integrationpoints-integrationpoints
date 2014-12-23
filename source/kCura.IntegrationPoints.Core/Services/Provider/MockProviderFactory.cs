@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using kCura.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.Core.Services.Provider
 {
@@ -11,7 +8,7 @@ namespace kCura.IntegrationPoints.Core.Services.Provider
 		public IDataSourceProvider GetDataProvider()
 		{
 			//return new kCura.IntegrationPoints.Core.Services.Provider.
-			throw new NotImplementedException();
+			return new LDAPProvider.LDAPProvider();
 		}
 	}
 }

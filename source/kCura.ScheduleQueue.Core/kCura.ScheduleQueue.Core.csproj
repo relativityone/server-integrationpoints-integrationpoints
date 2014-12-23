@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C831C856-E74F-48B4-AEBC-1CF15576E082}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>kCura.ScheduleQueue.Core</RootNamespace>
+    <AssemblyName>kCura.ScheduleQueue.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="kCura.Apps.Common.Config, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\kCura.Apps.Common.Config.1.0.77.1\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Data, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.Apps.Common.Data.1.0.77.1\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Utils, Version=1.0.106.2, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.106.2\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Injection">
+      <HintPath>..\Dependencies\kCura\kCura.Injection.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Relativity.Client">
+      <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.API, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="BatchProcess\BatchManagerBase.cs" />
+    <Compile Include="BatchProcess\BatchableTaskBase.cs" />
+    <Compile Include="Core\AgentInformation.cs" />
+    <Compile Include="Data\Interfaces\IQueueDBContext.cs" />
+    <Compile Include="Data\Queries\CreateJobLogTable.cs" />
+    <Compile Include="Data\Queries\InsertJobLogEntry.cs" />
+    <Compile Include="Data\Queries\UnlockScheduledJob.cs" />
+    <Compile Include="Data\Queries\DeleteJob.cs" />
+    <Compile Include="Data\Queries\GetJob.cs" />
+    <Compile Include="Data\Queries\CreateScheduledJob.cs" />
+    <Compile Include="Data\Queries\UpdateScheduledJob.cs" />
+    <Compile Include="Data\Queries\GetAgentInformation.cs" />
+    <Compile Include="Data\Queries\GetNextJob.cs" />
+    <Compile Include="Data\QueueDBContext.cs" />
+    <Compile Include="Data\Queries\CreateScheduleQueueTable.cs" />
+    <Compile Include="BatchProcess\IBatchableTask.cs" />
+    <Compile Include="Helpers\QueueTableHelper.cs" />
+    <Compile Include="Interfaces\IAgentService.cs" />
+    <Compile Include="Interfaces\FinalizeJobResult.cs" />
+    <Compile Include="Interfaces\ITaskFactory.cs" />
+    <Compile Include="Interfaces\IJobService.cs" />
+    <Compile Include="Interfaces\ITask.cs" />
+    <Compile Include="Core\Job.cs" />
+    <Compile Include="Core\LogCategory.cs" />
+    <Compile Include="Interfaces\JobLogState.cs" />
+    <Compile Include="Interfaces\TaskResult.cs" />
+    <Compile Include="Interfaces\TaskStatusEnum.cs" />
+    <Compile Include="Logging\CreateErrorRDO.cs" />
+    <Compile Include="Logging\JobLogService.cs" />
+    <Compile Include="Logging\JobLog.cs" />
+    <Compile Include="Logging\SystemEventLoggingService.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ScheduleRules\IScheduleRuleFactory.cs" />
+    <Compile Include="ScheduleRules\DefaultTimeService.cs" />
+    <Compile Include="ScheduleRules\Enums.cs" />
+    <Compile Include="ScheduleRules\IScheduleRule.cs" />
+    <Compile Include="ScheduleRules\ITimeService.cs" />
+    <Compile Include="ScheduleRules\PeriodicScheduleRule.cs" />
+    <Compile Include="ScheduleRules\ScheduleRuleBase.cs" />
+    <Compile Include="ScheduleRules\DefaultScheduleRuleFactory.cs" />
+    <Compile Include="Services\AgentService.cs" />
+    <Compile Include="Services\JobService.cs" />
+    <Compile Include="Services\TimeMachineService.cs" />
+    <Compile Include="TimeMachine\DefaultTimeMachineProvider.cs" />
+    <Compile Include="TimeMachine\AgentTimeMachineProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\Resources\InsertJobLogEntry.sql" />
+    <Content Include="Data\Resources\CreateJobLogTable.sql" />
+    <Content Include="Data\Resources\UnlockScheduledJob.sql" />
+    <Content Include="Data\Resources\DeleteJob.sql" />
+    <Content Include="Data\Resources\GetJobByRelatedObjectID.sql" />
+    <Content Include="Data\Resources\GetJobByID.sql" />
+    <Content Include="Data\Resources\CreateScheduledJob.sql" />
+    <Content Include="Data\Resources\UpdateScheduledJob.sql" />
+    <Content Include="Data\Resources\GetAgentInformation.sql" />
+    <Content Include="Data\Resources\CreateQueueTable.sql" />
+    <Content Include="Data\Resources\GetNextJob.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CustomAttributes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir  "$(SolutionDir)bin\$(Configuration)"
+$(SolutionDir)Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(SolutionDir)bin\$(Configuration)\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)bin\$(Configuration)\$(TargetName).pdb"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

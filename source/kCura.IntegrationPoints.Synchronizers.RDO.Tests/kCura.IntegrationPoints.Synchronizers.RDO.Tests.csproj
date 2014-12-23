@@ -43,6 +43,10 @@
     <OutputPath>bin\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="kCura.Apps.Common.Utils, Version=1.0.106.2, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.106.2\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client">
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
     </Reference>
@@ -77,6 +81,7 @@
   <ItemGroup>
     <Compile Include="Integration\RDOSynchronizerTest.cs" />
     <Compile Include="Unit\BatchManagerTests.cs" />
+    <Compile Include="Unit\ImportSettingsTests.cs" />
     <Compile Include="Unit\ImportServiceTests.cs" />
     <Compile Include="Unit\RDOSynchronizerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Castle.Facilities.TypedFactory;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.ScheduleQueueAgent;
+using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {

@@ -7,7 +7,9 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
-using kCura.ScheduleQueueAgent.ScheduleRules;
+using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.ScheduleRules;
+using kCura.ScheduleQueue.Core.Services;
 using Newtonsoft.Json;
 using kCura.IntegrationPoints.Data.Extensions;
 
@@ -19,6 +21,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private Data.IntegrationPoint _rdo;
 		private readonly kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private readonly ChoiceQuery _choiceQuery;
+		private readonly IJobManager _jobService;
 
 		private Data.IntegrationPoint GetRDO(int rdoID)
 		{
@@ -28,11 +31,13 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			return _rdo;
 		}
-		public IntegrationPointService(IServiceContext context, kCura.Apps.Common.Utils.Serializers.ISerializer serializer, ChoiceQuery choiceQuery)
+
+		public IntegrationPointService(IServiceContext context, kCura.Apps.Common.Utils.Serializers.ISerializer serializer, ChoiceQuery choiceQuery, IJobManager jobService)
 		{
 			_context = context;
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
+			_jobService = jobService;
 		}
 
 		public virtual string GetSourceOptions(int artifactID)
@@ -81,11 +86,14 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			else
 			{
-				_context.RsapiService.IntegrationPointLibrary.Create(ip);
+				ip.ArtifactId = _context.RsapiService.IntegrationPointLibrary.Create(ip);
 			}
 			//create job
+			_jobService.CreateJob<object>(null, TaskType.SyncManager, ip.ArtifactId, rule);
 		}
 
+
+		#region Please refactor
 		public class Weekly
 		{
 			public List<string> SelectedDays { get; set; }
@@ -103,8 +111,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			Month = 1,
 			Days = 2
 		}
-
-
+		
 		public class Monthly
 		{
 			public MonthlyType MonthChoice { get; set; }
@@ -118,6 +125,25 @@ namespace kCura.IntegrationPoints.Core.Services
 				this.TemplateID = "monthlySendOn";
 			}
 		}
+
+		private static DaysOfWeek FromDayOfWeek(List<DayOfWeek> days)
+		{
+			var map = kCura.ScheduleQueue.Core.ScheduleRules.ScheduleRuleBase.DaysOfWeekMap.ToDictionary(x => x.Value, x => x.Key);
+			return days.Aggregate(DaysOfWeek.None, (current, dayOfWeek) => current | map[dayOfWeek]);
+		}
+
+		public static List<DayOfWeek> FromDaysOfWeek(DaysOfWeek days)
+		{
+			var map = ScheduleRuleBase.DaysOfWeekMap;
+			if (days == DaysOfWeek.None)
+			{
+				return new List<DayOfWeek>();
+			}
+			var values = (DaysOfWeek[])Enum.GetValues(typeof(DaysOfWeek));
+			return (from value in values where (days & value) == value && map.ContainsKey(value) select map[value]).ToList();
+		}
+
+		#endregion
 
 		private PeriodicScheduleRule ToScheduleRule(IntegrationModel model)
 		{
@@ -173,22 +199,6 @@ namespace kCura.IntegrationPoints.Core.Services
 					break;
 			}
 			return periodicScheduleRule;
-		}
-
-		private static DaysOfWeek FromDayOfWeek(List<DayOfWeek> days)
-		{
-			var map = kCura.ScheduleQueueAgent.ScheduleRules.ScheduleRuleBase.DaysOfWeekMap.ToDictionary(x => x.Value, x => x.Key);
-			return days.Aggregate(DaysOfWeek.None, (current, dayOfWeek) => current | map[dayOfWeek]);
-		}
-		public static List<DayOfWeek> FromDaysOfWeek(DaysOfWeek days)
-		{
-			var map = ScheduleRuleBase.DaysOfWeekMap;
-			if (days == DaysOfWeek.None)
-			{
-				return new List<DayOfWeek>();
-			}
-			var values = (DaysOfWeek[])Enum.GetValues(typeof(DaysOfWeek));
-			return (from value in values where (days & value) == value && map.ContainsKey(value) select map[value]).ToList();
 		}
 
 	}
