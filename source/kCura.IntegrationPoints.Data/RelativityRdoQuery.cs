@@ -38,6 +38,10 @@ namespace kCura.IntegrationPoints.Data
 					Direction = SortEnum.Ascending
 				}
 			};
+			//qry.Condition = new Condition()
+			//{
+				
+			//};
 
 			if (typeIds != null)
 			{
