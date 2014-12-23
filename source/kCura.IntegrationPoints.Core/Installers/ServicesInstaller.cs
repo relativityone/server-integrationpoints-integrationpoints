@@ -13,6 +13,8 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Services;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -28,6 +30,9 @@ namespace kCura.IntegrationPoints.Core.Installers
 			
 			container.Register(Component.For<IDataSyncronizerFactory>().ImplementedBy<MockFactory>().DependsOn(new { container = container }));
 			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<MockProviderFactory>().LifestyleTransient());
+			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
+			container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
+			container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().LifestyleTransient());
 
 
 			container.Register(Component.For<IServiceContext>().ImplementedBy<ServiceContext>().LifestyleTransient());
