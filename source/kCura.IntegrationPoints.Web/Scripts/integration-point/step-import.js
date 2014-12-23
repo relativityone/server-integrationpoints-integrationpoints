@@ -65,7 +65,7 @@
 				self.hasTemplate = true;
 				var $frame = $('#' + frameName).attr('src', self.source);
 				$frame.iFrameResize({ heightCalculationMethod: 'max' }).load(function () {
-				    self.frameBus = IP.frameMessaging({ source: window[frameName].contentWindow || window[frameName] });
+					self.frameBus = IP.frameMessaging({ source: window[frameName].contentWindow });
 					var state = stepCache[self.stepKey];
 					self.frameBus.publish('load', state);
 				});

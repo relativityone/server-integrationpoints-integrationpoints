@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
 			container.Register(Component.For<IErrorService>().ImplementedBy<Services.ErrorService>().Named("ErrorService").LifestyleTransient());
-			
+			container.Register(Component.For<IDataProviderFactory>().AsFactory(x => x.SelectedWith(new DataProviderComponetSelector())).LifestyleTransient());
 			container.Register(Component.For<Core.Services.ObjectTypeService>().ImplementedBy<Core.Services.ObjectTypeService>());
 
 
@@ -33,6 +33,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
 			container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
 			container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().LifestyleTransient());
+			
 
 
 			container.Register(Component.For<IServiceContext>().ImplementedBy<ServiceContext>().LifestyleTransient());
