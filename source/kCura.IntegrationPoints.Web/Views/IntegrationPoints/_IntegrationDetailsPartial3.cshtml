@@ -13,11 +13,12 @@
 					<select id="workspace-fields" class="list-box" name="workspace-field" data-bind="options: workspaceFields, selectedOptions: selectedWorkspaceField, optionsText: 'name'" id="AvailableSelectedMembers" multiple="multiple" name="AvailableSelectedMembers"></select>
 				</div>
 				<div class="cell selection">
+					<div>
 					<div id="add-all-workspace-fields" class="legal-hold icon-paging-last" data-bind="click: addAllWorkspaceFields"></div>
 					<div id="add-workspace-field" class="legal-hold icon-paging-next" data-bind="click: addSelectFields"></div>
 					<div id="remove-workspace-field" class="legal-hold icon-paging-previous" data-bind="click: addToWorkspaceField"></div>
 					<div id="remove-all-workspace-fields" class="legal-hold icon-paging-first" data-bind="click: addAlltoWorkspaceField"></div>
-
+					</div>
 				</div>
 				<div class="cell">
 					<select class="list-box" id="selected-workspace-fields" data-bind="options: mappedWorkspace, selectedOptions: selectedMappedWorkspace, optionsText: 'name'" multiple="multiple"></select>
@@ -59,8 +60,7 @@
 				</div>
 
 			</div>
-
-
+			<div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error"></div>
 			<div class="field-row overlay-identifier">
 				<div class="field-label required">Overlay Identifier</div>
 				<div class="field-value ">
@@ -71,7 +71,8 @@
 			<div class="field-row parent-identifier" data-bind="visible: hasParent">
 				<div class="field-label required">Parent Attribute</div>
 				<div class="field-value ">
-					<select id="parent-identifier" data-bind="options: sourceField, value: parentIdentifier, optionsText: 'name', optionsCaption: 'Select...', select2: {}">
+					<div data-bind="validationMessage: parentIdentifier" class="icon-error legal-hold field-validation-error"></div>
+					<select id="parent-identifier" data-bind="options: parentField, value: parentIdentifier, optionsText: 'name', optionsCaption: 'Select...', select2: {}">
 					</select>
 				</div>
 			</div>

@@ -9,7 +9,16 @@ ko.validation.configure({
 	parseInputAttributes: true,
 	messageTemplate: null
 });
+ko.validation.rules['mustEqualMapped'] = {
+	validator: function (value, params) {
+		return value.length === params().length;
+	},
+	message: 'All selected items have not been mapped'
+};
+
 ko.validation.registerExtenders();
+
+
 
 ko.validation.insertValidationMessage = function (element) {
 	var errorContainer = document.createElement('div');
@@ -19,6 +28,8 @@ ko.validation.insertValidationMessage = function (element) {
 	$(element).parents('.field-value').eq(0).append(errorContainer);
 	return iconSpan;
 };
+
+
 
 (function (root, ko) {
 
@@ -41,20 +52,47 @@ ko.validation.insertValidationMessage = function (element) {
 
 	var viewModel = function (model) {
 		var self = this;
+		
+		this.hasBeenLoaded = model.hasBeenLoaded;
+		this.showErrors = ko.observable(false);
 		var artifactTypeId = model.destination.artifactTypeId;
 		var artifactId = model.artifactID || 0;
 		this.workspaceFields = ko.observableArray([]);
 		this.mappedWorkspace = ko.observableArray([]);
-		this.sourceMapped = ko.observableArray([]);
+		this.sourceMapped = ko.observableArray([]).extend({
+			mustEqualMapped: {
+				onlyIf: function () {
+					return self.showErrors();
+				},
+				params: this.mappedWorkspace
+			}
+		});
+		this.mappedWorkspace.extend({
+			mustEqualMapped: {
+				onlyIf: function() {
+					return self.showErrors();
+				},
+				params: self.sourceMapped
+			}
+		}); 
 		this.sourceField = ko.observableArray([]);
 		this.selectedWorkspaceField = ko.observableArray([]);
 		this.selectedMappedWorkspace = ko.observableArray([]);
 		this.selectedSourceField = ko.observableArray([]);
-		this.selectedMappedSource = ko.observableArray([]);//.extend({ equal: selectedMappedWorkspace });
+		this.selectedMappedSource = ko.observableArray([]);
 		this.overlay = ko.observableArray([]);
-		this.selectedOverlay = ko.observable();
+		this.selectedOverlay = ko.observable().extend({ required: true });
 		this.hasParent = ko.observable(false);
-		this.parentIdentifier = ko.observable();
+		this.parentField = ko.observableArray([]);
+		this.parentIdentifier = ko.observable().extend({
+			required: {
+				onlyIf: function() {
+					return self.showErrors() && self.hasParent();
+				},
+				message: 'The Parent Attribute must be mapped.'
+			}
+		});
+		this.cacheMapped = ko.observableArray([]) ;
 
 		var workspaceFieldPromise = root.data.ajax({ type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({ settings: model.destination }) }).then(function (result) {
 			var types = mapFields(result);
@@ -111,13 +149,16 @@ ko.validation.insertValidationMessage = function (element) {
 				var destinationFields = result[0],
 						sourceFields = result[1],
 						mapping = result[2];
-
+			
+				var types = mapFields(sourceFields);
+				self.parentField(types);
 				var destinationMapped = mapHelper.getMapped(destinationFields, mapping, 'destinationField');
 				var destinationNotMapped = mapHelper.getNotMapped(destinationFields, mapping, 'destinationField');
 				var sourceMapped = mapHelper.getMapped(sourceFields, mapping, 'sourceField');
 				var sourceNotMapped = mapHelper.getNotMapped(sourceFields, mapping, 'sourceField');
 
 				self.workspaceFields(mapFields(destinationNotMapped));
+				
 				self.mappedWorkspace(mapFields(destinationMapped));
 				self.sourceField(mapFields(sourceNotMapped));
 				self.sourceMapped(mapFields(sourceMapped));
@@ -125,7 +166,8 @@ ko.validation.insertValidationMessage = function (element) {
 		
 		/********** Submit Validation**********/
 		this.submit = function () {
-
+		
+			this.showErrors(true);
 		}
 		/********** WorkspaceFields control  **********/
 
@@ -147,7 +189,6 @@ ko.validation.insertValidationMessage = function (element) {
 			this.workspaceFields.removeAll();
 			this.selectedWorkspaceField.splice(0, this.selectedWorkspaceField().length);
 		}
-
 		this.addAlltoWorkspaceField = function () {
 			var requested = this.workspaceFields;
 			moveItemFromField(self.mappedWorkspace(), requested);
@@ -162,28 +203,24 @@ ko.validation.insertValidationMessage = function (element) {
 			this.sourceField.removeAll(self.selectedSourceField());
 			this.selectedSourceField.splice(0, this.selectedSourceField().length);
 		}
-
 		this.addToSourceField = function () {
 			var requested = this.sourceField;
 			moveItemFromField(self.selectedMappedSource(), requested);
 			this.sourceMapped.removeAll(self.selectedMappedSource());
 			this.selectedMappedSource.splice(0, this.selectedMappedSource().length);
 		}
-
 		this.addSourceToMapped = function () {
 			var requested = this.sourceMapped;
 			moveItemFromField(self.sourceField(), requested);
 			this.sourceField.removeAll();
 			this.selectedSourceField.splice(0, this.selectedSourceField.length);
 		}
-
 		this.addAlltoSourceField = function () {
 			var requested = this.sourceField;
 			moveItemFromField(self.sourceMapped(), requested);
 			this.sourceMapped.removeAll();
 			this.selectedMappedSource.splice(0, this.selectedMappedSource().length);
 		}
-
 		this.moveMappedWorkspaceUp = function () {
 			for (var j = 0; j < this.selectedMappedWorkspace().length ; j++) {
 				var i = this.mappedWorkspace.indexOf(this.selectedMappedWorkspace()[j]);
@@ -195,7 +232,6 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 			}
 		}
-
 		this.moveMappedWorkspaceDown = function () {
 			for (var j = this.selectedMappedWorkspace().length - 1; j >= 0 ; j--) {
 				var i = this.mappedWorkspace().indexOf(this.selectedMappedWorkspace()[j]);
@@ -243,11 +279,28 @@ ko.validation.insertValidationMessage = function (element) {
 		self.settings = settings;
 		this.template = ko.observable();
 		this.hasTemplate = false;
+		this.hasBeenLoaded = false;
 		this.returnModel = {};
+		this.bus = IP.frameMessaging();
 		this.loadModel = function (model) {
+			this.hasBeenLoaded = false;
 			this.selectedRdo = model.destination.selectedRdo;
 			this.returnModel = model;
 			this.model = new viewModel(this.returnModel);
+			//if (typeof (stepCache[model.cacheMapped.id]) === "undefined") {
+			//	//stepCache[model.cacheMapped.id] = self.model || '';
+			//}
+			//if (!this.hasBeenLoaded) {
+			//	this.hasBeenLoaded = true;
+			//	this.source = $.grep(model.source.sourceTypes, function (item) {
+			//		return item.value === model.source.selectedType;
+			//	})[0].href;
+			//}
+
+			//if (!this.hasBeenLoaded) {
+			//	this.hasBeenLoaded = true;
+				
+			//}
 		};
 
 		this.getTemplate = function () {
@@ -258,27 +311,40 @@ ko.validation.insertValidationMessage = function (element) {
 			});
 		};
 
+		this.bus.subscribe("saveState", function (state) {
+		});
+		var stepCache= {};
 		this.submit = function () {
 			var d = root.data.deferred().defer();
-			var mapping = ko.toJS(this.model);
-			var map = [];
-			for (var i = 0; i < mapping.sourceMapped.length; i++) {
-				var source = mapping.sourceMapped[i];
-				var destination = mapping.mappedWorkspace[i];
-				map.push({
-					sourceField: {
-						displayName: source.name,
-						fieldIdentifier: source.identifer
-					},
-					destinationField: {
-						displayName: destination.name,
-						fieldIdentifier: destination.identifer
-					}
+			this.model.submit();
+			if (this.model.errors().length === 0) {
+				var mapping = ko.toJS(this.model);
+				var map = [];
+				for (var i = 0; i < mapping.sourceMapped.length; i++) {
+					var source = mapping.sourceMapped[i];
+					var destination = mapping.mappedWorkspace[i];
+					map.push({
+						sourceField: {
+							displayName: source.name,
+							fieldIdentifier: source.identifer
+						},
+						destinationField: {
+							displayName: destination.name,
+							fieldIdentifier: destination.identifer
+						}
+					});
+				}
+				this.bus.subscribe('saveComplete', function (data) {
 				});
+				this.bus.subscribe('saveError', function (error) {
+					d.reject(error);
+				});
+				this.returnModel.map = JSON.stringify(map);
+				d.resolve(this.returnModel);
+			} else {
+				this.model.errors.showAllMessages();
+				d.reject();
 			}
-
-			this.returnModel.map = JSON.stringify(map);
-			d.resolve(this.returnModel);
 			return d.promise;
 		};
 	};

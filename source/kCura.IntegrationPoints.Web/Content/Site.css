@@ -175,6 +175,17 @@ ul li .day-select {
 	height: 400px;
 
 }	
+
+
+ #remove-all-source-fields.legal-hold[class*="icon-"]:before,#remove-all-workspace-fields.legal-hold[class*="icon-"]:before,#remove-source-field.legal-hold[class*="icon-"]:before
+ ,#remove-workspace-field.legal-hold[class*="icon-"]:before,#add-all-source-fields.legal-hold[class*="icon-"]:before,#add-all-workspace-fields.legal-hold[class*="icon-"]:before,
+ #add-source-field.legal-hold[class*="icon-"]:before,#add-workspace-field.legal-hold[class*="icon-"]:before,#attribute-field-down.legal-hold[class*="icon-"]:before
+ ,#attribute-field-up.legal-hold[class*="icon-"]:before,#workspace-field-down.legal-hold[class*="icon-"]:before,#workspace-field-up.legal-hold[class*="icon-"]:before{
+	border: 2px solid #1b5495;
+	border-radius: 4px;
+	padding: 1px;
+	margin-bottom: 10px;
+}
 .overlay-identifier {
 	margin-top: 20px;
 }
