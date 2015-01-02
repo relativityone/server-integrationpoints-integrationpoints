@@ -370,13 +370,15 @@ var IP = IP || {};
 	};
 
 	var Model = function (m) {
+		
 		var settings = $.extend({}, m);
 		var self = this;
 		this.name = ko.observable(settings.name).extend({ required: true });
-
+		
 		this.source = new Source(settings.source);
 		this.destination = new Destination(settings.destination);
-		this.overwrite = ko.observableArray(['Append/Overlay', 'Append']);
+		this.overwrite = ko.observableArray([
+			'Append/Overlay', 'Append', 'Overlay Only']);
 
 		this.selectedOverwrite = ko.observable(settings.selectedOverwrite);
 		this.scheduler = new Scheduler(settings.scheduler);

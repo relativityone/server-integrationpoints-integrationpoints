@@ -18,18 +18,17 @@ ko.validation.rules['mustEqualMapped'] = {
 
 ko.validation.registerExtenders();
 
-
-
 ko.validation.insertValidationMessage = function (element) {
 	var errorContainer = document.createElement('div');
 	var iconSpan = document.createElement('span');
 	iconSpan.className = 'icon-error legal-hold field-validation-error';
+
 	errorContainer.appendChild(iconSpan);
+
 	$(element).parents('.field-value').eq(0).append(errorContainer);
+
 	return iconSpan;
 };
-
-
 
 (function (root, ko) {
 
@@ -84,14 +83,16 @@ ko.validation.insertValidationMessage = function (element) {
 		this.selectedOverlay = ko.observable().extend({ required: true });
 		this.hasParent = ko.observable(false);
 		this.parentField = ko.observableArray([]);
-		this.parentIdentifier = ko.observable().extend({
+		this.selectedIdentifier = ko.observable().extend({
 			required: {
 				onlyIf: function() {
 					return self.showErrors() && self.hasParent();
 				},
-				message: 'The Parent Attribute must be mapped.'
+				message: 'The Parent Attribute is required.',
+				
 			}
 		});
+		
 		this.cacheMapped = ko.observableArray([]) ;
 
 		var workspaceFieldPromise = root.data.ajax({ type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({ settings: model.destination }) }).then(function (result) {
@@ -106,12 +107,19 @@ ko.validation.insertValidationMessage = function (element) {
 			return result;
 		});
 		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceFields'), data: { 'options': JSON.stringify({ artifactTypeID: artifactTypeId }), 'type': JSON.stringify({ artifactTypeID: artifactTypeId }) } });
+		var mappedSourcePromise;
+		if (model.map == undefined) {
+			mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap', artifactId) });
+		} else {
+			mappedSourcePromise = jQuery.parseJSON(model.map);
+		}
 		
-		var mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap', artifactId) });
-				
+
+
 		var destination = JSON.parse(model.destination);
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('rdometa', destination.artifactTypeID) }).then(function (result) {
 			self.hasParent(result.hasParent);
+			
 		});
 		var promises = [workspaceFieldPromise, sourceFieldPromise, mappedSourcePromise];
 
@@ -151,6 +159,7 @@ ko.validation.insertValidationMessage = function (element) {
 						mapping = result[2];
 			
 				var types = mapFields(sourceFields);
+			
 				self.parentField(types);
 				var destinationMapped = mapHelper.getMapped(destinationFields, mapping, 'destinationField');
 				var destinationNotMapped = mapHelper.getNotMapped(destinationFields, mapping, 'destinationField');
@@ -162,8 +171,10 @@ ko.validation.insertValidationMessage = function (element) {
 				self.mappedWorkspace(mapFields(destinationMapped));
 				self.sourceField(mapFields(sourceNotMapped));
 				self.sourceMapped(mapFields(sourceMapped));
-			});
-		
+			}).fail(function() {  });
+		if (model.identifer == undefined) {
+			self.selectedOverlay(model.identifer); 
+		}
 		/********** Submit Validation**********/
 		this.submit = function () {
 		
@@ -284,23 +295,20 @@ ko.validation.insertValidationMessage = function (element) {
 		this.bus = IP.frameMessaging();
 		this.loadModel = function (model) {
 			this.hasBeenLoaded = false;
-			this.selectedRdo = model.destination.selectedRdo;
+			this.selectedRdo = jQuery.parseJSON(model.destination).artifactTypeID;
 			this.returnModel = model;
+		
 			this.model = new viewModel(this.returnModel);
-			//if (typeof (stepCache[model.cacheMapped.id]) === "undefined") {
-			//	//stepCache[model.cacheMapped.id] = self.model || '';
-			//}
-			//if (!this.hasBeenLoaded) {
-			//	this.hasBeenLoaded = true;
-			//	this.source = $.grep(model.source.sourceTypes, function (item) {
-			//		return item.value === model.source.selectedType;
-			//	})[0].href;
-			//}
-
-			//if (!this.hasBeenLoaded) {
-			//	this.hasBeenLoaded = true;
+			this.model.errors = ko.validation.group(this.model, { deep: true });
+			if (typeof (stepCache[this.selectedRdo]) === "undefined") {
+				stepCache[this.selectedRdo] = self.model || '';
+			}
+			if (!this.hasBeenLoaded) {
+				this.hasBeenLoaded = true;
+			}
+			else {
 				
-			//}
+			}
 		};
 
 		this.getTemplate = function () {
@@ -334,12 +342,16 @@ ko.validation.insertValidationMessage = function (element) {
 						}
 					});
 				}
+				
 				this.bus.subscribe('saveComplete', function (data) {
 				});
 				this.bus.subscribe('saveError', function (error) {
 					d.reject(error);
 				});
 				this.returnModel.map = JSON.stringify(map);
+				this.returnModel.identifer = JSON.stringify(this.model.selectedOverlay());
+
+				
 				d.resolve(this.returnModel);
 			} else {
 				this.model.errors.showAllMessages();
