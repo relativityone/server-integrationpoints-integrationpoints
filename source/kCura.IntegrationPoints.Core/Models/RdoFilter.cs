@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			{
 				return new List<string>
 				{
-					"History","Event Handler","Install Event Handler"
+					"History","Event Handler","Install Event Handler","Source Provider","Integration Point"
 				};
 			}
 		}

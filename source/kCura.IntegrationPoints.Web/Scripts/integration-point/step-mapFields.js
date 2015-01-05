@@ -13,9 +13,45 @@ ko.validation.rules['mustEqualMapped'] = {
 	validator: function (value, params) {
 		return value.length === params().length;
 	},
-	message: 'All selected items have not been mapped'
+	message: 'All selected items have not been mapped.'
 };
-
+ko.validation.rules['mustContainIdentifer'] = {
+	validator: function (value, params) {
+		if (value.length == 0) {
+			IP.message.error.raise('The object identifier field must be mapped.');
+			return false;
+		} else {
+			var containsIdentifier;
+			if (params[0] === "Append") { // Append Selected
+				containsIdentifier = false;
+				$.each(value, function (index, item) {
+					
+					if (item.isIdentifier === true) {
+						containsIdentifier = true;
+					}
+				});
+				if (containsIdentifier) {
+					IP.message.error.clear();
+					return true;
+				}
+				IP.message.error.raise('The object identifier field must be mapped.');
+				return false;
+			} else {
+				containsIdentifier = false;
+				$.each(value, function (index, item) {
+					if (item.name === params[1]()) {
+						containsIdentifier = true;
+					}
+				});
+				if (containsIdentifier) {
+					return true;
+				}
+				return false; 
+			}
+		}
+	},
+	message: 'The object identifier field must be mapped.'
+}
 ko.validation.registerExtenders();
 
 ko.validation.insertValidationMessage = function (element) {
@@ -57,7 +93,16 @@ ko.validation.insertValidationMessage = function (element) {
 		var artifactTypeId = model.destination.artifactTypeId;
 		var artifactId = model.artifactID || 0;
 		this.workspaceFields = ko.observableArray([]);
-		this.mappedWorkspace = ko.observableArray([]);
+		this.selectedOverlay = ko.observable().extend({ required: true });
+		this.mappedWorkspace = ko.observableArray([]).extend({
+			mustContainIdentifer: {
+				onlyIf: function() {
+					return self.showErrors();
+				},
+				params: [model.selectedOverwrite , self.selectedOverlay]
+			}
+		});
+		
 		this.sourceMapped = ko.observableArray([]).extend({
 			mustEqualMapped: {
 				onlyIf: function () {
@@ -66,21 +111,14 @@ ko.validation.insertValidationMessage = function (element) {
 				params: this.mappedWorkspace
 			}
 		});
-		this.mappedWorkspace.extend({
-			mustEqualMapped: {
-				onlyIf: function() {
-					return self.showErrors();
-				},
-				params: self.sourceMapped
-			}
-		}); 
+	
 		this.sourceField = ko.observableArray([]);
 		this.selectedWorkspaceField = ko.observableArray([]);
 		this.selectedMappedWorkspace = ko.observableArray([]);
 		this.selectedSourceField = ko.observableArray([]);
 		this.selectedMappedSource = ko.observableArray([]);
 		this.overlay = ko.observableArray([]);
-		this.selectedOverlay = ko.observable().extend({ required: true });
+		
 		this.hasParent = ko.observable(false);
 		this.parentField = ko.observableArray([]);
 		this.selectedIdentifier = ko.observable().extend({
@@ -306,6 +344,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.returnModel = {};
 		this.bus = IP.frameMessaging();
 		this.loadModel = function (model) {
+			
 			this.hasBeenLoaded = false;
 			this.selectedRdo = jQuery.parseJSON(model.destination).artifactTypeID;
 			this.returnModel = model;

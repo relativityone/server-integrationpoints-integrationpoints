@@ -61,8 +61,9 @@ namespace kCura.IntegrationPoints.Data
 				{
 					Field = "Descriptor Artifact Type ID",
 					Operator = NumericConditionEnum.In,
-					Value = new List<int>() { 10, 1000002, 1000003, 1000031, 1000032}
+					Value = new List<int>() { 10}
 				};
+
 				qry.Condition = new CompositeCondition(condition1, CompositeConditionEnum.Or, condition2);
 			
 			}
@@ -73,6 +74,8 @@ namespace kCura.IntegrationPoints.Data
 				var e = new AggregateException(result.Message, messages.Select(x => new Exception(x)));
 				throw e;
 			}
+
+
 			return result.Results.Select(x => x.Artifact).ToList();
 		}
 
