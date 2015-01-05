@@ -35,7 +35,7 @@
 | | Find A Row With The Following Data	|
 | | ... | Name						| Identifier		|
 | | ... | Field Type				| Fixed-Length Text	|
-| | ... | Is Required				| No				|
+| | ... | Is Required				| Yes				|
 | | ... | Associative Object Type	| ${EMPTY}
 
 | Name
