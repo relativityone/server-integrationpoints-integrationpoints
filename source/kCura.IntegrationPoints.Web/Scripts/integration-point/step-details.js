@@ -84,18 +84,26 @@ var IP = IP || {};
 		var self = this;
 
 		this.sourceTypes = ko.observableArray();
-
+		this.selectedType = ko.observable().extend({ required: true });
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
+			
 			var types = $.map(result, function (entry) {
 				var c = new Choice(entry.name, entry.value);
 				c.href = entry.url;
 				return c;
 			});
 			self.sourceTypes(types);
+			$.each(self.sourceTypes(), function () {
+				if (this.value === settings.selectedType) {
+					self.selectedType(this.value);
+				}
+			});
 		});
 
-		this.selectedType = ko.observable(settings.selectedType).extend({ required: true });
-
+		
+		
+		
+		
 	};
 
 	var Destination = function (d) {
@@ -370,11 +378,10 @@ var IP = IP || {};
 	};
 
 	var Model = function (m) {
-		
 		var settings = $.extend({}, m);
 		var self = this;
 		this.name = ko.observable(settings.name).extend({ required: true });
-		
+
 		this.source = new Source(settings.source);
 		this.destination = new Destination(settings.destination);
 		this.overwrite = ko.observableArray([

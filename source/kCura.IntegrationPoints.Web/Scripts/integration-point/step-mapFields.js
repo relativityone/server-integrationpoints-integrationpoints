@@ -94,15 +94,20 @@ ko.validation.insertValidationMessage = function (element) {
 		});
 		
 		this.cacheMapped = ko.observableArray([]) ;
-
+	
 		var workspaceFieldPromise = root.data.ajax({ type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({ settings: model.destination }) }).then(function (result) {
 			var types = mapFields(result);
 			self.overlay(types);
 			
 			$.each(self.overlay(), function () {
 				if (this.isIdentifier) {
-					self.selectedOverlay(this);
+					self.selectedOverlay(this.name);
 				}				
+			});
+			$.each(self.overlay(), function () {
+				if (model.identifer == this.name) {
+					self.selectedOverlay(this.name);
+				}
 			});
 			return result;
 		});
@@ -161,6 +166,13 @@ ko.validation.insertValidationMessage = function (element) {
 				var types = mapFields(sourceFields);
 			
 				self.parentField(types);
+				if (model.parentIdentifier !== undefined) {
+					$.each(self.parentField(), function () {
+						if (this.name === model.parentIdentifier) {
+							self.selectedIdentifier(this.name);
+						}
+				});
+				}
 				var destinationMapped = mapHelper.getMapped(destinationFields, mapping, 'destinationField');
 				var destinationNotMapped = mapHelper.getNotMapped(destinationFields, mapping, 'destinationField');
 				var sourceMapped = mapHelper.getMapped(sourceFields, mapping, 'sourceField');
@@ -171,10 +183,10 @@ ko.validation.insertValidationMessage = function (element) {
 				self.mappedWorkspace(mapFields(destinationMapped));
 				self.sourceField(mapFields(sourceNotMapped));
 				self.sourceMapped(mapFields(sourceMapped));
-			}).fail(function() {  });
-		if (model.identifer == undefined) {
-			self.selectedOverlay(model.identifer); 
-		}
+			}).fail(function () { });
+
+	
+	
 		/********** Submit Validation**********/
 		this.submit = function () {
 		
@@ -300,15 +312,6 @@ ko.validation.insertValidationMessage = function (element) {
 		
 			this.model = new viewModel(this.returnModel);
 			this.model.errors = ko.validation.group(this.model, { deep: true });
-			if (typeof (stepCache[this.selectedRdo]) === "undefined") {
-				stepCache[this.selectedRdo] = self.model || '';
-			}
-			if (!this.hasBeenLoaded) {
-				this.hasBeenLoaded = true;
-			}
-			else {
-				
-			}
 		};
 
 		this.getTemplate = function () {
@@ -349,8 +352,8 @@ ko.validation.insertValidationMessage = function (element) {
 					d.reject(error);
 				});
 				this.returnModel.map = JSON.stringify(map);
-				this.returnModel.identifer = JSON.stringify(this.model.selectedOverlay());
-
+				this.returnModel.identifer = this.model.selectedOverlay();
+				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 				
 				d.resolve(this.returnModel);
 			} else {

@@ -59,12 +59,12 @@ namespace kCura.IntegrationPoints.Data
 				};
 				var condition2 = new WholeNumberCondition()
 				{
-					Field = "Descriptor Artifact Type ID",// Relativity.Client.DTOs.ObjectTypeFieldNames.DescriptorArtifactTypeID,
-					Operator = NumericConditionEnum.EqualTo,
-					Value = new List<int>() { 1000002, 1000003, 1000031, 1000032 }
+					Field = "Descriptor Artifact Type ID",
+					Operator = NumericConditionEnum.In,
+					Value = new List<int>() { 10, 1000002, 1000003, 1000031, 1000032}
 				};
-				//qry.Condition = new CompositeCondition(condition1, CompositeConditionEnum.Or, condition2);
-				qry.Condition = condition1;
+				qry.Condition = new CompositeCondition(condition1, CompositeConditionEnum.Or, condition2);
+			
 			}
 			var result = _client.Repositories.ObjectType.Query(qry);
 			if (!result.Success)
