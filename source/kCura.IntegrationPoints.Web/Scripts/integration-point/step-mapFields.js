@@ -94,6 +94,7 @@ ko.validation.insertValidationMessage = function (element) {
 		var artifactId = model.artifactID || 0;
 		this.workspaceFields = ko.observableArray([]);
 		this.selectedOverlay = ko.observable().extend({ required: true });
+		this.isAppendOverlay = ko.observable(true);
 		this.mappedWorkspace = ko.observableArray([]).extend({
 			mustContainIdentifer: {
 				onlyIf: function() {
@@ -221,6 +222,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.mappedWorkspace(mapFields(destinationMapped));
 				self.sourceField(mapFields(sourceNotMapped));
 				self.sourceMapped(mapFields(sourceMapped));
+				self.isAppendOverlay(model.selectedOverwrite !== "Append");
 			}).fail(function () { });
 
 	

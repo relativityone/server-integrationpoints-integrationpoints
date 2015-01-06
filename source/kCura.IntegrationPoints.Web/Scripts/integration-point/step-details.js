@@ -308,9 +308,9 @@ var IP = IP || {};
 		this.reoccurEvery = ko.computed(function () {
 			var state = self.selectedFrequency();
 			var states = {
-				"1": "",
-				"2": "week(s)",
-				"3": 'month(s)'
+				"Daily": "",
+				"Weekly": "week(s)",
+				"Monthly": 'month(s)'
 			}
 			return states[state] || '';
 		});
