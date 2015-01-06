@@ -58,9 +58,6 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NSubstitute">
-      <HintPath>..\packages\NSubstitute.1.8.0.0\lib\net45\NSubstitute.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
@@ -75,12 +72,12 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AuthenticationTypesEnum.cs" />
+    <Compile Include="LDAPDataReader.cs" />
     <Compile Include="LDAPServiceDataReader.cs" />
     <Compile Include="LDAPDataFormatterForBatchableIDs.cs" />
     <Compile Include="ExtendedDNEnum.cs" />
     <Compile Include="ILDAPDataFormatter.cs" />
     <Compile Include="LDAPDataFormatterDefault.cs" />
-    <Compile Include="LDAPDataReader.cs" />
     <Compile Include="SearchScopeEnum.cs" />
     <Compile Include="LDAPAdapters.cs" />
     <Compile Include="LDAPProvider.cs" />

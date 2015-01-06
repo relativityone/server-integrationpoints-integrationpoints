@@ -39,6 +39,7 @@ namespace kCura.IntegrationPoints.Data
 				}
 			};
 
+
 			if (typeIds != null)
 			{
 				qry.Condition = new ObjectCondition
@@ -48,7 +49,24 @@ namespace kCura.IntegrationPoints.Data
 					Value = typeIds
 				};
 			}
+			else
+			{
+				var condition1 = new WholeNumberCondition()
+				{
+					Field = "Descriptor Artifact Type ID",// Relativity.Client.DTOs.ObjectTypeFieldNames.DescriptorArtifactTypeID,
+					Operator = NumericConditionEnum.GreaterThan,
+					Value = new List<int>() { 1000000 }
+				};
+				var condition2 = new WholeNumberCondition()
+				{
+					Field = "Descriptor Artifact Type ID",
+					Operator = NumericConditionEnum.In,
+					Value = new List<int>() { 10}
+				};
 
+				qry.Condition = new CompositeCondition(condition1, CompositeConditionEnum.Or, condition2);
+			
+			}
 			var result = _client.Repositories.ObjectType.Query(qry);
 			if (!result.Success)
 			{
@@ -56,6 +74,8 @@ namespace kCura.IntegrationPoints.Data
 				var e = new AggregateException(result.Message, messages.Select(x => new Exception(x)));
 				throw e;
 			}
+
+
 			return result.Results.Select(x => x.Artifact).ToList();
 		}
 

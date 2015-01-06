@@ -6,9 +6,10 @@
 	<property name="testLogDirectory" value="${source.code.directory}\TestLogs" />
 	<property name="testOutput32" value="${testLogDirectory}\output32.xml" />
 	<property name="testOutput64" value="${testLogDirectory}\output64.xml" />
+	<property name="nunit.tools.location" value="${source.code.directory}\packages\NUnit.Runners.2.6.4\tools" />
 	
-	<property name="NUnit" value="${source.code.directory}\packages\NUnit.Runners.2.6.3\tools\nunit-console-x86.exe" unless="${property::exists('NUnit')}" />
-	<property name="NUnit64" value="${source.code.directory}\packages\NUnit.Runners.2.6.3\tools\nunit-console.exe" unless="${property::exists('NUnit64')}" />
+	<property name="NUnit" value="${nunit.tools.location}\nunit-console-x86.exe" unless="${property::exists('NUnit')}" />
+	<property name="NUnit64" value="${nunit.tools.location}\nunit-console.exe" unless="${property::exists('NUnit64')}" />
 	
 	<property name="testDirectory" value="${source.code.directory}" />
 	
@@ -68,7 +69,6 @@
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Synchronizers.RDO.Tests\bin\kCura.IntegrationPoints.Synchronizers.RDO.Tests.dll')}" />
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Agent.Tests\bin\kCura.IntegrationPoints.Agent.Tests.dll')}" />
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.EventHandlers.Tests\bin\kCura.IntegrationPoints.EventHandlers.Tests.dll')}" />
-		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.LDAPProvider.Tests\bin\kCura.IntegrationPoints.LDAPProvider.Tests.dll')}" />
 	</assemblyfileset>
 
 	<assemblyfileset id="unitTestAssembliesX64_Part2">

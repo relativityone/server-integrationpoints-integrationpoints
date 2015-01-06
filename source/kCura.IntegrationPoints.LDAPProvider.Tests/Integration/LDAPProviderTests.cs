@@ -61,8 +61,6 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests.Integration
 			//IDataReader sourceReader = ldap.GetBatchableIds(new FieldEntry() { DisplayName = "objectClass", FieldIdentifier = "objectClass" }, options); //Object Identifier
 
 			//ASSERT
-			Debug.WriteLine("Test!");
-			Console.WriteLine("Test!");
 			Object[] values = new Object[sourceReader.FieldCount];
 
 			while (sourceReader.Read())

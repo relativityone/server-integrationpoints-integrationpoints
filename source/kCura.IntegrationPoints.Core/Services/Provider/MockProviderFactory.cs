@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Core.Services.Provider
 		public IDataSourceProvider GetDataProvider()
 		{
 			//return new kCura.IntegrationPoints.Core.Services.Provider.
-			return new LDAPProvider.LDAPProvider();
+			throw new NotImplementedException();
 		}
 	}
 }

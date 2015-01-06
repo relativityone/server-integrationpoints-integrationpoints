@@ -187,12 +187,26 @@ ul li .day-select {
 	height: 400px;
 
 }	
+
+
+ #remove-all-source-fields.legal-hold[class*="icon-"]:before,#remove-all-workspace-fields.legal-hold[class*="icon-"]:before,#remove-source-field.legal-hold[class*="icon-"]:before
+ ,#remove-workspace-field.legal-hold[class*="icon-"]:before,#add-all-source-fields.legal-hold[class*="icon-"]:before,#add-all-workspace-fields.legal-hold[class*="icon-"]:before,
+ #add-source-field.legal-hold[class*="icon-"]:before,#add-workspace-field.legal-hold[class*="icon-"]:before,#attribute-field-down.legal-hold[class*="icon-"]:before
+ ,#attribute-field-up.legal-hold[class*="icon-"]:before,#workspace-field-down.legal-hold[class*="icon-"]:before,#workspace-field-up.legal-hold[class*="icon-"]:before{
+	border: 1px solid #1b5495;
+	border-radius: 3px;
+	padding: 1px;
+	margin-bottom: 10px;
+	font-size: 12px;
+	color: #1b5495;
+}
 .overlay-identifier {
 	margin-top: 20px;
 }
 .map-field-title {
 	padding-top: 20px;
 	display: flex;
+	width: 1200px;
 }
 .workspace-field {
 	float: left;
@@ -201,7 +215,7 @@ ul li .day-select {
 .source-field {
 	float: left;
 	padding-bottom: 10px; 
-	margin-left: 835px;
+	margin-left: 70.5%;
 }
 .list-title {
 	font-size: 13px;

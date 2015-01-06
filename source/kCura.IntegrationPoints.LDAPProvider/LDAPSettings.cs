@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			PropertyNamesOnly = false;// - dotNet default
 			ProviderReferralChasing = ReferralChasingOption.External;
 			ProviderExtendedDN = ExtendedDNEnum.Standard;
-			GetPropertiesItemSearchLimit = 100;
 			MultiValueDelimiter = char.Parse(";");
 		}
 
@@ -73,7 +72,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		public int SizeLimit { get; set; }
 
 		/// <summary>
-		/// Number of items to query to retrieve property list
+		/// number of items to query to retrieve property list
 		/// </summary>
 		public int GetPropertiesItemSearchLimit { get; set; }
 

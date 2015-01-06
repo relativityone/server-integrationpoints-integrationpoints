@@ -60,6 +60,9 @@
 				IP.messaging.publish('goToStep', step);
 				d.resolve(result);
 			}).fail(function (err) {
+				if (err.message) {
+					err = err.message;
+				}
 				IP.message.error.raise(err);
 				d.reject(err);
 			});

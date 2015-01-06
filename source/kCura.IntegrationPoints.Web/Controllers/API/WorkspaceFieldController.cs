@@ -7,7 +7,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Models;
 using Newtonsoft.Json;
-using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {

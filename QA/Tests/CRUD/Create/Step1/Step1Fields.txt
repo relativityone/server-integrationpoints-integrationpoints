@@ -1,5 +1,6 @@
+
 *** Settings ***
-| Documentation 	| Verify that the Set Intergration Details step of Integration Points shows the correct fields and data
+| Documentation 	| Verify that the Set Intergration Details step of Integration Points shows the correct fields and data.
 | Metadata		    | Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress | team.method
 | Suite Setup		| Open and Log in to Method
@@ -7,59 +8,68 @@
 | Test Teardown 	| Capture screenshot if test fails
 | Suite Teardown	| Close all browsers
 
+
 *** Variables ***
 
-| ${WorkspaceName}	    | Relativity Legal Hold
+| ${WorkspaceName}			| Relativity Legal Hold
 | ${IntegrationNameField}   | name
-| ${OverwriteDropDown}    | s2id_overwrite
-| ${SourceProviderDropDown}  | s2id_sourceProvider
-| ${DestinationRDODropDown}  | s2id_destinationRdo
-| ${EnableSchedulerRadioButtonsID}      | scheduleRulesEnabled
-| ${EnableSchedulerButtonName}          | enable
+| ${OverwriteDropDown}		| s2id_overwrite
+| ${SourceProviderDropDown}	| s2id_sourceProvider
+| ${DestinationRDODropDown}	| s2id_destinationRdo
+| ${EnableSchedulerRadioButtonsID}	| scheduleRulesEnabled
+| ${EnableSchedulerButtonName}		| enable
+
 
 *** Test Cases ***
 
 | Clicking New Integration Point Shows the Create Integration Point Detail screen
-| | [Documentation]	| Verify that clicking New Integration Point from the List view Shows the Create Integration Point Detail screen
-| | [Tags] | automated
+| | [Documentation]	| Verify that clicking New Integration Point from the List view Shows the Create Integration Point Detail screen.
+| | [Tags]			| automated
 | | Wait until keyword succeeds | 20s | 2s | Verify that the Header has the following text | Create Integration Point
+
 
 | The Set Integration Details sections are in the correct order
 | | [Documentation]	| Verify that the Set Integration Details sections are sorted correctly.
-| | [Tags] | automated
+| | [Tags]			| automated
 | | Verify the sections are ordered correctly  | General  | Integration | Import Scheduling
+
 
 | The General fields are in the correct order
 | | [Documentation]	| Verify that the fields in the General section are sorted correctly.
-| | [Tags] | automated
+| | [Tags]			| automated
 | | Verify that the following section contains the following fields | General | 
 | | ... | Integration Name: | 
 | | ... | Overwrite:
 
+
 | The Integration fields are in the correct order
 | | [Documentation]	| Verify that the fields in the Integration section are sorted correctly.
-| | [Tags] | automated
+| | [Tags]			| automated
 | | Verify that the following section contains the following fields | Integration | 
 | | ... | Source Provider: | 
 | | ... | Destination RDO:
 
+
 | The Import Scheduling fields are in the correct order
 | | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly.
-| | [Tags] | automated
+| | [Tags]			| automated
 | | Verify that the following section contains the following fields | Import Scheduling | Enable Scheduler:
+
 
 | The Overwrite list has the correct values
 | | [Documentation]	| Verify that the Overwrite List has the correct options
-| | [Tags] | automated	
+| | [Tags]			| automated	
 | | Click  | ${OverwriteDropDown}
 | | Verify that the currently opened select2 Dropdown has the following choices in order | Append/Overlay | Append
 
+
 | The Source Provider dropdown contains an alphabetically sorted list of Source Providers
-| | [Documentation]	| Verify that the Source Provider dropdown contains an alphabetically sorted list of Source Providers.
-| | [Tags]			| untested
-| | @{SourceProviders}=	| Get a List of all Source Providers in the current Workspace
+| | [Documentation]	| Verify that the Source Provider dropdown contains the value Select... followed by an alphabetically sorted list of all of the Source Providers in the current Workspace.
+| | ...				| Since Source Provider is going to be a hidden object type we are not creating any new objects to test alphabetization.
+| | [Tags]			| automated
+| | @{SourceProviders}=	| Get a List of all Source Providers in the current Workspace	| # Already alphabetized
 | | Click	| ${SourceProviderDropDown}
-| | Verify that the currently opened select2 Dropdown has the following choices in order | @{SourceProviders}
+| | Verify that the currently opened select2 Dropdown has the following choices in order | Select...	| @{SourceProviders}
 
 
 | The Overwrite Field's default value is Append/Overlay
@@ -70,13 +80,13 @@
 
 | The Source Provider Field defaults to Select...
 | | [Documentation]	| Verify that the Source Provider Field's dropdown defaults to "Select...".
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Verify that the following select2 Dropdown currently has the following value selected	|  ${SourceProviderDropDown}	| Select...
 
 
 | The Destination RDO's default value is Select...
 | | [Documentation]	| Verify that the Destination RDO's default value is "Select...".
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Verify that the following select2 Dropdown currently has the following value selected	|  ${DestinationRDODropDown}	| Select...
 
 
@@ -88,50 +98,57 @@
 
 | Integration Name has the Required Field indicator
 | | [Documentation]	| Verify that the Required Field indicator is present for the correct fields.
-| | [Tags] | automated
+| | [Tags]			| automated
 | | Verify that the following field is required | Integration Name:
+
 
 | Source Provider has the Required Field indicator
 | | [Documentation]	| Verify that the Required Field indicator is present for the correct fields.
-| | [Tags] | automated
+| | [Tags]			| automated
 | | Verify that the following field is required | Source Provider:
+
 
 | Destination RDO has the Required Field indicator
 | | [Documentation]	| Verify that the Required Field indicator is present for the correct fields.
-| | [Tags] | automated
+| | [Tags]			| automated
 | | Verify that the following field is required | Destination RDO:
+
 
 | Overwrite is not a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is not present for the correct fields.
-| | [Tags] | automated
+| | [Tags]			| automated
 | | Verify that the following field is not required | Overwrite:
+
 
 | Enable Scheduler is not a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is not present for the correct fields.
-| | [Tags] | automated
+| | [Tags]			| automated
 | | Verify that the following field is not required | Enable Scheduler:
+
 
 | The Set Integration Details Fields are of the correct type
 | | [Documentation]	| Verify that the Set Integration Details Fields are the correct type
-| | [Tags]		| automated	
+| | [Tags]			| automated
 | | Run keyword and continue on failure | Verify that the following field ID has a text input | ${IntegrationNameField}
 | | Run keyword and continue on failure | Verify that the following field ID has a droplist input | ${OverwriteDropDown}
 | | Run keyword and continue on failure | Verify that the following field ID has a droplist input | ${SourceProviderDropDown}
 | | Run keyword and continue on failure | Verify that the following field ID has a droplist input | ${DestinationRDODropDown}
-| | Run keyword and continue on failure | Verify that the following field ID has a YesNo Radio button input | ${EnableSchedulerRadioButtonsID}
+| | # Enable Scheduler is checked in the next test case.
+
 
 | The Enable Scheduler options are Yes and No
 | | [Documentation]	| Verify that the Enable Scheduler radio button options are Yes and No
-| | [Tags]		| automated
+| | [Tags]			| automated
 | | Verify that the following radio buttons are grouped together | ${EnableSchedulerButtonName}  | Yes | No
 
 
 | The Destination RDO dropdown has the correct values for Admins
 | | [Documentation]	| Verify that the Destination RDO Dropdown has the correct options when you are a user with Admin permissions.
+| | ...				| The expected values are Select..., followed by an alphabetized list of every non-System object type
 | | [Tags]			| untested
-| | @{ExpectedFields}=	| Get a List of All Non-System Object Types in the Workspace
+| | @{ExpectedFields}=	| Get a List of All Non-System Object Types in the Workspace	| # Already alphabetized
 | | Click	| ${DestinationRDODropDown}
-| | Verify that the currently opened select2 Dropdown has the following choices in order	| @{ExpectedFields}
+| | Verify that the currently opened select2 Dropdown has the following choices in order	| Select...	| @{ExpectedFields}
 
 
 | The Destination RDO dropdown hides Object Types the User does not have Add Permissions for
@@ -159,13 +176,13 @@
 | | ... | SELECT Name
 | | ... | FROM EDDSDBO.SourceProvider
 | | ... | ORDER BY Name
-| | @{1DGrid}=			| Flatten		| ${2DGrid}	| # Converts from 2D grid to 1D grid
-| | @{SourceProviders}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
+| | ${1DGrid}=			| Flatten		| ${2DGrid}	| # Converts from 2D grid to 1D grid
+| | @{SourceProviders}=	| Create List	| @{1DGrid}	| # Converts from 1D grid to List
 | | [Return]		| @{SourceProviders}
 
 | Verify the sections are ordered correctly
 | | [Documentation] | A keyword that compares the actual section headings to the expected section headings
-| | [Arguments] | @{ExpectedSections}
+| | [ARGUMENTS]		| @{ExpectedSections}
 | | @{ActualSections}= | Get Element Text  | xpath=//div[@class="card"]/child::span[@class="label"] | False 
 | | Lists should be Equal  | ${ActualSections} | ${ExpectedSections}
 

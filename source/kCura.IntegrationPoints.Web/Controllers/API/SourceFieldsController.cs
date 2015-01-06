@@ -12,9 +12,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class SourceFieldsController : ApiController
 	{
 		private readonly IDataProviderFactory _factory;
-		public SourceFieldsController(IDataProviderFactory factory)
+		public SourceFieldsController()
 		{
-			_factory = factory;
+			
 		}
 
 		
@@ -31,8 +31,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				new FieldEntry() {DisplayName = "Department", FieldIdentifier = "3"},
 				new FieldEntry() {DisplayName = "Field", FieldIdentifier = "5"},
 			};
-
-			//var fields = _factory.GetDataProvider().GetFields(options);
 			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
 		}
 

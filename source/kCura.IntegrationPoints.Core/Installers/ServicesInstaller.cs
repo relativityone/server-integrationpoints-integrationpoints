@@ -13,6 +13,8 @@ using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.Services;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -21,13 +23,17 @@ namespace kCura.IntegrationPoints.Core.Installers
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
 			container.Register(Component.For<IErrorService>().ImplementedBy<Services.ErrorService>().Named("ErrorService").LifestyleTransient());
-			
+			container.Register(Component.For<IDataProviderFactory>().AsFactory(x => x.SelectedWith(new DataProviderComponetSelector())).LifestyleTransient());
 			container.Register(Component.For<Core.Services.ObjectTypeService>().ImplementedBy<Core.Services.ObjectTypeService>());
 
 
 			
 			container.Register(Component.For<IDataSyncronizerFactory>().ImplementedBy<MockFactory>().DependsOn(new { container = container }));
 			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<MockProviderFactory>().LifestyleTransient());
+			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
+			container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
+			container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().LifestyleTransient());
+			
 
 
 			container.Register(Component.For<IServiceContext>().ImplementedBy<ServiceContext>().LifestyleTransient());
