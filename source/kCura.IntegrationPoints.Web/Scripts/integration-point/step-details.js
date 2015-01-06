@@ -264,7 +264,7 @@ var IP = IP || {};
 		}
 
 		this.submit = function () {
-			if (this.sendOn().submit) {
+			if (ko.utils.unwrapObservable(this.sendOn).submit) {
 				this.sendOn().submit();
 			}
 		};

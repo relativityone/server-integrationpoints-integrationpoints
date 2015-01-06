@@ -38,15 +38,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				rdoIntegrationPoint = _serviceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
 				if (rdoIntegrationPoint == null) throw new Exception("Failed to retrieved corresponding Integration Point.");
 
-				//SourceProvider sourceProvider =
-				//	_serviceContext.RsapiService.SourceProviderLibrary.Read(rdoIntegrationPoint.SourceProvider.Value);
-				//SourceProvider destinationProvider =
-				//	_serviceContext.RsapiService.SourceProviderLibrary.Read(rdoIntegrationPoint.DestinationProvider.Value);
-
 				IEnumerable<FieldMap> fieldMap = new JSONSerializer().Deserialize<List<FieldMap>>(rdoIntegrationPoint.FieldMappings);
 
 				List<string> entryIDs = new JSONSerializer().Deserialize<List<string>>(job.JobDetails);
-				IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider();
+				IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(Guid.NewGuid());
 				List<FieldEntry> sourceFields = fieldMap.Select(f => f.SourceField).ToList();
 				IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, rdoIntegrationPoint.SourceConfiguration);
 
