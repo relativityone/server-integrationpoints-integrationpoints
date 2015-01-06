@@ -24,10 +24,12 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests.Integration
 			settings.ConnectionAuthenticationType = AuthenticationTypesEnum.FastBind;
 			settings.UserName = "testing\\administrator";
 			settings.Password = "P@ssw0rd@1";
+			//settings.ProviderSearchScope = SearchScopeEnum.Subtree;
 			string options = new JSONSerializer().Serialize(settings);
 			IDataSourceProvider ldap = new LDAPProvider();
 
 			//ACT
+			DateTime dt = DateTime.Now;
 			IEnumerable<FieldEntry> fields = ldap.GetFields(options);
 
 			//ASSERT
@@ -35,6 +37,7 @@ namespace kCura.IntegrationPoints.LDAPProvider.Tests.Integration
 			{
 				Debug.WriteLine(field.DisplayName);
 			}
+			Debug.WriteLine("complete in: " + DateTime.Now.Subtract(dt).TotalMilliseconds);
 		}
 
 		[Test]

@@ -15,9 +15,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 	public class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Syncronizer.IDataSyncronizer
 	{
 		private RelativityFieldQuery _fieldQuery;
-		private RelativityRdoQuery _rdoQuery; 
+		private RelativityRdoQuery _rdoQuery;
 
-		public RdoSynchronizer(RelativityFieldQuery fieldQuery,RelativityRdoQuery rdoQuery)
+		public RdoSynchronizer(RelativityFieldQuery fieldQuery, RelativityRdoQuery rdoQuery)
 		{
 			_fieldQuery = fieldQuery;
 			_rdoQuery = rdoQuery;
@@ -40,35 +40,35 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				return list;
 			}
 		}
-	
+
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
 			var fields = _fieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
 			var allFieldsForRdo = new List<FieldEntry>();
-		var rdo= 	_rdoQuery.GetAllRdo(new List<int> {settings.ArtifactTypeId});
-		var custodian = rdo.FirstOrDefault(x => x.Name.Equals("Custodian")) !=null;
-						foreach (var result in fields)
-						{
+			var rdo = _rdoQuery.GetAllRdo(new List<int> { settings.ArtifactTypeId });
+			var custodian = rdo.FirstOrDefault(x => x.Name.Equals("Custodian")) != null;
+			foreach (var result in fields)
+			{
 
-							
-				 if (!IgnoredList.Contains(result.Name) )
+
+				if (!IgnoredList.Contains(result.Name))
 				{
 					var idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
-					 bool isIdentifier = false;
-					
-					if (custodian == true && result.Fields.FirstOrDefault(t => (t.Value ?? "").ToString().Equals("UniqueID")) !=null)
+					bool isIdentifier = false;
+
+					if (custodian == true && result.Fields.FirstOrDefault(t => (t.Value ?? "").ToString().Equals("UniqueID")) != null)
 					{
-						isIdentifier = true; 
+						isIdentifier = true;
 					}
 
 					if (idField != null && custodian == false)
 					{
 						isIdentifier = Convert.ToInt32(idField.Value) == 1;
 					}
-							
-			
-					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier});
+
+
+					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier });
 				}
 			}
 			return allFieldsForRdo;
