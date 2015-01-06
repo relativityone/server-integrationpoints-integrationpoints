@@ -200,7 +200,7 @@ ul li .day-select {
 	font-size: 12px;
 	color: #1b5495;
 }
-.overlay-identifier {
+.identifier {
 	margin-top: 20px;
 }
 .map-field-title {
@@ -228,4 +228,23 @@ ul li .day-select {
 	vertical-align: middle;
 	padding-right: 17px;
 	padding-left: 17px;
+}
+
+.integrationName {
+	width: 450px;
+	height: 26px;
+}
+.startDate,.endDate,.time {
+	width: 77px;
+	height: 26px;
+	border: 1px solid #c1c1c1;
+color: #102d4f;
+border-radius: 3px;
+}
+.reoccur {
+	width: 32px;
+	height: 26px;
+	border: 1px solid #c1c1c1;
+	color: #102d4f;
+	border-radius: 3px;
 }
