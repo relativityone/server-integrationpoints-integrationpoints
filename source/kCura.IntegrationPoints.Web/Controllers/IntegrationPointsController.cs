@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Core.Services;
@@ -53,70 +55,13 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return View(model);
 		}
 
-		public JsonNetResult GetGridModel(int id)
+		[HttpPost]
+		public ActionResult CheckLdap(LDAPSettings model)
 		{
-			var grid = ModelFactory.CreateModel("mapFieldsGrid", (int)Session["UserID"]);
-			grid.colModel = new List<GridColumn>();
-			grid.colModel.Add(new GridColumn
-			{
-				name = "workspace",
-				label = "Workspace Field"
-			});
-
-			grid.colModel.Add(new GridColumn
-			{
-				name = "source",
-				label = "Source Attribute"
-			});
-
-			grid.JsonReaderOptions = JsonReaderOptions.WebOptions();
-			grid.url = Url.Action("GetData", new { id });
-			return JsonNetResult(grid);
-		}
-
-		public ActionResult CheckLdap(object model)
-		{
-			return base.JsonNetResult("error");
-		}
-
-
-		public JsonNetResult GetSourceFields(string json)
-		{
-
-
-			var list = new List<FieldEntry>()
-			{
-				new FieldEntry() {DisplayName = "Age", FieldIdentifier = "2"},
-				new FieldEntry() {DisplayName = "Database Name", FieldIdentifier = "1"},
-				new FieldEntry() {DisplayName = "Date", FieldIdentifier = "4"},
-				new FieldEntry() {DisplayName = "Department", FieldIdentifier = "3"},
-				new FieldEntry() {DisplayName = "Field", FieldIdentifier = "5"},
-			};
-			return JsonNetResult(list);
-		}
-
-		public JsonNetResult GetData(int id, GridFilterModel filter)
-		{
-			//TODO: Get this to work
-			var result = _reader.GetFieldMap(id);
-			var mappings = result.Select(x => new { workspace = x.DestinationField.DisplayName, source = x.SourceField.DisplayName });
-			var data = new GridData();
-			data.BindData(mappings, filter);
-			return JsonNetResult(data);
-		}
-
-		public IEnumerable<object> GetFakeData()
-		{
-			for (var i = 0; i < 50; i++)
-			{
-				yield return new
-				{
-					test = i,
-					name = "name" + i
-
-				};
-			}
-
+			var service = new LDAPProvider.LDAPService(model);
+			service.InitializeConnection();
+			bool isAuthenticated = service.IsAuthenticated();
+			return isAuthenticated ? JsonNetResult(new object{}) : JsonNetResult(new {}, HttpStatusCode.BadRequest);
 		}
 
 	}

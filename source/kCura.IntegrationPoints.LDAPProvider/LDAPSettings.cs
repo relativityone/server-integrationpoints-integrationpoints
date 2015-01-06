@@ -7,12 +7,14 @@ namespace kCura.IntegrationPoints.LDAPProvider
 	{
 		#region Constructor
 
+		private const string FILTER_DEFAULT = "(objectClass=*)";
+
 		public LDAPSettings()
 		{
 			ConnectionPath = null;
 			ConnectionAuthenticationType = AuthenticationTypesEnum.Secure;// - dotNet default
-			Filter = "(objectClass=*)";// - dotNet default
-			ProviderSearchScope = SearchScopeEnum.Subtree;// - dotNet default
+			Filter = FILTER_DEFAULT;// - dotNet default
+			ImportNested = false;
 			//PageSize = 0;// - dotNet default
 			PageSize = 1000;
 			SizeLimit = 0;// - dotNet default
@@ -80,7 +82,8 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		/// Gets or sets a value indicating the scope of the search that is observed by the server.
 		/// One of the SearchScope values. The default is Subtree.
 		/// </summary>
-		public SearchScopeEnum ProviderSearchScope { get; set; }
+		public bool ImportNested { get; set; }
+		//public SearchScopeEnum ProviderSearchScope { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the search retrieves only the names of attributes to which values have been assigned.
@@ -121,7 +124,20 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		/// For more information: http://msdn.microsoft.com/en-us/library/system.directoryservices.directorysearcher.filter(v=vs.110).aspx
 		/// For more information about the LDAP search string format, see "Search Filter Syntax" in the MSDN Library at http://msdn.microsoft.com/library. 
 		/// </summary>
-		public string Filter { get; set; }
+		private string _filter;
+
+		public string Filter
+		{
+			get
+			{
+				if (string.IsNullOrWhiteSpace(_filter))
+				{
+					_filter = FILTER_DEFAULT;
+				}
+				return _filter;
+			}
+			set { _filter = value; }
+		}
 
 
 		/// <summary>
@@ -153,7 +169,13 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			}
 		}
 		[JsonIgnore]
-		internal SearchScope SearchScope { get { return (SearchScope)this.ProviderSearchScope; } }
+		internal SearchScope SearchScope
+		{
+			get
+			{
+				return this.ImportNested ? SearchScope.Subtree : SearchScope.OneLevel;
+			}
+		}
 		[JsonIgnore]
 		internal ReferralChasingOption ReferralChasing { get { return (ReferralChasingOption)this.ProviderReferralChasing; } }
 		[JsonIgnore]
