@@ -1,27 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Data;
 using System.DirectoryServices;
 using System.Linq;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
-	public class LDAPDataReader : IDataReader
+	public class LDAPServiceDataReader : IDataReader
 	{
 		private DataTable _dataTable;
 		private bool _readerOpen;
 		private int _position = 0;
-		private IEnumerator<SearchResult> _itemsEnumerator;
+		private LDAPService _ldapService;
 		private List<string> _fields;
 		private ILDAPDataFormatter _dataFormattter;
+		private IEnumerator<string> _entryIds;
+		private string _identifier;
+		private SearchResult _currentItem;
 
-		public LDAPDataReader(IEnumerable<SearchResult> items, List<string> fields, ILDAPDataFormatter dataFormattter)
+		public LDAPServiceDataReader(LDAPService ldapService, IEnumerable<string> entryIds, string identifier, List<string> fields, ILDAPDataFormatter dataFormattter)
 		{
+			_ldapService = ldapService;
+			_entryIds = entryIds.GetEnumerator();
 			_dataFormattter = dataFormattter;
 			_readerOpen = true;
-			_itemsEnumerator = items.GetEnumerator();
 			_fields = fields;
+			_identifier = identifier;
 
 			_dataTable = new DataTable();
 			_dataTable.Columns.AddRange(fields.Select(f => new DataColumn(f)).ToArray());
@@ -56,10 +60,24 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public bool Read()
 		{
+			_currentItem = null;
 			if (_readerOpen)
 			{
-				_readerOpen = _itemsEnumerator.MoveNext();
-				if (_readerOpen) _position++;
+				//TODO: possible optimization to retrieve multiple items per single call
+				while (_currentItem == null && _readerOpen)
+				{
+					_readerOpen = _entryIds.MoveNext();
+					if (_readerOpen)
+					{
+						_position++;
+						string filter = string.Format("({0}={1})", _identifier, _entryIds.Current);
+						IEnumerable<SearchResult> items = _ldapService.FetchItems(filter, null);
+						if (items != null && items.Count() > 0)
+						{
+							_currentItem = items.First();
+						}
+					}
+				}
 			}
 			return _readerOpen;
 		}
@@ -73,7 +91,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		{
 			_readerOpen = false;
 			_dataTable.Dispose();
-			_itemsEnumerator.Dispose();
+			_entryIds.Dispose();
 		}
 
 		public int FieldCount
@@ -178,7 +196,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public object GetValue(int i)
 		{
-			return _dataFormattter.FormatData(_itemsEnumerator.Current.Properties[_fields[i]]);
+			return _dataFormattter.FormatData(_currentItem.Properties[_fields[i]]);
 		}
 
 		public int GetValues(object[] values)

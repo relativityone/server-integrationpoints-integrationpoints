@@ -12,10 +12,12 @@ namespace kCura.IntegrationPoints.LDAPProvider
 	{
 		private LDAPSettings _settings;
 		private DirectoryEntry _searchRoot;
+		private List<string> _fieldsToLoad;
 
-		public LDAPService(LDAPSettings settings)
+		public LDAPService(LDAPSettings settings, List<string> fieldsToLoad = null)
 		{
 			_settings = settings;
+			_fieldsToLoad = fieldsToLoad;
 		}
 
 		public void InitializeConnection()
@@ -38,13 +40,19 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public IEnumerable<SearchResult> FetchItems(int? overrideSizeLimit = null)
 		{
-			using (DirectorySearcher searcher = new DirectorySearcher(_searchRoot, _settings.Filter))
+			return FetchItems(_settings.Filter, overrideSizeLimit);
+		}
+
+		public IEnumerable<SearchResult> FetchItems(string filter, int? overrideSizeLimit)
+		{
+			using (DirectorySearcher searcher = new DirectorySearcher(_searchRoot, filter))
 			{
 				searcher.AttributeScopeQuery = _settings.AttributeScopeQuery;
 				searcher.ExtendedDN = _settings.ExtendedDN;
 				searcher.PropertyNamesOnly = _settings.PropertyNamesOnly;
 				searcher.ReferralChasing = _settings.ReferralChasing;
 				searcher.SearchScope = _settings.SearchScope;
+				if (_fieldsToLoad != null && _fieldsToLoad.Count > 0) searcher.PropertiesToLoad.AddRange(_fieldsToLoad.ToArray());
 
 				if (!overrideSizeLimit.HasValue)
 				{
@@ -83,7 +91,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 					properties.Add(p.ToString());
 				}
 			}
-			if (properties.Count > 0) properties.Add("path");
+			//if (properties.Count > 0) properties.Add("path");
 
 			List<string> listProperties = properties.ToList();
 			listProperties.Sort();

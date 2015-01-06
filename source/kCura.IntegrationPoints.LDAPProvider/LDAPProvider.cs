@@ -1,38 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.DirectoryServices;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
-using NSubstitute;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
 	public class LDAPProvider : IDataSourceProvider
 	{
-		public System.Data.IDataReader GetData(IEnumerable<Contracts.Models.FieldEntry> entries, IEnumerable<string> entryIds, string options)
+		public System.Data.IDataReader GetData(IEnumerable<Contracts.Models.FieldEntry> fields, IEnumerable<string> entryIds, string options)
 		{
-			throw new NotImplementedException();
+			LDAPSettings settings = new JSONSerializer().Deserialize<LDAPSettings>(options);
+			List<string> fieldsToLoad = fields.Select(f => f.FieldIdentifier).ToList();
+			string identifier = fields.Where(f => f.IsIdentifier).Select(f => f.FieldIdentifier).First();
+
+			LDAPService ldapService = new LDAPService(settings, fieldsToLoad);
+			ldapService.InitializeConnection();
+			IEnumerable<SearchResult> items = ldapService.FetchItems();
+			return new LDAPServiceDataReader(ldapService, entryIds, identifier, fieldsToLoad, new LDAPDataFormatterDefault(settings));
 		}
 
 		public System.Data.IDataReader GetBatchableIds(Contracts.Models.FieldEntry identifier, string options)
 		{
-			throw new NotImplementedException();
-			
 			LDAPSettings settings = new JSONSerializer().Deserialize<LDAPSettings>(options);
-			
-			LDAPService ldapService = new LDAPService(settings);
+			List<string> fieldsToLoad = new List<string>() { identifier.FieldIdentifier };
+
+			LDAPService ldapService = new LDAPService(settings, fieldsToLoad);
 			ldapService.InitializeConnection();
-			IEnumerable<SearchResult> items = ldapService.FetchItems(settings.GetPropertiesItemSearchLimit);
-			return new LDAPDataReader(items, new List<string>() { identifier.FieldIdentifier });
+			IEnumerable<SearchResult> items = ldapService.FetchItems();
+			return new LDAPDataReader(items, fieldsToLoad, new LDAPDataFormatterForBatchableIDs(settings));
 		}
 
 		public IEnumerable<Contracts.Models.FieldEntry> GetFields(string options)
 		{
 			LDAPSettings settings = new JSONSerializer().Deserialize<LDAPSettings>(options);
+			settings.PropertyNamesOnly = true;
 
 			LDAPService ldapService = new LDAPService(settings);
 			ldapService.InitializeConnection();
