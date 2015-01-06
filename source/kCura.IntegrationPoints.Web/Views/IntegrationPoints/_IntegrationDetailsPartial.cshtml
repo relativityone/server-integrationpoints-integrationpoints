@@ -84,7 +84,7 @@
 			</div>
 		</div>
 
-		<div class="field-row" data-bind="visible: selectedFrequency() !== 1 && (selectedFrequency() || '') !== ''">
+		<div class="field-row" data-bind="visible: selectedFrequency() !== 'Daily' && (selectedFrequency() || '') !== ''">
 			<div class="field-label required">
 				Reoccur:
 			</div>
@@ -144,15 +144,12 @@
 <script type="text/html" id="monthlySendOn">
 	<ul>
 		<li class="field-row">
-			<input id="monthly" type="radio" name="monthly" value="2" data-bind="checked: monthChoice" />
-			Day
-			<select id="day-select" class="day-select" data-bind="options: days, optionsText: 'displayName', optionsValue: 'value', value: selectedDay, select2: {}"></select>
+			<input id="monthly" type="radio" name="monthly" value="2" data-bind="checked: monthChoice" />Day<select id="day-select" class="day-select" data-bind="options: days, optionsText: 'displayName', optionsValue: 'value', value: selectedDay, select2: {}"></select>
 			of the month
 			<i data-bind="text: overflowMessage, visible: selectedDay() > 28"></i>
 		</li>
 		<li class="field-row">
-			<input type="radio" name="monthly" value="1" data-bind="checked: monthChoice" />
-			The 
+			<input type="radio" name="monthly" value="1" data-bind="checked: monthChoice" />The 
 			<select id="dayType" data-bind="options: dayTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedType, select2: {}"></select>
 			<select id="dayOfMonth" data-bind="options: daysOfMonthComputed, optionsText: 'displayName', optionsValue: 'value', value: selectedDayOfTheMonth, select2: {}"></select>
 			of the month.
