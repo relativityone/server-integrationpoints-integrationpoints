@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			PropertyNamesOnly = false;// - dotNet default
 			ProviderReferralChasing = ReferralChasingOption.External;
 			ProviderExtendedDN = ExtendedDNEnum.Standard;
+			MultiValueDelimiter = char.Parse(";");
 		}
 
 		#endregion
@@ -121,6 +122,14 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		/// For more information about the LDAP search string format, see "Search Filter Syntax" in the MSDN Library at http://msdn.microsoft.com/library. 
 		/// </summary>
 		public string Filter { get; set; }
+
+
+		/// <summary>
+		/// If set, will convert original multi-value entry into a single-value 
+		/// by concatinating all values and separating them with specified delimiter 
+		/// </summary>
+		public char? MultiValueDelimiter { get; set; }
+
 		#endregion
 
 		#region Internal Properties

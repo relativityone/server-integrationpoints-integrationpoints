@@ -12,15 +12,17 @@ namespace kCura.IntegrationPoints.LDAPProvider
 	{
 		private LDAPSettings _settings;
 		private DirectoryEntry _searchRoot;
+		private List<string> _fieldsToLoad;
 
-		public LDAPService(LDAPSettings settings)
+		public LDAPService(LDAPSettings settings, List<string> fieldsToLoad = null)
 		{
 			_settings = settings;
+			_fieldsToLoad = fieldsToLoad;
 		}
 
 		public void InitializeConnection()
 		{
-			_searchRoot = new DirectoryEntry(_settings.ConnectionPath, _settings.UserName, _settings.Password, _settings.AuthenticationType);
+			_searchRoot = new DirectoryEntry(_settings.Path, _settings.UserName, _settings.Password, _settings.AuthenticationType);
 		}
 
 		public bool IsAuthenticated()
@@ -36,26 +38,34 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			return authentic;
 		}
 
-		public IEnumerable<SearchResult> FetchUsers()
+		public IEnumerable<SearchResult> FetchItems(int? overrideSizeLimit = null)
 		{
-			using (DirectorySearcher searcher = new DirectorySearcher(_searchRoot, _settings.Filter))
+			return FetchItems(_settings.Filter, overrideSizeLimit);
+		}
+
+		public IEnumerable<SearchResult> FetchItems(string filter, int? overrideSizeLimit)
+		{
+			using (DirectorySearcher searcher = new DirectorySearcher(_searchRoot, filter))
 			{
 				searcher.AttributeScopeQuery = _settings.AttributeScopeQuery;
 				searcher.ExtendedDN = _settings.ExtendedDN;
 				searcher.PropertyNamesOnly = _settings.PropertyNamesOnly;
 				searcher.ReferralChasing = _settings.ReferralChasing;
 				searcher.SearchScope = _settings.SearchScope;
+				if (_fieldsToLoad != null && _fieldsToLoad.Count > 0) searcher.PropertiesToLoad.AddRange(_fieldsToLoad.ToArray());
 
-				searcher.PageSize = _settings.PageSize;
-				if (searcher.PageSize == 0) searcher.SizeLimit = _settings.SizeLimit;
-
+				if (!overrideSizeLimit.HasValue)
+				{
+					searcher.PageSize = _settings.PageSize;
+					if (searcher.PageSize == 0) searcher.SizeLimit = _settings.SizeLimit;
+				}
+				else
+				{
+					searcher.SizeLimit = overrideSizeLimit.Value;
+				}
 
 				IEnumerable<SearchResult> itemList = SafeFindAll(searcher);
 
-				if (itemList.Count() < 1)
-				{
-					throw new Exception("No matching directory users found.");
-				}
 				return itemList;
 			}
 		}
@@ -71,22 +81,21 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			} // SearchResultCollection will be disposed here
 		}
 
-		//public List<string> GetAllProperties()
-		//{
-		//	var previewUsers = FetchUsers(group, 100);
+		public List<string> GetAllProperties(IEnumerable<SearchResult> previewItems)
+		{
+			HashSet<string> properties = new HashSet<string>();
+			foreach (SearchResult item in previewItems)
+			{
+				foreach (object p in item.Properties.PropertyNames)
+				{
+					properties.Add(p.ToString());
+				}
+			}
+			//if (properties.Count > 0) properties.Add("path");
 
-		//	HashSet<string> properties = new HashSet<string>();
-		//	foreach (SearchResult user in previewUsers)
-		//	{
-		//		foreach (object p in user.Properties.PropertyNames)
-		//		{
-		//			properties.Add(p.ToString());
-		//		}
-		//	}
-
-		//	List<string> listProperties = properties.ToList();
-		//	listProperties.Sort();
-		//	return listProperties;
-		//}
+			List<string> listProperties = properties.ToList();
+			listProperties.Sort();
+			return listProperties;
+		}
 	}
 }

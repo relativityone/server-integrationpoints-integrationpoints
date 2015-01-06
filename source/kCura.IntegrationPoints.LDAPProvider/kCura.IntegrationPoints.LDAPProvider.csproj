@@ -51,6 +51,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="kCura.Apps.Common.Utils">
+      <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.106.2\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -68,7 +72,12 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AuthenticationTypesEnum.cs" />
+    <Compile Include="LDAPDataReader.cs" />
+    <Compile Include="LDAPServiceDataReader.cs" />
+    <Compile Include="LDAPDataFormatterForBatchableIDs.cs" />
     <Compile Include="ExtendedDNEnum.cs" />
+    <Compile Include="ILDAPDataFormatter.cs" />
+    <Compile Include="LDAPDataFormatterDefault.cs" />
     <Compile Include="SearchScopeEnum.cs" />
     <Compile Include="LDAPAdapters.cs" />
     <Compile Include="LDAPProvider.cs" />
