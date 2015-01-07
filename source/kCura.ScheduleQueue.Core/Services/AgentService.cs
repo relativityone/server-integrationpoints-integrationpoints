@@ -17,10 +17,12 @@ namespace kCura.ScheduleQueue.Core.Services
 			this.QDBContext = new QueueDBContext(dbContext, QueueTable);
 		}
 
-		public AgentService()
+		public AgentService(IDBContext dbContext)
+			: this(dbContext, new Guid("08C0CE2D-8191-4E8F-B037-899CEAEE493D"))
 		{
-			
+
 		}
+
 		public Guid AgentGuid { get; private set; }
 		public string QueueTable { get; private set; }
 		public IQueueDBContext QDBContext { get; private set; }
