@@ -25,7 +25,7 @@ ko.validation.rules['mustContainIdentifer'] = {
 			if (params[0] === "Append") { // Append Selected
 				containsIdentifier = false;
 				$.each(value, function (index, item) {
-					
+
 					if (item.isIdentifier === true) {
 						containsIdentifier = true;
 					}
@@ -46,7 +46,7 @@ ko.validation.rules['mustContainIdentifer'] = {
 				if (containsIdentifier) {
 					return true;
 				}
-				return false; 
+				return false;
 			}
 		}
 	},
@@ -69,7 +69,7 @@ ko.validation.insertValidationMessage = function (element) {
 (function (root, ko) {
 
 	function mapField(entry) {
-		return { name: entry.displayName, identifer: entry.fieldIdentifier, isIdentifier :   entry.isIdentifier};
+		return { name: entry.displayName, identifer: entry.fieldIdentifier, isIdentifier: entry.isIdentifier };
 	}
 
 	var mapFields = function (result) {
@@ -87,7 +87,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 	var viewModel = function (model) {
 		var self = this;
-		
+
 		this.hasBeenLoaded = model.hasBeenLoaded;
 		this.showErrors = ko.observable(false);
 		var artifactTypeId = model.destination.artifactTypeId;
@@ -97,13 +97,13 @@ ko.validation.insertValidationMessage = function (element) {
 		this.isAppendOverlay = ko.observable(true);
 		this.mappedWorkspace = ko.observableArray([]).extend({
 			mustContainIdentifer: {
-				onlyIf: function() {
+				onlyIf: function () {
 					return self.showErrors();
 				},
-				params: [model.selectedOverwrite , self.selectedOverlay]
+				params: [model.selectedOverwrite, self.selectedOverlay]
 			}
 		});
-		
+
 		this.sourceMapped = ko.observableArray([]).extend({
 			mustEqualMapped: {
 				onlyIf: function () {
@@ -112,36 +112,36 @@ ko.validation.insertValidationMessage = function (element) {
 				params: this.mappedWorkspace
 			}
 		});
-	
+
 		this.sourceField = ko.observableArray([]);
 		this.selectedWorkspaceField = ko.observableArray([]);
 		this.selectedMappedWorkspace = ko.observableArray([]);
 		this.selectedSourceField = ko.observableArray([]);
 		this.selectedMappedSource = ko.observableArray([]);
 		this.overlay = ko.observableArray([]);
-		
+
 		this.hasParent = ko.observable(false);
 		this.parentField = ko.observableArray([]);
 		this.selectedIdentifier = ko.observable().extend({
 			required: {
-				onlyIf: function() {
+				onlyIf: function () {
 					return self.showErrors() && self.hasParent();
 				},
 				message: 'The Parent Attribute is required.',
-				
+
 			}
 		});
-		
-		this.cacheMapped = ko.observableArray([]) ;
-	
+
+		this.cacheMapped = ko.observableArray([]);
+		debugger;
 		var workspaceFieldPromise = root.data.ajax({ type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({ settings: model.destination }) }).then(function (result) {
 			var types = mapFields(result);
 			self.overlay(types);
-			
+
 			$.each(self.overlay(), function () {
 				if (this.isIdentifier) {
 					self.selectedOverlay(this.name);
-				}				
+				}
 			});
 			$.each(self.overlay(), function () {
 				if (model.identifer == this.name) {
@@ -150,20 +150,19 @@ ko.validation.insertValidationMessage = function (element) {
 			});
 			return result;
 		});
-		var sourceFieldPromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceFields'), data: { 'options': JSON.stringify({ artifactTypeID: artifactTypeId }), 'type': JSON.stringify({ artifactTypeID: artifactTypeId }) } });
+		var sourceFieldPromise = root.data.ajax({ type: 'Post', url: root.utils.generateWebAPIURL('SourceFields'), data: JSON.stringify({ 'options': model.sourceConfiguration, 'type': model.source.selectedType }) });
 		var mappedSourcePromise;
-		if (model.map == undefined) {
+
+		if (typeof (model.map) === "undefined") {
 			mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap', artifactId) });
 		} else {
 			mappedSourcePromise = jQuery.parseJSON(model.map);
 		}
-		
-
 
 		var destination = JSON.parse(model.destination);
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('rdometa', destination.artifactTypeID) }).then(function (result) {
 			self.hasParent(result.hasParent);
-			
+
 		});
 		var promises = [workspaceFieldPromise, sourceFieldPromise, mappedSourcePromise];
 
@@ -201,16 +200,16 @@ ko.validation.insertValidationMessage = function (element) {
 				var destinationFields = result[0],
 						sourceFields = result[1],
 						mapping = result[2];
-			
+
 				var types = mapFields(sourceFields);
-			
+
 				self.parentField(types);
 				if (model.parentIdentifier !== undefined) {
 					$.each(self.parentField(), function () {
 						if (this.name === model.parentIdentifier) {
 							self.selectedIdentifier(this.name);
 						}
-				});
+					});
 				}
 				var destinationMapped = mapHelper.getMapped(destinationFields, mapping, 'destinationField');
 				var destinationNotMapped = mapHelper.getNotMapped(destinationFields, mapping, 'destinationField');
@@ -218,18 +217,18 @@ ko.validation.insertValidationMessage = function (element) {
 				var sourceNotMapped = mapHelper.getNotMapped(sourceFields, mapping, 'sourceField');
 
 				self.workspaceFields(mapFields(destinationNotMapped));
-				
+
 				self.mappedWorkspace(mapFields(destinationMapped));
 				self.sourceField(mapFields(sourceNotMapped));
 				self.sourceMapped(mapFields(sourceMapped));
 				self.isAppendOverlay(model.selectedOverwrite !== "Append");
 			}).fail(function () { });
 
-	
-	
+
+
 		/********** Submit Validation**********/
 		this.submit = function () {
-		
+
 			this.showErrors(true);
 		}
 		/********** WorkspaceFields control  **********/
@@ -346,11 +345,10 @@ ko.validation.insertValidationMessage = function (element) {
 		this.returnModel = {};
 		this.bus = IP.frameMessaging();
 		this.loadModel = function (model) {
-			
+
 			this.hasBeenLoaded = false;
 			this.selectedRdo = jQuery.parseJSON(model.destination).artifactTypeID;
 			this.returnModel = model;
-		
 			this.model = new viewModel(this.returnModel);
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 		};
@@ -365,7 +363,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.bus.subscribe("saveState", function (state) {
 		});
-		var stepCache= {};
+		var stepCache = {};
 		this.submit = function () {
 			var d = root.data.deferred().defer();
 			this.model.submit();
@@ -386,7 +384,7 @@ ko.validation.insertValidationMessage = function (element) {
 						}
 					});
 				}
-				
+
 				this.bus.subscribe('saveComplete', function (data) {
 				});
 				this.bus.subscribe('saveError', function (error) {
@@ -395,7 +393,7 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.map = JSON.stringify(map);
 				this.returnModel.identifer = this.model.selectedOverlay();
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
-				
+
 				d.resolve(this.returnModel);
 			} else {
 				this.model.errors.showAllMessages();

@@ -23,7 +23,7 @@
 			Authentication:
 		</div>
 		<div class="field-value">
-			<select id="authentication" data-bind="options: auth, optionsText: 'name', optionsValue: 'id', value: selectedAuth, optionsCaption: 'Select...', select2: {}">
+			<select id="authentication" data-bind="options: auth, optionsText: 'name', optionsValue: 'id', value: connectionAuthenticationType, optionsCaption: 'Select...', select2: {}">
 			</select>
 		</div>
 	</div>
@@ -70,85 +70,5 @@
 	<script src="~/Scripts/knockout.validation.js"></script>
 	<script src="~/Scripts/integration-point/binding.js"></script>
 	<script src="~/Scripts/frame-messaging.js"></script>
-	<script>
-		ko.validation.configure({
-			registerExtenders: true,
-			messagesOnModified: true,
-			insertMessages: true,
-			parseInputAttributes: true,
-			messageTemplate: null
-		});
-
-		ko.validation.insertValidationMessage = function (element) {
-			var errorContainer = document.createElement('div');
-			var iconSpan = document.createElement('span');
-			iconSpan.className = 'icon-error legal-hold field-validation-error';
-
-			errorContainer.appendChild(iconSpan);
-
-			$(element).parents('.field-value').eq(0).append(errorContainer);
-
-			return iconSpan;
-		};
-
-		(function () {
-			var message = IP.frameMessaging();
-			var pageModel = {};
-			message.subscribe('submit', function () {
-				this.publish("saveState", ko.toJS(pageModel)); //save the model incase of error
-				var self = this;
-				if (pageModel.errors().length === 0) {
-					IP.data.ajax({
-						url: IP.utils.generateWebURL('IntegrationPoints', 'CheckLdap'),
-						data: {},
-					}).then(function () {
-						self.publish('saveComplete', ko.toJS(pageModel));
-					},
-					function (e) {
-						self.publish('saveError', e.responseText);
-					});
-
-				} else {
-					pageModel.errors.showAllMessages();
-				}
-			});
-			var viewModel = function (model) {
-				var state = $.extend({}, {}, model);
-				this.path = ko.observable(state.path).extend({
-					required: true
-				});
-				this.filter = ko.observable(state.filter);
-				this.auth = ko.observableArray([
-					{ name: 'Anonymous', id: 1 },
-					{ name: 'Encryption', id: 2 },
-					{ name: 'FastBind', id: 3 },
-					{ name: 'Secure Socket Layer', id: 4 }
-				]);
-				this.userName = ko.observable(state.userName);
-				this.password = ko.observable(state.password);
-				this.selectedAuth = ko.observable(state.selectedAuth);
-				this.importNested = ko.observable(state.importNested || 'false');
-
-				this.errors = ko.validation.group(this, { deep: true });
-
-			};
-
-			message.subscribe("back", function () {
-				this.publish("saveState", ko.toJS(pageModel));
-			});
-
-			message.subscribe('load', function (model) {
-				if (typeof (model) === "string") {
-					try {
-						model = JSON.parse(model);
-					} catch (e) {
-						model = {};
-					}
-				}
-				pageModel = new viewModel(model);
-				ko.applyBindings(pageModel, document.getElementById('ldapConfiguration'));
-			});
-
-		})();
-	</script>
+	<script src="~/Scripts/ldap/ldap-edit.js"></script>
 }

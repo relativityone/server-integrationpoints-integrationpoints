@@ -149,6 +149,9 @@ ul li .day-select {
 	font-weight: 400;
 	padding: 4px 4px 0;
 }
+.page-message.page-error > div {
+	display: inline-block;
+}
 .field-validation-error {
 	background-color: #ac3243;
 	border: 1px solid #ac3243;

@@ -1,8 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Contracts.Syncronizer;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Conversion;
+using kCura.IntegrationPoints.Core.Services.Conversion;
+using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -11,9 +20,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	{
 		private IServiceContext _serviceContext;
 		private IDataSyncronizerFactory _dataSyncronizerFactory;
-		public SyncWorker(IServiceContext serviceContext, IDataSyncronizerFactory dataSyncronizerFactory)
+		private IDataProviderFactory _dataProviderFactory;
+
+		public SyncWorker(IServiceContext serviceContext, IDataSyncronizerFactory dataSyncronizerFactory, IDataProviderFactory dataProviderFactory)
 		{
 			_serviceContext = serviceContext;
+			_dataSyncronizerFactory = dataSyncronizerFactory;
+			_dataProviderFactory = dataProviderFactory;
 		}
 
 		public void Execute(Job job)
@@ -25,23 +38,21 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				rdoIntegrationPoint = _serviceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
 				if (rdoIntegrationPoint == null) throw new Exception("Failed to retrieved corresponding Integration Point.");
 
-				SourceProvider sourceProvider =
-					_serviceContext.RsapiService.SourceProviderLibrary.Read(rdoIntegrationPoint.SourceProvider.Value);
-				SourceProvider destinationProvider =
-					_serviceContext.RsapiService.SourceProviderLibrary.Read(rdoIntegrationPoint.SourceProvider.Value);
-				//sourceProvider.Identifier 
+				IEnumerable<FieldMap> fieldMap = new JSONSerializer().Deserialize<List<FieldMap>>(rdoIntegrationPoint.FieldMappings);
 
-				//IDataSyncronizer ds = _dataSyncronizerFactory.GetSyncronizer(rdoIntegrationPoint.SourceProvider);
+				List<string> entryIDs = new JSONSerializer().Deserialize<List<string>>(job.JobDetails);
+				IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(Guid.NewGuid());
+				List<FieldEntry> sourceFields = fieldMap.Select(f => f.SourceField).ToList();
+				IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, rdoIntegrationPoint.SourceConfiguration);
 
-				//rdoIntegrationPoint.DestinationConfiguration
+				IDataSyncronizer dataSyncronizer = _dataSyncronizerFactory.GetSyncronizer();
+				IEnumerable<IDictionary<FieldEntry, object>> data =
+					new DataReaderToEnumerableService(
+						new SynchronizerObjectBuilder(sourceFields))
+						.GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
 
-				//var client = new RSAPIClient(new Uri("net.pipe://localhost/Relativity.Services"), new IntegratedAuthCredentials())
-				//{
-				//	APIOptions = { WorkspaceID = CaseArtifactId }
-				//};
+				dataSyncronizer.SyncData(data, fieldMap, rdoIntegrationPoint.DestinationConfiguration);
 
-				//var rdo = new RdoSynchronizer(new RelativityFieldQuery(client));
-				//ImportSettings settings = new ImportSettings();
 			}
 			catch
 			{

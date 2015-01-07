@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
+    <Compile Include="Services\Conversion\DataReaderEnumerable.cs" />
     <Compile Include="ExternalTabs.cs" />
     <Compile Include="Installers\ServicesInstaller.cs" />
     <Compile Include="IServiceContext.cs" />
@@ -90,6 +91,8 @@
     <Compile Include="ServiceContext.cs" />
     <Compile Include="Services\AgentJobManager.cs" />
     <Compile Include="Services\ChoiceService.cs" />
+    <Compile Include="Services\Conversion\IObjectBuilder.cs" />
+    <Compile Include="Services\Conversion\SynchronizerObjectBuilder.cs" />
     <Compile Include="Services\ErrorService.cs" />
     <Compile Include="Services\IJobManager.cs" />
     <Compile Include="Services\IntegrationPointService.cs" />
@@ -118,6 +121,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
+      <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>
+      <Name>kCura.IntegrationPoints.LDAPProvider</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
