@@ -30,7 +30,7 @@
 		this.model = {};
 		this.frameBus = {};
 		this.hasBeenLoaded = false;
-		this.bus =IP.frameMessaging(); 
+		this.bus = IP.frameMessaging({ destination: window.contentWindow });
 		this.loadModel = function (model) {//loads a readonly version of the ipmodel
 			this.stepKey = model.source.selectedType;
 			this.model = model;
@@ -65,13 +65,12 @@
 				self.hasTemplate = true;
 				var $frame = $('#' + frameName).attr('src', self.source);
 				$frame.iFrameResize({ heightCalculationMethod: 'max' }).load(function () {
-					self.frameBus = IP.frameMessaging({ source: window[frameName].contentWindow });
+					self.frameBus = IP.frameMessaging({ destination: window[frameName].contentWindow || window[frameName].frameElement.contentWindow });
 					var state = stepCache[self.stepKey];
 					self.frameBus.publish('load', state);
 				});
 			});
 		};
-
 		this.bus.subscribe("saveState", function (state) {
 			var key = $('#' + frameName).data(FRAME_KEY);
 			//get key from IFrame
