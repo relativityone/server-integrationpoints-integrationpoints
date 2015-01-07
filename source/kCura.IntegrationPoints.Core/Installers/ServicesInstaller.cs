@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 		{
 			container.Register(Component.For<IErrorService>().ImplementedBy<Services.ErrorService>().Named("ErrorService").LifestyleTransient());
 			container.Register(Component.For<IDataProviderFactory>().AsFactory(x => x.SelectedWith(new DataProviderComponetSelector())).LifestyleTransient());
-			container.Register(Component.For<Core.Services.ObjectTypeService>().ImplementedBy<Core.Services.ObjectTypeService>());
+			container.Register(Component.For<Core.Services.ObjectTypeService>().ImplementedBy<Core.Services.ObjectTypeService>().LifestyleTransient());
 
 
 			
@@ -32,10 +32,10 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<MockProviderFactory>().LifestyleTransient());
 			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
 			container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
-			container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().LifestyleTransient());
+
+			var guid = Guid.Parse("08C0CE2D-8191-4E8F-B037-899CEAEE493D");
+			container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().DependsOn(Dependency.OnValue<Guid>(guid)).LifestyleTransient());
 			
-
-
 			container.Register(Component.For<IServiceContext>().ImplementedBy<ServiceContext>().LifestyleTransient());
 			container.Register(Component.For<IntegrationPointService>().ImplementedBy<IntegrationPointService>().LifestyleTransient());
 

@@ -17,10 +17,6 @@ namespace kCura.ScheduleQueue.Core.Services
 			this.QDBContext = new QueueDBContext(dbContext, QueueTable);
 		}
 
-		public AgentService()
-		{
-			
-		}
 		public Guid AgentGuid { get; private set; }
 		public string QueueTable { get; private set; }
 		public IQueueDBContext QDBContext { get; private set; }
