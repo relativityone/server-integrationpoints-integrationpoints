@@ -21,12 +21,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IServiceContext _serviceContext;
 		private IDataSyncronizerFactory _dataSyncronizerFactory;
 		private IDataProviderFactory _dataProviderFactory;
+		private kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 
-		public SyncWorker(IServiceContext serviceContext, IDataSyncronizerFactory dataSyncronizerFactory, IDataProviderFactory dataProviderFactory)
+		public SyncWorker(IServiceContext serviceContext, IDataSyncronizerFactory dataSyncronizerFactory, IDataProviderFactory dataProviderFactory,kCura.Apps.Common.Utils.Serializers.ISerializer serializer)
 		{
 			_serviceContext = serviceContext;
 			_dataSyncronizerFactory = dataSyncronizerFactory;
 			_dataProviderFactory = dataProviderFactory;
+			_serializer = serializer;
 		}
 
 		public void Execute(Job job)
@@ -38,9 +40,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				rdoIntegrationPoint = _serviceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
 				if (rdoIntegrationPoint == null) throw new Exception("Failed to retrieved corresponding Integration Point.");
 
-				IEnumerable<FieldMap> fieldMap = new JSONSerializer().Deserialize<List<FieldMap>>(rdoIntegrationPoint.FieldMappings);
+				IEnumerable<FieldMap> fieldMap = _serializer.Deserialize<List<FieldMap>>(rdoIntegrationPoint.FieldMappings);
 
-				List<string> entryIDs = new JSONSerializer().Deserialize<List<string>>(job.JobDetails);
+				List<string> entryIDs = _serializer.Deserialize<List<string>>(job.JobDetails);
 				IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(Guid.NewGuid());
 				List<FieldEntry> sourceFields = fieldMap.Select(f => f.SourceField).ToList();
 				IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, rdoIntegrationPoint.SourceConfiguration);
@@ -52,7 +54,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						.GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
 
 				dataSyncronizer.SyncData(data, fieldMap, rdoIntegrationPoint.DestinationConfiguration);
-
 			}
 			catch
 			{
