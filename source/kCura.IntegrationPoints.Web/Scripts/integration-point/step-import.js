@@ -30,7 +30,7 @@
 		this.model = {};
 		this.frameBus = {};
 		this.hasBeenLoaded = false;
-		this.bus = IP.frameMessaging({ destination: window.contentWindow });
+		this.bus = IP.frameMessaging({ destination: window.frameElement.contentWindow });
 		this.loadModel = function (model) {//loads a readonly version of the ipmodel
 			this.stepKey = model.source.selectedType;
 			this.model = model;
