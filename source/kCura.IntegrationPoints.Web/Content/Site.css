@@ -234,15 +234,21 @@ ul li .day-select {
 	width: 450px;
 	height: 26px;
 }
-.startDate,.endDate,.time.inputBox, .inputBox,.reoccur {
+.startDate,.endDate,.time, .inputBox {
 	height: 26px;
 	border: 1px solid #c1c1c1;
 color: #102d4f;
 border-radius: 3px;
+width: 77px;
 }
-.startDate,.endDate,.time  {
-	width: 77px;
+
+.inputBox.connectionPath,.inputBox.connectionFilter {
+	width: 450px;
 }
 .reoccur {
 	width: 32px;
+	height: 26px;
+	border: 1px solid #c1c1c1;
+color: #102d4f;
+border-radius: 3px;
 }
