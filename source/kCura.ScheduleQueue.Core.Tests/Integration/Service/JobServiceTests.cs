@@ -28,10 +28,12 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			string taskType = "MyTestTask";
 			Guid agentGuid = new Guid("D65F5774-6572-49F0-91C4-28161A75DF0D");
 
-			IDBContext dbContext = new TestDBContextHelper().GetEDDSDBContext();
+			var agentHelper = NSubstitute.Substitute.For<Relativity.API.IAgentHelper>();
+			IDBContext eddsContext = new TestDBContextHelper().GetEDDSDBContext();
+			agentHelper.GetDBContext(Arg.Any<int>()).Returns(eddsContext);
 			//AgentInformation ai = jobService.GetAgentInformation(new Guid("08C0CE2D-8191-4E8F-B037-899CEAEE493D")); //Integration Points agent
-			IAgentService agentService = new AgentService(dbContext, agentGuid); //RLH agent
-			var jobService = new JobService(agentService, dbContext);
+			IAgentService agentService = new AgentService(agentHelper, agentGuid); //RLH agent
+			var jobService = new JobService(agentService, agentHelper);
 
 			Job jobOld = jobService.GetJob(workspaceID, relatedObjectArtifactID, taskType);
 			if (jobOld != null) jobService.DeleteJob(jobOld.JobId);
@@ -54,9 +56,12 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			//Guid agentGuid = new Guid("D65F5774-6572-49F0-91C4-28161A75DF0D");//RLH
 			Guid agentGuid = new Guid("08C0CE2D-8191-4E8F-B037-899CEAEE493D");//RIP
 
-			IDBContext dbContext = new TestDBContextHelper().GetEDDSDBContext();
-			IAgentService agentService = new AgentService(dbContext, agentGuid);
-			var jobService = new JobService(agentService, dbContext);
+			var agentHelper = NSubstitute.Substitute.For<Relativity.API.IAgentHelper>();
+			IDBContext eddsContext = new TestDBContextHelper().GetEDDSDBContext();
+			agentHelper.GetDBContext(Arg.Any<int>()).Returns(eddsContext);
+
+			IAgentService agentService = new AgentService(agentHelper, agentGuid);
+			var jobService = new JobService(agentService, agentHelper);
 
 			Job jobOld = jobService.GetJob(workspaceID, relatedObjectArtifactID, taskType);
 			if (jobOld != null) jobService.DeleteJob(jobOld.JobId);

@@ -32,7 +32,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 			sqlParams.Add(new SqlParameter("@CreatedBy", createdBy));
 			sqlParams.Add(details == null ? new SqlParameter("@Details", DBNull.Value) : new SqlParameter("@Details", details));
 
-			qDBContext.DBContext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());
+			qDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());
 		}
 	}
 }

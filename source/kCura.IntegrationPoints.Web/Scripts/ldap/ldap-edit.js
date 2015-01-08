@@ -76,5 +76,4 @@ ko.validation.insertValidationMessage = function (element) {
 		pageModel = new viewModel(model);
 		ko.applyBindings(pageModel, document.getElementById('ldapConfiguration'));
 	});
-
 })();

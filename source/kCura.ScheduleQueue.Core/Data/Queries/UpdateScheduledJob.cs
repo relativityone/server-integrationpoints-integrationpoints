@@ -22,7 +22,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 			sqlParams.Add(new SqlParameter("@JobID", jobID));
 			sqlParams.Add(new SqlParameter("@NextRunTime", nextUTCRunTime));
 
-			qDBContext.DBContext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());
+			qDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());
 		}
 	}
 }

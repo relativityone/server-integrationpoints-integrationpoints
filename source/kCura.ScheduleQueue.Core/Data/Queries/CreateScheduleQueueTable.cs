@@ -18,7 +18,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 		public void Execute()
 		{
 			string sql = string.Format(Resources.CreateQueueTable, qDBContext.TableName);
-			qDBContext.DBContext.ExecuteNonQuerySQLStatement(sql);
+			qDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(sql);
 		}
 	}
 }

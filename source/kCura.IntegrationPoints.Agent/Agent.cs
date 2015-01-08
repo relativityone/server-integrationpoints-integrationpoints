@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
+using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
@@ -12,13 +13,8 @@ using ITaskFactory = kCura.IntegrationPoints.Agent.Tasks.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent
 {
-	public static class GlobalConst
-	{
-		public const string AGENT_GUID = "08C0CE2D-8191-4E8F-B037-899CEAEE493D";
-	}
-
 	[kCura.Agent.CustomAttributes.Name("Relativity Integration Points Agent")]
-	[Guid(GlobalConst.AGENT_GUID)]
+	[Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)]
 	public class Agent : kCura.ScheduleQueue.AgentBase.ScheduleQueueAgentBase
 	{
 		private IRSAPIClient rsapiClient;
@@ -39,12 +35,12 @@ namespace kCura.IntegrationPoints.Agent
 		}
 
 		public Agent()
-			: base(Guid.Parse(GlobalConst.AGENT_GUID))
+			: base(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID))
 		{
 			base.RaiseException += new ExceptionEventHandler(RaiseException);
 			base.RaiseJobLogEntry += new JobLoggingEventHandler(RaiseJobLog);
 #if TIME_MACHINE
-			AgentTimeMachineProvider.Current = new DefaultAgentTimeMachineProvider(Guid.Parse(GlobalConst.AGENT_GUID));
+			AgentTimeMachineProvider.Current = new DefaultAgentTimeMachineProvider(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 #endif
 		}
 		public override string Name

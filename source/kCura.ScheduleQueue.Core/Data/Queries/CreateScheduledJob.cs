@@ -45,7 +45,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 											? new SqlParameter("@ScheduleRule", DBNull.Value)
 											: new SqlParameter("@ScheduleRule", serializedScheduleRule));
 
-			DataTable dataTable = qDBContext.DBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
+			DataTable dataTable = qDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
 
 			DataRow row = null;
 			if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)

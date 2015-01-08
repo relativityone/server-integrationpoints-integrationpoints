@@ -13,11 +13,11 @@ namespace kCura.ScheduleQueue.Core.Services
 {
 	public class JobService : IJobService
 	{
-		public JobService(IAgentService agentService, IDBContext dbContext)
+		public JobService(IAgentService agentService, IHelper dbHelper)
 		{
 			this.AgentService = agentService;
 			this.AgentInformation = AgentService.AgentInformation;
-			this.QDBContext = new QueueDBContext(dbContext, this.AgentService.QueueTable);
+			this.QDBContext = new QueueDBContext(dbHelper, this.AgentService.QueueTable);
 		}
 
 		public IAgentService AgentService { get; private set; }

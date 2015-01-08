@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace kCura.IntegrationPoints.Data
+﻿namespace kCura.IntegrationPoints.Data
 {
+	public static class GlobalConst
+	{
+		public const string RELATIVITY_INTEGRATION_POINTS_AGENT_GUID = "08C0CE2D-8191-4E8F-B037-899CEAEE493D";
+	}
+
 	public partial class OverwriteFieldsChoiceGuids
 	{
 		public static string APPEND_GUID = "FE6C371D-93F2-4DEA-B41B-4912357C5BA4";

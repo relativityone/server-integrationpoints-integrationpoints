@@ -133,7 +133,6 @@ ko.validation.insertValidationMessage = function (element) {
 		});
 
 		this.cacheMapped = ko.observableArray([]);
-		debugger;
 		var workspaceFieldPromise = root.data.ajax({ type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({ settings: model.destination }) }).then(function (result) {
 			var types = mapFields(result);
 			self.overlay(types);
