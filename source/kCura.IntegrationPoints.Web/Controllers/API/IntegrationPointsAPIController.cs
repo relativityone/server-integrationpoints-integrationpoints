@@ -1,17 +1,24 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using Relativity.CustomPages;
+using Relativity.CustomPages.localhost;
+using kCura.IntegrationPoints.Web;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class IntegrationPointsAPIController : ApiController
 	{
 		private readonly IntegrationPointService _reader;
-		public IntegrationPointsAPIController(IntegrationPointService reader)
+		private readonly RelativityUrlHelper _urlHelper;
+		public IntegrationPointsAPIController(IntegrationPointService reader,RelativityUrlHelper urlHelper)
 		{
 			_reader = reader;
+			_urlHelper = urlHelper;
 		}
 		[HttpGet]
 		public HttpResponseMessage Get(int id)
@@ -27,10 +34,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpPost]
-		public HttpResponseMessage Update(IntegrationModel model)
+		public HttpResponseMessage Update(int workspaceID, IntegrationModel model)
 		{
-			_reader.SaveIntegration(model);
-			return Request.CreateResponse(HttpStatusCode.Accepted);
+			var createdId = _reader.SaveIntegration(model);
+			//I'm already sorry to use name instead of guid
+			var result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
+			return Request.CreateResponse(HttpStatusCode.OK, result);
 		}
 
 	}

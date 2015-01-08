@@ -62,7 +62,7 @@ h1 {
 
 #pointBody {
 	position: absolute;
-	top: 140px;
+	top: 160px;
 	bottom: 0;
 	left: 0;
 	right: 0;
@@ -237,7 +237,7 @@ ul li .day-select {
 	width: 450px;
 	height: 26px;
 }
-.startDate,.endDate,.time, .inputBox {
+.startDate,.endDate,.time, .inputBox,.connection-path,.connection-filter {
 	height: 26px;
 	border: 1px solid #c1c1c1;
 color: #102d4f;
@@ -245,7 +245,7 @@ border-radius: 3px;
 width: 77px;
 }
 
-.inputBox.connectionPath,.inputBox.connectionFilter {
+.connection-path,.connection-filter {
 	width: 450px;
 }
 .reoccur {

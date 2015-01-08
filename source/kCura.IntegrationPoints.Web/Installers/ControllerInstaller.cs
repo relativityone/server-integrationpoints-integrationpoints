@@ -29,8 +29,8 @@ namespace kCura.IntegrationPoints.Web.Installers
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
 			container.Register(Classes.FromThisAssembly().BasedOn<IController>().LifestyleTransient());
-			container.Register(Component.For<ICustomPageService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
-			container.Register(Component.For<ICustomPageService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
+			container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
+			container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
 
 			container.Register(Component.For<ISessionService>().UsingFactoryMethod(k=> SessionService.Session).LifestylePerWebRequest());
 
@@ -53,6 +53,9 @@ namespace kCura.IntegrationPoints.Web.Installers
 				k.Resolve<WebClientFactory>().CreateDbContext()).LifestyleTransient());
 
 			container.Register(Component.For<GridModelFactory>().ImplementedBy<GridModelFactory>().LifestyleTransient());
+
+
+			container.Register(Component.For<RelativityUrlHelper>().ImplementedBy<RelativityUrlHelper>().LifeStyle.Transient);
 		}
 	}
 }

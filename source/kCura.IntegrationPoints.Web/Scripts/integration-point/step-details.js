@@ -32,7 +32,15 @@ ko.validation.rules["time"] = {
 	},
 	message: 'Please enter a valid time (24-hour format).'
 };
-
+ko.validation.rules["minArray"] = {
+		validator: function (value, params) {
+			if (value.length > params) {
+					return true;
+			}
+		return false;
+		},
+	message: 'This field is required.'
+};
 ko.validation.rules['arrayRange'] = {
 	validator: function (value, params) {
 		var num = parseInt(value, 10);
@@ -86,7 +94,6 @@ var IP = IP || {};
 		this.sourceTypes = ko.observableArray();
 		this.selectedType = ko.observable().extend({ required: true });
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
-			
 			var types = $.map(result, function (entry) {
 				var c = new Choice(entry.name, entry.value);
 				c.href = entry.url;
@@ -98,12 +105,7 @@ var IP = IP || {};
 					self.selectedType(this.value);
 				}
 			});
-		});
-
-		
-		
-		
-		
+		});	
 	};
 
 	var Destination = function (d) {
@@ -160,11 +162,9 @@ var IP = IP || {};
 			this.submit = function () {
 				this.showErrors(true);
 			};
-
 			this.selectedDays.extend({
-				arrayMin: {
+				minArray: {
 					params: 0,
-					message: 'This field is required.',
 					onlyIf: function () {
 						return self.showErrors();
 					}
@@ -176,7 +176,7 @@ var IP = IP || {};
 
 		var SendOnMonthly = function (state) {
 			var defaults = {
-				monthChoice: 'days'
+				monthChoice: '2'
 			};
 
 			var self = this;
@@ -240,7 +240,8 @@ var IP = IP || {};
 			this.selectedDayOfTheMonth = ko.observable(currentState.selectedDayOfTheMonth);
 
 			this.monthChoice = ko.observable(currentState.monthChoice);
-
+			
+		
 		};
 
 		var self = this;
@@ -270,10 +271,6 @@ var IP = IP || {};
 		};
 				
 		this.frequency = ko.observableArray(["Daily", "Weekly", "Monthly"]);
-		//root.services.getChoice("a2c2c3c5-a350-4617-a3e9-ddd284bed868").then(function () {
-		//	self.frequency()
-		//});
-
 		this.isEnabled = ko.computed(function () {
 			return self.enableScheduler() === "true";
 		});
@@ -402,7 +399,7 @@ var IP = IP || {};
 		this.model = new Model();
 		this.loadModel = function (ip) {
 			this.model = new Model(ip);
-			this.model.errors = ko.validation.group(this.model, { deep: true });
+			
 			this.model.sourceConfiguration = ip.sourceConfiguration;
 		};
 
@@ -417,11 +414,11 @@ var IP = IP || {};
 
 		this.submit = function () {
 			var d = root.data.deferred().defer();
+			this.model.errors = ko.validation.group(this.model, { deep: true });
 			this.model.submit();
-			this.model.destination = JSON.stringify({ artifactTypeID: ko.toJS(this.model.destination).artifactTypeID });
-			this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
-			
 			if (this.model.errors().length === 0) {
+				this.model.destination = JSON.stringify({ artifactTypeID: ko.toJS(this.model.destination).artifactTypeID });
+				this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
 				d.resolve(ko.toJS(this.model));
 			} else {
 				this.model.errors.showAllMessages();

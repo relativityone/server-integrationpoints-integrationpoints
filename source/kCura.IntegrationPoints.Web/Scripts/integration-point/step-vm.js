@@ -1,4 +1,4 @@
-﻿(function (ko) {
+﻿(function (ko, helper) {
 	IP.points = IP.points || {};
 	IP.points.steps = {
 		steps: [],
@@ -46,6 +46,9 @@
 			type: 'Get'
 		}).then(function (result) {
 			vm = new viewModel();
+			if (result.scheduler && result.scheduler.scheduledTime) {
+				result.scheduler.scheduledTime = helper.utcToLocal(result.scheduler.scheduledTime);
+			}
 			vm.goToStep(0, result);
 			artifactID = result.artifactID;
 			ko.applyBindings(vm, document.getElementById('pointBody'));
@@ -75,6 +78,9 @@
 
 		IP.messaging.subscribe('save', function () {
 			_next().then(function (result) {
+				if (result.scheduler && result.scheduler.scheduledTime) {
+					result.scheduler.scheduledTime = helper.timeLocalToUtc(result.scheduler.scheduledTime);
+				}
 				IP.messaging.publish('saveComplete', result);
 			}, function (error) {
 				IP.message.error.raise(error);
@@ -83,10 +89,11 @@
 		});
 
 		IP.messaging.subscribe('saveComplete', function (model) {
-			IP.data.ajax({ type: 'POST', url: IP.utils.generateWebAPIURL('IntegrationPointsAPI'), data: JSON.stringify(model)}).then(function () {
-
-			}, function () {
-
+			IP.data.ajax({ type: 'POST', url: IP.utils.generateWebAPIURL('IntegrationPointsAPI'), data: JSON.stringify(model) }).then(function (result) {
+				//redirect to page!!
+				window.top.location = result;
+			}, function (error) {
+				IP.message.error.raise(error);
 			});
 		});
 
@@ -108,4 +115,52 @@
 
 
 	});
-})(ko);
+})(ko, (function () {
+
+	function isValidDate(d) {
+		if (Object.prototype.toString.call(d) !== "[object Date]")
+			return false;
+		return !isNaN(d.getTime());
+	}
+
+	function utcToLocal(dateText, dateFormat) {
+		var inDateMod = new Date(dateText);
+		if (!isValidDate(inDateMod)) {
+			return dateText;
+		}
+		var offSet = inDateMod.getTimezoneOffset();
+		if (offSet < 0) {
+			inDateMod.setMinutes(inDateMod.getMinutes() + offSet);
+		} else {
+			inDateMod.setMinutes(inDateMod.getMinutes() - offSet);
+		}
+		return inDateMod.toString(dateFormat);
+	}
+
+	function timeUtcToLocal(time, timeFormat) {
+		timeFormat = timeFormat || "hh:mm";
+		var currentTime = Date.parseExact(time, "HH:mm") || Date.parseExact(time, "H:mm");
+		if (currentTime) {
+			var temp = new Date();
+			var now = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate(), currentTime.getHours(), currentTime.getMinutes(), currentTime.getSeconds());
+			return utcToLocal(now, timeFormat);
+		}
+	}
+
+
+	function timeLocalToUtc(time) {
+		var localTime = Date.parseExact(time, "HH:mm") || Date.parseExact(time, "H:mm");
+		if (localTime) {
+			var temp = new Date();
+			var tempDateTime = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate(), localTime.getHours(), localTime.getMinutes(), localTime.getSeconds());
+			return tempDateTime.getUTCHours() + ":" + tempDateTime.getUTCMinutes();
+		}
+		return '';
+	}
+
+	return {
+		utcToLocal: timeUtcToLocal,
+		timeLocalToUtc: timeLocalToUtc
+	};
+
+}()));
