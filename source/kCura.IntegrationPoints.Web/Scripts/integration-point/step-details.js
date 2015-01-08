@@ -418,10 +418,9 @@ var IP = IP || {};
 		this.submit = function () {
 			var d = root.data.deferred().defer();
 			this.model.submit();
-			this.model.destination = JSON.stringify({ artifactTypeID: ko.toJS(this.model.destination).artifactTypeID });
-			this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
-			
 			if (this.model.errors().length === 0) {
+				this.model.destination = JSON.stringify({ artifactTypeID: ko.toJS(this.model.destination).artifactTypeID });
+				this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
 				d.resolve(ko.toJS(this.model));
 			} else {
 				this.model.errors.showAllMessages();
