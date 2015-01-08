@@ -49,8 +49,8 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			//Guid agentGuid = new QueueTableHelper().GetAgentGuid();
 			if (this.DBContext == null) this.DBContext = base.Helper.GetDBContext(-1);
-			if (this.AgentService == null) this.AgentService = new AgentService(DBContext, agentGuid);
-			if (this.jobService == null) this.jobService = new JobService(AgentService, DBContext);
+			if (this.AgentService == null) this.AgentService = new AgentService(base.Helper, agentGuid);
+			if (this.jobService == null) this.jobService = new JobService(AgentService, base.Helper);
 			if (this.scheduleRuleFactory == null) this.scheduleRuleFactory = new DefaultScheduleRuleFactory();
 		}
 

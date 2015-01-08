@@ -21,7 +21,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@AgentID", agentID));
 
-			qDBContext.DBContext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());
+			qDBContext.EddsDBContext.ExecuteNonQuerySQLStatement(sql, sqlParams.ToArray());
 		}
 	}
 }

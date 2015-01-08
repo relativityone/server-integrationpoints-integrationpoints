@@ -37,7 +37,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 
 		private DataRow Execute(string sql, List<SqlParameter> sqlParams)
 		{
-			var dataTable = qDBContext.DBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray());
+			var dataTable = qDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams.ToArray());
 
 			DataRow row = null;
 			if (dataTable != null && dataTable.Rows != null && dataTable.Rows.Count > 0)

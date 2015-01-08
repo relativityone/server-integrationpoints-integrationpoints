@@ -9,22 +9,20 @@ namespace kCura.ScheduleQueue.Core.Services
 	public class AgentService : IAgentService
 	{
 		private bool creationOfQTableHasRun = false;
-		public AgentService(IDBContext dbContext, Guid agentGuid)
+		private IHelper _dbHelper;
+		public AgentService(IHelper dbHelper, Guid agentGuid)
 		{
 			this.AgentGuid = agentGuid;
 			this.QueueTable = string.Format("ScheduleAgentQueue_{0}", agentGuid.ToString().ToUpper());
-			this.AgentInformation = AgentService.GetAgentInformation(dbContext, agentGuid);
-			this.QDBContext = new QueueDBContext(dbContext, QueueTable);
+			this.DBHelper = dbHelper;
+			this.QDBContext = new QueueDBContext(dbHelper, QueueTable);
+			this.AgentInformation = AgentService.GetAgentInformation(QDBContext.EddsDBContext, agentGuid);
 		}
 
-		public AgentService(IDBContext dbContext)
-			: this(dbContext, new Guid("08C0CE2D-8191-4E8F-B037-899CEAEE493D"))
-		{
-
-		}
 
 		public Guid AgentGuid { get; private set; }
 		public string QueueTable { get; private set; }
+		public IHelper DBHelper { get; private set; }
 		public IQueueDBContext QDBContext { get; private set; }
 		public AgentInformation AgentInformation { get; private set; }
 
@@ -39,10 +37,10 @@ namespace kCura.ScheduleQueue.Core.Services
 			creationOfQTableHasRun = true;
 		}
 
-		public static AgentInformation GetAgentInformation(IDBContext dbContext, int agentID)
+		public static AgentInformation GetAgentInformation(IDBContext eddsDBContext, int agentID)
 		{
 			AgentInformation agentInformation = null;
-			DataRow row = new GetAgentInformation(dbContext).Execute(agentID);
+			DataRow row = new GetAgentInformation(eddsDBContext).Execute(agentID);
 			if (row != null)
 			{
 				agentInformation = new AgentInformation(row);
@@ -50,10 +48,10 @@ namespace kCura.ScheduleQueue.Core.Services
 			return agentInformation;
 		}
 
-		public static AgentInformation GetAgentInformation(IDBContext dbContext, Guid agentGuid)
+		public static AgentInformation GetAgentInformation(IDBContext eddsDBContext, Guid agentGuid)
 		{
 			AgentInformation agentInformation = null;
-			DataRow row = new GetAgentInformation(dbContext).Execute(agentGuid);
+			DataRow row = new GetAgentInformation(eddsDBContext).Execute(agentGuid);
 			if (row != null)
 			{
 				agentInformation = new AgentInformation(row);

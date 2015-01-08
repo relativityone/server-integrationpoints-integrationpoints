@@ -49,7 +49,7 @@ namespace kCura.ScheduleQueue.Core.Logging
 				qDBContext = null;
 				IDBContext context = helper.GetDBContext(job.WorkspaceID);
 				string logTableName = string.Format("AgentJobLog_{0}", agentInfo.GUID.ToString().ToUpper());
-				qDBContext = new QueueDBContext(context, logTableName);
+				qDBContext = new QueueDBContext(helper, logTableName);
 				savedWorkspaceID = job.WorkspaceID;
 				jobLogTableCreated = false;
 			}

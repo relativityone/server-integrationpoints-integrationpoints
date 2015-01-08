@@ -46,6 +46,14 @@
     <OutputPath>bin\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Castle.Core.3.3.0\lib\net45\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client">
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
     </Reference>
@@ -58,10 +66,16 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.API, Version=9.0.174.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -72,6 +86,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Integration\Installers\ServiceInstallerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\RdoFilterTest.cs" />
   </ItemGroup>
@@ -83,6 +98,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
+      <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
+      <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
