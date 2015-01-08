@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.EventHandler;
+﻿using kCura.EventHandler;
 using System.Runtime.InteropServices;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
