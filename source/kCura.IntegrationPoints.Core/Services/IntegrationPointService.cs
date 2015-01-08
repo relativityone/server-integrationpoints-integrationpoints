@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			return mapping;
 		}
 
-		public void SaveIntegration(IntegrationModel model)
+		public int SaveIntegration(IntegrationModel model)
 		{
 			var ip = model.ToRdo();
 			var rule = this.ToScheduleRule(model);
@@ -90,6 +90,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			//create job
 			_jobService.CreateJob<object>(null, TaskType.SyncManager, ip.ArtifactId, rule);
+			return ip.ArtifactId;
 		}
 
 

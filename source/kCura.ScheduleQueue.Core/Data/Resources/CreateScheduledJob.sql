@@ -133,6 +133,7 @@ SELECT
 		,[NextRunTime]
 		,[LastRunTime]
 		,[ScheduleRule]
+		,[ScheduleRuleType]
 		,[JobDetails]
 		,[JobFlags]
 		,[SubmittedDate]

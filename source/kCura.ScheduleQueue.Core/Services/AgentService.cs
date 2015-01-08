@@ -41,10 +41,11 @@ namespace kCura.ScheduleQueue.Core.Services
 		{
 			AgentInformation agentInformation = null;
 			DataRow row = new GetAgentInformation(eddsDBContext).Execute(agentID);
-			if (row != null)
+			if (row == null)
 			{
-				agentInformation = new AgentInformation(row);
+				throw new Exception(string.Format("The agent with agentID {0} could not be found, please ensure there is an existing installed agent", agentID));
 			}
+			agentInformation = new AgentInformation(row);
 			return agentInformation;
 		}
 
@@ -52,10 +53,12 @@ namespace kCura.ScheduleQueue.Core.Services
 		{
 			AgentInformation agentInformation = null;
 			DataRow row = new GetAgentInformation(eddsDBContext).Execute(agentGuid);
-			if (row != null)
+			if (row == null)
 			{
-				agentInformation = new AgentInformation(row);
+				throw new Exception(string.Format("The agent with Guid {0} could not be found, please ensure there is an existing installed agent", agentGuid.ToString()));
 			}
+			agentInformation = new AgentInformation(row);
+			
 			return agentInformation;
 		}
 	}
