@@ -53,6 +53,9 @@ namespace kCura.IntegrationPoints.Web.Installers
 				k.Resolve<WebClientFactory>().CreateDbContext()).LifestyleTransient());
 
 			container.Register(Component.For<GridModelFactory>().ImplementedBy<GridModelFactory>().LifestyleTransient());
+
+
+			container.Register(Component.For<RelativityUrlHelper>().ImplementedBy<RelativityUrlHelper>().LifeStyle.Transient);
 		}
 	}
 }
