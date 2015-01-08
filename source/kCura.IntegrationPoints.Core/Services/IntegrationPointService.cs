@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			var ip = model.ToRdo();
 			var rule = this.ToScheduleRule(model);
 			ip.ScheduleRule = rule.ToSerializedString();
-
+			
 			//save RDO
 			if (ip.ArtifactId > 0)
 			{

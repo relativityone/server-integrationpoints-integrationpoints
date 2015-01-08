@@ -95,6 +95,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="RdoGetter.cs" />
+    <Compile Include="RDOHelper.cs" />
     <Compile Include="RelativityRdoQuery.cs" />
     <Compile Include="Resources\Resource.Designer.cs">
       <AutoGen>True</AutoGen>

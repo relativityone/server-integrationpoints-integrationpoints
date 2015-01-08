@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using kCura.IntegrationPoints.Core;
 
 namespace kCura.IntegrationPoints.Web
 {
-	public class WebAPICustomPageService : ICustomPageService
+	public class WebAPICustomPageService : IWorkspaceService
 	{
 		public int GetWorkspaceID()
 		{

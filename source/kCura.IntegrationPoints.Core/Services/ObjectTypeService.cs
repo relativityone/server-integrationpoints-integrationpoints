@@ -22,7 +22,12 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			var rdo = _rdoQuery.GetType(objectType);
 			return rdo.ParentArtifactTypeID > NON_SYSTEM_FIELD_IDS;
-		} 
+		}
+
+		public int GetObjectTypeID(string artifactTypeName)
+		{
+			return _rdoQuery.GetObjectTypeID(artifactTypeName);
+		}
 
 	}
 }

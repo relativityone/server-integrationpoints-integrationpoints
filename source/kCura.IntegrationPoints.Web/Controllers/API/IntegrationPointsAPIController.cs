@@ -34,11 +34,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpPost]
-		public HttpResponseMessage Update(IntegrationModel model)
+		public HttpResponseMessage Update(int workspaceID, IntegrationModel model)
 		{
 			var createdId = _reader.SaveIntegration(model);
-			var result = _urlHelper.GetRelativityViewUrl(createdId, 0);
-			return Request.CreateResponse(HttpStatusCode.Redirect, result);
+			//I'm already sorry to use name instead of guid
+			var result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
+			return Request.CreateResponse(HttpStatusCode.OK, result);
 		}
 
 	}

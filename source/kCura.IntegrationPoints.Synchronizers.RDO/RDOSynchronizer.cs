@@ -55,12 +55,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				if (!IgnoredList.Contains(result.Name))
 				{
 					var idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
-					bool isIdentifier = false;
-
-					if (custodian == true && result.Fields.FirstOrDefault(t => (t.Value ?? "").ToString().Equals("UniqueID")) != null)
-					{
-						isIdentifier = true;
-					}
+					bool isIdentifier = custodian && result.Fields.FirstOrDefault(t => (t.Value ?? "").ToString().Equals("UniqueID")) != null;
 
 					if (idField != null && custodian == false)
 					{
@@ -73,9 +68,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			return allFieldsForRdo;
 		}
-
-
-
+		
 		private IImportService _importService;
 		private bool _isJobComplete = false;
 		private Exception _jobError;

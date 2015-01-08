@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Services;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -10,18 +11,21 @@ namespace kCura.IntegrationPoints.Web
 	{
 
 		public const string VIEW_URL_TEMPLATE =
-			"{0}/Case/Mask/View.aspx?AppID=1025258&ArtifactID=1037537&ArtifactTypeID=1000028";
-		public RelativityUrlHelper(IServiceContext context)
+			"/{0}/Case/Mask/View.aspx?AppID={1}&ArtifactID={2}&ArtifactTypeID={3}";
+
+		private readonly ObjectTypeService _service;
+		public RelativityUrlHelper(IServiceContext context, ObjectTypeService service)
 		{
-			
+			_service = service;
 		}
 
-		public string GetRelativityViewUrl(int artifactID, int artifactTypeID)
+		public string GetRelativityViewUrl(int workspaceID,int artifactID, string objectTypeName)
 		{
 			var applicationRoot = new HttpContextWrapper(System.Web.HttpContext.Current).Request.GetRootApplicationPath();
-			
+
+			var typeID = _service.GetObjectTypeID(objectTypeName);
 			return string.Format(VIEW_URL_TEMPLATE,
-				applicationRoot);
+				applicationRoot, workspaceID, artifactID, typeID);
 		}
 
 

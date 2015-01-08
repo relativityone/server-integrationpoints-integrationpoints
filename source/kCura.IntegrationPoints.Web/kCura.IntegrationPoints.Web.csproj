@@ -184,7 +184,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="GridModelFactory.cs" />
-    <Compile Include="ICustomPageService.cs" />
     <Compile Include="IErrorFactory.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
     <Compile Include="Models\IpDetailModel.cs" />

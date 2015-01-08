@@ -89,10 +89,9 @@
 		});
 
 		IP.messaging.subscribe('saveComplete', function (model) {
-			IP.data.ajax({ type: 'POST', url: IP.utils.generateWebAPIURL('IntegrationPointsAPI'), data: JSON.stringify(model) }).then(function () {
+			IP.data.ajax({ type: 'POST', url: IP.utils.generateWebAPIURL('IntegrationPointsAPI'), data: JSON.stringify(model) }).then(function (result) {
 				//redirect to page!!
-				debugger;
-				window.location.href = 'Relativity/Case/Mask/View.aspx?AppID=1025258&ArtifactID=1037537&ArtifactTypeID=1000028'
+				window.top.location = result;
 			}, function (error) {
 				IP.message.error.raise(error);
 			});

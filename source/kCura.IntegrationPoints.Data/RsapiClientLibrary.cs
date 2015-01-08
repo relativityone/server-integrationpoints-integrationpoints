@@ -21,12 +21,7 @@ namespace kCura.IntegrationPoints.Data
 
 		private static void CheckResult<TResult>(ResultSet<TResult> result) where TResult : kCura.Relativity.Client.DTOs.Artifact
 		{
-			if (!result.Success)
-			{
-				var messages = result.Results.Where(x => !x.Success).Select(x => x.Message);
-				var e = new AggregateException(result.Message, messages.Select(x => new Exception(x)));
-				throw e;
-			}
+			RDOHelper.CheckResult(result);
 		}
 
 		private static void CheckObject(T obj)

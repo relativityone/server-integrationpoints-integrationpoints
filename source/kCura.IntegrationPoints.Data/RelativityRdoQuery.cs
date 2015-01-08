@@ -68,14 +68,8 @@ namespace kCura.IntegrationPoints.Data
 			
 			}
 			var result = _client.Repositories.ObjectType.Query(qry);
-			if (!result.Success)
-			{
-				var messages = result.Results.Where(x => !x.Success).Select(x => x.Message);
-				var e = new AggregateException(result.Message, messages.Select(x => new Exception(x)));
-				throw e;
-			}
-
-
+			RDOHelper.CheckResult(result);
+			
 			return result.Results.Select(x => x.Artifact).ToList();
 		}
 
@@ -83,6 +77,25 @@ namespace kCura.IntegrationPoints.Data
 		{
 			return this.GetAllRdo(new List<int> {typeId}).FirstOrDefault();
 		}
+
+		public virtual int GetObjectTypeID(string objectTypeName)
+		{
+			var qry = new Relativity.Client.DTOs.Query<Relativity.Client.DTOs.ObjectType>();
+			qry.Fields = new List<FieldValue>()
+				{
+					new FieldValue(Relativity.Client.DTOs.ObjectTypeFieldNames.DescriptorArtifactTypeID),
+					new FieldValue(Relativity.Client.DTOs.ObjectTypeFieldNames.Name),
+				};
+			qry.Condition = new TextCondition(ObjectTypeFieldNames.Name, TextConditionEnum.EqualTo, objectTypeName);
+
+			var result = _client.Repositories.ObjectType.Query(qry);
+			RDOHelper.CheckResult(result);
+			if (!result.Results.First().Artifact.DescriptorArtifactTypeID.HasValue)
+			{
+				throw new Exception(string.Format("Object type with name {0} was not found in workspace {1}.", objectTypeName, _client.APIOptions.WorkspaceID));
+			}
+			return result.Results.First().Artifact.DescriptorArtifactTypeID.Value;
+		} 
 
 	}
 }

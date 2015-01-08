@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace kCura.IntegrationPoints.Web
+namespace kCura.IntegrationPoints.Core
 {
-	public interface ICustomPageService
+	public interface IWorkspaceService
 	{
 		int GetWorkspaceID();
 	}
