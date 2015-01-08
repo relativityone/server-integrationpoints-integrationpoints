@@ -45,7 +45,7 @@ ko.validation.insertValidationMessage = function (element) {
 		var state = $.extend({}, {}, model);
 		this.connectionPath = ko.observable(state.connectionPath).extend({
 			required: true
-		});
+		}); 
 		this.filter = ko.observable(state.filter);
 		this.auth = ko.observableArray([
 			{ name: 'Anonymous', id: 16 },
@@ -55,7 +55,11 @@ ko.validation.insertValidationMessage = function (element) {
 		]);
 		this.userName = ko.observable(state.userName);
 		this.password = ko.observable(state.password);
-		this.connectionAuthenticationType = ko.observable(state.connectionAuthenticationType);
+		
+		this.connectionAuthenticationType = ko.observable(state.connectionAuthenticationType).extend({
+			required: true
+		});
+		
 		this.importNested = ko.observable(state.importNested || 'false');
 
 		this.errors = ko.validation.group(this, { deep: true });
