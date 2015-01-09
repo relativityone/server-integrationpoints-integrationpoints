@@ -44,9 +44,9 @@
 
 | Date Validation message are shown after clicking Next
 | | [Documentation]	| Verify that the date fields show warning messages after clicking Next when invalid values are entered.
-| | [Tags]		    | required	| broken	| dam795
+| | [Tags]			| required	| automated	| dam795
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Custom Page	| 
-| | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=1234		| EndDate=5678	| ScheduledTime=23:00
+| | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=1234567	| EndDate=3456789		| ScheduledTime=23:00
 | | Click	| id=next
 
 | | Run Keyword And Continue On Failure	| Verify the following Integration Point Field has the following Error	| ${Start Date Field}	| The field Start Date must be a date.
@@ -55,7 +55,7 @@
 
 | Proceeding Post-Date Invalid message
 | | [Documentation]	| Verify that Step 2 can be reached after the invalid date fields message is shown.
-| | [Tags]			| broken	| dam795
+| | [Tags]			| automated	| dam795
 | | [Setup]			| Require Test Case	| Date Validation message are shown after clicking Next
 | | Fill out the Following Fields of the Integration Point Step 1 form	| StartDate=11/23/2012	| EndDate=04/15/2026
 | | Proceed to the Next Step of the Integration Point wizard
@@ -118,16 +118,16 @@
 
 | Send On Weekly Validation message is shown after trying to Proceed with nothing selected
 | | [Documentation]	| Verify that the Weekly Send On field has a validation message displayed when no Day has been selected and you try to proceed to Step 2.
-| | [Tags]			| required	| broken	| dam853
+| | [Tags]			| required	| automated	| dam853
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page		| EnableScheduler=Yes	| 
 | | ... 																| Frequency=Weekly	| Reoccur=1				| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=23:50
 | | Click	| id=next
-| | Verify the following Integration Point Field has the following Error	| ${Weekly Send On Field}	| This field is required.
+| | Verify that the Weekly Send On Field has a Required Field Error	| This field is required.
 
 
 | Proceeding Post-Weekly Send On Validation
 | | [Documentation]	| Verify that you can proceed to Step 2 after the Weekly Send On validation message has been shown.
-| | [Tags]			| broken	| dam853
+| | [Tags]			| automated	| dam853
 | | [Setup]			| Require Test Case	| Send On Weekly Validation message is shown after trying to Proceed with nothing selected
 | | Fill out the Following Fields of the Integration Point Step 1 form	| SendOn=Monday
 | | Proceed to the Next Step of the Integration Point wizard
@@ -195,6 +195,17 @@
 | | ... 																| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2006	| ScheduledTime=23:50
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
+
+
+*** Keywords ***
+
+| Verify that the Weekly Send On Field has a Required Field Error
+| | [Documentation]	| Verifies that the given field has the given error.
+| | ... 			| Must be called from the Integration Point Create/Edit pages.
+| | [ARGUMENTS]		| ${ErrorText}
+| | Element Should Be Visible	| css=div[id=sendOn] > div.icon-error.field-validation-error	| No error was found on the Send On field.
+| | ${ActualText}=	| Get Text	| css=div[id=sendOn] > div.icon-error.field-validation-error
+| | Run Keyword Unless	| '${ActualText}' == '${ErrorText}'	| Fail	| The Send On error was incorrect. It should have been "${ErrorText}" but it was actually "${ActualText}".
 
 
 *** Settings ***
