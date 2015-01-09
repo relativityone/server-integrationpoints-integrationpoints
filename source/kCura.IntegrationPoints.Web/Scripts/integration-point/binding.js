@@ -15,7 +15,7 @@ ko.bindingHandlers.select2 = {
 		$element.parent().find('.filter-container span.select2-arrow').removeClass("select2-arrow").addClass("icon legal-hold icon-chevron-down");
 	},
 	update: function (el, valueAccessor, allBindingsAccessor, viewModel) {
-		
+
 		var allBindings = allBindingsAccessor();
 		if ("value" in allBindings) {
 			$(el).select2("val", allBindings.value());
@@ -61,7 +61,7 @@ ko.bindingHandlers.datepicker = {
 		//});
 
 		$el.datepicker(options);
-		
+
 		//handle disposal (if KO removes by the template binding)
 		ko.utils.domNodeDisposal.addDisposeCallback(element, function () {
 			$el.datepicker("destroy");
@@ -81,5 +81,17 @@ ko.bindingHandlers.datepicker = {
 		if (value - current !== 0 && !/Invalid|NaN/.test(new Date(value))) {
 			$el.datepicker("setDate", value);
 		}
+	}
+};
+
+ko.bindingHandlers.doubleClick = {
+	init: function (element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+		var handler = valueAccessor(),
+				delay = 200,
+				clickTimeout = false;
+
+		$(element).on('dblclick', function () {
+				handler.call(viewModel);
+		});
 	}
 };
