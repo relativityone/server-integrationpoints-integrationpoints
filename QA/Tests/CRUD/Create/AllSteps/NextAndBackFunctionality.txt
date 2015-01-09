@@ -11,7 +11,12 @@
 
 *** Variables ***
 
-| ${WorkspaceName}	| Relativity Legal Hold
+| ${WorkspaceName}		| Relativity Legal Hold
+| ${ConnectionPath}		| testing.corp
+| ${ObjectFilterString}	| (&(objectCategory=person)(objectClass=user))
+| ${Authentication}		| FastBind
+| ${ConnectionUsername}	| testing\administrator
+| ${ConnectionPassword}	| P@ssw0rd@1
 
 
 *** Test Cases ***
@@ -24,7 +29,13 @@
 | | ... | 1. Open a new Create Integration Point Wizard
 | | ... | 2. Fill out all of the Required Step 1 fields
 | | ... | 3. Click Next
-| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=Connection Path	| ObjectFilterString=Object Filter String	| Authentication=Encryption	| Username=User Name	| Password=Pass phrase	| ImportNestedItems=Yes
+| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
+| | ... | - ConnectionPath=Connection Path	| 
+| | ... | - ObjectFilterString=Object Filter String	| 
+| | ... | - Authentication=Encryption	| 
+| | ... | - Username=User Name	| 
+| | ... | - Password=Pass phrase	| 
+| | ... | - ImportNestedItems=Yes
 | | ... | 5. Click Back
 | | ... | 6. Click Next
 | | ... | 

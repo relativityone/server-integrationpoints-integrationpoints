@@ -310,10 +310,14 @@
 | | [Documentation]	| Verifies that the given field has the given error.
 | | ... 			| Must be called from the Integration Point Create/Edit pages.
 | | [ARGUMENTS] 	| ${FieldID}	| ${ErrorText}
+| | ${StepText}=	| Determine the current Step of the Create Integration Point Process
+| | Run Keyword If	| "${StepText}" == "Connect to Source"	| Wait for then Select iFrame	| id=configurationFrame	| 10s
 | | ${FieldID}= | fetch from right | ${FieldID} | s2id_
-| | Element Should Be Visible	| xpath=//*[@id='${FieldID}']/following-sibling::div/child::*[contains(@class, 'icon-error') and contains(@class, 'field-validation-error')]	| No error was found on the field with the ID "${FieldID}".
-| | ${ActualText}=	| Get Text	| xpath=//*[@id='${FieldID}']/following-sibling::div/child::*[contains(@class, 'icon-error') and contains(@class, 'field-validation-error')]
+| | Element Should Be Visible	| css=[id=${FieldID}] + div > .icon-error.field-validation-error	| No error was found on the field with the ID "${FieldID}".
+| | ${ActualText}=	| Get Text	| css=[id=${FieldID}] + div > .icon-error.field-validation-error
 | | Run Keyword Unless	| '${ActualText}' == '${ErrorText}'	| Fail	| The error was incorrect. It should have been "${ErrorText}" but it was actually "${ActualText}".
+| | Run Keyword If	| "${StepText}" == "Connect to Source"	| Unselect Frame
+| | Run Keyword If	| "${StepText}" == "Connect to Source"	| Select iFrame	| id=_externalPage
 
 
 *** Settings ***
