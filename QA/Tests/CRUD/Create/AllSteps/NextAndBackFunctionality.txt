@@ -13,7 +13,7 @@
 
 | ${WorkspaceName}		| Relativity Legal Hold
 | ${ConnectionPath}		| testing.corp
-| ${ObjectFilterString}	| (&(objectCategory=person)(objectClass=user))
+| ${ObjectFilterString}	| (objectClass=*)
 | ${Authentication}		| FastBind
 | ${ConnectionUsername}	| testing\administrator
 | ${ConnectionPassword}	| P@ssw0rd@1
