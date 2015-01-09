@@ -60,6 +60,7 @@
 				result.artifactID = artifactID;
 				step = vm.goToStep(++step, result);
 				model = result;
+				IP.message.error.clear();
 				IP.messaging.publish('goToStep', step);
 				d.resolve(result);
 			}).fail(function (err) {
@@ -109,6 +110,7 @@
 
 			vm.currentStep().back().then(function () {
 				step = vm.goToStep(--step, model);
+				IP.message.error.clear();
 				IP.messaging.publish('goToStep', step);
 			});
 		});

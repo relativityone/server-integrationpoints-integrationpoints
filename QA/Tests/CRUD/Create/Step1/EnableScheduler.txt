@@ -42,7 +42,7 @@
 | Step 2 can be reached with the Enabled field set to No
 | | [Documentation]	| Verify that Step 2 can be shown after filling out the required fields and leaving the Scheduler set to No
 | | [Tags]			| automated
-| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Agent Type	| EnableScheduler=No
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Document	| EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
@@ -50,7 +50,7 @@
 | Step 2 can be reached with the Enabled field set to Yes
 | | [Documentation]	| Verify that Step 2 can be shown after filling out the required fields and providing valid Scheduler settings
 | | [Tags]			| automated
-| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Agent Type	| 
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Document	| 
 | | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2020	| EndDate=04/15/2021	| ScheduledTime=23:32
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
@@ -60,7 +60,7 @@
 | | [Documentation]	| Verify that Step 2 can be shown after filling out some of the Scheduler's required fields and then disabling the Scheduler
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| 
-| | ... 																| DestinationRDO=Agent Type					| EnableScheduler=Yes	| Frequency=Daily
+| | ... 																| DestinationRDO=Document					| EnableScheduler=Yes	| Frequency=Daily
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
