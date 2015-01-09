@@ -12,7 +12,7 @@
 		<div data-bind="validationMessage: mappedWorkspace" class="icon-error legal-hold field-validation-error"></div>
 		<div class="table" id="mapFields">
 			<div class="cell">
-				<select id="workspace-fields" class="list-box" name="workspace-field" data-bind="options: workspaceFields, selectedOptions: selectedWorkspaceField, optionsText: 'name'" id="AvailableSelectedMembers" multiple="multiple" name="AvailableSelectedMembers"></select>
+				<select id="workspace-fields" class="list-box" name="workspace-field" data-bind="options: workspaceFields, selectedOptions: selectedWorkspaceField, optionsText: 'name', doubleClick: addSelectFields" id="AvailableSelectedMembers" multiple="multiple" name="AvailableSelectedMembers"></select>
 			</div>
 			<div class="cell selection">
 				<div>
@@ -23,7 +23,7 @@
 				</div>
 			</div>
 			<div class="cell">
-				<select class="list-box" id="selected-workspace-fields" data-bind="options: mappedWorkspace, selectedOptions: selectedMappedWorkspace, optionsText: 'name'" multiple="multiple"></select>
+				<select class="list-box" id="selected-workspace-fields" data-bind="options: mappedWorkspace, selectedOptions: selectedMappedWorkspace, optionsText: 'name', doubleClick: addToWorkspaceField" multiple="multiple"></select>
 
 			</div>
 			<div class="cell selection">
@@ -41,7 +41,7 @@
 				</div>
 			</div>
 			<div class="cell">
-				<select class="list-box" id="selected-source-fields" multiple="multiple" data-bind="options: sourceMapped, selectedOptions: selectedMappedSource, optionsText: 'name'">
+				<select class="list-box" id="selected-source-fields" multiple="multiple" data-bind="options: sourceMapped, selectedOptions: selectedMappedSource, optionsText: 'name', doubleClick: addToSourceField ">
 				</select>
 			</div>
 			<div class="cell selection">
@@ -55,7 +55,7 @@
 
 			<div class="cell">
 				<div>
-					<select class="list-box" id="source-attributes" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'name'">
+					<select class="list-box" id="source-attributes" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'name', doubleClick: addToMappedSource">
 					</select>
 				</div>
 			</div>
