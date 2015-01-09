@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Security.Cryptography;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 
 namespace kCura.IntegrationPoints.EventHandlers
 {
 	public abstract class PreLoadEventHandlerBase : kCura.EventHandler.PreLoadEventHandler
 	{
-		private IServiceContext _context;
+		private ICaseServiceContext _context;
 
-		public IServiceContext ServiceContext
+		public ICaseServiceContext ServiceContext
 		{
-			get { return _context ?? (_context = ServiceContextFactory.CreateServiceContext(base.Helper, this.Application.ArtifactID)); }
+			get
+			{
+				return _context ?? (_context = ServiceContextFactory.CreateCaseServiceContext(base.Helper, this.Application.ArtifactID));
+			}
 			set { _context = value; }
 		}
 	}

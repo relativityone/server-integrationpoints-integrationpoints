@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Contracts.Syncronizer;
@@ -10,6 +9,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Conversion;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.Provider;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
@@ -18,14 +18,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class SyncWorker : ITask
 	{
-		private IServiceContext _serviceContext;
+		private ICaseServiceContext _caseServiceContext;
 		private IDataSyncronizerFactory _dataSyncronizerFactory;
 		private IDataProviderFactory _dataProviderFactory;
 		private kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 
-		public SyncWorker(IServiceContext serviceContext, IDataSyncronizerFactory dataSyncronizerFactory, IDataProviderFactory dataProviderFactory,kCura.Apps.Common.Utils.Serializers.ISerializer serializer)
+		public SyncWorker(ICaseServiceContext caseServiceContext, IDataSyncronizerFactory dataSyncronizerFactory, IDataProviderFactory dataProviderFactory, kCura.Apps.Common.Utils.Serializers.ISerializer serializer)
 		{
-			_serviceContext = serviceContext;
+			_caseServiceContext = caseServiceContext;
 			_dataSyncronizerFactory = dataSyncronizerFactory;
 			_dataProviderFactory = dataProviderFactory;
 			_serializer = serializer;
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				int integrationPointID = job.RelatedObjectArtifactID;
-				rdoIntegrationPoint = _serviceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
+				rdoIntegrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
 				if (rdoIntegrationPoint == null) throw new Exception("Failed to retrieved corresponding Integration Point.");
 
 				IEnumerable<FieldMap> fieldMap = _serializer.Deserialize<List<FieldMap>>(rdoIntegrationPoint.FieldMappings);
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					rdoIntegrationPoint.LastRuntime = DateTime.UtcNow;
 					//TODO:
 					//rdoIntegrationPoint.NextScheduledRuntime = ???;
-					_serviceContext.RsapiService.IntegrationPointLibrary.Update(rdoIntegrationPoint);
+					_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(rdoIntegrationPoint);
 				}
 			}
 		}

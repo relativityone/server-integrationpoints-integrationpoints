@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.ScheduleQueue.Core;
@@ -11,11 +12,11 @@ using kCura.ScheduleQueue.Core.BatchProcess;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	public class SyncManager : BatchManagerBase<string>
+	public class SyncManager : BatchManagerBase<string>, IDisposable
 	{
-		private readonly IDataProviderFactory _providerFactory;
-		private readonly IJobManager _jobManager;
-		private readonly IntegrationPointService _helper;
+		private IDataProviderFactory _providerFactory;
+		private IJobManager _jobManager;
+		private IntegrationPointService _helper;
 
 		public SyncManager(IDataProviderFactory providerFactory, IJobManager jobManager, IntegrationPointService helper)
 		{
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public override void CreateBatchJob(Job job, List<string> batchIDs)
 		{
-			_jobManager.CreateJob(batchIDs, TaskType.SyncWorker, job.RelatedObjectArtifactID);
+			_jobManager.CreateJob(batchIDs, TaskType.SyncWorker, job.WorkspaceID, job.RelatedObjectArtifactID);
 		}
 
 		private class ReaderEnumerable : IEnumerable<string>
@@ -70,5 +71,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
+
+		public void Dispose()
+		{
+			Debug.WriteLine("");
+		}
 	}
 }

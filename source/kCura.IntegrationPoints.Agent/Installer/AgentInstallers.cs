@@ -4,6 +4,8 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core;
+using kCura.Relativity.Client;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Installer
 {
@@ -11,10 +13,13 @@ namespace kCura.IntegrationPoints.Agent.Installer
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			container.Register(Component.For<IServiceContext>().ImplementedBy<ServiceContext>().LifestyleTransient());
+			container.Kernel.AddFacility<TypedFactoryFacility>();
+			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod((k) =>
+					k.Resolve<RsapiClientFactory>().CreateClientForWorkspace(-1, ExecutionIdentity.System)).LifestyleTransient());
 			container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifeStyle.Transient);
 			container.Register(Component.For<SyncWorker>().ImplementedBy<SyncWorker>().LifeStyle.Transient);
-			container.Register(Component.For<ITaskFactory>().AsFactory(x => x.SelectedWith<TaskComponentSelector>()).LifeStyle.Transient);
+			container.Register(Component.For<ITaskFactory>().AsFactory(x =>x.SelectedWith(new TaskComponentSelector())).LifeStyle.Transient);
+			container.Register(Component.For<kCura.Apps.Common.Utils.Serializers.ISerializer>().ImplementedBy<kCura.Apps.Common.Utils.Serializers.JSONSerializer>().LifestyleTransient());
 		}
 	}
 }

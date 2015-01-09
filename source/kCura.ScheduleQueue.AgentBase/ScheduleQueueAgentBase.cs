@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils;
@@ -121,6 +122,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				//}
 
 				TaskResult taskResult = ExecuteTask(nextJob);
+				GC.Collect();
 
 				FinalizeJob(nextJob, taskResult);
 

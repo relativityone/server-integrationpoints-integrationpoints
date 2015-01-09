@@ -76,10 +76,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
+    <Compile Include="Services\ServiceContext\ServiceContextHelperForEventHandlers.cs" />
+    <Compile Include="Services\ServiceContext\IServiceContextHelper.cs" />
+    <Compile Include="Services\ServiceContext\ServiceContextHelperForAgent.cs" />
+    <Compile Include="Services\ServiceContext\EddsServiceContext.cs" />
+    <Compile Include="Services\ServiceContext\IEddsServiceContext.cs" />
+    <Compile Include="Services\ServiceContext\ServiceContextFactory.cs" />
     <Compile Include="Services\Conversion\DataReaderEnumerable.cs" />
     <Compile Include="ExternalTabs.cs" />
     <Compile Include="Installers\ServicesInstaller.cs" />
-    <Compile Include="IServiceContext.cs" />
+    <Compile Include="Services\ServiceContext\ICaseServiceContext.cs" />
     <Compile Include="Models\ErrorModel.cs" />
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
@@ -88,7 +94,7 @@
     <Compile Include="Models\RdoFilter.cs" />
     <Compile Include="Models\RDO\IntegrationPoint.cs" />
     <Compile Include="RsapiClientFactory.cs" />
-    <Compile Include="ServiceContext.cs" />
+    <Compile Include="Services\ServiceContext\CaseServiceContext.cs" />
     <Compile Include="Services\AgentJobManager.cs" />
     <Compile Include="Services\ChoiceService.cs" />
     <Compile Include="Services\Conversion\IObjectBuilder.cs" />
