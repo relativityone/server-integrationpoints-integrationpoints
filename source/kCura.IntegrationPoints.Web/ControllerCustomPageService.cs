@@ -1,8 +1,9 @@
 ﻿using System;
+using kCura.IntegrationPoints.Core;
 
 namespace kCura.IntegrationPoints.Web
 {
-	public class ControllerCustomPageService : ICustomPageService
+	public class ControllerCustomPageService : IWorkspaceService
 	{
 		public ISessionService Service { get; set; }
 

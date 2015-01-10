@@ -21,7 +21,7 @@
 | The Integration Name field display an error message when empty
 | | [Documentation]	| Verify that leaving the Integration Name field blank displays a warning message after clicking Next.
 | | [Tags]			| required	| automated
-| | Fill out the Following Fields of the Integration Point Step 1 form	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Agent Type	| EnableScheduler=No
+| | Fill out the Following Fields of the Integration Point Step 1 form	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=History	| EnableScheduler=No
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Integration Name Field}	| This field is required.
 
@@ -47,7 +47,7 @@
 | | [Documentation]	| Verify that you can proceed to Step 2 after the Destination RDO validation message has been shown.
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| The Destination RDO field displays an error message when empty
-| | Fill out the Following Fields of the Integration Point Step 1 form	| DestinationRDO=Agent Type
+| | Fill out the Following Fields of the Integration Point Step 1 form	| DestinationRDO=History
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 

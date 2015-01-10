@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				case TaskType.SyncManager:
 					return Container.Resolve<SyncManager>();
 				case TaskType.SyncWorker:
-					return Container.Resolve<SyncManager>();
+					return Container.Resolve<SyncWorker>();
 				default:
 					return null;
 			}

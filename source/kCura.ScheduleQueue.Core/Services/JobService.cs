@@ -16,13 +16,17 @@ namespace kCura.ScheduleQueue.Core.Services
 		public JobService(IAgentService agentService, IHelper dbHelper)
 		{
 			this.AgentService = agentService;
-			this.AgentInformation = AgentService.AgentInformation;
 			this.QDBContext = new QueueDBContext(dbHelper, this.AgentService.QueueTable);
 		}
 
 		public IAgentService AgentService { get; private set; }
 		public IQueueDBContext QDBContext { get; private set; }
-		public AgentInformation AgentInformation { get; private set; }
+
+		
+		public AgentInformation AgentInformation
+		{
+			get { return AgentService.AgentInformation; }
+		}
 
 		public Job GetNextQueueJob(IEnumerable<int> resourceGroupIds)
 		{

@@ -13,21 +13,24 @@ namespace kCura.IntegrationPoints.Core.Services
 	{
 		private readonly IEddsServiceContext _context;
 		private readonly IJobService _jobService;
-		public AgentJobManager(IEddsServiceContext context, IJobService jobService)
+		private readonly kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
+		public AgentJobManager(IEddsServiceContext context, IJobService jobService, kCura.Apps.Common.Utils.Serializers.ISerializer serializer)
 		{
 			_context = context;
 			_jobService = jobService;
+			_serializer = serializer;
 		}
 
 		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, IScheduleRule rule)
 		{
-			_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), rule, string.Empty, _context.UserID);
+			string serializedDetails = _serializer.Serialize(jobDetails);
+			_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), rule, serializedDetails, _context.UserID);
 		}
 
 		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID)
 		{
-			_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, string.Empty,
-				_context.UserID);
+			string serializedDetails = _serializer.Serialize(jobDetails);
+			_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID);
 		}
 	}
 }

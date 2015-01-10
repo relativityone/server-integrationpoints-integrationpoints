@@ -4,6 +4,7 @@ using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
@@ -19,8 +20,8 @@ namespace kCura.IntegrationPoints.Web.Installers
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
 			container.Register(Classes.FromThisAssembly().BasedOn<IController>().LifestyleTransient());
-			container.Register(Component.For<ICustomPageService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
-			container.Register(Component.For<ICustomPageService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
+			container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
+			container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
 
 			container.Register(Component.For<ISessionService>().UsingFactoryMethod(k=> SessionService.Session).LifestylePerWebRequest());
 

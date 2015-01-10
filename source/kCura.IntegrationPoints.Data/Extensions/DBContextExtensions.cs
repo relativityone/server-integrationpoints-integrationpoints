@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Data.Extensions
 			var sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@ArtifactGuid", artifactGuid.ToString()));
 			return context.ExecuteSqlStatementAsScalar<int>(sql, sqlParams);
-
 		}
 	}
 }

@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
+    <Compile Include="IContextService.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForEventHandlers.cs" />
     <Compile Include="Services\ServiceContext\IServiceContextHelper.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForAgent.cs" />

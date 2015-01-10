@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
@@ -10,7 +11,7 @@ namespace kCura.IntegrationPoints.Web
 	public class ServiceContextHelperForWeb : IServiceContextHelper
 	{
 		private readonly WebClientFactory _factory;
-		public ServiceContextHelperForWeb(ICPHelper helper, IEnumerable<ICustomPageService> services, WebClientFactory factory)
+		public ServiceContextHelperForWeb(ICPHelper helper, IEnumerable<IWorkspaceService> services, WebClientFactory factory)
 		{
 			this.helper = helper;
 			this.customPageServices = services;
@@ -18,7 +19,7 @@ namespace kCura.IntegrationPoints.Web
 		}
 
 		private ICPHelper helper { get; set; }
-		private IEnumerable<ICustomPageService> customPageServices;
+		private IEnumerable<IWorkspaceService> customPageServices;
 
 		private int? _workspaceID;
 		public int WorkspaceID

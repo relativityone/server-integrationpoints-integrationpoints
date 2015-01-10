@@ -16,15 +16,19 @@ namespace kCura.ScheduleQueue.Core.Services
 			this.QueueTable = string.Format("ScheduleAgentQueue_{0}", agentGuid.ToString().ToUpper());
 			this.DBHelper = dbHelper;
 			this.QDBContext = new QueueDBContext(dbHelper, QueueTable);
-			this.AgentInformation = AgentService.GetAgentInformation(QDBContext.EddsDBContext, agentGuid);
+
 		}
-
-
+		
 		public Guid AgentGuid { get; private set; }
 		public string QueueTable { get; private set; }
 		public IHelper DBHelper { get; private set; }
 		public IQueueDBContext QDBContext { get; private set; }
-		public AgentInformation AgentInformation { get; private set; }
+		private AgentInformation _agentInformation;
+		public AgentInformation AgentInformation
+		{
+			get { return _agentInformation ?? (_agentInformation = GetAgentInformation(QDBContext.EddsDBContext, AgentGuid)); }
+
+		}
 
 		public void CreateQueueTable()
 		{
@@ -58,7 +62,7 @@ namespace kCura.ScheduleQueue.Core.Services
 				throw new Exception(string.Format("The agent with Guid {0} could not be found, please ensure there is an existing installed agent", agentGuid.ToString()));
 			}
 			agentInformation = new AgentInformation(row);
-			
+
 			return agentInformation;
 		}
 	}

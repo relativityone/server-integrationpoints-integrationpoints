@@ -17,9 +17,9 @@ namespace kCura.IntegrationPoints.Web
 		}
 
 		private readonly RsapiClientFactory _factory;
-		private IEnumerable<ICustomPageService> _customPageServices;
+		private readonly IEnumerable<IWorkspaceService> _customPageServices;
 
-		public WebClientFactory(RsapiClientFactory factory, IEnumerable<ICustomPageService> services)
+		public WebClientFactory(RsapiClientFactory factory, IEnumerable<IWorkspaceService> services)
 		{
 			_factory = factory;
 			_customPageServices = services;

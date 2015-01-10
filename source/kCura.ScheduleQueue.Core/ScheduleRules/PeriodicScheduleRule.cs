@@ -64,7 +64,7 @@ namespace kCura.ScheduleQueue.Core.ScheduleRules
 
 		public override DateTime? GetNextUTCRunDateTime(DateTime? LastRunTime = null, TaskStatusEnum? lastTaskStatus = null)
 		{
-			return GetNextRunTimeByInterval(Interval, StartDate.Value, localTimeOfDayTicks.Value, DaysToRun, DayOfMonth, SetLastDayOfMonth, EndDate, Reoccur, OccuranceInMonth);
+			return GetNextRunTimeByInterval(Interval, StartDate.GetValueOrDefault(DateTime.UtcNow), localTimeOfDayTicks.GetValueOrDefault(DateTime.UtcNow.TimeOfDay.Ticks), DaysToRun, DayOfMonth, SetLastDayOfMonth, EndDate, Reoccur, OccuranceInMonth);
 		}
 
 		public override string Description

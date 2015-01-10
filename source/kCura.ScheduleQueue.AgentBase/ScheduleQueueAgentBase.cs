@@ -122,7 +122,6 @@ namespace kCura.ScheduleQueue.AgentBase
 				//}
 
 				TaskResult taskResult = ExecuteTask(nextJob);
-				GC.Collect();
 
 				FinalizeJob(nextJob, taskResult);
 

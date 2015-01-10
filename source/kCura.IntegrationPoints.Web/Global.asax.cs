@@ -11,8 +11,13 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
+using kCura.IntegrationPoints.Data.Queries;
+using kCura.Relativity.Client;
+using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Relativity.API;
+using Relativity.CustomPages;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -41,6 +46,13 @@ namespace kCura.IntegrationPoints.Web
 			settings.Formatting = Formatting.Indented;
 			settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
+		}
+
+		public void Application_Error(object sender, EventArgs e)
+		{
+			var error = Server.GetLastError();
+			var s = error.Message;
+			new CreateErrorRdo(ConnectionHelper.Helper().GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System)).Execute(0, string.Empty, string.Empty, string.Empty);
 		}
 
 		private void CreateWindsorContainer()
