@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 
@@ -10,19 +11,22 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public class AgentJobManager : IJobManager
 	{
-		private readonly IServiceContext _context;
+		private readonly IEddsServiceContext _context;
 		private readonly IJobService _jobService;
-		public AgentJobManager(IServiceContext context, IJobService jobService)
+		private readonly kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
+		public AgentJobManager(IEddsServiceContext context, IJobService jobService, kCura.Apps.Common.Utils.Serializers.ISerializer serializer)
 		{
 			_context = context;
 			_jobService = jobService;
+			_serializer = serializer;
 		}
 
-		public void CreateJob<T>(T jobDetails, TaskType task, int integrationPointID, IScheduleRule rule)
+		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, IScheduleRule rule)
 		{
 			try
 			{
-				_jobService.CreateJob(_context.WorkspaceID, integrationPointID, task.ToString(), rule, string.Empty, _context.UserID);
+			string serializedDetails = _serializer.Serialize(jobDetails);
+			_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), rule, serializedDetails, _context.UserID);
 			}
 			catch (AgentNotFoundException anfe)
 			{
@@ -30,12 +34,12 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		public void CreateJob<T>(T jobDetails, TaskType task, int integrationPointID)
+		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID)
 		{
 			try
 			{
-				_jobService.CreateJob(_context.WorkspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, string.Empty,
-					_context.UserID);
+			string serializedDetails = _serializer.Serialize(jobDetails);
+			_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID);
 			}
 			catch (AgentNotFoundException anfe)
 			{

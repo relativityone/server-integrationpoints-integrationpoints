@@ -193,6 +193,7 @@
     <Compile Include="Models\SyncronizerSettings.cs" />
     <Compile Include="RelativityUrlHelper.cs" />
     <Compile Include="RequestExtensions.cs" />
+    <Compile Include="ServiceContextHelperForWeb.cs" />
     <Compile Include="SessionService.cs" />
     <Compile Include="WebAPICustomPageService.cs" />
     <Compile Include="WebClientFactory.cs" />

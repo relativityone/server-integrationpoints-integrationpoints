@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using kCura.IntegrationPoints.Core;
 using kCura.Relativity.Client;
 using Relativity.API;

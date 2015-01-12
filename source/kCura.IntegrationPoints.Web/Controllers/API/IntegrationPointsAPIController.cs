@@ -38,7 +38,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			var createdId = _reader.SaveIntegration(model);
 			//I'm already sorry to use name instead of guid
-			var result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
+			//is this merge issue???
+			//var result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
+			var result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId);
 			return Request.CreateResponse(HttpStatusCode.OK, result);
 		}
 

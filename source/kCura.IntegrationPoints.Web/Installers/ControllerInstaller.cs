@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Http.Controllers;
+﻿using System.Web.Http.Controllers;
 using System.Web.Mvc;
-using Castle.Core;
 using Castle.Facilities.TypedFactory;
-using Castle.MicroKernel;
-using Castle.MicroKernel.Context;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Newtonsoft.Json.Converters;
 using Relativity.API;
 using IDBContext = Relativity.API.IDBContext;
 using Relativity.CustomPages;
@@ -40,8 +31,12 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<RelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
 			container.Register(Classes.FromThisAssembly().BasedOn<IHttpController>().LifestyleTransient());
 
-			container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => ConnectionHelper.Helper()).LifestylePerWebRequest());
-			
+			container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => ConnectionHelper.Helper()).LifestylePerWebRequest()); 
+			container.Register(Component.For<ICPHelper>().UsingFactoryMethod((k) => ConnectionHelper.Helper()).LifestylePerWebRequest());
+			container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForWeb>().LifestylePerWebRequest());
+			container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestylePerWebRequest());
+			container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
+
 			container.AddFacility<TypedFactoryFacility>();
 			container.Register(Component.For<IErrorFactory>().AsFactory().UsingFactoryMethod((k) => new ErrorFactory(container)));
 			container.Register(Component.For<WebAPIFilterException>().ImplementedBy<WebAPIFilterException>());

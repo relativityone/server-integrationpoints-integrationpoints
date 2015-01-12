@@ -20,9 +20,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			service.APIOptions.WorkspaceID = 1025258;
 
 			var eh = new EventHandlers.Installers.RunEveryTimeInstaller();
-			eh.ServiceContext = new global::kCura.IntegrationPoints.Core.ServiceContext(null);
+			eh.ServiceContext = new global::kCura.IntegrationPoints.Core.Services.ServiceContext.CaseServiceContext(null);
 			eh.ServiceContext.RsapiService = new RSAPIService();
-			eh.ServiceContext.RsapiService.SourceProviderLibrary=new RsapiClientLibrary<SourceProvider>(service);
+			eh.ServiceContext.RsapiService.SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(service);
 
 			eh.Execute();
 
