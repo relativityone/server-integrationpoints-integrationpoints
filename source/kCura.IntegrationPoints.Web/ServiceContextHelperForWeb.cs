@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.Web
 	public class ServiceContextHelperForWeb : IServiceContextHelper
 	{
 		private readonly WebClientFactory _factory;
+		private const string USER_HEADER_VALUE = "X-IP-USERID";
 		public ServiceContextHelperForWeb(ICPHelper helper, IEnumerable<IWorkspaceService> services, WebClientFactory factory)
 		{
 			this.helper = helper;
@@ -35,12 +36,12 @@ namespace kCura.IntegrationPoints.Web
 		public int GetEddsUserID()
 		{
 			//TODO: get actual edds user id
-			return GetRequestNumericValueByKey("x-ip-userid");
+			return GetRequestNumericValueByKey(USER_HEADER_VALUE);
 			//return helper.GetAuthenticationManager().UserInfo.ArtifactID;
 		}
 		public int GetWorkspaceUserID()
 		{
-			return GetRequestNumericValueByKey("x-ip-userid");
+			return GetEddsUserID();
 			//return helper.GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID;
 		}
 		public IRSAPIService GetRsapiService()

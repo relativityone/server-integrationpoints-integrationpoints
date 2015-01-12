@@ -28,7 +28,6 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<WebClientFactory>().ImplementedBy<WebClientFactory>().LifestyleTransient());
 			container.Register(Component.For<RdoSynchronizer>().ImplementedBy<RdoSynchronizer>().LifestyleTransient());
 			container.Register(Component.For<kCura.Apps.Common.Utils.Serializers.ISerializer>().ImplementedBy<kCura.Apps.Common.Utils.Serializers.JSONSerializer>().LifestyleTransient());
-			container.Register(Component.For<RelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
 			container.Register(Classes.FromThisAssembly().BasedOn<IHttpController>().LifestyleTransient());
 
 			container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => ConnectionHelper.Helper()).LifestylePerWebRequest()); 

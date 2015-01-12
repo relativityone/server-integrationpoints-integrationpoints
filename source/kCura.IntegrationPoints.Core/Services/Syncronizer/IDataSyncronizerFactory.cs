@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 		public MockFactory(IWindsorContainer container)
 		{
 			_container = container;
-			_container.Register(Component.For<RelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
 			//_container.Install(FromAssembly.InThisApplication());
 		}
 
