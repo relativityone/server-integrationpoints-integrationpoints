@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Contracts.Syncronizer;
@@ -44,6 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				List<string> entryIDs = _serializer.Deserialize<List<string>>(job.JobDetails);
 				IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(Guid.NewGuid());
+				fieldMap.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
 				List<FieldEntry> sourceFields = fieldMap.Select(f => f.SourceField).ToList();
 				IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, rdoIntegrationPoint.SourceConfiguration);
 
