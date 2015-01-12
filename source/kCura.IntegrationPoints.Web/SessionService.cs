@@ -32,7 +32,14 @@ namespace kCura.IntegrationPoints.Web
 			get { return (int) HttpContext.Current.Session["workspaceID"]; }
 		}
 
-		
+		public int UserID {
+			get
+			{
+				return (int) HttpContext.Current.Session["UserID"];
+			}
+		}
+
+
 		public Dictionary<string, IEnumerable<FieldMap>> Fields{ get; set; }
 	}
 }

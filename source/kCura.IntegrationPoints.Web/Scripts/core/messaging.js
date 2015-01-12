@@ -19,11 +19,13 @@
 					//webAPI
 					try {
 						result = JSON.parse(error.responseText);
-						if (result.hasOwnProperty('ExceptionMessage')) {
-							result = result.ExceptionMessage;
-						} else if (result.hasOwnProperty("Message")) {
-							result = result.Message;
-						}
+						var props = ['ExceptionMessage', 'exceptionMessage', "Message", "message"];
+						$.each(props, function () {
+							if (result.hasOwnProperty(this)) {
+								result = result[this];
+								return false;
+							}
+						});
 					} catch (e) {
 						if (error.getResponseHeader('Content-Type').indexOf('html') > -1) {
 							result = $(error.responseText).eq(2).text();
@@ -48,7 +50,7 @@
 			} else if (typeof error === "string") {
 				result = error;
 			}
-			if (Method.utils.stringNullOrEmpty(result)) {
+			if (root.utils.stringNullOrEmpty(result)) {
 				result = DEFAULT_ERROR;
 			}
 			return result;
@@ -61,6 +63,7 @@
 
 		message.error = (function () {
 			function raiseError(messageBody, $container) {
+				messageBody = getMessage(messageBody);
 				var $el = getElement($container, $main),
 						$error = $('<div class="page-message page-error"/>').append('<span class="legal-hold icon-error"></span>').append($('<div/>').append(messageBody)).hide();
 

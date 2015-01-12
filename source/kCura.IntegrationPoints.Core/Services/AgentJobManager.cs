@@ -17,16 +17,30 @@ namespace kCura.IntegrationPoints.Core.Services
 			_context = context;
 			_jobService = jobService;
 		}
-		
+
 		public void CreateJob<T>(T jobDetails, TaskType task, int integrationPointID, IScheduleRule rule)
 		{
-			_jobService.CreateJob(_context.WorkspaceID, integrationPointID, task.ToString(), rule, string.Empty, _context.UserID);
+			try
+			{
+				_jobService.CreateJob(_context.WorkspaceID, integrationPointID, task.ToString(), rule, string.Empty, _context.UserID);
+			}
+			catch (AgentNotFoundException anfe)
+			{
+				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
+			}
 		}
 
 		public void CreateJob<T>(T jobDetails, TaskType task, int integrationPointID)
 		{
-			_jobService.CreateJob(_context.WorkspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, string.Empty,
-				_context.UserID);
+			try
+			{
+				_jobService.CreateJob(_context.WorkspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, string.Empty,
+					_context.UserID);
+			}
+			catch (AgentNotFoundException anfe)
+			{
+				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
+			}
 		}
 	}
 }

@@ -1,5 +1,5 @@
 ﻿@using kCura.IntegrationPoints.Web.Extensions
-@model int
+@model kCura.IntegrationPoints.Web.Models.EditPoint
 
 @section header{
 	<div class="header-actions-container">
@@ -37,7 +37,8 @@
 	<script src="~/Scripts/jquery-postMessage.js"></script>
 	<script>
 		IP.data.params = IP.data.params || {};
-		IP.data.params['artifactID'] = @Model;
+		IP.data.params['artifactID'] = @Model.ArtifactID;
+		IP.data.params['userID'] = @Model.UserID;
 	</script>
 	@Scripts.Render("~/bundles/ipEdit")
 	@Scripts.Render("~/bundles/dragon")

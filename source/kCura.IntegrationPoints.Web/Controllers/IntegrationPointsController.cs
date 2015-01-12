@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Web.Models;
 using Relativity.DragonGrid.Core.Grid;
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -22,7 +23,11 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		public ActionResult Edit(int? id)
 		{
-			return View(id ?? 0);
+			return View(new EditPoint
+			{
+				ArtifactID = id.GetValueOrDefault(0),
+				UserID = base.SessionService.UserID
+			});
 		}
 
 		public ActionResult StepDetails()
