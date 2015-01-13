@@ -6,7 +6,6 @@ using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Contracts.Syncronizer;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Conversion;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.Provider;
@@ -63,13 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			finally
 			{
-				if (rdoIntegrationPoint != null)
-				{
-					rdoIntegrationPoint.LastRuntime = DateTime.UtcNow;
-					//TODO:
-					//rdoIntegrationPoint.NextScheduledRuntime = ???;
-					_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(rdoIntegrationPoint);
-				}
+				//rdo last run and next scheduled time will be updated in Manager job
 			}
 		}
 	}

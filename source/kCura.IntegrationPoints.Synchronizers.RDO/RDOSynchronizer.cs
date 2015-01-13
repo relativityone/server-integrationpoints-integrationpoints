@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using kCura.Apps.Common.Config;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
@@ -50,8 +52,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			var custodian = rdo.FirstOrDefault(x => x.Name.Equals("Custodian")) != null;
 			foreach (var result in fields)
 			{
-
-
 				if (!IgnoredList.Contains(result.Name))
 				{
 					var idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
@@ -61,21 +61,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					{
 						isIdentifier = Convert.ToInt32(idField.Value) == 1;
 					}
-
-
 					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier });
 				}
 			}
 			return allFieldsForRdo;
 		}
-		
+
 		private IImportService _importService;
 		private bool _isJobComplete = false;
 		private Exception _jobError;
 		private List<KeyValuePair<string, string>> _rowErrors;
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{
-			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
+			ImportSettings settings = GetSettings(options);
+
 			Dictionary<string, int> importFieldMap = fieldMap.ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
 
 			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Parent))
@@ -119,6 +118,23 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			} while (!isJobDone);
 
 			ProcessExceptions(settings);
+		}
+
+		private static IDictionary _underlyingSetting;
+		protected static IDictionary ConfigSettings
+		{
+			get { return _underlyingSetting ?? (_underlyingSetting = Manager.Instance.GetConfig("kCura.EDDS.DBMT")); }
+		}
+
+		private ImportSettings GetSettings(string options)
+		{
+			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
+
+			if (string.IsNullOrEmpty(settings.WebServiceURL))
+			{
+				settings.WebServiceURL = ConfigHelper.GetValue<string>(ConfigSettings["WebAPIPath"], null);
+			}
+			return settings;
 		}
 
 		private void ProcessExceptions(ImportSettings settings)

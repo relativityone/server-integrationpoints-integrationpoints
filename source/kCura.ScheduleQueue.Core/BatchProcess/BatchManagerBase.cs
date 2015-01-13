@@ -1,11 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.BatchProcess
 {
+	public delegate void JobPreExecuteEvent(Job job);
+	public delegate void JobPostExecuteEvent(Job job, TaskResult taskResult);
+
 	public abstract class BatchManagerBase<T> : ITask
 	{
+		public event JobPreExecuteEvent RaiseJobPreExecute;
+		public event JobPostExecuteEvent RaiseJobPostExecute;
+
 		protected BatchManagerBase()
 		{
 			BatchSize = 1000;
@@ -13,7 +19,35 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 
 		public virtual void Execute(Job job)
 		{
-			BatchTask(job, GetUnbatchedIDs(job));
+			TaskResult taskResult = new TaskResult();
+			try
+			{
+				OnRaiseJobPreExecute(job);
+				BatchTask(job, GetUnbatchedIDs(job));
+				taskResult.Status = TaskStatusEnum.Success;
+			}
+			catch (Exception e)
+			{
+				taskResult.Status = TaskStatusEnum.Fail;
+				taskResult.Exceptions = new List<Exception>() { e };
+				throw;
+			}
+			finally
+			{
+				OnRaiseJobPostExecute(job, taskResult);
+			}
+		}
+
+		protected virtual void OnRaiseJobPreExecute(Job job)
+		{
+			if (RaiseJobPreExecute != null)
+				RaiseJobPreExecute(job);
+		}
+
+		protected virtual void OnRaiseJobPostExecute(Job job, TaskResult taskResult)
+		{
+			if (RaiseJobPostExecute != null)
+				RaiseJobPostExecute(job, taskResult);
 		}
 
 		public virtual int BatchSize { get; private set; }
@@ -38,7 +72,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 			if (list.Any())
 			{
 				CreateBatchJob(job, list);
-			}		
+			}
 		}
 		public abstract void CreateBatchJob(Job job, List<T> batchIDs);
 	}

@@ -20,12 +20,17 @@ namespace kCura.IntegrationPoints.Agent
 	{
 		private AgentInformation agentInformation = null;
 
-		private WindsorContainer _container;
-		private WindsorContainer Container
+		private IWindsorContainer _container;
+		private IWindsorContainer Container
 		{
 			get
 			{
-				if (_container == null) _container = new WindsorContainer();
+				if (_container == null)
+				{
+					_container = new WindsorContainer();
+					_container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => base.Helper, managedExternally: true));
+					_container.Install(FromAssembly.InThisApplication());
+				}
 				return _container;
 			}
 			set { _container = value; }
@@ -57,7 +62,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		public override ITask GetTask(Job job)
 		{
-			return TaskFactory.CreateTask(job);
+			return TaskFactory.CreateTask(job, this);
 		}
 
 		protected override void ReleaseTask(ITask task)

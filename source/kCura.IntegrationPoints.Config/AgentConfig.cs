@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections;
 using kCura.Apps.Common.Config;
 
 namespace kCura.IntegrationPoints.Config
@@ -28,6 +24,5 @@ namespace kCura.IntegrationPoints.Config
 					return value;
 		    }
 	    }
-
     }
 }
