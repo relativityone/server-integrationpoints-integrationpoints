@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpGet]
 		public HttpResponseMessage Get()
 		{
-			var list = _factory.GetSourceTypes().Select(x => new {name = x.Name, value = x.ID, url= x.SourceURL});
+			var list = _factory.GetSourceTypes().Select(x => new {name = x.Name, id=x.ArtifactID, value = x.ID, url= x.SourceURL});
 			return Request.CreateResponse(HttpStatusCode.OK, list);
 		}
 	}

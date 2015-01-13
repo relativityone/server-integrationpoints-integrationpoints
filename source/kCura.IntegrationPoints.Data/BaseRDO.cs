@@ -35,10 +35,16 @@ namespace kCura.IntegrationPoints.Data
 		{
 			var value = Rdo[fieldGuid].Value;
 			var choice = value as Relativity.Client.DTOs.Choice;
+			var artifact = value as Artifact;
 			if (choice != null)
 			{
 				value = new Choice(choice.ArtifactID, choice.Name);
 			}
+			if (artifact != null)
+			{
+				value = artifact.ArtifactID;
+			}
+			
 			return (T) value;
 		}
 

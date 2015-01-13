@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Models
 		public int ArtifactID { get; set; }
 		public string Name { get; set; }
 		public string SelectedOverwrite { get; set; }
-		public string SourceProvider { get; set; }
+		public int SourceProvider { get; set; }
 		public string Destination { get; set; }
 		public Scheduler Scheduler { get; set; }
 		public DateTime? NextRun { get; set; }
@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			//point.OverwriteFields = new Choice(Guid.Parse(Data.OverwriteFieldsChoiceGuids.APPEND_AND_OVERLAY_GUID), Data.OverwriteFieldsChoices.IntegrationPointAppend.Name);
 			point.SourceConfiguration = this.SourceConfiguration;
 			point.SourceProvider = null;
-
+			point.SourceProvider = this.SourceProvider;
 			point.DestinationConfiguration = this.Destination;
 			point.FieldMappings = this.Map;
 			point.EnableScheduler = this.Scheduler.EnableScheduler;
@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			this.ArtifactID = ip.ArtifactId;
 			Name = ip.Name;
 			SelectedOverwrite = string.Empty;
-
+			this.SourceProvider = ip.SourceProvider.GetValueOrDefault(0);
 			//if (ip.OverwriteFields != null)
 			//{
 			//	SelectedOverwrite = ip.OverwriteFields.Name;

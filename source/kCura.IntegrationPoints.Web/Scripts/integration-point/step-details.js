@@ -81,9 +81,10 @@ var IP = IP || {};
 		initDatePicker($('#scheduleRulesStartDate, #scheduleRulesEndDate'))
 	});
 
-	var Choice = function (name, value) {
+	var Choice = function (name, value, artifactID) {
 		this.displayName = name;
 		this.value = value;
+		this.artifactID = artifactID;
 	};
 
 	var Source = function (s) {
@@ -93,19 +94,29 @@ var IP = IP || {};
 
 		this.sourceTypes = ko.observableArray();
 		this.selectedType = ko.observable().extend({ required: true });
+		this.sourceProvider = settings.sourceProvider || 0;
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
 			var types = $.map(result, function (entry) {
-				var c = new Choice(entry.name, entry.value);
+				var c = new Choice(entry.name, entry.value, entry.id);
 				c.href = entry.url;
 				return c;
 			});
 			self.sourceTypes(types);
 			$.each(self.sourceTypes(), function () {
-				if (this.value === settings.selectedType) {
+
+				if (this.value === settings.selectedType || this.artifactID === self.sourceProvider) {
 					self.selectedType(this.value);
 				}
 			});
-		});	
+		});
+		
+		this.selectedType.subscribe(function (selectedValue) {
+			$.each(self.sourceTypes(), function () {
+				if (this.value === selectedValue) {
+					self.sourceProvider = this.artifactID;
+				}
+			});
+		});
 	};
 
 	var Destination = function (d) {
@@ -129,6 +140,7 @@ var IP = IP || {};
 
 		this.templateID = 'ldapDestinationConfig';
 		this.rdoTypes = ko.observableArray();
+		
 		self.artifactTypeID = ko.observable().extend({ required: true });
 	};
 
@@ -203,6 +215,7 @@ var IP = IP || {};
 				new Choice("last", 5)
 			]);
 
+			debugger;
 			this.selectedType = ko.observable(currentState.selectedType);
 
 			this.selectedType.subscribe(function () {
@@ -240,7 +253,6 @@ var IP = IP || {};
 			this.selectedDayOfTheMonth = ko.observable(currentState.selectedDayOfTheMonth);
 
 			this.monthChoice = ko.observable(currentState.monthChoice);
-			
 		
 		};
 
@@ -398,6 +410,7 @@ var IP = IP || {};
 		this.hasTemplate = false;
 		this.model = new Model();
 		this.loadModel = function (ip) {
+			ip.source = $.extend({}, { sourceProvider: ip.sourceProvider }, ip.source);
 			this.model = new Model(ip);
 			
 			this.model.sourceConfiguration = ip.sourceConfiguration;
@@ -419,6 +432,7 @@ var IP = IP || {};
 			if (this.model.errors().length === 0) {
 				this.model.destination = JSON.stringify({ artifactTypeID: ko.toJS(this.model.destination).artifactTypeID });
 				this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
+				this.model.sourceProvider = this.model.source.sourceProvider;
 				d.resolve(ko.toJS(this.model));
 			} else {
 				this.model.errors.showAllMessages();
