@@ -118,6 +118,18 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(IntegrationPointFieldGuids.ScheduleRule), value);
 			}
 		}
+		[DynamicField(IntegrationPointFields.Overwrite, IntegrationPointFieldGuids.Overwrite, FieldTypes.SingleChoice)]
+		public Choice Overwrite
+		{
+			get
+			{
+				return GetField<Choice>(new System.Guid(IntegrationPointFieldGuids.Overwrite));
+			}
+			set
+			{
+				SetField<Choice>(new System.Guid(IntegrationPointFieldGuids.Overwrite), value);
+			}
+		}
 		public const int NameFieldLength = 255;
 		[DynamicField(IntegrationPointFields.Name, IntegrationPointFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
 		public string Name
@@ -183,6 +195,18 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(SourceProviderFieldGuids.SourceConfigurationUrl), value);
 			}
 		}
+		[DynamicField(SourceProviderFields.LibLocation, SourceProviderFieldGuids.LibLocation, FieldTypes.File)]
+		public int? LibLocation
+		{
+			get
+			{
+				return GetField<int?>(new System.Guid(SourceProviderFieldGuids.LibLocation));
+			}
+			set
+			{
+				SetField<int?>(new System.Guid(SourceProviderFieldGuids.LibLocation), value);
+			}
+		}
 		public const int NameFieldLength = 255;
 		[DynamicField(SourceProviderFields.Name, SourceProviderFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
 		public string Name
@@ -215,6 +239,59 @@ namespace kCura.IntegrationPoints.Data
 				if (!(_objectMetadata == null))
 					return _objectMetadata;
 				_objectMetadata = GetObjectMetadata(typeof(SourceProvider));
+				return _objectMetadata;
+			}
+		}
+	}
+ 
+	[DynamicObject(ObjectTypes.DestinationProvider, ObjectTypes.Workspace, "", ObjectTypeGuids.DestinationProvider)]
+	public partial class DestinationProvider : BaseRdo
+	{
+		public const int IdentifierFieldLength = 40;
+		[DynamicField(DestinationProviderFields.Identifier, DestinationProviderFieldGuids.Identifier, FieldTypes.FixedLengthText, 40)]
+		public string Identifier
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(DestinationProviderFieldGuids.Identifier));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(DestinationProviderFieldGuids.Identifier), value);
+			}
+		}
+		public const int NameFieldLength = 255;
+		[DynamicField(DestinationProviderFields.Name, DestinationProviderFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
+		public string Name
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(DestinationProviderFieldGuids.Name));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(DestinationProviderFieldGuids.Name), value);
+			}
+		}
+		private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
+		public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
+		{
+			get
+			{
+				if (!(_fieldMetadata == null))
+					return _fieldMetadata;
+				_fieldMetadata = GetFieldMetadata(typeof(DestinationProvider));
+				return _fieldMetadata;
+			}
+		}
+		private static DynamicObjectAttribute _objectMetadata;
+		public override DynamicObjectAttribute ObjectMetadata
+		{
+			get
+			{
+				if (!(_objectMetadata == null))
+					return _objectMetadata;
+				_objectMetadata = GetObjectMetadata(typeof(DestinationProvider));
 				return _objectMetadata;
 			}
 		}

@@ -334,7 +334,7 @@ var IP = IP || {};
 
 		this.startDate = ko.observable(options.startDate).extend({
 			date: {
-				message: 'Invalid Date'
+				message: 'The field Start Date must be a date.'
 			}
 		}).extend({
 			required: {
@@ -346,7 +346,7 @@ var IP = IP || {};
 
 		this.endDate = ko.observable(options.endDate).extend({
 			date: {
-				message: 'Invalid Date'
+				message: 'The field End Date must be a date.'
 			}
 		}).extend({
 			validation: {

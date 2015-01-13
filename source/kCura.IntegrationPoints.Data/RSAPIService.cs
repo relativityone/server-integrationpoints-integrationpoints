@@ -6,6 +6,7 @@
 
 		public IGenericLibrary<IntegrationPoint> IntegrationPointLibrary { get; set; }
 		public IGenericLibrary<SourceProvider> SourceProviderLibrary { get; set; }
+		public IGenericLibrary<DestinationProvider> DestinationProviderLibrary { get; set; }
 	
 	}
 }
