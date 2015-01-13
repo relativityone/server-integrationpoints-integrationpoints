@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 		public string Name { get; set; }
 		public string ID { get; set; }
 		public string SourceURL { get; set; }
+		public int ArtifactID { get; set; }
 	}
 
 	public class SourceTypeFactory
@@ -24,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 		public virtual IEnumerable<SourceType> GetSourceTypes()
 		{
 			var types = _context.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(Data.SourceProviderFieldGuids.Name), Guid.Parse(Data.SourceProviderFieldGuids.Identifier), Guid.Parse(Data.SourceProviderFieldGuids.SourceConfigurationUrl));
-			return types.Select(x => new SourceType { Name = x.Name, ID = x.Identifier, SourceURL = x.SourceConfigurationUrl }).OrderBy(x => x.Name).ToList();
+			return types.Select(x => new SourceType { Name = x.Name, ID = x.Identifier, SourceURL = x.SourceConfigurationUrl, ArtifactID = x.ArtifactId}).OrderBy(x => x.Name).ToList();
 		}
 	}
 }

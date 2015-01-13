@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 		public override Response Execute()
 		{
 			new LdapSourceTypeCreator(ServiceContext).CreateOrUpdateLdapSourceType();
+			new Core.Services.Syncronizer.RDOSyncronizerProvider(ServiceContext).CreateOrUpdateLdapSourceType();
 			return new Response
 			{
 				Success = true

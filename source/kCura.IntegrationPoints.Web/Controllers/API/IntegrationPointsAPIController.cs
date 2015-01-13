@@ -15,10 +15,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	{
 		private readonly IntegrationPointService _reader;
 		private readonly RelativityUrlHelper _urlHelper;
-		public IntegrationPointsAPIController(IntegrationPointService reader, RelativityUrlHelper urlHelper)
+		private readonly Core.Services.Syncronizer.RDOSyncronizerProvider _provider;
+		public IntegrationPointsAPIController(IntegrationPointService reader, RelativityUrlHelper urlHelper, Core.Services.Syncronizer.RDOSyncronizerProvider provider)
 		{
 			_reader = reader;
 			_urlHelper = urlHelper;
+			_provider = provider;
 		}
 		[HttpGet]
 		public HttpResponseMessage Get(int id)
@@ -29,7 +31,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			{
 				model = _reader.ReadIntegrationPoint(id);
 			}
-
+			if (model.DestinationProvider == 0)
+			{
+				model.DestinationProvider = _provider.GetRdoSyncronizerId(); //hard coded for your ease of use
+			}
 			return Request.CreateResponse(HttpStatusCode.Accepted, model);
 		}
 

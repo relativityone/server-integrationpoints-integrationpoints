@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>kCura.IntegrationPoints.Contracts</name>
+    </assembly>
+    <members>
+        <member name="M:kCura.IntegrationPoints.Contracts.AssemblyDomainLoader.Load(System.Byte[])">
+            <summary>
+            Loads assembly the current app domain.
+            </summary>
+            <param name="rawAssembly">the library that will be loaded into the current Application Domain.</param>
+        </member>
+        <member name="T:kCura.IntegrationPoints.Contracts.Models.FieldMap">
+            <summary>
+            Responsible for where the data is coming from to where the data is going to
+            </summary>
+        </member>
+        <member name="P:kCura.IntegrationPoints.Contracts.Models.FieldMap.SourceField">
+            <summary>
+            The field where the data is coming from
+            </summary>
+        </member>
+        <member name="P:kCura.IntegrationPoints.Contracts.Models.FieldMap.DestinationField">
+            <summary>
+            The field where the data should be going to
+            </summary>
+        </member>
+        <member name="P:kCura.IntegrationPoints.Contracts.Models.FieldMap.FieldMapType">
+            <summary>
+            Type of map: None, Identifier, Parent
+            </summary>
+        </member>
+        <member name="T:kCura.IntegrationPoints.Contracts.Models.FieldEntry">
+            <summary>
+            Responsible for going to a datasource and returning what fields can be mapped
+            </summary>
+        </member>
+        <member name="P:kCura.IntegrationPoints.Contracts.Models.FieldEntry.DisplayName">
+            <summary>
+            Friendly name that will be displayed
+            </summary>
+        </member>
+        <member name="P:kCura.IntegrationPoints.Contracts.Models.FieldEntry.FieldIdentifier">
+            <summary>
+            value that should be used when mapping
+            </summary>
+        </member>
+        <member name="T:kCura.IntegrationPoints.Contracts.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:kCura.IntegrationPoints.Contracts.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:kCura.IntegrationPoints.Contracts.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:kCura.IntegrationPoints.Contracts.Properties.Resources.CouldNotCreateProvider">
+            <summary>
+              Looks up a localized string similar to Could not create provider of type {0}..
+            </summary>
+        </member>
+        <member name="P:kCura.IntegrationPoints.Contracts.Properties.Resources.MoreThanOneProviderFound">
+            <summary>
+              Looks up a localized string similar to {0} providers were found with the identifier {1}..
+            </summary>
+        </member>
+        <member name="P:kCura.IntegrationPoints.Contracts.Properties.Resources.NoProvidersFound">
+            <summary>
+              Looks up a localized string similar to No providers were found with the identifier {0}..
+            </summary>
+        </member>
+        <member name="T:kCura.IntegrationPoints.Contracts.ProviderBuilder">
+            <summary>
+            Represents the class that will resolve how the Provider will be created.
+            </summary>
+        </member>
+        <member name="M:kCura.IntegrationPoints.Contracts.ProviderBuilder.GetFactory">
+            <summary>
+            Gets the factory that will be used to create the provider.
+            </summary>
+            <returns>The newly created provider used to integrate with the source.</returns>
+        </member>
+        <member name="M:kCura.IntegrationPoints.Contracts.ProviderBuilder.SetFactory(kCura.IntegrationPoints.Contracts.IProviderFactory)">
+            <summary>
+            Sets the factory that will be used to create the provider.
+            </summary>
+            <param name="factory">The factory that will be used to create the provider to integrate with the source.</param>
+        </member>
+        <member name="T:kCura.IntegrationPoints.Contracts.DomainManager">
+            <summary>
+            Entry point into the App domain to create the Provider
+            </summary>
+        </member>
+        <member name="T:kCura.IntegrationPoints.Contracts.Provider.IDataSourceProvider">
+            <summary>
+            Represents an integration point where the data will flow from into the system.
+            </summary>
+        </member>
+        <member name="M:kCura.IntegrationPoints.Contracts.Provider.IDataSourceProvider.GetData(System.Collections.Generic.IEnumerable{kCura.IntegrationPoints.Contracts.Models.FieldEntry},System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            Determins the Data from the source that will flow into the system.
+            </summary>
+            <param name="fields">The fields that are requested from the data source.</param>
+            <param name="entryIds">The requested IDs that are expected to be read.</param>
+            <param name="options">The source providers options that have been previously set.</param>
+            <returns>A stream that represents the data based on the requested fields and the requested entryIds.</returns>
+        </member>
+        <member name="M:kCura.IntegrationPoints.Contracts.Provider.IDataSourceProvider.GetBatchableIds(kCura.IntegrationPoints.Contracts.Models.FieldEntry,System.String)">
+            <summary>
+            Determins the identifer for the current ids.
+            </summary>
+            <param name="identifier">The identifier field used to batch up jobs.</param>
+            <param name="options">The source providers options that have been previously set.</param>
+            <returns>A stream that represents all the ids with just the identifier field.</returns>
+        </member>
+        <member name="T:kCura.IntegrationPoints.Contracts.IStartUp">
+            <summary>
+            First call made into the app domain to do any setup work required.
+            It is expected that there is only one class that implements this interface
+            per library.
+            </summary>
+        </member>
+        <member name="M:kCura.IntegrationPoints.Contracts.IStartUp.Execute">
+            <summary>
+            The function that will do any setup work.
+            </summary>
+        </member>
+    </members>
+</doc>

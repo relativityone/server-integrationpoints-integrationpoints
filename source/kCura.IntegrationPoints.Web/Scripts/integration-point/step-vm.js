@@ -91,7 +91,9 @@
 
 		IP.messaging.subscribe('saveComplete', function (model) {
 			IP.data.ajax({ type: 'POST', url: IP.utils.generateWebAPIURL('IntegrationPointsAPI'), data: JSON.stringify(model) }).then(function (result) {
-				window.top.location =  result.returnURL;
+				//redirect to page!!
+				var prefix = window.top.location.protocol + "//" + window.top.location.host + '/';
+				window.top.location = prefix + result.returnURL;
 			}, function (error) {
 				IP.message.error.raise(error);
 			});
