@@ -9,6 +9,8 @@ namespace kCura.IntegrationPoints.Contracts
 {
 	public class DefaultProviderFactory : IProviderFactory
 	{
+		public DefaultProviderFactory(){}
+
 		public IDataSourceProvider CreateProvider(Guid identifier)
 		{
 			Type t = GetType(identifier);

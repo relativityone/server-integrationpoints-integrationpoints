@@ -23,14 +23,24 @@ namespace kCura.IntegrationPoints.Contracts
 		{
 			_factory = new DefaultProviderFactory();
 		}
-
+		/// <summary>
+		/// Gets the factory that will be used to create the provider.
+		/// </summary>
+		/// <returns>The newly created provider used to integrate with the source.</returns>
 		public IProviderFactory GetFactory()
 		{
 			return Current._factory;
 		}
-
+		/// <summary>
+		/// Sets the factory that will be used to create the provider.
+		/// </summary>
+		/// <param name="factory">The factory that will be used to create the provider to integrate with the source.</param>
 		public void SetFactory(IProviderFactory factory)
 		{
+			if (factory == null)
+			{
+				throw new ArgumentNullException("factory");
+			}
 			Current._factory = factory;
 		}
 
