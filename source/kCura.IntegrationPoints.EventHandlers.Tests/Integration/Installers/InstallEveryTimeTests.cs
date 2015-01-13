@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			eh.ServiceContext = new global::kCura.IntegrationPoints.Core.Services.ServiceContext.CaseServiceContext(new TestHelper(service.APIOptions.WorkspaceID));
 			eh.ServiceContext.RsapiService = new RSAPIService();
 			eh.ServiceContext.RsapiService.SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(service);
-
+			eh.ServiceContext.RsapiService.DestinationProviderLibrary = new RsapiClientLibrary<DestinationProvider>(service);
 			eh.Execute();
 
 		}

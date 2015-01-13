@@ -64,15 +64,31 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssemblyDomainLoader.cs" />
+    <Compile Include="DataSourceProviderAttribute.cs" />
+    <Compile Include="DefaultProviderFactory.cs" />
+    <Compile Include="IProviderFactory.cs" />
     <Compile Include="Models\FieldMapTypeEnum.cs" />
     <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Models\FieldEntry.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ProviderBuilder.cs" />
+    <Compile Include="ProviderManager.cs" />
+    <Compile Include="ProviderWrapper.cs" />
     <Compile Include="Provider\IDataSourceProvider.cs" />
     <Compile Include="Provider\IFieldProvider.cs" />
     <Compile Include="Syncronizer\IDataSyncronizer.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

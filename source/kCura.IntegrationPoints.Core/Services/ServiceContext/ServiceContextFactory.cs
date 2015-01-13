@@ -17,7 +17,8 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 			return new RSAPIService()
 			{
 				IntegrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(client),
-				SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(client)
+				SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(client),
+				DestinationProviderLibrary = new RsapiClientLibrary<DestinationProvider>(client)
 			};
 		}
 	}
