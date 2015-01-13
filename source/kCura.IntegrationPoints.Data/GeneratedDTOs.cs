@@ -70,16 +70,16 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(IntegrationPointFieldGuids.SourceConfiguration), value);
 			}
 		}
-		[DynamicField(IntegrationPointFields.DestinationRDO, IntegrationPointFieldGuids.DestinationRDO, FieldTypes.LongText)]
-		public string DestinationRDO
+		[DynamicField(IntegrationPointFields.DestinationConfiguration, IntegrationPointFieldGuids.DestinationConfiguration, FieldTypes.LongText)]
+		public string DestinationConfiguration
 		{
 			get
 			{
-				return GetField<string>(new System.Guid(IntegrationPointFieldGuids.DestinationRDO));
+				return GetField<string>(new System.Guid(IntegrationPointFieldGuids.DestinationConfiguration));
 			}
 			set
 			{
-				SetField<string>(new System.Guid(IntegrationPointFieldGuids.DestinationRDO), value);
+				SetField<string>(new System.Guid(IntegrationPointFieldGuids.DestinationConfiguration), value);
 			}
 		}
 		[DynamicField(IntegrationPointFields.SourceProvider, IntegrationPointFieldGuids.SourceProvider, FieldTypes.SingleObject)]

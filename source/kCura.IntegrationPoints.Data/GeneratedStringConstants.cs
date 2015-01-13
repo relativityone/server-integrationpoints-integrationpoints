@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string FieldMappings = @"Field Mappings";
 		public const string EnableScheduler = @"Enable Scheduler";
 		public const string SourceConfiguration = @"Source Configuration";
-		public const string DestinationRDO = @"Destination RDO";
+		public const string DestinationConfiguration = @"Destination Configuration";
 		public const string SourceProvider = @"Source Provider";
 		public const string DestinationProvider = @"Destination Provider";
 		public const string ScheduleRule = @"Schedule Rule";
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string FieldMappings = @"1b065787-a6e4-4d70-a7ed-f49d770f0bc7";
 		public const string EnableScheduler = @"bcdafc41-311e-4b66-8084-4a8e0f56ca00";
 		public const string SourceConfiguration = @"b5000e91-82bd-475a-86e9-32fefc04f4b8";
-		public const string DestinationRDO = @"b1323ca7-34e5-4e6b-8ff1-e8d3b1a5fd0a";
+		public const string DestinationConfiguration = @"b1323ca7-34e5-4e6b-8ff1-e8d3b1a5fd0a";
 		public const string SourceProvider = @"dc902551-2c9c-4f41-a917-41f4a3ef7409";
 		public const string DestinationProvider = @"4e63a5cc-8af8-49d0-8bf7-04e57f8c148c";
 		public const string ScheduleRule = @"000f25ef-d714-4671-8075-d2a71cac396b";

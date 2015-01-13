@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 			var q = new Query<RDO>();
 			q.Condition = new TextCondition(Guid.Parse(Data.DestinationProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, RDO_SYNC_TYPE_GUID);
 			var s = _context.RsapiService.DestinationProviderLibrary.Query(q).Single(); //there should only be one!
-			return s;
+			return s.ArtifactId;
 		}
 
 	}

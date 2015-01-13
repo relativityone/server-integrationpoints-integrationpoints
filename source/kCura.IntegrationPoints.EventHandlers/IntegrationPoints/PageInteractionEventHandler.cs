@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/grid/dragon-grid.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/grid/dragon-grid-pager.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/grid/dragon-utils.js");
-				
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/ldap/ldap-details.js");
 			}
 			return response;
 		}
