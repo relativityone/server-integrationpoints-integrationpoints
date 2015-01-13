@@ -397,7 +397,8 @@ ko.validation.insertValidationMessage = function (element) {
 							destinationField: {
 								displayName: destination.name,
 								fieldIdentifier: destination.identifer
-							}
+							},
+							fieldMapType: "None"
 						});
 					}
 				}
