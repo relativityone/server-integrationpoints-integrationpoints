@@ -7,7 +7,8 @@ namespace kCura.IntegrationPoints.LDAPProvider
 	{
 		#region Constructor
 
-		private const string FILTER_DEFAULT = "(objectClass=*)";
+		public const string FILTER_DEFAULT = "(objectClass=*)";
+		public const string MULTIVALUEDELIMITER_DEFAULT = ";";
 
 		public LDAPSettings()
 		{
@@ -21,7 +22,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			PropertyNamesOnly = false;// - dotNet default
 			ProviderReferralChasing = ReferralChasingOption.External;
 			ProviderExtendedDN = ExtendedDNEnum.Standard;
-			MultiValueDelimiter = char.Parse(";");
+			MultiValueDelimiter = char.Parse(MULTIVALUEDELIMITER_DEFAULT);
 		}
 
 		#endregion
@@ -125,7 +126,6 @@ namespace kCura.IntegrationPoints.LDAPProvider
 		/// For more information about the LDAP search string format, see "Search Filter Syntax" in the MSDN Library at http://msdn.microsoft.com/library. 
 		/// </summary>
 		private string _filter;
-
 		public string Filter
 		{
 			get

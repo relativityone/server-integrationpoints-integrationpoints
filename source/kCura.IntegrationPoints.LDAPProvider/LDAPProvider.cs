@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.DirectoryServices;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
@@ -11,7 +12,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 	{
 		public System.Data.IDataReader GetData(IEnumerable<Contracts.Models.FieldEntry> fields, IEnumerable<string> entryIds, string options)
 		{
-			LDAPSettings settings = new JSONSerializer().Deserialize<LDAPSettings>(options);
+			LDAPSettings settings = GetSettings(options);
 			List<string> fieldsToLoad = fields.Select(f => f.FieldIdentifier).ToList();
 			string identifier = fields.Where(f => f.IsIdentifier).Select(f => f.FieldIdentifier).First();
 
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public System.Data.IDataReader GetBatchableIds(Contracts.Models.FieldEntry identifier, string options)
 		{
-			LDAPSettings settings = new JSONSerializer().Deserialize<LDAPSettings>(options);
+			LDAPSettings settings = GetSettings(options);
 			List<string> fieldsToLoad = new List<string>() { identifier.FieldIdentifier };
 
 			LDAPService ldapService = new LDAPService(settings, fieldsToLoad);
@@ -34,7 +35,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public IEnumerable<Contracts.Models.FieldEntry> GetFields(string options)
 		{
-			LDAPSettings settings = new JSONSerializer().Deserialize<LDAPSettings>(options);
+			LDAPSettings settings = GetSettings(options);
 			settings.PropertyNamesOnly = true;
 
 			LDAPService ldapService = new LDAPService(settings);
@@ -43,6 +44,26 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			List<string> fields = ldapService.GetAllProperties(items);
 
 			return fields.Select(f => new FieldEntry() { DisplayName = f, FieldIdentifier = f }).AsEnumerable();
+		}
+
+		private LDAPSettings GetSettings(string options)
+		{
+			LDAPSettings settings = new JSONSerializer().Deserialize<LDAPSettings>(options);
+
+			if (String.IsNullOrWhiteSpace(settings.Filter)) { settings.Filter = LDAPSettings.FILTER_DEFAULT; }
+
+			if (settings.PageSize < 1) { settings.PageSize = 1000; }
+
+			if (settings.GetPropertiesItemSearchLimit < 1) { settings.GetPropertiesItemSearchLimit = 100; }
+
+			if (!settings.MultiValueDelimiter.HasValue || settings.MultiValueDelimiter.ToString() == string.Empty)
+			{
+				//not knowing what data can look like we will assume 
+				//blank entry (" ") is possible user entry as legit delimiter
+				settings.MultiValueDelimiter = char.Parse(LDAPSettings.MULTIVALUEDELIMITER_DEFAULT);
+			}
+
+			return settings;
 		}
 	}
 }
