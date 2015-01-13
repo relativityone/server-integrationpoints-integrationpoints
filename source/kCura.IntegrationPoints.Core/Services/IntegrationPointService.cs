@@ -5,6 +5,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Services.Syncronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -78,7 +79,8 @@ namespace kCura.IntegrationPoints.Core.Services
 			var ip = model.ToRdo();
 			var rule = this.ToScheduleRule(model);
 			ip.ScheduleRule = rule.ToSerializedString();
-			
+			ip.NextScheduledRuntime = rule.GetNextUTCRunDateTime();
+
 			//save RDO
 			if (ip.ArtifactId > 0)
 			{
@@ -89,7 +91,6 @@ namespace kCura.IntegrationPoints.Core.Services
 				ip.ArtifactId = _context.RsapiService.IntegrationPointLibrary.Create(ip);
 			}
 			_jobService.CreateJob<object>(null, TaskType.SyncManager, _context.WorkspaceID, ip.ArtifactId, rule);
-
 			return ip.ArtifactId;
 		}
 

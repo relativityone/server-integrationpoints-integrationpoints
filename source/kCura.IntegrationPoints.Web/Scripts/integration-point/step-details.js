@@ -393,6 +393,7 @@ var IP = IP || {};
 
 		this.source = new Source(settings.source);
 		this.destination = new Destination(settings.destination);
+		this.destinationProvider = settings.destinationProvider;
 		this.overwrite = ko.observableArray([
 			'Append/Overlay', 'Append', 'Overlay Only']);
 
@@ -412,6 +413,7 @@ var IP = IP || {};
 		this.loadModel = function (ip) {
 			ip.source = $.extend({}, { sourceProvider: ip.sourceProvider }, ip.source);
 			this.model = new Model(ip);
+			
 			
 			this.model.sourceConfiguration = ip.sourceConfiguration;
 		};

@@ -90,6 +90,7 @@ namespace kCura.IntegrationPoints.Core.Models
 		public string Name { get; set; }
 		public string SelectedOverwrite { get; set; }
 		public int SourceProvider { get; set; }
+		public int DestinationProvider { get; set; }
 		public string Destination { get; set; }
 		public Scheduler Scheduler { get; set; }
 		public DateTime? NextRun { get; set; }
@@ -114,6 +115,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			point.DestinationConfiguration = this.Destination;
 			point.FieldMappings = this.Map;
 			point.EnableScheduler = this.Scheduler.EnableScheduler;
+			point.DestinationProvider = this.DestinationProvider;
 			return point;
 		}
 
@@ -131,7 +133,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			//EndDate = ip.EndDate;
 			this.Destination = ip.DestinationConfiguration;
 			this.SourceConfiguration = ip.SourceConfiguration;
-
+			this.DestinationProvider = ip.DestinationProvider.GetValueOrDefault(0);
 			Scheduler = new Scheduler(ip);
 
 

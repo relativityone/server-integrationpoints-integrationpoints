@@ -33,12 +33,14 @@ namespace kCura.IntegrationPoints.Data
 		public const string Folder = "Folder";
 		public const string IntegrationPoint = @"Integration Point";
 		public const string SourceProvider = @"Source Provider";
+		public const string DestinationProvider = @"DestinationProvider";
 		}
 
 	public partial class ObjectTypeGuids
 	{
 		public const string IntegrationPoint = @"03d4f67e-22c9-488c-bee6-411f05c52e01";
 		public const string SourceProvider = @"5be4a1f7-87a8-4cbe-a53f-5027d4f70b80";
+		public const string DestinationProvider = @"d014f00d-f2c0-4e7a-b335-84fcb6eae980";
 		}
 
 	#region "Field Constants"
@@ -50,10 +52,11 @@ namespace kCura.IntegrationPoints.Data
 		public const string FieldMappings = @"Field Mappings";
 		public const string EnableScheduler = @"Enable Scheduler";
 		public const string SourceConfiguration = @"Source Configuration";
-		public const string DestinationConfiguration = @"Destination Configuration";
+		public const string DestinationRDO = @"Destination RDO";
 		public const string SourceProvider = @"Source Provider";
 		public const string DestinationProvider = @"Destination Provider";
 		public const string ScheduleRule = @"Schedule Rule";
+		public const string Overwrite = @"Overwrite";
 		public const string Name = @"Name";
 	}
 
@@ -64,10 +67,11 @@ namespace kCura.IntegrationPoints.Data
 		public const string FieldMappings = @"1b065787-a6e4-4d70-a7ed-f49d770f0bc7";
 		public const string EnableScheduler = @"bcdafc41-311e-4b66-8084-4a8e0f56ca00";
 		public const string SourceConfiguration = @"b5000e91-82bd-475a-86e9-32fefc04f4b8";
-		public const string DestinationConfiguration = @"b1323ca7-34e5-4e6b-8ff1-e8d3b1a5fd0a";
+		public const string DestinationRDO = @"b1323ca7-34e5-4e6b-8ff1-e8d3b1a5fd0a";
 		public const string SourceProvider = @"dc902551-2c9c-4f41-a917-41f4a3ef7409";
 		public const string DestinationProvider = @"4e63a5cc-8af8-49d0-8bf7-04e57f8c148c";
 		public const string ScheduleRule = @"000f25ef-d714-4671-8075-d2a71cac396b";
+		public const string Overwrite = @"0cae01d8-0dc3-4852-9359-fb954215c36f";
 		public const string Name = @"d534f433-dd92-4a53-b12d-bf85472e6d7a";
 	}
 
@@ -77,6 +81,7 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public const string Identifier = @"Identifier";
 		public const string SourceConfigurationUrl = @"Source Configuration Url";
+		public const string LibLocation = @"LibLocation";
 		public const string Name = @"Name";
 	}
 
@@ -84,7 +89,22 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public const string Identifier = @"d0ecc6c9-472c-4296-83e1-0906f0c0fbb9";
 		public const string SourceConfigurationUrl = @"b1b34def-3e77-48c3-97d4-eae7b5ee2213";
+		public const string LibLocation = @"8eedeec9-eebf-403b-972d-31a0d7362f08";
 		public const string Name = @"9073997b-319e-482f-92fe-67e0b5860c1b";
+	}
+
+
+
+	public partial class DestinationProviderFields : BaseFields
+	{
+		public const string Identifier = @"Identifier";
+		public const string Name = @"Name";
+	}
+
+	public partial class DestinationProviderFieldGuids 
+	{
+		public const string Identifier = @"9fa104ac-13ea-4868-b716-17d6d786c77a";
+		public const string Name = @"3ed18f54-c75a-4879-92a8-5ae23142bbeb";
 	}
 
 
@@ -99,13 +119,11 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class IntegrationPointLayoutGuids
 	{
-		public const string IntegrationPointsLayout = @"d8bf50c1-ace1-488b-8781-54133a5794be";
 		public const string IntegrationPointDetails = @"f4a9ed1f-d874-4b07-b127-043e8ad0d506";
 	}
 
 	public partial class IntegrationPointLayouts
 	{
-		public const string IntegrationPointsLayout = @"Integration Points Layout";
 		public const string IntegrationPointDetails = @"Integration Point Details";
 	}
 
@@ -117,6 +135,16 @@ namespace kCura.IntegrationPoints.Data
 	public partial class SourceProviderLayouts
 	{
 		public const string SourceProviderLayout = @"Source Provider Layout";
+	}
+
+	public partial class DestinationProviderLayoutGuids
+	{
+		public const string DestinationProviderLayout = @"806a3f21-3171-4093-afe6-b7a53cd2c4b5";
+	}
+
+	public partial class DestinationProviderLayouts
+	{
+		public const string DestinationProviderLayout = @"DestinationProvider Layout";
 	}
 
 	#endregion
@@ -144,6 +172,16 @@ namespace kCura.IntegrationPoints.Data
 		public const string SourceProvider = @"Source Provider";
 	}
 
+	public partial class DestinationProviderTabGuids
+	{
+		public const string DestinationProvider = @"8ee118d4-f0b4-4db5-ab1b-ad1d86ac8564";
+	}
+
+	public partial class DestinationProviderTabs
+	{
+		public const string DestinationProvider = @"DestinationProvider";
+	}
+
 	#endregion
 	
 	#region "Views"
@@ -166,6 +204,16 @@ namespace kCura.IntegrationPoints.Data
 	public partial class SourceProviderViews
 	{
 		public const string AllSourceProviders = @"All Source Providers";
+	}
+
+	public partial class DestinationProviderViewGuids
+	{
+		public const string AllDestinationProviders = @"602c03fd-3694-4547-ab39-598a95a957d2";
+	}
+
+	public partial class DestinationProviderViews
+	{
+		public const string AllDestinationProviders = @"All DestinationProviders";
 	}
 
 	#endregion									

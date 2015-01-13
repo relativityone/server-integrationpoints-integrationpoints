@@ -31,7 +31,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 			var guid = Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID);
 			container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().DependsOn(Dependency.OnValue<Guid>(guid)).LifestyleTransient());
 
-
+			container.Register(
+				Component.For<RDOSyncronizerProvider>().ImplementedBy<RDOSyncronizerProvider>().LifeStyle.Transient);
 			container.Register(Component.For<RelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
 			container.Register(Component.For<IntegrationPointService>().ImplementedBy<IntegrationPointService>().LifestyleTransient());
 
