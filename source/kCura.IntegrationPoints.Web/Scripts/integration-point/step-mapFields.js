@@ -112,7 +112,7 @@ ko.validation.insertValidationMessage = function (element) {
 				params: this.mappedWorkspace
 			}
 		});
-
+		
 		this.sourceField = ko.observableArray([]);
 		this.selectedWorkspaceField = ko.observableArray([]);
 		this.selectedMappedWorkspace = ko.observableArray([]);
@@ -192,7 +192,7 @@ ko.validation.insertValidationMessage = function (element) {
 			};
 
 		})();
-
+		
 		root.data.deferred().all(promises).then(
 			function (result) {
 
@@ -428,7 +428,7 @@ ko.validation.insertValidationMessage = function (element) {
 				});
 				this.returnModel.map = JSON.stringify(map);
 				this.returnModel.identifer = this.model.selectedOverlay();
-				debugger;
+				
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 
 				d.resolve(this.returnModel);
