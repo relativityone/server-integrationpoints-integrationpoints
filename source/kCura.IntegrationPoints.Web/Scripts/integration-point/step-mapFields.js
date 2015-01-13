@@ -26,7 +26,7 @@ ko.validation.rules['mustContainIdentifer'] = {
 				containsIdentifier = false;
 				$.each(value, function (index, item) {
 
-					if (item.isIdentifier === true) {
+					if (item.isIdentifier === true){ 
 						containsIdentifier = true;
 					}
 				});
@@ -112,7 +112,7 @@ ko.validation.insertValidationMessage = function (element) {
 				params: this.mappedWorkspace
 			}
 		});
-
+		
 		this.sourceField = ko.observableArray([]);
 		this.selectedWorkspaceField = ko.observableArray([]);
 		this.selectedMappedWorkspace = ko.observableArray([]);
@@ -192,7 +192,7 @@ ko.validation.insertValidationMessage = function (element) {
 			};
 
 		})();
-
+		
 		root.data.deferred().all(promises).then(
 			function (result) {
 
@@ -362,6 +362,8 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.bus.subscribe("saveState", function (state) {
 		});
+
+		
 		var stepCache = {};
 		this.submit = function () {
 			var d = root.data.deferred().defer();
@@ -372,18 +374,53 @@ ko.validation.insertValidationMessage = function (element) {
 				for (var i = 0; i < mapping.sourceMapped.length; i++) {
 					var source = mapping.sourceMapped[i];
 					var destination = mapping.mappedWorkspace[i];
-					map.push({
-						sourceField: {
-							displayName: source.name,
-							fieldIdentifier: source.identifer
-						},
-						destinationField: {
-							displayName: destination.name,
-							fieldIdentifier: destination.identifer
-						}
-					});
-				}
 
+					
+					if (mapping.selectedOverlay === destination.name) {
+						map.push({
+							sourceField: {
+								displayName: source.name,
+								fieldIdentifier: source.identifer
+							},
+							destinationField: {
+								displayName: destination.name,
+								fieldIdentifier: destination.identifer,
+							},
+							fieldMapType: "Identifier"
+						});
+					} else {
+						map.push({
+							sourceField: {
+								displayName: source.name,
+								fieldIdentifier: source.identifer
+							},
+							destinationField: {
+								displayName: destination.name,
+								fieldIdentifier: destination.identifer
+							}
+						});
+					}
+				}
+				
+				if (mapping.hasParent) {
+					for (var i = 0; i < mapping.sourceField.length; i++) {
+						if (mapping.selectedIdentifier === mapping.sourceField[i].name) {
+							map.push({
+								sourceField: {
+									displayName: mapping.sourceField[i].name,
+									fieldIdentifier: mapping.sourceField[i].identifer
+								},
+								destinationField: {
+
+								},
+								fieldMapType: "Parent"
+							});
+						}
+					}
+				}
+			
+					
+				
 				this.bus.subscribe('saveComplete', function (data) {
 				});
 				this.bus.subscribe('saveError', function (error) {
@@ -391,6 +428,7 @@ ko.validation.insertValidationMessage = function (element) {
 				});
 				this.returnModel.map = JSON.stringify(map);
 				this.returnModel.identifer = this.model.selectedOverlay();
+				
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 
 				d.resolve(this.returnModel);
@@ -402,11 +440,14 @@ ko.validation.insertValidationMessage = function (element) {
 		};
 	};
 
+	
 	var step = new Step({
 		url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3'),
 		templateID: 'step3'
 	});
-
+	IP.messaging.subscribe('back', function () {
+		step.submit();
+	});
 	root.points.steps.push(step);
 
 
