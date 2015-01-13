@@ -87,7 +87,6 @@
     <Compile Include="ExternalTabURLService.cs" />
     <Compile Include="IntegrationPoints\PageInteractionEventHandler.cs" />
     <Compile Include="IntegrationPoints\PreLoadEventHandler.cs" />
-    <Compile Include="ServiceContextFactory.cs" />
     <Compile Include="TagBuilder.cs" />
     <Compile Include="PreLoadEventHandlerBase.cs" />
   </ItemGroup>

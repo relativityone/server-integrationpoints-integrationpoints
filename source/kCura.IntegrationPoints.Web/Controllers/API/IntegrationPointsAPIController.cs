@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	{
 		private readonly IntegrationPointService _reader;
 		private readonly RelativityUrlHelper _urlHelper;
-		public IntegrationPointsAPIController(IntegrationPointService reader,RelativityUrlHelper urlHelper)
+		public IntegrationPointsAPIController(IntegrationPointService reader, RelativityUrlHelper urlHelper)
 		{
 			_reader = reader;
 			_urlHelper = urlHelper;
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			var model = new IntegrationModel();
 			model.ArtifactID = id;
-			if (id> 0)
+			if (id > 0)
 			{
 				model = _reader.ReadIntegrationPoint(id);
 			}
@@ -38,8 +38,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			var createdId = _reader.SaveIntegration(model);
 			//I'm already sorry to use name instead of guid
+			//is this merge issue???
+			//var result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
 			var result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
-			return Request.CreateResponse(HttpStatusCode.OK, result);
+			return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
 		}
 
 	}

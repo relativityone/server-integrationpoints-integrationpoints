@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -14,12 +15,12 @@ namespace kCura.IntegrationPoints.Web
 			"/{0}/Case/Mask/View.aspx?AppID={1}&ArtifactID={2}&ArtifactTypeID={3}";
 
 		private readonly ObjectTypeService _service;
-		public RelativityUrlHelper(IServiceContext context, ObjectTypeService service)
+		public RelativityUrlHelper(ObjectTypeService service)
 		{
 			_service = service;
 		}
 
-		public string GetRelativityViewUrl(int workspaceID,int artifactID, string objectTypeName)
+		public string GetRelativityViewUrl(int workspaceID, int artifactID, string objectTypeName)
 		{
 			var applicationRoot = new HttpContextWrapper(System.Web.HttpContext.Current).Request.GetRootApplicationPath();
 

@@ -1,27 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
-using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using kCura.ScheduleQueue.Core.Services;
-using Newtonsoft.Json;
 using kCura.IntegrationPoints.Data.Extensions;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class IntegrationPointService
+	public class IntegrationPointService : IDisposable
 	{
-		private readonly IServiceContext _context;
+		private readonly ICaseServiceContext _context;
 		private Data.IntegrationPoint _rdo;
 		private readonly kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private readonly ChoiceQuery _choiceQuery;
 		private readonly IJobManager _jobService;
+
+		public IntegrationPointService(ICaseServiceContext context, kCura.Apps.Common.Utils.Serializers.ISerializer serializer, ChoiceQuery choiceQuery, IJobManager jobService)
+		{
+			_context = context;
+			_serializer = serializer;
+			_choiceQuery = choiceQuery;
+			_jobService = jobService;
+		}
 
 		private Data.IntegrationPoint GetRDO(int rdoID)
 		{
@@ -30,14 +34,6 @@ namespace kCura.IntegrationPoints.Core.Services
 				_rdo = _context.RsapiService.IntegrationPointLibrary.Read(rdoID);
 			}
 			return _rdo;
-		}
-
-		public IntegrationPointService(IServiceContext context, kCura.Apps.Common.Utils.Serializers.ISerializer serializer, ChoiceQuery choiceQuery, IJobManager jobService)
-		{
-			_context = context;
-			_serializer = serializer;
-			_choiceQuery = choiceQuery;
-			_jobService = jobService;
 		}
 
 		public virtual string GetSourceOptions(int artifactID)
@@ -52,18 +48,22 @@ namespace kCura.IntegrationPoints.Core.Services
 			return fields.First(x => x.FieldMapType == FieldMapTypeEnum.Identifier).SourceField;
 		}
 
-		public IntegrationModel ReadIntegrationPoint(int objectId)
+		public IntegrationModel ReadIntegrationPoint(int artifactID)
 		{
-			var point = _context.RsapiService.IntegrationPointLibrary.Read(objectId);
+			var point = GetRDO(artifactID);
 			return new IntegrationModel(point);
 		}
 
-		public IEnumerable<FieldMap> GetFieldMap(int objectId)
+		public IEnumerable<FieldMap> GetFieldMap(int artifactID)
 		{
 			IEnumerable<FieldMap> mapping = new List<FieldMap>();
-			if (objectId > 0)
+			if (artifactID > 0)
 			{
-				var fieldmap = _context.RsapiService.IntegrationPointLibrary.Read(objectId, new Guid(Data.IntegrationPointFieldGuids.FieldMappings)).FieldMappings;
+				string fieldmap;
+				if (_rdo != null)
+					fieldmap = _rdo.FieldMappings;
+				else
+					fieldmap = _context.RsapiService.IntegrationPointLibrary.Read(artifactID, new Guid(Data.IntegrationPointFieldGuids.FieldMappings)).FieldMappings;
 
 				if (!string.IsNullOrEmpty(fieldmap))
 				{
@@ -88,8 +88,8 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				ip.ArtifactId = _context.RsapiService.IntegrationPointLibrary.Create(ip);
 			}
-			//create job
-			_jobService.CreateJob<object>(null, TaskType.SyncManager, ip.ArtifactId, rule);
+			_jobService.CreateJob<object>(null, TaskType.SyncManager, _context.WorkspaceID, ip.ArtifactId, rule);
+
 			return ip.ArtifactId;
 		}
 
@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			Month = 1,
 			Days = 2
 		}
-		
+
 		public class Monthly
 		{
 			public MonthlyType MonthChoice { get; set; }
@@ -202,5 +202,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			return periodicScheduleRule;
 		}
 
+		void IDisposable.Dispose()
+		{
+			var x = 0;
+			Debug.WriteLine("");
+		}
 	}
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 
 namespace kCura.IntegrationPoints.EventHandlers
 {
@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.EventHandlers
 	{
 		private static System.Guid ReportGuid = Guid.Parse("6C36149D-DFA9-4EB3-872B-D14FEFCBF3A1");
 
-		private readonly IServiceContext _context;
+		private readonly ICaseServiceContext _context;
 		public ExternalTabURLService()
 		{
 			//_context = context;

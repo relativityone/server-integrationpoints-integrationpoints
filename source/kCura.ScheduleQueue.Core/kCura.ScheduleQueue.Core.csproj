@@ -92,6 +92,7 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AgentNotFoundException.cs" />
     <Compile Include="BatchProcess\BatchManagerBase.cs" />
     <Compile Include="BatchProcess\BatchableTaskBase.cs" />
     <Compile Include="Core\AgentInformation.cs" />

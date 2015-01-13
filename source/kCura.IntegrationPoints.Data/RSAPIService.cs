@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using kCura.Relativity.Client;
-namespace kCura.IntegrationPoints.Data
+﻿namespace kCura.IntegrationPoints.Data
 {
 	public partial class RSAPIService : IRSAPIService
 	{
