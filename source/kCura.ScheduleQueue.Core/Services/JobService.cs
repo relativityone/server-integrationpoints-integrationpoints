@@ -22,7 +22,7 @@ namespace kCura.ScheduleQueue.Core.Services
 		public IAgentService AgentService { get; private set; }
 		public IQueueDBContext QDBContext { get; private set; }
 
-		
+
 		public AgentInformation AgentInformation
 		{
 			get { return AgentService.AgentInformation; }
@@ -45,7 +45,7 @@ namespace kCura.ScheduleQueue.Core.Services
 			return null;
 		}
 
-		public FinalizeJobResult FinalizeJob(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
+		public DateTime? GetJobNextUtcRunDateTime(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
 		{
 			FinalizeJobResult result = new FinalizeJobResult();
 
@@ -58,7 +58,14 @@ namespace kCura.ScheduleQueue.Core.Services
 #endif
 				nextUtcRunDateTime = scheduleRule.GetNextUTCRunDateTime(DateTime.UtcNow, taskResult.Status);
 			}
+			return nextUtcRunDateTime;
+		}
 
+		public FinalizeJobResult FinalizeJob(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
+		{
+			FinalizeJobResult result = new FinalizeJobResult();
+
+			DateTime? nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
 			if (nextUtcRunDateTime.HasValue)
 			{
 				new Data.Queries.UpdateScheduledJob(QDBContext).Execute(job.JobId, nextUtcRunDateTime.Value);

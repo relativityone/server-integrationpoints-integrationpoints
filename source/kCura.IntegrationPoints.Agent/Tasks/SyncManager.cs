@@ -5,24 +5,40 @@ using System.Data;
 using System.Diagnostics;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.ScheduleQueue.Core.BatchProcess;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class SyncManager : BatchManagerBase<string>, IDisposable
 	{
+		private ICaseServiceContext _caseServiceContext;
 		private IDataProviderFactory _providerFactory;
 		private IJobManager _jobManager;
+		private IJobService _jobService;
 		private IntegrationPointService _helper;
+		private IScheduleRuleFactory _scheduleRuleFactory;
 
-		public SyncManager(IDataProviderFactory providerFactory, IJobManager jobManager, IntegrationPointService helper)
+		public SyncManager(ICaseServiceContext caseServiceContext,
+			IDataProviderFactory providerFactory,
+			IJobManager jobManager,
+			IJobService jobService,
+			IntegrationPointService helper,
+			IScheduleRuleFactory scheduleRuleFactory)
 		{
+			_caseServiceContext = caseServiceContext;
 			_providerFactory = providerFactory;
 			_jobManager = jobManager;
+			_jobService = jobService;
 			_helper = helper;
+			_scheduleRuleFactory = scheduleRuleFactory;
+			base.RaiseJobPreExecute += new JobPreExecuteEvent(JobPreExecute);
+			base.RaiseJobPostExecute += new JobPostExecuteEvent(JobPostExecute);
 		}
 
 		public override int BatchSize
@@ -71,6 +87,29 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
+		private void JobPreExecute(Job job)
+		{
+			//do nothing
+			return;
+		}
+
+		private void JobPostExecute(Job job, TaskResult taskResult)
+		{
+			try
+			{
+				int integrationPointID = job.RelatedObjectArtifactID;
+				IntegrationPoint rdoIntegrationPoint =
+					_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
+				if (rdoIntegrationPoint != null)
+				{
+					rdoIntegrationPoint.LastRuntime = DateTime.UtcNow;
+					rdoIntegrationPoint.NextScheduledRuntime = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory,
+						taskResult);
+					_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(rdoIntegrationPoint);
+				}
+			}
+			catch { }
+		}
 
 		public void Dispose()
 		{

@@ -48,6 +48,15 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="kCura.Apps.Common.Config">
+      <HintPath>..\packages\kCura.Apps.Common.Config.1.0.77.1\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Data">
+      <HintPath>..\packages\kCura.Apps.Common.Data.1.0.66.4\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Utils">
+      <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.66.4\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>

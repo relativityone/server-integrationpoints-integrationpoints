@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using kCura.Vendor.Castle.Windsor;
+using NUnit.Framework;
 using kCura.IntegrationPoints.Agent;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration

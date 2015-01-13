@@ -3,9 +3,9 @@ using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Client;
+using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 using Relativity.API;
 using Component = Castle.MicroKernel.Registration.Component;
 
@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public interface ITaskFactory
 	{
-		ITask CreateTask(Job job);
+		ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase);
 		void Release(ITask task);
 	}
 
@@ -36,8 +36,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			set { _container = value; }
 		}
 
-		public ITask CreateTask(Job job)
+		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
 		{
+			Container.Register(Component.For<IScheduleRuleFactory>().UsingFactoryMethod((k) => agentBase.ScheduleRuleFactory, managedExternally: true));
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => _helper, managedExternally: true));
 			Container.Register(Component.For<IAgentHelper>().UsingFactoryMethod((k) => _helper, managedExternally: true));
 			Container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>()

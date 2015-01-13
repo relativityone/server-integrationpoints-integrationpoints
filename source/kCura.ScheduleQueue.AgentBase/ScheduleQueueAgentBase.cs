@@ -23,7 +23,6 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		private Guid agentGuid = Guid.Empty;
 		private IJobService jobService = null;
-		private IScheduleRuleFactory scheduleRuleFactory = null;
 		private bool errorRaised = false;
 
 		#region Constants
@@ -42,8 +41,9 @@ namespace kCura.ScheduleQueue.AgentBase
 			this.agentGuid = agentGuid;
 			this.AgentService = agentService;
 			this.jobService = jobService;
-			this.scheduleRuleFactory = scheduleRuleFactory;
+			this.ScheduleRuleFactory = scheduleRuleFactory;
 			this.DBContext = dbContext;
+			if (this.ScheduleRuleFactory == null) this.ScheduleRuleFactory = new DefaultScheduleRuleFactory();
 		}
 
 		public void Initialize()
@@ -52,11 +52,11 @@ namespace kCura.ScheduleQueue.AgentBase
 			if (this.DBContext == null) this.DBContext = base.Helper.GetDBContext(-1);
 			if (this.AgentService == null) this.AgentService = new AgentService(base.Helper, agentGuid);
 			if (this.jobService == null) this.jobService = new JobService(AgentService, base.Helper);
-			if (this.scheduleRuleFactory == null) this.scheduleRuleFactory = new DefaultScheduleRuleFactory();
 		}
 
 		public IDBContext DBContext { get; private set; }
 		public IAgentService AgentService { get; private set; }
+		public IScheduleRuleFactory ScheduleRuleFactory { get; private set; }
 
 		public virtual ITask GetTask(Job job)
 		{
@@ -173,7 +173,7 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			try
 			{
-				FinalizeJobResult result = jobService.FinalizeJob(job, this.scheduleRuleFactory, taskResult);
+				FinalizeJobResult result = jobService.FinalizeJob(job, this.ScheduleRuleFactory, taskResult);
 				OnRaiseJobLogEntry(job, result.JobState, null, result.Details);
 			}
 			catch (Exception ex)
