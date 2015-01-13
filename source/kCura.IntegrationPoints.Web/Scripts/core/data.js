@@ -43,6 +43,18 @@
 			var settings = $.extend({}, ajaxDefaults, options);
 			var container = settings.loading.container;
 
+			var beforeSend = settings.beforeSend;
+			settings.beforeSend = function (request) {
+				var args = $.makeArray(arguments);
+				if(data.params){
+					request.setRequestHeader('X-IP-USERID', data.params['userID']);
+				}
+				if($.isFunction(beforeSend)){
+					return beforeSend.apply(this, args);
+				}
+				return true;
+			};
+
 			if (settings.loading.timeout > 0) {
 				root.modal.open(settings.loading.timeout, (container instanceof jQuery) ? container : $(container));
 			}

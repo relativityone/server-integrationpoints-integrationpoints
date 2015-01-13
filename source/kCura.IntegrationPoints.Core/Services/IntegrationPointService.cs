@@ -88,8 +88,8 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				ip.ArtifactId = _context.RsapiService.IntegrationPointLibrary.Create(ip);
 			}
-			//create job
 			_jobService.CreateJob<object>(null, TaskType.SyncManager, _context.WorkspaceID, ip.ArtifactId, rule);
+
 			return ip.ArtifactId;
 		}
 

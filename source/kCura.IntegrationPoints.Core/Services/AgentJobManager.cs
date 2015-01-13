@@ -23,14 +23,28 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, IScheduleRule rule)
 		{
+			try
+			{
 			string serializedDetails = _serializer.Serialize(jobDetails);
 			_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), rule, serializedDetails, _context.UserID);
+			}
+			catch (AgentNotFoundException anfe)
+			{
+				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
+			}
 		}
 
 		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID)
 		{
+			try
+			{
 			string serializedDetails = _serializer.Serialize(jobDetails);
 			_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID);
+			}
+			catch (AgentNotFoundException anfe)
+			{
+				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
+			}
 		}
 	}
 }
