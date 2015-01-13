@@ -42,12 +42,12 @@ ko.validation.rules["minArray"] = {
 	message: 'This field is required.'
 };
 ko.validation.rules['arrayRange'] = {
-	validator: function (value, params) {
-		var num = parseInt(value, 10);
-		return !isNaN(num) && num >= params.min && num <= params.max
-	},
-	message: 'Please enter a value between 1 and 999.'
-}
+    validator: function(value, params) {
+        var num = parseInt(value, 10);
+        return !isNaN(num) && num >= params.min && num <= params.max
+    },
+    message: 'Please enter a value between 1 and 999.'
+};
 
 ko.validation.registerExtenders();
 var IP = IP || {};
@@ -61,21 +61,21 @@ var IP = IP || {};
 })(IP);
 
 (function (root, ko) {
-	var initDatePicker = function ($els) {
-		$els.datepicker({
-			beforeShow: function (el, inst) {
-				if ($(el).attr('readonly')) {
-					return false;
-				}
-				inst.dpDiv.css({ marginTop: -el.offsetHeight + 'px', marginLeft: el.offsetWidth + 5 + 'px' });
-				return true;
-			},
-			onSelect: function () {
-				//get the shim to work properly
-				$(this).blur();
-			}
-		});
-	}
+    var initDatePicker = function($els) {
+        $els.datepicker({
+            beforeShow: function(el, inst) {
+                if ($(el).attr('readonly')) {
+                    return false;
+                }
+                inst.dpDiv.css({ marginTop: -el.offsetHeight + 'px', marginLeft: el.offsetWidth + 5 + 'px' });
+                return true;
+            },
+            onSelect: function() {
+                //get the shim to work properly
+                $(this).blur();
+            }
+        });
+    };
 
 	root.messaging.subscribe('details-loaded', function () {
 		initDatePicker($('#scheduleRulesStartDate, #scheduleRulesEndDate'))
@@ -130,6 +130,8 @@ var IP = IP || {};
 		this.templateID = 'ldapDestinationConfig';
 		this.rdoTypes = ko.observableArray();
 		self.artifactTypeID = ko.observable().extend({ required: true });
+	    //CaseArtifactId
+		//ParentObjectIdSourceFieldName
 	};
 
 	var Scheduler = function (model) {

@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		public override ITask GetTask(Job job)
 		{
-			return TaskFactory.CreateTask(job);
+			return TaskFactory.CreateTask(job, this);
 		}
 
 		protected override void ReleaseTask(ITask task)

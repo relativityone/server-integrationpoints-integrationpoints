@@ -8,6 +8,7 @@ namespace kCura.ScheduleQueue.Core
 	{
 		Job GetNextQueueJob(IEnumerable<int> resourceGroupIds);
 		ITask GetTask(Job job);
+		DateTime? GetJobNextUtcRunDateTime(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult);
 		FinalizeJobResult FinalizeJob(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult);
 		void UnlockJobs(int agentID);
 		Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType,
