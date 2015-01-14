@@ -170,7 +170,7 @@ ko.validation.insertValidationMessage = function (element) {
 				return $.grep(fields, function (item) {
 					var remove = false;
 					$.each(fieldMapping, function () {
-						if (this[key].fieldIdentifier === item.fieldIdentifier) {
+						if (this[key].fieldIdentifier === item.fieldIdentifier && this["fieldMapType"] !== 2) {
 							remove = true;
 							return false;
 						}
@@ -180,6 +180,7 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 
 			function getNotMapped(fields, fieldMapping, key) {
+
 				return find(fields, fieldMapping, key, function (r) { return !r });
 			}
 
@@ -204,11 +205,18 @@ ko.validation.insertValidationMessage = function (element) {
 
 				self.parentField(types);
 				if (model.parentIdentifier !== undefined) {
-					$.each(self.parentField(), function () {
+					$.each(self.parentField(), function() {
 						if (this.name === model.parentIdentifier) {
 							self.selectedIdentifier(this.name);
 						}
 					});
+				} else {
+					for (var i = 0; i < mapping.length; i++) {
+						var a = mapping[i];
+						if (a.fieldMapType === 2 && self.hasParent) {
+							self.selectedIdentifier(a.sourceField.displayName);
+						}
+					}
 				}
 				var destinationMapped = mapHelper.getMapped(destinationFields, mapping, 'destinationField');
 				var destinationNotMapped = mapHelper.getNotMapped(destinationFields, mapping, 'destinationField');
@@ -221,6 +229,9 @@ ko.validation.insertValidationMessage = function (element) {
 				self.sourceField(mapFields(sourceNotMapped));
 				self.sourceMapped(mapFields(sourceMapped));
 				self.isAppendOverlay(model.selectedOverwrite !== "Append");
+
+				
+			
 			}).fail(function () { });
 
 
@@ -404,8 +415,10 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 				
 				if (mapping.hasParent) {
+					
 					for (var i = 0; i < mapping.sourceField.length; i++) {
 						if (mapping.selectedIdentifier === mapping.sourceField[i].name) {
+							
 							map.push({
 								sourceField: {
 									displayName: mapping.sourceField[i].name,

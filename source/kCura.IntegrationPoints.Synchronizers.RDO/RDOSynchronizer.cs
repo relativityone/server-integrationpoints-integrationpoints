@@ -75,7 +75,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			ImportSettings settings = GetSettings(options);
 
-			Dictionary<string, int> importFieldMap = fieldMap.ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
+			Dictionary<string, int> importFieldMap = null;
+
+			try
+			{
+				importFieldMap = fieldMap.Where(x => x.FieldMapType != FieldMapTypeEnum.Parent)
+						.ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Field Map is invalid.", ex);
+			}
 
 			if (string.IsNullOrWhiteSpace(settings.ParentObjectIdSourceFieldName) && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Parent))
 			{
