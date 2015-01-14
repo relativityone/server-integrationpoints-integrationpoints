@@ -94,18 +94,6 @@ namespace kCura.IntegrationPoints.Data
 				SetField<int?>(new System.Guid(IntegrationPointFieldGuids.SourceProvider), value);
 			}
 		}
-		[DynamicField(IntegrationPointFields.DestinationProvider, IntegrationPointFieldGuids.DestinationProvider, FieldTypes.SingleObject)]
-		public int? DestinationProvider
-		{
-			get
-			{
-				return GetField<int?>(new System.Guid(IntegrationPointFieldGuids.DestinationProvider));
-			}
-			set
-			{
-				SetField<int?>(new System.Guid(IntegrationPointFieldGuids.DestinationProvider), value);
-			}
-		}
 		[DynamicField(IntegrationPointFields.ScheduleRule, IntegrationPointFieldGuids.ScheduleRule, FieldTypes.LongText)]
 		public string ScheduleRule
 		{
@@ -118,16 +106,28 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(IntegrationPointFieldGuids.ScheduleRule), value);
 			}
 		}
-		[DynamicField(IntegrationPointFields.Overwrite, IntegrationPointFieldGuids.Overwrite, FieldTypes.SingleChoice)]
-		public Choice Overwrite
+		[DynamicField(IntegrationPointFields.OverwriteFields, IntegrationPointFieldGuids.OverwriteFields, FieldTypes.SingleChoice)]
+		public Choice OverwriteFields
 		{
 			get
 			{
-				return GetField<Choice>(new System.Guid(IntegrationPointFieldGuids.Overwrite));
+				return GetField<Choice>(new System.Guid(IntegrationPointFieldGuids.OverwriteFields));
 			}
 			set
 			{
-				SetField<Choice>(new System.Guid(IntegrationPointFieldGuids.Overwrite), value);
+				SetField<Choice>(new System.Guid(IntegrationPointFieldGuids.OverwriteFields), value);
+			}
+		}
+		[DynamicField(IntegrationPointFields.DestinationProvider, IntegrationPointFieldGuids.DestinationProvider, FieldTypes.SingleObject)]
+		public int? DestinationProvider
+		{
+			get
+			{
+				return GetField<int?>(new System.Guid(IntegrationPointFieldGuids.DestinationProvider));
+			}
+			set
+			{
+				SetField<int?>(new System.Guid(IntegrationPointFieldGuids.DestinationProvider), value);
 			}
 		}
 		public const int NameFieldLength = 255;
