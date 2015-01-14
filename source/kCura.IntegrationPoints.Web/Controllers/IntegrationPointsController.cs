@@ -25,6 +25,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			return View(new EditPoint
 			{
+				AppID = SessionService.WorkspaceID,
 				ArtifactID = id.GetValueOrDefault(0),
 				UserID = base.SessionService.UserID
 			});
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			var service = new LDAPProvider.LDAPService(model);
 			service.InitializeConnection();
 			bool isAuthenticated = service.IsAuthenticated();
-			return isAuthenticated ? JsonNetResult(new object{}) : JsonNetResult(new {}, HttpStatusCode.BadRequest);
+			return isAuthenticated ? JsonNetResult(new object { }) : JsonNetResult(new { }, HttpStatusCode.BadRequest);
 		}
 
 	}

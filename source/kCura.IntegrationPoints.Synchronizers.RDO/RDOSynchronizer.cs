@@ -77,12 +77,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			Dictionary<string, int> importFieldMap = fieldMap.ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
 
-			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Parent))
+			if (string.IsNullOrWhiteSpace(settings.ParentObjectIdSourceFieldName) && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Parent))
 			{
 				settings.ParentObjectIdSourceFieldName =
 					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Parent).Select(x => x.SourceField.FieldIdentifier).First();
 			}
-			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Identifier))
+			if (settings.IdentityFieldId < 1 && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Identifier))
 			{
 				settings.IdentityFieldId =
 					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier).Select(x => int.Parse(x.DestinationField.FieldIdentifier)).First();

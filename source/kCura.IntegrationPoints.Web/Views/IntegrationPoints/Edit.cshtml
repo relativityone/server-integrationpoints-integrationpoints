@@ -37,8 +37,9 @@
 	<script src="~/Scripts/jquery-postMessage.js"></script>
 	<script>
 		IP.data.params = IP.data.params || {};
-		IP.data.params['artifactID'] = @Model.ArtifactID;
-		IP.data.params['userID'] = @Model.UserID;
+		IP.data.params['appID'] = @Model.AppID;
+	    IP.data.params['artifactID'] = @Model.ArtifactID;
+	    IP.data.params['userID'] = @Model.UserID;
 	</script>
 	@Scripts.Render("~/bundles/ipEdit")
 	@Scripts.Render("~/bundles/dragon")
