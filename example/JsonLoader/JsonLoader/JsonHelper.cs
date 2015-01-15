@@ -9,16 +9,26 @@ namespace JsonLoader
 {
 	public class JsonHelper
 	{
-		public virtual string ReadFile(string options)
+		public virtual string ReadFields(string options)
 		{
 			var settings = GetSettings(options);
-			return File.ReadAllText(settings.FileName);
+			return File.ReadAllText(settings.FieldLocation);
+		}
+
+		public virtual string ReadData(string options)
+		{
+			var settings = GetSettings(options);
+			return File.ReadAllText(settings.DataLocation);
 		}
 
 		public virtual JsonSettings GetSettings(string options)
 		{
 			var settings = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonSettings>(options);
-			return new JsonSettings() { FileName = @"C:\SourceCode\LDAPSync\example\JsonLoader\JsonLoader\bin\fields.json" };
+			return new JsonSettings()
+			{
+				FieldLocation = @"C:\SourceCode\LDAPSync\example\JsonLoader\JsonLoader\bin\fields.json",
+				DataLocation = @"C:\SourceCode\LDAPSync\example\JsonLoader\JsonLoader\bin\data.json"
+			};
 		}
 	}
 }

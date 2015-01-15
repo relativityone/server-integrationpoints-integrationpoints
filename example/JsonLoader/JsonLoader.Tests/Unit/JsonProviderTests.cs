@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Data;
+using System.Linq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -13,7 +14,7 @@ namespace JsonLoader.Tests.Unit
 			//ARRANGE
 			var provider = new JsonLoader.JsonProvider(new JsonHelper());
 			var settings = new JsonSettings();
-			settings.FileName = "fields.json";
+			settings.FieldLocation = "fields.json";
 			//ACT
 			
 			var fields = provider.GetFields(JsonConvert.SerializeObject(settings));
@@ -22,6 +23,15 @@ namespace JsonLoader.Tests.Unit
 
 			//ASSERT
 			Assert.AreEqual(5, fields.Count());
+		}
+
+		[Test]
+		public void GetDataTests()
+		{
+			var provider = new JsonProvider(new JsonHelper());
+			var result = provider.GetData(null, null, null);
+			var dt = new DataTable();
+			dt.Load(result);
 		}
 
 	}

@@ -61,10 +61,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataObject.cs" />
     <Compile Include="DIProviderFactory.cs" />
     <Compile Include="JsonHelper.cs" />
     <Compile Include="JsonProvider.cs" />
     <Compile Include="JsonSettings.cs" />
+    <Compile Include="ListExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StartUp.cs" />
   </ItemGroup>
