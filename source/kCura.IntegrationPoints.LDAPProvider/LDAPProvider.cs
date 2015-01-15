@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.DirectoryServices;
 using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		private LDAPSettings GetSettings(string options)
 		{
-			LDAPSettings settings = new JSONSerializer().Deserialize<LDAPSettings>(options);
+			LDAPSettings settings = (LDAPSettings)JsonConvert.DeserializeObject(options, typeof(LDAPSettings));
 
 			if (String.IsNullOrWhiteSpace(settings.Filter)) { settings.Filter = LDAPSettings.FILTER_DEFAULT; }
 
