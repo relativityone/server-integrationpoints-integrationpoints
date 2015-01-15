@@ -80,6 +80,9 @@
       <HintPath>..\packages\Relativity.DragonGrid.1.0.48.13\lib\net45\Relativity.DragonGrid.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.ImportAPI.Wrapper">
+      <HintPath>..\Dependencies\kCura\Relativity.ImportAPI.Wrapper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />

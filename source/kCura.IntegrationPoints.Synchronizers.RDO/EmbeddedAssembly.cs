@@ -9,11 +9,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 	public class EmbeddedAssembly
 	{
 		static Dictionary<string, Assembly> dic = null;
+		static Dictionary<string, string> dic2 = null;
 
 		public static void Load(string embeddedResource, string fileName)
 		{
 			if (dic == null)
 				dic = new Dictionary<string, Assembly>();
+			if (dic2 == null)
+				dic2 = new Dictionary<string, string>();
+
+			if (dic2.ContainsKey(embeddedResource)) return;
 
 			byte[] ba = null;
 			Assembly asm = null;
@@ -34,6 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 					// Add the assembly/dll into dictionary
 					dic.Add(asm.FullName, asm);
+					dic2.Add(embeddedResource, asm.FullName);
 					return;
 				}
 				catch
