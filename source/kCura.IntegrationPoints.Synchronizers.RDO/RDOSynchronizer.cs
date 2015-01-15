@@ -7,8 +7,6 @@ using kCura.Apps.Common.Config;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using kCura.Relativity.DataReaderClient;
 using Newtonsoft.Json;
 

@@ -1,4 +1,4 @@
-@echo off
+@echo on
 
 SET BUILDCONFIG=Debug
 SET BUILDACTION=build

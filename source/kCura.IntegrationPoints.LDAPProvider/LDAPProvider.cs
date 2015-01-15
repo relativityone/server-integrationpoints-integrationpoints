@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
+	[kCura.IntegrationPoints.Contracts.DataSourceProvider("5bf1f2c2-9670-4d6e-a3e9-dbc83db6c232")]
 	public class LDAPProvider : IDataSourceProvider
 	{
 		public System.Data.IDataReader GetData(IEnumerable<Contracts.Models.FieldEntry> fields, IEnumerable<string> entryIds, string options)
