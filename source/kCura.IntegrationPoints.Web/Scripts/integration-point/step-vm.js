@@ -9,7 +9,6 @@
 
 	var viewModel = function () {
 		this.steps = ko.observableArray(IP.points.steps.steps);
-
 		this.currentStep = ko.observable();
 
 		this.currentStep.subscribe(function () {
@@ -141,17 +140,25 @@
 	}
 
 	function timeUtcToLocal(time, timeFormat) {
+		
 		timeFormat = timeFormat || "hh:mm";
-		var currentTime = Date.parseExact(time, "HH:mm") || Date.parseExact(time, "H:mm");
-		if (currentTime) {
-			var temp = new Date();
-			var now = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate(), currentTime.getHours(), currentTime.getMinutes(), currentTime.getSeconds());
-			return utcToLocal(now, timeFormat);
+		var lengthCheck = time.split(':');
+		if (lengthCheck[0].length < 2 ) {
+			lengthCheck[0] = "0" + lengthCheck[0]; 
+			time = lengthCheck[0] + ":" + lengthCheck[1];
 		}
+		if (lengthCheck[1].length < 2) {
+			lengthCheck[1] = "0" + lengthCheck[1];
+			time = lengthCheck[0] + ":" + lengthCheck[1];
+		}
+		var currentTime = Date.parseExact(time, "HH:mm") || Date.parseExact(time, "H:mm");
+		
+		return time;
 	}
 
 
 	function timeLocalToUtc(time) {
+		
 		var localTime = Date.parseExact(time, "HH:mm") || Date.parseExact(time, "H:mm");
 		if (localTime) {
 			var temp = new Date();

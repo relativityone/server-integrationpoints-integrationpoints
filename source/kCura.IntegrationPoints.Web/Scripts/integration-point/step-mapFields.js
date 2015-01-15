@@ -87,7 +87,6 @@ ko.validation.insertValidationMessage = function (element) {
 
 	var viewModel = function (model) {
 		var self = this;
-
 		this.hasBeenLoaded = model.hasBeenLoaded;
 		this.showErrors = ko.observable(false);
 		var artifactTypeId = model.destination.artifactTypeId;
@@ -196,7 +195,8 @@ ko.validation.insertValidationMessage = function (element) {
 		
 		root.data.deferred().all(promises).then(
 			function (result) {
-
+				
+				root.modal.open(1);
 				var destinationFields = result[0],
 						sourceFields = result[1],
 						mapping = result[2];
@@ -229,9 +229,9 @@ ko.validation.insertValidationMessage = function (element) {
 				self.sourceField(mapFields(sourceNotMapped));
 				self.sourceMapped(mapFields(sourceMapped));
 				self.isAppendOverlay(model.selectedOverwrite !== "Append");
+				root.modal.close();
 
-				
-			
+
 			}).fail(function () { });
 
 
@@ -347,6 +347,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 
 	var Step = function (settings) {
+		var stepCache = {};
 		var self = this;
 		self.settings = settings;
 		this.template = ko.observable();
@@ -354,39 +355,84 @@ ko.validation.insertValidationMessage = function (element) {
 		this.hasBeenLoaded = false;
 		this.returnModel = {};
 		this.bus = IP.frameMessaging();
+		this.key = "";
 		this.loadModel = function (model) {
-
 			this.hasBeenLoaded = false;
-			this.selectedRdo = jQuery.parseJSON(model.destination).artifactTypeID;
-			this.returnModel = model;
+			
+			this.key = jQuery.parseJSON(model.destination).artifactTypeID;
+			if (typeof (stepCache[this.key]) === "undefined") {
+				stepCache[this.key] = model || '';
+			}
+			this.returnModel = stepCache[this.key];
 			this.model = new viewModel(this.returnModel);
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 		};
-
 		this.getTemplate = function () {
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
+				root.modal.open(.05);
 				$('body').append(result);
 				self.template(self.settings.templateID);
 				self.hasTemplate = true;
 			});
 		};
-
+		
 		this.bus.subscribe("saveState", function (state) {
 		});
 
+		this.back = function () {
+			var d = root.data.deferred().defer();
+			
+			this.returnModel.identifer = this.model.selectedOverlay();
+			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
+			var map = [];  
+			for (var i = 0; i < this.model.mappedWorkspace().length; i++) {
+				map.push({
+					sourceField: {
+						displayName: '',
+						fieldIdentifier: ''
+					},
+					destinationField: {
+						displayName: this.model.mappedWorkspace()[i].name,
+						fieldIdentifier: this.model.mappedWorkspace()[i].identifer,
+					},
+					fieldMapType: "None"
+				});
+			}
+			for (var i = 0; i < this.model.sourceMapped().length; i++) {
+				map.push({
+					sourceField: {
+						displayName: this.model.sourceMapped()[i].name,
+						fieldIdentifier: this.model.sourceMapped()[i].identifer
+					},
+					destinationField: {
+						displayName: '',
+						fieldIdentifier: '',
+					},
+					fieldMapType: "None"
+				});
+			}
 		
-		var stepCache = {};
+			this.returnModel.map = JSON.stringify(map);
+
+			stepCache[self.key] = this.returnModel;
+			
+			d.resolve(this.returnModel);
+			return d.promise;
+		}
+		
+		
+
+
 		this.submit = function () {
 			var d = root.data.deferred().defer();
 			this.model.submit();
 			if (this.model.errors().length === 0) {
-				var mapping = ko.toJS(this.model);
+				var mapping = ko.toJS(self.model);
 				var map = [];
+
 				for (var i = 0; i < mapping.sourceMapped.length; i++) {
 					var source = mapping.sourceMapped[i];
 					var destination = mapping.mappedWorkspace[i];
-
-					
 					if (mapping.selectedOverlay === destination.name) {
 						map.push({
 							sourceField: {
@@ -413,12 +459,11 @@ ko.validation.insertValidationMessage = function (element) {
 						});
 					}
 				}
-				
 				if (mapping.hasParent) {
-					
+
 					for (var i = 0; i < mapping.sourceField.length; i++) {
 						if (mapping.selectedIdentifier === mapping.sourceField[i].name) {
-							
+
 							map.push({
 								sourceField: {
 									displayName: mapping.sourceField[i].name,
@@ -432,9 +477,6 @@ ko.validation.insertValidationMessage = function (element) {
 						}
 					}
 				}
-			
-					
-				
 				this.bus.subscribe('saveComplete', function (data) {
 				});
 				this.bus.subscribe('saveError', function (error) {
@@ -442,7 +484,6 @@ ko.validation.insertValidationMessage = function (element) {
 				});
 				this.returnModel.map = JSON.stringify(map);
 				this.returnModel.identifer = this.model.selectedOverlay();
-				
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 
 				d.resolve(this.returnModel);
@@ -460,7 +501,7 @@ ko.validation.insertValidationMessage = function (element) {
 		templateID: 'step3'
 	});
 	IP.messaging.subscribe('back', function () {
-		step.submit();
+		
 	});
 	root.points.steps.push(step);
 
