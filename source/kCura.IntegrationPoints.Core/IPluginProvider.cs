@@ -9,6 +9,6 @@ namespace kCura.IntegrationPoints.Core
 {
 	public interface IPluginProvider
 	{
-		Stream[] GetPluginLibraries(Guid selector);
+		FileStream[] GetPluginLibraries(Guid selector);
 	}
 }

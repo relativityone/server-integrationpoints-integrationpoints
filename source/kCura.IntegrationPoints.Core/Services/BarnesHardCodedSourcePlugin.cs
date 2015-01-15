@@ -9,9 +9,9 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public class BarnesHardCodedSourcePlugin : ISourcePluginProvider
 	{
-		public Stream[] GetPluginLibraries(Guid selector)
+		public FileStream[] GetPluginLibraries(Guid selector)
 		{
-			throw new NotImplementedException();
+			return new FileStream[] { File.OpenRead(@"C:\SourceCode\LDAPSync\example\JsonLoader\JsonLoader\bin\JsonLoader_merge.dll") };
 		}
 	}
 }

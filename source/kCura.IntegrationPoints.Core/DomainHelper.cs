@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts;
@@ -14,17 +15,19 @@ namespace kCura.IntegrationPoints.Core
 		{
 			//loads the contracts dll into the app domain so we can reference 
 			var assemblyPath = new Uri(typeof(Contracts.AssemblyDomainLoader).Assembly.CodeBase).LocalPath;
-			domain.Load(assemblyPath);
+			byte[] stream = File.ReadAllBytes(assemblyPath);
+			var dir = Path.Combine(domain.BaseDirectory, new FileInfo(assemblyPath).Name);
+			File.WriteAllBytes(dir, stream);
+			domain.Load(stream);
 		}
 
 		public virtual T CreateInstance<T>(AppDomain domain) where T : class
 		{
 			var type = typeof(T);
-			var instance = domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.Name) as T;
-
+			var instance = domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName) as T;
 			if (instance == null)
 			{
-				throw new Exception(string.Format("Could not create an instance of {0} in app domain {1}", type.Name, domain.FriendlyName));
+				throw new Exception(string.Format("Could not create an instance of {0} in app domain {1}.", type.Name, domain.FriendlyName));
 			}
 			return instance;
 		}
@@ -32,10 +35,12 @@ namespace kCura.IntegrationPoints.Core
 		public virtual void LoadClientLibraries(AppDomain domain, IPluginProvider provider, Guid identifier)
 		{
 			var loader = this.CreateInstance<Contracts.AssemblyDomainLoader>(domain);
-			Stream[] assemblies = provider.GetPluginLibraries(identifier);
+			FileStream[] assemblies = provider.GetPluginLibraries(identifier);
 			foreach (var stream in assemblies)
 			{
+				stream.Seek(0, SeekOrigin.Begin);
 				loader.Load(stream);
+				stream.Dispose();
 			}
 		}
 
@@ -43,6 +48,7 @@ namespace kCura.IntegrationPoints.Core
 		{
 			if (domain != null)
 			{
+				Directory.Delete(domain.BaseDirectory, true);
 				AppDomain.Unload(domain);
 			}
 		}
@@ -50,8 +56,9 @@ namespace kCura.IntegrationPoints.Core
 		public virtual AppDomain CreateNewDomain()
 		{
 			AppDomainSetup domaininfo = new AppDomainSetup();
-			domaininfo.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
 			var domainPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+			Directory.CreateDirectory(domainPath);
+			domaininfo.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
 			domaininfo.ApplicationBase = domainPath;
 			string domainName = Guid.NewGuid().ToString();
 			var newDomain = AppDomain.CreateDomain(domainName, null, domaininfo);

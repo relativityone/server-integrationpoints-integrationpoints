@@ -23,10 +23,10 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<Core.Services.ObjectTypeService>().ImplementedBy<Core.Services.ObjectTypeService>().LifestyleTransient());
 
 			container.Register(Component.For<IDataSyncronizerFactory>().ImplementedBy<MockFactory>().DependsOn(new { container = container }));
-			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<MockProviderFactory>().LifestyleTransient());
+			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<AppDomainFactory>().LifestyleTransient());
 			container.Register(Component.For<DomainHelper>().ImplementedBy<DomainHelper>().LifestyleTransient());
 
-			container.Register(Component.For<ISourcePluginProvider>().ImplementedBy<RsapiSourceProvider>().LifestyleTransient());
+			container.Register(Component.For<ISourcePluginProvider>().ImplementedBy<BarnesHardCodedSourcePlugin>().LifestyleTransient());
 
 			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
 			container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
