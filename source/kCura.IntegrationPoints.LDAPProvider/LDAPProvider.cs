@@ -4,6 +4,7 @@ using System.DirectoryServices;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {

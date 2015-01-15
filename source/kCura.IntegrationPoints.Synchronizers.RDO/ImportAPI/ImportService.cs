@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Reflection;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
@@ -25,12 +26,18 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, IImportAPI importAPI = null)
 		{
 			EmbeddedAssembly.Load("kCura.IntegrationPoints.Synchronizers.RDO.Relativity.ImportAPI.Wrapper.dll", "Relativity.ImportAPI.Wrapper.dll");
+			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 
 			this.Settings = settings;
 			this._batchManager = batchManager;
 			this._inputMappings = fieldMappings;
 			this._importAPI = importAPI;
 			if (_batchManager != null) _batchManager.OnBatchCreate += ImportService_OnBatchCreate;
+		}
+
+		static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+		{
+			return EmbeddedAssembly.Get(args.Name);
 		}
 
 		public ImportSettings Settings { get; private set; }

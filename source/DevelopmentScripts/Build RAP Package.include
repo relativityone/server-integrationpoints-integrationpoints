@@ -62,7 +62,9 @@
 		<exec program="${source.code.directory}\Dependencies\RAPUpdater.exe">
 			<arg value='/package:"${target.code.directory}\RelativityIntegrationPoints.Auto.rap"' />
 			<arg value='/sourcerap:"${source.code.directory}\Application\ldapsync.rap"' />
+			<arg value='/assembly:"${target.code.directory}\kCura.IntegrationPoints.Contracts.dll"' />
 			<arg value='/assembly:"${target.code.directory}\kCura.IntegrationPoints.dll"' />
+			<arg value='/assembly:"${target.code.directory}\kCura.LDAPProvider.dll"' />
 			<arg value='/custompage:"C2C93191-7B15-4A9B-AA56-6A8C2DAC5494=${ldap.build.server.share}\DCF6E9D1-22B6-4DA3-98F6-41381E93C30C.zip"' />
 			<arg value='/masterurl:"${ldapRelativityBuildServer}"' />
 			<arg value='/eddsdbserver:"${ldapRelativityBuildServer}"' />
