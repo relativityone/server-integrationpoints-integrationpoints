@@ -153,12 +153,7 @@
 		}
 		var currentTime = Date.parseExact(time, "HH:mm") || Date.parseExact(time, "H:mm");
 		
-		if (currentTime) {
-			var temp = new Date();
-			var now = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate(), currentTime.getHours(), currentTime.getMinutes(), currentTime.getSeconds());
-			//return utcToLocal(now, timeFormat);
-			return time;
-		}
+		return time;
 	}
 
 
