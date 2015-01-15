@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Contracts
 	/// First call made into the app domain to do any setup work required.
 	/// It is expected that there is only one class that implements this interface
 	/// per library.
+	/// The implementing class must have an empty constructor.
 	/// </summary>
 	public interface IStartUp
 	{

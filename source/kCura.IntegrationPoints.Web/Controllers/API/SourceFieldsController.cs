@@ -18,9 +18,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class SourceFieldsController : ApiController
 	{
 		private readonly IDataProviderFactory _factory;
-		public SourceFieldsController()
+		public SourceFieldsController(IDataProviderFactory factory)
 		{
-			_factory = new MockProviderFactory();
+			_factory = factory;
 		}
 
 		[HttpPost]

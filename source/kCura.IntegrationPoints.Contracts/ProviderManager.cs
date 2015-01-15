@@ -21,18 +21,18 @@ namespace kCura.IntegrationPoints.Contracts
 			var startupType = typeof(IStartUp);
 			var types = (from a in AppDomain.CurrentDomain.GetAssemblies()
 									 from t in a.GetTypes()
-									 where startupType.IsAssignableFrom(t)
+									 where startupType.IsAssignableFrom(t) && t != startupType
 									 select t).ToList();
 			if (types.Any())
 			{
 				var type = types.FirstOrDefault();
-				if (type != default (Type))
+				if (type != default(Type))
 				{
 					var instance = Activator.CreateInstance(type) as IStartUp;
 					if (instance != null)
 					{
 						instance.Execute();
-					}	
+					}
 				}
 			}
 		}
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <returns>A Data source provider to retrieve data and pass along to the source.</returns>
 		public Provider.IDataSourceProvider GetProvider(Guid identifer)
 		{
-			return ProviderBuilder.Current.GetFactory().CreateProvider(identifer);
+			return new ProviderWrapper(ProviderBuilder.Current.GetFactory().CreateProvider(identifer));
 		}
 
 	}

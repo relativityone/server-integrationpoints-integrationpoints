@@ -7,6 +7,7 @@ namespace JsonLoader
 {
 	public class JsonSettings 
 	{
-		public string FileName { get; set; }
+		public string FieldLocation { get; set; }
+		public string DataLocation { get; set; }
 	}
 }

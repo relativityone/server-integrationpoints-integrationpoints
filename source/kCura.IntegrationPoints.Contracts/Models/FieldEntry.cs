@@ -14,6 +14,7 @@ namespace kCura.IntegrationPoints.Contracts.Models
 	/// <summary>
 	/// Responsible for going to a datasource and returning what fields can be mapped
 	/// </summary>
+	[Serializable]
 	public class FieldEntry
 	{
 		/// <summary>

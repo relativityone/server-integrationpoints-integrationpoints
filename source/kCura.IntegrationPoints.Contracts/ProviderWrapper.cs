@@ -10,7 +10,7 @@ using kCura.IntegrationPoints.Contracts.Provider;
 namespace kCura.IntegrationPoints.Contracts
 {
 	//represents a wrapper to allow for certain safeties to be guaranteed when marshalling
-	internal class ProviderWrapper : IDataSourceProvider
+	internal class ProviderWrapper : MarshalByRefObject,IDataSourceProvider
 	{
 		private readonly IDataSourceProvider _provider;
 		internal ProviderWrapper(IDataSourceProvider provider)
