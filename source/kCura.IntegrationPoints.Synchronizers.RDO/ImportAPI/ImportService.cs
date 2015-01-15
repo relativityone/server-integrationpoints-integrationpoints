@@ -24,6 +24,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, IImportAPI importAPI = null)
 		{
+			EmbeddedAssembly.Load("kCura.IntegrationPoints.Synchronizers.RDO.Relativity.ImportAPI.Wrapper.dll", "Relativity.ImportAPI.Wrapper.dll");
+
 			this.Settings = settings;
 			this._batchManager = batchManager;
 			this._inputMappings = fieldMappings;

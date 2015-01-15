@@ -85,6 +85,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Integration\Installers\InstallEveryTimeTests.cs" />
+    <Compile Include="Integration\InstallDllTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -99,6 +100,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.EventHandlers\kCura.IntegrationPoints.EventHandlers.csproj">
       <Project>{6571b092-1582-4fec-9101-f510e7e573bc}</Project>
       <Name>kCura.IntegrationPoints.EventHandlers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
+      <Project>{fcaf52cd-0f8f-4d71-ac61-b7591a181a08}</Project>
+      <Name>kCura.IntegrationPoints.SourceProviderInstaller</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

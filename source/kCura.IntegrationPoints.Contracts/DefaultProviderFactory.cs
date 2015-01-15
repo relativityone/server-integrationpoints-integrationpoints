@@ -9,20 +9,20 @@ namespace kCura.IntegrationPoints.Contracts
 {
 	public class DefaultProviderFactory : IProviderFactory
 	{
-		public DefaultProviderFactory(){}
+		public DefaultProviderFactory() { }
 
 		public IDataSourceProvider CreateProvider(Guid identifier)
 		{
 			Type t = GetType(identifier);
 			return CreateInstance(t);
 		}
-		
+
 		protected virtual Type GetType(Guid identifer)
 		{
 			var types = from a in AppDomain.CurrentDomain.GetAssemblies()
 									from t in a.GetTypes()
-									where t.IsDefined(typeof(DataSourceProviderAttribute), true)
-									select t;
+									where Attribute.IsDefined(t, typeof(DataSourceProviderAttribute), true)
+									select t; 
 			var providerTypes = types.Where(x => x.GetCustomAttributes(typeof(DataSourceProviderAttribute), true).Cast<DataSourceProviderAttribute>().Any(y => y.Identifier.Equals(identifer))).ToList();
 			if (providerTypes.Count() > 1)
 			{

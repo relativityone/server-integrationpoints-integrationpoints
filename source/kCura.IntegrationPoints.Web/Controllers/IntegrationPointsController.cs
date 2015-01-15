@@ -2,13 +2,10 @@
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.IntegrationPoints.Web.Attributes;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Models;
-using Relativity.DragonGrid.Core.Grid;
 namespace kCura.IntegrationPoints.Web.Controllers
 {
 	public class IntegrationPointsController : BaseController

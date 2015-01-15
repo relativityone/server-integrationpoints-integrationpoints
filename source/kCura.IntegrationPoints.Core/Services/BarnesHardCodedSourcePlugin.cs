@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -28,6 +26,20 @@ namespace kCura.IntegrationPoints.Core.Services
 				};
 			}
 			
+				streams.Add(File.OpenRead(dllPath));
+			}
+			return streams.ToArray();
+		}
+
+		static public string AssemblyLoadDirectory
+		{
+			get
+			{
+				string codeBase = Assembly.GetCallingAssembly().CodeBase;
+				UriBuilder uri = new UriBuilder(codeBase);
+				string path = Uri.UnescapeDataString(uri.Path);
+				return Path.GetDirectoryName(path);
+			}
 		}
 	}
 }

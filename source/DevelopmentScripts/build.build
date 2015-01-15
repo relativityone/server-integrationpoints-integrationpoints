@@ -27,8 +27,8 @@
 	<property name="source.reference.CastleCore.directory" value="${source.packages.directory}\Castle.Core.3.3.0\lib\net45" />
 	<property name="source.reference.CastleWindsor.directory" value="${source.packages.directory}\Castle.Windsor.3.3.0\lib\net45" />
 	<property name="source.reference.kCuraAppsCommonConfig.directory" value="${source.packages.directory}\kCura.Apps.Common.Config.1.0.77.1\lib\net45" />
-	<property name="source.reference.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.1.0.77.1\lib\net45\" />
-	<property name="source.reference.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.106.2\lib\net45\" />
+	<property name="source.reference.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.1.0.77.1\lib\net45" />
+	<property name="source.reference.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.106.2\lib\net45" />
 	<property name="target.code.directory" value="${root}\bin\${buildconfig}" />
 	<property name="ldap.build.server.share" value="\\tt-img-app-8-2.testing.corp\BuildShare\LDAPSync\default" unless="${property::exists('ldap.build.server.share')}"/>
 	<property name="buildType" value="DEV" unless="${property::exists('buildType')}" />
@@ -62,7 +62,7 @@
 	<include buildfile="Update Storyboard.include"/>
 
 	<!-- Build all LDAPSync projects- presence of a Build.log file indicates failure -->
-	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, embed_binaries_into_application">				
+	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, merge_ldap, embed_binaries_into_application">				
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
@@ -148,6 +148,7 @@
 		<exec program="${source.packages.directory}\ilmerge.2.13.0307\ILMerge.exe" >
 			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/out:"${target.code.directory}\kCura.IntegrationPoints.dll"' />
+			<arg line='/internalize:ilmergeExcludeMain.txt' />
 			<arg line='/log' />
 			<arg line='/lib:"${source.reference.kCura.directory}"' />
 			<arg line='/lib:"${source.reference.MVCContrib.directory}"' />
@@ -157,13 +158,11 @@
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
 			<arg line='/lib:"${source.reference.NewtonsoftJson.directory}"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Contracts.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Data.dll"' />
 			<arg line='"${source.reference.kCuraAppsCommonConfig.directory}\kCura.Apps.Common.Config.dll"' />
 			<arg line='"${source.reference.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />
 			<arg line='"${source.reference.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
 			<arg line='"${source.reference.Injection.directory}\kCura.Injection.dll"' />
-			<arg line='"${source.reference.kCura.directory}\Relativity.ImportAPI.Wrapper.dll"' />
 			<arg line='"${target.code.directory}\kCura.ScheduleQueue.Core.dll"' />
 			<arg line='"${target.code.directory}\kCura.ScheduleQueue.AgentBase.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Config.dll"' />
@@ -176,6 +175,28 @@
 		</exec>
 	</target>
 
+	<target name="merge_ldap" description="Merge all related binaries into a single library">
+		<exec program="${source.packages.directory}\ilmerge.2.13.0307\ILMerge.exe" >
+			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/out:"${target.code.directory}\kCura.LDAPProvider.dll"' />
+			<arg line='/internalize:ilmergeExcludeLDAP.txt' />
+			<arg line='/log' />
+			<arg line='/lib:"${source.reference.kCura.directory}"' />
+			<arg line='/lib:"${source.reference.MVCContrib.directory}"' />
+			<arg line='/lib:"${source.reference.CastleCore.directory}"' />
+			<arg line='/lib:"${source.reference.CastleWindsor.directory}"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
+			<arg line='/lib:"${source.reference.kCuraAppsCommonUtils.directory}"' />
+			<arg line='/lib:"${source.reference.NewtonsoftJson.directory}"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.LDAPProvider.dll"' />
+			<arg line='"${source.reference.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
+			<arg line='/ver:${Product.Version}' />
+			<arg line='/closed' />
+		</exec>
+	</target>
+	
 	<target name="embed_binaries_into_application" description="Embed binary files into LDAPSync application">
 		<exec program="${ldap.scripts.directory}\EmbedLDAPSyncBinariesIntoApplication.bat" >
 			<arg line='${buildconfig}' />

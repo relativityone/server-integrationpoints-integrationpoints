@@ -1,0 +1,8 @@
+kCura.IntegrationPoints.Data
+kCura.IntegrationPoints.Config
+kCura.IntegrationPoints.Core
+kCura.IntegrationPoints.Synchronizers.RDO
+kCura.IntegrationPoints.EventHandlers
+kCura.IntegrationPoints.Agent
+kCura.ScheduleQueue.Core
+kCura.ScheduleQueue.AgentBase

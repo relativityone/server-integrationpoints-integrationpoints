@@ -164,6 +164,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\ModifySourceDestinationTable.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
   </ItemGroup>
   <ItemGroup />

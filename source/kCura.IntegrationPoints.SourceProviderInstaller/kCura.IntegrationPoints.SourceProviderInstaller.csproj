@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</ProjectGuid>
+    <ProjectGuid>{FCAF52CD-0F8F-4D71-AC61-B7591A181A08}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>kCura.IntegrationPoints.Synchronizers.RDO</RootNamespace>
-    <AssemblyName>kCura.IntegrationPoints.Synchronizers.RDO</AssemblyName>
+    <RootNamespace>kCura.IntegrationPoints.SourceProviderInstaller</RootNamespace>
+    <AssemblyName>kCura.IntegrationPoints.SourceProviderInstaller</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -37,36 +40,21 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.Apps.Common.Config">
-      <HintPath>..\packages\kCura.Apps.Common.Config.1.0.77.1\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.Apps.Common.Data">
-      <HintPath>..\packages\kCura.Apps.Common.Data.1.0.66.4\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.Apps.Common.Utils">
-      <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.66.4\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.ImportAPI.Wrapper">
-      <HintPath>..\Dependencies\kCura\Relativity.ImportAPI.Wrapper.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="kCura.EventHandler">
+      <HintPath>..\Dependencies\kCura\kCura.EventHandler.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -77,44 +65,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Version\AssemblyInfo.cs">
-      <Link>AssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="EmbeddedAssembly.cs" />
-    <Compile Include="ImportOverlayBehaviorEnum.cs" />
-    <Compile Include="ImportAuditLevelEnum.cs" />
-    <Compile Include="ImportNativeFileCopyModeEnum.cs" />
-    <Compile Include="ImportOverwriteModeEnum.cs" />
-    <Compile Include="ImportAPI\BatchManager.cs" />
-    <Compile Include="ImportAPI\IImportService.cs" />
-    <Compile Include="ImportAPI\ImportService.cs" />
-    <Compile Include="ImportSettings.cs" />
-    <Compile Include="RDOSynchronizer.cs" />
-    <Compile Include="RelativityFieldQuery.cs" />
+    <Compile Include="IntegrationPointSourceProviderUninstaller.cs" />
+    <Compile Include="IImportService.cs" />
+    <Compile Include="ImportService.cs" />
+    <Compile Include="IntegrationPointSourceProviderInstaller.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SourceProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
-      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
-      <Name>kCura.IntegrationPoints.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
-      <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
-      <Name>kCura.IntegrationPoints.Data</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Relativity.ImportAPI.Wrapper.dll" />
+    <Content Include="Resources\DoNotRemove.txt" />
+    <EmbeddedResource Include="Resources\kCura.IntegrationPoints.LDAPProvider.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir  "$(SolutionDir)bin"
-mkdir  "$(SolutionDir)bin\$(Configuration)"
+    <PostBuildEvent>mkdir  "$(SolutionDir)bin\$(Configuration)"
 $(SolutionDir)Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(SolutionDir)bin\$(Configuration)\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)bin\$(Configuration)\$(TargetName).pdb"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
