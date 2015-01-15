@@ -13,6 +13,10 @@ namespace kCura.IntegrationPoints.Contracts
 	/// </summary>
 	public class AssemblyDomainLoader : MarshalByRefObject
 	{
+		public AssemblyDomainLoader()
+		{
+			
+		}
 		/// <summary>
 		/// Loads assembly the current app domain.
 		/// </summary>

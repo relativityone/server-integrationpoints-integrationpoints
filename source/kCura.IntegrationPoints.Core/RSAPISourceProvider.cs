@@ -9,8 +9,7 @@ namespace kCura.IntegrationPoints.Core
 {
 	public class RsapiSourceProvider : ISourcePluginProvider
 	{
-		
-		public Stream[] GetPluginLibraries(Guid selector)
+		public FileStream[] GetPluginLibraries(Guid selector)
 		{
 			throw new NotImplementedException();
 		}

@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 
 namespace JsonLoader
 {
+	[kCura.IntegrationPoints.Contracts.DataSourceProvider("4380b80b-57ef-48c3-bf02-b98d2855166b")]
 	public class JsonProvider : kCura.IntegrationPoints.Contracts.Provider.IDataSourceProvider
 	{
 		private readonly JsonHelper _helper;

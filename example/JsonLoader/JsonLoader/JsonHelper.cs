@@ -18,7 +18,7 @@ namespace JsonLoader
 		public virtual JsonSettings GetSettings(string options)
 		{
 			var settings = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonSettings>(options);
-			return settings;
+			return new JsonSettings() { FileName = @"C:\SourceCode\LDAPSync\example\JsonLoader\JsonLoader\bin\fields.json" };
 		}
 	}
 }
