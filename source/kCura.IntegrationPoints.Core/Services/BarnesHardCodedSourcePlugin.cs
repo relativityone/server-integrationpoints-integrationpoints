@@ -25,10 +25,6 @@ namespace kCura.IntegrationPoints.Core.Services
 					//File.OpenRead(@"C:\SourceCode\LDAPSync\source\kCura.IntegrationPoints.LDAPProvider\bin\kCura.IntegrationPoints.LDAPProvider_merge.dll")
 				};
 			}
-			
-				streams.Add(File.OpenRead(dllPath));
-			}
-			return streams.ToArray();
 		}
 
 		static public string AssemblyLoadDirectory

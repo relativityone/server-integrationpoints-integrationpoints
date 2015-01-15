@@ -164,7 +164,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			}
 			finally
 			{
-				if (task != null) ReleaseTask(task);
+				ReleaseTask(task);
 			}
 			return result;
 		}

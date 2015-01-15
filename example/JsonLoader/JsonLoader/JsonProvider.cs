@@ -37,7 +37,10 @@ namespace JsonLoader
 
 		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
 		{
-			throw new NotImplementedException();
+			var file = _helper.ReadData(options);
+			var obj = JsonConvert.DeserializeObject<List<DataObject>>(file);
+			var dt = obj.ToDataTable();
+			return dt.CreateDataReader();
 		}
 	}
 }

@@ -24,6 +24,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<CreateErrorRDO>().ImplementedBy<CreateErrorRDO>().LifeStyle.Transient);
 			container.Register(Component.For<ITaskFactory>().AsFactory(x => x.SelectedWith(new TaskComponentSelector())).LifeStyle.Transient);
 			container.Register(Component.For<kCura.Apps.Common.Utils.Serializers.ISerializer>().ImplementedBy<kCura.Apps.Common.Utils.Serializers.JSONSerializer>().LifestyleTransient());
-		}
+			}
 	}
 }

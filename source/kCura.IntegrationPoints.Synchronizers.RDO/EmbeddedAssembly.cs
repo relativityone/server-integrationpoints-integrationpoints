@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 
 			asm = Assembly.LoadFile(tempFile);
-
+			if(dic.ContainsKey(asm.FullName)){}
 			dic.Add(asm.FullName, asm);
 		}
 
