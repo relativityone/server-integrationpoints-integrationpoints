@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Services.Provider
 
 		public void Dispose()
 		{
-			//_helper.ReleaseDomain(_newDomain);
+			_helper.ReleaseDomain(_newDomain);
 		}
 	}
 }

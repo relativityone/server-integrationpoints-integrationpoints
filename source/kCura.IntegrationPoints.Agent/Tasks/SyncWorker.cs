@@ -43,7 +43,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				IEnumerable<FieldMap> fieldMap = _serializer.Deserialize<List<FieldMap>>(rdoIntegrationPoint.FieldMappings);
 
 				List<string> entryIDs = _serializer.Deserialize<List<string>>(job.JobDetails);
-				IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(Guid.NewGuid());
+				Guid identifier = Guid.Parse(_caseServiceContext.RsapiService.SourceProviderLibrary.Read(rdoIntegrationPoint.ArtifactId).Identifier);
+				IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(identifier);
 				fieldMap.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
 				List<FieldEntry> sourceFields = fieldMap.Select(f => f.SourceField).ToList();
 				IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, rdoIntegrationPoint.SourceConfiguration);

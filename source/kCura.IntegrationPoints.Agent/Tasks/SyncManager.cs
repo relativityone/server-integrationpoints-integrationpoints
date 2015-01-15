@@ -53,7 +53,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				throw new ArgumentNullException("Job must have a Related Object ArtifactID");
 			}
 			var integrationPointID = job.RelatedObjectArtifactID;
-			IDataSourceProvider provider = _providerFactory.GetDataProvider(Guid.NewGuid());
+			Guid identifier = Guid.Parse(_caseServiceContext.RsapiService.SourceProviderLibrary.Read(job.RelatedObjectArtifactID).Identifier);
+			IDataSourceProvider provider = _providerFactory.GetDataProvider(identifier);
 			FieldEntry idField = _helper.GetIdentifierFieldEntry(integrationPointID);
 			string options = _helper.GetSourceOptions(integrationPointID);
 			IDataReader idReader = provider.GetBatchableIds(idField, options);

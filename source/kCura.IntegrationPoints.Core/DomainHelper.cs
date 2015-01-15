@@ -14,8 +14,9 @@ namespace kCura.IntegrationPoints.Core
 		public virtual void LoadRequiredAssemblies(AppDomain domain)
 		{
 			//loads the contracts dll into the app domain so we can reference 
-			var assemblyPath = new Uri(typeof(Contracts.AssemblyDomainLoader).Assembly.CodeBase).LocalPath;
-			byte[] stream = File.ReadAllBytes(assemblyPath);
+			//var assemblyPath = new Uri(typeof(Contracts.AssemblyDomainLoader).Assembly.CodeBase).LocalPath; //TODO switch to this instead
+			var assemblyPath = @"C:\SourceCode\LDAPSync\source\bin\Debug\kCura.IntegrationPoints.Contracts.dll";
+			var stream = File.ReadAllBytes(assemblyPath);
 			var dir = Path.Combine(domain.BaseDirectory, new FileInfo(assemblyPath).Name);
 			File.WriteAllBytes(dir, stream);
 			domain.Load(stream);
@@ -24,12 +25,28 @@ namespace kCura.IntegrationPoints.Core
 		public virtual T CreateInstance<T>(AppDomain domain) where T : class
 		{
 			var type = typeof(T);
-			var instance = domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName) as T;
+			//var instance = domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName) as T;
+			dynamic instance = domain.CreateInstanceAndUnwrap("kCura.IntegrationPoints.Contracts", type.FullName);
 			if (instance == null)
 			{
 				throw new Exception(string.Format("Could not create an instance of {0} in app domain {1}.", type.Name, domain.FriendlyName));
 			}
 			return instance;
+		}
+
+		private byte[] ReadFully(Stream stream)
+		{
+			byte[] buffer = new byte[16 * 1024];
+			using (MemoryStream ms = new MemoryStream())
+			{
+				int read;
+				while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+				{
+					ms.Write(buffer, 0, read);
+				}
+				stream.Seek(0, SeekOrigin.Begin);
+				return ms.ToArray();
+			}
 		}
 
 		public virtual void LoadClientLibraries(AppDomain domain, IPluginProvider provider, Guid identifier)
@@ -39,7 +56,9 @@ namespace kCura.IntegrationPoints.Core
 			foreach (var stream in assemblies)
 			{
 				stream.Seek(0, SeekOrigin.Begin);
-				loader.Load(stream);
+				var file = Path.Combine(domain.BaseDirectory, Guid.NewGuid().ToString() + ".dll");
+				File.WriteAllBytes(file, ReadFully(stream));
+				loader.LoadFrom(file);
 				stream.Dispose();
 			}
 		}
@@ -48,8 +67,8 @@ namespace kCura.IntegrationPoints.Core
 		{
 			if (domain != null)
 			{
-				Directory.Delete(domain.BaseDirectory, true);
 				AppDomain.Unload(domain);
+				Directory.Delete(domain.BaseDirectory, true);
 			}
 		}
 

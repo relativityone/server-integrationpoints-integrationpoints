@@ -11,7 +11,23 @@ namespace kCura.IntegrationPoints.Core.Services
 	{
 		public FileStream[] GetPluginLibraries(Guid selector)
 		{
-			return new FileStream[] { File.OpenRead(@"C:\SourceCode\LDAPSync\example\JsonLoader\JsonLoader\bin\JsonLoader_merge.dll") };
+			if (selector.Equals(Guid.Parse("4380b80b-57ef-48c3-bf02-b98d2855166b")))
+			{
+				return new FileStream[]
+				{
+					File.OpenRead(@"C:\SourceCode\LDAPSync\example\JsonLoader\JsonLoader\bin\JsonLoader_merge.dll")
+				};
+			}
+			else
+			{
+				return new FileStream[]
+				{
+					File.OpenRead(@"C:\SourceCode\LDAPSync\source\kCura.IntegrationPoints.LDAPProvider\bin\Newtonsoft.Json.dll"),
+					File.OpenRead(@"C:\SourceCode\LDAPSync\source\kCura.IntegrationPoints.LDAPProvider\bin\kCura.IntegrationPoints.LDAPProvider.dll")
+					//File.OpenRead(@"C:\SourceCode\LDAPSync\source\kCura.IntegrationPoints.LDAPProvider\bin\kCura.IntegrationPoints.LDAPProvider_merge.dll")
+				};
+			}
+			
 		}
 	}
 }
