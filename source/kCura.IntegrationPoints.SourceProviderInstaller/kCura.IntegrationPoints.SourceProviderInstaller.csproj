@@ -65,12 +65,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="aaa.cs" />
+    <Compile Include="IntegrationPointSourceProviderUninstaller.cs" />
+    <Compile Include="IImportService.cs" />
+    <Compile Include="ImportService.cs" />
     <Compile Include="IntegrationPointSourceProviderInstaller.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SourceProvider.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <Content Include="Resources\DoNotRemove.txt" />
     <EmbeddedResource Include="Resources\kCura.IntegrationPoints.LDAPProvider.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

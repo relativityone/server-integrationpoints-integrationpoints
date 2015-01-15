@@ -24,6 +24,10 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<IDataSyncronizerFactory>().ImplementedBy<MockFactory>().DependsOn(new { container = container }));
 			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<MockProviderFactory>().LifestyleTransient());
+			container.Register(Component.For<DomainHelper>().ImplementedBy<DomainHelper>().LifestyleTransient());
+
+			container.Register(Component.For<ISourcePluginProvider>().ImplementedBy<RsapiSourceProvider>().LifestyleTransient());
+
 			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
 			container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
 			//container.Register(Component.For<IAgentService>().ImplementedBy<AgentService>().LifestyleTransient().DependsOn(Dependency.OnValue("agentGuid", new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)), Dependency.OnComponent<IDBContext, Dbco>()));

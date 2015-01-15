@@ -18,8 +18,11 @@ namespace JsonLoader.Tests.Unit
 			
 			var fields = provider.GetFields(JsonConvert.SerializeObject(settings));
 
+			System.IO.File.ReadAllBytes(@"C:\\Users\dbarnes\");
+
 			//ASSERT
 			Assert.AreEqual(5, fields.Count());
 		}
+
 	}
 }

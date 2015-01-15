@@ -5,8 +5,17 @@ using System.Text;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
-	public class ImportHelper
+	public class ImportService : IImportService
 	{
+		public void InstallProvider(SourceProvider provider)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void UninstallProvider()
+		{
+			throw new NotImplementedException();
+		}
 
 		public static void ExtractEmbeddedResource(string outputDir, string resourceLocation, string file)
 		{

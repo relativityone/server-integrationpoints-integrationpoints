@@ -21,8 +21,18 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		public void Test()
 		{
 			Debug.WriteLine("");
-			ImportHelper.ExtractEmbeddedResource(@"C:\SourceCode\LDAPSync", "kCura.IntegrationPoints.SourceProviderInstaller.Resources", "kCura.IntegrationPoints.LDAPProvider.dll");
+			ImportService.ExtractEmbeddedResource(@"C:\SourceCode\LDAPSync", "kCura.IntegrationPoints.SourceProviderInstaller.Resources", "kCura.IntegrationPoints.LDAPProvider.dll");
+			Debug.WriteLine("");
+		}
+
+		[Test]
+		[Explicit]
+		public void Test2()
+		{
+			Debug.WriteLine("");
+			ImportService.ExtractEmbeddedResource(@"C:\SourceCode\LDAPSync", "kCura.IntegrationPoints.SourceProviderInstaller.Resources", "kCura.IntegrationPoints.LDAPProvider.dll");
 			Debug.WriteLine("");
 		}
 	}
+
 }
