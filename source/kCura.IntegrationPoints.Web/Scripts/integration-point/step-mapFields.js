@@ -87,7 +87,6 @@ ko.validation.insertValidationMessage = function (element) {
 
 	var viewModel = function (model) {
 		var self = this;
-
 		this.hasBeenLoaded = model.hasBeenLoaded;
 		this.showErrors = ko.observable(false);
 		var artifactTypeId = model.destination.artifactTypeId;
@@ -348,9 +347,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 
 	var Step = function (settings) {
-		
-		
-		
+		var stepCache = {};
 		var self = this;
 		self.settings = settings;
 		this.template = ko.observable();
@@ -358,10 +355,15 @@ ko.validation.insertValidationMessage = function (element) {
 		this.hasBeenLoaded = false;
 		this.returnModel = {};
 		this.bus = IP.frameMessaging();
+		this.key = "";
 		this.loadModel = function (model) {
 			this.hasBeenLoaded = false;
-			this.selectedRdo = jQuery.parseJSON(model.destination).artifactTypeID;
-			this.returnModel = model;
+			
+			this.key = jQuery.parseJSON(model.destination).artifactTypeID;
+			if (typeof (stepCache[this.key]) === "undefined") {
+				stepCache[this.key] = model || '';
+			}
+			this.returnModel = stepCache[this.key];
 			this.model = new viewModel(this.returnModel);
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 		};
@@ -411,10 +413,13 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		
 			this.returnModel.map = JSON.stringify(map);
+
+			stepCache[self.key] = this.returnModel;
+			
 			d.resolve(this.returnModel);
 			return d.promise;
 		}
-		var stepCache = {};
+		
 		
 
 
