@@ -29,6 +29,7 @@ namespace kCura.IntegrationPoints.Contracts.Models
 
 		public FieldType FieldType { get; set; }
 
+		
 		public bool IsIdentifier { get; set; }
 
 	}
