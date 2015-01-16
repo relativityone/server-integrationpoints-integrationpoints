@@ -49,10 +49,10 @@ namespace kCura.IntegrationPoints.Core
 			}
 		}
 
-		public virtual void LoadClientLibraries(AppDomain domain, IPluginProvider provider, Guid identifier)
+		public virtual void LoadClientLibraries(AppDomain domain, IPluginProvider provider, Guid applicationGuid)
 		{
 			var loader = this.CreateInstance<Contracts.AssemblyDomainLoader>(domain);
-			FileStream[] assemblies = provider.GetPluginLibraries(identifier);
+			var assemblies = provider.GetPluginLibraries(applicationGuid);
 			foreach (var stream in assemblies)
 			{
 				stream.Seek(0, SeekOrigin.Begin);
@@ -90,10 +90,10 @@ namespace kCura.IntegrationPoints.Core
 			return newDomain;
 		}
 
-		public virtual DomainManager SetupDomainAndCreateManager(AppDomain domain, IPluginProvider provider, Guid identifer)
+		public virtual DomainManager SetupDomainAndCreateManager(AppDomain domain, IPluginProvider provider, Guid applicationGuid)
 		{
 			this.LoadRequiredAssemblies(domain);
-			this.LoadClientLibraries(domain, provider, identifer);
+			this.LoadClientLibraries(domain, provider, applicationGuid);
 			var manager = this.CreateInstance<Contracts.DomainManager>(domain);
 			manager.Init();
 			return manager;

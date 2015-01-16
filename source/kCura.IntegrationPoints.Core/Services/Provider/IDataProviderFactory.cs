@@ -5,6 +5,6 @@ namespace kCura.IntegrationPoints.Core.Services.Provider
 {
 	public interface IDataProviderFactory
 	{
-		IDataSourceProvider GetDataProvider(Guid selector);
+		IDataSourceProvider GetDataProvider(Guid applicationGuid, Guid providerGuid);
 	}
 }

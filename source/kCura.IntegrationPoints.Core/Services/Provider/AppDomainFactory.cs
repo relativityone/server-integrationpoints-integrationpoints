@@ -23,11 +23,11 @@ namespace kCura.IntegrationPoints.Core.Services.Provider
 			_provider = provider;
 		}
 
-		public IDataSourceProvider GetDataProvider(Guid selector)
+		public IDataSourceProvider GetDataProvider(Guid applicationGuid, Guid providerGuid)
 		{
 			_newDomain = _helper.CreateNewDomain();
-			var manager = _helper.SetupDomainAndCreateManager(_newDomain, _provider, selector);
-			return manager.GetProvider(selector);
+			var manager = _helper.SetupDomainAndCreateManager(_newDomain, _provider, applicationGuid);
+			return manager.GetProvider(providerGuid);
 		}
 
 		public void Dispose()

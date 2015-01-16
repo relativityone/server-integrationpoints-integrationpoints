@@ -45,9 +45,9 @@ namespace kCura.IntegrationPoints.Core.Models
 						this.SendOn =
 							JsonConvert.SerializeObject(new IntegrationPointService.Weekly()
 							{
-								SelectedDays = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday)  == DaysOfWeek.Day ? new List<string>{ DaysOfWeek.Day.ToString().ToLower()} : IntegrationPointService.FromDaysOfWeek(rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday)).Select(x=>x.ToString()).ToList()
+								SelectedDays = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday) == DaysOfWeek.Day ? new List<string> { DaysOfWeek.Day.ToString().ToLower() } : IntegrationPointService.FromDaysOfWeek(rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday)).Select(x => x.ToString()).ToList()
 
-							}, Formatting.None, new JsonSerializerSettings{ ContractResolver = new CamelCasePropertyNamesContractResolver()});
+							}, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
 						break;
 					case ScheduleInterval.Monthly:
 						var type = rule.OccuranceInMonth.HasValue ? IntegrationPointService.MonthlyType.Month : IntegrationPointService.MonthlyType.Days;
@@ -55,9 +55,9 @@ namespace kCura.IntegrationPoints.Core.Models
 						{
 							MonthChoice = type,
 							SelectedDay = rule.DayOfMonth.GetValueOrDefault(1),
-							SelectedDayOfTheMonth =  rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday),
+							SelectedDayOfTheMonth = rule.DaysToRun.GetValueOrDefault(DaysOfWeek.Monday),
 							SelectedType = rule.OccuranceInMonth
-						}, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });						
+						}, Formatting.None, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
 
 						break;
 				}
@@ -79,7 +79,6 @@ namespace kCura.IntegrationPoints.Core.Models
 		public int Reoccur { get; set; }
 		public string ScheduledTime { get; set; }
 		public string SendOn { get; set; }
-
 	}
 
 
@@ -135,10 +134,6 @@ namespace kCura.IntegrationPoints.Core.Models
 			this.SourceConfiguration = ip.SourceConfiguration;
 			this.DestinationProvider = ip.DestinationProvider.GetValueOrDefault(0);
 			Scheduler = new Scheduler(ip);
-
-
 		}
-
-
 	}
 }

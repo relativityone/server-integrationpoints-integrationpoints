@@ -4,11 +4,13 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
@@ -27,6 +29,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<DomainHelper>().ImplementedBy<DomainHelper>().LifestyleTransient());
 
 			container.Register(Component.For<ISourcePluginProvider>().ImplementedBy<BarnesHardCodedSourcePlugin>().LifestyleTransient());
+			//container.Register(Component.For<ISourcePluginProvider>().ImplementedBy<DefaultSourcePluginProvider>().LifestyleTransient()); //TODO: switch to this when ready
 
 			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
 			container.Register(Component.For<IJobService>().ImplementedBy<JobService>().LifestyleTransient());
@@ -39,6 +42,15 @@ namespace kCura.IntegrationPoints.Core.Installers
 				Component.For<RDOSyncronizerProvider>().ImplementedBy<RDOSyncronizerProvider>().LifeStyle.Transient);
 			container.Register(Component.For<RelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
 			container.Register(Component.For<IntegrationPointService>().ImplementedBy<IntegrationPointService>().LifestyleTransient());
+			container.Register(
+				Component.For<GetSourceProviderRdoByIdentifier>()
+					.ImplementedBy<GetSourceProviderRdoByIdentifier>()
+					.LifeStyle.Transient);
+
+			container.Register(
+				Component.For<GetApplicationBinaries>()
+					.ImplementedBy<GetApplicationBinaries>()
+					.LifeStyle.Transient);
 
 			container.Register(Component.For<SourceTypeFactory>().ImplementedBy<SourceTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<RsapiClientFactory>().ImplementedBy<RsapiClientFactory>().LifestyleTransient());

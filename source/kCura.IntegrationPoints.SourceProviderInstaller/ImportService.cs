@@ -4,7 +4,6 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Queries;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Queries;
@@ -22,25 +21,41 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			_eddsContext = eddsContext;
 		}
 
-		public void InstallProviders(IEnumerable<SourceProvider> providers)
+		public void InstallProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providers)
 		{
 			int applicationID = providers.Select(x => x.ApplicationID).First();
 			Guid applicationGuid = GetApplicationGuid(applicationID);
 			providers.ToList().ForEach(x => x.ApplicationGUID = applicationGuid);
 
-			ValidateProviders(providers, applicationGuid);
+			ValidateProviders(providers);
 
 			List<Data.SourceProvider> installedRdoProviders =
 				new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(applicationGuid);
-			Dictionary<string, SourceProvider> installingProviderDict = providers.ToDictionary(x => x.GUID.ToString(), x => x);
+			Dictionary<string, SourceProviderInstaller.SourceProvider> installingProviderDict = providers.ToDictionary(x => x.GUID.ToString(), x => x);
 			Dictionary<string, Data.SourceProvider> installedRdoProviderDict = installedRdoProviders.ToDictionary(x => x.Identifier, x => x);
 
 			List<Data.SourceProvider> providersToBeRemoved =
 				installedRdoProviders.Where(x => !installingProviderDict.ContainsKey(x.Identifier)).ToList();
 
-			List<SourceProvider> providersToBeInstalled =
+			List<SourceProviderInstaller.SourceProvider> providersToBeInstalled =
 				providers.Where(x => !installedRdoProviderDict.ContainsKey(x.GUID.ToString())).ToList();
 
+			RemoveProviders(providersToBeRemoved);
+
+			AddNewProviders(providersToBeInstalled);
+		}
+
+		public void UninstallProvider(int applicationID)
+		{
+			Guid applicationGuid = GetApplicationGuid(applicationID);
+			List<Data.SourceProvider> installedRdoProviders =
+				new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(applicationGuid);
+
+			RemoveProviders(installedRdoProviders);
+		}
+
+		private void RemoveProviders(IEnumerable<Data.SourceProvider> providersToBeRemoved)
+		{
 			if (providersToBeRemoved.Any())
 			{
 				//TODO: before deleting SourceProviderRDO, 
@@ -48,7 +63,10 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 				//TODO: want to use delete event hanler for this case. 
 				_caseContext.RsapiService.SourceProviderLibrary.MassDelete(providersToBeRemoved);
 			}
+		}
 
+		private void AddNewProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providersToBeInstalled)
+		{
 			if (providersToBeInstalled.Any())
 			{
 				IEnumerable<Data.SourceProvider> newProviders =
@@ -60,25 +78,26 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 						Identifier = p.GUID.ToString(),
 						SourceConfigurationUrl = p.Url
 					};
-				_caseContext.RsapiService.SourceProviderLibrary.MassCreate(providersToBeRemoved);
+				AddNewProviders(newProviders);
 			}
 		}
 
-		public void UninstallProvider(int applicationID)
+		private void AddNewProviders(IEnumerable<Data.SourceProvider> newProviders)
 		{
-			Guid applicationGuid = GetApplicationGuid(applicationID);
-			List<Data.SourceProvider> installedRdoProviders =
-				new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(applicationGuid);
-		}
-		
-		private void ValidateProviders(IEnumerable<SourceProvider> providers, Guid applicationGuid)
-		{
-			foreach (SourceProvider provider in providers)
+			if (newProviders.Any())
 			{
-				TryLoadingProvider(applicationGuid, provider);
+				_caseContext.RsapiService.SourceProviderLibrary.MassCreate(newProviders);
 			}
 		}
-		
+
+		private void ValidateProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providers)
+		{
+			foreach (SourceProviderInstaller.SourceProvider provider in providers)
+			{
+				TryLoadingProvider(provider);
+			}
+		}
+
 		private Guid GetApplicationGuid(int applicationID)
 		{
 			Guid? applicationGuid = null;
@@ -99,17 +118,16 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			return applicationGuid.Value;
 		}
 
-		private void TryLoadingProvider(Guid applicationGuid, SourceProvider provider)
+		private void TryLoadingProvider(SourceProviderInstaller.SourceProvider provider)
 		{
 			Exception loadingException = null;
 			IDataSourceProvider dataSourceProvider = null;
-			ISourcePluginProvider pluginProvider =
-				new DefaultSourcePluginProvider(_caseContext, _eddsContext) { ApplicationGuid = applicationGuid };
+			ISourcePluginProvider pluginProvider = new DefaultSourcePluginProvider(new GetApplicationBinaries(_eddsContext.SqlContext));
 			using (AppDomainFactory factory = new AppDomainFactory(new DomainHelper(), pluginProvider))
 			{
 				try
 				{
-					dataSourceProvider = factory.GetDataProvider(provider.GUID);
+					dataSourceProvider = factory.GetDataProvider(provider.ApplicationGUID, provider.GUID);
 				}
 				catch (Exception ex)
 				{

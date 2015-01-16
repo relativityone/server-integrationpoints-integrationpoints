@@ -45,10 +45,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				List<string> entryIDs = _serializer.Deserialize<List<string>>(job.JobDetails);
 				if (rdoIntegrationPoint.SourceProvider.GetValueOrDefault(0) == 0 || !rdoIntegrationPoint.SourceProvider.HasValue)
 				{
-					throw new Exception("Cannot import into source provider with unknown id.");
+					throw new Exception("Cannot import source provider with unknown id.");
 				}
-				Guid identifier = Guid.Parse(_caseServiceContext.RsapiService.SourceProviderLibrary.Read(rdoIntegrationPoint.SourceProvider.Value).Identifier);
-				IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(identifier);
+				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(rdoIntegrationPoint.SourceProvider.Value);
+				Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
+				Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
+				IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(applicationGuid, providerGuid);
 				fieldMap.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
 				List<FieldEntry> sourceFields = fieldMap.Select(f => f.SourceField).ToList();
 				IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, rdoIntegrationPoint.SourceConfiguration);

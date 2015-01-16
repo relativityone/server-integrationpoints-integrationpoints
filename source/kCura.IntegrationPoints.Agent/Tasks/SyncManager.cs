@@ -53,9 +53,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				throw new ArgumentNullException("Job must have a Related Object ArtifactID");
 			}
 			var integrationPointID = job.RelatedObjectArtifactID;
-			var point = _helper.ReadIntegrationPoint(job.RelatedObjectArtifactID);
-			Guid identifier = Guid.Parse(_caseServiceContext.RsapiService.SourceProviderLibrary.Read(point.SourceProvider).Identifier);
-			IDataSourceProvider provider = _providerFactory.GetDataProvider(identifier);
+			var rdoIntegrationPoint = _helper.ReadIntegrationPoint(job.RelatedObjectArtifactID);
+			if (rdoIntegrationPoint.SourceProvider == 0)
+			{
+				throw new Exception("Cannot import source provider with unknown id.");
+			}
+			Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(rdoIntegrationPoint.SourceProvider);
+			Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
+			Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
+			IDataSourceProvider provider = _providerFactory.GetDataProvider(applicationGuid, providerGuid);
 			FieldEntry idField = _helper.GetIdentifierFieldEntry(integrationPointID);
 			string options = _helper.GetSourceOptions(integrationPointID);
 			IDataReader idReader = provider.GetBatchableIds(idField, options);
