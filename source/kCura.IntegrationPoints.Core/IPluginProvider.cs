@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Core
 {
 	public interface IPluginProvider
 	{
+		Guid ApplicationGuid { get; set; }
 		FileStream[] GetPluginLibraries(Guid selector);
 	}
 }

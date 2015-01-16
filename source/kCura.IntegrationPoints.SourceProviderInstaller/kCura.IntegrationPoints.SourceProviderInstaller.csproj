@@ -56,6 +56,10 @@
     <Reference Include="kCura.EventHandler">
       <HintPath>..\Dependencies\kCura\kCura.EventHandler.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.API, Version=9.0.174.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -65,16 +69,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Installer\ObjectInstaller.cs" />
     <Compile Include="IntegrationPointSourceProviderUninstaller.cs" />
     <Compile Include="IImportService.cs" />
     <Compile Include="ImportService.cs" />
     <Compile Include="IntegrationPointSourceProviderInstaller.cs" />
+    <Compile Include="InvalidSourceProviderException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SourceProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\DoNotRemove.txt" />
     <EmbeddedResource Include="Resources\kCura.IntegrationPoints.LDAPProvider.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
+      <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
+      <Name>kCura.IntegrationPoints.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
+      <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
+      <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

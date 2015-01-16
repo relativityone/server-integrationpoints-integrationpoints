@@ -61,6 +61,38 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SELECT 
+        ///					RF.[ArtifactID]
+        ///					,RF.[Name]
+        ///					,RFD.[FileData]
+        ///FROM 
+        ///					[EDDSDBO].[ResourceFile] RF WITH(NOLOCK)
+        ///	JOIN  
+        ///					[EDDSDBO].[ResourceFileData] RFD WITH(NOLOCK)
+        ///		ON		
+        ///					RF.[ArtifactID] = RFD.[ArtifactID]
+        ///WHERE 
+        ///					RF.[ApplicationGuid]=@ApplicationGuid
+        ///	.
+        /// </summary>
+        internal static string GetApplicationBinaries {
+            get {
+                return ResourceManager.GetString("GetApplicationBinaries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT		[ArtifactGuid]
+        ///FROM			[EDDSDBO].[ApplicationGuid] AG WITH(NOLOCK)
+        ///WHERE 		AG.[ApplicationID] = @ApplicationID.
+        /// </summary>
+        internal static string GetApplicationGuid {
+            get {
+                return ResourceManager.GetString("GetApplicationGuid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SELECT
         ///	ArtifactId
         ///FROM

@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public const string Identifier = @"Identifier";
 		public const string SourceConfigurationUrl = @"Source Configuration Url";
-		public const string LibLocation = @"LibLocation";
+		public const string ApplicationIdentifier = @"Application Identifier";
 		public const string Name = @"Name";
 	}
 
@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public const string Identifier = @"d0ecc6c9-472c-4296-83e1-0906f0c0fbb9";
 		public const string SourceConfigurationUrl = @"b1b34def-3e77-48c3-97d4-eae7b5ee2213";
-		public const string LibLocation = @"8eedeec9-eebf-403b-972d-31a0d7362f08";
+		public const string ApplicationIdentifier = @"0e696f9e-0e14-40f9-8cd7-34195defe5de";
 		public const string Name = @"9073997b-319e-482f-92fe-67e0b5860c1b";
 	}
 

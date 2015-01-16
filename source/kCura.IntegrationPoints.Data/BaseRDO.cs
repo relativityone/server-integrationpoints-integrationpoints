@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Management.Instrumentation;
 using kCura.IntegrationPoints.Data.Attributes;
 using kCura.Relativity.Client.DTOs;
 using Choice = kCura.Relativity.Client.Choice;
@@ -28,7 +27,7 @@ namespace kCura.IntegrationPoints.Data
 			set { _rdo = value; }
 		}
 
-		protected BaseRdo(){}
+		protected BaseRdo() { }
 
 
 		public virtual T GetField<T>(Guid fieldGuid)
@@ -44,8 +43,8 @@ namespace kCura.IntegrationPoints.Data
 			{
 				value = artifact.ArtifactID;
 			}
-			
-			return (T) value;
+
+			return (T)value;
 		}
 
 		public string GetFieldName(Guid fieldGuid)
@@ -63,23 +62,24 @@ namespace kCura.IntegrationPoints.Data
 				choiceDto.Name = choice.Name;
 				value = choiceDto;
 			}
-			if (!Rdo.Fields.Any(x=>x.Guids.Contains(fieldName)))
+			if (!Rdo.Fields.Any(x => x.Guids.Contains(fieldName)))
 			{
 				Rdo.Fields.Add(new FieldValue(fieldName, value));
 			}
 			else
 			{
-				Rdo[fieldName].Value = value;	
+				Rdo[fieldName].Value = value;
 			}
-			
+
 		}
 
 		public static Dictionary<Guid, DynamicFieldAttribute> GetFieldMetadata(Type t)
 		{
-			return (from pi in t.GetProperties() 
-							select pi.GetCustomAttributes(typeof (DynamicFieldAttribute), true)
-							into attributes where attributes.Any()
-							select (DynamicFieldAttribute) attributes.First()).ToDictionary(attribute => attribute.FieldGuid);
+			return (from pi in t.GetProperties()
+							select pi.GetCustomAttributes(typeof(DynamicFieldAttribute), true)
+								into attributes
+								where attributes.Any()
+								select (DynamicFieldAttribute)attributes.First()).ToDictionary(attribute => attribute.FieldGuid);
 		}
 
 		public static DynamicObjectAttribute GetObjectMetadata(Type t)

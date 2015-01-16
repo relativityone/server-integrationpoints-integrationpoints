@@ -37,5 +37,17 @@ namespace kCura.IntegrationPoints.Core.Services
 				return Path.GetDirectoryName(path);
 			}
 		}
+
+		public Guid ApplicationGuid
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

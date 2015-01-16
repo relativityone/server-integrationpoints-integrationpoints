@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Data;
+﻿using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using Relativity.API;
 
@@ -10,6 +9,11 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 		public static ICaseServiceContext CreateCaseServiceContext(IEHHelper helper, int workspaceID)
 		{
 			return new CaseServiceContext(new ServiceContextHelperForEventHandlers(helper, workspaceID, new RsapiClientFactory(helper)));
+		}
+
+		public static IEddsServiceContext CreateEddsServiceContext(IEHHelper helper)
+		{
+			return new EddsServiceContext(new ServiceContextHelperForEventHandlers(helper, -1, new RsapiClientFactory(helper)));
 		}
 
 		public static IRSAPIService CreateRSAPIService(IRSAPIClient client)

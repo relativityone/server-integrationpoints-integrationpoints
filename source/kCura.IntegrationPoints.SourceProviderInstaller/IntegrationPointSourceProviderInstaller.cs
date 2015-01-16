@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using kCura.EventHandler;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
@@ -16,15 +16,38 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		public event PostInstallPostExecuteEvent RaisePostInstallPostExecuteEvent;
 		public abstract IDictionary<Guid, SourceProvider> GetSourceProviders();
 
-		private IImportService _importService;
-		internal IntegrationPointSourceProviderInstaller(IImportService importService)
-		{
-			_importService = importService;
-		}
-
 		public IntegrationPointSourceProviderInstaller()
 		{
-			if (_importService == null) _importService = new ImportService();
+		}
+
+		private ICaseServiceContext _caseContext;
+		internal ICaseServiceContext CaseServiceContext
+		{
+			get
+			{
+				return _caseContext ?? (_caseContext = ServiceContextFactory.CreateCaseServiceContext(base.Helper, base.Helper.GetActiveCaseID()));
+			}
+			set { _caseContext = value; }
+		}
+
+		private IEddsServiceContext _eddsContext;
+		internal IEddsServiceContext EddsServiceContext
+		{
+			get
+			{
+				return _eddsContext ?? (_eddsContext = ServiceContextFactory.CreateEddsServiceContext(base.Helper));
+			}
+			set { _eddsContext = value; }
+		}
+
+		private IImportService _importService;
+		internal IImportService ImportService
+		{
+			get
+			{
+				return _importService ?? (_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext));
+			}
+			set { _importService = value; }
 		}
 
 		public override sealed Response Execute()
@@ -55,17 +78,20 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		private void InstallSourceProvider(IDictionary<Guid, SourceProvider> providers)
 		{
+			if (!providers.Any())
+			{
+				throw new InvalidSourceProviderException("No Source Providers passed.");
+			}
+
 			List<SourceProvider> sourceProviders = providers.Select(x => new SourceProvider()
 			{
 				GUID = x.Key,
+				ApplicationID = base.ApplicationArtifactId,
 				Name = x.Value.Name,
-				FileLocation = x.Value.FileLocation
+				Url = x.Value.Url
 			}).ToList();
 
-			foreach (SourceProvider provider in sourceProviders)
-			{
-				_importService.InstallProvider(provider);
-			}
+			ImportService.InstallProviders(sourceProviders);
 		}
 
 		protected void OnRaisePostInstallPreExecuteEvent()

@@ -195,16 +195,17 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(SourceProviderFieldGuids.SourceConfigurationUrl), value);
 			}
 		}
-		[DynamicField(SourceProviderFields.LibLocation, SourceProviderFieldGuids.LibLocation, FieldTypes.File)]
-		public int? LibLocation
+		public const int ApplicationIdentifierFieldLength = 50;
+		[DynamicField(SourceProviderFields.ApplicationIdentifier, SourceProviderFieldGuids.ApplicationIdentifier, FieldTypes.FixedLengthText, 50)]
+		public string ApplicationIdentifier
 		{
 			get
 			{
-				return GetField<int?>(new System.Guid(SourceProviderFieldGuids.LibLocation));
+				return GetField<string>(new System.Guid(SourceProviderFieldGuids.ApplicationIdentifier));
 			}
 			set
 			{
-				SetField<int?>(new System.Guid(SourceProviderFieldGuids.LibLocation), value);
+				SetField<string>(new System.Guid(SourceProviderFieldGuids.ApplicationIdentifier), value);
 			}
 		}
 		public const int NameFieldLength = 255;

@@ -13,5 +13,17 @@ namespace kCura.IntegrationPoints.Core
 		{
 			throw new NotImplementedException();
 		}
+
+		public Guid ApplicationGuid
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }

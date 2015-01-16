@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		public IntegrationPointSourceProviderUninstaller()
 		{
-			if (_importService == null) _importService = new ImportService();
+			//if (_importService == null) _importService = new ImportService();
 		}
 
 		public override sealed Response Execute()

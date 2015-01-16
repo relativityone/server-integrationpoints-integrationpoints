@@ -1,8 +1,10 @@
-﻿namespace kCura.IntegrationPoints.SourceProviderInstaller
+﻿using System.Collections.Generic;
+
+namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
 	public interface IImportService
 	{
-		void InstallProvider(SourceProvider provider);
+		void InstallProviders(IEnumerable<SourceProvider> providers);
 		void UninstallProvider();
 	}
 }

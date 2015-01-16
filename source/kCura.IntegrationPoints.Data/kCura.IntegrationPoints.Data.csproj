@@ -84,6 +84,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="Extensions\GenericLibraryExtensions.cs" />
+    <Compile Include="GetObjectBase.cs" />
     <Compile Include="Installers\RSAPIServiceInstaller.cs">
       <DependentUpon>RSAPIServiceInstaller.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -94,6 +95,9 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Models\ApplicationBinary.cs" />
+    <Compile Include="Queries\GetApplicationBinaries.cs" />
+    <Compile Include="Queries\GetApplicationGuid.cs" />
     <Compile Include="RdoGetter.cs" />
     <Compile Include="RDOHelper.cs" />
     <Compile Include="RelativityRdoQuery.cs" />
@@ -164,7 +168,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\ModifySourceDestinationTable.sql" />
+    <Content Include="Resources\GetApplicationBinaries.sql" />
+    <Content Include="Resources\GetApplicationGuid.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
   </ItemGroup>
   <ItemGroup />
