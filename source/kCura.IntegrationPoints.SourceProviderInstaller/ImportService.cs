@@ -28,10 +28,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			Guid applicationGuid = GetApplicationGuid(applicationID);
 			providers.ToList().ForEach(x => x.ApplicationGUID = applicationGuid);
 
-			foreach (SourceProvider provider in providers)
-			{
-				TryLoadingProvider(applicationGuid, provider);
-			}
+			ValidateProviders(providers, applicationGuid);
 
 			List<Data.SourceProvider> installedRdoProviders =
 				new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(applicationGuid);
@@ -43,13 +40,45 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 			List<SourceProvider> providersToBeInstalled =
 				providers.Where(x => !installedRdoProviderDict.ContainsKey(x.GUID.ToString())).ToList();
+
+			if (providersToBeRemoved.Any())
+			{
+				//TODO: before deleting SourceProviderRDO, 
+				//TODO: deactivate corresponding IntegrationPointRDO and delete corresponding queue job
+				//TODO: want to use delete event hanler for this case. 
+				_caseContext.RsapiService.SourceProviderLibrary.MassDelete(providersToBeRemoved);
+			}
+
+			if (providersToBeInstalled.Any())
+			{
+				IEnumerable<Data.SourceProvider> newProviders =
+					from p in providersToBeInstalled
+					select new Data.SourceProvider()
+					{
+						Name = p.Name,
+						ApplicationIdentifier = p.ApplicationGUID.ToString(),
+						Identifier = p.GUID.ToString(),
+						SourceConfigurationUrl = p.Url
+					};
+				_caseContext.RsapiService.SourceProviderLibrary.MassCreate(providersToBeRemoved);
+			}
 		}
 
-		public void UninstallProvider()
+		public void UninstallProvider(int applicationID)
 		{
-			throw new NotImplementedException();
+			Guid applicationGuid = GetApplicationGuid(applicationID);
+			List<Data.SourceProvider> installedRdoProviders =
+				new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(applicationGuid);
 		}
-
+		
+		private void ValidateProviders(IEnumerable<SourceProvider> providers, Guid applicationGuid)
+		{
+			foreach (SourceProvider provider in providers)
+			{
+				TryLoadingProvider(applicationGuid, provider);
+			}
+		}
+		
 		private Guid GetApplicationGuid(int applicationID)
 		{
 			Guid? applicationGuid = null;

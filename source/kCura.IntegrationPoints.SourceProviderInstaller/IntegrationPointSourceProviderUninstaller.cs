@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		private void UninstallSourceProvider()
 		{
-			//TODO: need app guid
+			_importService.UninstallProvider(base.ApplicationArtifactId);
 		}
 
 		protected void OnRaisePreUninstallPreExecuteEvent()
