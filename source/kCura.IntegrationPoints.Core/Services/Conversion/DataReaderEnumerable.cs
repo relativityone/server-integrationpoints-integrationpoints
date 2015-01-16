@@ -19,6 +19,9 @@ namespace kCura.IntegrationPoints.Core.Conversion
 		{
 			try
 			{
+				//this was not getting me the correct table columns it was giving me some bs column names that made no sense
+				//DataColumnCollection columns = reader.GetSchemaTable().Columns;
+				//found http://stackoverflow.com/questions/681653/can-you-get-the-column-names-from-a-sqldatareader
 				var columns = Enumerable.Range(0, reader.FieldCount).Select(reader.GetName).ToList();
 				while (reader.Read())
 				{
@@ -31,62 +34,4 @@ namespace kCura.IntegrationPoints.Core.Conversion
 			}
 		}
 	}
-
-	//public class DataReaderEnumerable : IEnumerable<IDictionary<FieldEntry, object>>
-	//{
-	//	private IDataReader _dataReader;
-	//	private IEnumerable<FieldMap> _fieldMap;
-
-	//	public DataReaderEnumerable(IDataReader dataReader, IEnumerable<FieldMap> fieldMap)
-	//	{
-	//		_dataReader = dataReader;
-	//		_fieldMap = fieldMap;
-	//	}
-
-	//	public IEnumerator<IDictionary<FieldEntry, object>> GetEnumerator()
-	//	{
-	//		return _dataReader.
-	//	}
-
-	//	IEnumerator IEnumerable.GetEnumerator()
-	//	{
-	//		throw new NotImplementedException();
-	//	}
-	//}
-
-	//public class DataReaderEnumerator : IEnumerator<IDictionary<FieldEntry, object>>
-	//{
-	//	private IDataReader _dataReader;
-	//	private IEnumerable<FieldMap> _fieldMap;
-	//	public DataReaderEnumerator(IDataReader dataReader, IEnumerable<FieldMap> fieldMap)
-	//	{
-	//		_dataReader = dataReader;
-	//		_fieldMap = fieldMap;
-	//	}
-
-	//	public IDictionary<FieldEntry, object> Current
-	//	{
-	//		get { _dataReader.; }
-	//	}
-
-	//	public void Dispose()
-	//	{
-	//		throw new NotImplementedException();
-	//	}
-
-	//	object IEnumerator.Current
-	//	{
-	//		get { throw new NotImplementedException(); }
-	//	}
-
-	//	public bool MoveNext()
-	//	{
-	//		throw new NotImplementedException();
-	//	}
-
-	//	public void Reset()
-	//	{
-	//		throw new NotImplementedException();
-	//	}
-	//}
 }
