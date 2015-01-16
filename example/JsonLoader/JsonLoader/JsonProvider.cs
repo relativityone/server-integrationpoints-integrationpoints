@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using Newtonsoft.Json;
@@ -32,6 +33,15 @@ namespace JsonLoader
 			var file = _helper.ReadData(options);
 			var obj = JsonConvert.DeserializeObject<List<DataObject>>(file);
 			var dt = obj.ToDataTable();
+			var columns = dt.CreateDataReader().GetSchemaTable().Columns;
+			var reader = dt.CreateDataReader();
+			var mydt = new DataTable();
+			var cs = Enumerable.Range(0, reader.FieldCount).Select(reader.GetName).ToList();
+			mydt.Load(dt.CreateDataReader());
+			foreach (var column in columns)
+			{
+				
+			}
 			return dt.CreateDataReader();
 		}
 
@@ -40,6 +50,7 @@ namespace JsonLoader
 			var file = _helper.ReadData(options);
 			var obj = JsonConvert.DeserializeObject<List<DataObject>>(file);
 			var dt = obj.ToDataTable();
+			var columns = dt.CreateDataReader().GetSchemaTable().Columns;
 			return dt.CreateDataReader();
 		}
 	}

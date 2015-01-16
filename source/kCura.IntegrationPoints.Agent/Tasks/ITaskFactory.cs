@@ -62,11 +62,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public void Release(ITask task)
 		{
-			if (task != null)
+			try
 			{
-				Container.Release(task);
+				if (task != null)
+				{
+					Container.Release(task);
+				}
 			}
-			Container = null;
+			finally
+			{
+				Container = null;
+			}
 		}
 	}
 }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 
@@ -18,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Conversion
 		{
 			try
 			{
-				DataColumnCollection columns = reader.GetSchemaTable().Columns;
+				var columns = Enumerable.Range(0, reader.FieldCount).Select(reader.GetName).ToList();
 				while (reader.Read())
 				{
 					yield return _objectBuilder.BuildObject<T>(reader, columns);

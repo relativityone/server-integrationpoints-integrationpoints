@@ -85,19 +85,21 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 
 			asm = Assembly.LoadFile(tempFile);
-			if(dic.ContainsKey(asm.FullName)){}
-			dic.Add(asm.FullName, asm);
+			if (!dic.ContainsKey(asm.FullName))
+			{
+				dic.Add(asm.FullName, asm);
+				dic2.Add(embeddedResource, asm.FullName);
+			}
 		}
 
 		public static Assembly Get(string assemblyFullName)
 		{
-			if (dic == null || dic.Count == 0)
-				return null;
+			Assembly ass = null;
 
-			if (dic.ContainsKey(assemblyFullName))
-				return dic[assemblyFullName];
-
-			return null;
+			if (dic!=null && dic.ContainsKey(assemblyFullName))
+				ass = dic[assemblyFullName];
+		
+			return ass;
 		}
 	}
 }

@@ -9,6 +9,6 @@ namespace kCura.IntegrationPoints.Core.Services.Conversion
 {
 	public interface IObjectBuilder
 	{
-		T BuildObject<T>(IDataRecord row, DataColumnCollection columns); 
+		T BuildObject<T>(IDataRecord row, IEnumerable<string> columns); 
 	}
 }
