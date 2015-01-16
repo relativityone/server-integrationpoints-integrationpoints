@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Contracts
 			}
 			catch (Exception e)
 			{
-				throw GetNonCustomException(e);
+				throw Utils.GetNonCustomException(e);
 			}
 			
 		}
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Contracts
 			}
 			catch (Exception e)
 			{
-				throw GetNonCustomException(e);
+				throw Utils.GetNonCustomException(e);
 			}
 			
 		}
@@ -57,33 +57,10 @@ namespace kCura.IntegrationPoints.Contracts
 			}
 			catch (Exception e)
 			{
-				throw GetNonCustomException(e);
+				throw Utils.GetNonCustomException(e);
 			}
 			
 		}
 
-		//We want to make sure if there is a custom exception the code does not go crazy and blow up
-		//more fail gracefully.
-		private Exception GetNonCustomException(System.Exception ex)
-		{
-			var strBuilder = new StringBuilder();
-
-			if (!String.IsNullOrWhiteSpace(ex.Message))
-			{
-				strBuilder.Append(ex.Message);
-			}
-
-			if (!String.IsNullOrEmpty(ex.StackTrace))
-			{
-				strBuilder.AppendLine(ex.StackTrace);
-			}
-
-			if (ex.InnerException != null)
-			{
-				strBuilder.AppendLine(ex.InnerException.ToString());
-			}
-
-			return new Exception(strBuilder.ToString());
-		}
 	}
 }

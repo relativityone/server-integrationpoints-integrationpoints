@@ -81,6 +81,7 @@
     <Compile Include="Provider\IFieldProvider.cs" />
     <Compile Include="IStartUp.cs" />
     <Compile Include="Syncronizer\IDataSyncronizer.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
