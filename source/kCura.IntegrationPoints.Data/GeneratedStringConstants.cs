@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string Folder = "Folder";
 		public const string IntegrationPoint = @"Integration Point";
 		public const string SourceProvider = @"Source Provider";
-		public const string DestinationProvider = @"DestinationProvider";
+		public const string DestinationProvider = @"Destination Provider";
 		}
 
 	public partial class ObjectTypeGuids
@@ -98,12 +98,14 @@ namespace kCura.IntegrationPoints.Data
 	public partial class DestinationProviderFields : BaseFields
 	{
 		public const string Identifier = @"Identifier";
+		public const string ApplicationIdentifier = @"Application Identifier";
 		public const string Name = @"Name";
 	}
 
 	public partial class DestinationProviderFieldGuids 
 	{
 		public const string Identifier = @"9fa104ac-13ea-4868-b716-17d6d786c77a";
+		public const string ApplicationIdentifier = @"92892e25-0927-4073-b03d-e6a94ff80450";
 		public const string Name = @"3ed18f54-c75a-4879-92a8-5ae23142bbeb";
 	}
 
@@ -188,12 +190,12 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class IntegrationPointViewGuids
 	{
-		public const string AllIntegrationPointss = @"181bf82a-e0dc-4a95-955a-0630bccb6afa";
+		public const string AllIntegrationPoints = @"181bf82a-e0dc-4a95-955a-0630bccb6afa";
 	}
 
 	public partial class IntegrationPointViews
 	{
-		public const string AllIntegrationPointss = @"All Integration Pointss";
+		public const string AllIntegrationPoints = @"All Integration Points";
 	}
 
 	public partial class SourceProviderViewGuids
