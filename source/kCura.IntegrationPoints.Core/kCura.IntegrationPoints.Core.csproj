@@ -86,7 +86,6 @@
     </Compile>
     <Compile Include="IContextService.cs" />
     <Compile Include="Queries\GetSourceProviderRdoByIdentifier.cs" />
-    <Compile Include="RSAPISourceProvider.cs" />
     <Compile Include="Services\BarnesHardCodedSourcePlugin.cs" />
     <Compile Include="Queries\GetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Services\Provider\DefaultSourcePluginProvider.cs" />
@@ -118,7 +117,6 @@
     <Compile Include="Services\IJobManager.cs" />
     <Compile Include="Services\IntegrationPointService.cs" />
     <Compile Include="Services\ObjectTypeService.cs" />
-    <Compile Include="Services\Provider\DataProviderComponetSelector.cs" />
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />
     <Compile Include="Services\Provider\MockProviderFactory.cs" />
     <Compile Include="Services\SourceTypes\LdapSourceTypeCreator.cs" />

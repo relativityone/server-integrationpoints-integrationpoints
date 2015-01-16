@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public class BarnesHardCodedSourcePlugin : ISourcePluginProvider
 	{
-		public FileStream[] GetPluginLibraries(Guid selector)
+		public IEnumerable<Stream> GetPluginLibraries(Guid selector)
 		{
 			if (selector.Equals(Guid.Parse("4380b80b-57ef-48c3-bf02-b98d2855166b")))
 			{

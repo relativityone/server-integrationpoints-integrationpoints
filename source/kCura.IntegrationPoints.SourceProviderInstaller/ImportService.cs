@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			Exception loadingException = null;
 			IDataSourceProvider dataSourceProvider = null;
 			ISourcePluginProvider pluginProvider =
-				new DefaultSourcePluginProvider(_caseContext, _eddsContext) { ApplicationGuid = applicationGuid };
+				new DefaultSourcePluginProvider(new GetSourceProviderRdoByIdentifier(_caseContext), new GetApplicationBinaries(_eddsContext.SqlContext) ) { ApplicationGuid = applicationGuid };
 			using (AppDomainFactory factory = new AppDomainFactory(new DomainHelper(), pluginProvider))
 			{
 				try

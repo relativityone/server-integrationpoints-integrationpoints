@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core
 		public virtual void LoadClientLibraries(AppDomain domain, IPluginProvider provider, Guid identifier)
 		{
 			var loader = this.CreateInstance<Contracts.AssemblyDomainLoader>(domain);
-			FileStream[] assemblies = provider.GetPluginLibraries(identifier);
+			var assemblies = provider.GetPluginLibraries(identifier);
 			foreach (var stream in assemblies)
 			{
 				stream.Seek(0, SeekOrigin.Begin);
