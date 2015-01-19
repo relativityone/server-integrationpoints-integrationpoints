@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 		public List<ApplicationBinary> Execute(Guid applicationGuid)
 		{
 			List<ApplicationBinary> binaries = new List<ApplicationBinary>();
-			var sql = Resources.Resource.GetApplicationGuid;
+			var sql = Resources.Resource.GetApplicationBinaries;
 			var sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@ApplicationGUID", applicationGuid));
 

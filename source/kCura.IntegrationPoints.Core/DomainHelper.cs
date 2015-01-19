@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.Core
 			var dir = Path.Combine(domain.BaseDirectory, new FileInfo(assemblyPath).Name);
 			File.WriteAllBytes(dir, stream);
 			domain.Load(stream);
+			domain.AssemblyResolve += AssemblyDomainLoader.ResolveAssembly;
 		}
 
 		public virtual T CreateInstance<T>(AppDomain domain) where T : class
@@ -67,6 +68,7 @@ namespace kCura.IntegrationPoints.Core
 		{
 			if (domain != null)
 			{
+				domain.AssemblyResolve -= AssemblyDomainLoader.ResolveAssembly;
 				domain.DomainUnload += (sender, args) =>
 				{
 
@@ -85,6 +87,7 @@ namespace kCura.IntegrationPoints.Core
 			Directory.CreateDirectory(domainPath);
 			domaininfo.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
 			domaininfo.ApplicationBase = domainPath;
+			domaininfo.PrivateBinPath = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
 			string domainName = Guid.NewGuid().ToString();
 			var newDomain = AppDomain.CreateDomain(domainName, null, domaininfo);
 			return newDomain;
@@ -98,6 +101,5 @@ namespace kCura.IntegrationPoints.Core
 			manager.Init();
 			return manager;
 		}
-
 	}
 }

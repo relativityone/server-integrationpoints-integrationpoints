@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.Contracts
@@ -33,8 +30,7 @@ namespace kCura.IntegrationPoints.Contracts
 		{
 			var types = from a in AppDomain.CurrentDomain.GetAssemblies()
 									from t in a.GetTypes()
-									where Attribute.IsDefined(t, typeof(DataSourceProviderAttribute), true)
-									select t; 
+									select t;
 			var providerTypes = types.Where(x => x.GetCustomAttributes(typeof(DataSourceProviderAttribute), true).Cast<DataSourceProviderAttribute>().Any(y => y.Identifier.Equals(identifer))).ToList();
 			if (providerTypes.Count() > 1)
 			{

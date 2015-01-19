@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller
+namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 {
 	public interface IImportService
 	{

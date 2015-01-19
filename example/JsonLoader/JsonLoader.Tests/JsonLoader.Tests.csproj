@@ -59,12 +59,11 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.IntegrationPoints.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\kCura.IntegrationPoints.Contracts.0.9.0.1\lib\net45\kCura.IntegrationPoints.Contracts.dll</HintPath>
-    </Reference>
     <Reference Include="kCura.Relativity.Client">
       <HintPath>..\..\..\source\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.SourceProviderInstaller">
+      <HintPath>..\..\..\source\bin\Debug\kCura.SourceProviderInstaller.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

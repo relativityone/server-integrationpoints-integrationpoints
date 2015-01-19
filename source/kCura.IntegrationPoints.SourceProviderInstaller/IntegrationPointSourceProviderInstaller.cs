@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
 	public delegate void PostInstallPreExecuteEvent();
-
 	public delegate void PostInstallPostExecuteEvent(bool isInstalled, Exception ex);
 
 	public abstract class IntegrationPointSourceProviderInstaller : kCura.EventHandler.PostInstallEventHandler

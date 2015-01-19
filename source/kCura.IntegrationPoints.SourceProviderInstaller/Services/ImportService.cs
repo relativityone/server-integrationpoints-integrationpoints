@@ -9,7 +9,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Queries;
 
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller
+namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 {
 	public class ImportService : IImportService
 	{
@@ -92,9 +92,14 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		private void ValidateProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providers)
 		{
-			foreach (SourceProviderInstaller.SourceProvider provider in providers)
+			ISourcePluginProvider pluginProvider =
+				new DefaultSourcePluginProvider(new GetApplicationBinaries(_eddsContext.SqlContext));
+			using (AppDomainFactory factory = new AppDomainFactory(new DomainHelper(), pluginProvider))
 			{
-				TryLoadingProvider(provider);
+				foreach (SourceProviderInstaller.SourceProvider provider in providers)
+				{
+					TryLoadingProvider(factory, provider);
+				}
 			}
 		}
 
@@ -118,25 +123,22 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			return applicationGuid.Value;
 		}
 
-		private void TryLoadingProvider(SourceProviderInstaller.SourceProvider provider)
+		private void TryLoadingProvider(AppDomainFactory factory, SourceProviderInstaller.SourceProvider provider)
 		{
 			Exception loadingException = null;
 			IDataSourceProvider dataSourceProvider = null;
-			ISourcePluginProvider pluginProvider = new DefaultSourcePluginProvider(new GetApplicationBinaries(_eddsContext.SqlContext));
-			using (AppDomainFactory factory = new AppDomainFactory(new DomainHelper(), pluginProvider))
+			try
 			{
-				try
-				{
-					dataSourceProvider = factory.GetDataProvider(provider.ApplicationGUID, provider.GUID);
-				}
-				catch (Exception ex)
-				{
-					loadingException = ex;
-				}
+				dataSourceProvider = factory.GetDataProvider(provider.ApplicationGUID, provider.GUID);
+			}
+			catch (Exception ex)
+			{
+				loadingException = ex;
 			}
 			if (dataSourceProvider == null)
 			{
-				throw new InvalidSourceProviderException(string.Format("Could not load {0} ({1}).", provider.Name, provider.GUID), loadingException);
+				throw new InvalidSourceProviderException(string.Format("Could not load {0} ({1}).", provider.Name, provider.GUID),
+					loadingException);
 			}
 		}
 	}

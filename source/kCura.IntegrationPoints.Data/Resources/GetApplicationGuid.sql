@@ -1,3 +1,3 @@
 ﻿SELECT		[ArtifactGuid]
-FROM			[EDDSDBO].[ApplicationGuid] AG WITH(NOLOCK)
-WHERE 		AG.[ApplicationID] = @ApplicationID
+FROM			[EDDSDBO].[ArtifactGuid] AG WITH(NOLOCK)
+WHERE 		AG.[ArtifactID] = @ApplicationID

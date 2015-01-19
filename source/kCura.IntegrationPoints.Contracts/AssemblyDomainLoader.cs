@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Contracts
 	{
 		public AssemblyDomainLoader()
 		{
-			
+
 		}
 		/// <summary>
 		/// Loads assembly the current app domain.
@@ -72,8 +72,40 @@ namespace kCura.IntegrationPoints.Contracts
 		private void ValidatePath(string path)
 		{
 			if (path == null) throw new ArgumentNullException("path");
-			if (!System.IO.File.Exists(path)){
+			if (!System.IO.File.Exists(path))
+			{
 				throw new ArgumentException(String.Format("path \"{0}\" does not exist", path));
+			}
+		}
+
+		private static Dictionary<String, Assembly> _assemblies = new Dictionary<String, Assembly>(StringComparer.OrdinalIgnoreCase);
+		public static Assembly ResolveAssembly(object sender, ResolveEventArgs args)
+		{
+			Assembly returnedAssembly = null;
+
+			string dllName = new AssemblyName(args.Name).Name;
+			string dllPath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.PrivateBinPath, dllName + ".dll");
+
+			lock (_assemblies)
+			{
+				if (_assemblies.Count == 0) GetLoadedAssemblies();
+				if (!_assemblies.ContainsKey(dllName))
+				{
+					if (File.Exists(dllPath))
+					{
+						returnedAssembly = Assembly.LoadFile(dllPath);
+					}
+					_assemblies.Add(dllName, returnedAssembly);
+				}
+			}
+			return _assemblies[dllName];
+		}
+
+		private static void GetLoadedAssemblies()
+		{
+			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+			{
+				_assemblies.Add(assembly.GetName().Name, assembly);
 			}
 		}
 

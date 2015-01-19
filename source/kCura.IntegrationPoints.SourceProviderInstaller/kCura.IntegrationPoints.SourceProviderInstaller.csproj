@@ -75,8 +75,8 @@
   <ItemGroup>
     <Compile Include="Installer\ObjectInstaller.cs" />
     <Compile Include="IntegrationPointSourceProviderUninstaller.cs" />
-    <Compile Include="IImportService.cs" />
-    <Compile Include="ImportService.cs" />
+    <Compile Include="Services\IImportService.cs" />
+    <Compile Include="Services\ImportService.cs" />
     <Compile Include="IntegrationPointSourceProviderInstaller.cs" />
     <Compile Include="InvalidSourceProviderException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

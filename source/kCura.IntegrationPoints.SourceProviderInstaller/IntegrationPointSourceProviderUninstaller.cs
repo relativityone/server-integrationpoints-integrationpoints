@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using kCura.EventHandler;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
@@ -13,17 +15,39 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 	{
 		public event PreUninstallPreExecuteEvent RaisePreUninstallPreExecuteEvent;
 		public event PreUninstallPostExecuteEvent RaisePreUninstallPostExecuteEvent;
-		public abstract IDictionary<Guid, SourceProvider> GetSourceProviders();
-
-		private IImportService _importService;
-		internal IntegrationPointSourceProviderUninstaller(IImportService importService)
-		{
-			_importService = importService;
-		}
 
 		public IntegrationPointSourceProviderUninstaller()
 		{
-			//if (_importService == null) _importService = new ImportService();
+		}
+
+		private ICaseServiceContext _caseContext;
+		internal ICaseServiceContext CaseServiceContext
+		{
+			get
+			{
+				return _caseContext ?? (_caseContext = ServiceContextFactory.CreateCaseServiceContext(base.Helper, base.Helper.GetActiveCaseID()));
+			}
+			set { _caseContext = value; }
+		}
+
+		private IEddsServiceContext _eddsContext;
+		internal IEddsServiceContext EddsServiceContext
+		{
+			get
+			{
+				return _eddsContext ?? (_eddsContext = ServiceContextFactory.CreateEddsServiceContext(base.Helper));
+			}
+			set { _eddsContext = value; }
+		}
+
+		private IImportService _importService;
+		internal IImportService ImportService
+		{
+			get
+			{
+				return _importService ?? (_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext));
+			}
+			set { _importService = value; }
 		}
 
 		public override sealed Response Execute()
@@ -54,7 +78,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		private void UninstallSourceProvider()
 		{
-			_importService.UninstallProvider(base.ApplicationArtifactId);
+			ImportService.UninstallProvider(base.ApplicationArtifactId);
 		}
 
 		protected void OnRaisePreUninstallPreExecuteEvent()

@@ -11,17 +11,17 @@ using Newtonsoft.Json;
 
 namespace JsonLoader
 {
-	[kCura.IntegrationPoints.Contracts.DataSourceProvider("4380b80b-57ef-48c3-bf02-b98d2855166b")]
+	[kCura.IntegrationPoints.Contracts.DataSourceProvider(GlobalConst.JSON_SOURCE_PROVIDER_GUID)]
 	public class JsonProvider : kCura.IntegrationPoints.Contracts.Provider.IDataSourceProvider
 	{
 
 		private readonly JsonHelper _helper;
-		
+
 		public JsonProvider(JsonHelper helper)
 		{
 			_helper = helper;
 		}
-		
+
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
 			var fields = _helper.ReadFields(options);
@@ -40,7 +40,7 @@ namespace JsonLoader
 			mydt.Load(dt.CreateDataReader());
 			foreach (var column in columns)
 			{
-				
+
 			}
 			return dt.CreateDataReader();
 		}
