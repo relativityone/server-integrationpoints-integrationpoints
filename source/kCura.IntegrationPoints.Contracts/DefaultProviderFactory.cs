@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Provider;
 
@@ -30,8 +31,12 @@ namespace kCura.IntegrationPoints.Contracts
 		{
 			var types = from a in AppDomain.CurrentDomain.GetAssemblies()
 									from t in a.GetTypes()
+									where t.GetInterface("IDataSourceProvider", true) != null
 									select t;
-			var providerTypes = types.Where(x => x.GetCustomAttributes(typeof(DataSourceProviderAttribute), true).Cast<DataSourceProviderAttribute>().Any(y => y.Identifier.Equals(identifer))).ToList();
+			var attributes = types.SelectMany(x => x.GetCustomAttributes(true)).ToList();
+			attributes = attributes.Where(y => y.GetType().Name.Equals(typeof(DataSourceProviderAttribute).Name)).ToList();
+			List<DataSourceProviderAttribute> providerTypes = attributes.Select(x => (DataSourceProviderAttribute)x).ToList();
+			providerTypes = providerTypes.Where(z => z.Identifier.Equals(identifer)).ToList();
 			if (providerTypes.Count() > 1)
 			{
 				throw new Exception(string.Format(Properties.Resources.MoreThanOneProviderFound, providerTypes.Count(), identifer));
@@ -40,7 +45,7 @@ namespace kCura.IntegrationPoints.Contracts
 			{
 				throw new Exception(string.Format(Properties.Resources.NoProvidersFound, identifer));
 			}
-			return providerTypes.First();
+			return providerTypes.First().GetType();
 		}
 		/// <summary>
 		/// Creates a new instance of the provider type with an empty constructor using Activator

@@ -34,6 +34,7 @@
 	<property name="buildType" value="DEV" unless="${property::exists('buildType')}" />
 	<property name="Injections" value="INJECTION" unless="${property::exists('Injections')}" />
 	<property name="TimeMachine" value="TIME_MACHINE" unless="${property::exists('TimeMachine')}" />
+	<property name="DevEnv" value="DEVENV" unless="${property::exists('DevEnv')}" />
 
 	<!-- Microsoft .NET folders -->
 	<property name="microsoft.net.directory" value="${environment::get-variable('windir')}\Microsoft.NET\Framework\v4.0.30319" unless="${property::exists('microsoft.net.directory')}" />
@@ -139,7 +140,7 @@
 			<arg line='/flp:LogFile="${logfile}";Verbosity=${verbosity}' />      
 			<arg line="/target:BuildMethod" />
 			<arg line="/verbosity:${verbosity}" />
-			<arg line='/p:DefineConstants="${TimeMachine},${Injections}"' />
+			<arg line='/p:DefineConstants="${DevEnv},${TimeMachine},${Injections}"' />
 			<arg line="/nologo" />
 		</exec>
 	</target>

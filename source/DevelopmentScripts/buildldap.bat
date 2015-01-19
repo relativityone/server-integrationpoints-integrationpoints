@@ -17,7 +17,7 @@ if not "%2" == "" (
 
 SET LDAPSyncRoot=%LDAPSync%
 pushd %LDAPSync%\developmentscripts
-nant build -buildfile:"%BUILDPROJECT%" "-D:root=%LDAPSyncRoot%" "-D:buildconfig=%BUILDCONFIG%" "-D:action=%BUILDACTION%"
+nant build -buildfile:"%BUILDPROJECT%" "-D:root=%LDAPSyncRoot%" "-D:buildconfig=%BUILDCONFIG%" "-D:action=%BUILDACTION%" "-D:DevEnv=DEVENV"
 popd
 
 ::DropDLL

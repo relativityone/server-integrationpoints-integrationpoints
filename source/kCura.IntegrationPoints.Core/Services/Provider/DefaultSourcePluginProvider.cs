@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using kCura.IntegrationPoints.Core.Queries;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Queries;
 
 namespace kCura.IntegrationPoints.Core.Services.Provider

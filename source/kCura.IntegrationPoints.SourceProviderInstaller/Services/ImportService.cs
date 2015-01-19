@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.Vendor.Castle.Core.Internal;
 
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
@@ -37,10 +38,15 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			List<Data.SourceProvider> providersToBeRemoved =
 				installedRdoProviders.Where(x => !installingProviderDict.ContainsKey(x.Identifier)).ToList();
 
+			List<Data.SourceProvider> providersToBeUpdated =
+				installedRdoProviders.Where(x => installingProviderDict.ContainsKey(x.Identifier)).ToList();
+
 			List<SourceProviderInstaller.SourceProvider> providersToBeInstalled =
 				providers.Where(x => !installedRdoProviderDict.ContainsKey(x.GUID.ToString())).ToList();
 
 			RemoveProviders(providersToBeRemoved);
+
+			UpdateExistingProviders(providersToBeUpdated, providers);
 
 			AddNewProviders(providersToBeInstalled);
 		}
@@ -61,7 +67,19 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 				//TODO: before deleting SourceProviderRDO, 
 				//TODO: deactivate corresponding IntegrationPointRDO and delete corresponding queue job
 				//TODO: want to use delete event hanler for this case. 
-				_caseContext.RsapiService.SourceProviderLibrary.MassDelete(providersToBeRemoved);
+				_caseContext.RsapiService.SourceProviderLibrary.Delete(providersToBeRemoved);
+			}
+		}
+
+		private void UpdateExistingProviders(IEnumerable<Data.SourceProvider> providersToBeUpdated, 
+			IEnumerable<SourceProviderInstaller.SourceProvider> providers)
+		{
+			if (providersToBeUpdated.Any())
+			{
+				providersToBeUpdated.ForEach(x => x.Name = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Name).First());
+				providersToBeUpdated.ForEach(x => x.SourceConfigurationUrl = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Url).First());
+
+				_caseContext.RsapiService.SourceProviderLibrary.Update(providersToBeUpdated);
 			}
 		}
 
@@ -86,7 +104,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 		{
 			if (newProviders.Any())
 			{
-				_caseContext.RsapiService.SourceProviderLibrary.MassCreate(newProviders);
+				_caseContext.RsapiService.SourceProviderLibrary.Create(newProviders);
 			}
 		}
 

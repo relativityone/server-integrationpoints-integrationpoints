@@ -35,6 +35,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEVENV</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -42,6 +43,8 @@
     <Optimize>false</Optimize>
     <DebugType>pdbonly</DebugType>
     <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>
+    </DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core">

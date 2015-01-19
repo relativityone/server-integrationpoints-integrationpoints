@@ -54,10 +54,9 @@ namespace kCura.IntegrationPoints.Contracts
 		/// Loads assembly the current app domain.
 		/// </summary>
 		/// <param name="path">The library that will be loaded into the current Application Domain.</param>
-		public void Load(string path)
+		public void Load(string assemblyName)
 		{
-			ValidatePath(path);
-			Assembly.Load(path);
+			Assembly.Load(assemblyName);
 		}
 		/// <summary>
 		/// Loads assembly the current app domain.

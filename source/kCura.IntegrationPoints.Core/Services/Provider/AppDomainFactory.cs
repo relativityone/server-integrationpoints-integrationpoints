@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Odbc;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.Core.Services.Provider
