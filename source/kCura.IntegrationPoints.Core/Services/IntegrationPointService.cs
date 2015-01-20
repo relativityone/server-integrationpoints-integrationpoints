@@ -78,8 +78,18 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			var ip = model.ToRdo();
 			var rule = this.ToScheduleRule(model);
-			ip.ScheduleRule = rule.ToSerializedString();
-			ip.NextScheduledRuntime = rule.GetNextUTCRunDateTime();
+			if (ip.EnableScheduler.GetValueOrDefault(false))
+			{
+				ip.ScheduleRule = rule.ToSerializedString();
+				ip.NextScheduledRuntime = rule.GetNextUTCRunDateTime();
+			}
+			else
+			{
+				ip.ScheduleRule = string.Empty;
+				ip.NextScheduledRuntime = DateTime.UtcNow;
+				rule = null;
+			}
+			
 
 			//save RDO
 			if (ip.ArtifactId > 0)
