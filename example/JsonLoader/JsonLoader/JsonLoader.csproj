@@ -57,7 +57,11 @@
     <Reference Include="kCura.EventHandler">
       <HintPath>..\..\..\source\Dependencies\kCura\kCura.EventHandler.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.SourceProviderInstaller">
+    <Reference Include="kCura.IntegrationPoints.Contracts">
+      <HintPath>..\..\..\source\bin\Debug\kCura.IntegrationPoints.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.SourceProviderInstaller, Version=2.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\source\bin\Debug\kCura.SourceProviderInstaller.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">

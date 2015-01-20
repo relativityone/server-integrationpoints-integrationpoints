@@ -10,20 +10,8 @@ var IP  = IP || {};
 		
 		var localModel = ko.toJS(pageModel);
 		this.publish("saveState", localModel); //save the model incase of error
-		var self = this;
+		this.publish('saveComplete', localModel);
 
-		
-		$.ajax({
-			url: IP.utils.generateWebAPIURL('SourceFields/'),
-			type: "POST",
-			data: JSON.stringify(localModel),
-			success: function (data, textStatus, jqXHR) {
-				self.publish('saveComplete', ko.toJS(pageModel));
-			},
-			error: function (jqXHR, textStatus, errorThrown) {
-
-			}
-		});
 });
 	var viewModel = function () {
 		var self = this;

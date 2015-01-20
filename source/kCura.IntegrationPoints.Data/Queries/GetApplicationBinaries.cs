@@ -39,4 +39,5 @@ namespace kCura.IntegrationPoints.Data.Queries
 			return binaries;
 		}
 	}
+
 }

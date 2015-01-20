@@ -28,7 +28,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<AppDomainFactory>().LifestyleTransient());
 			container.Register(Component.For<DomainHelper>().ImplementedBy<DomainHelper>().LifestyleTransient());
 
-			//container.Register(Component.For<ISourcePluginProvider>().ImplementedBy<BarnesHardCodedSourcePlugin>().LifestyleTransient());
 			container.Register(Component.For<ISourcePluginProvider>().ImplementedBy<DefaultSourcePluginProvider>().LifestyleTransient());
 
 			container.Register(Component.For<IJobManager>().ImplementedBy<AgentJobManager>().LifestyleTransient());
