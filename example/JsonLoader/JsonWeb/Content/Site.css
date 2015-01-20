@@ -175,12 +175,10 @@ ul li .day-select {
 	border: 1px solid #c1c1c1;
 color: #102d4f;
 border-radius: 3px;
-width: 77px;
+width: 750px;
 
 }
-.inputBox {
-	width: 178px;
-}
+
 .connection-path,.connection-filter {
 	width: 450px;
 }
