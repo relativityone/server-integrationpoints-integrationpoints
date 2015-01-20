@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -45,11 +46,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 				Component.For<GetSourceProviderRdoByIdentifier>()
 					.ImplementedBy<GetSourceProviderRdoByIdentifier>()
 					.LifeStyle.Transient);
-
-			container.Register(
-				Component.For<GetApplicationBinaries>()
-					.ImplementedBy<GetApplicationBinaries>()
-					.LifeStyle.Transient);
+			
 
 			container.Register(Component.For<SourceTypeFactory>().ImplementedBy<SourceTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<RsapiClientFactory>().ImplementedBy<RsapiClientFactory>().LifestyleTransient());

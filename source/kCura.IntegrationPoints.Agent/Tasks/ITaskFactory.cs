@@ -1,8 +1,10 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
+using kCura.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data.Queries;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -36,7 +38,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			set { _container = value; }
 		}
 
-		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
+		private void Install(Job job, ScheduleQueueAgentBase agentBase)
 		{
 			Container.Register(Component.For<IScheduleRuleFactory>().UsingFactoryMethod((k) => agentBase.ScheduleRuleFactory, managedExternally: true));
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => _helper, managedExternally: true));
@@ -45,7 +47,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				.DependsOn(Dependency.OnValue<int>(job.WorkspaceID)));
 			Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>());
 			Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>());
+			Container.Register(Component.For<GetApplicationBinaries>().ImplementedBy<GetApplicationBinaries>().DynamicParameters((k, d) => d["eddsDBcontext"] = _helper.GetDBContext(-1)).LifeStyle.Transient);
 			Container.Install(FromAssembly.InThisApplication());
+		}
+
+		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
+		{
+			Install(job, agentBase);
 			TaskType taskType = TaskType.None;
 			TaskType.TryParse(job.TaskType, true, out taskType);
 			switch (taskType)
