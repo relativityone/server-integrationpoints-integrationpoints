@@ -95,10 +95,7 @@ namespace kCura.IntegrationPoints.Core
 				try
 				{
 					domain.DomainUnload += (sender, args) =>
-					{
-
-
-					};
+					{};
 				}
 				catch
 				{ }
@@ -116,7 +113,8 @@ namespace kCura.IntegrationPoints.Core
 		public virtual AppDomain CreateNewDomain()
 		{
 			AppDomainSetup domaininfo = new AppDomainSetup();
-			var domainPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+			var domainPath = Path.Combine(Path.GetTempPath(), "RelativityIntegrationPoints");
+			domainPath = Path.Combine(domainPath, Guid.NewGuid().ToString());
 			Directory.CreateDirectory(domainPath);
 			domaininfo.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
 			domaininfo.ApplicationBase = domainPath;

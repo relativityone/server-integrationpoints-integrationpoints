@@ -151,6 +151,7 @@
 			<arg line='/out:"${target.code.directory}\kCura.IntegrationPoints.dll"' />
 			<arg line='/internalize:ilmergeExcludeMain.txt' />
 			<arg line='/log' />
+			<arg line='/lib:"${target.code.directory}"' />
 			<arg line='/lib:"${source.reference.kCura.directory}"' />
 			<arg line='/lib:"${source.reference.MVCContrib.directory}"' />
 			<arg line='/lib:"${source.reference.CastleCore.directory}"' />

@@ -4,13 +4,15 @@ using System.DirectoryServices;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
-using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
 	[kCura.IntegrationPoints.Contracts.DataSourceProvider("5bf1f2c2-9670-4d6e-a3e9-dbc83db6c232")]
 	public class LDAPProvider : IDataSourceProvider
 	{
+		public LDAPProvider()
+		{ }
+
 		public System.Data.IDataReader GetData(IEnumerable<Contracts.Models.FieldEntry> fields, IEnumerable<string> entryIds, string options)
 		{
 			LDAPSettings settings = GetSettings(options);

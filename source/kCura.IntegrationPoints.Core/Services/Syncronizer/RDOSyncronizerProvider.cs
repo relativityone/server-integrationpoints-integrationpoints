@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 {
 	public class RDOSyncronizerProvider
 	{
-		public const string RDO_SYNC_TYPE_GUID = "4380b80b-57ef-48c3-bf02-b98d2855166b";
+		public const string RDO_SYNC_TYPE_GUID = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
 
 		private readonly ICaseServiceContext _context;
 
