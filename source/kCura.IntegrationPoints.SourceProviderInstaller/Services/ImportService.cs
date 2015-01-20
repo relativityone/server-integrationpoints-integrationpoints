@@ -28,6 +28,8 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			Guid applicationGuid = GetApplicationGuid(applicationID);
 			providers.ToList().ForEach(x => x.ApplicationGUID = applicationGuid);
 
+			InstallSyncronizerForCoreOnly(applicationGuid);
+
 			ValidateProviders(providers);
 
 			List<Data.SourceProvider> installedRdoProviders =
@@ -58,6 +60,15 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 				new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(applicationGuid);
 
 			RemoveProviders(installedRdoProviders);
+		}
+
+		private void InstallSyncronizerForCoreOnly(Guid applicationGuid)
+		{
+			//This is hack untill we introduce installation of Destination Providers
+			if (applicationGuid == new Guid(Application.GUID))
+			{
+				new Core.Services.Syncronizer.RDOSyncronizerProvider(_caseContext).CreateOrUpdateLdapSourceType();
+			}
 		}
 
 		private void RemoveProviders(IEnumerable<Data.SourceProvider> providersToBeRemoved)

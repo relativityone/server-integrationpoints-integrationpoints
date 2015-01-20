@@ -18,7 +18,7 @@ namespace JsonLoader.Installer
 					new Guid(GlobalConst.JSON_SOURCE_PROVIDER_GUID),
 					new SourceProvider()
 					{
-						Name = "Json File Source Provider",
+						Name = "JSON",
 						Url = "/%applicationpath%/CustomPages/f0fd184d-d2ca-4be9-83ec-884955eea8ff/Home/"
 					}
 				}

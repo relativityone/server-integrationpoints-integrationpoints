@@ -28,6 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 				var rdo = new DestinationProvider();
 				rdo.Name = "RDO";
 				rdo.Identifier = RDO_SYNC_TYPE_GUID;
+				rdo.ApplicationIdentifier = Application.GUID;
 				_context.RsapiService.DestinationProviderLibrary.Create(rdo);
 			}
 			else

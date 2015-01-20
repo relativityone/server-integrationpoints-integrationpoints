@@ -168,6 +168,7 @@
 			<arg line='"${target.code.directory}\kCura.ScheduleQueue.AgentBase.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Config.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.dll"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.SourceProviderInstaller.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Synchronizers.RDO.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.EventHandlers.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
