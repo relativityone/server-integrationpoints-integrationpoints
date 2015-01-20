@@ -299,7 +299,9 @@
 .select2-container.filter-container.select2-dropdown-open a,
 .select2-drop.filter-select.select2-drop-active {
   border: 1px solid #1b54ab; }
-
+.select2-container.filter-container.select2-dropdown-open{
+	border: none;
+}
 .select2-container.filter-container.select2-dropdown-open a {
   border-bottom: none; }
 

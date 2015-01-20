@@ -13,10 +13,10 @@ var IP  = IP || {};
 		this.publish('saveComplete', localModel);
 
 });
-	var viewModel = function () {
+	var viewModel = function (model) {
 		var self = this;
-		this.fieldLocation = ko.observable("");
-		this.dataLocation = ko.observable("");
+		this.fieldLocation = ko.observable(model.fieldLocation);
+		this.dataLocation = ko.observable(model.dataLocation);
 
 	};
 
@@ -24,7 +24,18 @@ var IP  = IP || {};
 		this.publish("saveState", ko.toJS(pageModel));
 	});
 
-		pageModel = new viewModel();
+	message.subscribe('load', function (model) {
+		if (typeof (model) === "string") {
+			try {
+				model = JSON.parse(model);
+			} catch (e) {
+				model = {};
+			}
+		}
+		pageModel = new viewModel(model);
 		ko.applyBindings(pageModel, document.getElementById('jsonConfiguration'));
+	});
+
+		
 	
 })();
