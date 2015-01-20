@@ -92,11 +92,16 @@ namespace kCura.IntegrationPoints.Core
 			{
 				string domainDirectory = domain.BaseDirectory;
 				domain.AssemblyResolve -= AssemblyDomainLoader.ResolveAssembly;
-				domain.DomainUnload += (sender, args) =>
+				try
 				{
+					domain.DomainUnload += (sender, args) =>
+					{
 
 
-				};
+					};
+				}
+				catch
+				{ }
 				AppDomain.Unload(domain);
 
 				try
@@ -104,7 +109,7 @@ namespace kCura.IntegrationPoints.Core
 					Directory.Delete(domainDirectory, true);
 				}
 				catch
-				{}
+				{ }
 			}
 		}
 
@@ -145,10 +150,14 @@ namespace kCura.IntegrationPoints.Core
 			Directory.CreateDirectory(targetDir);
 
 			foreach (var file in Directory.GetFiles(sourceDir))
+			{
 				File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)));
+			}
 
 			foreach (var directory in Directory.GetDirectories(sourceDir))
+			{
 				CopyDirectoryFiles(directory, Path.Combine(targetDir, Path.GetFileName(directory)));
+			}
 		}
 
 		private void PrepAssemblies(AppDomain domain)

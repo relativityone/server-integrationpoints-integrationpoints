@@ -1,2 +1,1 @@
-kCura.IntegrationPoints.Contracts
 kCura.IntegrationPoints.SourceProviderInstaller

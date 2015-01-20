@@ -59,6 +59,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="kCura.IntegrationPoints.Contracts">
+      <HintPath>..\..\..\source\bin\Debug\kCura.IntegrationPoints.Contracts.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client">
       <HintPath>..\..\..\source\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
     </Reference>
