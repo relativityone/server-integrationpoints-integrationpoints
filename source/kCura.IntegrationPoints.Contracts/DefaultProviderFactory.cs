@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Contracts
 			{
 				throw new Exception(string.Format(Properties.Resources.NoProvidersFound, identifer));
 			}
-			return providerTypes.First().GetType();
+			return providerTypes.First();
 		}
 		/// <summary>
 		/// Creates a new instance of the provider type with an empty constructor using Activator
