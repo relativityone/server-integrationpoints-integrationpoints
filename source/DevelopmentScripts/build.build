@@ -167,6 +167,7 @@
 			<arg line='"${source.reference.Injection.directory}\kCura.Injection.dll"' />
 			<arg line='"${target.code.directory}\kCura.ScheduleQueue.Core.dll"' />
 			<arg line='"${target.code.directory}\kCura.ScheduleQueue.AgentBase.dll"' />
+			<arg line='"${source.reference.kCura.directory}\Relativity.ImportAPI.Wrapper.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Config.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.SourceProviderInstaller.dll"' />
