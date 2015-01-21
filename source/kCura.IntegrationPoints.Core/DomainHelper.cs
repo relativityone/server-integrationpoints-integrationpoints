@@ -146,9 +146,22 @@ namespace kCura.IntegrationPoints.Core
 			libDllPath = GetRelativityLibraryPath();
 			CopyDirectoryFiles(libDllPath, finalDllPath, true, true);
 
+			//FSharp.Core
+			libDllPath = GetRelativityEddsPath();
+			if (!string.IsNullOrWhiteSpace(libDllPath)) CopyFileWithWildcard(Path.Combine(libDllPath, "bin"), finalDllPath, "FSharp.Core*");
+
 			//PrepAssemblies(domain);
 		}
 
+		private void CopyFileWithWildcard(string sourceDir, string targetDir, string fileName)
+		{
+			string[] files = Directory.GetFiles(sourceDir, fileName);
+			foreach (string file in files)
+			{
+				FileInfo file_info = new FileInfo(file);
+				File.Copy(file, Path.Combine(targetDir, file_info.Name), true);
+			}
+		}
 		private void CopyDirectoryFiles(string sourceDir, string targetDir, bool overwriteFiles, bool includeSubdirectories)
 		{
 			Directory.CreateDirectory(targetDir);
@@ -206,6 +219,20 @@ namespace kCura.IntegrationPoints.Core
 			}
 			rk.Close();
 			return keyValue;
+		}
+
+		private string GetRelativityEddsPath()
+		{
+			string eddsPath = string.Empty;
+
+			try
+			{
+				eddsPath = GetFeaturePathsValue("WebPath");
+			}
+			catch
+			{
+			}
+			return eddsPath;
 		}
 
 		private string GetRelativityAgentPath()
