@@ -17,13 +17,18 @@ namespace kCura.IntegrationPoints.Web.Attributes
 		}
 		public override void OnException(HttpActionExecutedContext actionExecutedContext)
 		{
-			var worksspaceID = actionExecutedContext.Request.GetRouteData().Values["workspaceID"] as string;
-			var workspsace = 0;
-			int.TryParse(worksspaceID, out workspsace);
-			var exp = actionExecutedContext.Exception;
-			var creator = _factory.GetErrorService();
-			creator.Log(new ErrorModel(workspsace, exp.Message, exp));
-			_factory.Release(creator);
+			try
+			{
+				var worksspaceID = actionExecutedContext.Request.GetRouteData().Values["workspaceID"] as string;
+				var workspsace = 0;
+				int.TryParse(worksspaceID, out workspsace);
+				var exp = actionExecutedContext.Exception;
+				var creator = _factory.GetErrorService();
+				creator.Log(new ErrorModel(workspsace, exp.Message, exp));
+				_factory.Release(creator);
+			}
+			catch
+			{}
 		}
 	}
 }

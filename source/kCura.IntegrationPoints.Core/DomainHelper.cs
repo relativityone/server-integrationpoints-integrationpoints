@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts;
 using Microsoft.Win32;
@@ -95,7 +96,7 @@ namespace kCura.IntegrationPoints.Core
 				try
 				{
 					domain.DomainUnload += (sender, args) =>
-					{};
+					{ };
 				}
 				catch
 				{ }
@@ -137,24 +138,31 @@ namespace kCura.IntegrationPoints.Core
 		private void DeployLibraryFiles(AppDomain domain)
 		{
 			string finalDllPath = domain.BaseDirectory;
-			string libDllPath = GetRelativityLibraryPath();
+			string libDllPath = null;
 
-			CopyDirectoryFiles(libDllPath, finalDllPath);
+			libDllPath = GetRelativityAgentPath();
+			if (!string.IsNullOrWhiteSpace(libDllPath)) CopyDirectoryFiles(libDllPath, finalDllPath, true, false);
+
+			libDllPath = GetRelativityLibraryPath();
+			CopyDirectoryFiles(libDllPath, finalDllPath, true, true);
+
 			//PrepAssemblies(domain);
 		}
 
-		private void CopyDirectoryFiles(string sourceDir, string targetDir)
+		private void CopyDirectoryFiles(string sourceDir, string targetDir, bool overwriteFiles, bool includeSubdirectories)
 		{
 			Directory.CreateDirectory(targetDir);
 
 			foreach (var file in Directory.GetFiles(sourceDir))
 			{
-				File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)));
+				File.Copy(file, Path.Combine(targetDir, Path.GetFileName(file)), overwriteFiles);
 			}
-
-			foreach (var directory in Directory.GetDirectories(sourceDir))
+			if (includeSubdirectories)
 			{
-				CopyDirectoryFiles(directory, Path.Combine(targetDir, Path.GetFileName(directory)));
+				foreach (var directory in Directory.GetDirectories(sourceDir))
+				{
+					CopyDirectoryFiles(directory, Path.Combine(targetDir, Path.GetFileName(directory)), overwriteFiles, includeSubdirectories);
+				}
 			}
 		}
 
@@ -200,6 +208,20 @@ namespace kCura.IntegrationPoints.Core
 			return keyValue;
 		}
 
+		private string GetRelativityAgentPath()
+		{
+			string agentPath = string.Empty;
+
+			try
+			{
+				agentPath = GetFeaturePathsValue("AgentPath");
+			}
+			catch
+			{
+			}
+			return agentPath;
+		}
+
 		private string GetRelativityLibraryPath()
 		{
 			string libraryPath = string.Empty;
@@ -209,9 +231,9 @@ namespace kCura.IntegrationPoints.Core
 				libraryPath = GetFeaturePathsValue("LibraryPath");
 			}
 			catch
-			{}
+			{ }
 
-			if (!string.IsNullOrEmpty(libraryPath))
+			if (string.IsNullOrEmpty(libraryPath))
 			{
 				libraryPath = @"C:\SourceCode\Mainline\lib"; //HACK: copied from Relativity Core
 				if (!Directory.Exists(libraryPath))
