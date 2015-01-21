@@ -11,6 +11,7 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
+using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.Relativity.Client;
 using Microsoft.Ajax.Utilities;
@@ -45,7 +46,7 @@ namespace kCura.IntegrationPoints.Web
 			var settings = jsonFormatter.SerializerSettings;
 			settings.Formatting = Formatting.Indented;
 			settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-
+			kCura.Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(ConnectionHelper.Helper());
 		}
 
 		public void Application_Error(object sender, EventArgs e)

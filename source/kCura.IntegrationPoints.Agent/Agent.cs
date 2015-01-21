@@ -11,6 +11,7 @@ using kCura.ScheduleQueue.Core.Logging;
 using kCura.ScheduleQueue.Core.TimeMachine;
 using Relativity.API;
 using ITaskFactory = kCura.IntegrationPoints.Agent.Tasks.ITaskFactory;
+using kCura.Apps.Common.Data;
 
 namespace kCura.IntegrationPoints.Agent
 {
@@ -51,6 +52,7 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			base.RaiseException += new ExceptionEventHandler(RaiseException);
 			base.RaiseJobLogEntry += new JobLoggingEventHandler(RaiseJobLog);
+			kCura.Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(base.Helper);
 #if TIME_MACHINE
 			AgentTimeMachineProvider.Current = new DefaultAgentTimeMachineProvider(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 #endif

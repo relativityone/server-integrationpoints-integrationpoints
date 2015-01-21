@@ -360,6 +360,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 	var Step = function (settings) {
 		function setCache(model, key) {
+			//we only want to cache the fields this page is incharge of
 			stepCache[key] = {
 				map: model.map,
 				parentIdentifier: model.parentIdentifier,
@@ -381,7 +382,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 			this.key = JSON.parse(model.destination).artifactTypeID;
 			if (typeof (stepCache[this.key]) === "undefined") {
-				//we only want to cache the fields this page is incharge of
+				
 				setCache(model, this.key);
 			}
 			this.returnModel = $.extend(true,{}, model);
