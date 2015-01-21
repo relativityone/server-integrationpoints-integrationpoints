@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				ip.NextScheduledRuntime = DateTime.UtcNow;
 				rule = null;
 			}
-			
+
 
 			//save RDO
 			if (ip.ArtifactId > 0)
@@ -100,7 +100,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				ip.ArtifactId = _context.RsapiService.IntegrationPointLibrary.Create(ip);
 			}
-			_jobService.CreateJob<object>(null, TaskType.SyncManager, _context.WorkspaceID, ip.ArtifactId, rule);
+			if (rule != null)
+			{
+				_jobService.CreateJob<object>(null, TaskType.SyncManager, _context.WorkspaceID, ip.ArtifactId, rule);
+			}
 			return ip.ArtifactId;
 		}
 
