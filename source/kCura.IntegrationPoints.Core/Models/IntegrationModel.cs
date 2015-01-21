@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
+using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -102,12 +103,17 @@ namespace kCura.IntegrationPoints.Core.Models
 			this.SourceConfiguration = string.Empty;
 		}
 
-		public IntegrationPoint ToRdo()
+		public IntegrationPoint ToRdo(IEnumerable<Relativity.Client.DTOs.Choice> choices)
 		{
 			var point = new IntegrationPoint();
 			point.ArtifactId = this.ArtifactID;
 			point.Name = this.Name;
-			//point.OverwriteFields = new Choice(Guid.Parse(Data.OverwriteFieldsChoiceGuids.APPEND_AND_OVERLAY_GUID), Data.OverwriteFieldsChoices.IntegrationPointAppend.Name);
+			var choice = choices.FirstOrDefault(x => x.Name.Equals(this.SelectedOverwrite));
+			if (choice == null)
+			{
+				throw new Exception("Cannot find choice by the name " + this.SelectedOverwrite);
+			}
+			point.OverwriteFields = new Choice(choice.ArtifactID, choice.Name);
 			point.SourceConfiguration = this.SourceConfiguration;
 			point.SourceProvider = null;
 			point.SourceProvider = this.SourceProvider;
@@ -115,14 +121,19 @@ namespace kCura.IntegrationPoints.Core.Models
 			point.FieldMappings = this.Map;
 			point.EnableScheduler = this.Scheduler.EnableScheduler;
 			point.DestinationProvider = this.DestinationProvider;
+
 			return point;
 		}
-
 		public IntegrationModel(IntegrationPoint ip)
 		{
 			this.ArtifactID = ip.ArtifactId;
 			Name = ip.Name;
 			SelectedOverwrite = string.Empty;
+			if (ip.OverwriteFields != null)
+			{
+				SelectedOverwrite = ip.OverwriteFields.Name;
+			}
+
 			this.SourceProvider = ip.SourceProvider.GetValueOrDefault(0);
 			//if (ip.OverwriteFields != null)
 			//{

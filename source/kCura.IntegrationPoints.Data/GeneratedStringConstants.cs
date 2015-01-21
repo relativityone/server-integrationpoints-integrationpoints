@@ -115,6 +115,13 @@ namespace kCura.IntegrationPoints.Data
 
 	#region "Choice Constants"
 
+	public partial class OverwriteFieldsChoices
+	{
+		public static Choice IntegrationPointAppend = new Choice(0, @"Append");
+		public static Choice IntegrationPointAppendOverlay = new Choice(0, @"Append/Overlay");
+		public static Choice IntegrationPointOverlayOnly = new Choice(0, @"Overlay Only");
+	}
+
 	#endregion								
 
 	#region "Layouts"

@@ -76,7 +76,9 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public int SaveIntegration(IntegrationModel model)
 		{
-			var ip = model.ToRdo();
+			var choices = _choiceQuery.GetChoicesOnField(Guid.Parse(Data.IntegrationPointFieldGuids.OverwriteFields));
+
+			var ip = model.ToRdo(choices);
 			var rule = this.ToScheduleRule(model);
 			if (ip.EnableScheduler.GetValueOrDefault(false))
 			{

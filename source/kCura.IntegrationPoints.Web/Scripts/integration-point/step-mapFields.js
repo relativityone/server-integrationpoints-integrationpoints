@@ -26,7 +26,7 @@ ko.validation.rules['mustContainIdentifer'] = {
 				containsIdentifier = false;
 				$.each(value, function (index, item) {
 
-					if (item.isIdentifier === true){ 
+					if (item.isIdentifier === true) {
 						containsIdentifier = true;
 					}
 				});
@@ -111,7 +111,7 @@ ko.validation.insertValidationMessage = function (element) {
 				params: this.mappedWorkspace
 			}
 		});
-		
+
 		this.sourceField = ko.observableArray([]);
 		this.selectedWorkspaceField = ko.observableArray([]);
 		this.selectedMappedWorkspace = ko.observableArray([]);
@@ -132,7 +132,11 @@ ko.validation.insertValidationMessage = function (element) {
 		});
 
 		this.cacheMapped = ko.observableArray([]);
-		var workspaceFieldPromise = root.data.ajax({ type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({ settings: model.destination }) }).then(function (result) {
+		var workspaceFieldPromise = root.data.ajax({
+			type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({
+				settings: model.destination
+			})
+		}).then(function (result) {
 			var types = mapFields(result);
 			self.overlay(types);
 
@@ -148,7 +152,12 @@ ko.validation.insertValidationMessage = function (element) {
 			});
 			return result;
 		});
-		var sourceFieldPromise = root.data.ajax({ type: 'Post', url: root.utils.generateWebAPIURL('SourceFields'), data: JSON.stringify({ 'options': model.sourceConfiguration, 'type': model.source.selectedType }) });
+		var sourceFieldPromise = root.data.ajax({
+			type: 'Post', url: root.utils.generateWebAPIURL('SourceFields'), data: JSON.stringify({
+				'options': model.sourceConfiguration,
+				'type': model.source.selectedType
+			})
+		});
 		var mappedSourcePromise;
 
 		if (typeof (model.map) === "undefined") {
@@ -192,10 +201,10 @@ ko.validation.insertValidationMessage = function (element) {
 			};
 
 		})();
-		
+
 		root.data.deferred().all(promises).then(
 			function (result) {
-				
+
 				root.modal.open(1);
 				var destinationFields = result[0],
 						sourceFields = result[1],
@@ -205,7 +214,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 				self.parentField(types);
 				if (model.parentIdentifier !== undefined) {
-					$.each(self.parentField(), function() {
+					$.each(self.parentField(), function () {
 						if (this.name === model.parentIdentifier) {
 							self.selectedIdentifier(this.name);
 						}
@@ -232,7 +241,9 @@ ko.validation.insertValidationMessage = function (element) {
 				root.modal.close();
 
 
-			}).fail(function () { });
+			}).fail(function (result) {
+				IP.message.error.raise(result);
+			});
 
 
 
@@ -346,7 +357,16 @@ ko.validation.insertValidationMessage = function (element) {
 	};// end of the viewmodel
 
 
+
 	var Step = function (settings) {
+		function setCache(model, key) {
+			stepCache[key] = {
+				map: model.map,
+				parentIdentifier: model.parentIdentifier,
+				identifer: model.identifer
+			} || '';
+		}
+
 		var stepCache = {};
 		var self = this;
 		self.settings = settings;
@@ -358,12 +378,19 @@ ko.validation.insertValidationMessage = function (element) {
 		this.key = "";
 		this.loadModel = function (model) {
 			this.hasBeenLoaded = false;
-			
-			this.key = jQuery.parseJSON(model.destination).artifactTypeID;
+
+			this.key = JSON.parse(model.destination).artifactTypeID;
 			if (typeof (stepCache[this.key]) === "undefined") {
-				stepCache[this.key] = model || '';
+				//we only want to cache the fields this page is incharge of
+				setCache(model, this.key);
 			}
-			this.returnModel = stepCache[this.key];
+			this.returnModel = $.extend(true,{}, model);
+			var c = stepCache[this.key];
+			for (var k in c) {
+				if (c.hasOwnProperty(k)) {
+					this.returnModel[k] = c[k];
+				}
+			}
 			this.model = new viewModel(this.returnModel);
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 		};
@@ -375,16 +402,16 @@ ko.validation.insertValidationMessage = function (element) {
 				self.hasTemplate = true;
 			});
 		};
-		
+
 		this.bus.subscribe("saveState", function (state) {
 		});
 
 		this.back = function () {
 			var d = root.data.deferred().defer();
-			
+
 			this.returnModel.identifer = this.model.selectedOverlay();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
-			var map = [];  
+			var map = [];
 			for (var i = 0; i < this.model.mappedWorkspace().length; i++) {
 				map.push({
 					sourceField: {
@@ -411,17 +438,15 @@ ko.validation.insertValidationMessage = function (element) {
 					fieldMapType: "None"
 				});
 			}
-		
+
 			this.returnModel.map = JSON.stringify(map);
 
-			stepCache[self.key] = this.returnModel;
-			
+			setCache(this.returnModel, self.key);
+
 			d.resolve(this.returnModel);
 			return d.promise;
 		}
 		
-		
-
 
 		this.submit = function () {
 			var d = root.data.deferred().defer();
@@ -495,13 +520,13 @@ ko.validation.insertValidationMessage = function (element) {
 		};
 	};
 
-	
+
 	var step = new Step({
 		url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3'),
 		templateID: 'step3'
 	});
 	IP.messaging.subscribe('back', function () {
-		
+
 	});
 	root.points.steps.push(step);
 

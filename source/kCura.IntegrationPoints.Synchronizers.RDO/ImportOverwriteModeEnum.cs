@@ -4,6 +4,6 @@
 	{
 		Append = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append,
 		AppendOverlay = kCura.Relativity.DataReaderClient.OverwriteModeEnum.AppendOverlay,
-		Overlay = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Overlay,
+		OverlayOnly = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Overlay,
 	}
 }

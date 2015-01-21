@@ -217,7 +217,6 @@ var IP = IP || {};
 				new Choice("last", 5)
 			]);
 
-			debugger;
 			this.selectedType = ko.observable(currentState.selectedType);
 
 			this.selectedType.subscribe(function () {
@@ -434,7 +433,11 @@ var IP = IP || {};
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 			this.model.submit();
 			if (this.model.errors().length === 0) {
-			    this.model.destination = JSON.stringify({ artifactTypeID: ko.toJS(this.model.destination).artifactTypeID, ImportOverwriteMode: ko.toJS(this.model.selectedOverwrite).replace('/', ''), CaseArtifactId: IP.data.params['appID'] });
+				this.model.destination = JSON.stringify({
+					artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,
+					ImportOverwriteMode: ko.toJS(this.model.selectedOverwrite).replace('/', '').replace(' ', ''),
+					CaseArtifactId: IP.data.params['appID']
+				});
 				
 				this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
 				this.model.sourceProvider = this.model.source.sourceProvider;
