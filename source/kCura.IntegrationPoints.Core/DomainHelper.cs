@@ -211,7 +211,7 @@ namespace kCura.IntegrationPoints.Core
 			catch
 			{}
 
-			if (!string.IsNullOrEmpty(libraryPath))
+			if (string.IsNullOrEmpty(libraryPath))
 			{
 				libraryPath = @"C:\SourceCode\Mainline\lib"; //HACK: copied from Relativity Core
 				if (!Directory.Exists(libraryPath))
