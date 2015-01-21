@@ -202,13 +202,24 @@ namespace kCura.IntegrationPoints.Core
 
 		private string GetRelativityLibraryPath()
 		{
-			string libraryPath = GetFeaturePathsValue("LibraryPath");
-#if DEVENV
+			string libraryPath = string.Empty;
+
+			try
+			{
+				libraryPath = GetFeaturePathsValue("LibraryPath");
+			}
+			catch
+			{}
+
 			if (!string.IsNullOrEmpty(libraryPath))
 			{
 				libraryPath = @"C:\SourceCode\Mainline\lib"; //HACK: copied from Relativity Core
+				if (!Directory.Exists(libraryPath))
+				{
+					throw new Exception("Could not retrieve LibraryPath.");
+				}
 			}
-#endif
+
 			return libraryPath;
 		}
 	}

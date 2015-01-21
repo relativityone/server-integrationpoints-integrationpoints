@@ -2,6 +2,7 @@
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
+	[Serializable]
 	public class InvalidSourceProviderException : Exception
 	{
 		public InvalidSourceProviderException()
