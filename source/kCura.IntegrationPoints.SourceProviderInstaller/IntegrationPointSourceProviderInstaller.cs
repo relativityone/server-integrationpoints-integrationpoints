@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.EventHandler;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 
@@ -64,7 +65,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			{
 				ex = e;
 				isSuccess = false;
-				throw;
+				throw Utils.GetNonCustomException(e);
 			}
 			finally
 			{
