@@ -25,8 +25,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, IImportAPI importAPI = null)
 		{
-			EmbeddedAssembly.Load("kCura.IntegrationPoints.Synchronizers.RDO.Relativity.ImportAPI.Wrapper.dll", "Relativity.ImportAPI.Wrapper.dll");
-			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
+			//EmbeddedAssembly.Load("kCura.IntegrationPoints.Synchronizers.RDO.Relativity.ImportAPI.Wrapper.dll", "Relativity.ImportAPI.Wrapper.dll");
+			//AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 
 			this.Settings = settings;
 			this._batchManager = batchManager;
@@ -46,6 +46,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			if (_importAPI == null)
 			{
+				EmbeddedAssembly.Load("kCura.IntegrationPoints.Synchronizers.RDO.Relativity.ImportAPI.Wrapper.dll", "Relativity.ImportAPI.Wrapper.dll");
+				AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 				Connect(Settings.WebServiceURL);
 				SetupFieldDictionary(_importAPI);
 				Dictionary<string, int> fieldMapping = _inputMappings;
