@@ -138,11 +138,13 @@ namespace kCura.IntegrationPoints.Core
 		private void DeployLibraryFiles(AppDomain domain)
 		{
 			string finalDllPath = domain.BaseDirectory;
-			string libDllPath = GetRelativityLibraryPath();
-			CopyDirectoryFiles(libDllPath, finalDllPath, true, true);
+			string libDllPath = null;
 
 			libDllPath = GetRelativityAgentPath();
-			if (!string.IsNullOrWhiteSpace(libDllPath)) CopyDirectoryFiles(libDllPath, finalDllPath, false, false);
+			if (!string.IsNullOrWhiteSpace(libDllPath)) CopyDirectoryFiles(libDllPath, finalDllPath, true, false);
+
+			libDllPath = GetRelativityLibraryPath();
+			CopyDirectoryFiles(libDllPath, finalDllPath, true, true);
 
 			//PrepAssemblies(domain);
 		}
