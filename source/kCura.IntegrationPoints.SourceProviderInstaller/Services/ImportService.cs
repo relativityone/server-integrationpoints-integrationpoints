@@ -55,11 +55,16 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 
 		public void UninstallProvider(int applicationID)
 		{
-			Guid applicationGuid = GetApplicationGuid(applicationID);
-			List<Data.SourceProvider> installedRdoProviders =
-				new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(applicationGuid);
+			try
+			{
+				Guid applicationGuid = GetApplicationGuid(applicationID);
+				List<Data.SourceProvider> installedRdoProviders =
+					new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(applicationGuid);
 
-			RemoveProviders(installedRdoProviders);
+				RemoveProviders(installedRdoProviders);
+			}
+			catch
+			{ }
 		}
 
 		private void InstallSyncronizerForCoreOnly(Guid applicationGuid)
@@ -82,7 +87,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			}
 		}
 
-		private void UpdateExistingProviders(IEnumerable<Data.SourceProvider> providersToBeUpdated, 
+		private void UpdateExistingProviders(IEnumerable<Data.SourceProvider> providersToBeUpdated,
 			IEnumerable<SourceProviderInstaller.SourceProvider> providers)
 		{
 			if (providersToBeUpdated.Any())

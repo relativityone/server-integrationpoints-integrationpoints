@@ -83,10 +83,6 @@
     <Compile Include="SourceProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\DoNotRemove.txt" />
-    <EmbeddedResource Include="Resources\kCura.IntegrationPoints.LDAPProvider.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>

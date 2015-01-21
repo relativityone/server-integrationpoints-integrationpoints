@@ -153,6 +153,7 @@
     <Content Include="Content\buttermilk.scss" />
     <Content Include="Content\buttermilk-variables.scss" />
     <None Include="Properties\PublishProfiles\abc.pubxml" />
+    <None Include="Properties\PublishProfiles\Art.pubxml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\data.js" />
     <Content Include="Scripts\frame-messaging.js" />
