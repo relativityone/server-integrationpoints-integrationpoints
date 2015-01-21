@@ -7,8 +7,9 @@
 
 	public partial class OverwriteFieldsChoiceGuids
 	{
-		public static string APPEND_GUID = "FE6C371D-93F2-4DEA-B41B-4912357C5BA4";
-		public static string APPEND_AND_OVERLAY_GUID = "27792C58-FB65-4C8A-8920-3329F3DF19B8";
+		public static string APPEND_GUID = "998c2b04-d42e-435b-9fba-11fec836aad8";
+		public static string APPEND_AND_OVERLAY_GUID = "5450ebc3-ac57-4e6a-9d28-d607bbdcf6fd";
+		public static string OVERLAY_GUID = "70a1052d-93a3-4b72-9235-ac65f0d5a515";
 
 	}
 	public partial class FrequencyChoiceGuids

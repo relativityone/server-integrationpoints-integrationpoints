@@ -25,6 +25,11 @@ namespace JsonLoader
 		{
 			var settings = Newtonsoft.Json.JsonConvert.DeserializeObject<JsonSettings>(options);
 			return settings;
+			return new JsonSettings()
+			{
+				FieldLocation = @"C:\SourceCode\LDAPSync\example\JsonLoader\JsonLoader\bin\fields.json",
+				DataLocation = @"C:\SourceCode\LDAPSync\example\JsonLoader\JsonLoader\bin\data.json"
+			};
 		}
 	}
 }
