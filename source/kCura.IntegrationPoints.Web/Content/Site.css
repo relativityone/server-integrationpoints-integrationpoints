@@ -257,3 +257,29 @@ width: 77px;
 color: #102d4f;
 border-radius: 3px;
 }
+
+.legal-hold[class*="icon-"]:before, .legal-hold[class*=" icon-"]:before
+{
+	color: #006699;
+}
+.legal-hold[class*="icon-"]:hover:before, .legal-hold[class*=" icon-"]:hover:before
+{
+	color: #007fc6;
+}
+a.legal-hold.icon-help {
+	text-decoration: none;
+}
+header-actions-container:hover:before {
+-webkit-transform: translateX(-50%);
+-moz-transform: translateX(-50%);
+-ms-transform: translateX(-50%);
+-o-transform: translateX(-50%);
+border: solid;
+border-color: #333333 transparent;
+border-width: 6px 6px 0 6px;
+bottom: 20px;
+content: "";
+left: 50%;
+transform: translateX(-50%);
+position: absolute;
+}
