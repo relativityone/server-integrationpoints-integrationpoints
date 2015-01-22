@@ -118,7 +118,6 @@ ko.validation.insertValidationMessage = function (element) {
 		this.selectedSourceField = ko.observableArray([]);
 		this.selectedMappedSource = ko.observableArray([]);
 		this.overlay = ko.observableArray([]);
-
 		this.hasParent = ko.observable(false);
 		this.parentField = ko.observableArray([]);
 		this.selectedIdentifier = ko.observable().extend({
@@ -130,7 +129,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 			}
 		});
-
+	
 		this.cacheMapped = ko.observableArray([]);
 		var workspaceFieldPromise = root.data.ajax({
 			type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({
@@ -167,7 +166,7 @@ ko.validation.insertValidationMessage = function (element) {
 		}
 
 		var destination = JSON.parse(model.destination);
-		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('rdometa', destination.artifactTypeID) }).then(function (result) {
+		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('rdometa', destination.artifactTypeID)}).then(function (result) {
 			self.hasParent(result.hasParent);
 
 		});
@@ -213,11 +212,12 @@ ko.validation.insertValidationMessage = function (element) {
 			};
 
 		})();
-
+		
 		root.data.deferred().all(promises).then(
-			function (result) {
 
-				root.modal.open(1);
+			function (result) {
+				
+
 				var destinationFields = result[0],
 						sourceFields = result[1],
 						mapping = result[2];
@@ -256,7 +256,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.sourceField(mapFields(sourceNotMapped));
 				self.sourceMapped(mapFields(sourceMapped));
 				self.isAppendOverlay(model.selectedOverwrite !== "Append");
-				root.modal.close();
+			
 
 
 			}).fail(function (result) {
@@ -415,7 +415,7 @@ ko.validation.insertValidationMessage = function (element) {
 		};
 		this.getTemplate = function () {
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
-				root.modal.open(.05);
+				
 				$('body').append(result);
 				self.template(self.settings.templateID);
 				self.hasTemplate = true;
