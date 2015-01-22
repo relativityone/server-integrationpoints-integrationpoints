@@ -27,7 +27,7 @@
 		});
 		data.session = storage(sessionStorage);
 		data.local = storage(localStorage);
-				
+		var requestCounter = 0;	
 		data.ajax = function (options) {
 			var ajaxDefaults = {
 				loading: {
@@ -39,7 +39,7 @@
 				contentType: 'application/json; charset=utf-8',
 				data: {}
 			};
-
+			
 			var settings = $.extend({}, ajaxDefaults, options);
 			var container = settings.loading.container;
 
@@ -58,11 +58,18 @@
 			if (settings.loading.timeout > 0) {
 				root.modal.open(settings.loading.timeout, (container instanceof jQuery) ? container : $(container));
 			}
+
 			settings.complete = function () {
-				if (root.modal && root.modal.close) {
-					root.modal.close();
+				if (requestCounter == 1) {
+					requestCounter = 0; 
+					if (root.modal && root.modal.close) {
+						root.modal.close();
+					}
+				} else {
+					requestCounter--;
 				}
 			};
+			requestCounter++;
 			return data.deferred($.ajax(settings));
 		};
 
