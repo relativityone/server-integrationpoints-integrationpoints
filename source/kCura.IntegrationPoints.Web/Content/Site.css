@@ -257,3 +257,109 @@ width: 77px;
 color: #102d4f;
 border-radius: 3px;
 }
+
+.tooltip.legal-hold[class*="icon-"]:before, .legal-hold[class*=" icon-"]:before
+{
+	color: #006699;
+	font-size: 16px;
+	
+}
+.tooltip.legal-hold[class*="icon-"]:hover:before, .legal-hold[class*=" icon-"]:hover:before
+{
+	color: #007fc6;
+}
+
+.tooltip
+{
+	cursor: pointer;
+	display: inline;
+	position: relative;
+	z-index: 999;
+	margin-top: 10px;
+}
+.tooltip a
+{
+	text-decoration: none;
+}
+ul.actions-right{
+	margin-top: 0;
+}
+	.tooltip:hover:after
+	{
+		-ms-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-transform: translateX(-50%);
+		-moz-transform: translateX(-50%);
+		-ms-transform: translateX(-50%);
+		-o-transform: translateX(-50%);
+		background: #333333;
+		background: rgba(0, 0, 0, .8);
+		border-radius: 5px;
+		bottom: 26px;
+		color: #fff;
+		content: attr(data-title);
+		left: 50%;
+		padding: 10px;
+		position: absolute;
+		text-decoration: none;
+		text-transform: uppercase;
+		transform: translateX(-50%);
+		z-index: 999;
+		font-size: 11px;
+	}
+
+	.tooltip.bottom:hover:after
+	{
+		bottom: -35px;
+		padding: 10px 10px;
+	}
+
+	.tooltip:hover:before
+	{
+		-webkit-transform: translateX(-50%);
+		-moz-transform: translateX(-50%);
+		-ms-transform: translateX(-50%);
+		-o-transform: translateX(-50%);
+		border: solid;
+		border-color: #333333 transparent;
+		border-width: 6px 6px 0 6px;
+		bottom: 20px;
+		content: "";
+		left: 50%;
+		transform: translateX(-50%);
+		position: absolute;
+	}
+
+	.tooltip.bottom:hover:before
+	{
+		bottom: 0px;
+		border-width: 0 6px 6px 6px;
+	}
+
+	.tooltip.open-left:hover:before
+	{
+		border-color: transparent #333333;
+		border-width: 6px 0 6px 6px;
+		left: -10px;
+		top: 0;
+	}
+
+	.tooltip.open-left:hover:after
+	{
+		-webkit-transform: translateY(0);
+		-moz-transform: translateY(0);
+		-ms-transform: translateY(0);
+		-o-transform: translateY(0);
+		/*top: -10px;*/
+		right: 29px;
+		left: auto;
+		bottom: -5px;
+		transform: translateY(0);
+		white-space: nowrap;
+	}
+
+	.tooltip.on-hold:hover:after {
+		width: 60px;
+		text-align: center;
+	}
