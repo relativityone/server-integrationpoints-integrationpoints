@@ -227,6 +227,12 @@ ko.validation.insertValidationMessage = function (element) {
 						}
 					}
 				}
+				for (var i = 0; i < mapping.length; i++) {
+					if (mapping[i].fieldMapType == 1) {
+						self.selectedOverlay(mapping[i].destinationField.displayName);
+					}
+				}
+
 				var destinationMapped = mapHelper.getMapped(destinationFields, mapping, 'destinationField');
 				var destinationNotMapped = mapHelper.getNotMapped(destinationFields, mapping, 'destinationField');
 				var sourceMapped = mapHelper.getMapped(sourceFields, mapping, 'sourceField');
