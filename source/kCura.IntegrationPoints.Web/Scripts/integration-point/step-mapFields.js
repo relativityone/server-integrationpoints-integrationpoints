@@ -309,25 +309,25 @@ ko.validation.insertValidationMessage = function (element) {
 			moveItemFromField(self.selectedSourceField(), requested);
 			this.sourceField.removeAll(self.selectedSourceField());
 			this.selectedSourceField.splice(0, this.selectedSourceField().length);
-		}
+		};
 		this.addToSourceField = function () {
 			var requested = this.sourceField;
 			moveItemFromField(self.selectedMappedSource(), requested);
 			this.sourceMapped.removeAll(self.selectedMappedSource());
 			this.selectedMappedSource.splice(0, this.selectedMappedSource().length);
-		}
+		};
 		this.addSourceToMapped = function () {
 			var requested = this.sourceMapped;
 			moveItemFromField(self.sourceField(), requested);
 			this.sourceField.removeAll();
 			this.selectedSourceField.splice(0, this.selectedSourceField.length);
-		}
+		};
 		this.addAlltoSourceField = function () {
 			var requested = this.sourceField;
 			moveItemFromField(self.sourceMapped(), requested);
 			this.sourceMapped.removeAll();
 			this.selectedMappedSource.splice(0, this.selectedMappedSource().length);
-		}
+		};
 		this.moveMappedWorkspaceUp = function () {
 			for (var j = 0; j < this.selectedMappedWorkspace().length ; j++) {
 				var i = this.mappedWorkspace.indexOf(this.selectedMappedWorkspace()[j]);
@@ -338,7 +338,7 @@ ko.validation.insertValidationMessage = function (element) {
 					break;
 				}
 			}
-		}
+		};
 
 		this.moveMappedWorkspaceDown = function () {
 			for (var j = this.selectedMappedWorkspace().length - 1; j >= 0 ; j--) {
@@ -351,7 +351,7 @@ ko.validation.insertValidationMessage = function (element) {
 					break;
 				}
 			}
-		}
+		};
 
 		this.moveMappedSourceUp = function () {
 			for (var j = 0; j < this.selectedMappedSource().length ; j++) {
@@ -363,7 +363,7 @@ ko.validation.insertValidationMessage = function (element) {
 					break;
 				}
 			}
-		}
+		};
 
 		this.moveMappedSourceDown = function () {
 			for (var j = this.selectedMappedSource().length - 1; j >= 0 ; j--) {
@@ -377,7 +377,7 @@ ko.validation.insertValidationMessage = function (element) {
 					break;
 				}
 			}
-		}
+		};
 
 	};// end of the viewmodel
 
