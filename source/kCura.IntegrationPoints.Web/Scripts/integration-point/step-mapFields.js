@@ -188,12 +188,24 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 
 			function getNotMapped(fields, fieldMapping, key) {
-
 				return find(fields, fieldMapping, key, function (r) { return !r });
 			}
 
 			function getMapped(fields, fieldMapping, key) {
-				return find(fields, fieldMapping, key, function (r) { return r });
+				function _contains(array, field) {
+					return $.grep(array, function (value, index) { return value.fieldIdentifier == field.fieldIdentifier }).length > 0; //I wish underscore was an option
+				}
+
+				var result = [];
+				$.each(fieldMapping, function (item) {
+					var myItem = this[key];
+					if (_contains(fields, myItem)) {
+						result.push(myItem);
+					}
+
+				})
+
+				return result;
 			}
 			return {
 				getNotMapped: getNotMapped,
@@ -233,8 +245,7 @@ ko.validation.insertValidationMessage = function (element) {
 						self.selectedOverlay(mapping[i].destinationField.displayName);
 					}
 				}
-
-				var destinationMapped = mapHelper.getMapped(destinationFields, mapping, 'destinationField');
+				var destinationMapped = mapHelper.getMapped(destinationFields,mapping, 'destinationField');
 				var destinationNotMapped = mapHelper.getNotMapped(destinationFields, mapping, 'destinationField');
 				var sourceMapped = mapHelper.getMapped(sourceFields, mapping, 'sourceField');
 				var sourceNotMapped = mapHelper.getNotMapped(sourceFields, mapping, 'sourceField');
@@ -420,28 +431,19 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.identifer = this.model.selectedOverlay();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 			var map = [];
-			for (var i = 0; i < this.model.mappedWorkspace().length; i++) {
+			var emptyField = { name: '', identifer: '' };
+			var maxMapFieldLength = Math.max(this.model.mappedWorkspace().length, this.model.sourceMapped().length);//make sure we grab the left overs
+			for (var i = 0; i < maxMapFieldLength; i++) {
+				var workspace = this.model.mappedWorkspace()[i] || emptyField;
+				var source = this.model.sourceMapped()[i] || emptyField;
 				map.push({
 					sourceField: {
-						displayName: '',
-						fieldIdentifier: ''
+						displayName: source.name,
+						fieldIdentifier: source.identifer
 					},
 					destinationField: {
-						displayName: this.model.mappedWorkspace()[i].name,
-						fieldIdentifier: this.model.mappedWorkspace()[i].identifer,
-					},
-					fieldMapType: "None"
-				});
-			}
-			for (var i = 0; i < this.model.sourceMapped().length; i++) {
-				map.push({
-					sourceField: {
-						displayName: this.model.sourceMapped()[i].name,
-						fieldIdentifier: this.model.sourceMapped()[i].identifer
-					},
-					destinationField: {
-						displayName: '',
-						fieldIdentifier: '',
+						displayName: workspace.name,
+						fieldIdentifier: workspace.identifer,
 					},
 					fieldMapType: "None"
 				});
