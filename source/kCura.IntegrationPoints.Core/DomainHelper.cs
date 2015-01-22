@@ -140,11 +140,13 @@ namespace kCura.IntegrationPoints.Core
 			string finalDllPath = domain.BaseDirectory;
 			string libDllPath = null;
 
-			libDllPath = GetRelativityAgentPath();
-			if (!string.IsNullOrWhiteSpace(libDllPath)) CopyDirectoryFiles(libDllPath, finalDllPath, true, false);
-
 			libDllPath = GetRelativityLibraryPath();
 			CopyDirectoryFiles(libDllPath, finalDllPath, true, true);
+
+			//kCura.Agent
+			libDllPath = GetRelativityAgentPath();
+			//if (!string.IsNullOrWhiteSpace(libDllPath)) CopyDirectoryFiles(libDllPath, finalDllPath, true, false);
+			if (!string.IsNullOrWhiteSpace(libDllPath)) CopyFileWithWildcard(libDllPath, finalDllPath, "kCura.Agent*");
 
 			//FSharp.Core
 			libDllPath = GetRelativityEddsPath();

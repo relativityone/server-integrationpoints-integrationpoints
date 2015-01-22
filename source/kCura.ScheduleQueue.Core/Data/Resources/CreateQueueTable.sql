@@ -42,7 +42,7 @@ CREATE NONCLUSTERED INDEX [IX_{0}_LockedByAgentID_AgentTypeID_NextRunTime] ON [e
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 
 IF NOT EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[eddsdbo].[{0}]') AND name = N'IX_{0}_WorkspaceID_RelatedObjectArtifactID_TaskType')
-CREATE UNIQUE NONCLUSTERED INDEX [IX_{0}_WorkspaceID_RelatedObjectArtifactID_TaskType] ON [eddsdbo].[{0}] 
+CREATE NONCLUSTERED INDEX [IX_{0}_WorkspaceID_RelatedObjectArtifactID_TaskType] ON [eddsdbo].[{0}] 
 (
 	[WorkspaceID] ASC,
 	[RelatedObjectArtifactID] ASC,
