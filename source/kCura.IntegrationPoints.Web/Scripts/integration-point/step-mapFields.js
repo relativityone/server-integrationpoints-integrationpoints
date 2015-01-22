@@ -172,12 +172,18 @@ ko.validation.insertValidationMessage = function (element) {
 		});
 		var promises = [workspaceFieldPromise, sourceFieldPromise, mappedSourcePromise];
 
+		var mapTypes = {
+			identifier: 1,
+			parent: 2
+		};
+
+
 		var mapHelper = (function () {
 			function find(fields, fieldMapping, key, func) {
 				return $.grep(fields, function (item) {
 					var remove = false;
 					$.each(fieldMapping, function () {
-						if (this[key].fieldIdentifier === item.fieldIdentifier && this["fieldMapType"] !== 2) {
+						if (this[key].fieldIdentifier === item.fieldIdentifier && this["fieldMapType"] !== mapTypes.parent) {
 							remove = true;
 							return false;
 						}
@@ -234,14 +240,14 @@ ko.validation.insertValidationMessage = function (element) {
 				} else {
 					for (var i = 0; i < mapping.length; i++) {
 						var a = mapping[i];
-						if (a.fieldMapType === 2 && self.hasParent) {
+						if (a.fieldMapType === mapTypes.parent && self.hasParent) {
 							self.selectedIdentifier(a.sourceField.displayName);
 						}
 					}
 				}
 
 				for (var i = 0; i < mapping.length; i++) {
-					if (mapping[i].fieldMapType == 1) {
+					if (mapping[i].fieldMapType == mapTypes.identifier) {
 						self.selectedOverlay(mapping[i].destinationField.displayName);
 					}
 				}
@@ -333,6 +339,7 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 			}
 		}
+
 		this.moveMappedWorkspaceDown = function () {
 			for (var j = this.selectedMappedWorkspace().length - 1; j >= 0 ; j--) {
 				var i = this.mappedWorkspace().indexOf(this.selectedMappedWorkspace()[j]);
