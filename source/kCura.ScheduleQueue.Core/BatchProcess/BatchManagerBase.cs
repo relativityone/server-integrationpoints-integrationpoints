@@ -60,14 +60,18 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 			var idx = 0;
 			foreach (var id in batchIDs)
 			{
-				list.Add(id);
-				if (idx >= BatchSize)
+				//TODO: later we will need to generate error entry for every item we bypass
+				if (id != null && (id is string && id.ToString() != string.Empty))
 				{
-					CreateBatchJob(job, list);
-					list = new List<T>();
-					idx = 0;
+					list.Add(id);
+					if (idx >= BatchSize)
+					{
+						CreateBatchJob(job, list);
+						list = new List<T>();
+						idx = 0;
+					}
+					idx++;
 				}
-				idx++;
 			}
 			if (list.Any())
 			{
