@@ -60,7 +60,7 @@
 			}
 
 			settings.complete = function () {
-				if (requestCounter == 1) {
+				if (requestCounter <= 1) {
 					requestCounter = 0; 
 					if (root.modal && root.modal.close) {
 						root.modal.close();
