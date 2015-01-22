@@ -227,6 +227,7 @@ ko.validation.insertValidationMessage = function (element) {
 						}
 					}
 				}
+
 				for (var i = 0; i < mapping.length; i++) {
 					if (mapping[i].fieldMapType == 1) {
 						self.selectedOverlay(mapping[i].destinationField.displayName);

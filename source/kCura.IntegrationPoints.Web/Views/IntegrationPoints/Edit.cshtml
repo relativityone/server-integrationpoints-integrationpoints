@@ -3,7 +3,15 @@
 
 @section header{
 	<div class="header-actions-container">
-		<a href="https://help.kcura.com/integrationpoints" class="legal-hold icon-help" ><i title="help"></i></a> 
+		@*<ul class="actions-right">
+			<li class="tooltip bottom" data-title="Help"  style="position:absolute; right:30px"><a href="https://help.kcura.com/integrationpoints" class="legal-hold icon-help" ><i title="help"></i></a> 
+			</li>		
+		</ul>*@
+
+		<div class="tooltip bottom" data-title="Help" style="position:absolute; right:30px">
+				<span  class="legal-hold icon-help"> </span>
+		</div>
+
 	</div>
 	<h1>Create Integration Point</h1>
 }
@@ -35,11 +43,16 @@
 	<script src="~/Scripts/core/utils.js"></script>
 	<script src="~/Scripts/integration-point/binding.js"></script>
 	<script src="~/Scripts/jquery-postMessage.js"></script>
+	
+	<script>
+		var helpURL = "https://help.kcura.com/integrationpoints";
+	</script>
+	<script src="~/Scripts/HelpUtil.js"></script>
 	<script>
 		IP.data.params = IP.data.params || {};
 		IP.data.params['appID'] = @Model.AppID;
-	    IP.data.params['artifactID'] = @Model.ArtifactID;
-	    IP.data.params['userID'] = @Model.UserID;
+		IP.data.params['artifactID'] = @Model.ArtifactID;
+		IP.data.params['userID'] = @Model.UserID;
 	</script>
 	@Scripts.Render("~/bundles/ipEdit")
 	@Scripts.Render("~/bundles/dragon")
