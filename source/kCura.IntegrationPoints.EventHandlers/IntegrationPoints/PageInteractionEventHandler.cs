@@ -27,8 +27,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterLinkedCss(applicationPath + "/Content/legal-hold-fonts.css");
 				this.RegisterLinkedCss(applicationPath + "/Content/controls.grid.css");
 				this.RegisterLinkedCss(applicationPath + "/Content/controls-grid-pager.css");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/date.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/integration-point/time-utils.js");
 
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL234324324", Script = "<script>var IP = IP ||{};IP.cpPath = '" + applicationPath + "';</script>" });
+				var fieldID = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.NextScheduledRuntime));
+				this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL2343243453", Script = "<script>var IP = IP ||{};IP.nextTimeid= '" + fieldID + "';</script>" });
+
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-grid.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-view.js");
 				

@@ -358,6 +358,7 @@
     <Content Include="Scripts\integration-point\step-mapFields.js" />
     <Content Include="Scripts\integration-point\step-vm.js" />
     <Content Include="Scripts\integration-point\step-details.js" />
+    <Content Include="Scripts\integration-point\time-utils.js" />
     <Content Include="Scripts\ip-messaging.js" />
     <Content Include="Scripts\jquery-1.8.2.js" />
     <Content Include="Scripts\jquery-1.8.2.min.js" />
