@@ -16,10 +16,13 @@
 	};
 
 	$(function () {
-		var $el = $('input[faartifactid="' + IP.nextTimeid + '"]').siblings('.dynamicViewFieldValue');
-		var text = $el.text();
-		var result = IP.timeUtil.utcDateToLocal(text,config.time.longDate);
-		$el.text(result);
+		$.each(IP.nextTimeid || [], function () {
+			var $el = $('input[faartifactid="' + this + '"]').siblings('.dynamicViewFieldValue');
+			var text = $el.text();
+			var result = IP.timeUtil.utcDateToLocal(text, config.time.longDate);
+			$el.text(result);
+		});
+		
 	});
 	
 
