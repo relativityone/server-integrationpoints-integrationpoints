@@ -66,7 +66,6 @@
     </Reference>
     <Reference Include="Relativity.ImportAPI.Wrapper">
       <HintPath>..\Dependencies\kCura\Relativity.ImportAPI.Wrapper.dll</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
