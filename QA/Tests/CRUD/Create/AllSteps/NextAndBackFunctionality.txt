@@ -12,11 +12,13 @@
 *** Variables ***
 
 | ${WorkspaceName}		| Relativity Legal Hold
-| ${ConnectionPath}		| testing.corp
+| ${ConnectionPath1}	| testing.corp/CN=Users,DC=testing,DC=corp
+| ${ConnectionPath2}	| testing.corp
 | ${ObjectFilterString}	| (objectClass=*)
 | ${Authentication}		| FastBind
 | ${ConnectionUsername}	| testing\administrator
 | ${ConnectionPassword}	| P@ssw0rd@1
+| ${ImportNestedItems}	| Yes
 
 
 *** Test Cases ***
@@ -30,12 +32,12 @@
 | | ... | 2. Fill out all of the Required Step 1 fields
 | | ... | 3. Click Next
 | | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
-| | ... | - ConnectionPath=Connection Path	| 
-| | ... | - ObjectFilterString=Object Filter String	| 
-| | ... | - Authentication=Encryption	| 
-| | ... | - Username=User Name	| 
-| | ... | - Password=Pass phrase	| 
-| | ... | - ImportNestedItems=Yes
+| | ... | ConnectionPath=Connection Path			| 
+| | ... | ObjectFilterString=Object Filter String	| 
+| | ... | Authentication=Encryption	| 
+| | ... | Username=User Name		| 
+| | ... | Password=Pass phrase		| 
+| | ... | ImportNestedItems=Yes
 | | ... | 5. Click Back
 | | ... | 6. Click Next
 | | ... | 
@@ -52,11 +54,79 @@
 | Returning to Step 3 from Step 2 without changing anything Saves all Step 3 data
 | | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 2, then return to step 3, that all of the previously entered data on step 3 will still be present.
 | | [Tags]			| manual	| automateable?
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Open a new Create Integration Point Wizard
+| | ... | 2. Fill out all of the Required Step 1 fields choosing Custodian as the Destination RDO
+| | ... | 3. Click Next
+| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
+| | ... | ConnectionPath=${ConnectionPath1}			| 
+| | ... | ObjectFilterString=${ObjectFilterString}	| 
+| | ... | Authentication=${Authentication}			| 
+| | ... | Username=${ConnectionUsername}			| 
+| | ... | Password=${ConnectionPassword}			| 
+| | ... | ImportNestedItems=${ImportNestedItems}
+| | ... | 5. Click Next
+| | ... | 6. Map the Following Fields together
+| | ... | - First Name	: givenName
+| | ... | - Last Name	: sn
+| | ... | - Full Name	: cn
+| | ... | - Email		: mail
+| | ... | - Department	: countrycode
+| | ... | - Unique ID	: objectguid
+| | ... | 7. Select the following Unique Identifier	| Full Name
+| | ... | 8. Click Back
+| | ... | 9. Click Next
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Full Name
+| | ... | 2. Verify that the following fields are mapped together	| 
+| | ... | - First Name	: givenName
+| | ... | - Last Name	: sn
+| | ... | - Full Name	: cn
+| | ... | - Email		: mail
+| | ... | - Department	: countrycode
+| | ... | - Unique ID	: objectguid
 
 
 | Returning to Step 3 from Step 1 without changing anything Saves all Step 3 data
 | | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 1, then return to step 3, that all of the previously entered data on step 3 will still be present.
 | | [Tags]			| manual	| automateable?
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Open a new Create Integration Point Wizard
+| | ... | 2. Fill out all of the Required Step 1 fields choosing Custodian as the Destination RDO
+| | ... | 3. Click Next
+| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
+| | ... | ConnectionPath=${ConnectionPath1}			| 
+| | ... | ObjectFilterString=${ObjectFilterString}	| 
+| | ... | Authentication=${Authentication}			| 
+| | ... | Username=${ConnectionUsername}			| 
+| | ... | Password=${ConnectionPassword}			| 
+| | ... | ImportNestedItems=${ImportNestedItems}
+| | ... | 5. Click Next
+| | ... | 6. Map the Following Fields together
+| | ... | - First Name	: givenName
+| | ... | - Last Name	: sn
+| | ... | - Full Name	: cn
+| | ... | - Email		: mail
+| | ... | - Department	: countrycode
+| | ... | - Unique ID	: objectguid
+| | ... | 7. Select the following Unique Identifier	| Full Name
+| | ... | 8. Click Back
+| | ... | 9. Click Back
+| | ... | 10. Click Next
+| | ... | 11. Click Next
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Full Name
+| | ... | 2. Verify that the following fields are mapped together	| 
+| | ... | - First Name	: givenName
+| | ... | - Last Name	: sn
+| | ... | - Full Name	: cn
+| | ... | - Email		: mail
+| | ... | - Department	: countrycode
+| | ... | - Unique ID	: objectguid
 
 
 | Returning to Step 2 from Step 1 after changing the Source Provider clears all fields on Step 2
@@ -70,18 +140,24 @@
 | | ... | 1. Go to Step 1 of the Create Integration Point Wizard
 | | ... | 2. Fill out all of the Required fields selecting the "LDAP" Source Provider
 | | ... | 3. Click Next
-| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=Connection Path	| ObjectFilterString=Object Filter String	| Authentication=Encryption	| Username=User Name	| Password=Pass phrase	| ImportNestedItems=Yes
+| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
+| | ... | ConnectionPath=Connection Path			| 
+| | ... | ObjectFilterString=Object Filter String	| 
+| | ... | Authentication=Encryption	| 
+| | ... | Username=User Name		| 
+| | ... | Password=Pass phrase		| 
+| | ... | ImportNestedItems=Yes
 | | ... | 5. Click Back
 | | ... | 6. Select any other Source Provider
 | | ... | 7. Click Next
 | | ... | 
 | | ... | Expected Results:
 | | ... | Verify that the Step 2 fields have the following values	| 
-| | ... | Connection Path: (Empty)	| 
+| | ... | Connection Path: (Empty)		| 
 | | ... | Object Filter String: (Empty)	| 
-| | ... | Authentication: Select...	| 
-| | ... | Username: (Empty)	| 
-| | ... | Password: (Empty)	| 
+| | ... | Authentication: Select...		| 
+| | ... | Username: (Empty)				| 
+| | ... | Password: (Empty)				| 
 | | ... | Import Nested Items: No
 
 
@@ -97,7 +173,13 @@
 | | ... | 1. Go to Step 1 of the Create Integration Point Wizard
 | | ... | 2. Fill out all of the Required fields selecting the "LDAP" Source Provider
 | | ... | 3. Click Next
-| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=Connection Path	| ObjectFilterString=Object Filter String	| Authentication=Encryption	| Username=User Name	| Password=Pass phrase	| ImportNestedItems=Yes
+| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
+| | ... | ConnectionPath=Connection Path			| 
+| | ... | ObjectFilterString=Object Filter String	| 
+| | ... | Authentication=Encryption	| 
+| | ... | Username=User Name		| 
+| | ... | Password=Pass phrase		| 
+| | ... | ImportNestedItems=Yes
 | | ... | 5. Click Back
 | | ... | 6. Select any other Source Provider
 | | ... | 7. Click Next
@@ -107,33 +189,98 @@
 | | ... | 
 | | ... | Expected Results:
 | | ... | Verify that the Step 2 fields have the following values	| 
-| | ... | Connection Path: Connection Path	| 
+| | ... | Connection Path: Connection Path				| 
 | | ... | Object Filter String: Object Filter String	| 
 | | ... | Authentication: Encryption	| 
-| | ... | Username: User Name	| 
-| | ... | Password: Pass phrase	| 
+| | ... | Username: User Name			| 
+| | ... | Password: Pass phrase			| 
 | | ... | Import Nested Items: Yes
 
 
-| Going back from Step 3 and changing any field in Step 2 resets everything on Step 3 except the Workspace Fields selections
-| | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 2 and change the values in step 2, then when you return to step 3 
-| | ...				| all of the Source Attribute selections and the dropdowns will be reset, but the Workspace Fields selections will be saved.
+| Going back from Step 3 and changing the Connection Path in Step 2 to remove some of the Source Attributes selections on Step 3 maintains the Mappings
+| | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 2 and change the Connection Path in step 2 to 
+| | ...				| something that does not have some of the selected Source Attributes, then when you return to step 3 the remaining Source Attribute selections 
+| | ...				| will still be correctly mapped with the Workspace Fields selections. Also the Unique Identifier dropdown value will be saved.
 | | [Tags]			| manual	| automateable?
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Open a new Create Integration Point Wizard
+| | ... | 2. Fill out all of the Required Step 1 fields choosing Custodian as the Destination RDO
+| | ... | 3. Click Next
+| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
+| | ... | ConnectionPath=${ConnectionPath1}			| 
+| | ... | ObjectFilterString=${ObjectFilterString}	| 
+| | ... | Authentication=${Authentication}			| 
+| | ... | Username=${ConnectionUsername}			| 
+| | ... | Password=${ConnectionPassword}			| 
+| | ... | ImportNestedItems=${ImportNestedItems}
+| | ... | 5. Click Next
+| | ... | 6. Map the Following Fields together in this order	| 
+| | ... | - First Name	: givenName
+| | ... | - Last Name	: sn
+| | ... | - Full Name	: cn
+| | ... | - Email		: mail
+| | ... | - Department	: countrycode
+| | ... | - Unique ID	: objectguid
+| | ... | 7. Select the following Unique Identifier	| Full Name
+| | ... | 8. Click Back
+| | ... | 9. Fill out the Following Fields of the Integration Point Step 2 form	| 
+| | ... | - ConnectionPath=${ConnectionPath2}
+| | ... | 10. Click Next
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Full Name
+| | ... | 2. Verify that the following fields are mapped together in order	| 
+| | ... | - Full Name	: cn
+| | ... | - Department	: countrycode
+| | ... | - Unique ID	: objectguid
+| | ... | - First Name	: (NONE)
+| | ... | - Last Name	: (NONE)
+| | ... | - Email		: (NONE)
 
 
 | Going back from Step 3 and changing Step 1's Destination RDO resets everything on Step 3 except the Source Attribute selections
 | | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 1 and change the Destination RDO, then when you return to step 3 
 | | ...				| all of the Workspace Fields selections and the dropdowns will be reset, but the Source Attribute selections will be saved.
 | | [Tags]			| manual	| automateable?
-
-
-| Going back from Step 3 and changing Step 1's Destination RDO and any field in Step 2 resets everything on Step 3
-| | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 1 and change the Destination RDO, proceed to step 2 and change the step 2 values, then when you return to step 3 
-| | ...				| all of the Workspace Fields selections, Source Attribute selections, and the dropdowns will be reset.
-| | [Tags]			| manual	| automateable?
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Open a new Create Integration Point Wizard
+| | ... | 2. Fill out all of the Required Step 1 fields choosing Custodian as the Destination RDO
+| | ... | 3. Click Next
+| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
+| | ... | ConnectionPath=${ConnectionPath1}			| 
+| | ... | ObjectFilterString=${ObjectFilterString}	| 
+| | ... | Authentication=${Authentication}			| 
+| | ... | Username=${ConnectionUsername}			| 
+| | ... | Password=${ConnectionPassword}			| 
+| | ... | ImportNestedItems=${ImportNestedItems}
+| | ... | 5. Click Next
+| | ... | 6. Map the Following Fields together in this order	| 
+| | ... | - First Name	: givenName
+| | ... | - Last Name	: sn
+| | ... | - Full Name	: cn
+| | ... | - Email		: mail
+| | ... | - Department	: countrycode
+| | ... | - Unique ID	: objectguid
+| | ... | 7. Select the following Unique Identifier	| Full Name
+| | ... | 8. Click Back
+| | ... | 9. Click Back
+| | ... | 10. Choose Communication as the Destination RDO
+| | ... | 11. Click Next
+| | ... | 12. Click Next
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the Unique Indentifier dropdown is NOT set to	| Full Name
+| | ... | 2. Verify that the following fields are mapped together	| 
+| | ... | - (NONE)	: givenName
+| | ... | - (NONE)	: sn
+| | ... | - (NONE)	: cn
+| | ... | - (NONE)	: mail
+| | ... | - (NONE)	: countrycode
+| | ... | - (NONE)	: objectguid
 
 
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt

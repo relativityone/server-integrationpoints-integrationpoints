@@ -12,7 +12,7 @@
 *** Variables ***
 
 | ${WorkspaceName}		| Relativity Legal Hold
-| ${ConnectionPath}		| testing.corp
+| ${ConnectionPath}		| testing.corp/CN=Users,DC=testing,DC=corp
 | ${ObjectFilterString}	| (objectClass=*)
 | ${Authentication}		| FastBind
 | ${ConnectionUsername}	| testing\administrator
