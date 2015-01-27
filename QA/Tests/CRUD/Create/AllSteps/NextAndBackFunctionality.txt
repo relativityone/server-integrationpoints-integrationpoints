@@ -201,7 +201,7 @@
 | | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 2 and change the Connection Path in step 2 to 
 | | ...				| something that does not have some of the selected Source Attributes, then when you return to step 3 the remaining Source Attribute selections 
 | | ...				| will still be correctly mapped with the Workspace Fields selections. Also the Unique Identifier dropdown value will be saved.
-| | [Tags]			| manual	| automateable?
+| | [Tags]			| manual	| automateable?	| dan682
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Open a new Create Integration Point Wizard
