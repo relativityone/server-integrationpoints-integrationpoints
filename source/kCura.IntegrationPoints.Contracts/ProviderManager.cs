@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace kCura.IntegrationPoints.Contracts
 {
@@ -18,8 +16,10 @@ namespace kCura.IntegrationPoints.Contracts
 		/// </summary>
 		public void Init()
 		{
+			AppDomain.CurrentDomain.AssemblyResolve += AssemblyDomainLoader.ResolveAssembly;
+			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			var startupType = typeof(IStartUp);
-			var types = (from a in AppDomain.CurrentDomain.GetAssemblies()
+			var types = (from a in assemblies
 									 from t in a.GetTypes()
 									 where startupType.IsAssignableFrom(t) && t != startupType
 									 select t).ToList();
