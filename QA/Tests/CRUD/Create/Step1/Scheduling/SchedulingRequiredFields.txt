@@ -19,7 +19,7 @@
 | Enable Scheduler is not a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is not shown for Enable Scheduler
 | | [Tags]			| automated
-| | Verify that the following field is not required	| Enable Scheduler
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following field is not required	| Enable Scheduler:
 
 
 | Frequency is a Required Field when it is visible
@@ -27,7 +27,7 @@
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
-| | Verify that the following field is required | Frequency
+| | Verify that the following field is required | Frequency:
 
 
 | Reoccur is a Required Field for Weekly Reports
@@ -35,7 +35,7 @@
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Weekly
 
-| | Verify that the following field is required | Reoccur
+| | Verify that the following field is required | Reoccur:
 
 
 | Reoccur is a Required Field for Monthly Reports
@@ -43,7 +43,7 @@
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Monthly
 
-| | Verify that the following field is required | Reoccur
+| | Verify that the following field is required | Reoccur:
 
 
 | Send On is a Required Field for Weekly Reports
@@ -51,7 +51,7 @@
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Weekly
 
-| | Verify that the following field is required	| Send On
+| | Verify that the following field is required	| Send On:
 
 
 | Send On is a Required Field for Monthly Reports
@@ -59,7 +59,7 @@
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Monthly
 
-| | Verify that the following field is required | Send On
+| | Verify that the following field is required | Send On:
 
 
 | Start Date is a Required Field
@@ -67,7 +67,7 @@
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
-| | Verify that the following field is required | Start Date
+| | Verify that the following field is required | Start Date:
 
 
 | End Date is not a Required Field
@@ -75,7 +75,7 @@
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
-| | Verify that the following field is not required	| End Date
+| | Verify that the following field is not required	| End Date:
 
 
 | Scheduled Time is a Required Field
@@ -83,7 +83,7 @@
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
-| | Verify that the following field is required | Scheduled Time
+| | Verify that the following field is required | Scheduled Time:
 
 
 *** Settings ***

@@ -25,7 +25,7 @@
 
 | The Connection Path field display an error message when empty
 | | [Documentation]	| Verify that leaving the Connection Path field blank displays a warning message after clicking Next.
-| | [Tags]			| required	| 
+| | [Tags]			| required	| automated
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ObjectFilterString=${ObjectFilterString}	| Authentication=${Authentication}	| Username=${ConnectionUsername}	| Password=${ConnectionPassword}	| ImportNestedItems=Yes
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Connection Path Field}	| This field is required.
@@ -33,7 +33,7 @@
 
 | Proceeding Post-Integration Name Validation
 | | [Documentation]	| Verify that you can proceed to Step 3 after the Connection Path validation message has been shown.
-| | [Tags]			| 
+| | [Tags]			| automated
 | | [Setup] 		| Require Test Case	| The Connection Path field display an error message when empty
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}
 | | Proceed to the Next Step of the Integration Point wizard
@@ -42,7 +42,7 @@
 
 | The Authentication field displays an error message when empty
 | | [Documentation]	| Verify that leaving the Authentication field as Select... displays a warning message after clicking Next.
-| | [Tags]			| required	| 
+| | [Tags]			| required	| automated
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}	| ObjectFilterString=${ObjectFilterString}	| Username=${ConnectionUsername}	| Password=${ConnectionPassword}	| ImportNestedItems=Yes
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Authentication Field}	| This field is required.
@@ -50,7 +50,7 @@
 
 | Proceeding Post-Authentication Validation
 | | [Documentation]	| Verify that you can proceed to Step 3 after the Authentication validation message has been shown.
-| | [Tags]			| 
+| | [Tags]			| automated
 | | [Setup] 		| Require Test Case	| The Authentication field displays an error message when empty
 | | Fill out the Following Fields of the Integration Point Step 2 form	| Authentication=${Authentication}
 | | Proceed to the Next Step of the Integration Point wizard

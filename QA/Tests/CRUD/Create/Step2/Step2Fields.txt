@@ -5,18 +5,18 @@
 | Force Tags		| in-progress	| team.method
 | Suite Setup		| Open and Log in to Method
 | Test Setup		| Go to Step 2 of the Create Integration Point Process
-| Test Teardown 	| Capture screenshot if test fails
+| Test Teardown 	| Capture Screenshot If Test Fails
 | Suite Teardown	| Close All Browsers
 
 
 *** Variables ***
 
-| ${WorkspaceName}				| LDAP Sync
+| ${WorkspaceName}	| LDAP Sync
 | ${Connection Path}			| connectionPath
 | ${Object Filter String}		| connectionFilter
-| ${Authentication Dropdown}	| 
-| ${Username}					| connectionUsername
-| ${Password}					| connectionPassword
+| ${Authentication Dropdown}	| s2id_authentication
+| ${Username Field}				| connectionUsername
+| ${Password Field}				| connectionPassword
 | ${Import Nested Items}		| enable	| # the Radio Button Group's Name
 
 
@@ -24,7 +24,7 @@
 
 | The Source Connection section's fields are in the correct order
 | | [Documentation]	| Verify that the fields in the Source Connection section are sorted correctly.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Verify that the following section contains the following fields	| Source Connection	| 
 | | ... | Connection Path:		| 
 | | ... | Object Filter String:	| 
@@ -36,42 +36,40 @@
 
 | The Authentication list has the correct values
 | | [Documentation]	| Verify that the Overwrite List has the correct options
-| | [Tags]			| untested	
+| | [Tags]			| automated	
 | | Click	| ${Authentication Dropdown}
 | | Verify that the currently opened select2 Dropdown has the following choices in order	| 
 | | ... | Select...				| 
 | | ... | Anonymous				| 
 | | ... | Encryption			| 
 | | ... | FastBind				| 
-| | ... | ReadonlyServer		| 
-| | ... | Secure				| 
-| | ... | SecureSocketsLayer
+| | ... | Secure Socket Layer
 
 
 | The Authentication list's default value is Select...
 | | [Documentation]	| Verify that the Source Provider Field's default value is "Select...".
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Verify that the following select2 Dropdown currently has the following value selected	| ${Authentication Dropdown}	| Select...
 
 
 | The Import Nested Items options are Yes and No
 | | [Documentation]	| Verify that the Import Nested Items radio button options are Yes and No (true and false).
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Verify that the following radio buttons are grouped together	| ${Import Nested Items}	| true	| false
 
 
 | Import Nested Items default value is No
 | | [Documentation]	| Verify that the Import Nested Items field's default value is No (false).
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Radio Button Should Be Set To	| ${Import Nested Items}	| false
 
 
 | The correct fields have the Required Field Indicator
 | | [Documentation]	| Verify that the Required Field indicator is present for the correct fields.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Run Keyword And Continue On Failure	| Verify that the following field is required		| Connection Path:
 | | Run Keyword And Continue On Failure	| Verify that the following field is not required	| Object Filter String:
-| | Run Keyword And Continue On Failure	| Verify that the following field is not required	| Authentication:
+| | Run Keyword And Continue On Failure	| Verify that the following field is required		| Authentication:
 | | Run Keyword And Continue On Failure	| Verify that the following field is not required	| Username:
 | | Run Keyword And Continue On Failure	| Verify that the following field is not required	| Password:
 | | Run Keyword And Continue On Failure	| Verify that the following field is not required	| Import Nested Items:
@@ -80,24 +78,28 @@
 | The Source Connection Fields are of the correct type
 | | [Documentation]	| Verify that the Set Integration Details Fields are the correct type
 | | [Tags]			| untested	
-| | Verify that the following field ID has a text input					| ${Connection Path}
-| | Verify that the following field ID has a droplist input				| ${Object Filter String}
-| | Verify that the following field ID has a droplist input				| ${Authentication Drop ID}
-| | Verify that the following field ID has a text input					| ${Username} 
-| | Verify that the following field ID has a text input					| ${Password} 
-| | Verify that the following field ID has a YesNo Radio button input	| ${EnableSchedulerRadioButtonsID}
+| | Run Keyword And Continue On Failure	| Verify that the following field ID has a text input		| ${Connection Path}
+| | Run Keyword And Continue On Failure	| Verify that the following field ID has a text input		| ${Object Filter String}
+| | Run Keyword And Continue On Failure	| Verify that the following field ID has a droplist input	| ${Authentication Dropdown}
+| | Run Keyword And Continue On Failure	| Verify that the following field ID has a text input		| ${Username Field} 
+| | Run Keyword And Continue On Failure	| Verify that the following field ID has a password input	| ${Password Field}
+| | # Import Nested Items is checked in the next test case.
+
+
+| The Import Nested Items options are Yes and No
+| | [Documentation]	| Verify that the Import Nested Items radio button options are Yes and No.
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the following radio buttons are grouped together | ${Import Nested Items}  | Yes | No
 
 
 *** Keywords *** 
 
-| Verify that the following radio buttons are grouped together
-| | [ARGUMENTS]	| ${GroupName}	| @{ExpectedButtons}
-| | @{ActualButtons}=	| Get Elements Attribute	| xpath=//input[@type='radio' and @name='${GroupName}']@value
-| | Lists Should Be Equal	| ${ExpectedButtons}	| ${ActualButtons}
-
 | Go to Step 2 of the Create Integration Point Process
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Testing | Append/Overlay | LDAP | Custodian | no
+| | Proceed to the Next Step of the Integration Point wizard
+| | Wait for then Select iFrame	| id=configurationFrame	| 10s	| The page was not on Step 2 of the Integration Point form.
 
 
 *** Settings ***
