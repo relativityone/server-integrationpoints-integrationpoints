@@ -135,7 +135,7 @@
 | | ... | Verify that the Back button is blue with white text
 
 
-| The Next button is enabled when you first arrive on Step 3
+| The Next (Save) button is enabled when you first arrive on Step 3
 | | [Tags]			| manual	| automateable
 | | Run the following manual steps:
 | | ... | Steps:
