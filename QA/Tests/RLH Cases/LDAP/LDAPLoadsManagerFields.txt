@@ -1,4 +1,4 @@
-﻿ 
+ 
 *** Settings ***
 | Documentation		| Test that only the LDAP Import of Custodians via the Custodian Creator properly associate Custodians with their Manager Information
 | Metadata		| Authors	| Aaron Spruill	| William Sehy
@@ -17,8 +17,10 @@
 
 
 *** Test Cases ***
+#---------Managers are not supported in IP v1 ---------------------
 
-| 1. Custodian Creator successfully imports Custodian's information and their Manager information from LDAP
+
+| Custodian Creator successfully imports Custodian's information and their Manager information from LDAP
 | | [Documentation]	| Verify that a Custodian's Manager information can be imported with the LDAP import/Custodian Creator
 | | Run the following manual steps:
 | | ... | Pre-conditions:
@@ -34,7 +36,7 @@
 | | ... | 3. New Custodian has the correct Manager
 
 
-| 2. Custodian Creator successfully imports Custodian's information when Manager field is empty in LDAP
+| Custodian Creator successfully imports Custodian's information when Manager field is empty in LDAP
 | | [Documentation]	| Verify that a Custodian's information is imported and not haulted if they have no manager in LDAP
 | | Run the following manual steps:
 | | ... | Pre-conditions:
@@ -50,7 +52,7 @@
 | | ... | 3. New Custodian has NO Manager
 
 
-| 3. Custodian Creator does not overwrite manually entered Custodian Manager data with LDAP Custodian Manager data during import
+| Custodian Creator does not overwrite manually entered Custodian Manager data with LDAP Custodian Manager data during import
 | | [Documentation]	| Verify that an existing Custodian's Manager information is not overwritten by LDAP Manager data upon
 | | ... 		| LDAP import.
 | | Run the following manual steps:
@@ -68,7 +70,7 @@
 | | ... | 3. Custodian has the same Manager as before the import
 
 
-| 4. Custodian Creator does not overwrite an existing Custodian's Manager data with LDAP Custodian Manager data during import even if the existing field is blank
+| Custodian Creator does not overwrite an existing Custodian's Manager data with LDAP Custodian Manager data during import even if the existing field is blank
 | | [Documentation]	| Verify that an existing Custodian's Manager information is not overwritten by LDAP Manager data upon
 | | ... 		| LDAP import even if the existing Custodian's Manager information was empty.
 | | Run the following manual steps:
@@ -86,7 +88,7 @@
 | | ... | 3. Custodian has NO Manager
 
 
-| 5. Escalate a Communication to an LDAP imported Custodian
+| Escalate a Communication to an LDAP imported Custodian
 | | [Documentation]	| Verify an escalation is sent to a Custodian's Manager after they are created by the Custodian Creator
 | | Run the following manual steps:
 | | ... | Pre-conditions:

@@ -54,10 +54,10 @@
 | | ... | 1. Require Test Case: An Overlay import updates existing modified records
 | | ... |
 | | ... | Steps:
-| | ... | 1. View the History records for the ${RIPOverlay1} import
+| | ... | 1. View the History records for the ${RIPOverlay1} import (Action of Import and Update - Import)
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that there is no Update entry for the object ${ExistingNoChangeObject}
+| | ... | 1. Verify that the Update entries for the object ${ExistingNoChangeObject} did not change the existing values to new values
 
 | Updates Null to a Value
 | | [Documentation] | Verify that when an Overlay RIP is run with an existing record in the Target RDO with one field set to Null, that it does update the existing record in the Target RDO.
