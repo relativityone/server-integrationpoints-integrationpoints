@@ -17,7 +17,7 @@
 
 
 *** Test Cases ***
-#---------Managers are not supported in IP v1 ---------------------
+#---------hg pul ---------------------
 
 
 | Custodian Creator successfully imports Custodian's information and their Manager information from LDAP
