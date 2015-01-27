@@ -1,0 +1,45 @@
+
+*** Settings ***
+| Documentation 	| Verify that the Relativity Integration Points application can import into objects besides Custodians.
+| Metadata		    | Authors	| William Sehy
+| Force Tags		| in-progress	| team.method	| manual
+#| Suite Setup		| Log	| This is the suite setup keyword.
+#| Test Setup		| Open and Log in to Method
+#| Test Teardown 	| Close All Browsers
+#| Suite Teardown	| Log	| This is the suite teardown keyword.
+
+
+*** Variables ***
+
+| ${WorkspaceName}		| Relativity Legal Hold
+| ${ConnectionPath}		| testing.corp/CN=Builtin,DC=testing,DC=corp
+| ${ObjectFilterString}	| (objectClass=*)
+| ${Authentication}		| FastBind
+| ${ConnectionUsername}	| testing\administrator
+| ${ConnectionPassword}	| P@ssw0rd@1
+
+
+*** Test Cases ***
+
+| Questionnaire Objects can be created
+| | [Documentation]	| Verify that Relativity Integration Points can be used to create Questionnaire objects.
+| | [Tags]			| manual	| 
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to Step 1 of the Create Integration Point Wizard
+| | ... | 2. Fill out all of the Required fields, naming it Questionnaire Creator
+| | ... | 3. Click Next
+| | ... | 4. Fill out all of the Required fields
+| | ... | 5. Click Next
+| | ... | 6. Map the following fields together	| 
+| | ... | Name		: name
+| | ... | 7. Run this Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that a bunch of Questionnaires are created (specifically, one for each item in the BuiltIn folder on testing.corp)
+| | [Teardown]		| Run the following manual steps:	| Delete all of the new Questionnaires.
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py

@@ -11,7 +11,7 @@
 
 *** Variables ***
 
-| ${WorkspaceName}			| Relativity Legal Hold
+| ${WorkspaceName}			| LDAP Sync
 | ${ValidConnectionPath}	| 
 | ${Overlay Identifier Dropdown}	| s2id_overlay-identifier
 
