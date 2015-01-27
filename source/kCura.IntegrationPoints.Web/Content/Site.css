@@ -258,13 +258,13 @@ color: #102d4f;
 border-radius: 3px;
 }
 
-.tooltip.legal-hold[class*="icon-"]:before, .legal-hold[class*=" icon-"]:before
+.tooltip.legal-hold[class*="icon-"]:before,.tooltip .legal-hold[class*=" icon-"]:before
 {
 	color: #006699;
 	font-size: 16px;
 	
 }
-.tooltip.legal-hold[class*="icon-"]:hover:before, .legal-hold[class*=" icon-"]:hover:before
+.tooltip.legal-hold[class*="icon-"]:hover:before, .tooltip .legal-hold[class*=" icon-"]:hover:before
 {
 	color: #007fc6;
 }

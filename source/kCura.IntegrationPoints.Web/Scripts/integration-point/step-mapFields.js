@@ -15,40 +15,42 @@ ko.validation.rules['mustEqualMapped'] = {
 	},
 	message: 'All selected items have not been mapped.'
 };
+
+
+ko.validation.rules['uniqueIdIsMapped'] = {
+	validator: function (value, params) {
+		var containsIdentifier = false;
+		var rdoIdentifierMapped = false;
+		$.each(value, function (index, item) {
+			if (item.isIdentifier === true) {
+				rdoIdentifierMapped = true;
+			}
+			if (item.name == params[1]()) {
+				containsIdentifier= true;
+			}
+		});
+		if (containsIdentifier && rdoIdentifierMapped) {
+			IP.message.error.clear();
+			return true;
+		}
+		if (!rdoIdentifierMapped || !containsIdentifier) {
+			var missingField = !rdoIdentifierMapped ? params[2]() : params[1]();
+			IP.message.error.raise('Error: The object identifier field, ' + missingField + ', must be mapped.');
+			return false;
+		}
+		return true;
+	},
+	message: "The object identifier field must be mapped."
+}
 ko.validation.rules['mustContainIdentifer'] = {
 	validator: function (value, params) {
+		
+		var errorMessage = ""; 
 		if (value.length == 0) {
 			IP.message.error.raise('The object identifier field must be mapped.');
 			return false;
-		} else {
-			var containsIdentifier;
-			if (params[0] === "Append") { // Append Selected
-				containsIdentifier = false;
-				$.each(value, function (index, item) {
-
-					if (item.isIdentifier === true) {
-						containsIdentifier = true;
-					}
-				});
-				if (containsIdentifier) {
-					IP.message.error.clear();
-					return true;
-				}
-				IP.message.error.raise('The object identifier field must be mapped.');
-				return false;
-			} else {
-				containsIdentifier = false;
-				$.each(value, function (index, item) {
-					if (item.name === params[1]()) {
-						containsIdentifier = true;
-					}
-				});
-				if (containsIdentifier) {
-					return true;
-				}
-				return false;
-			}
 		}
+		
 	},
 	message: 'The object identifier field must be mapped.'
 }
@@ -92,14 +94,21 @@ ko.validation.insertValidationMessage = function (element) {
 		var artifactTypeId = model.destination.artifactTypeId;
 		var artifactId = model.artifactID || 0;
 		this.workspaceFields = ko.observableArray([]);
-		this.selectedOverlay = ko.observable().extend({ required: true });
+		this.selectedUniqueId = ko.observable().extend({ required: true });
+		this.rdoIdentifier = ko.observable();
 		this.isAppendOverlay = ko.observable(true);
 		this.mappedWorkspace = ko.observableArray([]).extend({
 			mustContainIdentifer: {
 				onlyIf: function () {
-					return self.showErrors();
+					return self.showErrors() && self.mappedWorkspace().length == 0 ;
 				},
-				params: [model.selectedOverwrite, self.selectedOverlay]
+				params: [model.selectedOverwrite, self.selectedUniqueId,self.rdoIdentifier]
+			},
+			uniqueIdIsMapped: {
+				onlyIf: function() {
+					return self.showErrors() && self.mappedWorkspace().length > 0;
+				},
+				params: [model.selectedOverwrite, self.selectedUniqueId, self.rdoIdentifier]
 			}
 		});
 
@@ -126,7 +135,6 @@ ko.validation.insertValidationMessage = function (element) {
 					return self.showErrors() && self.hasParent();
 				},
 				message: 'The Parent Attribute is required.',
-
 			}
 		});
 	
@@ -141,12 +149,13 @@ ko.validation.insertValidationMessage = function (element) {
 
 			$.each(self.overlay(), function () {
 				if (this.isIdentifier) {
-					self.selectedOverlay(this.name);
+					self.rdoIdentifier(this.name);
+					self.selectedUniqueId(this.name);
 				}
 			});
 			$.each(self.overlay(), function () {
 				if (model.identifer == this.name) {
-					self.selectedOverlay(this.name);
+					self.selectedUniqueId(this.name);
 				}
 			});
 			return result;
@@ -218,12 +227,10 @@ ko.validation.insertValidationMessage = function (element) {
 			};
 
 		})();
-		
+
 		root.data.deferred().all(promises).then(
 
 			function (result) {
-				
-
 				var destinationFields = result[0],
 						sourceFields = result[1],
 						mapping = result[2];
@@ -248,7 +255,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 				for (var i = 0; i < mapping.length; i++) {
 					if (mapping[i].fieldMapType == mapTypes.identifier) {
-						self.selectedOverlay(mapping[i].destinationField.displayName);
+						self.selectedUniqueId(mapping[i].destinationField.displayName);
 					}
 				}
 				var destinationMapped = mapHelper.getMapped(destinationFields,mapping, 'destinationField');
@@ -435,7 +442,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.back = function () {
 			var d = root.data.deferred().defer();
 
-			this.returnModel.identifer = this.model.selectedOverlay();
+			this.returnModel.identifer = this.model.selectedUniqueId();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 			var map = [];
 			var emptyField = { name: '', identifer: '' };
@@ -446,10 +453,12 @@ ko.validation.insertValidationMessage = function (element) {
 				map.push({
 					sourceField: {
 						displayName: source.name,
+						isIdentifier: source.isIdentifier,
 						fieldIdentifier: source.identifer
 					},
 					destinationField: {
 						displayName: workspace.name,
+						isIdentifier: workspace.isIdentifier,
 						fieldIdentifier: workspace.identifer,
 					},
 					fieldMapType: "None"
@@ -475,14 +484,16 @@ ko.validation.insertValidationMessage = function (element) {
 				for (var i = 0; i < mapping.sourceMapped.length; i++) {
 					var source = mapping.sourceMapped[i];
 					var destination = mapping.mappedWorkspace[i];
-					if (mapping.selectedOverlay === destination.name) {
+					if (mapping.selectedUniqueId === destination.name) {
 						map.push({
 							sourceField: {
 								displayName: source.name,
+								isIdentifier: source.isIdentifier,
 								fieldIdentifier: source.identifer
 							},
 							destinationField: {
 								displayName: destination.name,
+								isIdentifier: destination.isIdentifier,
 								fieldIdentifier: destination.identifer,
 							},
 							fieldMapType: "Identifier"
@@ -491,10 +502,12 @@ ko.validation.insertValidationMessage = function (element) {
 						map.push({
 							sourceField: {
 								displayName: source.name,
+								isIdentifier: source.isIdentifier,
 								fieldIdentifier: source.identifer
 							},
 							destinationField: {
 								displayName: destination.name,
+								isIdentifier: destination.isIdentifier,
 								fieldIdentifier: destination.identifer
 							},
 							fieldMapType: "None"
@@ -509,6 +522,7 @@ ko.validation.insertValidationMessage = function (element) {
 							map.push({
 								sourceField: {
 									displayName: mapping.sourceField[i].name,
+									isIdentifier: mapping.sourceField[i].isIdentifier,
 									fieldIdentifier: mapping.sourceField[i].identifer
 								},
 								destinationField: {
@@ -525,7 +539,7 @@ ko.validation.insertValidationMessage = function (element) {
 					d.reject(error);
 				});
 				this.returnModel.map = JSON.stringify(map);
-				this.returnModel.identifer = this.model.selectedOverlay();
+				this.returnModel.identifer = this.model.selectedUniqueId();
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 
 				d.resolve(this.returnModel);
