@@ -1,3 +1,4 @@
+
 *** Settings ***
 | Documentation 	| Verify that the Connect to Source step of Integration Points field validation works correctly
 | Metadata		    | Authors	| Daniel Oliver
@@ -7,9 +8,10 @@
 | Test Teardown 	| Capture screenshot if test fails
 | Suite Teardown	| Close all browsers
 
+
 *** Variables ***
 
-| ${WorkspaceName}	      | Relativity Legal Hold
+| ${WorkspaceName}				| LDAP Sync
 | ${ConnectionPathID}     | 
 | ${ObjectFilterStringID} | 
 | ${AuthenticationDropID} | 
@@ -19,6 +21,7 @@
 | ${ImportNestedItemsButtonName} |
 | ${ValidConnectionPath}         | 
 | ${InvalidConnectionPath}       | 
+
 
 *** Test Cases ***
 

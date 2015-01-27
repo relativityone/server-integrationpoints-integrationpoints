@@ -11,7 +11,7 @@
 
 *** Variables ***
 
-| ${WorkspaceName}	| LDAP
+| ${WorkspaceName}	| LDAP Sync
 
 
 *** Test Cases ***
