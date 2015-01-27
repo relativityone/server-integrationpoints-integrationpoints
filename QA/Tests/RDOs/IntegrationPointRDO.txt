@@ -19,7 +19,7 @@
 | The Correct Number of Fields have an Object Type of Integration Point
 | | [Documentation]	| This test verifies that the correct number of fields exist with an Object Type of Integration Point.
 | | ${Fields}=		| Get the Number of Items in the ItemList
-| | Run Keyword Unless	| '${Fields}' == '22'	| Fail	| There should have been 22 fields, but instead there were ${Fields}.
+| | Run Keyword Unless	| '${Fields}' == '16'	| Fail	| There should have been 16 fields, but instead there were ${Fields}.
 
 # The below tests each verify that a Field with the given data is present on the table.
 
@@ -44,7 +44,7 @@
 | | ... | Name						| Destination Provider	|
 | | ... | Field Type				| Single Object			|
 | | ... | Is Required				| No					|
-| | ... | Associative Object Type	| SourceProvider
+| | ... | Associative Object Type	| DestinationProvider
 
 
 | Enable Scheduler
@@ -55,27 +55,11 @@
 | | ... | Associative Object Type	| ${EMPTY}
 
 
-| End Date
-| | Find A Row With The Following Data	|
-| | ... | Name						| End Date	|
-| | ... | Field Type				| Date		|
-| | ... | Is Required				| No		|
-| | ... | Associative Object Type	| ${EMPTY}
-
-
 | Field Mappings
 | | Find A Row With The Following Data	|
 | | ... | Name						| Field Mappings	|
 | | ... | Field Type				| Long Text			|
 | | ... | Is Required				| No				|
-| | ... | Associative Object Type	| ${EMPTY}
-
-
-| Frequency
-| | Find A Row With The Following Data	|
-| | ... | Name						| Frequency		|
-| | ... | Field Type				| Single Choice	|
-| | ... | Is Required				| No			|
 | | ... | Associative Object Type	| ${EMPTY}
 
 
@@ -111,35 +95,11 @@
 | | ... | Associative Object Type	| ${EMPTY}
 
 
-| Reoccur
-| | Find A Row With The Following Data	|
-| | ... | Name						| Reoccur	 	|
-| | ... | Field Type				| Whole Number	|
-| | ... | Is Required				| No			|
-| | ... | Associative Object Type	| ${EMPTY}
-
-
 | Schedule Rule
 | | Find A Row With The Following Data	|
 | | ... | Name						| Schedule Rule	|
 | | ... | Field Type				| Long Text		|
 | | ... | Is Required				| No			|
-| | ... | Associative Object Type	| ${EMPTY}
-
-
-| Scheduled Time
-| | Find A Row With The Following Data	|
-| | ... | Name						| Scheduled Time	|
-| | ... | Field Type				| Fixed-Length Text	|
-| | ... | Is Required				| No				|
-| | ... | Associative Object Type	| ${EMPTY}
-
-
-| Send On
-| | Find A Row With The Following Data	|
-| | ... | Name						| Send On	|
-| | ... | Field Type				| Long Text	|
-| | ... | Is Required				| No		|
 | | ... | Associative Object Type	| ${EMPTY}
 
 
@@ -157,14 +117,6 @@
 | | ... | Field Type				| Single Object		|
 | | ... | Is Required				| No				|
 | | ... | Associative Object Type	| SourceProvider
-
-
-| Start Date
-| | Find A Row With The Following Data	|
-| | ... | Name						| Start Date	|
-| | ... | Field Type				| Date			|
-| | ... | Is Required				| No			|
-| | ... | Associative Object Type	| ${EMPTY}
 
 
 | System Created By

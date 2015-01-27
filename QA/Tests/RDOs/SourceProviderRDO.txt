@@ -19,9 +19,17 @@
 | The Correct Number of Fields have an Object Type of Source Provider
 | | [Documentation]	| This test verifies that the correct number of fields exist with an Object Type of Source Provider.
 | | ${Fields}=		| Get the Number of Items in the ItemList
-| | Run Keyword Unless	| '${Fields}' == '8'	| Fail	| There should have been 8 fields, but instead there were ${Fields}.
+| | Run Keyword Unless	| '${Fields}' == '9'	| Fail	| There should have been 9 fields, but instead there were ${Fields}.
 
 # The below tests each verify that a Field with the given data is present on the table.
+
+| Application Identifier
+| | Find A Row With The Following Data	|
+| | ... | Name						| Application Identifier 	|
+| | ... | Field Type				| Fixed-Length Text			|
+| | ... | Is Required				| No						|
+| | ... | Associative Object Type	| ${EMPTY}
+
 
 | Artifact ID
 | | Find A Row With The Following Data	|
