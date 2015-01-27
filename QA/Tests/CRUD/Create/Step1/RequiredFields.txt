@@ -11,7 +11,7 @@
 
 *** Variables ***
 
-| ${WorkspaceName}			| Relativity Legal Hold
+| ${WorkspaceName}			| LDAP Sync
 | ${Integration Name Field}	| name
 | ${Destination RDO Field}	| s2id_destinationRdo
 
