@@ -11,7 +11,7 @@
 
 *** Variables ***
 
-| ${WorkspaceName}			| Relativity Legal Hold
+| ${WorkspaceName}			| LDAP Sync
 | ${Frequency Field}		| s2id_frequency
 | ${Reoccur Field}			| reoccur
 | ${Weekly Send On Field}	| sendOn
