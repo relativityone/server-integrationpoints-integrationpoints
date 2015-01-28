@@ -51,8 +51,7 @@
 | | Proceed to the Next Step of the Integration Point wizard
 | | ${UniqueField}=	| Determine the RDO Identifier Field on the following Object Type	| ${ObjectType}
 | | ${UniqueField}=	| Set Variable If	| "${ObjectType}" == "Custodian"	| UniqueID	| ${UniqueField}
-| | Wait Until Page Contains Element	| ${Overlay Identifier Dropdown}
-| | Verify that the following select2 Dropdown currently has the following value selected	| ${Overlay Identifier Dropdown}	| ${UniqueField}	| 
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following select2 Dropdown currently has the following value selected	| ${Overlay Identifier Dropdown}	| ${UniqueField}	| 
 | | ... | The Default Overlay Identifier for the Object Type "${ObjectType}" was not "${UniqueField}".
 | | [Teardown]		| Run Keyword If Keyword Failed	| Capture Page Screenshot
 

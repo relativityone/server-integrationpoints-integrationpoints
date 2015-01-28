@@ -1,53 +1,15 @@
 	
 *** Settings ***
-| Documentation		| Verify the mapping of LDAP to RLH fields in Map LDAP Fields from Settings
+| Documentation		| Verify the mapping of LDAP to RLH fields in Map LDAP Fields from Settings.
 | Metadata		    | Authors	| Daniel Oliver	| William Sehy
-| Suite Setup		| Log	| This is the suite setup keyword.
-| Suite Teardown	| Log	| This is the suite teardown keyword.
 | Force Tags		| manual	| in-progress	| team.method
-| Test Setup		| Open Browser	| ${ROOT}
-| Test Teardown 	| Close All Browsers
-
-
-*** Variables ***
+#| Suite Setup		| Log	| This is the suite setup keyword.
+#| Test Setup		| Open Browser	| ${ROOT}
+#| Test Teardown 	| Close All Browsers
+#| Suite Teardown	| Log	| This is the suite teardown keyword.
 
 
 *** Test Cases ***
-
-
-| Error Message displayed when trying to load Custodians with no field map data
-| | [Documentation]	| Verify the correct Error Message is displayed when trying to load Custodians with no field map data
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. LDAP Details are configured, but the field map is blank
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Go to the Settings tab
-| | ... | 2. Click	| Load Custodians
-| | ... | 
-| | ... | Expected Results:
-| | ... | Verify error message is displayed "Cannot Load Custodians because there are no LDAP Fields Mapped."
-
-
-| The Required Fields can be Mapped
-| | [Documentation]	| Verify that the required fields can be mapped
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. LDAP Details are configured
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Go to the Settings tab
-| | ... | 2. Click | Map LDAP Fields
-| | ... | 3. Assign the following LDAP and RLH fields
-| | ... | mail      \| Email
-| | ... | givenname \| First Name
-| | ... | sn        \| Last Name
-| | ... | objectsid \| UniqueID
-| | ... | 4. Click	| Save
-| | ... | 5. Click | Map LDAP Fields
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that the fields are displayed as entered
 
 
 | Non Matching field types shown an error in Admin mode after Loading Custodians
@@ -69,92 +31,6 @@
 | | ... | 
 | | ... | Expected Results:
 | | ... | 1. Verify an error is displayed similar to "The value of the field <Field Name> (<Field Value>) could not be converted to a <type> for custodian <email>."
-
- 
-| An unmapped field is present in the LDAP List displays an error on Save
-| | [Documentation]	| Verify that an error is displayed when trying to save with an additional field listed in the LDAP side of the map
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. LDAP Details are configured
-| | ... | 2. The required fields have been mapped
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Go to the Settings tab
-| | ... | 2. Click | Map LDAP Fields
-| | ... | 3. Assign an additional field in the LDAP list
-| | ... | 4. Click		| Save
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify error is displayed "An unmapped field is present. Please make sure all fields to be loaded have a corresponding mapped field."
-| | ... | 2. Verify that the LDAP Map Fields screen is still displayed
-
-| An unmapped field is present in the RLH List displays an error on Save
-| | [Documentation]	| Verify that an error is displayed when trying to save with an additional field listed in the RLH side of the map
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. LDAP Details are configured
-| | ... | 2. The required fields have been mapped
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Go to the Settings tab
-| | ... | 2. Click | Map LDAP Fields
-| | ... | 3. Assign an additional field in the RLH list
-| | ... | 4. Click		| Save
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify error is displayed "An unmapped field is present. Please make sure all fields to be loaded have a corresponding mapped field."
-| | ... | 2. Verify that the LDAP Map Fields screen is still displayed
-
-
-
-| Can save post unmapped field message
-| | [Documentation]	| Verify that the map can be saved after encountering the unmapped fields message
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. LDAP Details are configured
-| | ... | 2. The required fields have been mapped
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Go to the Settings tab
-| | ... | 2. Click | Map LDAP Fields
-| | ... | 3. Assign an additional field in the RLH list
-| | ... | 4. Click		| Save
-| | ... | 5. Assign a mathcing field in the LDAP list
-| | ... | 6. Click		| Save
-| | ... | 7. Click      | Map LDAP Fields
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Map has been saved with the new fields added.
-
-
-| LDAP Map Fields UI
-| | [Documentation]	| Verify that the LDAP Map Fields UI is correct
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Settings tab
-| | ... | 2. Click | Map LDAP Fields
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the heading is LDAP Map fields
-| | ... | 2. The first list is titled LDAP Fields and contains all the fields in LDAP
-| | ... | 3. The second list is the selected LDAP fields
-| | ... | 4. The third list is the selected RLH fields
-| | ... | 5. The fourth list is titled Confirguration fields and contains the following:
-| | ... | - Current Title
-| | ... | - Department
-| | ... | - Email
-| | ... | - Employee Number
-| | ... | - Employess Status
-| | ... | - Employment End Date
-| | ... | - Employment Start Date
-| | ... | - First Name
-| | ... | - Last Name
-| | ... | - Past Department
-| | ... | - Past Title
-| | ... | - Phone Number
-| | ... | - Secondate Email
-| | ... | - Unique ID
-
 
 
 | Updates to the Field Map are used in future imports
