@@ -155,8 +155,10 @@ ko.validation.insertValidationMessage = function (element) {
 		var sourceFieldPromise = root.data.ajax({
 			type: 'Post', url: root.utils.generateWebAPIURL('SourceFields'), data: JSON.stringify({
 				'options': model.sourceConfiguration,
-				'type': model.source.selectedType
+				'type': model.source.selectedType,
 			})
+		}).fail(function (error) {
+			IP.message.error.raise("The object filter string returned no attributes.");
 		});
 		var mappedSourcePromise;
 
@@ -226,7 +228,7 @@ ko.validation.insertValidationMessage = function (element) {
 		root.data.deferred().all(promises).then(
 			function (result) {
 				var destinationFields = result[0],
-						sourceFields = result[1],
+						sourceFields = result[1] || [],
 						mapping = result[2];
 
 				var types = mapFields(sourceFields);
