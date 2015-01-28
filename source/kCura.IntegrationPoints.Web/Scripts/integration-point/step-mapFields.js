@@ -26,7 +26,7 @@ ko.validation.rules['uniqueIdIsMapped'] = {
 				rdoIdentifierMapped = true;
 			}
 			if (item.name == params[1]()) {
-				containsIdentifier= true;
+				containsIdentifier = true;
 			}
 		});
 		if (containsIdentifier && rdoIdentifierMapped) {
@@ -44,13 +44,13 @@ ko.validation.rules['uniqueIdIsMapped'] = {
 }
 ko.validation.rules['mustContainIdentifer'] = {
 	validator: function (value, params) {
-		
-		var errorMessage = ""; 
+
+		var errorMessage = "";
 		if (value.length == 0) {
 			IP.message.error.raise('The object identifier field must be mapped.');
 			return false;
 		}
-		
+
 	},
 	message: 'The object identifier field must be mapped.'
 }
@@ -79,14 +79,6 @@ ko.validation.insertValidationMessage = function (element) {
 			return mapField(entry);
 		});
 	}
-
-	var moveItemFromField = function (from, to) {
-		$.each(from, function () {
-			to.push(this);
-		});
-	}
-
-
 	var viewModel = function (model) {
 		var self = this;
 		this.hasBeenLoaded = model.hasBeenLoaded;
@@ -100,12 +92,12 @@ ko.validation.insertValidationMessage = function (element) {
 		this.mappedWorkspace = ko.observableArray([]).extend({
 			mustContainIdentifer: {
 				onlyIf: function () {
-					return self.showErrors() && self.mappedWorkspace().length == 0 ;
+					return self.showErrors() && self.mappedWorkspace().length == 0;
 				},
-				params: [model.selectedOverwrite, self.selectedUniqueId,self.rdoIdentifier]
+				params: [model.selectedOverwrite, self.selectedUniqueId, self.rdoIdentifier]
 			},
 			uniqueIdIsMapped: {
-				onlyIf: function() {
+				onlyIf: function () {
 					return self.showErrors() && self.mappedWorkspace().length > 0;
 				},
 				params: [model.selectedOverwrite, self.selectedUniqueId, self.rdoIdentifier]
@@ -137,7 +129,7 @@ ko.validation.insertValidationMessage = function (element) {
 				message: 'The Parent Attribute is required.',
 			}
 		});
-	
+
 		this.cacheMapped = ko.observableArray([]);
 		var workspaceFieldPromise = root.data.ajax({
 			type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({
@@ -175,7 +167,7 @@ ko.validation.insertValidationMessage = function (element) {
 		}
 
 		var destination = JSON.parse(model.destination);
-		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('rdometa', destination.artifactTypeID)}).then(function (result) {
+		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('rdometa', destination.artifactTypeID) }).then(function (result) {
 			self.hasParent(result.hasParent);
 
 		});
@@ -204,32 +196,34 @@ ko.validation.insertValidationMessage = function (element) {
 			function getNotMapped(fields, fieldMapping, key) {
 				return find(fields, fieldMapping, key, function (r) { return !r });
 			}
-
-			function getMapped(fields, fieldMapping, key) {
+			function getMapped(sourceField, destinationFields, fieldMapping, sourceKey, destinationKey) {
 				function _contains(array, field) {
-					return $.grep(array, function (value, index) { return value.fieldIdentifier == field.fieldIdentifier }).length > 0; //I wish underscore was an option
+					return $.grep(array, function (value, index) { return value.fieldIdentifier == field.fieldIdentifier; }).length > 0; //I wish underscore was an option
 				}
-
-				var result = [];
+				var sourceMapped = [];
+				var destinationMapped = [];
+				var orphan = [];
 				$.each(fieldMapping, function (item) {
-					var myItem = this[key];
-					if (_contains(fields, myItem)) {
-						result.push(myItem);
+					var source = this[sourceKey];
+					var _destination = this[destinationKey];
+					var isInSource = _contains(sourceField, source);
+					var isInDestination = _contains(destinationFields, _destination);
+					if (isInSource && isInDestination) {
+						sourceMapped.push(source);
+						destinationMapped.push(_destination);
 					}
-
-				})
-
-				return result;
+					else if (!isInSource && isInDestination) {
+						orphan.push(_destination);
+					}
+				});
+				return [destinationMapped.concat(orphan), sourceMapped];
 			}
 			return {
 				getNotMapped: getNotMapped,
 				getMapped: getMapped
 			};
-
 		})();
-
 		root.data.deferred().all(promises).then(
-
 			function (result) {
 				var destinationFields = result[0],
 						sourceFields = result[1],
@@ -252,37 +246,27 @@ ko.validation.insertValidationMessage = function (element) {
 						}
 					}
 				}
-
 				for (var i = 0; i < mapping.length; i++) {
 					if (mapping[i].fieldMapType == mapTypes.identifier) {
 						self.selectedUniqueId(mapping[i].destinationField.displayName);
 					}
 				}
-				
-				mapping  = $.map(mapping, function (value) {
-					return value.fieldMapType !== mapTypes.parent ? value :null; 
+				mapping = $.map(mapping, function (value) {
+					return value.fieldMapType !== mapTypes.parent ? value : null;
 				});
-				
-				var destinationMapped = mapHelper.getMapped(destinationFields,mapping, 'destinationField');
+				var mapped = mapHelper.getMapped(sourceFields, destinationFields, mapping, 'sourceField', 'destinationField');
+				var destinationMapped = mapped[0];
+				var sourceMapped = mapped[1];
 				var destinationNotMapped = mapHelper.getNotMapped(destinationFields, mapping, 'destinationField');
-				var sourceMapped = mapHelper.getMapped(sourceFields, mapping, 'sourceField');
 				var sourceNotMapped = mapHelper.getNotMapped(sourceFields, mapping, 'sourceField');
-
 				self.workspaceFields(mapFields(destinationNotMapped));
-
 				self.mappedWorkspace(mapFields(destinationMapped));
 				self.sourceField(mapFields(sourceNotMapped));
 				self.sourceMapped(mapFields(sourceMapped));
 				self.isAppendOverlay(model.selectedOverwrite !== "Append");
-			
-
-
 			}).fail(function (result) {
 				IP.message.error.raise(result);
 			});
-
-
-
 		/********** Submit Validation**********/
 		this.submit = function () {
 
@@ -290,106 +274,21 @@ ko.validation.insertValidationMessage = function (element) {
 		}
 		/********** WorkspaceFields control  **********/
 
-		this.addSelectFields = function () {
-			var requested = this.mappedWorkspace;
-			moveItemFromField(self.selectedWorkspaceField(), requested);
-			this.workspaceFields.removeAll(self.selectedWorkspaceField());
-			this.selectedWorkspaceField.splice(0, this.selectedWorkspaceField().length);
-		}
-		this.addToWorkspaceField = function () {
-			var requested = this.workspaceFields;
-			moveItemFromField(self.selectedMappedWorkspace(), requested);
-			this.mappedWorkspace.removeAll(self.selectedMappedWorkspace());
-			this.selectedMappedWorkspace.splice(0, this.selectedMappedWorkspace().length);
-		}
-		this.addAllWorkspaceFields = function () {
-			var requested = this.mappedWorkspace;
-			moveItemFromField(self.workspaceFields(), requested);
-			this.workspaceFields.removeAll();
-			this.selectedWorkspaceField.splice(0, this.selectedWorkspaceField().length);
-		}
-		this.addAlltoWorkspaceField = function () {
-			var requested = this.workspaceFields;
-			moveItemFromField(self.mappedWorkspace(), requested);
-			this.mappedWorkspace.removeAll();
-			this.selectedMappedWorkspace.splice(0, this.selectedMappedWorkspace().length);
-		}
+
+		this.addSelectFields = function () { IP.workspaceFieldsControls.add(this.workspaceFields, this.selectedWorkspaceField, this.mappedWorkspace); }
+		this.addToWorkspaceField = function () { IP.workspaceFieldsControls.add(this.mappedWorkspace, this.selectedMappedWorkspace, this.workspaceFields); }
+		this.addAllWorkspaceFields = function () { IP.workspaceFieldsControls.addAll(this.workspaceFields, this.selectedWorkspaceField, this.mappedWorkspace); }
+		this.addAlltoWorkspaceField = function () { IP.workspaceFieldsControls.addAll(this.mappedWorkspace, this.selectedMappedWorkspace, this.workspaceFields); }
 
 		/********** Source Attribute control  **********/
-		this.addToMappedSource = function () {
-			var requested = this.sourceMapped;
-			moveItemFromField(self.selectedSourceField(), requested);
-			this.sourceField.removeAll(self.selectedSourceField());
-			this.selectedSourceField.splice(0, this.selectedSourceField().length);
-		};
-		this.addToSourceField = function () {
-			var requested = this.sourceField;
-			moveItemFromField(self.selectedMappedSource(), requested);
-			this.sourceMapped.removeAll(self.selectedMappedSource());
-			this.selectedMappedSource.splice(0, this.selectedMappedSource().length);
-		};
-		this.addSourceToMapped = function () {
-			var requested = this.sourceMapped;
-			moveItemFromField(self.sourceField(), requested);
-			this.sourceField.removeAll();
-			this.selectedSourceField.splice(0, this.selectedSourceField.length);
-		};
-		this.addAlltoSourceField = function () {
-			var requested = this.sourceField;
-			moveItemFromField(self.sourceMapped(), requested);
-			this.sourceMapped.removeAll();
-			this.selectedMappedSource.splice(0, this.selectedMappedSource().length);
-		};
-		this.moveMappedWorkspaceUp = function () {
-			for (var j = 0; j < this.selectedMappedWorkspace().length ; j++) {
-				var i = this.mappedWorkspace.indexOf(this.selectedMappedWorkspace()[j]);
-				if (i >= 1) {
-					var array = this.mappedWorkspace();
-					this.mappedWorkspace.splice(i - 1, 2, array[i], array[i - 1]);
-				} else {
-					break;
-				}
-			}
-		};
-
-		this.moveMappedWorkspaceDown = function () {
-			for (var j = this.selectedMappedWorkspace().length - 1; j >= 0 ; j--) {
-				var i = this.mappedWorkspace().indexOf(this.selectedMappedWorkspace()[j]);
-				var length = this.mappedWorkspace().length - 1;
-				if ((i + 1) <= length) {
-					var array = this.mappedWorkspace();
-					this.mappedWorkspace.splice(i, 2, array[i + 1], array[i]);
-				} else {
-					break;
-				}
-			}
-		};
-
-		this.moveMappedSourceUp = function () {
-			for (var j = 0; j < this.selectedMappedSource().length ; j++) {
-				var i = this.sourceMapped.indexOf(this.selectedMappedSource()[j]);
-				if (i >= 1) {
-					var array = this.sourceMapped();
-					this.sourceMapped.splice(i - 1, 2, array[i], array[i - 1]);
-				} else {
-					break;
-				}
-			}
-		};
-
-		this.moveMappedSourceDown = function () {
-			for (var j = this.selectedMappedSource().length - 1; j >= 0 ; j--) {
-				var i = this.sourceMapped().indexOf(this.selectedMappedSource()[j]);
-				var length = this.sourceMapped().length - 1;
-
-				if ((i + 1) <= length) {
-					var array = this.sourceMapped();
-					this.sourceMapped.splice(i, 2, array[i + 1], array[i]);
-				} else {
-					break;
-				}
-			}
-		};
+		this.addToMappedSource = function () { IP.workspaceFieldsControls.add(this.sourceField, this.selectedSourceField, this.sourceMapped); };
+		this.addToSourceField = function () { IP.workspaceFieldsControls.add(this.sourceMapped, this.selectedMappedSource, this.sourceField); };
+		this.addSourceToMapped = function () { IP.workspaceFieldsControls.addAll(this.sourceField, this.selectedSourceField, this.sourceMapped); };
+		this.addAlltoSourceField = function () { IP.workspaceFieldsControls.addAll(this.sourceMapped, this.selectedSourceField, this.sourceField); };
+		this.moveMappedWorkspaceUp = function () { IP.workspaceFieldsControls.up(this.mappedWorkspace, this.selectedMappedWorkspace); };
+		this.moveMappedWorkspaceDown = function () { IP.workspaceFieldsControls.down(this.mappedWorkspace, this.selectedMappedWorkspace); };
+		this.moveMappedSourceUp = function () { IP.workspaceFieldsControls.up(this.sourceMapped, this.selectedMappedSource); };
+		this.moveMappedSourceDown = function () { IP.workspaceFieldsControls.down(this.sourceMapped, this.selectedMappedSource); };
 
 	};// end of the viewmodel
 
@@ -419,10 +318,10 @@ ko.validation.insertValidationMessage = function (element) {
 
 			this.key = JSON.parse(model.destination).artifactTypeID;
 			if (typeof (stepCache[this.key]) === "undefined") {
-				
+
 				setCache(model, this.key);
 			}
-			this.returnModel = $.extend(true,{}, model);
+			this.returnModel = $.extend(true, {}, model);
 			var c = stepCache[this.key];
 			for (var k in c) {
 				if (c.hasOwnProperty(k)) {
@@ -434,7 +333,7 @@ ko.validation.insertValidationMessage = function (element) {
 		};
 		this.getTemplate = function () {
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
-				
+
 				$('body').append(result);
 				self.template(self.settings.templateID);
 				self.hasTemplate = true;
@@ -477,7 +376,7 @@ ko.validation.insertValidationMessage = function (element) {
 			d.resolve(this.returnModel);
 			return d.promise;
 		}
-		
+
 
 		this.submit = function () {
 			var d = root.data.deferred().defer();
@@ -520,15 +419,14 @@ ko.validation.insertValidationMessage = function (element) {
 					}
 				}
 				if (mapping.hasParent) {
-
-					for (var i = 0; i < mapping.sourceField.length; i++) {
-						if (mapping.selectedIdentifier === mapping.sourceField[i].name) {
-
+					var allSource = mapping.sourceField.concat(mapping.sourceMapped);
+					for (var i = 0; i < allSource.length; i++) {
+						if (mapping.selectedIdentifier === allSource[i].name) {
 							map.push({
 								sourceField: {
-									displayName: mapping.sourceField[i].name,
-									isIdentifier: mapping.sourceField[i].isIdentifier,
-									fieldIdentifier: mapping.sourceField[i].identifer
+									displayName: allSource[i].name,
+									isIdentifier: allSource[i].isIdentifier,
+									fieldIdentifier: allSource[i].identifer
 								},
 								destinationField: {
 
@@ -555,7 +453,6 @@ ko.validation.insertValidationMessage = function (element) {
 			return d.promise;
 		};
 	};
-
 
 	var step = new Step({
 		url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3'),
