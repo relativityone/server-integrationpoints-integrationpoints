@@ -1,7 +1,7 @@
  
 *** Settings ***
 | Documentation 	| Verify that the Import Scheduling section of the Create Integration Points is correct with different Frequency options selected.
-| Metadata		    | Authors	| Daniel Oliver	| William Sehy
+| Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| sprint-3.1.2	| team.method
 | Suite Setup		| Open and Log in to Method
 | Test Setup		| Open Create Integration Point
@@ -27,9 +27,9 @@
 
 | | Verify that the following section contains the following fields	| Import Scheduling	| 
 | | ... | Enable Scheduler:	| 
-| | ... | Frequency:        | 
+| | ... | Frequency:		| 
 | | ... | Start Date:		| 
-| | ... | End Date:		    | 
+| | ... | End Date:			| 
 | | ... | Scheduled Time:	
 
 
@@ -42,7 +42,7 @@
 | | ... | Enable Scheduler:	| 
 | | ... | Frequency:		| 
 | | ... | Start Date:		| 
-| | ... | End Date:		    | 
+| | ... | End Date:			| 
 | | ... | Scheduled Time:
 
 
@@ -57,7 +57,7 @@
 | | ... | Reoccur:			| 
 | | ... | Send On:			| 
 | | ... | Start Date:		| 
-| | ... | End Date:		    | 
+| | ... | End Date:			| 
 | | ... | Scheduled Time:
 
 
@@ -72,7 +72,7 @@
 | | ... | Reoccur:			| 
 | | ... | Send On:			| 
 | | ... | Start Date:		| 
-| | ... | End Date:		    | 
+| | ... | End Date:			| 
 | | ... | Scheduled Time:
 
 
@@ -118,39 +118,56 @@
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Weekly
 | | Verify that the Following field has Checkboxes with the following text	| Send On	| 
-| | ... | Monday	|  
-| | ... | Tuesday	|  
-| | ... | Wednesday	|  
-| | ... | Thursday	|  
-| | ... | Friday	|  
-| | ... | Saturday	|  
-| | ... | Sunday 
+| | ... | Monday	| 
+| | ... | Tuesday	| 
+| | ... | Wednesday	| 
+| | ... | Thursday	| 
+| | ... | Friday	| 
+| | ... | Saturday	| 
+| | ... | Sunday
 
 
-| The Import Scheduling Section's Fields are of the correct Types when Frequency is set to Weekly
-| | [Tags]		    | manual	| visual
+| The Import Scheduling Section's Fields are of the correct Types when Frequency is set to Daily
+| | [Documentation]	| Verifies that the fields in the Import Scheduling Section are of the correct type when Frequency is set to Daily,
+| | ...				| since changes to the Frequency field can affect some fields' types.
+| | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Expected Results:
 | | ... | Enable Scheduler	| Yes/No Radio Buttons	| 
-| | ... | Frequency         | Single Choice			| 
-| | ... | Reoccur           | Text					|
-| | ... | Send On           | Checkboxes			| 
+| | ... | Frequency			| Single Choice			| 
 | | ... | Start Date		| Date					| 
-| | ... | End Date		    | Date					| 
+| | ... | End Date			| Date					| 
+| | ... | Scheduled Time	| Text
+
+
+| The Import Scheduling Section's Fields are of the correct Types when Frequency is set to Weekly
+| | [Documentation]	| Verifies that the fields in the Import Scheduling Section are of the correct type when Frequency is set to Weekly,
+| | ...				| since changes to the Frequency field can affect some fields' types.
+| | [Tags]			| manual	| visual
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | Enable Scheduler	| Yes/No Radio Buttons	| 
+| | ... | Frequency			| Single Choice			| 
+| | ... | Reoccur			| Text					|
+| | ... | Send On			| Checkboxes			| 
+| | ... | Start Date		| Date					| 
+| | ... | End Date			| Date					| 
 | | ... | Scheduled Time	| Text
 
 
 | The Import Scheduling Section's Fields are of the correct Types when Frequency is set to Monthly
-| | [Tags]		    | manual	| visual
+| | [Documentation]	| Verifies that the fields in the Import Scheduling Section are of the correct type when Frequency is set to Monthly,
+| | ...				| since changes to the Frequency field can affect some fields' types.
+| | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Expected Results:
 | | ... | Verify that the Following fields are of the following types:	| 
 | | ... | Enable Scheduler	| Yes/No Radio Buttons	| 
-| | ... | Frequency         | Single Choice			| 
-| | ... | Reoccur           | Text					| 
-| | ... | Send On           | A Combination of Single Choice and dropdowns	| 
+| | ... | Frequency			| Single Choice			| 
+| | ... | Reoccur			| Text					| 
+| | ... | Send On			| A Combination of Single Choice and dropdowns	| 
 | | ... | Start Date		| Date					| 
-| | ... | End Date		    | Date					| 
+| | ... | End Date			| Date					| 
 | | ... | Scheduled Time	| Text
 
 

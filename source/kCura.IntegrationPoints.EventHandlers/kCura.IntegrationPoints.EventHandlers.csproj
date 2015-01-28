@@ -86,6 +86,7 @@
     <Compile Include="IntegrationPoints\ConsoleEventHandler.cs" />
     <Compile Include="Constant.cs" />
     <Compile Include="ExternalTabURLService.cs" />
+    <Compile Include="IntegrationPoints\DeleteEventHandler.cs" />
     <Compile Include="IntegrationPoints\PageInteractionEventHandler.cs" />
     <Compile Include="IntegrationPoints\PreLoadEventHandler.cs" />
     <Compile Include="TagBuilder.cs" />
@@ -110,6 +111,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
       <Project>{fcaf52cd-0f8f-4d71-ac61-b7591a181a08}</Project>
       <Name>kCura.IntegrationPoints.SourceProviderInstaller</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
+      <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
+      <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

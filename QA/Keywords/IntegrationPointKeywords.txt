@@ -132,14 +132,15 @@
 | | [Documentation]	| This keyword fills out the Integration Point Step 2 fields.
 | | ... 			| The value of ${Authentication} should be Select.../Anonymous/Encryption/FastBind/Secure/Secure Socket Layer/Readonly server.
 | | ... 			| The value of ${ImportNestedItems} should be Yes or No.
-| | [ARGUMENTS]		| ${ConnectionPath}=NULL	| ${ObjectFilterString}=NULL	| ${Authentication}=NULL	| ${Username}=NULL	| ${Password}=NULL	| ${ImportNestedItems}=NULL
+| | [ARGUMENTS]		| ${ConnectionPath}=NULL		| ${ObjectFilterString}=NULL	| ${Authentication}=NULL	| 
+| | ...				| ${ConnectionUsername}=NULL	| ${ConnectionPassword}=NULL	| ${ImportNestedItems}=NULL
 | | Wait for then Select iFrame	| id=configurationFrame	| 10s	| The page was not on Step 2 of the Integration Point form.
 | | Wait Until Page Contains Element	| id=connectionPath	| 10s	| The page was not on Step 2.
 | | Run Keyword Unless	| "${ConnectionPath}" == "NULL"		| Input Text	| id=connectionPath		| ${ConnectionPath}
 | | Run Keyword Unless	| "${ObjectFilterString}" == "NULL"	| Input Text	| id=connectionFilter	| ${ObjectFilterString}
 | | Run Keyword Unless	| "${Authentication}" == "NULL"		| Select from Select2 Dropdown	| s2id_authentication	| ${Authentication}
-| | Run Keyword Unless	| "${Username}" == "NULL"			| Input Text	| id=connectionUsername	| ${Username}
-| | Run Keyword Unless	| "${Password}" == "NULL"			| Input Text	| id=connectionPassword	| ${Password}
+| | Run Keyword Unless	| "${ConnectionUsername}" == "NULL"	| Input Text	| id=connectionUsername	| ${ConnectionUsername}
+| | Run Keyword Unless	| "${ConnectionPassword}" == "NULL"	| Input Text	| id=connectionPassword	| ${ConnectionPassword}
 
 | | Run Keyword If		| "${ImportNestedItems.lower()}" == "yes"	| Select Radio Button	| enable	| true	| 
 | | ... | ELSE IF		| "${ImportNestedItems.lower()}" == "no"	| Select Radio Button	| enable	| false	| 
@@ -156,6 +157,14 @@
 | | Wait Until Page Contains Element	| xpath=//select[@id='workspace-fields']/child::option	| 10s	| The unassigned Workspace Fields never loaded.
 | | @{WorkspaceFields}=	| Get Element Text	| xpath=//select[@id='workspace-fields']/child::option	| False
 | | [Return]		| @{WorkspaceFields}
+
+| Verify that the Unassigned Workspace Listbox has the following Fields in order
+| | [Documentation]	| Verifies that the given fields are on the Unassigned Workspace listbox in the given order.
+| | [ARGUMENTS]		| @{ExpectedFields}
+| | @{WorkspaceFields}=	| Get the Unassigned Workspace Fields
+| | Log	| Workspace Fields: ${WorkspaceFields}
+| | Log	| Expected Fields: ${ExpectedFields}
+| | Lists Should Be Equal	| ${WorkspaceFields}	| ${ExpectedFields}
 
 | Get the Assigned Workspace Fields
 | | [Documentation]	| Returns a list of the Workspace Fields from the Assigned Workspace Fields list box on Step 3 of the Integration Point creation process.
@@ -278,6 +287,12 @@
 | | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
 | | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@type="text" and @id="${FieldID}"]	| The "${FieldID}" field does not have an input type of Text.
 
+| Verify that the following field ID has a password input
+| | [Documentation]	| A keyword that verifies the specified field has an input type of Password.
+| | [ARGUMENTS] 	| ${FieldID}
+| | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
+| | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@type="password" and @id="${FieldID}"]	| The "${FieldID}" field does not have an input type of Text.
+
 | Verify that the following field ID has a droplist input
 | | [Documentation]	| A keyword that verifies the specified field has an input type of a drop down list.
 | | [ARGUMENTS]		| ${FieldID}
@@ -313,8 +328,9 @@
 | | ${StepText}=	| Determine the current Step of the Create Integration Point Process
 | | Run Keyword If	| "${StepText}" == "Connect to Source"	| Wait for then Select iFrame	| id=configurationFrame	| 10s
 | | ${FieldID}= | fetch from right | ${FieldID} | s2id_
-| | Element Should Be Visible	| css=[id=${FieldID}] + div > .icon-error.field-validation-error	| No error was found on the field with the ID "${FieldID}".
-| | ${ActualText}=	| Get Text	| css=[id=${FieldID}] + div > .icon-error.field-validation-error
+| | Element Should Be Visible	| css=[id=${FieldID}]	| The field with the ID "${FieldID}" was not found.
+| | Element Should Be Visible	| xpath=//*[@id='${FieldID}']/following-sibling::div/child::*[contains(@class, 'icon-error') and contains(@class, 'field-validation-error')]	| No error was found on the field with the ID "${FieldID}".
+| | ${ActualText}=	| Get Text	| xpath=//*[@id='${FieldID}']/following-sibling::div/child::*[contains(@class, 'icon-error') and contains(@class, 'field-validation-error')]
 | | Run Keyword Unless	| '${ActualText}' == '${ErrorText}'	| Fail	| The error was incorrect. It should have been "${ErrorText}" but it was actually "${ActualText}".
 | | Run Keyword If	| "${StepText}" == "Connect to Source"	| Unselect Frame
 | | Run Keyword If	| "${StepText}" == "Connect to Source"	| Select iFrame	| id=_externalPage

@@ -37,23 +37,7 @@
 | | ... | Verify that the following message displayed: "Successfully connected to LDAP on testing.corp using provided credentials."
 
 
-| Test a Valid Default LDAP configuration
-| | [Documentation]	| This testcase utilizes the Method LDAP Configuration to connect to a default LDAP Server
-| | ... 		| and uses the Test LDAP Settings button to verify the connection.
-| | Run the following manual steps
-| | ... | Pre-conditions:
-| | ... | 1. LDAP server configured on the local network
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Change the Default LDAP Configuration	| testing\rellockdown	| P@ssw0rd@1
-| | ... | 2. Configure LDAP with the Following Values	| ${empty}	| ${empty}	| ${empty}
-| | ... | 3. Click	| Test LDAP Settings
-| | ... | 
-| | ... | Expected Results:
-| | ... | Verify that no error messages displayed (blank entries into the LDAP fields forces a connection to a local LDAP through the local network and windows authentication)
-
-
-| Test an Invalid or No Default LDAP configuration
+| Test an Invalid  LDAP configuration
 | | [Documentation]	| This testcase utilizes the Method LDAP Configuration to connect to a default LDAP Server
 | | ... 		| where no LDAP server exists and uses the Test LDAP Settings button to force an error.
 | | Run the following manual steps
