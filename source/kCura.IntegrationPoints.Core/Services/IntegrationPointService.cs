@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			else
 			{
 				ip.ScheduleRule = string.Empty;
-				ip.NextScheduledRuntime = DateTime.UtcNow;
+				ip.NextScheduledRuntime = null;
 				rule = null;
 			}
 
