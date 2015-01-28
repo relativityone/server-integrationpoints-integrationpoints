@@ -29,17 +29,22 @@
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${ObjectType} Step 3 Test	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${ObjectType}	| EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=Dummy1	| # Username=Dummy3	| Password=Dummy4	| ImportNestedItems=Yes	| ObjectFilterString=Dummy2	| Authentication=Secure	
+| | Fill out the Following Fields of the Integration Point Step 2 form	| 
+| | ... | ConnectionPath=testing.corp/CN=Users,DC=testing,DC=corp	| 
+| | ... | ObjectFilterString=(objectClass=*)		| 
+| | ... | Authentication=FastBind					| 
+| | ... | ConnectionUsername=testing\\administrator	| 
+| | ... | ConnectionPassword=P@ssw0rd@1				| 
+| | ... | ImportNestedItems=Yes
 | | Proceed to the Next Step of the Integration Point wizard
-| | @{WorkspaceFields}=	| Get the Unassigned Workspace Fields
 | | @{ExpectedFields}=	| Get the Non-System Fields for the following Object Type	| ${ObjectType}
-| | Log	| Workspace Fields: ${WorkspaceFields}
-| | Log	| Expected Fields: ${ExpectedFields}
-| | Lists Should Be Equal	| ${WorkspaceFields}	| ${ExpectedFields}
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Unassigned Workspace Listbox has the following Fields in order	| @{ExpectedFields}
 | | [Teardown]		| Run Keyword If Keyword Failed	| Capture Page Screenshot
 
 | Make the Object Type List a Suite Variable
 | | @{ObjectTypeList}=	| Get a List of All Non-System Object Types in the Workspace
+#| | @{ObjectTypeList}=	| Create List	| 
+#| | ... | Custodian
 | | Set Suite Variable	| ${ObjectTypes}	| ${ObjectTypeList}
 
 

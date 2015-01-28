@@ -57,12 +57,12 @@
 | | ... | Expected Results:
 | | ... | 1. Verify that there is no Update entry for the object ${ExistingAndUpdatedObject}
 
-| An Append and Overlay import does not update existing unmodified objects
+| An Append import does not update existing unmodified objects
 | | [Documentation] | Verify that when an Append RIP is run which has Source objects that match to existing objects with no changes, that it does not update the existing objects in the target RDO.
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Preconditions:
-| | ... | 1. Require Test Case: An Append and Overlay import Creates new objects
+| | ... | 1. Require Test Case: An Append import Creates new objects
 | | ... |
 | | ... | Steps:
 | | ... | 1. View the History objects for the ${RIPAppendOverlay1} import

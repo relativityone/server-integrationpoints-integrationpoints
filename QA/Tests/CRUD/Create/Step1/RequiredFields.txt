@@ -13,7 +13,8 @@
 
 | ${WorkspaceName}			| LDAP Sync
 | ${Integration Name Field}	| name
-| ${Destination RDO Field}	| s2id_destinationRdo
+| ${Sorce Provider Field}	| sourceProvider
+| ${Destination RDO Field}	| destinationRdo
 
 
 *** Test Cases ***
@@ -21,7 +22,7 @@
 | The Integration Name field display an error message when empty
 | | [Documentation]	| Verify that leaving the Integration Name field blank displays a warning message after clicking Next.
 | | [Tags]			| required	| automated
-| | Fill out the Following Fields of the Integration Point Step 1 form	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=History	| EnableScheduler=No
+| | Fill out the Following Fields of the Integration Point Step 1 form	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custodian	| EnableScheduler=No
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Integration Name Field}	| This field is required.
 
@@ -35,8 +36,25 @@
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
 
+| The Source Provider field displays an error message when empty
+| | [Documentation]	| Verify that leaving the Source Provider field as Select... displays a warning message after clicking Next.
+| | [Tags]			| required	| automated
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| DestinationRDO=Custodian	| EnableScheduler=No
+| | Click	| id=next
+| | Verify the following Integration Point Field has the following Error	| ${Sorce Provider Field}	| This field is required.
+
+
+| Proceeding Post-Source Provider Validation
+| | [Documentation]	| Verify that you can proceed to Step 2 after the Source Provider validation message has been shown.
+| | [Tags]			| automated
+| | [Setup]			| Require Test Case	| The Source Provider field displays an error message when empty
+| | Fill out the Following Fields of the Integration Point Step 1 form	| SourceProvider=LDAP
+| | Proceed to the Next Step of the Integration Point wizard
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
+
+
 | The Destination RDO field displays an error message when empty
-| | [Documentation]	| Verify that leaving the Integration Name field as Select... displays a warning message after clicking Next.
+| | [Documentation]	| Verify that leaving the Destination RDO field as Select... displays a warning message after clicking Next.
 | | [Tags]			| required	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| EnableScheduler=No
 | | Click	| id=next
@@ -47,7 +65,7 @@
 | | [Documentation]	| Verify that you can proceed to Step 2 after the Destination RDO validation message has been shown.
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| The Destination RDO field displays an error message when empty
-| | Fill out the Following Fields of the Integration Point Step 1 form	| DestinationRDO=History
+| | Fill out the Following Fields of the Integration Point Step 1 form	| DestinationRDO=Custodian
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
