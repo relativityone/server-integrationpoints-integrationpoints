@@ -158,7 +158,7 @@ ko.validation.insertValidationMessage = function (element) {
 				'type': model.source.selectedType,
 			})
 		}).fail(function (error) {
-			IP.message.error.raise("The object filter string returned no attributes.");
+			IP.message.error.raise("No attributes were returned from the source provider.");
 		});
 		var mappedSourcePromise;
 
