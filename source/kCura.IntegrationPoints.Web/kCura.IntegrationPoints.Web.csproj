@@ -355,6 +355,7 @@
     <Content Include="Scripts\integration-point\edit.js" />
     <Content Include="Scripts\integration-point\binding.js" />
     <Content Include="Scripts\integration-point\step-import.js" />
+    <Content Include="Scripts\integration-point\step-mapFields-control.js" />
     <Content Include="Scripts\integration-point\step-mapFields.js" />
     <Content Include="Scripts\integration-point\step-vm.js" />
     <Content Include="Scripts\integration-point\step-details.js" />
