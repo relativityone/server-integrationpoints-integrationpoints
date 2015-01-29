@@ -46,7 +46,6 @@
 		}).then(function (result) {
 			vm = new viewModel();
 			if (result.scheduler && result.scheduler.scheduledTime) {
-				debugger;
 				result.scheduler.scheduledTime = helper.utcToLocal(result.scheduler.scheduledTime);
 			}
 			vm.goToStep(0, result);
