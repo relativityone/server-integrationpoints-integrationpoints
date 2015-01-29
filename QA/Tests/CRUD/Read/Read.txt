@@ -148,8 +148,8 @@
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Status Fields are in the following Order:
-| | ... | - Next Scheduled Runtime:
-| | ... | - Last Runtime:
+| | ... | - Next Scheduled Runtime (UTC):
+| | ... | - Last Runtime (UTC):
 
 
 | The Status fields are in the correct order when Enable Scheduler is set to Yes
@@ -161,8 +161,8 @@
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Status Fields are in the following Order:
-| | ... | - Next Scheduled Runtime:
-| | ... | - Last Runtime:
+| | ... | - Next Scheduled Runtime (UTC):
+| | ... | - Last Runtime (UTC):
 
 
 *** Settings ***
