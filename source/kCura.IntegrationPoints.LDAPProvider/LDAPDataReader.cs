@@ -173,7 +173,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public string GetString(int i)
 		{
-			return GetValue(i).ToString();
+			return GetValue(i) as string;
 		}
 
 		public object GetValue(int i)

@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 
 		public ActionResult StepDetails3()
 		{
-			return PartialView("_IntegrationDetailsPartial3");
+			return PartialView("_IntegrationMapFields");
 		}
 
 		public ActionResult ConfigurationDetail()

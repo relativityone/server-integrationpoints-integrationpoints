@@ -1,5 +1,5 @@
 *** Settings ***
-| Documentation 	| Verify that the Map Fields step of Integration Points shows the correct fields
+| Documentation 	| Verify that the Parent Attribtue list is shown at the correct times with the correct values
 | Metadata		    | Authors	| Daniel Oliver
 | Force Tags		| in-progress | team.method
 | Suite Setup		| Open and Log in to Method

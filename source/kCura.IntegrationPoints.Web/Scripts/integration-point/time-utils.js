@@ -50,10 +50,14 @@ IP.timeUtil = (function () {
 		return '';
 	}
 
+	var _noOp = function (time) {
+		return time;
+	};
+
 	return {
-		utcToLocal: timeUtcToLocal,
-		timeLocalToUtc: timeLocalToUtc,
-		utcDateToLocal: utcToLocal
+		utcToLocal: _noOp,
+		timeLocalToUtc: _noOp,
+		utcDateToLocal: _noOp
 	};
 
 }());

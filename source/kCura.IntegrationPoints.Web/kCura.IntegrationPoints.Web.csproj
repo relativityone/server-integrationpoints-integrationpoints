@@ -355,6 +355,7 @@
     <Content Include="Scripts\integration-point\edit.js" />
     <Content Include="Scripts\integration-point\binding.js" />
     <Content Include="Scripts\integration-point\step-import.js" />
+    <Content Include="Scripts\integration-point\step-mapFields-control.js" />
     <Content Include="Scripts\integration-point\step-mapFields.js" />
     <Content Include="Scripts\integration-point\step-vm.js" />
     <Content Include="Scripts\integration-point\step-details.js" />
@@ -462,7 +463,7 @@
     <Content Include="Views\IntegrationPoints\Edit.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial2.cshtml" />
-    <Content Include="Views\IntegrationPoints\_IntegrationDetailsPartial3.cshtml" />
+    <Content Include="Views\IntegrationPoints\_IntegrationMapFields.cshtml" />
     <Content Include="Views\IntegrationPoints\Details.cshtml" />
     <Content Include="Views\IntegrationPoints\_Configuration.cshtml" />
     <Content Include="Views\IntegrationPoints\LDAPConfiguration.cshtml" />

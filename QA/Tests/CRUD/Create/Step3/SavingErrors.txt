@@ -32,7 +32,7 @@
 | | ... | 4. Click Save
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify that the message "The overlay identifier must be mapped." is displayed
+| | ... | Verify that the message "The overlay identifier field must be mapped." is displayed
 
 
 | Saving post "The overlay identifier must be mapped." message works by adding the Overlay Identifier to the Selected list
@@ -59,7 +59,7 @@
 | | ... | 2. Move one field to the Selected Source Attributes list
 | | ... | 3. Have a different field selected in the Overlay Identifer than the field in the Selected Workspace Fields list
 | | ... | 4. Click Save
-| | ... | 5. Change the Overlay Identifier field to be the same as the field from step1.
+| | ... | 5. Map the RDO's identifier and add another Source Attribute
 | | ... | 6. Click Save
 | | ... |
 | | ... | Expected Results:
@@ -102,7 +102,7 @@
 
 
 | When the conditions for both invalid messages are met, the "All selected items have not been mapped" message is displayed
-| | [Documentation]	| Verify that the conditions are met for both messages (Overlay not mapped, and Uneven field count), that only the "All selected items have not been mapped" message is displayed.
+| | [Documentation]	| Verify that the conditions are met for both messages (Overlay not mapped, and Uneven field count), that the "All selected items have not been mapped" message is displayed.
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Move one field to the Selected Workspace Fields list
@@ -136,7 +136,7 @@
 | | ... | 1. Click Save
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify that the message "The overlay identifier must be mapped." is displayed
+| | ... | Verify that the message "The overlay identifier field must be mapped." is displayed
 
 
 *** Keywords *** 

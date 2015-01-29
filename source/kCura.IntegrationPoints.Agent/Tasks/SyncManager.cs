@@ -85,7 +85,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				while (_reader.Read())
 				{
-					yield return _reader.GetString(0);
+					var result = _reader.GetString(0);
+					yield return result;
 				}
 			}
 
