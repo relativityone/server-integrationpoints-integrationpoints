@@ -95,7 +95,7 @@
     <Compile Include="AgentNotFoundException.cs" />
     <Compile Include="BatchProcess\BatchManagerBase.cs" />
     <Compile Include="BatchProcess\BatchableTaskBase.cs" />
-    <Compile Include="Core\AgentInformation.cs" />
+    <Compile Include="Core\AgentTypeInformation.cs" />
     <Compile Include="Data\Interfaces\IQueueDBContext.cs" />
     <Compile Include="Data\Queries\CreateJobLogTable.cs" />
     <Compile Include="Data\Queries\InsertJobLogEntry.cs" />
@@ -104,7 +104,7 @@
     <Compile Include="Data\Queries\GetJob.cs" />
     <Compile Include="Data\Queries\CreateScheduledJob.cs" />
     <Compile Include="Data\Queries\UpdateScheduledJob.cs" />
-    <Compile Include="Data\Queries\GetAgentInformation.cs" />
+    <Compile Include="Data\Queries\GetAgentTypeInformation.cs" />
     <Compile Include="Data\Queries\GetNextJob.cs" />
     <Compile Include="Data\QueueDBContext.cs" />
     <Compile Include="Data\Queries\CreateScheduleQueueTable.cs" />
@@ -152,7 +152,7 @@
     <Content Include="Data\Resources\GetJobByID.sql" />
     <Content Include="Data\Resources\CreateScheduledJob.sql" />
     <Content Include="Data\Resources\UpdateScheduledJob.sql" />
-    <Content Include="Data\Resources\GetAgentInformation.sql" />
+    <Content Include="Data\Resources\GetAgentTypeInformation.sql" />
     <Content Include="Data\Resources\CreateQueueTable.sql" />
     <Content Include="Data\Resources\GetNextJob.sql" />
   </ItemGroup>

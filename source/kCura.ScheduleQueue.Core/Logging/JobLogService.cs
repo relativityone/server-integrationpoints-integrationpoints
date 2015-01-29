@@ -14,11 +14,11 @@ namespace kCura.ScheduleQueue.Core.Logging
 			this.helper = helper;
 		}
 
-		public void Log(AgentInformation agentInfo, Job job, JobLogState state, string details = null)
+		public void Log(AgentTypeInformation agentTypeInfo, Job job, JobLogState state, string details = null)
 		{
 			try
 			{
-				SetLocalQDBContext(agentInfo, job);
+				SetLocalQDBContext(agentTypeInfo, job);
 
 				CreateLogTableOnce();
 
@@ -34,14 +34,14 @@ namespace kCura.ScheduleQueue.Core.Logging
 			}
 			catch (Exception ex)
 			{
-				SystemEventLoggingService.WriteErrorEvent(agentInfo.Name, "Application", ex);
+				SystemEventLoggingService.WriteErrorEvent(agentTypeInfo.Name, "Application", ex);
 			}
 		}
 
 
 		private IQueueDBContext qDBContext = null;
 		private int savedWorkspaceID = int.MinValue;
-		private void SetLocalQDBContext(AgentInformation agentInfo, Job job)
+		private void SetLocalQDBContext(AgentTypeInformation agentInfo, Job job)
 		{
 			if (qDBContext == null
 				|| !savedWorkspaceID.Equals(job.WorkspaceID))

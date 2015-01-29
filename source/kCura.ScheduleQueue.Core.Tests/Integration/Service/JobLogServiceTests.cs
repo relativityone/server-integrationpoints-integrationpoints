@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.Agent;
 using kCura.ScheduleQueue.Core.Logging;
 using kCura.ScheduleQueue.Core.Services;
 using NSubstitute;
@@ -27,7 +28,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			IDBContext c1Context = new TestDBContextHelper().GetDBContext(caseID1);
 			IDBContext c2Context = new TestDBContextHelper().GetDBContext(caseID2);
 			IAgentService agentService = new AgentService(agentHelper, agentGuid); //RLH agent
-			AgentInformation ai = agentService.AgentInformation;
+			AgentTypeInformation ai = agentService.AgentTypeInformation;
 			var jobService = new JobService(agentService, agentHelper);
 
 			Job jobOld = jobService.GetJob(caseID1, relatedObjectArtifactID, taskType);

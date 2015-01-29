@@ -18,15 +18,15 @@ namespace kCura.ScheduleQueue.Core.Services
 			this.QDBContext = new QueueDBContext(dbHelper, QueueTable);
 
 		}
-		
+
 		public Guid AgentGuid { get; private set; }
 		public string QueueTable { get; private set; }
 		public IHelper DBHelper { get; private set; }
 		public IQueueDBContext QDBContext { get; private set; }
-		private AgentInformation _agentInformation;
-		public AgentInformation AgentInformation
+		private AgentTypeInformation _agentTypeInformation;
+		public AgentTypeInformation AgentTypeInformation
 		{
-			get { return _agentInformation ?? (_agentInformation = GetAgentInformation(QDBContext.EddsDBContext, AgentGuid)); }
+			get { return _agentTypeInformation ?? (_agentTypeInformation = GetAgentTypeInformation(QDBContext.EddsDBContext, AgentGuid)); }
 
 		}
 
@@ -41,29 +41,17 @@ namespace kCura.ScheduleQueue.Core.Services
 			creationOfQTableHasRun = true;
 		}
 
-		public static AgentInformation GetAgentInformation(IDBContext eddsDBContext, int agentID)
+		public static AgentTypeInformation GetAgentTypeInformation(IDBContext eddsDBContext, Guid agentGuid)
 		{
-			AgentInformation agentInformation = null;
-			DataRow row = new GetAgentInformation(eddsDBContext).Execute(agentID);
-			if (row == null)
-			{
-				throw new AgentNotFoundException(string.Format("The agent with agentID {0} could not be found, please ensure there is an existing installed agent", agentID));
-			}
-			agentInformation = new AgentInformation(row);
-			return agentInformation;
-		}
-
-		public static AgentInformation GetAgentInformation(IDBContext eddsDBContext, Guid agentGuid)
-		{
-			AgentInformation agentInformation = null;
-			DataRow row = new GetAgentInformation(eddsDBContext).Execute(agentGuid);
+			AgentTypeInformation agentTypeInformation = null;
+			DataRow row = new GetAgentTypeInformation(eddsDBContext).Execute(agentGuid);
 			if (row == null)
 			{
 				throw new AgentNotFoundException(string.Format("The agent with Guid {0} could not be found, please ensure there is an existing installed agent", agentGuid.ToString()));
 			}
-			agentInformation = new AgentInformation(row);
+			agentTypeInformation = new AgentTypeInformation(row);
 
-			return agentInformation;
+			return agentTypeInformation;
 		}
 	}
 }

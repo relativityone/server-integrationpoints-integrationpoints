@@ -105,7 +105,7 @@ namespace kCura.ScheduleQueue.AgentBase
 		{
 			var msg = string.Empty;
 
-			Job nextJob = jobService.GetNextQueueJob(base.GetResourceGroupIDs());
+			Job nextJob = jobService.GetNextQueueJob(base.GetResourceGroupIDs(), base.AgentID);
 			while (nextJob != null)
 			{
 				msg = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, nextJob.JobId, nextJob.WorkspaceID, nextJob.TaskType);
@@ -117,7 +117,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				//	var warnMsg = string.Format("Deleting job {0} from workspace {1} due to inactive workspace", nextJob.JobId, nextJob.JobType.ToString());
 				//	mainLogger.Log(warnMsg, warnMsg, LogCategory.Warn);
 				//	jobService.DeleteJob(nextJob.JobId);
-				//	nextJob = jobService.GetNextQueueJob(AgentInformation, base.GetResourceGroupIDs());
+				//	nextJob = jobService.GetNextQueueJob(AgentTypeInformation, base.GetResourceGroupIDs());
 				//	continue;
 				//}
 
@@ -125,7 +125,7 @@ namespace kCura.ScheduleQueue.AgentBase
 
 				FinalizeJob(nextJob, taskResult);
 
-				nextJob = jobService.GetNextQueueJob(base.GetResourceGroupIDs());
+				nextJob = jobService.GetNextQueueJob(base.GetResourceGroupIDs(), base.AgentID);
 			}
 
 			if (base.ToBeRemoved)

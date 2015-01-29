@@ -23,15 +23,15 @@ namespace kCura.ScheduleQueue.Core.Services
 		public IQueueDBContext QDBContext { get; private set; }
 
 
-		public AgentInformation AgentInformation
+		public AgentTypeInformation AgentTypeInformation
 		{
-			get { return AgentService.AgentInformation; }
+			get { return AgentService.AgentTypeInformation; }
 		}
 
-		public Job GetNextQueueJob(IEnumerable<int> resourceGroupIds)
+		public Job GetNextQueueJob(IEnumerable<int> resourceGroupIds, int agentID)
 		{
 			Job job = null;
-			DataRow row = new GetNextJob(QDBContext).Execute(AgentInformation.AgentID, AgentInformation.AgentTypeID, resourceGroupIds.ToArray());
+			DataRow row = new GetNextJob(QDBContext).Execute(agentID, AgentTypeInformation.AgentTypeID, resourceGroupIds.ToArray());
 			if (row != null)
 			{
 				job = new Job(row);
@@ -103,7 +103,7 @@ namespace kCura.ScheduleQueue.Core.Services
 					relatedObjectArtifactID,
 					taskType,
 					nextRunTime.Value,
-					AgentInformation.AgentTypeID,
+					AgentTypeInformation.AgentTypeID,
 					scheduleRule.GetType().AssemblyQualifiedName,
 					serializedScheduleRule,
 					jobDetails,
@@ -126,7 +126,7 @@ namespace kCura.ScheduleQueue.Core.Services
 				relatedObjectArtifactID,
 				taskType,
 				nextRunTime,
-				AgentInformation.AgentTypeID,
+				AgentTypeInformation.AgentTypeID,
 				null,
 				null,
 				jobDetails,

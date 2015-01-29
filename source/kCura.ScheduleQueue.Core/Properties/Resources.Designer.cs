@@ -164,9 +164,9 @@ namespace kCura.ScheduleQueue.Core.Properties {
         ///			(NOT @AgentGuid IS NULL AND at.[Guid] = @AgentGuid)
         ///.
         /// </summary>
-        internal static string GetAgentInformation {
+        internal static string GetAgentTypeInformation {
             get {
-                return ResourceManager.GetString("GetAgentInformation", resourceCulture);
+                return ResourceManager.GetString("GetAgentTypeInformation", resourceCulture);
             }
         }
         

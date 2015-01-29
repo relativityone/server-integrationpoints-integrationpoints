@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.Core
 			CopyDirectoryFiles(libDllPath, finalDllPath, true, true);
 
 			//kCura.Agent
-			libDllPath = GetRelativityAgentPath();
+			libDllPath = GetRelativityWebProcessingPath();
 			//if (!string.IsNullOrWhiteSpace(libDllPath)) CopyDirectoryFiles(libDllPath, finalDllPath, true, false);
 			if (!string.IsNullOrWhiteSpace(libDllPath)) CopyFileWithWildcard(libDllPath, finalDllPath, "kCura.Agent*");
 
@@ -221,6 +221,20 @@ namespace kCura.IntegrationPoints.Core
 			}
 			rk.Close();
 			return keyValue;
+		}
+
+		private string GetRelativityWebProcessingPath()
+		{
+			string eddsPath = string.Empty;
+
+			try
+			{
+				eddsPath = GetFeaturePathsValue("WebProcessingPath");
+			}
+			catch
+			{
+			}
+			return eddsPath;
 		}
 
 		private string GetRelativityEddsPath()

@@ -7,21 +7,12 @@ using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.Data.Queries
 {
-	public class GetAgentInformation
+	public class GetAgentTypeInformation
 	{
 		private IDBContext DBContext = null;
-		public GetAgentInformation(IDBContext dbContext)
+		public GetAgentTypeInformation(IDBContext dbContext)
 		{
 			this.DBContext = dbContext;
-		}
-
-		public DataRow Execute(int agentID)
-		{
-			List<SqlParameter> sqlParams = new List<SqlParameter>();
-			sqlParams.Add(new SqlParameter("@AgentID", agentID));
-			sqlParams.Add(new SqlParameter("@AgentGuid", DBNull.Value));
-
-			return Execute(sqlParams);
 		}
 
 		public DataRow Execute(Guid agentGuid)
@@ -35,7 +26,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 
 		public DataRow Execute(IEnumerable<SqlParameter> sqlParams)
 		{
-			string sql = Resources.GetAgentInformation;
+			string sql = Resources.GetAgentTypeInformation;
 
 			var dataTable = DBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
 

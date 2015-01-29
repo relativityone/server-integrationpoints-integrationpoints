@@ -7,7 +7,6 @@ using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.Vendor.Castle.Core.Internal;
 
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
@@ -92,8 +91,8 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 		{
 			if (providersToBeUpdated.Any())
 			{
-				providersToBeUpdated.ForEach(x => x.Name = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Name).First());
-				providersToBeUpdated.ForEach(x => x.SourceConfigurationUrl = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Url).First());
+				providersToBeUpdated.ToList().ForEach(x => x.Name = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Name).First());
+				providersToBeUpdated.ToList().ForEach(x => x.SourceConfigurationUrl = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Url).First());
 
 				_caseContext.RsapiService.SourceProviderLibrary.Update(providersToBeUpdated);
 			}

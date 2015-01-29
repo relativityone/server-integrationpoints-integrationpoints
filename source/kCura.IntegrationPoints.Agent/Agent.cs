@@ -19,8 +19,6 @@ namespace kCura.IntegrationPoints.Agent
 	[Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)]
 	public class Agent : kCura.ScheduleQueue.AgentBase.ScheduleQueueAgentBase, IDisposable
 	{
-		private AgentInformation agentInformation = null;
-
 		private IWindsorContainer _container;
 		private IWindsorContainer Container
 		{
@@ -81,7 +79,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		private void RaiseJobLog(Job job, JobLogState state, string details = null)
 		{
-			new JobLogService(base.Helper).Log(base.AgentService.AgentInformation, job, state, details);
+			new JobLogService(base.Helper).Log(base.AgentService.AgentTypeInformation, job, state, details);
 		}
 
 		public void Dispose()
