@@ -25,6 +25,7 @@
 
 | The Connection Path field display an error message when empty
 | | [Documentation]	| Verify that leaving the Connection Path field blank displays a warning message after clicking Next.
+| | ... | [id] 10029a70-a89f-11e4-8075-b8ca3a83048f
 | | [Tags]			| required	| automated
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ObjectFilterString=${ObjectFilterString}	| Authentication=${Authentication}	| Username=${ConnectionUsername}	| Password=${ConnectionPassword}	| ImportNestedItems=Yes
 | | Click	| id=next
@@ -33,6 +34,7 @@
 
 | Proceeding Post-Integration Name Validation
 | | [Documentation]	| Verify that you can proceed to Step 3 after the Connection Path validation message has been shown.
+| | ... | [id] 1007a380-a89f-11e4-964b-b8ca3a83048f
 | | [Tags]			| automated
 | | [Setup] 		| Require Test Case	| The Connection Path field display an error message when empty
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}
@@ -42,6 +44,7 @@
 
 | The Authentication field displays an error message when empty
 | | [Documentation]	| Verify that leaving the Authentication field as Select... displays a warning message after clicking Next.
+| | ... | [id] 1007a381-a89f-11e4-8a89-b8ca3a83048f
 | | [Tags]			| required	| automated
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}	| ObjectFilterString=${ObjectFilterString}	| Username=${ConnectionUsername}	| Password=${ConnectionPassword}	| ImportNestedItems=Yes
 | | Click	| id=next
@@ -50,6 +53,7 @@
 
 | Proceeding Post-Authentication Validation
 | | [Documentation]	| Verify that you can proceed to Step 3 after the Authentication validation message has been shown.
+| | ... | [id] 1007f19e-a89f-11e4-82c9-b8ca3a83048f
 | | [Tags]			| automated
 | | [Setup] 		| Require Test Case	| The Authentication field displays an error message when empty
 | | Fill out the Following Fields of the Integration Point Step 2 form	| Authentication=${Authentication}
@@ -59,6 +63,7 @@
 
 | An Invalid Connection will trigger a page level error
 | | [Documentation]	| Verify that attempting to proceed with Connection Details that cannot form an actual connection causes a page level error.
+| | ... | [id] 1007f19f-a89f-11e4-b5a8-b8ca3a83048f
 | | [Tags]			| required	| automated
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=ConnectionPath	| ObjectFilterString=ObjectFilterString	| Authentication=Anonymous	| Username=Username	| Password=Password	| ImportNestedItems=No
 | | Click	| id=next
@@ -67,6 +72,7 @@
 
 | Proceeding Post-Invalid Connection
 | | [Documentation]	| Verify that you can proceed to Step 3 after the Invalid Connection Page Error has been shown.
+| | ... | [id] 1007f1a0-a89f-11e4-887e-b8ca3a83048f
 | | [Tags]			| automated
 | | [Setup] 		| Require Test Case	| An Invalid Connection will trigger a page level error
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}	| ObjectFilterString=${ObjectFilterString}	| Authentication=${Authentication}	| Username=${ConnectionUsername}	| Password=${ConnectionPassword}	| ImportNestedItems=Yes

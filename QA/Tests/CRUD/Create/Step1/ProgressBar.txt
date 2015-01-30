@@ -16,6 +16,7 @@
 *** Test Cases ***
 | General UI Format of the Progress Bar
 | | [Documentation] | Verify the general format of the Progress Bar.
+| | ... | [id] 0f0c0570-a89f-11e4-9211-b8ca3a83048f
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Steps:
@@ -29,6 +30,7 @@
 
 | Progress Bar's Step 1 Format
 | | [Documentation] | Verify that the Progress Bar's format is correct when the Create Integration Point screen is first opened
+| | ... | [id] 0f0f87e1-a89f-11e4-9234-b8ca3a83048f
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Steps:
@@ -42,6 +44,7 @@
 
 | Progress Bar's Step 2 Format
 | | [Documentation] | Verify that the Progress Bar's format is correct when the Integration Point screen is on step 2
+| | ... | [id] 0f0f87e2-a89f-11e4-bb31-b8ca3a83048f
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Steps:
@@ -58,6 +61,7 @@
 
 | Progress Bar's Step 3 Format
 | | [Documentation] | Verify that the Progress Bar's format is correct when the Integration Point screen is on step 3
+| | ... | [id] 0f0f87e3-a89f-11e4-a2f9-b8ca3a83048f
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Steps:

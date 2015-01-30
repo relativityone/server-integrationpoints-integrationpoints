@@ -27,24 +27,28 @@
 
 | Blank Required Fields show messages after clicking Next
 | | [Documentation]	| Verify that Required Fields that are blank show the correct warning message after clicking Next.
+| | ... | [id] 102e1740-a89f-11e4-9647-b8ca3a83048f
 | | [Tags]		| untested
 | | Proceed to the Next Step of the Integration Point wizard
 | | Run Keyword And Continue On Failure | Verify the following Integration Point Field has the following Error	| ${ConnectionPathID}	| This field is required.
 
 | Proceeding Post-blank required fields message
 | | [Documentation]	| Verify that the next screen can be reached after the blank required fields message is shown.
+| | ... | [id] 10332051-a89f-11e4-9be6-b8ca3a83048f
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ValidConnectionPath}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Map Fields
 
 | Invalid Connection Path message is not displayed when the field is blank
 | | [Documentation]	| Verify that the "Unable to connect to source using the specified settings" warning message is not displayed after clicking Next while the Connection Path is blank.
+| | ... | [id] 10332052-a89f-11e4-a2f1-b8ca3a83048f
 | | [Tags]		| untested
 | | Proceed to the Next Step of the Integration Point wizard
 | | Verify the following Integration Point Field does not have the following Error | ${ConnectionPathID} | Unable to connect to source using the specified settings
 
 | Invalid Connection Path message is displayed when unable to connect because of a non-blank value
 | | [Documentation]	| Verify that the "Unable to connect to source using the specified settings" warning message is displayed after clicking Next while a Connection Path is specified.
+| | ... | [id] 10332053-a89f-11e4-9135-b8ca3a83048f
 | | [Tags]		| untested
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${InvalidConnectionPath}
 | | Proceed to the Next Step of the Integration Point wizard
@@ -52,6 +56,7 @@
 
 | Proceeding Post-blank required fields message
 | | [Documentation]	| Verify that the next screen can be reached after the Invalid Connection Path message is shown.
+| | ... | [id] 10332054-a89f-11e4-a009-b8ca3a83048f
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${InvalidConnectionPath}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ValidConnectionPath}

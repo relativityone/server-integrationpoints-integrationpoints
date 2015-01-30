@@ -17,6 +17,7 @@
 *** Test Cases ***
 
 | Date fields
+| | [Documentation] | [id] 1359668f-a89f-11e4-95a3-b8ca3a83048f
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Steps:
@@ -29,6 +30,7 @@
 
 
 | Decimal fields
+| | [Documentation] | [id] 135ebdc0-a89f-11e4-b7fc-b8ca3a83048f
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Steps:
@@ -41,6 +43,7 @@
 
 
 | Fixed-Length Text fields
+| | [Documentation] | [id] 135ebdc1-a89f-11e4-8c72-b8ca3a83048f
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Steps:
@@ -53,6 +56,7 @@
 
 
 | Long Text fields
+| | [Documentation] | [id] 135ebdc2-a89f-11e4-8014-b8ca3a83048f
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Steps:
@@ -65,6 +69,7 @@
 
 
 | Multiple Choice fields
+| | [Documentation] | [id] 135ebdc3-a89f-11e4-af26-b8ca3a83048f
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Steps:
@@ -77,6 +82,7 @@
 
 
 | Multiple Object fields
+| | [Documentation] | [id] 135ebdc4-a89f-11e4-b28c-b8ca3a83048f
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Steps:
@@ -89,6 +95,7 @@
 
 
 | Single Choice fields
+| | [Documentation] | [id] 135f32ee-a89f-11e4-9732-b8ca3a83048f
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Steps:
@@ -101,6 +108,7 @@
 
 
 | Single Object fields
+| | [Documentation] | [id] 135f32ef-a89f-11e4-8e0f-b8ca3a83048f
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Steps:
@@ -113,6 +121,7 @@
 
 
 | Whole Number fields
+| | [Documentation] | [id] 135f32f0-a89f-11e4-b925-b8ca3a83048f
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Steps:
@@ -125,6 +134,7 @@
 
 
 | Yes/No fields
+| | [Documentation] | [id] 135f32f1-a89f-11e4-9cc9-b8ca3a83048f
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Steps:

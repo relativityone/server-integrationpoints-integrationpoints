@@ -22,6 +22,7 @@
 
 | The Import Scheduling Section's Fields are ordered correctly when no Frequency is selected
 | | [Documentation] | Verify that the Import Scheduling fields are correctly order when no Frequency has been selected.
+| | ... | [id] 0fd6cf80-a89f-11e4-9059-b8ca3a83048f
 | | [Tags]			| golden	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
@@ -35,6 +36,7 @@
 
 | The Import Scheduling Section's Fields are ordered correctly when Frequency is set to Daily
 | | [Documentation] | Verify that the Import Scheduling fields are correctly order are of the correct type when Daily Frequency has been selected.
+| | ... | [id] 0fdc74cf-a89f-11e4-a5b5-b8ca3a83048f
 | | [Tags]			| golden	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Daily
 
@@ -48,6 +50,7 @@
 
 | The Import Scheduling Section's Fields are ordered correctly when Frequency is set to Weekly
 | | [Documentation] | Verify that the Import Scheduling layout fields are correctly order are of the correct type when Weekly Frequency has been selected.
+| | ... | [id] 0fdc74d0-a89f-11e4-892e-b8ca3a83048f
 | | [Tags]			| golden	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Weekly
 
@@ -63,6 +66,7 @@
 
 | The Import Scheduling Section's Fields are ordered correctly when when Frequency is set to Monthly
 | | [Documentation] | Verify that the Import Scheduling fields are correctly order are of the correct type when Monthly Frequency has been selected.
+| | ... | [id] 0fdcea00-a89f-11e4-9e72-b8ca3a83048f
 | | [Tags]			| golden	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Monthly
 
@@ -78,6 +82,7 @@
 
 | The Start Date field's Placeholder text is correct
 | | [Documentation]	| Verify that the placeholder text is correct for Start Date.
+| | ... | [id] 0fdcea01-a89f-11e4-a856-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
@@ -86,6 +91,7 @@
 
 | The End Date field's Placeholder text is correct
 | | [Documentation]	| Verify that the placeholder text is correct for End Date.
+| | ... | [id] 0fdcea02-a89f-11e4-a6bb-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
@@ -94,6 +100,7 @@
 
 | The Scheduled Time field's Placeholder text is correct
 | | [Documentation]	| Verify that the placeholder text is correct for Scheduled Time.
+| | ... | [id] 0fdcea03-a89f-11e4-ad3d-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
@@ -102,6 +109,7 @@
  
 | The Frequency Dropdown List has the correct options
 | | [Documentation]	| Verify that the Frequency dropdown list has the correct options.
+| | ... | [id] 0fdcea04-a89f-11e4-8cbe-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 | | Click	| ${Frequency Field}
@@ -115,6 +123,7 @@
  
 | The Weekly Send On field has the correct checkboxes
 | | [Documentation]	| Verify that the Weekly Send On field has the correct checkboxes.
+| | ... | [id] 0fdd381e-a89f-11e4-a076-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Weekly
 | | Verify that the Following field has Checkboxes with the following text	| Send On	| 
@@ -130,6 +139,7 @@
 | The Import Scheduling Section's Fields are of the correct Types when Frequency is set to Daily
 | | [Documentation]	| Verifies that the fields in the Import Scheduling Section are of the correct type when Frequency is set to Daily,
 | | ...				| since changes to the Frequency field can affect some fields' types.
+| | ... | [id] 0fdd381f-a89f-11e4-b977-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Expected Results:
@@ -143,6 +153,7 @@
 | The Import Scheduling Section's Fields are of the correct Types when Frequency is set to Weekly
 | | [Documentation]	| Verifies that the fields in the Import Scheduling Section are of the correct type when Frequency is set to Weekly,
 | | ...				| since changes to the Frequency field can affect some fields' types.
+| | ... | [id] 0fdd3820-a89f-11e4-a2df-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Expected Results:
@@ -158,6 +169,7 @@
 | The Import Scheduling Section's Fields are of the correct Types when Frequency is set to Monthly
 | | [Documentation]	| Verifies that the fields in the Import Scheduling Section are of the correct type when Frequency is set to Monthly,
 | | ...				| since changes to the Frequency field can affect some fields' types.
+| | ... | [id] 0fdd3821-a89f-11e4-8612-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Expected Results:

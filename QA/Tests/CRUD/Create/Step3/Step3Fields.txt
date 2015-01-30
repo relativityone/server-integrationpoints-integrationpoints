@@ -38,23 +38,27 @@
 
 | The Map Fields screen has a card with the Title Field Mappings
 | | [Documentation]	| Verify that the Map Fields screen has a card with the title text "Field Mappings".
+| | ... | [id] 115c5e11-a89f-11e4-b5fc-b8ca3a83048f
 | | [Tags]			| automated
 | | Wait until keyword succeeds	| 10s	| 2s	| Verify that the following Card has the following Title Text	| ${Field Mappings Card}	| Field Mappings
 
 
 | The Field Mappings fields are in the correct order
 | | [Documentation]	| Verify that the fields in the Source Connection section are sorted correctly.
+| | ... | [id] 115ea800-a89f-11e4-bc2e-b8ca3a83048f
 | | [Tags]			| manual	| unwritten
 | | Verify that the following section contains the following fields | Field Mappings | ${WorkspaceFieldListID} | ${SelectedFieldListID}	| ${SelectedAttributeListID} | ${SourceAttributeListID} | ${OverlayIdentifierID} | ${ParentAttributeID}
 
 | The Step 3 Fields are Required
 | | [Documentation]	| Verify that the Required Field indicator is present for both the Overlay Identifer  and Parent Attribute fields.
+| | ... | [id] 115ea801-a89f-11e4-97ab-b8ca3a83048f
 | | [Tags]			| manual	| unwritten
 | | Verify that the following field is required	| ${OverlayIdentifierID}
 | | Verify that the following field is required | ${ParentAttributeID}
 
 | The Fields are of the correct type
 | | [Documentation]	| Verify that the Fields on the Map Fields screen are the correct type. Note that the Parent Attribute field is excluded from this test case.
+| | ... | [id] 115ea802-a89f-11e4-abb8-b8ca3a83048f
 | | [Tags]			| manual	| unwritten
 | | Run keyword and continue on failure | Verify that the following field ID has a listbox input | ${WorkspaceFieldListID}
 | | Run keyword and continue on failure | Verify that the following field ID has a listbox input | ${SelectedFieldListID} 
@@ -66,6 +70,7 @@
 
 | The Workspace Fields List Change Icons are present and sorted correctly
 | | [Documentation]	| Verify that the Workspace Fields listbox movement Icons are present and sorted correctly.
+| | ... | [id] 115ea803-a89f-11e4-9cfd-b8ca3a83048f
 | | [Tags]			| automated
 | | Verify that the following icons are present and sorted correctly	| 
 | | ... | ${AddAllWorkspaceFieldsIcon}	| ${AddWorkspaceFieldIcon}	| ${RemoveWorkspaceFieldIcon}	| ${RemoveWAllWorkspaceFieldsIcon}
@@ -73,6 +78,7 @@
 
 | The Source Attribute List Change Icons are present and sorted correctly
 | | [Documentation]	| Verify that the Source Attributes listbox movement Icons are present and sorted correctly.
+| | ... | [id] 115ea804-a89f-11e4-99aa-b8ca3a83048f
 | | [Tags]			| automated
 | | Verify that the following icons are present and sorted correctly	| 
 | | ... | ${AddAllSourceFieldsIcon}	| ${AddSourceFieldIcon}	| ${RemoveSourceFieldIcon}	| ${RemoveAllSourceFieldsIcon}
@@ -80,12 +86,14 @@
 
 | Workspace Fields Up and Down Icons are present and sorted correctly
 | | [Documentation]	| Verify that the Workspace Fields Up and Down movement icons are present and sorted correctly.
+| | ... | [id] 115ea805-a89f-11e4-b854-b8ca3a83048f
 | | [Tags]			| automated
 | | Verify that the following icons are present and sorted correctly	| ${MoveWorkspaceFieldUpIcon}	| ${MoveWorkspaceFieldDownIcon}
 
 
 | Source Attribute Up and Down Icons are present and sorted correctly
 | | [Documentation]	| Verify that the Source Attributes Up and Down movement icons are present and sorted correctly.
+| | ... | [id] 115ea806-a89f-11e4-8e69-b8ca3a83048f
 | | [Tags]			| automated
 | | Verify that the following icons are present and sorted correctly	| ${MoveAttributeFieldUpIcon}	| ${MoveAttributeFieldDownIcon}
 

@@ -18,6 +18,7 @@
 *** Test Cases ***
 
 | The Source Attributes are populated correctly when using LDAP
+| | [Documentation] | [id] 1134b1d1-a89f-11e4-96f5-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. You are able to determine which attributes to expect from ${Source1}
@@ -32,6 +33,7 @@
 
 
 | Custom Attributes appear in the Source Attributes List
+| | [Documentation] | [id] 113770f0-a89f-11e4-83bc-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. You are able to create attributes on ${Source1}
@@ -45,6 +47,7 @@
 
 
 | Deleted Attributes appear in the Source Attributes List
+| | [Documentation] | [id] 113770f1-a89f-11e4-bca5-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. You are able to delete attributes on ${Source1}
