@@ -48,7 +48,7 @@
 | | ... | 7. Click Save
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify that the Integration Point is created
+| | ... | Verify that the Integration Point detail view is shown
 
 
 | Saving Post "The overlay identifier must be mapped." message is displayed works by changing the Overlay value
@@ -63,7 +63,7 @@
 | | ... | 6. Click Save
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify that the Integration Point is created
+| | ... | Verify that the Integration Point detail view is shown
  
 
 | The message "All selected items have not been mapped." is displayed under the correct conditions for too few Workspace Fields
@@ -98,7 +98,7 @@
 | | ... | 4. Click Save
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify that the Integration Point is created
+| | ... | Verify that the Integration Point detail view is shown
 
 
 | When the conditions for both invalid messages are met, the "All selected items have not been mapped" message is displayed

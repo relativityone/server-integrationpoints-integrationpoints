@@ -20,41 +20,41 @@
 | The Source Attributes are populated correctly when using LDAP
 | | Run the following manual steps:
 | | ... | Preconditions:
-| | ... | 1. You are able to determine which attributes to expect from ${Source1}
-| | ... | 2. ${Source1} uses LDAP
+| | ... | 1. You have access to the LDAP server ${Source1}
+| | ... | 2. You know which attributes have data
 | | ... | 
 | | ... | Steps:
 | | ... | 1. Go to Step 3 of the Create Integration Point Process, using the Source ${Source1}
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the unselected Source Attributes list contains all of the attributes from ${Source1}
-| | ... | 2. Verify that the selected Source Attributes list is empty
+| | ... | 1. Verify that the Source Attributes list contains all of the attributes that contain data from ${Source1}
 
-
-| Custom Attributes appear in the Source Attributes List
+| Newly Populated Attributes appear in the Source Attributes List
 | | Run the following manual steps:
 | | ... | Preconditions:
-| | ... | 1. You are able to create attributes on ${Source1}
+| | ... | 1. You have access to the LDAP server ${Source1}
+| | ... | 2. You know which attributes have data
 | | ... | 
 | | ... | Steps:
-| | ... | 1. Create an attribute on ${Source1}
+| | ... | 1. Populate data for a previously unused attribute on ${Source1}
 | | ... | 2. Go to Step 3 of the Create Integration Point Process, using the Source ${Source1}
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the new attribute was present on the unselected Source Attributes list
+| | ... | Verify that the newly populated attribute is present on the Source Attributes list
 
 
-| Deleted Attributes appear in the Source Attributes List
+| Now Unpopulated Attributes appear in the Source Attributes List
 | | Run the following manual steps:
 | | ... | Preconditions:
-| | ... | 1. You are able to delete attributes on ${Source1}
+| | ... | 1. You have access to the LDAP server ${Source1}
+| | ... | 2. You know which attributes have data
 | | ... | 
 | | ... | Steps:
-| | ... | 1. Delete an attribute on ${Source1}
+| | ... | 1. Deleted all data for a previously used attribute on  ${Source1}
 | | ... | 2. Go to Step 3 of the Create Integration Point Process, using the Source ${Source1}
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the deleted attribute was not present on the unselected Source Attributes list
+| | ... | Verify that the deleted attribute is not present on the Source Attributes list
 
 
 *** Settings ***
