@@ -143,8 +143,8 @@
 | | ... | Verify that the Next Scheduled Runtime is set to "<Tomorrow's Date> <The Scheduled Time>"
 
 
-| The Next Scheduled Runtime displays the correct message when the End Date has passed
-| | [Documentation]	| Verify that 
+| The Next Scheduled Runtime is blank when the End Date has passed
+| | [Documentation]	| Verify that the Next Scheduled Runtime is blank when the End Date has passed
 | | ...				| [id] 1192fe75-a89f-11e4-8fe3-b8ca3a83048f
 | | [Tags]			| manual	| dates
 | | Run the following manual steps:
@@ -161,7 +161,7 @@
 | | ... | 1. View the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Next Scheduled Runtime is set to "There are no upcoming runs scheduled."
+| | ... | Verify that the Next Scheduled Runtime is blank
 
 
 | The Last Runtime field is empty when the Integration Point has never been Imported
