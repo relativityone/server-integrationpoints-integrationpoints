@@ -18,14 +18,14 @@
 
 | Enable Scheduler is not a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is not shown for Enable Scheduler
-| | ... | [id] 0fac1600-a89f-11e4-8871-b8ca3a83048f
+| | ...				| [id] 0fac1600-a89f-11e4-8871-b8ca3a83048f
 | | [Tags]			| automated
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following field is not required	| Enable Scheduler:
 
 
 | Frequency is a Required Field when it is visible
 | | [Documentation]	| Verify that the Frequency field is a required field when it is shown
-| | ... | [id] 0fb0f800-a89f-11e4-b39c-b8ca3a83048f
+| | ...				| [id] 0fb0f800-a89f-11e4-b39c-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
@@ -34,7 +34,7 @@
 
 | Reoccur is a Required Field for Weekly Reports
 | | [Documentation]	| Verify that the Required Field indicator is shown for Send On when the Frequency option of Weekly is selected.
-| | ... | [id] 0fb0f801-a89f-11e4-81cc-b8ca3a83048f
+| | ...				| [id] 0fb0f801-a89f-11e4-81cc-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Weekly
 
@@ -43,7 +43,7 @@
 
 | Reoccur is a Required Field for Monthly Reports
 | | [Documentation]	| Verify that the Required Field indicator is shown for Send On when the Frequency option of Monthly is selected.
-| | ... | [id] 0fb0f802-a89f-11e4-a154-b8ca3a83048f
+| | ...				| [id] 0fb0f802-a89f-11e4-a154-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Monthly
 
@@ -52,7 +52,7 @@
 
 | Send On is a Required Field for Weekly Reports
 | | [Documentation]	| Verify that the Required Field indicator is shown for Send On when the Frequency option of Weekly is selected.
-| | ... | [id] 0fb16d30-a89f-11e4-8d7d-b8ca3a83048f
+| | ...				| [id] 0fb16d30-a89f-11e4-8d7d-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Weekly
 
@@ -61,7 +61,7 @@
 
 | Send On is a Required Field for Monthly Reports
 | | [Documentation]	| Verify that the Required Field indicator is shown for Send On when the Frequency option of Monthly is selected.
-| | ... | [id] 0fb16d31-a89f-11e4-aef3-b8ca3a83048f
+| | ...				| [id] 0fb16d31-a89f-11e4-aef3-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Monthly
 
@@ -70,7 +70,7 @@
 
 | Start Date is a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is shown for the Start Date field.
-| | ... | [id] 0fb16d32-a89f-11e4-95ad-b8ca3a83048f
+| | ...				| [id] 0fb16d32-a89f-11e4-95ad-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
@@ -79,7 +79,7 @@
 
 | End Date is not a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is not shown for the End Date field.
-| | ... | [id] 0fb16d33-a89f-11e4-85cf-b8ca3a83048f
+| | ...				| [id] 0fb16d33-a89f-11e4-85cf-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
@@ -88,7 +88,7 @@
 
 | Scheduled Time is a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is shown for the Scheduled Time field.
-| | ... | [id] 0fb16d34-a89f-11e4-832b-b8ca3a83048f
+| | ...				| [id] 0fb16d34-a89f-11e4-832b-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 

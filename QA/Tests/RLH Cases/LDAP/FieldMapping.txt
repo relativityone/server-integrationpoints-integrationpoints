@@ -14,7 +14,7 @@
 
 | Non Matching field types shown an error in Admin mode after Loading Custodians
 | | [Documentation]	| An Admin error is shown when miss-matching field types are mapped and Custodians are loaded
-| | ... | [id] 126d0ac0-a89f-11e4-96a3-b8ca3a83048f
+| | ...				| [id] 126d0ac0-a89f-11e4-96a3-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 1. LDAP Details are configured
@@ -36,7 +36,7 @@
 
 | Updates to the Field Map are used in future imports
 | | [Documentation]	| Add a new field, run. Remove the new field, and add another field, run
-| | ... | [id] 127213cf-a89f-11e4-b21c-b8ca3a83048f
+| | ...				| [id] 127213cf-a89f-11e4-b21c-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 1. LDAP Details are configured

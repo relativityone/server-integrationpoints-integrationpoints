@@ -24,7 +24,7 @@
 
 | Blank Required Fields show messages after clicking Next
 | | [Documentation]	| Verify that Required Fields that are blank show the correct warning message after clicking Next.
-| | ... | [id] 0f830a30-a89f-11e4-9890-b8ca3a83048f
+| | ...				| [id] 0f830a30-a89f-11e4-9890-b8ca3a83048f
 | | [Tags]		    | required	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Custom Page	| EnableScheduler=Yes
 | | Click	| id=next
@@ -36,7 +36,7 @@
 
 | Proceeding Post-blank required fields message
 | | [Documentation]	| Verify that a Scheduled Report can be created after the blank required fields message is shown.
-| | ... | [id] 0f881340-a89f-11e4-83fe-b8ca3a83048f
+| | ...				| [id] 0f881340-a89f-11e4-83fe-b8ca3a83048f
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| Blank Required Fields show messages after clicking Next
 | | Fill out the Following Fields of the Integration Point Step 1 form	| Frequency=Daily	| StartDate=11/23/2012	| EndDate=04/15/2016	| ScheduledTime=23:00
@@ -46,7 +46,7 @@
 
 | Date Validation message are shown after clicking Next
 | | [Documentation]	| Verify that the date fields show warning messages after clicking Next when invalid values are entered.
-| | ... | [id] 0f881341-a89f-11e4-b0af-b8ca3a83048f
+| | ...				| [id] 0f881341-a89f-11e4-b0af-b8ca3a83048f
 | | [Tags]			| required	| automated	| dam795
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Custom Page	| 
 | | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=1234567	| EndDate=3456789		| ScheduledTime=23:00
@@ -58,7 +58,7 @@
 
 | Proceeding Post-Date Invalid message
 | | [Documentation]	| Verify that Step 2 can be reached after the invalid date fields message is shown.
-| | ... | [id] 0f88615e-a89f-11e4-b655-b8ca3a83048f
+| | ...				| [id] 0f88615e-a89f-11e4-b655-b8ca3a83048f
 | | [Tags]			| automated	| dam795
 | | [Setup]			| Require Test Case	| Date Validation message are shown after clicking Next
 | | Fill out the Following Fields of the Integration Point Step 1 form	| StartDate=11/23/2012	| EndDate=04/15/2026
@@ -68,7 +68,7 @@
 
 | Start Date must be before the End Date Validation Message is displayed after clicking Next
 | | [Documentation]	| Verify that the "Start Date must be before the End Date" validation message is displayed when the End Date is before the Start Date.
-| | ... | [id] 0f88615f-a89f-11e4-9e5d-b8ca3a83048f
+| | ...				| [id] 0f88615f-a89f-11e4-9e5d-b8ca3a83048f
 | | [Tags]		    | required	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page	| 
 | | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2020	| EndDate=04/15/2019	| ScheduledTime=23:32
@@ -78,7 +78,7 @@
 
 | Proceeding Post-Start Date must be before the End Date message
 | | [Documentation]	| Verify that you can proceed to Step 2 after the "Start Date must be before the End Date" validation message has been shown.
-| | ... | [id] 0f886160-a89f-11e4-853f-b8ca3a83048f
+| | ...				| [id] 0f886160-a89f-11e4-853f-b8ca3a83048f
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| Start Date must be before the End Date Validation Message is displayed after clicking Next
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EndDate=04/15/2026
@@ -88,7 +88,7 @@
 
 | Scheduled Time Validation message is shown after clicking Next
 | | [Documentation]	| Verify that the Scheduled Time field shows a warning message after clicking Next when an invalid value is entered.
-| | ... | [id] 0f886161-a89f-11e4-95bf-b8ca3a83048f
+| | ...				| [id] 0f886161-a89f-11e4-95bf-b8ca3a83048f
 | | [Tags]			| required	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page	| 
 | | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=230
@@ -98,7 +98,7 @@
 
 | Proceeding Post-Time Invalid message
 | | [Documentation]	| Verify that you can proceed to Step 2 after the invalid time validation message has been shown.
-| | ... | [id] 0f886162-a89f-11e4-ad17-b8ca3a83048f
+| | ...				| [id] 0f886162-a89f-11e4-ad17-b8ca3a83048f
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| Scheduled Time Validation message is shown after clicking Next
 | | Fill out the Following Fields of the Integration Point Step 1 form	| ScheduledTime=23:40
@@ -108,7 +108,7 @@
 
 | Scheduled Time Validation message is shown when the hour value is greater than 23
 | | [Documentation]	| Verify that the Scheduled Time field shows is shown when the hour value is greater than 23.
-| | ... | [id] 0f886163-a89f-11e4-96b8-b8ca3a83048f
+| | ...				| [id] 0f886163-a89f-11e4-96b8-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page	| 
 | | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=24:30
@@ -118,7 +118,7 @@
 
 | Scheduled Time Validation message is shown when the minute value is greater than 59
 | | [Documentation]	| Verify that the Scheduled Time field shows is shown when the hour value is greater than 59.
-| | ... | [id] 0f88d68f-a89f-11e4-917d-b8ca3a83048f
+| | ...				| [id] 0f88d68f-a89f-11e4-917d-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page	| 
 | | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=23:60
@@ -128,7 +128,7 @@
 
 | Send On Weekly Validation message is shown after trying to Proceed with nothing selected
 | | [Documentation]	| Verify that the Weekly Send On field has a validation message displayed when no Day has been selected and you try to proceed to Step 2.
-| | ... | [id] 0f88d690-a89f-11e4-aeee-b8ca3a83048f
+| | ...				| [id] 0f88d690-a89f-11e4-aeee-b8ca3a83048f
 | | [Tags]			| required	| automated	| dam853
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page		| EnableScheduler=Yes	| 
 | | ... 																| Frequency=Weekly	| Reoccur=1				| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=23:50
@@ -138,7 +138,7 @@
 
 | Proceeding Post-Weekly Send On Validation
 | | [Documentation]	| Verify that you can proceed to Step 2 after the Weekly Send On validation message has been shown.
-| | ... | [id] 0f88d691-a89f-11e4-ab86-b8ca3a83048f
+| | ...				| [id] 0f88d691-a89f-11e4-ab86-b8ca3a83048f
 | | [Tags]			| automated	| dam853
 | | [Setup]			| Require Test Case	| Send On Weekly Validation message is shown after trying to Proceed with nothing selected
 | | Fill out the Following Fields of the Integration Point Step 1 form	| SendOn=Monday
@@ -148,7 +148,7 @@
 
 | Reoccur Required message is displayed when blank
 | | [Documentation]	| Verify that the Reoccur required message displays if you try to save with a blank Reoccur value.
-| | ... | [id] 0f88d692-a89f-11e4-8bd0-b8ca3a83048f
+| | ...				| [id] 0f88d692-a89f-11e4-8bd0-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Custom Page	| EnableScheduler=Yes	| 
 | | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=${EMPTY}	| StartDate=11/23/2002	| EndDate=04/15/2026		| ScheduledTime=23:50
@@ -158,7 +158,7 @@
 
 | Reoccur Validation message is displayed for Zero
 | | [Documentation]	| Verify that the Reoccur validation does not accept Zero
-| | ... | [id] 0f88d693-a89f-11e4-94a6-b8ca3a83048f
+| | ...				| [id] 0f88d693-a89f-11e4-94a6-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Custom Page	| EnableScheduler=Yes	| 
 | | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=0			| StartDate=11/23/2002	| EndDate=04/15/2026		| ScheduledTime=23:50
@@ -168,7 +168,7 @@
 
 | Reoccur Validation message is displayed for negative integers
 | | [Documentation]	| Verify that the Reoccur validation does not accept negative integers.
-| | ... | [id] 0f8924b0-a89f-11e4-8034-b8ca3a83048f
+| | ...				| [id] 0f8924b0-a89f-11e4-8034-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Custom Page	| EnableScheduler=Yes	| 
 | | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=-1		| StartDate=11/23/2002	| EndDate=04/15/2026		| ScheduledTime=23:50
@@ -178,7 +178,7 @@
 
 | Reoccur Validation message is displayed for integers above 999
 | | [Documentation]	| Verify that the Reoccur validation does not accept integers above 999.
-| | ... | [id] 0f8924b1-a89f-11e4-949b-b8ca3a83048f
+| | ...				| [id] 0f8924b1-a89f-11e4-949b-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Custom Page	| EnableScheduler=Yes	| 
 | | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=1000		| StartDate=11/23/2002	| EndDate=04/15/2026		| ScheduledTime=23:50
@@ -188,7 +188,7 @@
 
 | Reoccur Validation message is displayed for non-integers
 | | [Documentation]	| Verify that the Reoccur field's validation does not accept non-integers.
-| | ... | [id] 0f8924b2-a89f-11e4-97a6-b8ca3a83048f
+| | ...				| [id] 0f8924b2-a89f-11e4-97a6-b8ca3a83048f
 | | [Tags]			| required	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Custom Page	| EnableScheduler=Yes	| 
 | | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=a			| StartDate=11/23/2002	| EndDate=04/15/2026		| ScheduledTime=23:50
@@ -198,7 +198,7 @@
 
 | Proceeding Post-Reoccur Validation
 | | [Documentation]	| 
-| | ... | [id] 0f8924b3-a89f-11e4-81ca-b8ca3a83048f
+| | ...				| [id] 0f8924b3-a89f-11e4-81ca-b8ca3a83048f
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| Reoccur Validation message is displayed for non-integers
 | | Fill out the Following Fields of the Integration Point Step 1 form	| Reoccur=2
@@ -208,7 +208,7 @@
 
 | Integration Points can be created with an End Date in the Past
 | | [Documentation]	| Verify that Integration Points can be created with an End Date value that is in the Past.
-| | ... | [id] 0f8924b4-a89f-11e4-b19d-b8ca3a83048f
+| | ...				| [id] 0f8924b4-a89f-11e4-b19d-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page	| EnableScheduler=Yes	| 
 | | ... 																| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2006	| ScheduledTime=23:50

@@ -15,7 +15,7 @@
 
 | An Append and Overlay import Creates new records
 | | [Documentation] | Verify that when an Append and Overlay RIP is run which has new Source records, that it creates new records in the Target RDO.
-| | ... | [id] 130ad15e-a89f-11e4-9aa5-b8ca3a83048f
+| | ...				| [id] 130ad15e-a89f-11e4-9aa5-b8ca3a83048f
 | | [Tags] | manual  | required
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -34,7 +34,7 @@
 
 | An Append and Overlay import updates existing modified records
 | | [Documentation] | Verify that when an Append and Overlay RIP is run with an existing record in the Target RDO with updated details in the Source, that it does update the existing records in the Target RDO.
-| | ... | [id] 130fda6e-a89f-11e4-8313-b8ca3a83048f
+| | ...				| [id] 130fda6e-a89f-11e4-8313-b8ca3a83048f
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -48,7 +48,7 @@
 
 | An Append and Overlay import does not update existing unmodified records
 | | [Documentation] | Verify that when an Append and Overlay RIP is run with an existing record in the Target RDO with identical details in the Source, that it does not update the existing record in the Target RDO.
-| | ... | [id] 130fda6f-a89f-11e4-b15c-b8ca3a83048f
+| | ...				| [id] 130fda6f-a89f-11e4-b15c-b8ca3a83048f
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Preconditions:

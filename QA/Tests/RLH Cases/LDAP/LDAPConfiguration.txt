@@ -24,7 +24,7 @@
 | Test a Valid LDAP configuration
 | | [Documentation]	| This testcase utilizes the Method LDAP Configuration to connect to a configured LDAP Server
 | | ... 		| and uses the Test LDAP Settings button to verify the connection.
-| | ... | [id] 12952c30-a89f-11e4-8eb1-b8ca3a83048f
+| | ...				| [id] 12952c30-a89f-11e4-8eb1-b8ca3a83048f
 | | Run the following manual steps
 | | ... | Pre-conditions:
 | | ... | 1. LDAP server configured
@@ -41,7 +41,7 @@
 | Test an Invalid  LDAP configuration
 | | [Documentation]	| This testcase utilizes the Method LDAP Configuration to connect to a default LDAP Server
 | | ... 		| where no LDAP server exists and uses the Test LDAP Settings button to force an error.
-| | ... | [id] 129a8361-a89f-11e4-a320-b8ca3a83048f
+| | ...				| [id] 129a8361-a89f-11e4-a320-b8ca3a83048f
 | | Run the following manual steps
 | | ... | Pre-conditions:
 | | ... | 1. Have a valid LDAP Map
@@ -61,7 +61,7 @@
 | Test an Invalid LDAP configuration due to invalid domain
 | | [Documentation]	| This testcase utilizes the Method LDAP Configuration to attempt to connect to an LDAP Server
 | | ... 		| using an invalid domain. The Test LDAP Settings button is used to verify the connection.
-| | ... | [id] 129a8362-a89f-11e4-8983-b8ca3a83048f
+| | ...				| [id] 129a8362-a89f-11e4-8983-b8ca3a83048f
 | | Run the following manual steps
 | | ... | Pre-conditions:
 | | ... | 1. No LDAP server configured on the local network
@@ -78,7 +78,7 @@
 | Test an Invalid LDAP configuration due to invalid username
 | | [Documentation]	| This testcase utilizes the Method LDAP Configuration to attempt to connect to an LDAP Server
 | | ... 		| using an invalid username. The Test LDAP Settings button is used to verify the connection.
-| | ... | [id] 129a8363-a89f-11e4-beb9-b8ca3a83048f
+| | ...				| [id] 129a8363-a89f-11e4-beb9-b8ca3a83048f
 | | Run the following manual steps
 | | ... | Pre-conditions:
 | | ... | 1. No LDAP server configured on the local network
@@ -95,7 +95,7 @@
 | Test an Invalid LDAP configuration due to invalid password
 | | [Documentation]	| This testcase utilizes the Method LDAP Configuration to attempt to connect to an LDAP Server
 | | ... 		| using an invalid password. The Test LDAP Settings button is used to verify the connection.
-| | ... | [id] 129a8364-a89f-11e4-9b21-b8ca3a83048f
+| | ...				| [id] 129a8364-a89f-11e4-9b21-b8ca3a83048f
 | | Run the following manual steps
 | | ... | Pre-conditions:
 | | ... | 1. No LDAP server configured on the local network

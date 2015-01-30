@@ -18,7 +18,7 @@
 
 | The Correct Number of Fields have an Object Type of Integration Point
 | | [Documentation]	| This test verifies that the correct number of fields exist with an Object Type of Integration Point.
-| | ... | [id] 11a240b0-a89f-11e4-9669-b8ca3a83048f
+| | ...				| [id] 11a240b0-a89f-11e4-9669-b8ca3a83048f
 | | ${Fields}=		| Get the Number of Items in the ItemList
 | | Run Keyword Unless	| '${Fields}' == '16'	| Fail	| There should have been 16 fields, but instead there were ${Fields}.
 

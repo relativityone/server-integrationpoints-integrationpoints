@@ -23,7 +23,7 @@
 #1
 | Manually Run Load Custodians without a Field Map
 | | [Documentation]	| This testcase verifes that attempting to run Load Custodians without a Field Map fails.
-| | ... | [id] 12bd2691-a89f-11e4-b7cd-b8ca3a83048f
+| | ...				| [id] 12bd2691-a89f-11e4-b7cd-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 2. LDAP server configured
@@ -44,7 +44,7 @@
 | Run Manual Load Custodians with a Record Missing Some Standard Data
 | | [Documentation]	| This testcase utilizes the manual Load Custodians button to import an employee
 | | ... 		| record from LDAP that is missing data from standard fields.
-| | ... | [id] 12c22fa1-a89f-11e4-9c1c-b8ca3a83048f
+| | ...				| [id] 12c22fa1-a89f-11e4-9c1c-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 2. LDAP server configured
@@ -66,7 +66,7 @@
 | Run Manual Load Custodians with a Record Missing Some Custom Data
 | | [Documentation]	| This testcase utilizes the manual Load Custodians button to import an employee
 | | ... 		| record from LDAP that is missing data from custom fields.
-| | ... | [id] 12c27dc0-a89f-11e4-8cc4-b8ca3a83048f
+| | ...				| [id] 12c27dc0-a89f-11e4-8cc4-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 2. LDAP server configured
@@ -88,7 +88,7 @@
 | Run Manual Load Custodians and Disable the Agent During Execution
 | | [Documentation]	| This testcase utilizes the manual Load Custodians button to import an employee
 | | ... 		| records from LDAP but stops the import agent in the middle of the job
-| | ... | [id] 12c27dc1-a89f-11e4-ad4d-b8ca3a83048f
+| | ...				| [id] 12c27dc1-a89f-11e4-ad4d-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 2. LDAP server configured
@@ -114,7 +114,7 @@
 | Run Manual Load Custodians and Break the Connection to the Agent Server During Execution
 | | [Documentation]	| This testcase utilizes the manual Load Custodians button to import employee records from 
 | | ... 		| LDAP but breaks the connection to the agent server in the middle of the job.
-| | ... | [id] 12c27dc2-a89f-11e4-80ad-b8ca3a83048f
+| | ...				| [id] 12c27dc2-a89f-11e4-80ad-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 2. LDAP server configured and running on a different server
@@ -141,7 +141,7 @@
 | | [Documentation]	| This testcase utilizes the manual Load Custodians button to import employee records from 
 | | ... 		| LDAP and then clicks on the button again while the process is still running.  This 
 | | ... 		| will verify that clicking the button a second time does not disrupt the import in progress or corrupt data.
-| | ... | [id] 12c2f2f0-a89f-11e4-9dee-b8ca3a83048f
+| | ...				| [id] 12c2f2f0-a89f-11e4-9dee-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 2. LDAP server configured
@@ -164,7 +164,7 @@
 | | [Documentation]	| This testcase utilizes the manual Load Custodians button to import employee records from 
 | | ... 		| LDAP into 2 workspaces at the same time.  This will need to be run under two separate logins
 | | ... 		| to access two workspaces and click the buttons at the same time.
-| | ... | [id] 12c2f2f1-a89f-11e4-8ba2-b8ca3a83048f
+| | ...				| [id] 12c2f2f1-a89f-11e4-8ba2-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 2. LDAP server configured
@@ -189,7 +189,7 @@
 | Run Manual Load Custodians While a Scheduled Automatic Update is Running.
 | | [Documentation]	| This testcase utilizes the manual Load Custodians button to import employee records while
 | | ... 		| a scheduled automatic update is currently running.
-| | ... | [id] 12c2f2f2-a89f-11e4-bbca-b8ca3a83048f
+| | ...				| [id] 12c2f2f2-a89f-11e4-bbca-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 2. LDAP server configured
@@ -210,7 +210,7 @@
 #9
 | Manually Loading Custodians updates the LDAP Status fields
 | | [Documentation]	| Verifies that manually updating Custodians with the Load Custodians button updates the three LDAP Status fields.
-| | ... | [id] 12c34111-a89f-11e4-8d4f-b8ca3a83048f
+| | ...				| [id] 12c34111-a89f-11e4-8d4f-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 1. LDAP server configured
