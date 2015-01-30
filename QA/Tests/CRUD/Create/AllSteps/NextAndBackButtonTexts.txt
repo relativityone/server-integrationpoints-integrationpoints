@@ -22,6 +22,7 @@
 *** Test Cases ***
 
 | The Back button says "<-- Back" on Step 1
+| | [Documentation] | [id] 0ea57b6e-a89f-11e4-9a72-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
@@ -32,6 +33,7 @@
 
 
 | The Next button says "Next -->" on Step 1
+| | [Documentation] | [id] 0ea99a1e-a89f-11e4-80be-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
@@ -42,6 +44,7 @@
 
 
 | The Back button says "<-- Back" on Step 2
+| | [Documentation] | [id] 0ea99a1f-a89f-11e4-952e-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
@@ -54,6 +57,7 @@
 
 
 | The Next button says "Next -->" on Step 2
+| | [Documentation] | [id] 0ea99a20-a89f-11e4-a6aa-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
@@ -66,6 +70,7 @@
 
 
 | The Back button says "<-- Back" on Step 3
+| | [Documentation] | [id] 0ea99a21-a89f-11e4-a161-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
@@ -80,6 +85,7 @@
 
 
 | The Next button says "Save" on Step 3
+| | [Documentation] | [id] 0ea99a22-a89f-11e4-b20f-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:

@@ -25,6 +25,7 @@
 
 | Returning to Step 2 from Step 1 without changing anything Saves all Step 2 data
 | | [Documentation]	| Verify that if you fill out steps 1 and 2, go back to step 1, then return to step 2, that all of the previously entered data on step 2 will still be present.
+| | ...				| [id] 0ecbef30-a89f-11e4-81ef-b8ca3a83048f
 | | [Tags]			| manual	| automateable
 | | Run the following manual steps:
 | | ... | Steps:
@@ -53,6 +54,7 @@
 
 | Returning to Step 3 from Step 2 without changing anything Saves all Step 3 data
 | | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 2, then return to step 3, that all of the previously entered data on step 3 will still be present.
+| | ...				| [id] 0ecfbfc0-a89f-11e4-839a-b8ca3a83048f
 | | [Tags]			| manual	| automateable?
 | | Run the following manual steps:
 | | ... | Steps:
@@ -91,6 +93,7 @@
 
 | Returning to Step 3 from Step 1 without changing anything Saves all Step 3 data
 | | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 1, then return to step 3, that all of the previously entered data on step 3 will still be present.
+| | ...				| [id] 0ed034ee-a89f-11e4-93a5-b8ca3a83048f
 | | [Tags]			| manual	| automateable?
 | | Run the following manual steps:
 | | ... | Steps:
@@ -201,6 +204,7 @@
 | | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 2 and change the Connection Path in step 2 to 
 | | ...				| something that does not have some of the selected Source Attributes, then when you return to step 3 the remaining Source Attribute selections 
 | | ...				| will still be correctly mapped with the Workspace Fields selections. Also the Unique Identifier dropdown value will be saved.
+| | ...				| [id] 0ed0830f-a89f-11e4-9c79-b8ca3a83048f
 | | [Tags]			| manual	| automateable?	| dan682
 | | Run the following manual steps:
 | | ... | Steps:
@@ -242,6 +246,7 @@
 | Going back from Step 3 and changing Step 1's Destination RDO resets everything on Step 3 except the Source Attribute selections
 | | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 1 and change the Destination RDO, then when you return to step 3 
 | | ...				| all of the Workspace Fields selections and the dropdowns will be reset, but the Source Attribute selections will be saved.
+| | ...				| [id] 0ed08310-a89f-11e4-ae95-b8ca3a83048f
 | | [Tags]			| manual	| automateable?
 | | Run the following manual steps:
 | | ... | Steps:

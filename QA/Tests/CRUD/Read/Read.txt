@@ -22,6 +22,7 @@
 
 | The correct Buttons appear in the Header
 | | [Documentation]	| Verify that the correct buttons appear at the top of the page
+| | ...				| [id] 117f284f-a89f-11e4-ab56-b8ca3a83048f
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | 1. View Integration Point | ${IP1}
@@ -37,6 +38,7 @@
 
 | The Section headings are in the correct order
 | | [Documentation]	| Verify that the Section headings are sorted correctly.
+| | ...				| [id] 1180fd11-a89f-11e4-b0e4-b8ca3a83048f
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps: 
@@ -52,6 +54,7 @@
 
 | The General fields are in the correct order
 | | [Documentation]	| Verify that the fields in the General section are sorted correctly.
+| | ...				| [id] 1180fd12-a89f-11e4-a95c-b8ca3a83048f
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps: 
@@ -65,6 +68,7 @@
 
 | The Integration fields are in the correct order
 | | [Documentation]	| Verify that the fields in the Integration section are sorted correctly.
+| | ...				| [id] 1180fd13-a89f-11e4-8169-b8ca3a83048f
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps: 
@@ -77,6 +81,7 @@
 
 | The Import Scheduling fields are in the correct order for an Integration Point with a disabled Scheduler
 | | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the Scheduler is disabled.
+| | ...				| [id] 11817240-a89f-11e4-82b7-b8ca3a83048f
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps: 
@@ -141,6 +146,7 @@
 
 | The Status fields are in the correct order when Enable Scheduler is set to No
 | | [Documentation]	| Verify that the fields in the Status section are sorted correctly when Enable Scheduler is set to No.
+| | ...				| [id] 11817241-a89f-11e4-bd3b-b8ca3a83048f
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps: 
@@ -154,6 +160,7 @@
 
 | The Status fields are in the correct order when Enable Scheduler is set to Yes
 | | [Documentation]	| Verify that the fields in the Status section are sorted correctly when Enable Scheduler is set to Yes.
+| | ...				| [id] 11817242-a89f-11e4-82d7-b8ca3a83048f
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps: 

@@ -18,6 +18,7 @@
 *** Test Cases ***
 
 | The Workspace Fields for each Object Type populate correctly
+| | [Documentation] | [id] 11031a80-a89f-11e4-b633-b8ca3a83048f
 | | [Template]	| Verify that the fields for the Object Type "${ObjectType}" populate correctly on the Unassigned Workspace Fields List Box on Step 3 of the Create Integration Point Process
 | | :FOR	| ${ObjectType}	| IN | @{ObjectTypes}
 | | | ${ObjectType}

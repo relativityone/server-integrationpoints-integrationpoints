@@ -19,6 +19,7 @@
 
 | A Field on the unselected Source Attribute list can be selected
 | | [Documentation] | Verify that one field can be selected from the unselected Source Attribute list.
+| | ...				| [id] 11494b40-a89f-11e4-ab88-b8ca3a83048f
 | | [Tags]			| manual	| source_attributes
 | | Run the following manual steps:
 | | ... | Steps:
@@ -31,6 +32,7 @@
 
 | A Field on the unselected Source Attribute list can be moved to the selected list
 | | [Documentation] | Verify that moving a field from the unselected Source Attribute list to the selected list removes the field from the unselected list.
+| | ...				| [id] 114b9530-a89f-11e4-a1a7-b8ca3a83048f
 | | [Tags]			| manual	| source_attributes
 | | Run the following manual steps:
 | | ... | Steps:
@@ -45,6 +47,7 @@
 
 | Multiple Individual fields can be selected and moved individually
 | | [Documentation] | Verify that multiple fields from the unselected Source Attribute list can be moved to the selected list, over multiple icon actions.
+| | ...				| [id] 114b9531-a89f-11e4-8cd9-b8ca3a83048f
 | | [Tags]			| manual	| source_attributes
 | | Run the following manual steps:
 | | ... | Steps:
@@ -61,6 +64,7 @@
 
 | Multiple Fields can be selected and moved with one click 
 | | [Documentation] | Verify that multiple fields from the unselected Source Attribute list can be moved to the selected list, using only one icon action.
+| | ...				| [id] 114b9532-a89f-11e4-b3d2-b8ca3a83048f
 | | [Tags]			| manual	| source_attributes
 | | Run the following manual steps:
 | | ... | Steps:
@@ -76,6 +80,7 @@
 
 | A field can be moved back to the unselected List
 | | [Documentation] | Verify that fields can be moved from the selected Source Attribute list back to the selected list.
+| | ...				| [id] 114b9533-a89f-11e4-89f0-b8ca3a83048f
 | | [Tags]			| manual	| source_attributes
 | | Run the following manual steps:
 | | ... | Steps:
@@ -92,6 +97,7 @@
 
 | Clicking the Source Attribute list's << icon moves all fields from the unselected list to the selected list
 | | [Documentation] | Verify that all of the fields from the unselected Source Attribute list are moved to the selected list when using the "<<" icon.
+| | ...				| [id] 114b9534-a89f-11e4-a6b1-b8ca3a83048f
 | | [Tags]			| manual	| source_attributes
 | | Run the following manual steps:
 | | ... | Steps:
@@ -105,6 +111,7 @@
 
 | Clicking the Source Attribute list's >> icon moves all fields from the selected list to the unselected list
 | | [Documentation] | Verify that all of the fields from the selected Source Attribute list are moved to the unselected list when using the ">>" icon.
+| | ...				| [id] 114b9535-a89f-11e4-a1d5-b8ca3a83048f
 | | [Tags]			| manual	| source_attributes
 | | Run the following manual steps:
 | | ... | Steps:
@@ -119,6 +126,7 @@
 
 | Multiple Fields can be selected be clicking and dragging
 | | [Documentation] | Verify that multiple Source Attribute fields can be seleted by clicking one field and dragging.
+| | ...				| [id] 114b9536-a89f-11e4-9743-b8ca3a83048f
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps:
@@ -130,6 +138,7 @@
 
 | Multiple Fields can be Control Clicked
 | | [Documentation] | Verify that multiple Source Attribute fields can be seleted by control clicking.
+| | ...				| [id] 114b9537-a89f-11e4-86e6-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
@@ -142,6 +151,7 @@
 
 | Double clicking a field moves it to the other list
 | | [Documentation] | Verify that a double clicking a field moves it from Source Attribute one list to the other.
+| | ...				| [id] 114c0a5e-a89f-11e4-aafa-b8ca3a83048f
 | | [Tags]			| manual	| source_attributes
 | | Run the following manual steps:
 | | ... | Steps:
@@ -153,6 +163,7 @@
 
 | Selected field rows on inactive Source Attribute lists are grey
 | | [Documentation] | Verify that a selected row turns grey when clicking anywhere else on the screen besides that Source Attribute list.
+| | ...				| [id] 114c0a5f-a89f-11e4-8d1f-b8ca3a83048f
 | | [Tags]			| manual	| source_attributes
 | | Run the following manual steps:
 | | ... | Steps:
