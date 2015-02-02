@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Data.Models;
 using Microsoft.Win32;
 
 namespace kCura.IntegrationPoints.Core
@@ -58,15 +59,15 @@ namespace kCura.IntegrationPoints.Core
 		{
 			List<Assembly> domainAssemblies = domain.GetAssemblies().ToList();
 
-			var assemblies = provider.GetPluginLibraries(applicationGuid);
+			IDictionary<ApplicationBinary, Stream> assemblies = provider.GetPluginLibraries(applicationGuid);
 			List<string> files = new List<string>();
-			foreach (var stream in assemblies)
+			foreach (ApplicationBinary appBinary in assemblies.Keys)
 			{
+				Stream stream = assemblies[appBinary];
 				stream.Seek(0, SeekOrigin.Begin);
-				var file = Path.Combine(domain.BaseDirectory, Guid.NewGuid().ToString() + ".dll");
-				File.WriteAllBytes(file, ReadFully(stream));
+				var file = Path.Combine(domain.BaseDirectory, appBinary.Name);
+				if (!File.Exists(file)) File.WriteAllBytes(file, ReadFully(stream));
 				files.Add(file);
-				//loader.LoadFrom(file);
 				stream.Dispose();
 			}
 			var loader = this.CreateInstance<Contracts.AssemblyDomainLoader>(domain);
