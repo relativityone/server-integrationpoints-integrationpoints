@@ -46,6 +46,11 @@
 		}).then(function (result) {
 			vm = new viewModel();
 			if (result.scheduler && result.scheduler.scheduledTime) {
+				
+				var time = result.scheduler.scheduledTime.split(':');
+				var hour = time[0].length == 2 ? time[0] : '0' + time[0];
+				var min = time[1].length == 2 ? time[1] : '0' + time[1];
+				result.scheduler.scheduledTime = hour + ':' + min;
 				result.scheduler.scheduledTime = helper.utcToLocal(result.scheduler.scheduledTime);
 			}
 			vm.goToStep(0, result);
