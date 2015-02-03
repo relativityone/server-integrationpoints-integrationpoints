@@ -185,6 +185,7 @@
     <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\FieldMapController.cs" />
+    <Compile Include="Controllers\API\ImportNowController.cs" />
     <Compile Include="Controllers\API\RdoMetaController.cs" />
     <Compile Include="Controllers\API\SourceFieldsController.cs" />
     <Compile Include="Controllers\API\SourceTypeController.cs" />
@@ -515,6 +516,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
+      <Project>{C831C856-E74F-48B4-AEBC-1CF15576E082}</Project>
+      <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

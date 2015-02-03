@@ -28,6 +28,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterLinkedCss(applicationPath + "/Content/controls.grid.css");
 				this.RegisterLinkedCss(applicationPath + "/Content/controls-grid-pager.css");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/date.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/q.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/loading-modal.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/core/data.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/core/utils.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/integration-point/time-utils.js");
 
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL234324324", Script = "<script>var IP = IP ||{};IP.cpPath = '" + applicationPath + "';</script>" });
@@ -37,8 +41,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL2343243453", Script = "<script>var IP = IP ||{};IP.nextTimeid= ['" + fieldID + "', '" + lastTimefieldID + "'] ;</script>" });
 
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-grid.js");
+			
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-view.js");
-				
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/i18n/grid.locale-en.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/jquery.jqGrid.min.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/select2.min.js");

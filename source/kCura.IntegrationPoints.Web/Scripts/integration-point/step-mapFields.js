@@ -198,7 +198,7 @@ ko.validation.insertValidationMessage = function (element) {
 					var isInDestination = _contains(destinationFields, _destination);
 					if (isInSource && isInDestination) {
 						sourceMapped.push(source);
-						debugger;
+						
 						if (_destination.isIdentifier == true) {
 							if (_destination.displayName.indexOf(" [Object Identifier]") < 0) {
 								_destination.displayName = _destination.displayName + ' [Object Identifier]';
