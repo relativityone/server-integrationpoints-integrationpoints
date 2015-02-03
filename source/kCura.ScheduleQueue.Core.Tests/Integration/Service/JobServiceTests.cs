@@ -31,7 +31,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			var agentHelper = NSubstitute.Substitute.For<Relativity.API.IAgentHelper>();
 			IDBContext eddsContext = new TestDBContextHelper().GetEDDSDBContext();
 			agentHelper.GetDBContext(Arg.Any<int>()).Returns(eddsContext);
-			//AgentInformation ai = jobService.GetAgentInformation(new Guid("08C0CE2D-8191-4E8F-B037-899CEAEE493D")); //Integration Points agent
+			//AgentTypeInformation ai = jobService.GetAgentInformation(new Guid("08C0CE2D-8191-4E8F-B037-899CEAEE493D")); //Integration Points agent
 			IAgentService agentService = new AgentService(agentHelper, agentGuid); //RLH agent
 			var jobService = new JobService(agentService, agentHelper);
 
@@ -40,8 +40,8 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			Job job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
 			Job job1 = jobService.GetJob(job.JobId);
 			Job job2 = jobService.GetJob(workspaceID, job.RelatedObjectArtifactID, taskType);
-			Job job3 = jobService.GetNextQueueJob(new int[] { 1015040 });
-			jobService.UnlockJobs(agentService.AgentInformation.AgentID);
+			Job job3 = jobService.GetNextQueueJob(new int[] { 1015040 }, 1111111);
+			jobService.UnlockJobs(1111111);
 			jobService.DeleteJob(job3.JobId);
 		}
 
@@ -70,7 +70,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			DateTime dt = DateTime.Now;
 			while (DateTime.Now.Subtract(dt).Minutes < 4)
 			{
-				job2 = jobService.GetNextQueueJob(new int[] { 1015040 });
+				job2 = jobService.GetNextQueueJob(new int[] { 1015040 }, 1111111);
 				if (job2 != null) jobService.FinalizeJob(job2, new DefaultScheduleRuleFactory(), new TaskResult() { Status = TaskStatusEnum.Success, Exceptions = new List<Exception>() });
 				Thread.Sleep(1000);
 			}
@@ -102,7 +102,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 
 		[Test]
 		[Explicit]
-		public void xxx()
+		public void ScheduleRule_Test1()
 		{
 			PeriodicScheduleRule psr = new PeriodicScheduleRule();
 			psr.Interval = ScheduleInterval.Immediate;
@@ -137,7 +137,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 
 		[Test]
 		[Explicit]
-		public void xxx2()
+		public void ScheduleRule_Test2()
 		{
 			PeriodicScheduleRule psr = new PeriodicScheduleRule();
 			psr.Interval = ScheduleInterval.Immediate;
@@ -157,6 +157,42 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			ISerializer serializer = factory.GetDeserializer(type2);
 			IScheduleRule possibleObject = (IScheduleRule)serializer.Deserialize(type2, xml);
 
+		}
+
+		[Test]
+		[Explicit]
+		public void jobService_TestMultiAgentProcess()
+		{
+			int workspaceID = 1015641;
+			int relatedObjectArtifactID = 1111111;
+			string taskType = "MyTestTask";
+			Guid agentGuid = new Guid("D65F5774-6572-49F0-91C4-28161A75DF0D");
+
+			var agentHelper = NSubstitute.Substitute.For<Relativity.API.IAgentHelper>();
+			IDBContext eddsContext = new TestDBContextHelper().GetEDDSDBContext();
+			agentHelper.GetDBContext(Arg.Any<int>()).Returns(eddsContext);
+			//AgentTypeInformation ai = jobService.GetAgentInformation(new Guid("08C0CE2D-8191-4E8F-B037-899CEAEE493D")); //Integration Points agent
+			IAgentService agentService = new AgentService(agentHelper, agentGuid); //RLH agent
+			var jobService = new JobService(agentService, agentHelper);
+
+			Job jobOld = jobService.GetJob(workspaceID, relatedObjectArtifactID, taskType);
+			while (jobOld != null)
+			{
+				jobService.DeleteJob(jobOld.JobId);
+				jobOld = jobService.GetJob(workspaceID, relatedObjectArtifactID, taskType);
+			}
+			Job job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
+			job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
+			job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
+			job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
+			job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
+			Job nextJob1 = jobService.GetNextQueueJob(new int[] { 1015040 }, 1111111);
+			Job nextJob2 = jobService.GetNextQueueJob(new int[] { 1015040 }, 1111112);
+			Job nextJob3 = jobService.GetNextQueueJob(new int[] { 1015040 }, 1111113);
+			jobService.DeleteJob(nextJob1.JobId);
+			nextJob1 = jobService.GetNextQueueJob(new int[] { 1015040 }, 1111111);
+			jobService.DeleteJob(nextJob3.JobId);
+			nextJob3 = jobService.GetNextQueueJob(new int[] { 1015040 }, 1111113);
 		}
 	}
 }

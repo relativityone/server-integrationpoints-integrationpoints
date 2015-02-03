@@ -15,6 +15,7 @@
 
 | An Append import Creates new objects
 | | [Documentation] | Verify that when an Append RIP is run which has new Source objects, that it creates new objects in the Target RDO.
+| | ...				| [id] 12e54800-a89f-11e4-bb62-b8ca3a83048f
 | | [Tags] | manual  | required
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -33,6 +34,7 @@
 
 | An Append import Creates new History objects
 | | [Documentation] | Verify that when an Append RIP is run which has new source recods, that there are history entries for the newly created objects in the target RDO.
+| | ...				| [id] 12e9dbe1-a89f-11e4-b55e-b8ca3a83048f
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -46,6 +48,7 @@
 
 | An Append import does not update existing objects
 | | [Documentation] | Verify that when an Append RIP is run which has updated Source objects that match to existing objects, that it does not update the existing objects in the target RDO.
+| | ...				| [id] 12ea02f0-a89f-11e4-b98c-b8ca3a83048f
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -59,6 +62,7 @@
 
 | An Append import does not update existing unmodified objects
 | | [Documentation] | Verify that when an Append RIP is run which has Source objects that match to existing objects with no changes, that it does not update the existing objects in the target RDO.
+| | ...				| [id] 12ea02f1-a89f-11e4-a719-b8ca3a83048f
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Preconditions:

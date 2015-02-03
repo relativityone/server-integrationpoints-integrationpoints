@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Data.Models;
 using Microsoft.Win32;
 
 namespace kCura.IntegrationPoints.Core
@@ -58,15 +59,15 @@ namespace kCura.IntegrationPoints.Core
 		{
 			List<Assembly> domainAssemblies = domain.GetAssemblies().ToList();
 
-			var assemblies = provider.GetPluginLibraries(applicationGuid);
+			IDictionary<ApplicationBinary, Stream> assemblies = provider.GetPluginLibraries(applicationGuid);
 			List<string> files = new List<string>();
-			foreach (var stream in assemblies)
+			foreach (ApplicationBinary appBinary in assemblies.Keys)
 			{
+				Stream stream = assemblies[appBinary];
 				stream.Seek(0, SeekOrigin.Begin);
-				var file = Path.Combine(domain.BaseDirectory, Guid.NewGuid().ToString() + ".dll");
-				File.WriteAllBytes(file, ReadFully(stream));
+				var file = Path.Combine(domain.BaseDirectory, appBinary.Name);
+				if (!File.Exists(file)) File.WriteAllBytes(file, ReadFully(stream));
 				files.Add(file);
-				//loader.LoadFrom(file);
 				stream.Dispose();
 			}
 			var loader = this.CreateInstance<Contracts.AssemblyDomainLoader>(domain);
@@ -144,7 +145,7 @@ namespace kCura.IntegrationPoints.Core
 			CopyDirectoryFiles(libDllPath, finalDllPath, true, true);
 
 			//kCura.Agent
-			libDllPath = GetRelativityAgentPath();
+			libDllPath = GetRelativityWebProcessingPath();
 			//if (!string.IsNullOrWhiteSpace(libDllPath)) CopyDirectoryFiles(libDllPath, finalDllPath, true, false);
 			if (!string.IsNullOrWhiteSpace(libDllPath)) CopyFileWithWildcard(libDllPath, finalDllPath, "kCura.Agent*");
 
@@ -221,6 +222,20 @@ namespace kCura.IntegrationPoints.Core
 			}
 			rk.Close();
 			return keyValue;
+		}
+
+		private string GetRelativityWebProcessingPath()
+		{
+			string eddsPath = string.Empty;
+
+			try
+			{
+				eddsPath = GetFeaturePathsValue("WebProcessingPath");
+			}
+			catch
+			{
+			}
+			return eddsPath;
 		}
 
 		private string GetRelativityEddsPath()

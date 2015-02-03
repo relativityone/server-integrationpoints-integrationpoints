@@ -18,6 +18,7 @@
 *** Test Cases ***
 
 | The Options on the Overlay Identifier dropdown are correct for all Object Types
+| | [Documentation] | [id] 10b807c0-a89f-11e4-82d4-b8ca3a83048f
 | | [Tags]		| automated
 | | [Template]	| Verify that the Overlay Identifier dropdown populates the correct fields for the Object Type "${ObjectType}"
 | | :FOR	| ${ObjectType}	| IN	| @{ObjectTypes}

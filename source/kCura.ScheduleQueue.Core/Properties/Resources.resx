@@ -130,8 +130,8 @@
   <data name="DeleteJob" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\data\resources\deletejob.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="GetAgentInformation" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\data\resources\getagentinformation.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  <data name="GetAgentTypeInformation" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\data\resources\getagenttypeinformation.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="GetJobByID" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\data\resources\getjobbyid.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

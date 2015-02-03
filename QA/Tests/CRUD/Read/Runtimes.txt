@@ -18,6 +18,7 @@
 
 | The Next Scheduled Runtime calculates correctly for Daily Jobs
 | | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is calculated correctly for Schedulers with a Frequency of Daily.
+| | ...				| [id] 119102a1-a89f-11e4-ad67-b8ca3a83048f
 | | [Tags]			| manual	| dates
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -37,6 +38,7 @@
 
 | The Next Scheduled Runtime calculates correctly for Weekly Jobs
 | | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is calculated correctly for Schedulers with a Frequency of Weekly.
+| | ...				| [id] 1192fe70-a89f-11e4-b462-b8ca3a83048f
 | | [Tags]			| manual	| dates
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -58,6 +60,7 @@
 
 | The Next Scheduled Runtime calculates correctly for Monthly Jobs on X day
 | | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is calculated correctly for Schedulers with a Frequency of Monthly and a Send On value of a given day of the month.
+| | ...				| [id] 1192fe71-a89f-11e4-8ae8-b8ca3a83048f
 | | [Tags]			| manual	| dates
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -79,6 +82,7 @@
 
 | The Next Scheduled Runtime calculates correctly for Monthly Jobs on the X Y of the Month
 | | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is calculated correctly for Schedulers with a Frequency of Monthly and a Send On value of a given occurance of a given day of the week.
+| | ...				| [id] 1192fe72-a89f-11e4-b13d-b8ca3a83048f
 | | [Tags]			| manual	| dates
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -100,6 +104,7 @@
 
 | The Next Scheduled Runtime calculates correctly when the scheduled time uses single digit values
 | | [Documentation]	| Verify that 
+| | ...				| [id] 1192fe73-a89f-11e4-b82b-b8ca3a83048f
 | | [Tags]			| manual	| dates
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -119,6 +124,7 @@
 
 | The Next Scheduled Runtime updates correctly when the scheduled job runs
 | | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is updated correctly when its Scheduled Job runs.
+| | ...				| [id] 1192fe74-a89f-11e4-8b2a-b8ca3a83048f
 | | [Tags]			| manual	| dates	| timing
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -137,8 +143,9 @@
 | | ... | Verify that the Next Scheduled Runtime is set to "<Tomorrow's Date> <The Scheduled Time>"
 
 
-| The Next Scheduled Runtime displays the correct message when the End Date has passed
-| | [Documentation]	| Verify that 
+| The Next Scheduled Runtime is blank when the End Date has passed
+| | [Documentation]	| Verify that the Next Scheduled Runtime is blank when the End Date has passed
+| | ...				| [id] 1192fe75-a89f-11e4-8fe3-b8ca3a83048f
 | | [Tags]			| manual	| dates
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -154,11 +161,12 @@
 | | ... | 1. View the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Next Scheduled Runtime is set to "There are no upcoming runs scheduled."
+| | ... | Verify that the Next Scheduled Runtime is blank
 
 
 | The Last Runtime field is empty when the Integration Point has never been Imported
 | | [Documentation]	| Verify that when an Integration Point has never been Imported it has a blank Last Runtime field. 
+| | ...				| [id] 11934c8f-a89f-11e4-93d0-b8ca3a83048f
 | | [Tags]			| manual	| dates	| workspace_state
 | | Run the following manual steps:
 | | ... | Steps:
@@ -171,6 +179,7 @@
 
 | The Last Runtime is updated when a scheduled job runs
 | | [Documentation]	| Verify that 
+| | ...				| [id] 11934c90-a89f-11e4-a7bf-b8ca3a83048f
 | | [Tags]			| manual	| dates	| timing
 | | Run the following manual steps:
 | | ... | Preconditions:

@@ -25,6 +25,7 @@
 *** Test Cases ***
 
 | Importing the same Object Type from two different Sources
+| | [Documentation] | [id] 13316c30-a89f-11e4-b34b-b8ca3a83048f
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -44,6 +45,7 @@
 
 
 | Importing different Object Types from the same Source
+| | [Documentation] | [id] 13358ade-a89f-11e4-b738-b8ca3a83048f
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -63,6 +65,7 @@
 
 
 | Importing the same Object Type from the same Source
+| | [Documentation] | [id] 13358adf-a89f-11e4-9095-b8ca3a83048f
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -82,6 +85,7 @@
 
 
 | Importing different Object Types from different Sources
+| | [Documentation] | [id] 13358ae0-a89f-11e4-a129-b8ca3a83048f
 | | [Tags]			| manual	| integration_points
 | | Run the following manual steps:
 | | ... | Preconditions:
