@@ -10,6 +10,8 @@ namespace kCura.IntegrationPoints.LDAPProvider
 	[kCura.IntegrationPoints.Contracts.DataSourceProvider("5bf1f2c2-9670-4d6e-a3e9-dbc83db6c232")]
 	public class LDAPProvider : IDataSourceProvider
 	{
+		private readonly IEncryptionManager _encryptionManager = new DefaultEncryptionManager();
+		
 		public LDAPProvider()
 		{ }
 
@@ -46,11 +48,13 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			IEnumerable<SearchResult> items = ldapService.FetchItems(settings.GetPropertiesItemSearchLimit);
 			List<string> fields = ldapService.GetAllProperties(items);
 
-			return fields.Select(f => new FieldEntry() { DisplayName = f, FieldIdentifier = f }).AsEnumerable();
+			return fields.Select(f => new FieldEntry() { DisplayName = f, FieldIdentifier = f });
 		}
 
 		private LDAPSettings GetSettings(string options)
 		{
+			options = Newtonsoft.Json.JsonConvert.DeserializeObject<string>(options);
+			options = _encryptionManager.Decrypt(options);
 			LDAPSettings settings = Newtonsoft.Json.JsonConvert.DeserializeObject<LDAPSettings>(options);
 
 			if (String.IsNullOrWhiteSpace(settings.Filter)) { settings.Filter = LDAPSettings.FILTER_DEFAULT; }

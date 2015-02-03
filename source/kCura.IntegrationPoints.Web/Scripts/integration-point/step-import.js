@@ -107,6 +107,8 @@
 		templateID: 'configuration'
 	});
 
+	
+
 	root.points.steps.push(step);
 
 })(IP, ko);
