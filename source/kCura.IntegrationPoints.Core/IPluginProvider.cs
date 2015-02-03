@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using kCura.IntegrationPoints.Data.Models;
 
 namespace kCura.IntegrationPoints.Core
 {
 	public interface IPluginProvider
 	{
-		IEnumerable<Stream> GetPluginLibraries(Guid applicationGuid);
+		IDictionary<ApplicationBinary, Stream> GetPluginLibraries(Guid applicationGuid);
 	}
 }

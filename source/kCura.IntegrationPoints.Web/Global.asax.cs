@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Web
 			AreaRegistration.RegisterAllAreas();
 
 			CreateWindsorContainer();
-
+			
 			WebApiConfig.Register(GlobalConfiguration.Configuration);
 			FilterConfig.RegisterWebAPIFilters(GlobalConfiguration.Configuration, _container);
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
@@ -47,6 +47,7 @@ namespace kCura.IntegrationPoints.Web
 			settings.Formatting = Formatting.Indented;
 			settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 			kCura.Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(ConnectionHelper.Helper());
+			GlobalConfiguration.Configuration.EnsureInitialized();
 		}
 
 		public void Application_Error(object sender, EventArgs e)

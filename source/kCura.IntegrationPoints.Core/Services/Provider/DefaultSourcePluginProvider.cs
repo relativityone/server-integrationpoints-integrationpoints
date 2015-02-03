@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using kCura.IntegrationPoints.Data.Models;
 using kCura.IntegrationPoints.Data.Queries;
 
 namespace kCura.IntegrationPoints.Core.Services.Provider
@@ -15,13 +16,13 @@ namespace kCura.IntegrationPoints.Core.Services.Provider
 			_getApplicationBinaries = getApplicationBinaries;
 		}
 
-		public IEnumerable<Stream> GetPluginLibraries(Guid applicationGuid)
+		public IDictionary<ApplicationBinary, Stream> GetPluginLibraries(Guid applicationGuid)
 		{
-			var apps = _getApplicationBinaries.Execute(applicationGuid);
-			return apps.Select(applicationBinary => new MemoryStream(applicationBinary.FileData));
+			List<ApplicationBinary> apps = _getApplicationBinaries.Execute(applicationGuid);
+			return apps.ToDictionary(appBinary => appBinary, appBinary => (Stream)new MemoryStream(appBinary.FileData));
 		}
 
-		static public string AssemblyLoadDirectory
+		public static string AssemblyLoadDirectory
 		{
 			get
 			{

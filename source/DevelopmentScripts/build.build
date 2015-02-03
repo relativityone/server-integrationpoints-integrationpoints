@@ -30,7 +30,7 @@
 	<property name="source.reference.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.1.0.77.1\lib\net45" />
 	<property name="source.reference.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.106.2\lib\net45" />
 	<property name="target.code.directory" value="${root}\bin\${buildconfig}" />
-	<property name="ldap.build.server.share" value="\\tt-img-app-9-0.testing.corp\BuildShare\LDAPSync\release-1.0" unless="${property::exists('ldap.build.server.share')}"/>
+	<property name="ldap.build.server.share" value="\\tt-img-app-8-2.testing.corp\BuildShare\LDAPSync\default" unless="${property::exists('ldap.build.server.share')}"/>
 	<property name="buildType" value="DEV" unless="${property::exists('buildType')}" />
 	<property name="Injections" value="INJECTION" unless="${property::exists('Injections')}" />
 	<property name="TimeMachine" value="TIME_MACHINE" unless="${property::exists('TimeMachine')}" />

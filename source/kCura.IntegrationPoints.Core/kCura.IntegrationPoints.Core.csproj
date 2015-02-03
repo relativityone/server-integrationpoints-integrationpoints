@@ -89,7 +89,6 @@
     </Compile>
     <Compile Include="IContextService.cs" />
     <Compile Include="Queries\GetSourceProviderRdoByIdentifier.cs" />
-    <Compile Include="Services\BarnesHardCodedSourcePlugin.cs" />
     <Compile Include="Queries\GetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Services\Provider\DefaultSourcePluginProvider.cs" />
     <Compile Include="Services\Provider\AppDomainFactory.cs" />
