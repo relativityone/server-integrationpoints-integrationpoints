@@ -1,71 +1,76 @@
 ﻿<script id="step3" type="text/html">
 	<div class="card" id="fieldMappings">
-	<div>
-		<span class="label title">Field Mappings</span>
+		<div>
+			<span class="label title">Field Mappings</span>
 
-		<div class="map-field-title">
-			<label class="list-title workspace-field">Workspace Fields</label>
-			<label class="list-title source-field">Source Attributes</label>
+			<div class="map-field-title">
+				<label class="list-title workspace-field">Workspace Fields</label>
+				<label class="list-title source-field">Source Attributes</label>
 
-		</div>
-		<div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error"></div>
-		<div data-bind="validationMessage: mappedWorkspace" class="icon-error legal-hold field-validation-error"></div>
-		<div class="table" id="mapFields">
-			<div class="cell">
-				<select id="workspace-fields" class="list-box" name="workspace-field" data-bind="options: workspaceFields, selectedOptions: selectedWorkspaceField, optionsText: 'name', doubleClick: addSelectFields" id="AvailableSelectedMembers" multiple="multiple" name="AvailableSelectedMembers"></select>
 			</div>
-			<div class="cell selection">
-				<div>
-					<div id="add-all-workspace-fields" class="legal-hold icon-paging-last" data-bind="click: addAllWorkspaceFields"></div>
-					<div id="add-workspace-field" class="legal-hold icon-paging-next" data-bind="click: addSelectFields"></div>
-					<div id="remove-workspace-field" class="legal-hold icon-paging-previous" data-bind="click: addToWorkspaceField"></div>
-					<div id="remove-all-workspace-fields" class="legal-hold icon-paging-first" data-bind="click: addAlltoWorkspaceField"></div>
+			<div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error"></div>
+			<div data-bind="validationMessage: mappedWorkspace" class="icon-error legal-hold field-validation-error"></div>
+			<div class="table" id="mapFields">
+				<div class="cell">
+					<select id="workspace-fields" class="list-box" name="workspace-field" data-bind="options: workspaceFields, selectedOptions: selectedWorkspaceField, optionsText: 'name', doubleClick: addSelectFields" id="AvailableSelectedMembers" multiple="multiple" name="AvailableSelectedMembers"></select>
 				</div>
-			</div>
-			<div class="cell">
-				<select class="list-box" id="selected-workspace-fields" data-bind="options: mappedWorkspace, selectedOptions: selectedMappedWorkspace, optionsText: 'name', doubleClick: addToWorkspaceField" multiple="multiple"></select>
-
-			</div>
-			<div class="cell selection">
-				<div>
-					<div id="workspace-field-up" class="legal-hold icon-chevron-up " data-bind="click: moveMappedWorkspaceUp"></div>
-					<div id="workspace-field-down" class="legal-hold icon-chevron-down" data-bind="click: moveMappedWorkspaceDown"></div>
+				<div class="cell selection">
+					<div>
+						<div id="add-all-workspace-fields" class="legal-hold icon-paging-last" data-bind="click: addAllWorkspaceFields"></div>
+						<div id="add-workspace-field" class="legal-hold icon-paging-next" data-bind="click: addSelectFields"></div>
+						<div id="remove-workspace-field" class="legal-hold icon-paging-previous" data-bind="click: addToWorkspaceField"></div>
+						<div id="remove-all-workspace-fields" class="legal-hold icon-paging-first" data-bind="click: addAlltoWorkspaceField"></div>
+					</div>
+				</div>
+				<div class="cell">
+					<select class="list-box" id="selected-workspace-fields" data-bind="options: mappedWorkspace, selectedOptions: selectedMappedWorkspace, optionsText: 'name', doubleClick: addToWorkspaceField" multiple="multiple"></select>
 
 				</div>
-			</div>
+				<div class="cell selection">
+					<div>
+						<div id="workspace-field-up" class="legal-hold icon-chevron-up " data-bind="click: moveMappedWorkspaceUp"></div>
+						<div id="workspace-field-down" class="legal-hold icon-chevron-down" data-bind="click: moveMappedWorkspaceDown"></div>
 
-			<div class="cell selection">
-				<div>
-					<div id="attribute-field-up" class="legal-hold icon-chevron-up " data-bind="click: moveMappedSourceUp"></div>
-					<div id="attribute-field-down" class="legal-hold icon-chevron-down" data-bind="click: moveMappedSourceDown"></div>
+					</div>
 				</div>
-			</div>
-			<div class="cell">
-				<select class="list-box" id="selected-source-fields" multiple="multiple" data-bind="options: sourceMapped, selectedOptions: selectedMappedSource, optionsText: 'name', doubleClick: addToSourceField ">
-				</select>
-			</div>
-			<div class="cell selection">
-				<div>
-					<div id="add-all-source-fields" class="legal-hold icon-paging-last" data-bind="click: addAlltoSourceField"></div>
-					<div id="remove-source-field" class="legal-hold icon-paging-previous" data-bind="click: addToMappedSource"></div>
-					<div id="add-source-field" class="legal-hold icon-paging-next" data-bind="click: addToSourceField"></div>
-					<div id="remove-all-source-fields" class="legal-hold icon-paging-first" data-bind="click: addSourceToMapped"></div>
-				</div>
-			</div>
 
-			<div class="cell">
-				<div>
-					<select class="list-box" id="source-attributes" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'name', doubleClick: addToMappedSource">
+				<div class="cell selection">
+					<div>
+						<div id="attribute-field-up" class="legal-hold icon-chevron-up " data-bind="click: moveMappedSourceUp"></div>
+						<div id="attribute-field-down" class="legal-hold icon-chevron-down" data-bind="click: moveMappedSourceDown"></div>
+					</div>
+				</div>
+				<div class="cell">
+					<select class="list-box" id="selected-source-fields" multiple="multiple" data-bind="options: sourceMapped, selectedOptions: selectedMappedSource, optionsText: 'name', doubleClick: addToSourceField ">
 					</select>
 				</div>
-			</div>
+				<div class="cell selection">
+					<div>
+						<div id="add-all-source-fields" class="legal-hold icon-paging-last" data-bind="click: addAlltoSourceField"></div>
+						<div id="remove-source-field" class="legal-hold icon-paging-previous" data-bind="click: addToMappedSource"></div>
+						<div id="add-source-field" class="legal-hold icon-paging-next" data-bind="click: addToSourceField"></div>
+						<div id="remove-all-source-fields" class="legal-hold icon-paging-first" data-bind="click: addSourceToMapped"></div>
+					</div>
+				</div>
 
+				<div class="cell">
+					<div>
+						<select class="list-box" id="source-attributes" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'name', doubleClick: addToMappedSource">
+						</select>
+					</div>
+				</div>
+
+			</div>
+		
 		</div>
+	</div>
+	<div class="card">
+		<span class="label title">Import Settings</span>
 		<div class="identifier">
 			<div class="field-row overlay-identifier">
 				<div class="field-label required">Unique Identifier</div>
 				<div class="field-value ">
-					<select id="overlay-identifier" data-bind="options: overlay, value: selectedUniqueId, optionsValue: 'name', optionsText: 'name', select2: {}">
+					<select id="overlay-identifier" data-bind="options: overlay, value: selectedUniqueId, optionsValue: 'displayName', optionsText: 'displayName', select2: {}">
 					</select>
 				</div>
 			</div>
@@ -73,11 +78,10 @@
 			<div class="field-row" data-bind="visible: hasParent">
 				<div class="field-label required ">Parent Attribute</div>
 				<div class="field-value ">					
-					<select id="parent-identifier" data-bind="options: parentField, value: selectedIdentifier,optionsValue: 'name', optionsText: 'name', optionsCaption: 'Select...', select2: {}">
+					<select id="parent-identifier" data-bind="options: parentField, value: selectedIdentifier, optionsValue: 'name', optionsText: 'name', optionsCaption: 'Select...', select2: {}">
 					</select>
 				</div>
 			</div>
 			</div>
-		</div>
 	</div>
 </script>

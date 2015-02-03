@@ -136,20 +136,6 @@ ko.validation.insertValidationMessage = function (element) {
 				settings: model.destination
 			})
 		}).then(function (result) {
-			var types = mapFields(result);
-			self.overlay(types);
-
-			$.each(self.overlay(), function () {
-				if (this.isIdentifier) {
-					self.rdoIdentifier(this.name);
-					self.selectedUniqueId(this.name);
-				}
-			});
-			$.each(self.overlay(), function () {
-				if (model.identifer == this.name) {
-					self.selectedUniqueId(this.name);
-				}
-			});
 			return result;
 		});
 		var sourceFieldPromise = root.data.ajax({
@@ -212,6 +198,12 @@ ko.validation.insertValidationMessage = function (element) {
 					var isInDestination = _contains(destinationFields, _destination);
 					if (isInSource && isInDestination) {
 						sourceMapped.push(source);
+						debugger;
+						if (_destination.isIdentifier == true) {
+							if (_destination.displayName.indexOf(" [Object Identifier]") < 0) {
+								_destination.displayName = _destination.displayName + ' [Object Identifier]';
+							}
+						}
 						destinationMapped.push(_destination);
 					}
 					else if (!isInSource && isInDestination) {
@@ -225,6 +217,7 @@ ko.validation.insertValidationMessage = function (element) {
 				getMapped: getMapped
 			};
 		})();
+
 		root.data.deferred().all(promises).then(
 			function (result) {
 				var destinationFields = result[0],
@@ -232,7 +225,24 @@ ko.validation.insertValidationMessage = function (element) {
 						mapping = result[2];
 
 				var types = mapFields(sourceFields);
+				for (var i = 0; i < destinationFields.length; i++) {
+					if (destinationFields[i].isIdentifier === true) {
+						destinationFields[i].displayName = destinationFields[i].displayName + ' [Object Identifier]';
+					}
+				}
+				self.overlay(destinationFields);
 
+				$.each(self.overlay(), function () {
+					if (this.isIdentifier) {
+						self.rdoIdentifier(this.displayName);
+						self.selectedUniqueId(this.displayName);
+					}
+				});
+				$.each(self.overlay(), function () {
+					if (model.identifer == this.displayName) {
+						self.selectedUniqueId(this.displayName);
+					}
+				});
 				self.parentField(types);
 				if (model.parentIdentifier !== undefined) {
 					$.each(self.parentField(), function () {
@@ -256,11 +266,14 @@ ko.validation.insertValidationMessage = function (element) {
 				mapping = $.map(mapping, function (value) {
 					return value.fieldMapType !== mapTypes.parent ? value : null;
 				});
+				
+				
 				var mapped = mapHelper.getMapped(sourceFields, destinationFields, mapping, 'sourceField', 'destinationField');
 				var destinationMapped = mapped[0];
 				var sourceMapped = mapped[1];
 				var destinationNotMapped = mapHelper.getNotMapped(destinationFields, mapping, 'destinationField');
 				var sourceNotMapped = mapHelper.getNotMapped(sourceFields, mapping, 'sourceField');
+				
 				self.workspaceFields(mapFields(destinationNotMapped));
 				self.mappedWorkspace(mapFields(destinationMapped));
 				self.sourceField(mapFields(sourceNotMapped));
