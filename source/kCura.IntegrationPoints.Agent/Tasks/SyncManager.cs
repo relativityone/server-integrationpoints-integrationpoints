@@ -111,8 +111,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
 				if (rdoIntegrationPoint != null)
 				{
-					rdoIntegrationPoint.LastRuntime = DateTime.UtcNow;
-					rdoIntegrationPoint.NextScheduledRuntime = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory,
+					rdoIntegrationPoint.LastRuntimeUTC = DateTime.UtcNow;
+					rdoIntegrationPoint.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory,
 						taskResult);
 					_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(rdoIntegrationPoint);
 				}

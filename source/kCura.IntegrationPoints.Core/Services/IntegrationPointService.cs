@@ -83,12 +83,12 @@ namespace kCura.IntegrationPoints.Core.Services
 			if (ip.EnableScheduler.GetValueOrDefault(false))
 			{
 				ip.ScheduleRule = rule.ToSerializedString();
-				ip.NextScheduledRuntime = rule.GetNextUTCRunDateTime();
+				ip.NextScheduledRuntimeUTC = rule.GetNextUTCRunDateTime();
 			}
 			else
 			{
 				ip.ScheduleRule = string.Empty;
-				ip.NextScheduledRuntime = null;
+				ip.NextScheduledRuntimeUTC = null;
 				rule = null;
 			}
 
