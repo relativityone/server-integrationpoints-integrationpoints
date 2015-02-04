@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		public IEnumerable<FieldEntry> GetFields(string options)
+		public virtual IEnumerable<FieldEntry> GetFields(string options)
 		{
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
 			var fields = _fieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);

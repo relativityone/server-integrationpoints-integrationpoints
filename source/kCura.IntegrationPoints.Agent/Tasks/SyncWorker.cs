@@ -38,30 +38,22 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				int integrationPointID = job.RelatedObjectArtifactID;
 				rdoIntegrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
-				if (rdoIntegrationPoint == null) throw new Exception("Failed to retrieved corresponding Integration Point.");
-
-				IEnumerable<FieldMap> fieldMap = _serializer.Deserialize<List<FieldMap>>(rdoIntegrationPoint.FieldMappings);
-
-				List<string> entryIDs = _serializer.Deserialize<List<string>>(job.JobDetails);
-				if (rdoIntegrationPoint.SourceProvider.GetValueOrDefault(0) == 0 || !rdoIntegrationPoint.SourceProvider.HasValue)
+				if (rdoIntegrationPoint == null)
 				{
-					throw new Exception("Cannot import source provider with unknown id.");
+					throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
 				}
+				if (rdoIntegrationPoint.SourceProvider.GetValueOrDefault(0) == 0)
+				{
+					throw new ArgumentException("Cannot import source provider with unknown id.");
+				}
+
+				if (rdoIntegrationPoint.DestinationProvider.GetValueOrDefault(0) == 0)
+				{
+					throw new ArgumentException("Cannot import destination provider with unknown id.");
+				}
+				List<string> entryIDs = _serializer.Deserialize<List<string>>(job.JobDetails);
 				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(rdoIntegrationPoint.SourceProvider.Value);
-				Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
-				Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
-				IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(applicationGuid, providerGuid);
-				fieldMap.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
-				List<FieldEntry> sourceFields = fieldMap.Select(f => f.SourceField).ToList();
-				IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, rdoIntegrationPoint.SourceConfiguration);
-
-				IDataSyncronizer dataSyncronizer = _dataSyncronizerFactory.GetSyncronizer();
-				IEnumerable<IDictionary<FieldEntry, object>> data =
-					new DataReaderToEnumerableService(
-						new SynchronizerObjectBuilder(sourceFields))
-						.GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
-
-				dataSyncronizer.SyncData(data, fieldMap, rdoIntegrationPoint.DestinationConfiguration);
+				ExecuteImp(rdoIntegrationPoint, entryIDs, sourceProviderRdo);
 			}
 			catch
 			{
@@ -72,5 +64,42 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				//rdo last run and next scheduled time will be updated in Manager job
 			}
 		}
+
+		private void ExecuteImp(IntegrationPoint rdoIntegrationPoint, List<string> entryIDs, Data.SourceProvider sourceProviderRdo)
+		{
+
+			IDataSourceProvider sourceProvider = GetSourceProvider(sourceProviderRdo);
+
+			IEnumerable<FieldMap> fieldMap = _serializer.Deserialize<List<FieldMap>>(rdoIntegrationPoint.FieldMappings);
+			fieldMap.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
+			List<FieldEntry> sourceFields = fieldMap.Select(f => f.SourceField).ToList();
+
+			IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, rdoIntegrationPoint.SourceConfiguration);
+			Data.DestinationProvider destination = _caseServiceContext.RsapiService.DestinationProviderLibrary.Read(rdoIntegrationPoint.DestinationProvider.Value);
+
+			IDataSyncronizer dataSyncronizer = GetDestomationProvider(destination, rdoIntegrationPoint.DestinationConfiguration);
+			var objectBuilder = new SynchronizerObjectBuilder(sourceFields);
+			IEnumerable<IDictionary<FieldEntry, object>> data = new DataReaderToEnumerableService(objectBuilder).GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
+
+			dataSyncronizer.SyncData(data, fieldMap, rdoIntegrationPoint.DestinationConfiguration);
+		}
+
+		private IDataSourceProvider GetSourceProvider(SourceProvider sourceProviderRdo)
+		{
+			Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
+			Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
+			IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(applicationGuid, providerGuid);
+			return sourceProvider;
+		}
+
+
+		private IDataSyncronizer GetDestomationProvider(DestinationProvider destinationProviderRdo, string configuration)
+		{
+			Guid applicationGuid = new Guid(destinationProviderRdo.ApplicationIdentifier);
+			Guid providerGuid = new Guid(destinationProviderRdo.Identifier);
+			IDataSyncronizer sourceProvider = _dataSyncronizerFactory.GetSyncronizer(providerGuid, configuration);
+			return sourceProvider;
+		}
+
 	}
 }

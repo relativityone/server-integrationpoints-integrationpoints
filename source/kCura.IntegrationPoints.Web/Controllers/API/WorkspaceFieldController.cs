@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -22,7 +23,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[Route("{workspaceID}/api/WorkspaceField/")]
 		public HttpResponseMessage Post([FromBody] SyncronizerSettings settings)
 		{
-			var syncronizer = _factory.GetSyncronizer();
+			var syncronizer = _factory.GetSyncronizer(Guid.Empty,settings.Settings);
 			var fields = syncronizer.GetFields(settings.Settings);
 			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
 		}

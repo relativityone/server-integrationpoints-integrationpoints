@@ -44,7 +44,18 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <returns>A Data source provider to retrieve data and pass along to the source.</returns>
 		public Provider.IDataSourceProvider GetProvider(Guid identifer)
 		{
-			return new ProviderWrapper(ProviderBuilder.Current.GetFactory().CreateProvider(identifer));
+			return new ProviderWrapper(PluginBuilder.Current.GetProviderFactory().CreateProvider(identifer));
+		}
+
+		/// <summary>
+		/// Gets the synchronizer in the app domain for the specific identifier
+		/// </summary>
+		/// <param name="identifier">The identifier that represents the synchronizer to create.</param>
+		/// <param name="options">The options for that synchronizer that will be passed on initialization.</param>
+		/// <returns>A synchronizer that will bring data into a system.</returns>
+		public Syncronizer.IDataSyncronizer GetSyncronizer(Guid identifier, string options)
+		{
+			return new SynchronizerWrapper(PluginBuilder.Current.GetSynchronizerFactory().CreateSyncronizer(identifier, options));
 		}
 
 	}
