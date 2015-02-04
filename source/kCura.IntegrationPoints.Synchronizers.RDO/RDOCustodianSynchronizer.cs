@@ -63,10 +63,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				{
 					continue;
 				}
-				if (IsField(artifact, Guid.Parse(CustodianFieldGuids.FirstName)) || IsField(artifact, Guid.Parse(CustodianFieldGuids.LastName)))
-				{
-					fieldEntry.IsRequired = true;
-				}
+				var isRequired = (IsField(artifact, Guid.Parse(CustodianFieldGuids.FirstName)) ||
+													IsField(artifact, Guid.Parse(CustodianFieldGuids.LastName)));
+
+				fieldEntry.IsRequired = isRequired;
 				yield return fieldEntry;
 			}
 		}
