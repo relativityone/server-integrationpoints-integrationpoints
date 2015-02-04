@@ -24,12 +24,17 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			if (base.PageMode == EventHandler.Helper.PageMode.View)
 			{
 				this.RegisterLinkedCss(applicationPath + "/Content/jquery.jqGrid/ui.jqgrid.css");
+				this.RegisterLinkedCss(applicationPath + "/Content/integration-points-fonts.css");
 				this.RegisterLinkedCss(applicationPath + "/Content/legal-hold-fonts.css");
+				
+				this.RegisterLinkedCss(applicationPath + "/Content/Site.css");
 				this.RegisterLinkedCss(applicationPath + "/Content/controls.grid.css");
 				this.RegisterLinkedCss(applicationPath + "/Content/controls-grid-pager.css");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/date.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/q.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/core/messaging.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/loading-modal.js");
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/dragon/dragon-dialogs.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/core/data.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/core/utils.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/integration-point/time-utils.js");

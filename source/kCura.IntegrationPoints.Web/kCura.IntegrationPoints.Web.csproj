@@ -296,6 +296,7 @@
     <Content Include="Content\buttermilk-variables.scss" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\core\messaging.js" />
+    <Content Include="Scripts\dragon\dragon-dialogs.js" />
     <Content Include="Scripts\frame-messaging.js" />
     <Content Include="Scripts\HelpUtil.js" />
     <Content Include="Scripts\iframeResizer.min.js" />
