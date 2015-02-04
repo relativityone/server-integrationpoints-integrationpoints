@@ -15,13 +15,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Syncronizer.IDataSyncronizer
 	{
-		private RelativityFieldQuery _fieldQuery;
-		private RelativityRdoQuery _rdoQuery;
+		protected readonly RelativityFieldQuery FieldQuery;
+		protected readonly RelativityRdoQuery RdoQuery;
 
 		public RdoSynchronizer(RelativityFieldQuery fieldQuery, RelativityRdoQuery rdoQuery)
 		{
-			_fieldQuery = fieldQuery;
-			_rdoQuery = rdoQuery;
+			FieldQuery = fieldQuery;
+			RdoQuery = rdoQuery;
 		}
 
 		private List<string> IgnoredList
@@ -42,20 +42,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
+
+
 		public virtual IEnumerable<FieldEntry> GetFields(string options)
 		{
-			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
-			var fields = _fieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
-			var rdo = _rdoQuery.GetObjectType(settings.ArtifactTypeId);
-			var isCustodian = !rdo.Name.Equals("Custodian");
+			ImportSettings settings = GetSettings(options);
+			var fields = FieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
+			return ParseFields(fields);
+		}
+
+		protected IEnumerable<FieldEntry> ParseFields(List<Relativity.Client.Artifact> fields)
+		{
 			foreach (var result in fields)
 			{
 				if (!IgnoredList.Contains(result.Name))
 				{
 					var idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
-					bool isIdentifier = isCustodian && result.Fields.FirstOrDefault(t => (t.Value ?? string.Empty).ToString().Equals("UniqueID")) != null;
-
-					if (idField != null && !isCustodian)
+					bool isIdentifier = false;
+					if (idField != null)
 					{
 						isIdentifier = Convert.ToInt32(idField.Value) == 1;
 					}
@@ -63,6 +67,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				}
 			}
 		}
+
 
 		private IImportService _importService;
 		private bool _isJobComplete = false;
@@ -127,7 +132,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			ProcessExceptions(settings);
 		}
 
-		private ImportSettings GetSettings(string options)
+		protected ImportSettings GetSettings(string options)
 		{
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
 
@@ -193,5 +198,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			_rowErrors.Add(new KeyValuePair<string, string>(documentIdentifier, errorMessage));
 		}
+
+
+
 	}
 }
