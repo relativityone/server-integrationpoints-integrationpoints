@@ -185,11 +185,11 @@
     <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\FieldMapController.cs" />
+    <Compile Include="Controllers\API\LdapController.cs" />
     <Compile Include="Controllers\API\RdoMetaController.cs" />
     <Compile Include="Controllers\API\SourceFieldsController.cs" />
     <Compile Include="Controllers\API\SourceTypeController.cs" />
     <Compile Include="Controllers\API\RdoFilterController.cs" />
-    <Compile Include="Controllers\API\TestController.cs" />
     <Compile Include="Controllers\API\WorkspaceFieldController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIController.cs" />

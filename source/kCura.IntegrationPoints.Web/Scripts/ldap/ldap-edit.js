@@ -17,26 +17,60 @@ ko.validation.insertValidationMessage = function (element) {
 
 	return iconSpan;
 };
+var ldapHelper = (function (data) {
+	var _checkLdap = function (localModel) {
+		return IP.data.ajax({
+			url: IP.utils.generateWebURL('IntegrationPoints', 'CheckLdap'),
+			data: JSON.stringify(localModel),
+			type: 'Post'
+		});
+	};
 
-(function () {
+	var _encrypt = function (model) {
+		return IP.data.ajax({
+			data: JSON.stringify(model),
+			url: IP.utils.generateWebAPIURL('ldap', 'e'),
+			type: 'post'
+		});
+
+	};
+
+	return {
+		checkLdap: _checkLdap,
+		encryptSettings: _encrypt
+
+	}
+
+})(IP.data);
+
+
+(function (helper) {
 	var message = IP.frameMessaging();
 	var pageModel = {};
+
+	function checkLdap(localModel) {
+		return helper.checkLdap(localModel).fail(function (e) {
+			self.publish('saveError', 'Unable to connect to source using the specified settings.');
+		});
+	}
+
+	function encrypt(localModel) {
+		return helper.encryptSettings(localModel);	
+	}
+
 	message.subscribe('submit', function () {
 		var localModel = ko.toJS(pageModel);
 		this.publish("saveState", localModel); //save the model incase of error
 		var self = this;
 		if (pageModel.errors().length === 0) {
-			IP.data.ajax({
-				url: IP.utils.generateWebURL('IntegrationPoints', 'CheckLdap'),
-				data: JSON.stringify(localModel),
-				type: 'Post'
-			}).then(function () {
-				self.publish('saveComplete', ko.toJS(pageModel));
-			},
-			function (e) {
-				self.publish('saveError', 'Unable to connect to source using the specified settings.');
+			var p1 = checkLdap(localModel);
+			var p2 = encrypt(localModel);
+			IP.data.deferred().all(p1, p2).then(function () {
+				p2.then(function (message) {
+					self.publish('saveComplete', message);
+				});
 			});
-
+			
 		} else {
 			pageModel.errors.showAllMessages();
 		}
@@ -45,7 +79,7 @@ ko.validation.insertValidationMessage = function (element) {
 		var state = $.extend({}, {}, model);
 		this.connectionPath = ko.observable(state.connectionPath).extend({
 			required: true
-		}); 
+		});
 		this.filter = ko.observable(state.filter);
 		this.auth = ko.observableArray([
 			{ name: 'Anonymous', id: 16 },
@@ -55,29 +89,36 @@ ko.validation.insertValidationMessage = function (element) {
 		]);
 		this.userName = ko.observable(state.userName);
 		this.password = ko.observable(state.password);
-		
+
 		this.connectionAuthenticationType = ko.observable(state.connectionAuthenticationType).extend({
 			required: true
 		});
-		
+
 		this.importNested = ko.observable(state.importNested || 'false');
 
 		this.errors = ko.validation.group(this, { deep: true });
 	};
 
 	message.subscribe("back", function () {
-		this.publish("saveState", ko.toJS(pageModel));
+		this.publish("saveState", JSON.stringify(ko.toJS(pageModel)));
 	});
 
 	message.subscribe('load', function (model) {
-		if (typeof (model) === "string") {
-			try {
-				model = JSON.parse(model);
-			} catch (e) {
-				model = {};
-			}
+		if (typeof model === "object") {
+			model = JSON.stringify(model);
 		}
-		pageModel = new viewModel(model);
-		ko.applyBindings(pageModel, document.getElementById('ldapConfiguration'));
+		IP.data.ajax({ data: JSON.stringify(model), url: IP.utils.generateWebAPIURL('ldap', 'd'), type: 'post' }).then(function (result) {
+			var jsonResult = result;
+			if (typeof (jsonResult) === "string") {
+				try {
+					jsonResult = JSON.parse(jsonResult);
+				} catch (e) {
+					jsonResult = {};
+				}
+			}
+			pageModel = new viewModel(jsonResult);
+			ko.applyBindings(pageModel, document.getElementById('ldapConfiguration'));
+		});
+
 	});
-})();
+})(ldapHelper);

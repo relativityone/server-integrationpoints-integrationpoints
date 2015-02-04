@@ -68,6 +68,8 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AuthenticationTypesEnum.cs" />
+    <Compile Include="DefaultEncryptionManager.cs" />
+    <Compile Include="IEncryptionManager.cs" />
     <Compile Include="LDAPDataReader.cs" />
     <Compile Include="LDAPServiceDataReader.cs" />
     <Compile Include="LDAPDataFormatterForBatchableIDs.cs" />
