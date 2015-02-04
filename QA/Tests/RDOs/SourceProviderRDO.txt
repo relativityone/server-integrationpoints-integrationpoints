@@ -4,7 +4,7 @@
 | Metadata			| Authors	| William Sehy
 | Force Tags		| rdo	| team.method
 | Suite Setup		| Go to the Fields tab and use the Automated RDO Checking view then filter to the following object type	| Source Provider
-#| Test Setup 		| 
+#| Test Setup 		| NONE
 | Test Teardown		| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Close All Browsers
 
