@@ -10,28 +10,28 @@ namespace kCura.IntegrationPoints.Data
 	[DynamicObject(ObjectTypes.IntegrationPoint, ObjectTypes.Workspace, "", ObjectTypeGuids.IntegrationPoint)]
 	public partial class IntegrationPoint : BaseRdo
 	{
-		[DynamicField(IntegrationPointFields.NextScheduledRuntime, IntegrationPointFieldGuids.NextScheduledRuntime, FieldTypes.Date)]
-		public DateTime? NextScheduledRuntime
+		[DynamicField(IntegrationPointFields.NextScheduledRuntimeUTC, IntegrationPointFieldGuids.NextScheduledRuntimeUTC, FieldTypes.Date)]
+		public DateTime? NextScheduledRuntimeUTC
 		{
 			get
 			{
-				return GetField<DateTime?>(new System.Guid(IntegrationPointFieldGuids.NextScheduledRuntime));
+				return GetField<DateTime?>(new System.Guid(IntegrationPointFieldGuids.NextScheduledRuntimeUTC));
 			}
 			set
 			{
-				SetField<DateTime?>(new System.Guid(IntegrationPointFieldGuids.NextScheduledRuntime), value);
+				SetField<DateTime?>(new System.Guid(IntegrationPointFieldGuids.NextScheduledRuntimeUTC), value);
 			}
 		}
-		[DynamicField(IntegrationPointFields.LastRuntime, IntegrationPointFieldGuids.LastRuntime, FieldTypes.Date)]
-		public DateTime? LastRuntime
+		[DynamicField(IntegrationPointFields.LastRuntimeUTC, IntegrationPointFieldGuids.LastRuntimeUTC, FieldTypes.Date)]
+		public DateTime? LastRuntimeUTC
 		{
 			get
 			{
-				return GetField<DateTime?>(new System.Guid(IntegrationPointFieldGuids.LastRuntime));
+				return GetField<DateTime?>(new System.Guid(IntegrationPointFieldGuids.LastRuntimeUTC));
 			}
 			set
 			{
-				SetField<DateTime?>(new System.Guid(IntegrationPointFieldGuids.LastRuntime), value);
+				SetField<DateTime?>(new System.Guid(IntegrationPointFieldGuids.LastRuntimeUTC), value);
 			}
 		}
 		[DynamicField(IntegrationPointFields.FieldMappings, IntegrationPointFieldGuids.FieldMappings, FieldTypes.LongText)]
