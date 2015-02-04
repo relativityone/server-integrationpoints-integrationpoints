@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			SizeLimit = 0;// - dotNet default
 			PropertyNamesOnly = false;// - dotNet default
 			ProviderReferralChasing = ReferralChasingOption.External;
-			ProviderExtendedDN = ExtendedDNEnum.Standard;
+			ProviderExtendedDN = ExtendedDNEnum.None;
 			MultiValueDelimiter = char.Parse(MULTIVALUEDELIMITER_DEFAULT);
 		}
 
