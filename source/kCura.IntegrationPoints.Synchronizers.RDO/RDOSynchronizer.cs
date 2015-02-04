@@ -145,7 +145,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				}
 				return _webAPIPath;
 			}
-			private set { _webAPIPath = value; }
+			protected set { _webAPIPath = value; }
 		}
 
 		protected ImportSettings GetSettings(string options)

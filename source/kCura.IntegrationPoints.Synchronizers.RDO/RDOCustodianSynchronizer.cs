@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 	public class RDOCustodianSynchronizer : RdoSynchronizer
 	{
 
-		private static class CustodianFieldGuids
+		public static class CustodianFieldGuids
 		{
 			public const string FullName = @"57928ef5-f29d-4137-a215-3a9abf3e3f82";
 			public const string BCCPeople = @"3f10b4e5-f7a6-4774-a102-660f36110310";
@@ -53,6 +53,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			foreach (var fieldEntry in fields)
 			{
+				if (!fieldLookup.ContainsKey(fieldEntry.FieldIdentifier))
+				{
+					yield return fieldEntry;
+				}
 				var artifact = fieldLookup[fieldEntry.FieldIdentifier];
 				fieldEntry.IsIdentifier = IsField(artifact, Guid.Parse(CustodianFieldGuids.UniqueID));
 				if (IsField(artifact, Guid.Parse(CustodianFieldGuids.FullName)))
