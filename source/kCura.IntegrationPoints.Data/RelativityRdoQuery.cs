@@ -73,6 +73,12 @@ namespace kCura.IntegrationPoints.Data
 			return result.Results.Select(x => x.Artifact).ToList();
 		}
 
+		public virtual ObjectType GetObjectType(int typeID)
+		{
+			return GetAllRdo(new List<int>{typeID}).First();
+		}
+
+
 		public virtual ObjectType GetType(int typeId)
 		{
 			return this.GetAllRdo(new List<int> {typeId}).FirstOrDefault();

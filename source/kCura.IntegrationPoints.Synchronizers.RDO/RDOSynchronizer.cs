@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Threading;
 using kCura.Apps.Common.Config;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -45,24 +46,22 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
 			var fields = _fieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
-			var allFieldsForRdo = new List<FieldEntry>();
-			var rdo = _rdoQuery.GetAllRdo(new List<int> { settings.ArtifactTypeId });
-			var custodian = rdo.FirstOrDefault(x => x.Name.Equals("Custodian")) != null;
+			var rdo = _rdoQuery.GetObjectType(settings.ArtifactTypeId);
+			var isCustodian = !rdo.Name.Equals("Custodian");
 			foreach (var result in fields)
 			{
 				if (!IgnoredList.Contains(result.Name))
 				{
 					var idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
-					bool isIdentifier = custodian && result.Fields.FirstOrDefault(t => (t.Value ?? "").ToString().Equals("UniqueID")) != null;
+					bool isIdentifier = isCustodian && result.Fields.FirstOrDefault(t => (t.Value ?? string.Empty).ToString().Equals("UniqueID")) != null;
 
-					if (idField != null && custodian == false)
+					if (idField != null && !isCustodian)
 					{
 						isIdentifier = Convert.ToInt32(idField.Value) == 1;
 					}
-					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier });
+					yield return new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier };
 				}
 			}
-			return allFieldsForRdo;
 		}
 
 		private IImportService _importService;
@@ -128,19 +127,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			ProcessExceptions(settings);
 		}
 
-		private static IDictionary _underlyingSetting;
-		protected static IDictionary ConfigSettings
-		{
-			get { return _underlyingSetting ?? (_underlyingSetting = Manager.Instance.GetConfig("kCura.EDDS.DBMT")); }
-		}
-
 		private ImportSettings GetSettings(string options)
 		{
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
 
 			if (string.IsNullOrEmpty(settings.WebServiceURL))
 			{
-				settings.WebServiceURL = ConfigHelper.GetValue<string>(ConfigSettings["WebAPIPath"], null);
+				settings.WebServiceURL = kCura.Apps.Common.Config.Sections.EddsDbmtConfig.WebAPIPath;
 			}
 			return settings;
 		}

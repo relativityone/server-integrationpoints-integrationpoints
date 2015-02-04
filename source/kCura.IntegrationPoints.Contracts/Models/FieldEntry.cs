@@ -32,5 +32,9 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		
 		public bool IsIdentifier { get; set; }
 
+		/// <summary>
+		/// Determines if the field is required to be mapped
+		/// </summary>
+		public bool IsRequired { get; set; }
 	}
 }
