@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					{
 						isIdentifier = Convert.ToInt32(idField.Value) == 1;
 					}
-					yield return new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier };
+					yield return new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier, IsRequired = false };
 				}
 			}
 		}
