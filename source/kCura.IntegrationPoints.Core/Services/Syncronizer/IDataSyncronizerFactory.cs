@@ -30,8 +30,8 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 			var rdoObjectType = _query.GetObjectType(json.ArtifactTypeId);
 			switch (rdoObjectType.Name.ToLower())
 			{
-//				case "custodian":
-//					return _container.Kernel.Resolve<kCura.IntegrationPoints.Synchronizers.RDO.RDOCustodianSynchronizer>();
+				case "custodian":
+					return _container.Kernel.Resolve<kCura.IntegrationPoints.Synchronizers.RDO.RDOCustodianSynchronizer>();
 				default:
 					return _container.Kernel.Resolve<kCura.IntegrationPoints.Synchronizers.RDO.RdoSynchronizer>();
 			}

@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public bool IsField(Relativity.Client.Artifact artifact, Guid fieldGuid)
 		{
-			return artifact.Fields.Any(x => x.ArtifactGuids.Contains(fieldGuid));
+			return artifact.ArtifactGuids.Contains(fieldGuid);
 		}
 
 	}
