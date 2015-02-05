@@ -111,15 +111,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		protected override Dictionary<string, object> GenerateImportRow(IDictionary<FieldEntry, object> row, IEnumerable<FieldMap> fieldMap, ImportSettings settings)
 		{
-
-			Dictionary<string, int> importFieldMap = fieldMap.Where(x => x.FieldMapType != FieldMapTypeEnum.Parent)
-				.ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
-
 			var importRow = base.GenerateImportRow(row, fieldMap, settings);
 			if (!importRow.ContainsKey(LDAPMapFullNameFieldName))
 			{
-				string firstName = FirstNameSourceFieldId;
-				string lastName = LastNameSourceFieldId;
+				string firstName = (string)importRow[FirstNameSourceFieldId];
+				string lastName = (string)importRow[LastNameSourceFieldId];
 				string fullName = string.Empty;
 				if (!string.IsNullOrWhiteSpace(lastName))
 				{
