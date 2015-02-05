@@ -11,7 +11,7 @@ namespace JsonLoader
 	{
 		public void Execute()
 		{
-			ProviderBuilder.Current.SetFactory(new DIProviderFactory());
+			PluginBuilder.Current.SetProviderFactory(new DIProviderFactory());
 		}
 	}
 }

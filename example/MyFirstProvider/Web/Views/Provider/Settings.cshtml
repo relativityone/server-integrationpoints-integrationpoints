@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "Settings";
+}
+
+<link href="~/Content/buttermilk.css" rel="stylesheet" />
+<link   href="~/Content/Site.css" rel="stylesheet" />
+<div class="card" id="jsonConfiguration">
+	
+	<label class="section label">Json Loader</label>
+	<div class="field-row">
+		<div class="field-label required">
+			Field Location:
+		</div>
+		<div class="field-value ">
+			<input type="text" name="field" data-bind="value: fieldLocation" class="inputBox" placeholder="Please enter a field location"/>
+			
+		</div>
+	</div>
+	<div class="field-row">
+		<div class="field-label required">
+			Data Location:
+		</div>
+		<div class="field-value ">
+			<input type="text" name="location" data-bind="value: dataLocation"class="inputBox" placeholder="Please enter a data location"/>
+		</div>
+	</div>
+	
+</div>
+
+<script src="~/Scripts/jquery-1.8.2.js"></script>
+<script src="~/Scripts/jquery-postMessage.js"></script>
+<script src="~/Scripts/frame-messaging.js"></script>
+<script src="~/Scripts/first-provider.js"></script>
