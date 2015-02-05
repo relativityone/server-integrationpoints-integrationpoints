@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			console.ButtonList = new List<ConsoleButton>();
 			console.ButtonList.Add(new ConsoleButton
 			{
-				DisplayText = "Import Data Now",
+				DisplayText = "Import Now",
 				RaisesPostBack = false,
 				Enabled = true,
 				OnClickEvent = "IP.importNow(" + this.ActiveArtifact.ArtifactID +","+this.Application.ArtifactID+")"
