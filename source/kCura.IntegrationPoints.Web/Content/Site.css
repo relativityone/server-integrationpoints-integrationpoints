@@ -149,23 +149,24 @@ ul li .day-select {
 	font-weight: 400;
 	padding: 4px 4px 0;
 }
+
 .page-message.page-error > div, .page-message.page-info> div{
 	display: inline-block;
 }
 .page-info .icon-step-complete {
 	display: inline-block;
 		vertical-align: middle;
-		padding: 4px 4px 0;
+		padding: 1px 4px 0;
 		float: left;
 }
 
 .page-message.page-info
 {
-	
+	vertical-align: middle;
 	border-radius: 2px;
 	color: #ffffff;
 	height: 24px;
-	margin-top: 5px;
+	margin-bottom: 5px;
 	position: relative;
 	z-index: 1;
 	font-size: 12px;
@@ -178,6 +179,7 @@ ul li .day-select {
 		background-color: #467e11;
 		border: 1px solid #467e11;
 	}
+	
 .field-validation-error {
 	background-color: #ac3243;
 	border: 1px solid #ac3243;
