@@ -20,11 +20,37 @@
 
 *** Test Cases ***
 
+| The Integration Point Read page defaults to the correct Layout
+| | [Documentation]	| Verify that the default Layout on an Integration Point Read page is "Integration Point Details". 
+| | ...				| 
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. View Integration Point | ${IP1}
+| | ... |
+| | ... | Expected Result:
+| | ... | Verify that the default Layout is "Integration Point Details"
+
+
+| The Integration Point Read page has the correct Layouts
+| | [Documentation]	| Verify that the Integration Point Read page has only the "Integration Point Details" Layout. 
+| | ...				| 
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. View Integration Point | ${IP1}
+| | ... | 2. Click the Layout dropdown
+| | ... |
+| | ... | Expected Result:
+| | ... | Verify that the only Layout is "Integration Point Details"
+
+
 | The correct Buttons appear in the Header
-| | [Documentation]	| Verify that the correct buttons appear at the top of the page
+| | [Documentation]	| Verify that the correct buttons appear at the top of the page.
 | | ...				| [id] 117f284f-a89f-11e4-ab56-b8ca3a83048f
 | | [Tags]			| manual
 | | Run the following manual steps:
+| | ... | Steps: 
 | | ... | 1. View Integration Point | ${IP1}
 | | ... |
 | | ... | Expected Result:
