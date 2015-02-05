@@ -8,7 +8,7 @@ IP.timeUtil = (function () {
 	}
 
 	function utcToLocal(dateText, dateFormat) {
-		var inDateMod = new Date(dateText);
+		var inDateMod = new Date(0,0,0,dateText[0],dateText[1]);
 		if (!isValidDate(inDateMod)) {
 			return dateText;
 		}
@@ -55,8 +55,8 @@ IP.timeUtil = (function () {
 	};
 
 	return {
-		utcToLocal: _noOp,
-		timeLocalToUtc: _noOp,
+		utcToLocal: utcToLocal,
+		timeLocalToUtc: timeLocalToUtc,
 		utcDateToLocal: _noOp
 	};
 

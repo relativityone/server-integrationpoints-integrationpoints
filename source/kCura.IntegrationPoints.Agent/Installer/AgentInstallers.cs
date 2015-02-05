@@ -16,8 +16,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
 			container.Kernel.AddFacility<TypedFactoryFacility>();
-			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod((k) =>
-					k.Resolve<RsapiClientFactory>().CreateClientForWorkspace(-1, ExecutionIdentity.System)).LifestyleTransient());
+
 			container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifeStyle.Transient);
 			container.Register(Component.For<SyncWorker>().ImplementedBy<SyncWorker>().LifeStyle.Transient);
 			container.Register(Component.For<RdoSynchronizer>().ImplementedBy<RdoSynchronizer>().LifeStyle.Transient);

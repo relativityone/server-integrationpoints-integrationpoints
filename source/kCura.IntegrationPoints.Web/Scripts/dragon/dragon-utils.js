@@ -59,6 +59,7 @@
 			if (localTime) {
 				var temp = new Date();
 				var tempDateTime = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate(), localTime.getHours(), localTime.getMinutes(), localTime.getSeconds());
+				
 				return tempDateTime.getUTCHours() + ":" + tempDateTime.getUTCMinutes();
 			}
 			return '';

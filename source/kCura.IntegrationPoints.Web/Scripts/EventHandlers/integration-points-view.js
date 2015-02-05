@@ -4,7 +4,7 @@
 		
 		window.Dragon.dialogs.showConfirm({
 			message: 'Are you sure you want to import data now?',
-			title: 'Import Data Now',
+			title: 'Import Now',
 			showCancel: true,
 			width: 450,
 			success: function (calls) {
