@@ -64,7 +64,7 @@
 
 | Make the Object Type List a Suite Variable
 | | [Documentation]	| Creates and populates the Object Type list with all Non-System Object Types in the current Workspace, then makes it a Suite variable.
-#| | @{ObjectTypeList}=	| Get a List of All Non-System Object Types in the Workspace
+| | @{ObjectTypeList}=	| Get a List of All Non-System Object Types in the Workspace
 #| | @{ObjectTypeList}=	| Create List	| 
 #| | ... | Custodian
 | | Set Suite Variable	| ${ObjectTypes}	| ${ObjectTypeList}
