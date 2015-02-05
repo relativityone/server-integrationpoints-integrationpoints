@@ -1,0 +1,61 @@
+
+*** Settings ***
+| Documentation 	| Verify that the Integration Points tab's List View is correct.
+| Metadata		    | Authors	| William Sehy
+| Force Tags		| in-progress	| team.method	| manual
+#| Suite Setup		| Log	| This is the suite setup keyword.
+#| Test Setup		| Open and Log in to Method
+#| Test Teardown 	| Close All Browsers
+#| Suite Teardown	| Log	| This is the suite teardown keyword.
+
+
+*** Variables ***
+
+| ${WorkspaceName}		| Relativity Legal Hold
+
+
+*** Test Cases ***
+
+| The Default View on the Integration Points List View
+| | [Documentation] | Verifies that the default View on the Integration Points list view page.
+| | [Tags]			| manual	| automateable
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the default view is "All Integration Points"
+
+
+| The Only View on the Integration Points List View is All Integration Points
+| | [Documentation] | Verifies that the only View on the Integration Points list view page is "All Integration Points".
+| | [Tags]			| manual	| automateable?
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Click the View dropdown
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the ONLY view is "All Integration Points"
+
+
+| The Columns on the "All Integration Points" View are correct
+| | [Documentation] | Verifies that the "All Integration Points" View on the Integration Points list view page has the correct columns.
+| | [Tags]			| manual	| automateable?
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Integration Points
+| | ... | 2. Ensure that the "All Integration Points" View is selected
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the table has the following columns in order	| 
+| | ... | - Name				| 
+| | ... | - Source Provider		| 
+| | ... | - Enable Scheduler	|
+| | ... | - Last Runtime (UTC)	| 
+| | ... | - Next Scheduled Runtime (UTC)
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py

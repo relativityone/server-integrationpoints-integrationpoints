@@ -95,7 +95,18 @@
 | | Verify that the following field is required | Scheduled Time:
 
 
+| The Scheduled Time field's Required Field Indicator extends to the (local) label
+| | [Documentation]	| Verify that the Scheduled Time field's Required Field Indicator extends down to below the (local) label.
+| | [Tags]			| manual	| visual
+| | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
+
+| | Run the following manual steps:
+| | ... | Expected Result:
+| | ... | Verify that the Required Field Indicator looks tall enough for both the "Scheduled Field:" label and the "(local)" label
+
+
 *** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
