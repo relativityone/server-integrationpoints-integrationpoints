@@ -140,7 +140,9 @@
 | | [Documentation]	| Verifies that the fields in the Import Scheduling Section are of the correct type when Frequency is set to Daily,
 | | ...				| since changes to the Frequency field can affect some fields' types.
 | | ...				| [id] 0fdd381f-a89f-11e4-b977-b8ca3a83048f
-| | [Tags]			| manual	| visual
+| | [Tags]			| manual	| partially_automated	| visual
+| | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Daily
+
 | | Run the following manual steps:
 | | ... | Expected Results:
 | | ... | Enable Scheduler	| Yes/No Radio Buttons	| 
@@ -154,7 +156,9 @@
 | | [Documentation]	| Verifies that the fields in the Import Scheduling Section are of the correct type when Frequency is set to Weekly,
 | | ...				| since changes to the Frequency field can affect some fields' types.
 | | ...				| [id] 0fdd3820-a89f-11e4-a2df-b8ca3a83048f
-| | [Tags]			| manual	| visual
+| | [Tags]			| manual	| partially_automated	| visual
+| | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Weekly
+
 | | Run the following manual steps:
 | | ... | Expected Results:
 | | ... | Enable Scheduler	| Yes/No Radio Buttons	| 
@@ -170,7 +174,9 @@
 | | [Documentation]	| Verifies that the fields in the Import Scheduling Section are of the correct type when Frequency is set to Monthly,
 | | ...				| since changes to the Frequency field can affect some fields' types.
 | | ...				| [id] 0fdd3821-a89f-11e4-8612-b8ca3a83048f
-| | [Tags]			| manual	| visual
+| | [Tags]			| manual	| partially_automated	| visual
+| | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Monthly
+
 | | Run the following manual steps:
 | | ... | Expected Results:
 | | ... | Verify that the Following fields are of the following types:	| 
@@ -181,6 +187,16 @@
 | | ... | Start Date		| Date					| 
 | | ... | End Date			| Date					| 
 | | ... | Scheduled Time	| Text
+
+
+| The Scheduled Time field has the (local) label
+| | [Documentation]	| Verify that the Scheduled Time field has the (local) label on it.
+| | [Tags]			| manual	| partially_automated	| font
+| | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
+
+| | Run the following manual steps:
+| | ... | Expected Result:
+| | ... | Verify that below the "Scheduled Field:" label is an italicized label in a smaller font with the text "(local)"
 
 
 *** Keywords ***

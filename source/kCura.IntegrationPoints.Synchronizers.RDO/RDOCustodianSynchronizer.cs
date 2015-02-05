@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.EDDS.WebAPI.UserManagerBase;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
+using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class RDOCustodianSynchronizer : RdoSynchronizer
 	{
+
+		private const string LDAPMapFullNameFieldName = "CustomFullName";
 
 		public static class CustodianFieldGuids
 		{
@@ -45,9 +45,25 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 		}
 
+		public string FirstNameSourceFieldId { get; set; }
+		public string LastNameSourceFieldId { get; set; }
+
+
+		private int _artifactTypeId = 0;
+		private List<Artifact> _allRdoFields;
+		private List<Artifact> GetAllRdoFields(int artifactTypeId)
+		{
+			if (_artifactTypeId != artifactTypeId || _allRdoFields == null)
+			{
+				_allRdoFields = FieldQuery.GetFieldsForRDO(artifactTypeId);
+				_artifactTypeId = artifactTypeId;
+			}
+			return _allRdoFields;
+		}
+
 		public override IEnumerable<FieldEntry> GetFields(string options)
 		{
-			var relativityFields = FieldQuery.GetFieldsForRDO(GetSettings(options).ArtifactTypeId);
+			var relativityFields = GetAllRdoFields(GetSettings(options).ArtifactTypeId);
 			var fields = ParseFields(relativityFields);
 			var fieldLookup = relativityFields.ToDictionary(x => x.ArtifactID.ToString(), x => x);
 
@@ -69,6 +85,59 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				fieldEntry.IsRequired = isRequired;
 				yield return fieldEntry;
 			}
+		}
+
+		protected override Dictionary<string, int> GetSyncDataImportFieldMap(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		{
+			var allRDOFields = GetAllRdoFields(settings.ArtifactTypeId);
+
+			FieldEntry fullNameField = allRDOFields.Where(x => x.ArtifactGuids.Contains(new Guid(CustodianFieldGuids.FullName))).Select(x => new FieldEntry() { DisplayName = x.Name, FieldIdentifier = x.ArtifactID.ToString(), IsIdentifier = false }).FirstOrDefault();
+
+			Dictionary<string, int> importFieldMap = base.GetSyncDataImportFieldMap(fieldMap, settings);
+
+			int fullNameFieldId = int.Parse(fullNameField.FieldIdentifier);
+			if (!importFieldMap.ContainsValue(fullNameFieldId))
+			{
+				importFieldMap.Add(LDAPMapFullNameFieldName, fullNameFieldId);
+			}
+
+			int firstNameFieldId = allRDOFields.Where(x => x.ArtifactGuids.Contains(new Guid(CustodianFieldGuids.FirstName))).Select(x => x.ArtifactID).FirstOrDefault();
+			int lastNameFieldId = allRDOFields.Where(x => x.ArtifactGuids.Contains(new Guid(CustodianFieldGuids.LastName))).Select(x => x.ArtifactID).FirstOrDefault();
+			FirstNameSourceFieldId = fieldMap.Where(x => x.DestinationField.FieldIdentifier == firstNameFieldId.ToString()).Select(x => x.SourceField.FieldIdentifier).First();
+			LastNameSourceFieldId = fieldMap.Where(x => x.DestinationField.FieldIdentifier == lastNameFieldId.ToString()).Select(x => x.SourceField.FieldIdentifier).First();
+
+			return importFieldMap;
+		}
+
+		protected override Dictionary<string, object> GenerateImportRow(IDictionary<FieldEntry, object> row, IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		{
+			var importRow = base.GenerateImportRow(row, fieldMap, settings);
+			if (!importRow.ContainsKey(LDAPMapFullNameFieldName))
+			{
+				string firstName = (string)importRow[FirstNameSourceFieldId];
+				string lastName = (string)importRow[LastNameSourceFieldId];
+				string fullName = string.Empty;
+				if (!string.IsNullOrWhiteSpace(lastName))
+				{
+					fullName = lastName;
+				}
+				if (!string.IsNullOrWhiteSpace(firstName))
+				{
+					if (!string.IsNullOrWhiteSpace(firstName)) fullName += ", ";
+					fullName += firstName;
+				}
+				if (!string.IsNullOrWhiteSpace(fullName))
+				{
+					importRow.Add(LDAPMapFullNameFieldName, fullName);
+				}
+				else
+				{
+					//if no Full Name, do not insert record
+					importRow = null;
+				}
+			}
+
+			return importRow;
 		}
 
 		public bool IsField(Relativity.Client.Artifact artifact, Guid fieldGuid)

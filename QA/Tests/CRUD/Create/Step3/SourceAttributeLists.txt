@@ -174,6 +174,54 @@
 | | ... | Verify that the row color for the selected field is grey
 
 
+| Hovering over a Selected field with no mapped field
+| | [Documentation] | Verify that hovering over a Selected Attribute field with no mapped Workspace field affects the Attribute field correctly.
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. At least three fields are selected on each side
+| | ... | 2. There are two Selected Attribute fields with no mapped Workspace field
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Hover over over both of the Selected Attribute fields with no mapped Workspace field
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the only the field you are hovering over is bolded
+| | ... | 2. Verify that the only the field you are hovering over is italicized
+
+
+| Hovering over a Selected field with a mapped field
+| | [Documentation] | Verify that hovering over a Selected Attribute field with a mapped Workspace field affects the both fields correctly.
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. At least three fields are selected on each side
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Hover over over each of the Selected Attribute fields with mapped Workspaces field
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the only the field you are hovering over and its mapped Workspace field are bolded
+| | ... | 2. Verify that the only the field you are hovering over and its mapped Workspace field are italicized
+
+
+| Hovering over the whitespace below the last Selected Attribute field acts the same as hovering over the last Selected Attribute field
+| | [Documentation] | Verify that hovering over the whitespace below the last Selected Attribute field acts the same as hovering over the last Selected Attribute field.
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. At least three fields are selected on each side
+| | ... | 2. There is one Selected Attribute field with no mapped Workspace field
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Hover over the whitespace below the last Selected Attribute field
+| | ... | 2. Assign a new Workspace field
+| | ... | 3. Hover over the whitespace below the last Selected Attribute field
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the hovering over the whitespace below the last Selected Attribute field acts the same as hovering over the last Selected Attribute field
+
+
 *** Settings ***
 | Library	| Collections
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
