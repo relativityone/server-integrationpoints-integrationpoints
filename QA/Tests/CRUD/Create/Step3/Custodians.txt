@@ -1,0 +1,126 @@
+*** Settings ***
+| Documentation | Verify that specifics of Custodian RDO Integration Point functions correctly
+| Metadata		| Authors	  | Daniel Oliver
+| Force Tags    | in-progress | manual | team.method
+
+
+*** Variables ***
+
+| ${WorkspaceName}	| Relativity Legal Hold
+
+*** Test Cases ***
+
+| First Name is a required field
+| | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed without mapping the First Name Workspace field 
+| | ... | [id] 25a2cdde-ad46-11e4-afd6-90b11c6c5ae4
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 of RIP using Custodian Destination RDO
+| | ... | 2. Map the required fields excluding First Name
+| | ... | 3. Click Save
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the following message is displayed: "The First Name and Last Name fields must be mapped."
+
+| Last Name is a required field
+| | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed without mapping the Last Name Workspace field
+| | ... | [id] 2cf817d1-ad46-11e4-b34e-90b11c6c5ae4
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 of RIP using Custodian Destination RDO
+| | ... | 2. Map the required fields excluding Last Name
+| | ... | 3. Click Save
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the following message is displayed: "The First Name and Last Name fields must be mapped."
+
+| Warning message is shown when both First Name and Last Name are not shown
+| | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed when both First Name and Last Name are not mapped
+| | ... | [id] 8ca09e4f-ad46-11e4-b732-90b11c6c5ae4
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 of RIP using Custodian Destination RDO
+| | ... | 2. Map the required fields excluding Last Name and First Name
+| | ... | 3. Click Save
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the following message is displayed: "The First Name and Last Name fields must be mapped."
+
+| A Custodian RIP can be saved after fixing the missing name error
+| | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed when both First Name and Last Name are not mapped
+| | ... | [id] 82b0886e-ad4a-11e4-8cf2-90b11c6c5ae4
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 of RIP using Custodian Destination RDO
+| | ... | 2. Map the required fields excluding Last Name and First Name
+| | ... | 3. Click Save
+| | ... | 4. Map the Last Name and First Name fields
+| | ... | 5. Click Save
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the RIP is saved
+
+| Custodians without a First Name are not imported
+| | [Documentation] | Verify that Custodians that do not have their first name populated in LDAP are not imported into RLH.
+| | ... | [id] 901a5bc0-ad46-11e4-9a02-90b11c6c5ae4
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. A Person in LDAP has a blank first name
+| | ... | 2. A RIP exists that includes the Person with the blank first name
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Import the RIP
+| | ... | 2. Go to the Custodian tab
+| | ... | 3. Filter by the Person's Last name
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the no Custodian was created for the Person with the blank first name
+
+| Custodians without a Last Name are not imported
+| | [Documentation] | Verify that Custodians that do not have their last name populated are not imported into RLH.
+| | ... | [id] 93c625b0-ad46-11e4-993c-90b11c6c5ae4
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. A Person in LDAP has a blank last name
+| | ... | 2. A RIP exists that includes the Person with the blank last name
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Import the RIP
+| | ... | 2. Go to the Custodian tab
+| | ... | 3. Filter by the Person's First name
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the no Custodian was created for the Person with the blank last name
+
+| Custodians without both a First Name and Last Name are not imported
+| | [Documentation] | Verify that Custodians that do not have both a First Name and Last Name are not imported into RLH.
+| | ... | [id] 98e1d34f-ad46-11e4-8e0c-90b11c6c5ae4
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. A Person in LDAP has a blank first name and last name
+| | ... | 2. A RIP exists that includes the Person with the blank name
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Import the RIP
+| | ... | 2. Go to the Custodian tab
+| | ... | 3. Filter by the Person's email
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the no Custodian was created for the Person with the blank name
+
+| Custodian full names are generated
+| | [Documentation] | Verify that Custodian full names are populated in RLH
+| | ... | [id] 9cfe1251-ad46-11e4-9a0a-90b11c6c5ae4
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. A RIP exists that includes the First Name and Last Name fields
+| | ... | 2. The RIP does not include Full Name
+| | ... | 3. The RIP should import a new Custodian
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Import the RIP
+| | ... | 2. Go to the Custodian tab
+| | ... | 3. Search for the new Custodian 
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the Custodians Full Name is generated
