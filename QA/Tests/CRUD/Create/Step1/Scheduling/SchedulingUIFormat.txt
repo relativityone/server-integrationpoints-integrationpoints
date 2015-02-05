@@ -196,7 +196,7 @@
 
 | | Run the following manual steps:
 | | ... | Expected Result:
-| | ... | Verify that below the "Scheduled Field:" label is a bold, italicized label with the text "(local)"
+| | ... | Verify that below the "Scheduled Field:" label is an italicized label in a smaller font with the text "(local)"
 
 
 *** Keywords ***
