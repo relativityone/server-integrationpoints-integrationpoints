@@ -22,7 +22,7 @@
 *** Test Cases ***
 
 | The Back button is disabled when you first arrive on Step 1
-| | [Documentation] | [id] 0e83e9ae-a89f-11e4-8e6b-b8ca3a83048f
+| | [Documentation] | Verify that | [id] 0e83e9ae-a89f-11e4-8e6b-b8ca3a83048f
 | | [Tags]			| manual	| automateable
 | | Run the following manual steps:
 | | ... | Steps:
@@ -33,7 +33,7 @@
 
 
 | The Next button is enabled when you first arrive on Step 1
-| | [Documentation] | [id] 0e86f6ee-a89f-11e4-b1c8-b8ca3a83048f
+| | [Documentation] | Verify that The Next button is enabled when you first arrive on Step 1 | [id] 0e86f6ee-a89f-11e4-b1c8-b8ca3a83048f
 | | [Tags]			| manual	| automateable
 | | Run the following manual steps:
 | | ... | Steps:
@@ -44,7 +44,7 @@
 
 
 | The Back button is disabled when you return to Step 1 from Step 2
-| | [Documentation] | [id] 0e86f6ef-a89f-11e4-84d7-b8ca3a83048f
+| | [Documentation] | Verify that The Back button is disabled when you return to Step 1 from Step 2 | [id] 0e86f6ef-a89f-11e4-84d7-b8ca3a83048f
 | | [Tags]			| manual	| automateable
 | | Run the following manual steps:
 | | ... | Steps:
@@ -58,7 +58,7 @@
 
 
 | The Next button is enabled when you return to Step 1 from Step 2
-| | [Documentation] | [id] 0e86f6f0-a89f-11e4-8f83-b8ca3a83048f
+| | [Documentation] | Verify that The Next button is enabled when you return to Step 1 from Step 2 | [id] 0e86f6f0-a89f-11e4-8f83-b8ca3a83048f
 | | [Tags]			| manual	| automateable
 | | Run the following manual steps:
 | | ... | Steps:
@@ -72,7 +72,7 @@
 
 
 | The Back button is enabled when you first arrive on Step 2
-| | [Documentation] | [id] 0e86f6f1-a89f-11e4-ac0e-b8ca3a83048f
+| | [Documentation] | Verify that The Back button is enabled when you first arrive on Step 2 | [id] 0e86f6f1-a89f-11e4-ac0e-b8ca3a83048f
 | | [Tags]			| manual	| automateable
 | | Run the following manual steps:
 | | ... | Steps:
@@ -85,7 +85,7 @@
 
 
 | The Next button is enabled when you first arrive on Step 2
-| | [Documentation] | [id] 0e87450f-a89f-11e4-a580-b8ca3a83048f
+| | [Documentation] | Verify that The Next button is enabled when you first arrive on Step 2 | [id] 0e87450f-a89f-11e4-a580-b8ca3a83048f
 | | [Tags]			| manual	| automateable
 | | Run the following manual steps:
 | | ... | Steps:
@@ -98,7 +98,7 @@
 
 
 | The Back button is enabled when you return to Step 2 from Step 3
-| | [Documentation] | [id] 0e874510-a89f-11e4-ab4f-b8ca3a83048f
+| | [Documentation] | Verify that The Back button is enabled when you return to Step 2 from Step 3 | [id] 0e874510-a89f-11e4-ab4f-b8ca3a83048f
 | | [Tags]			| manual	| automateable
 | | Run the following manual steps:
 | | ... | Steps:
@@ -114,7 +114,7 @@
 
 
 | The Next button is enabled when you return to Step 2 from Step 3
-| | [Documentation] | [id] 0e874511-a89f-11e4-bc19-b8ca3a83048f
+| | [Documentation] | Verify that The Next button is enabled when you return to Step 2 from Step 3 | [id] 0e874511-a89f-11e4-bc19-b8ca3a83048f
 | | [Tags]			| manual	| automateable
 | | Run the following manual steps:
 | | ... | Steps:
@@ -130,7 +130,7 @@
 
 
 | The Back button is enabled when you first arrive on Step 3
-| | [Documentation] | [id] 0e874512-a89f-11e4-95b1-b8ca3a83048f
+| | [Documentation] | Verify that The Back button is enabled when you first arrive on Step 3 | [id] 0e874512-a89f-11e4-95b1-b8ca3a83048f
 | | [Tags]			| manual	| automateable
 | | Run the following manual steps:
 | | ... | Steps:
@@ -145,7 +145,7 @@
 
 
 | The Next (Save) button is enabled when you first arrive on Step 3
-| | [Documentation] | [id] 0e874513-a89f-11e4-95ba-b8ca3a83048f
+| | [Documentation] | Verify that The Next (Save) button is enabled when you first arrive on Step 3 | [id] 0e874513-a89f-11e4-95ba-b8ca3a83048f
 | | [Tags]			| manual	| automateable
 | | Run the following manual steps:
 | | ... | Steps:
