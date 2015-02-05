@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Contracts.Syncronizer;
 using kCura.IntegrationPoints.Data;
@@ -28,6 +27,7 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 		{
 			var json = JsonConvert.DeserializeObject<ImportSettings>(options);
 			var rdoObjectType = _query.GetObjectType(json.ArtifactTypeId);
+			//name is very bad, we should consider switching to guid
 			switch (rdoObjectType.Name.ToLower())
 			{
 				case "custodian":

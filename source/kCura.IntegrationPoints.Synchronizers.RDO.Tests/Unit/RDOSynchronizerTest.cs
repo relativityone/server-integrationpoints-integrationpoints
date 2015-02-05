@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using kCura.Apps.Common.Config;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
@@ -16,6 +18,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 	[TestFixture]
 	public class RdoSynchronizerTest
 	{
+		public static RdoSynchronizer ChangeWebAPIPath(RdoSynchronizer synchronizer)
+		{
+			var prop = synchronizer.GetType().GetProperty("WebAPIPath");
+			prop.SetValue(synchronizer, "Mock value");
+			return synchronizer;
+		}
+
 		[Test]
 		public void GetRightCountOfFieldsWithSystemAndArtifactFeildsRemoved()
 		{
@@ -30,7 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				Name = "Document"
 			});
 			//
-			var rdoSyncronizer = new RdoSynchronizer(fieldMock, rdoQuery);
+			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, rdoQuery));
 			var options = new ImportSettings();
 			options.ArtifactTypeId = 1268820;
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
@@ -64,7 +73,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				DescriptorArtifactTypeID = 1,
 				Name = "Document"
 			});
-			var rdoSyncronizer = new RdoSynchronizer(fieldMock, rdoQuery);
+			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, rdoQuery));
 			var options = new ImportSettings { ArtifactTypeId = 1268820 };
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
@@ -109,7 +118,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 					 DescriptorArtifactTypeID = 1,
 					 Name = "Document"
 				 });
-			var rdoSyncronizer = new RdoSynchronizer(fieldMock, rdoQuery);
+			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, rdoQuery));
 			var options = new ImportSettings();
 			options.ArtifactTypeId = 1268820;
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
@@ -144,7 +153,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				DescriptorArtifactTypeID = 1,
 				Name = "Document"
 			});
-			var rdoSyncronizer = new RdoSynchronizer(fieldMock, rdoQuery);
+			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, rdoQuery));
 			var options = new ImportSettings { ArtifactTypeId = 1268820 };
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
@@ -176,7 +185,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				Assert.AreEqual(listOfFieldEntry[i].FieldIdentifier, expectedFieldEntry[i].FieldIdentifier);
 			}
 		}
-
 
 
 	}
