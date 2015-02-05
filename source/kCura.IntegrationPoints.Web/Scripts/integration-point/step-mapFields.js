@@ -30,30 +30,59 @@ ko.validation.rules['uniqueIdIsMapped'] = {
 			}
 		});
 		if (containsIdentifier && rdoIdentifierMapped) {
-			IP.message.error.clear();
+			if ($('#uniquIdMissing').length){
+				IP.message.error.clear();
+			}
 			return true;
 		}
 		if (!rdoIdentifierMapped || !containsIdentifier) {
 			var missingField = !rdoIdentifierMapped ? params[2]() : params[1]();
-			IP.message.error.raise('Error: The object identifier field, ' + missingField + ', must be mapped.');
+			IP.message.error.raise('<span id="uniquIdMissing">Error: The unique identifier field, ' + missingField + ', must be mapped.<span>');
 			return false;
 		}
 		return true;
 	},
-	message: "The object identifier field must be mapped."
-}
+	message: "The unique identifier field must be mapped."
+};
+
 ko.validation.rules['mustContainIdentifer'] = {
 	validator: function (value, params) {
-
-		var errorMessage = "";
-		if (value.length == 0) {
-			IP.message.error.raise('The object identifier field must be mapped.');
-			return false;
+		var contains = false;
+		for (var i = 0; i < value.length; i++) {
+			var current = value[i];
+			if (current.isIdentifier) {
+				return true;
+			}
 		}
-
+		IP.message.error.raise('The object identifier field must be mapped.');
 	},
 	message: 'The object identifier field must be mapped.'
-}
+};
+
+ko.validation.rules['fieldsMustBeMapped'] = {
+	validator: function (value, params) {
+		var requiredFields = [];
+		for (var i = 0; i < value.length; i++) {
+			var current = value[i];
+			if (current.isRequired) {
+				requiredFields.push(current.name);
+			}
+		}
+
+		if (requiredFields.length > 0) {
+			var fieldMessage = requiredFields.sort().join(' and ');
+			var fieldPlural = requiredFields.length === 1 ? 'field' : 'fields';
+			IP.message.error.raise('<span id="missingFieldMessage">The ' + fieldMessage + ' ' + fieldPlural + ' must be mapped.</span>');
+		} else {
+			if ($('#missingFieldMessage').length) {
+				IP.message.error.clear();
+			}
+		}
+		return requiredFields.length === 0;
+	},
+	message: ''
+};
+
 ko.validation.registerExtenders();
 
 ko.validation.insertValidationMessage = function (element) {
@@ -68,10 +97,17 @@ ko.validation.insertValidationMessage = function (element) {
 	return iconSpan;
 };
 
+
+
 (function (root, ko) {
 
 	function mapField(entry) {
-		return { name: entry.displayName, identifer: entry.fieldIdentifier, isIdentifier: entry.isIdentifier };
+		return {
+			name: entry.displayName,
+			identifer: entry.fieldIdentifier,
+			isIdentifier: entry.isIdentifier,
+			isRequired: entry.isRequired
+		};
 	}
 
 	var mapFields = function (result) {
@@ -85,20 +121,28 @@ ko.validation.insertValidationMessage = function (element) {
 		this.showErrors = ko.observable(false);
 		var artifactTypeId = model.destination.artifactTypeId;
 		var artifactId = model.artifactID || 0;
-		this.workspaceFields = ko.observableArray([]);
+		this.workspaceFields = ko.observableArray([]).extend({
+			fieldsMustBeMapped: {
+				onlyIf: function () {
+					return self.showErrors();
+				}
+			}
+
+		});
 		this.selectedUniqueId = ko.observable().extend({ required: true });
 		this.rdoIdentifier = ko.observable();
 		this.isAppendOverlay = ko.observable(true);
+
 		this.mappedWorkspace = ko.observableArray([]).extend({
 			mustContainIdentifer: {
 				onlyIf: function () {
-					return self.showErrors() && self.mappedWorkspace().length == 0;
+					return self.showErrors() && self.mappedWorkspace().length >= 0;
 				},
 				params: [model.selectedOverwrite, self.selectedUniqueId, self.rdoIdentifier]
 			},
 			uniqueIdIsMapped: {
 				onlyIf: function () {
-					return self.showErrors() && self.mappedWorkspace().length > 0;
+					return self.showErrors() && self.mappedWorkspace().length >= 0;
 				},
 				params: [model.selectedOverwrite, self.selectedUniqueId, self.rdoIdentifier]
 			}
@@ -136,20 +180,6 @@ ko.validation.insertValidationMessage = function (element) {
 				settings: model.destination
 			})
 		}).then(function (result) {
-			var types = mapFields(result);
-			self.overlay(types);
-
-			$.each(self.overlay(), function () {
-				if (this.isIdentifier) {
-					self.rdoIdentifier(this.name);
-					self.selectedUniqueId(this.name);
-				}
-			});
-			$.each(self.overlay(), function () {
-				if (model.identifer == this.name) {
-					self.selectedUniqueId(this.name);
-				}
-			});
 			return result;
 		});
 		var sourceFieldPromise = root.data.ajax({
@@ -225,6 +255,7 @@ ko.validation.insertValidationMessage = function (element) {
 				getMapped: getMapped
 			};
 		})();
+
 		root.data.deferred().all(promises).then(
 			function (result) {
 				var destinationFields = result[0],
@@ -232,9 +263,21 @@ ko.validation.insertValidationMessage = function (element) {
 						mapping = result[2];
 
 				var types = mapFields(sourceFields);
+				self.overlay(destinationFields);
 
+				$.each(self.overlay(), function () {
+					if (this.isIdentifier) {
+						self.rdoIdentifier(this.displayName);
+						self.selectedUniqueId(this.displayName);
+					}
+				});
+				$.each(self.overlay(), function () {
+					if (model.identifer == this.displayName) {
+						self.selectedUniqueId(this.displayName);
+					}
+				});
 				self.parentField(types);
-				if (model.parentIdentifier !== undefined) {
+				if (typeof (model.parentIdentifier) !== "undefined") {
 					$.each(self.parentField(), function () {
 						if (this.name === model.parentIdentifier) {
 							self.selectedIdentifier(this.name);
@@ -256,11 +299,14 @@ ko.validation.insertValidationMessage = function (element) {
 				mapping = $.map(mapping, function (value) {
 					return value.fieldMapType !== mapTypes.parent ? value : null;
 				});
+
+
 				var mapped = mapHelper.getMapped(sourceFields, destinationFields, mapping, 'sourceField', 'destinationField');
 				var destinationMapped = mapped[0];
 				var sourceMapped = mapped[1];
 				var destinationNotMapped = mapHelper.getNotMapped(destinationFields, mapping, 'destinationField');
 				var sourceNotMapped = mapHelper.getNotMapped(sourceFields, mapping, 'sourceField');
+
 				self.workspaceFields(mapFields(destinationNotMapped));
 				self.mappedWorkspace(mapFields(destinationMapped));
 				self.sourceField(mapFields(sourceNotMapped));
@@ -271,9 +317,9 @@ ko.validation.insertValidationMessage = function (element) {
 			});
 		/********** Submit Validation**********/
 		this.submit = function () {
-
 			this.showErrors(true);
-		}
+		};
+
 		/********** WorkspaceFields control  **********/
 
 
@@ -345,8 +391,19 @@ ko.validation.insertValidationMessage = function (element) {
 		this.bus.subscribe("saveState", function (state) {
 		});
 
+		var _createEntry = function (field) {
+			return {
+				displayName: field.name,
+				isIdentifier: field.isIdentifier,
+				fieldIdentifier: field.identifer,
+				isRequired: field.isRequired
+			}
+		};
+
 		this.back = function () {
 			var d = root.data.deferred().defer();
+
+
 
 			this.returnModel.identifer = this.model.selectedUniqueId();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
@@ -357,16 +414,8 @@ ko.validation.insertValidationMessage = function (element) {
 				var workspace = this.model.mappedWorkspace()[i] || emptyField;
 				var source = this.model.sourceMapped()[i] || emptyField;
 				map.push({
-					sourceField: {
-						displayName: source.name,
-						isIdentifier: source.isIdentifier,
-						fieldIdentifier: source.identifer
-					},
-					destinationField: {
-						displayName: workspace.name,
-						isIdentifier: workspace.isIdentifier,
-						fieldIdentifier: workspace.identifer,
-					},
+					sourceField: _createEntry(source),
+					destinationField: _createEntry(workspace),
 					fieldMapType: "None"
 				});
 			}
@@ -377,8 +426,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 			d.resolve(this.returnModel);
 			return d.promise;
-		}
-
+		};
 
 		this.submit = function () {
 			var d = root.data.deferred().defer();
@@ -392,30 +440,14 @@ ko.validation.insertValidationMessage = function (element) {
 					var destination = mapping.mappedWorkspace[i];
 					if (mapping.selectedUniqueId === destination.name) {
 						map.push({
-							sourceField: {
-								displayName: source.name,
-								isIdentifier: source.isIdentifier,
-								fieldIdentifier: source.identifer
-							},
-							destinationField: {
-								displayName: destination.name,
-								isIdentifier: destination.isIdentifier,
-								fieldIdentifier: destination.identifer,
-							},
+							sourceField: _createEntry(source),
+							destinationField: _createEntry(destination),
 							fieldMapType: "Identifier"
 						});
 					} else {
 						map.push({
-							sourceField: {
-								displayName: source.name,
-								isIdentifier: source.isIdentifier,
-								fieldIdentifier: source.identifer
-							},
-							destinationField: {
-								displayName: destination.name,
-								isIdentifier: destination.isIdentifier,
-								fieldIdentifier: destination.identifer
-							},
+							sourceField: _createEntry(source),
+							destinationField: _createEntry(destination),
 							fieldMapType: "None"
 						});
 					}
@@ -425,14 +457,8 @@ ko.validation.insertValidationMessage = function (element) {
 					for (var i = 0; i < allSource.length; i++) {
 						if (mapping.selectedIdentifier === allSource[i].name) {
 							map.push({
-								sourceField: {
-									displayName: allSource[i].name,
-									isIdentifier: allSource[i].isIdentifier,
-									fieldIdentifier: allSource[i].identifer
-								},
-								destinationField: {
-
-								},
+								sourceField: _createEntry(allSource[i]),
+								destinationField: {},
 								fieldMapType: "Parent"
 							});
 						}

@@ -43,6 +43,13 @@
     <OutputPath>bin\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="kCura.Apps.Common.Config, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\kCura.Apps.Common.Config.1.0.77.1\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Apps.Common.Data">
+      <HintPath>..\packages\kCura.Apps.Common.Data.1.0.66.4\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Apps.Common.Utils, Version=1.0.106.2, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.106.2\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
@@ -84,6 +91,7 @@
     <Compile Include="Unit\BatchManagerTests.cs" />
     <Compile Include="Unit\ImportSettingsTests.cs" />
     <Compile Include="Unit\ImportServiceTests.cs" />
+    <Compile Include="Unit\RDOCustodianSynchronizerTests.cs" />
     <Compile Include="Unit\RDOSynchronizerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

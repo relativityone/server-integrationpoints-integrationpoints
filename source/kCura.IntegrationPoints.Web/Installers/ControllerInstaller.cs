@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client;
+using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using IDBContext = Relativity.API.IDBContext;
 using Relativity.CustomPages;
@@ -38,7 +39,9 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForWeb>().LifestylePerWebRequest());
 			container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestylePerWebRequest());
 			container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
+			container.Register(Component.For<IJobService>().ImplementedBy<IJobService>().LifestyleTransient());
 			
+
 			container.AddFacility<TypedFactoryFacility>();
 			container.Register(Component.For<IErrorFactory>().AsFactory().UsingFactoryMethod((k) => new ErrorFactory(container)));
 			container.Register(Component.For<WebAPIFilterException>().ImplementedBy<WebAPIFilterException>());

@@ -91,7 +91,7 @@
 		message.info = (function () {
 			function raiseInfo(messageBody, $container) {
 				var $el = getElement($container, $main),
-						$error = $('<div class="page-message page-info"/>').append('<span class="icon-step-complete"></span>').append($('<div/>').append(messageBody)).hide();
+						$error = $('<div class="page-message page-info"/>').append('<span class="legal-hold icon-step-complete"></span>').append($('<div/>').append(messageBody)).hide();
 
 				clearInfo($el);
 
@@ -103,8 +103,7 @@
 				var $el = getElement($container, $main);
 				$el.find('div.page-info').remove();
 			};
-
-
+			
 			return {
 				raise: raiseInfo,
 				clear: clearInfo

@@ -47,8 +47,8 @@ namespace kCura.IntegrationPoints.Data
 	
 	public partial class IntegrationPointFields : BaseFields
 	{
-		public const string NextScheduledRuntime = @"Next Scheduled Runtime";
-		public const string LastRuntime = @"Last Runtime";
+		public const string NextScheduledRuntimeUTC = @"Next Scheduled Runtime (UTC)";
+		public const string LastRuntimeUTC = @"Last Runtime (UTC)";
 		public const string FieldMappings = @"Field Mappings";
 		public const string EnableScheduler = @"Enable Scheduler";
 		public const string SourceConfiguration = @"Source Configuration";
@@ -62,8 +62,8 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class IntegrationPointFieldGuids 
 	{
-		public const string NextScheduledRuntime = @"5b1c9986-f166-40e4-a0dd-a56f185ff30b";
-		public const string LastRuntime = @"90d58af1-f79f-40ae-85fc-7e42f84dbcc1";
+		public const string NextScheduledRuntimeUTC = @"5b1c9986-f166-40e4-a0dd-a56f185ff30b";
+		public const string LastRuntimeUTC = @"90d58af1-f79f-40ae-85fc-7e42f84dbcc1";
 		public const string FieldMappings = @"1b065787-a6e4-4d70-a7ed-f49d770f0bc7";
 		public const string EnableScheduler = @"bcdafc41-311e-4b66-8084-4a8e0f56ca00";
 		public const string SourceConfiguration = @"b5000e91-82bd-475a-86e9-32fefc04f4b8";

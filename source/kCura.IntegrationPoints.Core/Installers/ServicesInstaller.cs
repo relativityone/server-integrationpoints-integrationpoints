@@ -40,6 +40,10 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(
 				Component.For<RDOSyncronizerProvider>().ImplementedBy<RDOSyncronizerProvider>().LifeStyle.Transient);
+
+			container.Register(
+			Component.For<RDOCustodianSynchronizer>().ImplementedBy<RDOCustodianSynchronizer>().LifeStyle.Transient);
+
 			container.Register(Component.For<RelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
 			container.Register(Component.For<IntegrationPointService>().ImplementedBy<IntegrationPointService>().LifestyleTransient());
 			container.Register(

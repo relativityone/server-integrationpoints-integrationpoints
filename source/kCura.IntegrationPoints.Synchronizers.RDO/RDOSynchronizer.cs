@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Threading;
 using kCura.Apps.Common.Config;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -14,13 +15,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Syncronizer.IDataSyncronizer
 	{
-		private RelativityFieldQuery _fieldQuery;
-		private RelativityRdoQuery _rdoQuery;
+		protected readonly RelativityFieldQuery FieldQuery;
+		protected readonly RelativityRdoQuery RdoQuery;
 
 		public RdoSynchronizer(RelativityFieldQuery fieldQuery, RelativityRdoQuery rdoQuery)
 		{
-			_fieldQuery = fieldQuery;
-			_rdoQuery = rdoQuery;
+			FieldQuery = fieldQuery;
+			RdoQuery = rdoQuery;
 		}
 
 		private List<string> IgnoredList
@@ -41,77 +42,58 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		public IEnumerable<FieldEntry> GetFields(string options)
+
+
+		public virtual IEnumerable<FieldEntry> GetFields(string options)
 		{
-			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
-			var fields = _fieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
-			var allFieldsForRdo = new List<FieldEntry>();
-			var rdo = _rdoQuery.GetAllRdo(new List<int> { settings.ArtifactTypeId });
-			var custodian = rdo.FirstOrDefault(x => x.Name.Equals("Custodian")) != null;
+			ImportSettings settings = GetSettings(options);
+			var fields = FieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
+			return ParseFields(fields);
+		}
+
+		protected IEnumerable<FieldEntry> ParseFields(List<Relativity.Client.Artifact> fields)
+		{
 			foreach (var result in fields)
 			{
 				if (!IgnoredList.Contains(result.Name))
 				{
 					var idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
-					bool isIdentifier = custodian && result.Fields.FirstOrDefault(t => (t.Value ?? "").ToString().Equals("UniqueID")) != null;
-
-					if (idField != null && custodian == false)
+					bool isIdentifier = false;
+					if (idField != null)
 					{
 						isIdentifier = Convert.ToInt32(idField.Value) == 1;
+						if (isIdentifier)
+						{
+							result.Name += " [Object Identifier]";
+						}
 					}
-					allFieldsForRdo.Add(new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier });
+					yield return new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier, IsRequired = false };
 				}
 			}
-			return allFieldsForRdo;
 		}
+
 
 		private IImportService _importService;
 		private bool _isJobComplete = false;
 		private Exception _jobError;
 		private List<KeyValuePair<string, string>> _rowErrors;
+
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{
-			ImportSettings settings = GetSettings(options);
+			var settings = GetSyncDataImportSettings(fieldMap, options);
 
-			Dictionary<string, int> importFieldMap = null;
+			var importFieldMap = GetSyncDataImportFieldMap(fieldMap, settings);
 
-			try
-			{
-				importFieldMap = fieldMap.Where(x => x.FieldMapType != FieldMapTypeEnum.Parent)
-						.ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
-			}
-			catch (Exception ex)
-			{
-				throw new Exception("Field Map is invalid.", ex);
-			}
-
-			if (string.IsNullOrWhiteSpace(settings.ParentObjectIdSourceFieldName) && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Parent))
-			{
-				settings.ParentObjectIdSourceFieldName =
-					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Parent).Select(x => x.SourceField.FieldIdentifier).First();
-			}
-			if (settings.IdentityFieldId < 1 && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Identifier))
-			{
-				settings.IdentityFieldId =
-					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier).Select(x => int.Parse(x.DestinationField.FieldIdentifier)).First();
-			}
-
-			_importService = new ImportService(settings, importFieldMap, new BatchManager());
-			_importService.OnBatchComplete += new BatchCompleted(Finish);
-			_importService.OnDocumentError += new RowError(ItemError);
-			_importService.OnJobError += new JobError(JobError);
-
+			_importService = InitializeImportService(settings, importFieldMap);
 
 			_isJobComplete = false;
 			_jobError = null;
 			_rowErrors = new List<KeyValuePair<string, string>>();
 
-			_importService.Initialize();
-
 			foreach (var row in data)
 			{
-				Dictionary<string, object> importRow = row.ToDictionary(x => x.Key.FieldIdentifier, x => x.Value);
-				_importService.AddRow(importRow);
+				var importRow = GenerateImportRow(row, fieldMap, settings);
+				if (importRow != null) _importService.AddRow(importRow);
 			}
 			_importService.PushBatchIfFull(true);
 
@@ -128,19 +110,81 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			ProcessExceptions(settings);
 		}
 
-		private static IDictionary _underlyingSetting;
-		protected static IDictionary ConfigSettings
+		private string _webAPIPath;
+
+		public string WebAPIPath
 		{
-			get { return _underlyingSetting ?? (_underlyingSetting = Manager.Instance.GetConfig("kCura.EDDS.DBMT")); }
+			get
+			{
+				if (string.IsNullOrEmpty(_webAPIPath))
+				{
+					_webAPIPath = kCura.Apps.Common.Config.Sections.EddsDbmtConfig.WebAPIPath;
+				}
+				return _webAPIPath;
+			}
+			protected set { _webAPIPath = value; }
 		}
 
-		private ImportSettings GetSettings(string options)
+		protected virtual ImportService InitializeImportService(ImportSettings settings, Dictionary<string, int> importFieldMap)
+		{
+			ImportService importService = new ImportService(settings, importFieldMap, new BatchManager());
+			importService.OnBatchComplete += new BatchCompleted(Finish);
+			importService.OnDocumentError += new RowError(ItemError);
+			importService.OnJobError += new JobError(JobError);
+			importService.Initialize();
+
+			return importService;
+		}
+
+		protected virtual ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, string options)
+		{
+			ImportSettings settings = GetSettings(options);
+			if (string.IsNullOrWhiteSpace(settings.ParentObjectIdSourceFieldName) &&
+					fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Parent))
+			{
+				settings.ParentObjectIdSourceFieldName =
+					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Parent).Select(x => x.SourceField.FieldIdentifier).First();
+			}
+			if (settings.IdentityFieldId < 1 && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Identifier))
+			{
+				settings.IdentityFieldId =
+					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier)
+						.Select(x => int.Parse(x.DestinationField.FieldIdentifier))
+						.First();
+			}
+			return settings;
+		}
+
+		protected virtual Dictionary<string, int> GetSyncDataImportFieldMap(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		{
+			Dictionary<string, int> importFieldMap = null;
+
+			try
+			{
+				importFieldMap = fieldMap.Where(x => x.FieldMapType != FieldMapTypeEnum.Parent)
+					.ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Field Map is invalid.", ex);
+			}
+			return importFieldMap;
+		}
+
+		protected virtual Dictionary<string, object> GenerateImportRow(IDictionary<FieldEntry, object> row, IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		{
+			Dictionary<string, object> importRow = row.ToDictionary(x => x.Key.FieldIdentifier, x => x.Value);
+			return importRow;
+		}
+
+		protected ImportSettings GetSettings(string options)
 		{
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
 
 			if (string.IsNullOrEmpty(settings.WebServiceURL))
 			{
-				settings.WebServiceURL = ConfigHelper.GetValue<string>(ConfigSettings["WebAPIPath"], null);
+				settings.WebServiceURL = this.WebAPIPath;
+				//kCura.Apps.Common.Config.Sections.EddsDbmtConfig.WebAPIPath; //one day we will switch to this;
 			}
 			return settings;
 		}
