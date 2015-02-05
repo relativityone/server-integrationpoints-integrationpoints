@@ -244,8 +244,5 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			_rowErrors.Add(new KeyValuePair<string, string>(documentIdentifier, errorMessage));
 		}
-
-
-
 	}
 }
