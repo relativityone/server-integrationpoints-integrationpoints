@@ -2,9 +2,11 @@
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.Agent;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -49,6 +51,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>());
 			Container.Register(Component.For<GetApplicationBinaries>().ImplementedBy<GetApplicationBinaries>().DynamicParameters((k, d) => d["eddsDBcontext"] = _helper.GetDBContext(-1)).LifeStyle.Transient);
 			Container.Install(FromAssembly.InThisApplication());
+			Container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod((k) =>
+				k.Resolve<RsapiClientFactory>().CreateClientForWorkspace(job.WorkspaceID, ExecutionIdentity.System)).LifestyleTransient());
+
 		}
 
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
