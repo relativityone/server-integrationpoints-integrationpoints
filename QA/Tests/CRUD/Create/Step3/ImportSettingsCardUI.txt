@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Map Fields step of Integration Points shows the correct fields, card, and icons.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.method
-| Suite Setup		| Go to Step 3 of the Create Integration Point Process
+| Suite Setup		| Open and Log in to Method
 #| Test Setup		| NONE
 | Test Teardown 	| Capture Screenshot If Test Fails
 | Suite Teardown	| Close All Browsers
@@ -12,8 +12,8 @@
 *** Variables ***
 
 | ${WorkspaceName}	| LDAP Sync
-| ${Overlay Identifier}		| s2id_overlay-identifier
-| ${Parent Attribute}		| s2id_parent-identifier
+| ${Overlay Identifier}	| s2id_overlay-identifier
+| ${Parent Attribute}	| s2id_parent-identifier
 
 
 *** Test Cases ***
@@ -21,12 +21,16 @@
 | The Map Fields screen has a card with the Title Import Settings
 | | [Documentation]	| Verify that the Map Fields screen has a card with the title text "Import Settings".
 | | [Tags]			| automated
+| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Append/Overlay
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that a Card with the following Title Text is Visible	| Import Settings
+| | [Teardown]		| Run Keyword If Test Failed	| Fatal Error	| The Import Settings card was not found. Cancelling the remainder of the Suite.
 
 
-| The Field Mappings fields are in the correct order
-| | [Documentation]	| Verify that the fields in the Source Connection section are sorted correctly.
-| | [Tags]			| automated	| dan854
+| The Field Mappings fields are present and in the correct order when using an Overwrite value of Append/Overlay
+| | [Documentation]	| Verify that the fields on the Import Settings card are sorted correctly 
+| | ...				| when an Overwrite value of "Append/Overlay" was selected on Step 1.
+| | [Tags]			| automated
+| | [Setup]			| Require Test Case	| The Map Fields screen has a card with the Title Import Settings
 | | Verify that the following Card contains the following Fields in Order | Import Settings | 
 | | ... | Unique Identifier:	| 
 | | ... | Parent Attribute:
@@ -36,6 +40,7 @@
 | | [Documentation]	| Verify that the Required Field indicator is present for both the Overlay Identifer and Parent Attribute fields.
 | | ...				| [id] 115ea801-a89f-11e4-97ab-b8ca3a83048f
 | | [Tags]			| automated
+| | [Setup]			| Require Test Case	| The Field Mappings fields are present and in the correct order when using an Overwrite value of Append/Overlay
 | | Run Keyword and Continue on Failure	| Verify that the following field is required	| Unique Identifier:
 | | Run Keyword and Continue on Failure	| Verify that the following field is required	| Parent Attribute:
 
@@ -43,8 +48,29 @@
 | The Fields on the Import Settings Card are of the correct type
 | | [Documentation]	| Verify that the Fields on the Import Settings card are the correct type.
 | | [Tags]			| automated
+| | [Setup]			| Require Test Case	| The Field Mappings fields are present and in the correct order when using an Overwrite value of Append/Overlay
 | | Run Keyword and Continue on Failure	| Verify that the following field ID has a droplist input | ${Overlay Identifier}
 | | Run Keyword and Continue on Failure	| Verify that the following field ID has a droplist input | ${Parent Attribute}
+
+
+| The Field Mappings fields are present and in the correct order when using an Overwrite value of Append
+| | [Documentation]	| Verify that the fields on the Import Settings card are sorted correctly 
+| | ...				| when an Overwrite value of "Append" was selected on Step 1.
+| | [Tags]			| automated	| dan641
+| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Append
+| | Verify that the following Card contains the following Fields in Order | Import Settings | 
+| | ... | Unique Identifier:	| 
+| | ... | Parent Attribute:
+
+
+| The Field Mappings fields are present and in the correct order when using an Overwrite value of Overlay Only
+| | [Documentation]	| Verify that the fields on the Import Settings card are sorted correctly 
+| | ...				| when an Overwrite value of "Overlay Only" was selected on Step 1.
+| | [Tags]			| automated	| dan641
+| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Overlay Only
+| | Verify that the following Card contains the following Fields in Order | Import Settings | 
+| | ... | Unique Identifier:	| 
+| | ... | Parent Attribute:
 
 
 *** Keywords *** 
@@ -63,12 +89,12 @@
 | | Log	| Actual Fields: ${ActualFields}
 | | Lists Should Be Equal	| ${ExpectedFields}	| ${ActualFields}
 
-| Go to Step 3 of the Create Integration Point Process
-| | Open and Log in to Method
+| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value
+| | [ARGUMENTS]		| ${OverwriteValue}
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| 
 | | ... | IntegrationName=Import Settings Card Testing	| 
-| | ... | Overwrite=Append/Overlay						| 
+| | ... | Overwrite=${OverwriteValue}						| 
 | | ... | SourceProvider=LDAP							| 
 | | ... | DestinationRDO=Questionnaire Question			| 
 | | ... | EnableScheduler=No
