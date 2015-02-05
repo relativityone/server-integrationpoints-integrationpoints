@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public virtual IEnumerable<FieldEntry> GetFields(string options)
 		{
-			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
+			ImportSettings settings = GetSettings(options);
 			var fields = FieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
 			return ParseFields(fields);
 		}
@@ -62,8 +62,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					if (idField != null)
 					{
 						isIdentifier = Convert.ToInt32(idField.Value) == 1;
+						if (isIdentifier)
+						{
+							result.Name += " [Object Identifier]";
+						}
 					}
-					yield return new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier };
+					yield return new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier, IsRequired = false };
 				}
 			}
 		}
@@ -73,12 +77,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private bool _isJobComplete = false;
 		private Exception _jobError;
 		private List<KeyValuePair<string, string>> _rowErrors;
-
-		private static IDictionary _underlyingSetting;
-		protected static IDictionary ConfigSettings
-		{
-			get { return _underlyingSetting ?? (_underlyingSetting = Manager.Instance.GetConfig("kCura.EDDS.DBMT")); }
-		}
 
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{
@@ -139,14 +137,28 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			ProcessExceptions(settings);
 		}
 
+		private string _webAPIPath;
+
+		public string WebAPIPath
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(_webAPIPath))
+				{
+					_webAPIPath = kCura.Apps.Common.Config.Sections.EddsDbmtConfig.WebAPIPath;
+				}
+				return _webAPIPath;
+			}
+			protected set { _webAPIPath = value; }
+		}
+
 		protected ImportSettings GetSettings(string options)
 		{
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
 
 			if (string.IsNullOrEmpty(settings.WebServiceURL))
 			{
-				settings.WebServiceURL = ConfigHelper.GetValue<string>(ConfigSettings["WebAPIPath"], null);
-				 //kCura.Apps.Common.Config.Sections.EddsDbmtConfig.WebAPIPath; //one day we will switch to this;
+				settings.WebServiceURL = this.WebAPIPath;
 			}
 			return settings;
 		}

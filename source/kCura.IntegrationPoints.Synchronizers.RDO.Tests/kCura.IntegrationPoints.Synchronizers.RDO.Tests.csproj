@@ -91,6 +91,7 @@
     <Compile Include="Unit\BatchManagerTests.cs" />
     <Compile Include="Unit\ImportSettingsTests.cs" />
     <Compile Include="Unit\ImportServiceTests.cs" />
+    <Compile Include="Unit\RDOCustodianSynchronizerTests.cs" />
     <Compile Include="Unit\RDOSynchronizerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

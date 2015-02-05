@@ -41,16 +41,18 @@ ko.validation.rules['uniqueIdIsMapped'] = {
 		return true;
 	},
 	message: "The object identifier field must be mapped."
-}
+};
+
 ko.validation.rules['mustContainIdentifer'] = {
 	validator: function (value, params) {
-
-		var errorMessage = "";
-		if (value.length == 0) {
-			IP.message.error.raise('The object identifier field must be mapped.');
-			return false;
+		var contains = false;
+		for (var i = 0; i < value.length; i++) {
+			var current = value[i];
+			if (current.isIdentifier) {
+				return true;
+			}
 		}
-
+		IP.message.error.raise('The object identifier field must be mapped.');
 	},
 	message: 'The object identifier field must be mapped.'
 }
@@ -89,16 +91,17 @@ ko.validation.insertValidationMessage = function (element) {
 		this.selectedUniqueId = ko.observable().extend({ required: true });
 		this.rdoIdentifier = ko.observable();
 		this.isAppendOverlay = ko.observable(true);
+
 		this.mappedWorkspace = ko.observableArray([]).extend({
 			mustContainIdentifer: {
 				onlyIf: function () {
-					return self.showErrors() && self.mappedWorkspace().length == 0;
+					return self.showErrors() && self.mappedWorkspace().length >= 0;
 				},
 				params: [model.selectedOverwrite, self.selectedUniqueId, self.rdoIdentifier]
 			},
 			uniqueIdIsMapped: {
 				onlyIf: function () {
-					return self.showErrors() && self.mappedWorkspace().length > 0;
+					return self.showErrors() && self.mappedWorkspace().length >= 0;
 				},
 				params: [model.selectedOverwrite, self.selectedUniqueId, self.rdoIdentifier]
 			}
@@ -198,7 +201,7 @@ ko.validation.insertValidationMessage = function (element) {
 					var isInDestination = _contains(destinationFields, _destination);
 					if (isInSource && isInDestination) {
 						sourceMapped.push(source);
-						
+
 						if (_destination.isIdentifier == true) {
 							if (_destination.displayName.indexOf(" [Object Identifier]") < 0) {
 								_destination.displayName = _destination.displayName + ' [Object Identifier]';
@@ -225,11 +228,6 @@ ko.validation.insertValidationMessage = function (element) {
 						mapping = result[2];
 
 				var types = mapFields(sourceFields);
-				for (var i = 0; i < destinationFields.length; i++) {
-					if (destinationFields[i].isIdentifier === true) {
-						destinationFields[i].displayName = destinationFields[i].displayName + ' [Object Identifier]';
-					}
-				}
 				self.overlay(destinationFields);
 
 				$.each(self.overlay(), function () {
@@ -266,14 +264,14 @@ ko.validation.insertValidationMessage = function (element) {
 				mapping = $.map(mapping, function (value) {
 					return value.fieldMapType !== mapTypes.parent ? value : null;
 				});
-				
-				
+
+
 				var mapped = mapHelper.getMapped(sourceFields, destinationFields, mapping, 'sourceField', 'destinationField');
 				var destinationMapped = mapped[0];
 				var sourceMapped = mapped[1];
 				var destinationNotMapped = mapHelper.getNotMapped(destinationFields, mapping, 'destinationField');
 				var sourceNotMapped = mapHelper.getNotMapped(sourceFields, mapping, 'sourceField');
-				
+
 				self.workspaceFields(mapFields(destinationNotMapped));
 				self.mappedWorkspace(mapFields(destinationMapped));
 				self.sourceField(mapFields(sourceNotMapped));
