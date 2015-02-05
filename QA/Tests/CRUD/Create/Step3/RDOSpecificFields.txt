@@ -11,7 +11,7 @@
 
 *** Variables ***
 
-| ${WorkspaceName}			| LDAP Sync
+| ${WorkspaceName}	| LDAP Sync
 
 
 *** Test Cases ***
@@ -42,6 +42,7 @@
 | | ... | ImportNestedItems=Yes
 | | Proceed to the Next Step of the Integration Point wizard
 | | @{ExpectedFields}=		| Get the Non-System Fields for the following Object Type	| ${ObjectType}
+| | Run Keyword If		| "${ObjectType}" == "Custodian"	| Remove Values From List	| ${ExpectedFields}	| Full Name
 | | ${UniqueIdentifier}=	| Determine the RDO Identifier Field on the following Object Type	| ${ObjectType}
 | | ${Index}= | Get Index From List | ${ExpectedFields} | ${UniqueIdentifier}
 | | Run Keyword Unless	| "${ObjectType}" == "Custodian"	| Set List Value | ${ExpectedFields} | ${Index} | ${UniqueIdentifier} [Object Identifier]

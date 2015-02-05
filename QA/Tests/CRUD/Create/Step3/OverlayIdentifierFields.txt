@@ -44,23 +44,12 @@
 | | Proceed to the Next Step of the Integration Point wizard
 | | Click	| ${Overlay Identifier Dropdown}
 | | @{ExpectedFields}=	| Get the Non-System Fields for the following Object Type	| ${ObjectType}
+| | Run Keyword If		| "${ObjectType}" == "Custodian"	| Remove Values From List	| ${ExpectedFields}	| Full Name
 | | ${UniqueIdentifier}=	| Determine the RDO Identifier Field on the following Object Type	| ${ObjectType}
 | | ${Index}= | Get Index From List | ${ExpectedFields} | ${UniqueIdentifier}
 | | Run Keyword Unless	| "${ObjectType}" == "Custodian"	| Set List Value | ${ExpectedFields} | ${Index} | ${UniqueIdentifier} [Object Identifier]
 | | Verify that the currently opened select2 Dropdown has the following choices in order	| @{ExpectedFields}
 | | [Teardown]		| Run Keyword If Keyword Failed	| Capture Page Screenshot
-
-| Determine the RDO Identifier Field on the following Object Type
-| | [Documentation]	| Returns the Unique field for the given Object Type.
-| | [ARGUMENTS]		| ${ObjectType}
-| | ${2DGrid}=	| Query Workspace Database	|  
-| | ... | SELECT f.DisplayName
-| | ... | FROM [EDDSDBO].[Field] f
-| | ... | JOIN [ObjectType] ot on ot.DescriptorArtifactTypeID = f.FieldArtifactTypeID
-| | ... | WHERE ot.Name = '${ObjectType}'
-| | ... | AND f.FieldCategoryID = 2	| # Unique Value
-| | Should Not Be Empty	| ${2DGrid}	| No Unique fields were found for the Object Type "${ObjectType}".
-| | [Return]		| ${2DGrid[0][0]}
 
 | Make the Object Type List a Suite Variable
 | | [Documentation]	| Creates and populates the Object Type list with all Non-System Object Types in the current Workspace, then makes it a Suite variable.
@@ -71,6 +60,7 @@
 
 
 *** Settings ***
+| Library	| Collections
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt

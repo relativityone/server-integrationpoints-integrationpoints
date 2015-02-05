@@ -28,18 +28,6 @@
 
 *** Keywords *** 
 
-| Determine the RDO Identifier Field on the following Object Type
-| | [Documentation]	| Returns the Unique field for the given Object Type.
-| | [ARGUMENTS]		| ${ObjectType}
-| | ${2DGrid}=	| Query Workspace Database	|  
-| | ... | SELECT f.DisplayName
-| | ... | FROM [EDDSDBO].[Field] f
-| | ... | JOIN [ObjectType] ot on ot.DescriptorArtifactTypeID = f.FieldArtifactTypeID
-| | ... | WHERE ot.Name = '${ObjectType}'
-| | ... | AND f.FieldCategoryID = 2	| # Unique Value
-| | Should Not Be Empty	| ${2DGrid}	| No Unique fields were found for the Object Type "${ObjectType}".
-| | [Return]		| ${2DGrid[0][0]}
-
 | Verify that the default Overlay Identifier populates correctly for the Object Type "${ObjectType}"
 | | [Documentation]	| Goes through the Integration Point wizard to get to step 3, choosing the given Object Type as the Destination RDO on Step 1, 
 | | ...				| then verifies that the default Overlay Identifier on Step 3 is correct for that Object Type.
