@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, rdoIntegrationPoint.SourceConfiguration);
 			Data.DestinationProvider destination = _caseServiceContext.RsapiService.DestinationProviderLibrary.Read(rdoIntegrationPoint.DestinationProvider.Value);
 
-			IDataSyncronizer dataSyncronizer = GetDestomationProvider(destination, rdoIntegrationPoint.DestinationConfiguration);
+			IDataSyncronizer dataSyncronizer = GetDestinationProvider(destination, rdoIntegrationPoint.DestinationConfiguration);
 			var objectBuilder = new SynchronizerObjectBuilder(sourceFields);
 			IEnumerable<IDictionary<FieldEntry, object>> data = new DataReaderToEnumerableService(objectBuilder).GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
 
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 
 
-		private IDataSyncronizer GetDestomationProvider(DestinationProvider destinationProviderRdo, string configuration)
+		private IDataSyncronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration)
 		{
 			Guid applicationGuid = new Guid(destinationProviderRdo.ApplicationIdentifier);
 			Guid providerGuid = new Guid(destinationProviderRdo.Identifier);

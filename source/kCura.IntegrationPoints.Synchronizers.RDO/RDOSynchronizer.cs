@@ -80,47 +80,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{
-			ImportSettings settings = GetSettings(options);
+			var settings = GetSyncDataImportSettings(fieldMap, options);
 
-			Dictionary<string, int> importFieldMap = null;
+			var importFieldMap = GetSyncDataImportFieldMap(fieldMap, settings);
 
-			try
-			{
-				importFieldMap = fieldMap.Where(x => x.FieldMapType != FieldMapTypeEnum.Parent)
-						.ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
-			}
-			catch (Exception ex)
-			{
-				throw new Exception("Field Map is invalid.", ex);
-			}
-
-			if (string.IsNullOrWhiteSpace(settings.ParentObjectIdSourceFieldName) && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Parent))
-			{
-				settings.ParentObjectIdSourceFieldName =
-					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Parent).Select(x => x.SourceField.FieldIdentifier).First();
-			}
-			if (settings.IdentityFieldId < 1 && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Identifier))
-			{
-				settings.IdentityFieldId =
-					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier).Select(x => int.Parse(x.DestinationField.FieldIdentifier)).First();
-			}
-
-			_importService = new ImportService(settings, importFieldMap, new BatchManager());
-			_importService.OnBatchComplete += new BatchCompleted(Finish);
-			_importService.OnDocumentError += new RowError(ItemError);
-			_importService.OnJobError += new JobError(JobError);
-
+			_importService = InitializeImportService(settings, importFieldMap);
 
 			_isJobComplete = false;
 			_jobError = null;
 			_rowErrors = new List<KeyValuePair<string, string>>();
 
-			_importService.Initialize();
-
 			foreach (var row in data)
 			{
-				Dictionary<string, object> importRow = row.ToDictionary(x => x.Key.FieldIdentifier, x => x.Value);
-				_importService.AddRow(importRow);
+				var importRow = GenerateImportRow(row, fieldMap, settings);
+				if (importRow != null) _importService.AddRow(importRow);
 			}
 			_importService.PushBatchIfFull(true);
 
@@ -152,6 +125,58 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			protected set { _webAPIPath = value; }
 		}
 
+		protected virtual ImportService InitializeImportService(ImportSettings settings, Dictionary<string, int> importFieldMap)
+		{
+			ImportService importService = new ImportService(settings, importFieldMap, new BatchManager());
+			importService.OnBatchComplete += new BatchCompleted(Finish);
+			importService.OnDocumentError += new RowError(ItemError);
+			importService.OnJobError += new JobError(JobError);
+			importService.Initialize();
+
+			return importService;
+		}
+
+		protected virtual ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, string options)
+		{
+			ImportSettings settings = GetSettings(options);
+			if (string.IsNullOrWhiteSpace(settings.ParentObjectIdSourceFieldName) &&
+					fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Parent))
+			{
+				settings.ParentObjectIdSourceFieldName =
+					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Parent).Select(x => x.SourceField.FieldIdentifier).First();
+			}
+			if (settings.IdentityFieldId < 1 && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Identifier))
+			{
+				settings.IdentityFieldId =
+					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier)
+						.Select(x => int.Parse(x.DestinationField.FieldIdentifier))
+						.First();
+			}
+			return settings;
+		}
+
+		protected virtual Dictionary<string, int> GetSyncDataImportFieldMap(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		{
+			Dictionary<string, int> importFieldMap = null;
+
+			try
+			{
+				importFieldMap = fieldMap.Where(x => x.FieldMapType != FieldMapTypeEnum.Parent)
+					.ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Field Map is invalid.", ex);
+			}
+			return importFieldMap;
+		}
+
+		protected virtual Dictionary<string, object> GenerateImportRow(IDictionary<FieldEntry, object> row, IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		{
+			Dictionary<string, object> importRow = row.ToDictionary(x => x.Key.FieldIdentifier, x => x.Value);
+			return importRow;
+		}
+
 		protected ImportSettings GetSettings(string options)
 		{
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
@@ -159,6 +184,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			if (string.IsNullOrEmpty(settings.WebServiceURL))
 			{
 				settings.WebServiceURL = this.WebAPIPath;
+				//kCura.Apps.Common.Config.Sections.EddsDbmtConfig.WebAPIPath; //one day we will switch to this;
 			}
 			return settings;
 		}
@@ -218,8 +244,5 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			_rowErrors.Add(new KeyValuePair<string, string>(documentIdentifier, errorMessage));
 		}
-
-
-
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Contracts.Syncronizer;
 using kCura.IntegrationPoints.Data;
