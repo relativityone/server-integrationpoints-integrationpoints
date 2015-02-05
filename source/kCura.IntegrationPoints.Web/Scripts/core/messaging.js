@@ -103,8 +103,7 @@
 				var $el = getElement($container, $main);
 				$el.find('div.page-info').remove();
 			};
-
-
+			
 			return {
 				raise: raiseInfo,
 				clear: clearInfo
