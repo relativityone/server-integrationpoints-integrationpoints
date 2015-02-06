@@ -101,3 +101,4 @@ kCura.Method.Web.Tests\Unit\Scripts\Controls\
 ~$*.xlsx
 source/TestResults/
 Keyword Testing.txt
+kCura.IntegrationPoints.Documentation\Help\*
