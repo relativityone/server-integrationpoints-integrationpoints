@@ -113,14 +113,14 @@
 | | ... | - Enable Scheduler: Yes
 | | ... | - Frequency: Daily
 | | ... | - Start Date: <Tomorrow's Date>
-| | ... | - Scheduled Time (local): <Solve for X. X + ${UTC} = 01:02>
+| | ... | - Scheduled Time (local): <Solve for X. X + ${UTC} = 07:02>
 | | ... | 2. The rest of the Integration Points' data is valid
 | | ... | 
 | | ... | Steps:
 | | ... | 1. View the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Next Scheduled Runtime is set to "<Tomorrow's Date> 1:02 AM"
+| | ... | Verify that the Next Scheduled Runtime is set to "<Tomorrow's Date> 7:02 AM"
 
 
 | The Next Scheduled Runtime updates correctly when the scheduled job runs
@@ -155,7 +155,7 @@
 | | ... | - Frequency: Daily
 | | ... | - Start Date: <Two days ago's Date>
 | | ... | - End Date: <Yesterday's Date>
-| | ... | - Scheduled Time (local):  <Solve for X. X + ${UTC} = 22:11>
+| | ... | - Scheduled Time (local): <Any valid value>
 | | ... | 2. The rest of the Integration Points' data is valid
 | | ... | 
 | | ... | Steps:
@@ -204,16 +204,18 @@
 | | [Tags]			| manual	| automateable
 | | Run the following manual steps:
 | | ... | Preconditions:
-| | ... | 1. The Integration Points' data is valid
+| | ... | 1. The Integration Points' data is valid and scheduled to run
 | | ... | 
 | | ... | Steps:
 | | ... | 1. View the Integration Point
-| | ... | 2. Click	| Import Data Now
-| | ... | 3. If needed, confirm the action
-| | ... | 4. Refresh the page
+| | ... | 2. Note the Next Scheduled Runtime
+| | ... | 3. Click	| Import Data Now
+| | ... | 4. Click	| OK
+| | ... | 5. Wait until the Job finishes then refresh the page
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Last Runtime is set to (<Today's Date> <Roughly Now> + ${UTC}) 
+| | ... | 1. Verify that the Last Runtime is set to (<Today's Date> <Roughly Now> + ${UTC}) 
+| | ... | 2. Verify that the Next Scheduled Runtime is not affected
 
 
 *** Settings ***
