@@ -11,7 +11,7 @@
 
 *** Variables ***
 
-| ${WorkspaceName}	| Relativity Legal Hold
+| ${WorkspaceName}	| LDAP Sync
 | ${Field1}			| Email
 | ${Field2}			| Notes
 | ${Workspace Field List}				| workspace-fields

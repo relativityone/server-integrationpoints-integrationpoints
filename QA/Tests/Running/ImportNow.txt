@@ -1,0 +1,98 @@
+*** Settings ***
+| Documentation | Verify that the Import Now button functions correctly
+| Metadata		| Authors	  | Daniel Oliver
+| Force Tags    | in-progress | manual | team.method
+
+*** Variables ***
+
+| ${WorkspaceName}	| Relativity Legal Hold
+| ${IP1}            | Integration Point 1
+| ${IP2}            | Integration Point is not enabled
+| ${IP3}            | Integration Point is enabled
+
+*** Test Cases ***
+
+| Import Now button UI
+| | [Documentation] | Verify that both the IMPORT column and Import Now buttons are present
+| | ... | [id] 16edffcf-ad51-11e4-8b0c-90b11c6c5ae4
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the IP tab
+| | ... | 2. View ${IP1}
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the IMPORT column is on the right of the screen
+| | ... | 2. Verify that the Import Now button is in the IMPORT column
+
+| Import Now is active when there is no Schedule
+| | [Documentation] | Verify that the Import Now button is active when Enable Scheduler is set to No
+| | ... | [id] 7e0125a1-ad54-11e4-b89d-90b11c6c5ae4
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. ${IP2} has the Enable Scheduler set to No
+| | ... |
+| | ... | Steps:
+| | ... | 1. Go to the IP tab
+| | ... | 2. View ${IP2}
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the Import Now button is active
+
+| Import Now is active when there is a Schedule
+| | [Documentation] | Verify that the Import Now button is active when Enable Scheduler is set to Yes 
+| | ... | [id] 7fadc430-ad54-11e4-be8a-90b11c6c5ae4
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. ${IP3} has the Enable Scheduler set to Yes
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the IP tab
+| | ... | 2. View ${IP3}
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Import Now button is active
+
+| Import Now Dialog UI format is correct
+| | [Documentation] | Verify that the Import Now dialogs UI is correct
+| | ... | [id] 8988c740-ad57-11e4-969f-90b11c6c5ae4
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the IP tab
+| | ... | 2. View ${IP3}
+| | ... | 3. Click Import Now
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the heading is: Import Now
+| | ... | 2. Verify that the text is: Are you sure you want to import data now?
+| | ... | 3. Verify that the OK and Cancel buttons are present in the bottom right corner
+
+| Clicking Cancel from the Dialog does not create a new Import job
+| | [Documentation] | Verify that clicking Cancel from the Dialog does not create a new Import job
+| | ... | [id] 8b5dae51-ad57-11e4-bcb9-90b11c6c5ae4
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the IP tab
+| | ... | 2. View ${IP3}
+| | ... | 3. Click Import Now
+| | ... | 4. Click Cancel
+| | ... | 5. View the eddsdbo.ScheduleAgentQueue
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that no SyncManager (TaskType column) has been created
+
+| Clicking OK from the Dialog creates a new Job
+| | [Documentation] | Verify that clicking OK from the Dialog creates a new Job
+| | ... | [id] 873c6d9e-ad54-11e4-9396-90b11c6c5ae4
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the IP tab
+| | ... | 2. View ${IP3}
+| | ... | 3. Click Import Now
+| | ... | 4. Click OK
+| | ... | 5. View the eddsdbo.ScheduleAgentQueue
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that a SyncManager (TaskType column) has been created
+
+| The Importing Now message is correct
+"Data will now be imported from the source provider." Green at top of cards

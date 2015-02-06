@@ -1,68 +1,85 @@
 *** Settings ***
 | Documentation | Verify that specifics of Custodian RDO Integration Point functions correctly
 | Metadata		| Authors	  | Daniel Oliver
-| Force Tags    | in-progress | manual | team.method
-
+| Force Tags    | in-progress | team.method
+| Suite Setup		| Create Suite Setup Data
+| Test Setup		| Go to and Setup Step 3
+| Test Teardown		| Run Keyword if Test Failed	| Capture Page Screenshot
+| Suite Teardown	| Delete Suite Setup Data
 
 *** Variables ***
 
-| ${WorkspaceName}	| Relativity Legal Hold
+| ${WorkspaceName}	| LDAP Sync
+| ${Workspace Field List}				| workspace-fields
+| ${Selected Workspace List}			| selected-workspace-fields
+| ${SelectedAttributeListID}			| selected-source-fields
+| ${SourceAttributeListID}				| source-attributes
+| ${Add All Workspace Fields Icon}		| add-all-workspace-fields
+| ${Add Workspace Field Icon}			| add-workspace-field
+| ${RemoveWorkspaceFieldIcon}			| remove-workspace-field
+| ${Remove All Workspace Fields Icon}	| remove-all-workspace-fields
+| ${MoveWorkspaceFieldUpIcon}			| workspace-field-up
+| ${MoveWorkspaceFieldDownIcon}			| workspace-field-down
+| ${AddAllSourceFieldsIcon}				| add-all-source-fields
+| ${AddSourceFieldIcon}					| add-workspace-field
+| ${RemoveSourceFieldIcon}				| remove-source-field
+| ${RemoveAllSourceFieldsIcon}			| remove-all-source-fields
+| ${ConnectionPath}                     | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
+| ${AuthenticationType}                 | FastBind
+| ${Add Source Attribute Field Icon}    | add-source-field
+
+
 
 *** Test Cases ***
 
 | First Name is a required field
 | | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed without mapping the First Name Workspace field 
 | | ... | [id] 25a2cdde-ad46-11e4-afd6-90b11c6c5ae4
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to step 3 of RIP using Custodian Destination RDO
-| | ... | 2. Map the required fields excluding First Name
-| | ... | 3. Click Save
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that the following message is displayed: "The First Name and Last Name fields must be mapped."
+| | [Tags] | automated
+| | Click Workspace Field  | Last Name
+| | Move fields to the Selected Workspace list
+| | Click Source Attribute Field | sn
+| | Click | Save
+
+| | Verify the current Method Page Error has the following Text  | The First Name field must be mapped.
 
 | Last Name is a required field
 | | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed without mapping the Last Name Workspace field
 | | ... | [id] 2cf817d1-ad46-11e4-b34e-90b11c6c5ae4
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to step 3 of RIP using Custodian Destination RDO
-| | ... | 2. Map the required fields excluding Last Name
-| | ... | 3. Click Save
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that the following message is displayed: "The First Name and Last Name fields must be mapped."
+| | [Tags] | automated
+| | Click Workspace Field  | First Name
+| | Move fields to the Selected Workspace list
+| | Click Source Attribute Field | givenname
+| | Click | Save
+
+| | Verify the current Method Page Error has the following Text  | The Last Name field must be mapped.
 
 | Warning message is shown when both First Name and Last Name are not shown
 | | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed when both First Name and Last Name are not mapped
 | | ... | [id] 8ca09e4f-ad46-11e4-b732-90b11c6c5ae4
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to step 3 of RIP using Custodian Destination RDO
-| | ... | 2. Map the required fields excluding Last Name and First Name
-| | ... | 3. Click Save
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that the following message is displayed: "The First Name and Last Name fields must be mapped."
+| | [Tags] | automated
+| | Click | Save
+
+| | Verify the current Method Page Error has the following Text  | The First Name and Last Name fields must be mapped.
 
 | A Custodian RIP can be saved after fixing the missing name error
 | | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed when both First Name and Last Name are not mapped
 | | ... | [id] 82b0886e-ad4a-11e4-8cf2-90b11c6c5ae4
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to step 3 of RIP using Custodian Destination RDO
-| | ... | 2. Map the required fields excluding Last Name and First Name
-| | ... | 3. Click Save
-| | ... | 4. Map the Last Name and First Name fields
-| | ... | 5. Click Save
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that the RIP is saved
+| | [Tags] | manual
+| | Click | Save
+| | Click Workspace Field  | Last Name
+| | Click Workspace Field  | First Name
+| | Move fields to the Selected Workspace list
+| | Click Source Attribute Field | sn
+| | Click Source Attribute Field | givenname
+| | Click | Save
 
-| Custodians without a First Name are not imported
-| | [Documentation] | Verify that Custodians that do not have their first name populated in LDAP are not imported into RLH.
+| | Verify the Integration Point Details view is shown
+
+| Custodians without a First Name not imported
+| | [Documentation] | Verify that Custodians that do not have their first name populated in LDAP are imported into RLH.
 | | ... | [id] 901a5bc0-ad46-11e4-9a02-90b11c6c5ae4
+| | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. A Person in LDAP has a blank first name
@@ -74,11 +91,12 @@
 | | ... | 3. Filter by the Person's Last name
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the no Custodian was created for the Person with the blank first name
+| | ... | 1. Verify that the Custodian was created for the Person with the blank first name
 
-| Custodians without a Last Name are not imported
-| | [Documentation] | Verify that Custodians that do not have their last name populated are not imported into RLH.
+| Custodians without a Last Name are imported
+| | [Documentation] | Verify that Custodians that do not have their last name populated are imported into RLH.
 | | ... | [id] 93c625b0-ad46-11e4-993c-90b11c6c5ae4
+| | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. A Person in LDAP has a blank last name
@@ -90,11 +108,12 @@
 | | ... | 3. Filter by the Person's First name
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the no Custodian was created for the Person with the blank last name
+| | ... | 1. Verify that the Custodian was created for the Person with the blank last name
 
 | Custodians without both a First Name and Last Name are not imported
 | | [Documentation] | Verify that Custodians that do not have both a First Name and Last Name are not imported into RLH.
 | | ... | [id] 98e1d34f-ad46-11e4-8e0c-90b11c6c5ae4
+| | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. A Person in LDAP has a blank first name and last name
@@ -111,6 +130,7 @@
 | Custodian full names are generated
 | | [Documentation] | Verify that Custodian full names are populated in RLH
 | | ... | [id] 9cfe1251-ad46-11e4-9a0a-90b11c6c5ae4
+| | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. A RIP exists that includes the First Name and Last Name fields
@@ -124,3 +144,84 @@
 | | ... | 
 | | ... | Expected Results:
 | | ... | 1. Verify that the Custodians Full Name is generated
+
+*** Keywords *** 
+
+| Create Suite Setup Data
+| | [Documentation]	| Create the Suite Preconditions
+| | Setup connection to the relativity database
+| | Open and Log in to Method
+| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+
+| Go to and Setup Step 3
+| | [Documentation]	| A keyword that is used as the test case setup. It goes to Step 3 of RIP for Custodians and maps the Email and ID fields.
+| | Open Create Integration Point
+| | Fill out the Following Fields of the Integration Point Step 1 form | Required Custodian Fields | Append/Overlay | LDAP | Custodian | no
+| | Proceed to the Next Step of the Integration Point wizard
+| | Fill out the Following Fields of the Integration Point Step 2 form | ConnectionPath=${ConnectionPath} | Authentication=${AuthenticationType} 
+| | Proceed to the Next Step of the Integration Point wizard
+| | Click Workspace Field  | Email
+| | Click Workspace Field  | UniqueID
+| | Move fields to the Selected Workspace list
+| | Click Source Attribute Field  | mail
+| | Click Source Attribute Field  | objectguid
+| | Move fields to the Selected Source Attribute list
+
+| Verify that the following field is not in the following list
+| | [Documentation] | A keyword that verifies that the specified field is not present in the specified list.
+| | [ARGUMENTS]		| ${FieldName} | ${ListName}
+| | Element should not be visible  |  xpath=//select[@id='${ListName}']/option[text()='${FieldName}']
+
+| Verify that the Selected Workspace fields are in the following order
+| | [Documentation] | A keyword that verifies the fields in the Selected Workspace list are in the desired order.
+| | [Arguments] | @{ExpectedFields}
+| | Wait until keyword succeeds | 20s | 2s | Element Should be Visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Fields list box was not visible.
+| | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-workspace-fields']/option | False 
+| | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
+
+| Click Workspace Field 
+| | [Documentation] | A keyword that clicks an item from the (unselected) Workspace Field list. Multiple calls of select can be used with a single Click of Move.
+| | [ARGUMENTS]		| ${Field}
+| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='workspace-fields'] | The Workspace Fields list box was not visible.
+| | Click | xpath=//select[@id='workspace-fields']/option[text()='${Field}']
+
+| Click Selected Workspace Field 
+| | [Documentation] | A keyword that clicks an item from the Selected Workspace Field list. Multiple calls of select can be used with a single Click of Move.
+| | [ARGUMENTS]		| ${Field}
+| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='selected-workspace-fields'] | The Selected Workspace Fields list box was not visible.
+| | Click | xpath=//select[@id='selected-workspace-fields']/option[text()='${Field}']
+
+| Move fields to the Selected Workspace list
+| | [Documentation] | A keyword that clicks the "Move to Selected Workspace list" icon
+| | Click | ${Add Workspace Field Icon}
+
+| Click Source Attribute Field 
+| | [Documentation] | A keyword that clicks an item from the (unselected) Source Attribute Field list. Multiple calls of select can be used with a single Click of Move.
+| | [ARGUMENTS]		| ${Field}
+| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='source-attributes'] | The Source Attribute Fields list box was not visible.
+| | Click | xpath=//select[@id='source-attributes']/option[text()='${Field}']
+
+| Move fields to the Selected Source Attribute list
+| | [Documentation] | A keyword that clicks the "Move to Selected Source Attributes list" icon
+| | Click | ${Add Source Attribute Field Icon}
+
+| Move fields to the Workspace list
+| | [Documentation] | A keyword that clicks the "Move to Workspace list" icon
+| | Click | ${RemoveWorkspaceFieldIcon}
+
+| Delete Suite Setup Data
+| | [Documentation]	| Delete the Suite Preconditions of Projects, Communications and Custodians.
+| | Open and Log in to Method
+| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+
+| | Drop connection to the relativity services api
+| | Close All Browsers
+
+
+*** Settings ***
+| Library	| Collections
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt

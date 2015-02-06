@@ -267,7 +267,7 @@
 | | [Return]		| ${ActualStep}
 
 | Open Create Integration Point
-| | [Documentation]	| Opens the create Integration Point page. Must be called from the All Integration Points page.
+| | [Documentation]	| Opens the create Integration Point page. 
 | | Go to the Tab	| Integration Points
 | | Click	| New Integration Point
 | | Wait for then Select iFrame	| id=_externalPage	| 10s	| The Page never redirected after clicking "New Integration Point".
