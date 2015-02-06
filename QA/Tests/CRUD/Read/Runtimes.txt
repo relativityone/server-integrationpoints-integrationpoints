@@ -12,6 +12,7 @@
 *** Variables ***
 
 | ${WorkspaceName}	| Relativity Legal Hold
+| ${UTC}			| Your current UTC time difference (probably -06:00)
 
  
 *** Test Cases ***
@@ -26,7 +27,7 @@
 | | ... | - Enable Scheduler: Yes
 | | ... | - Frequency: Daily
 | | ... | - Start Date: <Today's Date>
-| | ... | - Scheduled Time: 22:11
+| | ... | - Scheduled Time (local): <Solve for X. X + ${UTC} = 22:11>
 | | ... | 2. The rest of the Integration Points' data is valid
 | | ... | 
 | | ... | Steps:
@@ -48,7 +49,7 @@
 | | ... | - Reoccur: 1
 | | ... | - Send On: Saturday
 | | ... | - Start Date: <Today's Date>
-| | ... | - Scheduled Time: 22:11
+| | ... | - Scheduled Time (local): <Solve for X. X + ${UTC} = 22:11>
 | | ... | 2. The rest of the Integration Points' data is valid
 | | ... | 
 | | ... | Steps:
@@ -70,7 +71,7 @@
 | | ... | - Reoccur: 1
 | | ... | - Send On: Day 28 of the month
 | | ... | - Start Date: <Today's Date>
-| | ... | - Scheduled Time: 22:11
+| | ... | - Scheduled Time (local): <Solve for X. X + ${UTC} = 22:11>
 | | ... | 2. The rest of the Integration Points' data is valid
 | | ... | 
 | | ... | Steps:
@@ -92,7 +93,7 @@
 | | ... | - Reoccur: 1
 | | ... | - Send On: The second Tuesday of the month
 | | ... | - Start Date: <Today's Date>
-| | ... | - Scheduled Time: 22:11
+| | ... | - Scheduled Time (local): <Solve for X. X + ${UTC} = 22:11>
 | | ... | 2. The rest of the Integration Points' data is valid
 | | ... | 
 | | ... | Steps:
@@ -111,15 +112,15 @@
 | | ... | 1. The Import Scheduling settings are as follows:
 | | ... | - Enable Scheduler: Yes
 | | ... | - Frequency: Daily
-| | ... | - Start Date: <Today's Date>
-| | ... | - Scheduled Time: 1:02
+| | ... | - Start Date: <Tomorrow's Date>
+| | ... | - Scheduled Time (local): <Solve for X. X + ${UTC} = 01:02>
 | | ... | 2. The rest of the Integration Points' data is valid
 | | ... | 
 | | ... | Steps:
 | | ... | 1. View the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Next Scheduled Runtime is set to "<Today's Date> 1:02 AM"
+| | ... | Verify that the Next Scheduled Runtime is set to "<Tomorrow's Date> 1:02 AM"
 
 
 | The Next Scheduled Runtime updates correctly when the scheduled job runs
@@ -132,7 +133,7 @@
 | | ... | - Enable Scheduler: Yes
 | | ... | - Frequency: Daily
 | | ... | - Start Date: <Today's Date>
-| | ... | - Scheduled Time: <2 minutes from now>
+| | ... | - Scheduled Time (local): <2 minutes from now>
 | | ... | 2. The rest of the Integration Points' data is valid
 | | ... | 
 | | ... | Steps:
@@ -140,7 +141,7 @@
 | | ... | 2. View the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Next Scheduled Runtime is set to "<Tomorrow's Date> <The Scheduled Time>"
+| | ... | Verify that the Next Scheduled Runtime is set to (<Tomorrow's Date> <The Scheduled Time> + ${UTC}) 
 
 
 | The Next Scheduled Runtime is blank when the End Date has passed
@@ -154,7 +155,7 @@
 | | ... | - Frequency: Daily
 | | ... | - Start Date: <Two days ago's Date>
 | | ... | - End Date: <Yesterday's Date>
-| | ... | - Scheduled Time: 22:11
+| | ... | - Scheduled Time (local):  <Solve for X. X + ${UTC} = 22:11>
 | | ... | 2. The rest of the Integration Points' data is valid
 | | ... | 
 | | ... | Steps:
@@ -187,7 +188,7 @@
 | | ... | - Enable Scheduler: Yes
 | | ... | - Frequency: Daily
 | | ... | - Start Date: <Today's Date>
-| | ... | - Scheduled Time: <2 minutes from now>
+| | ... | - Scheduled Time (local): <2 minutes from now>
 | | ... | 2. The rest of the Integration Points' data is valid
 | | ... | 
 | | ... | Steps:
@@ -195,24 +196,24 @@
 | | ... | 2. View the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Last Runtime is set to "<Today's Date> <Roughly the Scheduled Time>"
+| | ... | Verify that the Last Runtime is set to (<Today's Date> <Roughly the Scheduled Time> + ${UTC}) 
  
 
-#| The Last Runtime is updated when Import Data Now is used 
-#| | [Documentation]	| Verify that 
-#| | [Tags]			| manual	| automateable
-#| | Run the following manual steps:
-#| | ... | Preconditions:
-#| | ... | 1. The Integration Points' data is valid
-#| | ... | 
-#| | ... | Steps:
-#| | ... | 1. View the Integration Point
-#| | ... | 2. Click	| Import Data Now
-#| | ... | 3. If needed, confirm the action
-#| | ... | 4. Refresh the page
-#| | ... | 
-#| | ... | Expected Results:
-#| | ... | Verify that the Last Runtime is set to "<Today's Date> <Roughly Now>"
+| The Last Runtime is updated when Import Data Now is used 
+| | [Documentation]	| Verify that 
+| | [Tags]			| manual	| automateable
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Integration Points' data is valid
+| | ... | 
+| | ... | Steps:
+| | ... | 1. View the Integration Point
+| | ... | 2. Click	| Import Data Now
+| | ... | 3. If needed, confirm the action
+| | ... | 4. Refresh the page
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Last Runtime is set to (<Today's Date> <Roughly Now> + ${UTC}) 
 
 
 *** Settings ***
