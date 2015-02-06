@@ -1,0 +1,48 @@
+
+*** Settings ***
+| Documentation		| Testing the Encryption performed on the Integration Point objects.
+| Metadata	     	| Authors	| William Sehy
+| Force Tags		| manual	| in-progress	| team.method
+#| Suite Setup		| Log	| This is the suite setup keyword.
+#| Test Setup		| Open Browser	| ${ROOT}
+#| Test Teardown	| Close All Browsers
+#| Suite Teardown	| Log	| This is the suite teardown keyword.
+
+
+*** Variables ***
+
+| ${WorkspaceName}	| Relativity Legal Hold
+| ${ConnectionPath}		| testing.corp/CN=Users,DC=testing,DC=corp
+| ${ObjectFilterString}	| (objectClass=*)
+| ${Authentication}		| FastBind
+| ${ConnectionUsername}	| testing\administrator
+| ${ConnectionPassword}	| P@ssw0rd@1
+| ${ImportNestedItems}	| Yes
+| ${Encrypted String}	| "deuecphQItbCwbjgLpTXqBITBZBF7zPo86eOnPQc/6I/ET6rVOvNLQfUi8JpQqBDGhinUROm9SN2H3UYsQ/aIzOVJjBWZv3/LyAOauLVTsXPS//OjReq5m2Hko4/QkZo+qE6XtRWuO1/ipAHXSNbTpdFIw6c4okj0Q8bW4ZozGkSyRy/mud776kSLXx5ZKwtA5acbl7+4SBsxfDNWLPsJ25gRpyDQBRegrB7V2OQz1ctu3Qx2H1FbR/cVMCDayUh9rKzg6c5j2yd0d5JiAxwmV5FNoCEkPxi+wcb/5qDQ7649Mc4jYkNC83MjAByNzfNv5YUzmtp+qDJdILx4LLmFXOTuG08KyOX8ipGAdujTe/GREsjbQL9RRr94w7VDNXGN+Lo+n8O3MLqexmeB43bR2+NsODATXc7gpo6VxXMeripVdVDjX8gZgcV57O4CXVSlLLv+X1OTzriH/vkdiH+4rKOHN9hF7DpZrVbDzNdibSjiPweSNJzWFdUbQmlM0mhPihGSb8/yoIhMrLkS2SHL0Uz7EJvZVcAhLmkV3lGAAR4vzBhmCjXk6BOT+f3ap6UgX2fwN/yZ0u43d2QiNcSBBqbrrgR6mRZZ+/HYBs/lmXR2Et5yA2qHhPS+tPteMlhg4lrdq3DEh035Rl36hlr8qMcGR0UdQxDs5NmlXVLvxuigGU+8C7B5A=="
+
+ 
+*** Test Cases ***
+ 
+
+| The Last Runtime is updated when Import Data Now is used 
+| | [Documentation]	| Verify that 
+| | [Tags]			| manual	| automateable
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Create a new Integration Point using the following values on Step 2	| 
+| | ... | - Connection Path=${ConnectionPath}			| 
+| | ... | - Object Filter String=${ObjectFilterString}	| 
+| | ... | - Authentication=${Authentication}			| 
+| | ... | - Username=${ConnectionUsername}				| 
+| | ... | - Password=${ConnectionPassword}				| 
+| | ... | - Import Nested Items=${ImportNestedItems}
+| | ... | 2. Open the environment's Database
+| | ... | 3. Open your workspace's Integration Points table
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the new Integration Point's SourceConnection value is ${Encrypted String}
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
