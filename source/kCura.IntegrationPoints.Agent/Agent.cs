@@ -4,7 +4,10 @@ using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Logging;
@@ -19,20 +22,34 @@ namespace kCura.IntegrationPoints.Agent
 	[Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)]
 	public class Agent : kCura.ScheduleQueue.AgentBase.ScheduleQueueAgentBase, IDisposable
 	{
-		private IWindsorContainer _container;
-		private IWindsorContainer Container
+		//private IWindsorContainer _container;
+		//private IWindsorContainer Container
+		//{
+		//	get
+		//	{
+		//		if (_container == null)
+		//		{
+		//			_container = new WindsorContainer();
+		//			_container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => base.Helper, managedExternally: true));
+		//			_container.Install(FromAssembly.InThisApplication());
+		//		}
+		//		return _container;
+		//	}
+		//	set { _container = value; }
+		//}
+
+		private IRSAPIClient _eddsRsapiClient;
+		public IRSAPIClient EddsRsapiClient
 		{
 			get
 			{
-				if (_container == null)
+				if (_eddsRsapiClient == null)
 				{
-					_container = new WindsorContainer();
-					_container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => base.Helper, managedExternally: true));
-					_container.Install(FromAssembly.InThisApplication());
+					_eddsRsapiClient = new RsapiClientFactory(base.Helper).CreateClientForWorkspace(-1, ExecutionIdentity.System);
 				}
-				return _container;
+				return _eddsRsapiClient;
 			}
-			set { _container = value; }
+			set { _eddsRsapiClient = value; }
 		}
 
 		private ITaskFactory _taskFactory;
@@ -73,7 +90,7 @@ namespace kCura.IntegrationPoints.Agent
 		private CreateErrorRDO errorService;
 		private void RaiseException(Job job, Exception exception)
 		{
-			if (errorService == null) errorService = Container.Resolve<CreateErrorRDO>();
+			if (errorService == null) errorService = new CreateErrorRDO(this.EddsRsapiClient);
 			errorService.Execute(job, exception, "Relativity Integration Points Agent");
 		}
 
@@ -84,7 +101,7 @@ namespace kCura.IntegrationPoints.Agent
 
 		public void Dispose()
 		{
-			if (errorService != null) Container.Release(errorService);
+			//if (errorService != null) Container.Release(errorService);
 		}
 	}
 }
