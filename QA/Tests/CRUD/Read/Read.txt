@@ -73,8 +73,6 @@
 | | ... | Expected Results:
 | | ... | Verify that the Sections headings are in the following Order:
 | | ... | - General
-| | ... | - Integration
-| | ... | - Import Scheduling
 | | ... | - Status
 
 
@@ -89,85 +87,8 @@
 | | ... | Expected Results:
 | | ... | Verify that the General Fields are in the following Order:
 | | ... | - Name:
+| | ... | - Source Provider:
 | | ... | - Overwrite:
-
-
-| The Integration fields are in the correct order
-| | [Documentation]	| Verify that the fields in the Integration section are sorted correctly.
-| | ...				| [id] 1180fd13-a89f-11e4-8169-b8ca3a83048f
-| | [Tags]			| manual
-| | Run the following manual steps:
-| | ... | Steps: 
-| | ... | 1. View Integration Point | ${IP1}
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Integration Fields are in the following Order:
-| | ... | - Destination RDO:
-
-
-| The Import Scheduling fields are in the correct order for an Integration Point with a disabled Scheduler
-| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the Scheduler is disabled.
-| | ...				| [id] 11817240-a89f-11e4-82b7-b8ca3a83048f
-| | [Tags]			| manual
-| | Run the following manual steps:
-| | ... | Steps: 
-| | ... | 1. View Integration Point | ${IP1}
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Import Scheduling Fields are in the following Order:
-| | ... | - Enable Scheduler:
-
-
-#| The Import Scheduling fields are in the correct order for a Daily Integration Point
-#| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the Frequency is Daily.
-#| | [Tags]			| manual
-#| | Run the following manual steps:
-#| | ... | Steps: 
-#| | ... | 1. View Integration Point | ${IP2}
-#| | ... |
-#| | ... | Expected Results:
-#| | ... | Verify that the Import Scheduling Fields are in the following Order:
-#| | ... | - Enable Scheduler: 
-#| | ... | - Frequency:
-#| | ... | - Start Date:
-#| | ... | - End Date:
-#| | ... | - Scheduled Time:
-#
-#
-#| The Import Scheduling fields are in the correct order for a Weekly Integration Point
-#| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the Frequency is Weekly.
-#| | [Tags]			| manual
-#| | Run the following manual steps:
-#| | ... | Steps: 
-#| | ... | 1. View Integration Point | ${IP3}
-#| | ... |
-#| | ... | Expected Results:
-#| | ... | Verify that the Import Scheduling Fields are in the following Order:
-#| | ... | - Enable Scheduler:
-#| | ... | - Frequency:
-#| | ... | - Reoccur:
-#| | ... | - Send On:
-#| | ... | - Start Date:
-#| | ... | - End Date:
-#| | ... | - Scheduled Time:
-#
-#
-#| The Import Scheduling fields are in the correct order for a Monthly Integration Point
-#| | [Documentation]	|  Verify that the fields in the Import Scheduling section are sorted correctly when the Frequency is Monthly.
-#| | [Tags]			| manual
-#| | Run the following manual steps:
-#| | ... | Steps: 
-#| | ... | 1. View Integration Point | ${IP4}
-#| | ... |
-#| | ... | Expected Results:
-#| | ... | Verify that the Import Scheduling Fields are in the following Order:
-#| | ... | - Enable Scheduler:
-#| | ... | - Frequency:
-#| | ... | - Reoccur:
-#| | ... | - Send On:
-#| | ... | - Start Date:
-#| | ... | - End Date:
-#| | ... | - Scheduled Time:
 
 
 | The Status fields are in the correct order when Enable Scheduler is set to No
@@ -180,6 +101,7 @@
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Status Fields are in the following Order:
+| | ... | - Enable Scheduler:
 | | ... | - Next Scheduled Runtime (UTC):
 | | ... | - Last Runtime (UTC):
 
@@ -194,6 +116,7 @@
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Status Fields are in the following Order:
+| | ... | - Enable Scheduler:
 | | ... | - Next Scheduled Runtime (UTC):
 | | ... | - Last Runtime (UTC):
 
