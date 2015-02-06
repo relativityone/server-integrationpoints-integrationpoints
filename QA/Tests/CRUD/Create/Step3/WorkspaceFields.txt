@@ -201,8 +201,7 @@
 | | ... | 1. Hover over over both of the Selected Workspace fields with no mapped Attribute field
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the only the field you are hovering over is bolded
-| | ... | 2. Verify that the only the field you are hovering over is italicized
+| | ... | Verify that the only the field you are hovering over is underlined
 
 
 | Hovering over a Selected field with a mapped field
@@ -216,8 +215,7 @@
 | | ... | 1. Hover over over each of the Selected Workspace fields with mapped Attributes field
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the only the field you are hovering over and its mapped Attribute field are bolded
-| | ... | 2. Verify that the only the field you are hovering over and its mapped Attribute field are italicized
+| | ... | Verify that the only the field you are hovering over is underlined
 
 
 | Hovering over the whitespace below the last Selected Workspace field acts the same as hovering over the last Selected Workspace field
