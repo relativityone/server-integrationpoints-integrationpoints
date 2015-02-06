@@ -1,5 +1,5 @@
 *** Settings ***
-| Documentation | Verify that specifics of Custodian RDO Integration Point functions correctly
+| Documentation | Verify that the specifics of the Custodian RDO Integration Point functions correctly when creating a new Custodian IP
 | Metadata		| Authors	  | Daniel Oliver
 | Force Tags    | in-progress | team.method
 | Suite Setup		| Create Suite Setup Data
@@ -27,8 +27,6 @@
 | ${ConnectionPath}                     | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
 | ${AuthenticationType}                 | FastBind
 | ${Add Source Attribute Field Icon}    | add-source-field
-
-
 
 *** Test Cases ***
 
@@ -65,85 +63,17 @@
 | A Custodian RIP can be saved after fixing the missing name error
 | | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed when both First Name and Last Name are not mapped
 | | ... | [id] 82b0886e-ad4a-11e4-8cf2-90b11c6c5ae4
-| | [Tags] | manual
+| | [Tags] | automated
 | | Click | Save
 | | Click Workspace Field  | Last Name
 | | Click Workspace Field  | First Name
 | | Move fields to the Selected Workspace list
 | | Click Source Attribute Field | sn
 | | Click Source Attribute Field | givenname
+| | Move fields to the Selected Source Attribute list
 | | Click | Save
 
-| | Verify the Integration Point Details view is shown
-
-| Custodians without a First Name not imported
-| | [Documentation] | Verify that Custodians that do not have their first name populated in LDAP are imported into RLH.
-| | ... | [id] 901a5bc0-ad46-11e4-9a02-90b11c6c5ae4
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Preconditions:
-| | ... | 1. A Person in LDAP has a blank first name
-| | ... | 2. A RIP exists that includes the Person with the blank first name
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Import the RIP
-| | ... | 2. Go to the Custodian tab
-| | ... | 3. Filter by the Person's Last name
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that the Custodian was created for the Person with the blank first name
-
-| Custodians without a Last Name are imported
-| | [Documentation] | Verify that Custodians that do not have their last name populated are imported into RLH.
-| | ... | [id] 93c625b0-ad46-11e4-993c-90b11c6c5ae4
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Preconditions:
-| | ... | 1. A Person in LDAP has a blank last name
-| | ... | 2. A RIP exists that includes the Person with the blank last name
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Import the RIP
-| | ... | 2. Go to the Custodian tab
-| | ... | 3. Filter by the Person's First name
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that the Custodian was created for the Person with the blank last name
-
-| Custodians without both a First Name and Last Name are not imported
-| | [Documentation] | Verify that Custodians that do not have both a First Name and Last Name are not imported into RLH.
-| | ... | [id] 98e1d34f-ad46-11e4-8e0c-90b11c6c5ae4
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Preconditions:
-| | ... | 1. A Person in LDAP has a blank first name and last name
-| | ... | 2. A RIP exists that includes the Person with the blank name
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Import the RIP
-| | ... | 2. Go to the Custodian tab
-| | ... | 3. Filter by the Person's email
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that the no Custodian was created for the Person with the blank name
-
-| Custodian full names are generated
-| | [Documentation] | Verify that Custodian full names are populated in RLH
-| | ... | [id] 9cfe1251-ad46-11e4-9a0a-90b11c6c5ae4
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Preconditions:
-| | ... | 1. A RIP exists that includes the First Name and Last Name fields
-| | ... | 2. The RIP does not include Full Name
-| | ... | 3. The RIP should import a new Custodian
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Import the RIP
-| | ... | 2. Go to the Custodian tab
-| | ... | 3. Search for the new Custodian 
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that the Custodians Full Name is generated
+| | Wait until page contains | Integration Point Details
 
 *** Keywords *** 
 
@@ -216,7 +146,6 @@
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
-
 
 *** Settings ***
 | Library	| Collections
