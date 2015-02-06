@@ -72,20 +72,18 @@
 | | ... | 6. Map the Following Fields together
 | | ... | - First Name	: givenName
 | | ... | - Last Name	: sn
-| | ... | - Full Name	: cn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
 | | ... | - Unique ID	: objectguid
-| | ... | 7. Select the following Unique Identifier	| Full Name
+| | ... | 7. Select the following Unique Identifier	| Email
 | | ... | 8. Click Back
 | | ... | 9. Click Next
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Full Name
+| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Email
 | | ... | 2. Verify that the following fields are mapped together	| 
 | | ... | - First Name	: givenName
 | | ... | - Last Name	: sn
-| | ... | - Full Name	: cn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
 | | ... | - Unique ID	: objectguid
@@ -111,22 +109,20 @@
 | | ... | 6. Map the Following Fields together
 | | ... | - First Name	: givenName
 | | ... | - Last Name	: sn
-| | ... | - Full Name	: cn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
 | | ... | - Unique ID	: objectguid
-| | ... | 7. Select the following Unique Identifier	| Full Name
+| | ... | 7. Select the following Unique Identifier	| Email
 | | ... | 8. Click Back
 | | ... | 9. Click Back
 | | ... | 10. Click Next
 | | ... | 11. Click Next
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Full Name
+| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Email
 | | ... | 2. Verify that the following fields are mapped together	| 
 | | ... | - First Name	: givenName
 | | ... | - Last Name	: sn
-| | ... | - Full Name	: cn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
 | | ... | - Unique ID	: objectguid
@@ -222,20 +218,18 @@
 | | ... | 6. Map the Following Fields together in this order	| 
 | | ... | - First Name	: givenName
 | | ... | - Last Name	: sn
-| | ... | - Full Name	: cn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
 | | ... | - Unique ID	: objectguid
-| | ... | 7. Select the following Unique Identifier	| Full Name
+| | ... | 7. Select the following Unique Identifier	| Email
 | | ... | 8. Click Back
 | | ... | 9. Fill out the Following Fields of the Integration Point Step 2 form	| 
 | | ... | - ConnectionPath=${ConnectionPath2}
 | | ... | 10. Click Next
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Full Name
+| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Email
 | | ... | 2. Verify that the following fields are mapped together in order	| 
-| | ... | - Full Name	: cn
 | | ... | - Department	: countrycode
 | | ... | - Unique ID	: objectguid
 | | ... | - First Name	: (NONE)
@@ -264,11 +258,10 @@
 | | ... | 6. Map the Following Fields together in this order	| 
 | | ... | - First Name	: givenName
 | | ... | - Last Name	: sn
-| | ... | - Full Name	: cn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
 | | ... | - Unique ID	: objectguid
-| | ... | 7. Select the following Unique Identifier	| Full Name
+| | ... | 7. Select the following Unique Identifier	| Email
 | | ... | 8. Click Back
 | | ... | 9. Click Back
 | | ... | 10. Choose Communication as the Destination RDO
@@ -276,7 +269,7 @@
 | | ... | 12. Click Next
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the Unique Indentifier dropdown is NOT set to	| Full Name
+| | ... | 1. Verify that the Unique Indentifier dropdown is NOT set to	| Email
 | | ... | 2. Verify that the field mappings are empty. No fields have been selected on either side.
 
 
