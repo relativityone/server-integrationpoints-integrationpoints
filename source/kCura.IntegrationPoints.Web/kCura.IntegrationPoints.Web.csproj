@@ -239,6 +239,7 @@
     <Content Include="Content\Images\loading.gif" />
     <Content Include="Content\Images\sprite.png" />
     <Content Include="Content\integration-points-fonts.css" />
+    <Content Include="Content\integration-points-view.css" />
     <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
     <Content Include="Content\jquery.jqGrid\ui.jqgrid.css" />
     <Content Include="Content\legal-hold-fonts.css" />

@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterLinkedCss(applicationPath + "/Content/integration-points-fonts.css");
 				this.RegisterLinkedCss(applicationPath + "/Content/legal-hold-fonts.css");
 				this.RegisterLinkedCss(applicationPath + "/Content/themes/base/jquery.ui.dialog.css");
+					this.RegisterLinkedCss(applicationPath + "/Content/integration-points-view.css");
 				this.RegisterLinkedCss(applicationPath + "/Content/Site.css");
 				this.RegisterLinkedCss(applicationPath + "/Content/controls.grid.css");
 				this.RegisterLinkedCss(applicationPath + "/Content/controls-grid-pager.css");
