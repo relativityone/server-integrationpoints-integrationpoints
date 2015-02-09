@@ -108,6 +108,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			} while (!isJobDone);
 
 			ProcessExceptions(settings);
+
+			FinalizeSyncData(data, fieldMap, settings);
 		}
 
 		private string _webAPIPath;
@@ -175,6 +177,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			Dictionary<string, object> importRow = row.ToDictionary(x => x.Key.FieldIdentifier, x => x.Value);
 			return importRow;
+		}
+
+		protected virtual void FinalizeSyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		{
+			return;
 		}
 
 		protected ImportSettings GetSettings(string options)

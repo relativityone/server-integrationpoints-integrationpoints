@@ -80,7 +80,6 @@
 		IP.messaging.subscribe('save', function () {
 			_next().then(function (result) {
 				if (result.scheduler && result.scheduler.scheduledTime) {
-					debugger;
 					result.scheduler.scheduledTime = helper.timeLocalToUtc(result.scheduler.scheduledTime);
 				}
 				IP.messaging.publish('saveComplete', result);

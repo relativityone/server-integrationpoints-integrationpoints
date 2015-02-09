@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Core.Contracts;
 
-namespace kCura.IntegrationPoints.Contracts
+namespace kCura.IntegrationPoints.Core.Domain
 {
 	//represents a wrapper to allow for certain safeties to be guaranteed when marshalling
 	internal class ProviderWrapper : MarshalByRefObject, IDataSourceProvider

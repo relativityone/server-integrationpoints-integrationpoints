@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Castle.Facilities.TypedFactory;
-using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -18,10 +18,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				switch (taskType)
 				{
 					case TaskType.SyncManager:
-						return typeof (SyncManager);
+						return typeof(SyncManager);
 					case TaskType.SyncWorker:
-						return typeof (SyncWorker);
-					default: 
+						return typeof(SyncWorker);
+					case TaskType.SyncCustodianManagerWorker:
+						return typeof(SyncCustodianManagerWorker);
+					default:
 						return null;
 				}
 			}

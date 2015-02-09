@@ -79,7 +79,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
-    <Compile Include="DomainHelper.cs" />
+    <Compile Include="Services\Domain\AssemblyDomainLoader.cs" />
+    <Compile Include="Services\Domain\DataReaderWrapper.cs" />
+    <Compile Include="Services\Domain\DomainHelper.cs" />
     <Compile Include="IPluginProvider.cs" />
     <Compile Include="ISourcePluginProvider.cs" />
     <Compile Include="Properties\ErrorMessages.Designer.cs">
@@ -90,8 +92,10 @@
     <Compile Include="IContextService.cs" />
     <Compile Include="Queries\GetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="Queries\GetSourceProviderRdoByApplicationIdentifier.cs" />
+    <Compile Include="Services\Domain\ProviderWrapper.cs" />
     <Compile Include="Services\Provider\DefaultSourcePluginProvider.cs" />
-    <Compile Include="Services\Provider\AppDomainFactory.cs" />
+    <Compile Include="Services\Domain\AppDomainFactory.cs" />
+    <Compile Include="Services\Provider\ProviderManager.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForEventHandlers.cs" />
     <Compile Include="Services\ServiceContext\IServiceContextHelper.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForAgent.cs" />
@@ -116,17 +120,18 @@
     <Compile Include="Services\Conversion\IObjectBuilder.cs" />
     <Compile Include="Services\Conversion\SynchronizerObjectBuilder.cs" />
     <Compile Include="Services\ErrorService.cs" />
-    <Compile Include="Services\IJobManager.cs" />
     <Compile Include="Services\IntegrationPointService.cs" />
     <Compile Include="Services\ObjectTypeService.cs" />
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />
-    <Compile Include="Services\Provider\MockProviderFactory.cs" />
     <Compile Include="Services\SourceTypes\LdapSourceTypeCreator.cs" />
     <Compile Include="Services\SourceTypes\SourceTypeFactory.cs" />
     <Compile Include="Services\Syncronizer\DataSyncronizerComponetSelector.cs" />
+    <Compile Include="Services\Syncronizer\GeneralWithCustodianRdoSynchronizerFactory.cs" />
     <Compile Include="Services\Syncronizer\IDataSyncronizerFactory.cs" />
     <Compile Include="Services\Syncronizer\RDOSyncronizerProvider.cs" />
     <Compile Include="Services\UserService.cs" />
+    <Compile Include="Services\Domain\SynchronizerWrapper.cs" />
+    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\SyncConfiguration\" />
@@ -138,6 +143,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>

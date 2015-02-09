@@ -3,22 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Data.Models;
 using Microsoft.Win32;
 
-namespace kCura.IntegrationPoints.Core
+namespace kCura.IntegrationPoints.Core.Domain
 {
 	public class DomainHelper
 	{
 		public virtual void LoadRequiredAssemblies(AppDomain domain)
 		{
 			//loads the contracts dll into the app domain so we can reference 
-			var assemblyPath = new Uri(typeof(Contracts.AssemblyDomainLoader).Assembly.CodeBase).LocalPath; //TODO switch to this instead
+			var assemblyPath = new Uri(typeof(AssemblyDomainLoader).Assembly.CodeBase).LocalPath; //TODO switch to this instead
 			//var assemblyPath = @"C:\SourceCode\LDAPSync\source\bin\Debug\kCura.IntegrationPoints.Contracts.dll";
 			var stream = File.ReadAllBytes(assemblyPath);
 			var dir = Path.Combine(domain.BaseDirectory, new FileInfo(assemblyPath).Name);
@@ -70,7 +66,7 @@ namespace kCura.IntegrationPoints.Core
 				files.Add(file);
 				stream.Dispose();
 			}
-			var loader = this.CreateInstance<Contracts.AssemblyDomainLoader>(domain);
+			var loader = this.CreateInstance<AssemblyDomainLoader>(domain);
 			IDictionary<string, Assembly> loadedAssemblies = new Dictionary<string, Assembly>();
 			foreach (Assembly assembly in domainAssemblies)
 			{
@@ -131,7 +127,7 @@ namespace kCura.IntegrationPoints.Core
 		{
 			this.LoadRequiredAssemblies(domain);
 			this.LoadClientLibraries(domain, provider, applicationGuid);
-			var manager = this.CreateInstance<Contracts.DomainManager>(domain);
+			var manager = this.CreateInstance<DomainManager>(domain);
 			manager.Init();
 			return manager;
 		}

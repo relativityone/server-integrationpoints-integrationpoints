@@ -1,7 +1,8 @@
 ﻿using System;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Core.Services.Provider;
 
-namespace kCura.IntegrationPoints.Core.Services.Provider
+namespace kCura.IntegrationPoints.Core.Domain
 {
 	public class AppDomainFactory : IDataProviderFactory, IDisposable
 	{
