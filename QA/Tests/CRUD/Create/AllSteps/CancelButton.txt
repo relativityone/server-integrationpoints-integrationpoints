@@ -1,0 +1,82 @@
+
+*** Settings ***
+| Documentation 	| Verify that the Cancel button on the Integration Point Wizard has the correct functionality.
+| Metadata		    | Authors	| William Sehy
+| Force Tags		| in-progress	| team.method	| manual
+#| Suite Setup		| Log	| This is the suite setup keyword.
+#| Test Setup		| Open and Log in to Method
+#| Test Teardown 	| Close All Browsers
+#| Suite Teardown	| Log	| This is the suite teardown keyword.
+
+
+*** Variables ***
+
+| ${WorkspaceName}		| Relativity Legal Hold
+| ${ConnectionPath}		| testing.corp
+| ${ObjectFilterString}	| (objectClass=*)
+| ${Authentication}		| FastBind
+| ${ConnectionUsername}	| testing\administrator
+| ${ConnectionPassword}	| P@ssw0rd@1
+
+
+*** Test Cases ***
+
+| The Cancel button is on the Header bar
+| | [Documentation] | Verify that the Cancel button is on the header bar on the Integration Points Wizard.
+| | [Tags]			| manual	| automateable?
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to Step 1 of the Create Integration Point Wizard
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Cancel button is on the right side of the header bar
+
+
+| The Cancel button does not create an Integration Point object from Step 1
+| | [Documentation] | Verify that clicking the Cancel button on Step 1 of the Integration Points Wizard does not create an Integration Point.
+| | [Tags]			| manual	| automateable
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to Step 1 of the Create Integration Point Wizard
+| | ... | 2. Fill out all of the Fields with valid values
+| | ... | 3. Click	| Cancel
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Integration Point object was not created
+
+
+| The Cancel button does not create an Integration Point object from Step 2
+| | [Documentation] | Verify that clicking the Cancel button on Step 2 of the Integration Points Wizard does not create an Integration Point.
+| | [Tags]			| manual	| automateable
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to Step 1 of the Create Integration Point Wizard
+| | ... | 2. Fill out all of the Fields with valid values
+| | ... | 3. Click	| Next
+| | ... | 4. Fill out all of the Fields with valid values
+| | ... | 5. Click	| Cancel
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Integration Point object was not created
+
+
+| The Cancel button does not create an Integration Point object from Step 3
+| | [Documentation] | Verify that clicking the Cancel button on Step 3 of the Integration Points Wizard does not create an Integration Point.
+| | [Tags]			| manual	| automateable
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to Step 1 of the Create Integration Point Wizard
+| | ... | 2. Fill out all of the Fields with valid values
+| | ... | 3. Click	| Next
+| | ... | 4. Fill out all of the Fields with valid values
+| | ... | 5. Click	| Next
+| | ... | 6. Fill out all of the Fields with valid values and create a valid mapping
+| | ... | 7. Click	| Cancel
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Integration Point object was not created
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
