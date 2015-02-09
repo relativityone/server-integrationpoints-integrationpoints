@@ -391,3 +391,6 @@ ul.actions-right{
 		width: 60px;
 		text-align: center;
 	}
+	select option.hover{
+		text-decoration: underline;
+		}
