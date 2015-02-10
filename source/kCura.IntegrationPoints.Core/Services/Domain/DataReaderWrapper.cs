@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 
-namespace kCura.IntegrationPoints.Contracts
+namespace kCura.IntegrationPoints.Core.Domain
 {
 	//represents a wrapper to allow for certain safeties to be guaranteed when marshalling
 	internal class DataReaderWrapper : MarshalByRefObject, IDataReader

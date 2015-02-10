@@ -26,11 +26,14 @@ ko.validation.rules["time"] = {
 	validator: function (value) {
 		if (value !== undefined) {
 			var date = Date.parseExact(value, "HH:mm") || Date.parseExact(value, "H:mm");
+			if (value != null && value.split(':')[0] > 12) {
+				return false;
+			}
 			return !!date;
 		}
 		return true;
 	},
-	message: 'Please enter a valid time (24-hour format).'
+	message: 'Please enter a valid time (12-hour format).'
 };
 ko.validation.rules["minArray"] = {
 		validator: function (value, params) {
@@ -93,6 +96,7 @@ var IP = IP || {};
 		var self = this;
 
 		this.sourceTypes = ko.observableArray();
+		
 		this.selectedType = ko.observable().extend({ required: true });
 		this.sourceProvider = settings.sourceProvider || 0;
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
@@ -384,7 +388,8 @@ var IP = IP || {};
 				}
 			}
 		});
-
+		this.timeFormat = ko.observableArray(['AM', 'PM']);//
+		this.selectedTimeFormat = ko.observable(options.selectedTimeFormat);
 	};
 
 	var Model = function (m) {
@@ -397,7 +402,7 @@ var IP = IP || {};
 		this.destinationProvider = settings.destinationProvider;
 		this.overwrite = ko.observableArray([
 			'Append/Overlay', 'Append', 'Overlay Only']);
-
+		
 		this.selectedOverwrite = ko.observable(settings.selectedOverwrite);
 		this.scheduler = new Scheduler(settings.scheduler);
 		this.submit = function () {

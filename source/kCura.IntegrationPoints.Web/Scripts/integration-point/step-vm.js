@@ -46,7 +46,17 @@
 		}).then(function (result) {
 			vm = new viewModel();
 			if (result.scheduler && result.scheduler.scheduledTime) {
-				result.scheduler.scheduledTime = helper.utcToLocal(result.scheduler.scheduledTime.split(':'), "HH:mm");
+				
+				var time = helper.utcToLocal(result.scheduler.scheduledTime.split(':'), "HH:mm");
+				var timeSplit = time.split(':');
+				
+				if ((timeSplit[0] - 12) >= 1) {
+					result.scheduler.scheduledTime = timeSplit[0] - 12 + ":" + timeSplit[1];
+					result.scheduler.selectedTimeFormat='PM';
+				} else {
+					result.scheduler.scheduledTime = timeSplit[0] + ":" + timeSplit[1];
+					result.scheduler.selectedTimeFormat = 'AM';
+				}
 				
 			}
 			vm.goToStep(0, result);
@@ -80,8 +90,14 @@
 		IP.messaging.subscribe('save', function () {
 			_next().then(function (result) {
 				if (result.scheduler && result.scheduler.scheduledTime) {
-					debugger;
-					result.scheduler.scheduledTime = helper.timeLocalToUtc(result.scheduler.scheduledTime);
+					
+					if (result.scheduler.selectedTimeFormat == "AM") {
+						result.scheduler.scheduledTime = helper.timeLocalToUtc(result.scheduler.scheduledTime);
+					} else {
+						var timeSplit = result.scheduler.scheduledTime.split(':');
+						var hour = parseInt(timeSplit[0]) + 12;
+						result.scheduler.scheduledTime = helper.timeLocalToUtc(hour+':'+timeSplit[1]);
+					}
 				}
 				IP.messaging.publish('saveComplete', result);
 			}, function (error) {

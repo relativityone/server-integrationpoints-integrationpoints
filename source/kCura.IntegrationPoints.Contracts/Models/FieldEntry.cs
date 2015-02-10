@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Contracts.Models
 {
@@ -23,13 +19,18 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		public string DisplayName { get; set; }
 
 		/// <summary>
-		/// value that should be used when mapping
+		/// Field identifier. This is the value that should be used when mapping.
 		/// </summary>
 		public string FieldIdentifier { get; set; }
 
+		/// <summary>
+		/// Field type. 
+		/// </summary>
 		public FieldType FieldType { get; set; }
 
-		
+		/// <summary>
+		/// This flag indicates if field will contain data unique identifier 
+		/// </summary>
 		public bool IsIdentifier { get; set; }
 
 		/// <summary>

@@ -1,12 +1,13 @@
 ﻿using kCura.ScheduleQueue.Core.ScheduleRules;
 
-namespace kCura.IntegrationPoints.Core.Services
+namespace kCura.IntegrationPoints.Core.Contracts.Agent
 {
 	public enum TaskType
 	{
 		None,
 		SyncManager,
-		SyncWorker
+		SyncWorker,
+		SyncCustodianManagerWorker
 	}
 
 	public interface IJobManager

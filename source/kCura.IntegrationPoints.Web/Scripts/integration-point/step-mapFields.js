@@ -337,7 +337,9 @@ ko.validation.insertValidationMessage = function (element) {
 		this.moveMappedWorkspaceDown = function () { IP.workspaceFieldsControls.down(this.mappedWorkspace, this.selectedMappedWorkspace); };
 		this.moveMappedSourceUp = function () { IP.workspaceFieldsControls.up(this.sourceMapped, this.selectedMappedSource); };
 		this.moveMappedSourceDown = function () { IP.workspaceFieldsControls.down(this.sourceMapped, this.selectedMappedSource); };
-
+		
+		
+		
 	};// end of the viewmodel
 
 
@@ -363,7 +365,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.key = "";
 		this.loadModel = function (model) {
 			this.hasBeenLoaded = false;
-
+			
 			this.key = JSON.parse(model.destination).artifactTypeID;
 			if (typeof (stepCache[this.key]) === "undefined") {
 
@@ -377,15 +379,16 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 			}
 			this.model = new viewModel(this.returnModel);
-			this.model.errors = ko.validation.group(this.model, { deep: true });
+			this.model.errors = ko.validation.group(this.model, { deep: true }); 
 		};
 		this.getTemplate = function () {
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
-
 				$('body').append(result);
 				self.template(self.settings.templateID);
 				self.hasTemplate = true;
+				IP.affects.hover();
 			});
+		
 		};
 
 		this.bus.subscribe("saveState", function (state) {
@@ -491,5 +494,8 @@ ko.validation.insertValidationMessage = function (element) {
 	});
 	root.points.steps.push(step);
 
-
 })(IP, ko);
+
+
+
+

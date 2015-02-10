@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
@@ -11,6 +13,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 	{
 
 		private const string LDAPMapFullNameFieldName = "CustomFullName";
+
+
 
 		public static class CustodianFieldGuids
 		{
@@ -39,14 +43,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			public const string SecondaryEmail = @"31ded4e9-f37f-42b5-b222-f36b9da1417b";
 			public const string UniqueID = @"3c5f8ef5-4ed9-40be-b404-1c70318b3563";
 		}
+		public ITaskJobSubmitter TaskJobSubmitter { get; set; }
 
 		public RDOCustodianSynchronizer(RelativityFieldQuery fieldQuery, RelativityRdoQuery rdoQuery)
 			: base(fieldQuery, rdoQuery)
-		{
-		}
+		{ }
 
 		public string FirstNameSourceFieldId { get; set; }
 		public string LastNameSourceFieldId { get; set; }
+		public string ManagerSourceFieldId { get; set; }
+		public string UniqueIDSourceFieldId { get; set; }
+		public bool HandleManagerLink { get; set; }
 
 
 		private int _artifactTypeId = 0;
@@ -103,8 +110,18 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			int firstNameFieldId = allRDOFields.Where(x => x.ArtifactGuids.Contains(new Guid(CustodianFieldGuids.FirstName))).Select(x => x.ArtifactID).FirstOrDefault();
 			int lastNameFieldId = allRDOFields.Where(x => x.ArtifactGuids.Contains(new Guid(CustodianFieldGuids.LastName))).Select(x => x.ArtifactID).FirstOrDefault();
-			FirstNameSourceFieldId = fieldMap.Where(x => x.DestinationField.FieldIdentifier == firstNameFieldId.ToString()).Select(x => x.SourceField.FieldIdentifier).First();
-			LastNameSourceFieldId = fieldMap.Where(x => x.DestinationField.FieldIdentifier == lastNameFieldId.ToString()).Select(x => x.SourceField.FieldIdentifier).First();
+			int managerFieldId = allRDOFields.Where(x => x.ArtifactGuids.Contains(new Guid(CustodianFieldGuids.Manager))).Select(x => x.ArtifactID).FirstOrDefault();
+			FirstNameSourceFieldId = fieldMap.Where(x => x.DestinationField.FieldIdentifier.Equals(firstNameFieldId.ToString())).Select(x => x.SourceField.FieldIdentifier).First();
+			LastNameSourceFieldId = fieldMap.Where(x => x.DestinationField.FieldIdentifier.Equals(lastNameFieldId.ToString())).Select(x => x.SourceField.FieldIdentifier).First();
+			UniqueIDSourceFieldId = fieldMap.Where(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).Select(x => x.SourceField.FieldIdentifier).First();
+
+			HandleManagerLink = false;
+			_custodianManagerMap = new Dictionary<string, string>();
+			if (managerFieldId > 0 && fieldMap.Any(x => x.DestinationField.FieldIdentifier.Equals(managerFieldId.ToString())))
+			{
+				ManagerSourceFieldId = fieldMap.Where(x => x.DestinationField.FieldIdentifier.Equals(managerFieldId.ToString())).Select(x => x.SourceField.FieldIdentifier).First();
+				if (settings.CustodianManagerFieldContainsLink) HandleManagerLink = true;
+			}
 
 			return importFieldMap;
 		}
@@ -116,19 +133,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				string firstName = (string)importRow[FirstNameSourceFieldId];
 				string lastName = (string)importRow[LastNameSourceFieldId];
-				string fullName = string.Empty;
-				if (!string.IsNullOrWhiteSpace(lastName))
-				{
-					fullName = lastName;
-				}
-				if (!string.IsNullOrWhiteSpace(firstName))
-				{
-					if (!string.IsNullOrWhiteSpace(firstName)) fullName += ", ";
-					fullName += firstName;
-				}
+				string fullName = GenerateFullName(lastName, firstName);
 				if (!string.IsNullOrWhiteSpace(fullName))
 				{
 					importRow.Add(LDAPMapFullNameFieldName, fullName);
+					ProcessManagerReference(importRow);
 				}
 				else
 				{
@@ -138,6 +147,63 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 
 			return importRow;
+		}
+
+		protected override void FinalizeSyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		{
+			base.FinalizeSyncData(data, fieldMap, settings);
+
+			if (TaskJobSubmitter == null) return;
+
+			IDictionary<string, object> jobParameters = new Dictionary<string, object>()
+			{
+				{"CustodianManagerMap", _custodianManagerMap},
+				{"CustodianManagerFieldMap", new List<FieldMap> ()
+					{
+						new FieldMap()
+						{
+							SourceField = new FieldEntry() { DisplayName = "CustodianIdentifier", FieldIdentifier = fieldMap.Where(x=>x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).Select(x=>x.SourceField.FieldIdentifier).First() },
+							DestinationField = new FieldEntry() { DisplayName = "ManagerIdentidier", FieldIdentifier = ""},
+							FieldMapType = FieldMapTypeEnum.Identifier
+						}
+					}
+				},
+				{"ManagerFieldMap", fieldMap}
+			};
+
+			string jobDetails = JsonConvert.SerializeObject(jobParameters);
+
+			TaskJobSubmitter.SubmitJob(jobDetails);
+		}
+
+		public static string GenerateFullName(string lastName, string firstName)
+		{
+			string fullName = string.Empty;
+			if (!string.IsNullOrWhiteSpace(lastName))
+			{
+				fullName = lastName;
+			}
+			if (!string.IsNullOrWhiteSpace(firstName))
+			{
+				if (!string.IsNullOrWhiteSpace(fullName)) fullName += ", ";
+				fullName += firstName;
+			}
+			return fullName;
+		}
+
+		private IDictionary<string, string> _custodianManagerMap;
+
+		public void ProcessManagerReference(IDictionary<string, object> importRow)
+		{
+			if (!HandleManagerLink) return;
+
+			string managerReferenceLink = (string)importRow[ManagerSourceFieldId];
+			if (!string.IsNullOrWhiteSpace(managerReferenceLink))
+			{
+				string custodianUniqueIdentifier = (string)importRow[UniqueIDSourceFieldId];
+				_custodianManagerMap.Add(custodianUniqueIdentifier, managerReferenceLink);
+				importRow[ManagerSourceFieldId] = null;
+			}
 		}
 
 		public bool IsField(Relativity.Client.Artifact artifact, Guid fieldGuid)
