@@ -39,7 +39,7 @@
 | | ...				| [id] 0f881340-a89f-11e4-83fe-b8ca3a83048f
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| Blank Required Fields show messages after clicking Next
-| | Fill out the Following Fields of the Integration Point Step 1 form	| Frequency=Daily	| StartDate=11/23/2012	| EndDate=04/15/2016	| ScheduledTime=23:00
+| | Fill out the Following Fields of the Integration Point Step 1 form	| Frequency=Daily	| StartDate=11/23/2012	| EndDate=04/15/2016	| ScheduledTime=11:00 PM
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
@@ -49,7 +49,7 @@
 | | ...				| [id] 0f881341-a89f-11e4-b0af-b8ca3a83048f
 | | [Tags]			| required	| automated	| dam795
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Custom Page	| 
-| | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=1234567	| EndDate=3456789		| ScheduledTime=23:00
+| | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=1234567	| EndDate=3456789		| ScheduledTime=11:00 PM
 | | Click	| id=next
 
 | | Run Keyword And Continue On Failure	| Verify the following Integration Point Field has the following Error	| ${Start Date Field}	| The field Start Date must be a date.
@@ -71,7 +71,7 @@
 | | ...				| [id] 0f88615f-a89f-11e4-9e5d-b8ca3a83048f
 | | [Tags]		    | required	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page	| 
-| | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2020	| EndDate=04/15/2019	| ScheduledTime=23:32
+| | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2020	| EndDate=04/15/2019	| ScheduledTime=11:32 PM
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${End Date Field}		| The start date must come before the end date.
 
@@ -91,7 +91,7 @@
 | | ...				| [id] 0f886161-a89f-11e4-95bf-b8ca3a83048f
 | | [Tags]			| required	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page	| 
-| | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=230
+| | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=230 PM
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (24-hour format).
 
@@ -101,7 +101,7 @@
 | | ...				| [id] 0f886162-a89f-11e4-ad17-b8ca3a83048f
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| Scheduled Time Validation message is shown after clicking Next
-| | Fill out the Following Fields of the Integration Point Step 1 form	| ScheduledTime=23:40
+| | Fill out the Following Fields of the Integration Point Step 1 form	| ScheduledTime=11:40 PM
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
@@ -111,7 +111,7 @@
 | | ...				| [id] 0f886163-a89f-11e4-96b8-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page	| 
-| | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=24:30
+| | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=13:30 PM
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (24-hour format).
 
@@ -121,7 +121,7 @@
 | | ...				| [id] 0f88d68f-a89f-11e4-917d-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page	| 
-| | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=23:60
+| | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=11:60 PM
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (24-hour format).
 
@@ -131,7 +131,7 @@
 | | ...				| [id] 0f88d690-a89f-11e4-aeee-b8ca3a83048f
 | | [Tags]			| required	| automated	| dam853
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page		| EnableScheduler=Yes	| 
-| | ... 																| Frequency=Weekly	| Reoccur=1				| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=23:50
+| | ... 																| Frequency=Weekly	| Reoccur=1				| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=11:50 PM
 | | Click	| id=next
 | | Verify that the Weekly Send On Field has a Required Field Error	| This field is required.
 
@@ -151,7 +151,7 @@
 | | ...				| [id] 0f88d692-a89f-11e4-8bd0-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Custom Page	| EnableScheduler=Yes	| 
-| | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=${EMPTY}	| StartDate=11/23/2002	| EndDate=04/15/2026		| ScheduledTime=23:50
+| | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=${EMPTY}	| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=11:50 PM
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Reoccur Field}	| This field is required.
 
@@ -161,7 +161,7 @@
 | | ...				| [id] 0f88d693-a89f-11e4-94a6-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Custom Page	| EnableScheduler=Yes	| 
-| | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=0			| StartDate=11/23/2002	| EndDate=04/15/2026		| ScheduledTime=23:50
+| | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=0			| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=11:50 PM
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Reoccur Field}	| Please enter a value between 1 and 999.
 
@@ -171,7 +171,7 @@
 | | ...				| [id] 0f8924b0-a89f-11e4-8034-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Custom Page	| EnableScheduler=Yes	| 
-| | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=-1		| StartDate=11/23/2002	| EndDate=04/15/2026		| ScheduledTime=23:50
+| | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=-1		| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=11:50 PM
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Reoccur Field}	| Please enter a value between 1 and 999.
 
@@ -181,7 +181,7 @@
 | | ...				| [id] 0f8924b1-a89f-11e4-949b-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Custom Page	| EnableScheduler=Yes	| 
-| | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=1000		| StartDate=11/23/2002	| EndDate=04/15/2026		| ScheduledTime=23:50
+| | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=1000		| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=11:50 PM
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Reoccur Field}	| Please enter a value between 1 and 999.
 
@@ -191,7 +191,7 @@
 | | ...				| [id] 0f8924b2-a89f-11e4-97a6-b8ca3a83048f
 | | [Tags]			| required	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Custom Page	| EnableScheduler=Yes	| 
-| | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=a			| StartDate=11/23/2002	| EndDate=04/15/2026		| ScheduledTime=23:50
+| | ... 																| Frequency=Weekly	| SendOn=Monday			| Reoccur=a			| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=11:50 PM
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Reoccur Field}	| Please enter a value between 1 and 999.
 
@@ -211,7 +211,7 @@
 | | ...				| [id] 0f8924b4-a89f-11e4-b19d-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page	| EnableScheduler=Yes	| 
-| | ... 																| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2006	| ScheduledTime=23:50
+| | ... 																| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2006	| ScheduledTime=11:50 PM
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 

@@ -31,7 +31,7 @@
 | | ... 			| - When ${Frequency} is 'Monthly' then ${SendOn} should be one of two strings: 
 | | ...				| -- 'The <X> <Y> of the month' where X is First, Second, Third, Fourth, or Last, and Y is any day Monday-Sunday or just 'day'.
 | | ...				| -- 'Day <X> of the month' where X is any value from 1-31.
-| | ...				| The value of ${ScheduledTime} should be expressed in military time. I.E. in the format HH:MM.
+| | ...				| The value of ${ScheduledTime} should be expressed HH:MM AM/PM.
 | | [ARGUMENTS]		| ${IntegrationName}=NULL	| ${Overwrite}=NULL	| ${SourceProvider}=NULL	| ${DestinationRDO}=NULL	| ${EnableScheduler}=NULL	| ${Frequency}=NULL		| 
 | | ...				| ${Reoccur}=NULL			| ${SendOn}=NULL	| ${StartDate}=NULL			| ${EndDate}=NULL			| ${ScheduledTime}=NULL
 | | Wait Until Page Contains Element	| id=name	| 10s	| The page was not on Step 1 of the Integration Point form.
@@ -65,7 +65,7 @@
 
 | | Run Keyword Unless	| "${EndDate}" == "NULL"	| Input Text	| id=scheduleRulesEndDate	| ${EndDate}
 
-| | Run Keyword Unless	| "${ScheduledTime}" == "NULL"	| Input Text	| id=scheduledTime	| ${ScheduledTime}
+| | Run Keyword Unless	| "${ScheduledTime}" == "NULL"	| Fill Out the Scheduled Time field	| ${ScheduledTime}
 
 | Fill out the Send On field for a Weekly Frequency
 | | [Documentation]	| Selects the given checkboxes of the Weekly Send On field's checkboxes.
@@ -110,6 +110,16 @@
 | | ${DayValue}=	| Fetch from Right	| ${DayValue}	| Day${Space}
 | | Select from select2 Dropdown	| id=s2id_day-select	| ${DayValue}	| # The Send On dropdown
 | | Select Radio Button	| monthly	| days
+
+| Fill Out the Scheduled Time field
+| | [Documentation]	| Enters the Hour:Minute value and selects the AM/PM value.
+| | ... 			| [Tags] private
+| | [ARGUMENTS] 	| ${ScheduledTimeValue}
+| | ${AMPMValue}=		| Fetch from Right	| ${ScheduledTimeValue}	| ${Space}
+| | ${HourMinuteValue}=	| Fetch from Left	| ${ScheduledTimeValue}	| ${Space}
+| | Input Text	| id=scheduledTime	| ${HourMinuteValue}
+| | Select From Select2 Dropdown	| s2id_timeFormat	| ${AMPMValue.upper()}
+
 
 | Select the radio button for The X X of the month
 | | [Documentation]	| Selects the values for the "The X X of the month." option. This includes setting both the dropdown values and the radio button.
