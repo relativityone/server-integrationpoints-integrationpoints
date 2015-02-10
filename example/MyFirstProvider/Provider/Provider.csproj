@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventHandlers\RegisterNewIntegrationPoint.cs" />
+    <Compile Include="EventHandlers\RemoveMyFirstProvider.cs" />
     <Compile Include="GlobalConstants.cs" />
     <Compile Include="MyFirstProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
