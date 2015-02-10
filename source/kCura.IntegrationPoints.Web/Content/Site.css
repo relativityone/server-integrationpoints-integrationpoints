@@ -83,7 +83,7 @@ h1
 	right: 0;
 }
 
-#headerContainer button
+#headerContainer button{
 	width: 77px;
 }
 
