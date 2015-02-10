@@ -61,11 +61,11 @@
 | | Run Keyword If	| ("${FrequencyValue}" == "Weekly") and ("${SendOn}" != "NULL")		| IntegrationPointKeywords.Fill out the Send On field for a Weekly Frequency	| ${SendOn}	| 
 | | ... | ELSE IF	| ("${FrequencyValue}" == "Monthly") and ("${SendOn}" != "NULL")	| IntegrationPointKeywords.Fill out the Send On field for a Monthly Frequency	| ${SendOn}
 
+| | Run Keyword Unless	| "${ScheduledTime}" == "NULL"	| Fill Out the Scheduled Time field	| ${ScheduledTime}	| # Out of order due to date picker issues with the End Date. This does not work when date picker overlaps dropdown.
+
 | | Run Keyword Unless	| "${StartDate}" == "NULL"	| Input Text	| id=scheduleRulesStartDate	| ${StartDate}
 
 | | Run Keyword Unless	| "${EndDate}" == "NULL"	| Input Text	| id=scheduleRulesEndDate	| ${EndDate}
-
-| | Run Keyword Unless	| "${ScheduledTime}" == "NULL"	| Fill Out the Scheduled Time field	| ${ScheduledTime}
 
 | Fill out the Send On field for a Weekly Frequency
 | | [Documentation]	| Selects the given checkboxes of the Weekly Send On field's checkboxes.

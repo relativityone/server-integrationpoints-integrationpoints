@@ -93,7 +93,7 @@
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page	| 
 | | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=230 PM
 | | Click	| id=next
-| | Verify the following Integration Point Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (24-hour format).
+| | Verify the following Integration Point Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (12-hour format).
 
 
 | Proceeding Post-Time Invalid message
@@ -113,7 +113,7 @@
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page	| 
 | | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=13:30 PM
 | | Click	| id=next
-| | Verify the following Integration Point Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (24-hour format).
+| | Verify the following Integration Point Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (12-hour format).
 
 
 | Scheduled Time Validation message is shown when the minute value is greater than 59
@@ -123,7 +123,7 @@
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Custom Page	| 
 | | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2002	| EndDate=04/15/2026	| ScheduledTime=11:60 PM
 | | Click	| id=next
-| | Verify the following Integration Point Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (24-hour format).
+| | Verify the following Integration Point Field has the following Error	| ${Scheduled Time Field}	| Please enter a valid time (12-hour format).
 
 
 | Send On Weekly Validation message is shown after trying to Proceed with nothing selected
