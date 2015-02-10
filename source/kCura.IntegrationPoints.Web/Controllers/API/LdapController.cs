@@ -42,7 +42,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			catch (Exception e)
 			{
 				//already taken care of so we can just decrypt
-				message = Newtonsoft.Json.JsonConvert.DeserializeObject<string>(message);
+				try { message = Newtonsoft.Json.JsonConvert.DeserializeObject<string>(message); }
+				catch (Exception strException) {/*just a regular string so we pass and decrypt it.*/ }
 				decryptedText = _manager.Decrypt(message);
 			}
 			return Ok(decryptedText);
