@@ -50,7 +50,7 @@ var ldapHelper = (function (data) {
 
 	function checkLdap(localModel) {
 		return helper.checkLdap(localModel).fail(function (e) {
-			self.publish('saveError', 'Unable to connect to source using the specified settings.');
+			message.publish('saveError', 'Unable to connect to source using the specified settings.');
 		});
 	}
 
@@ -63,6 +63,7 @@ var ldapHelper = (function (data) {
 		this.publish("saveState", localModel); //save the model incase of error
 		var self = this;
 		if (pageModel.errors().length === 0) {
+			debugger;
 			var p1 = checkLdap(localModel);
 			var p2 = encrypt(localModel);
 			IP.data.deferred().all(p1, p2).then(function () {
