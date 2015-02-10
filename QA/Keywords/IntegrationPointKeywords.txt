@@ -296,6 +296,27 @@
 #------------------------------------------------------------------------------------------------------------------------
 # Generic Keywords
 
+| Run Import Now on the Current Integration Point
+| | [Documentation] | A keyword that runs an RIP import. Must be called from the Integration Point view screen.
+| | Click Element   | ${ImportNowButton} 
+| | Click Element   | ${OKButton}  
+| | Wait Until Integration Point Job Runs | ${IntegrationPoint1} 
+
+| View Integration Point
+| | [Documentation] | A keyword that Views an Integration Point. Can be called from any where.
+| | [Arguments]     | ${IntegrationName}  | 
+| | Go to the Tab	| Integration Points
+| | Set Filter      | Name | ${IntegrationName}
+| | Click Element   | xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationName}']
+
+| Delete the Following Integration Point
+| | [Documentation] | A keyword that deletes the specified Integration Point; can be called from anywhere.
+| | [Arguments]     | ${IntegrationPointToDelete}
+| | Go to the Tab	| Integration Points
+| | Set Filter      | Name | ${IntegrationPointToDelete}
+| | Click Element   | xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationPointToDelete}']
+| | Delete this object
+
 | Create Integration Point
 | | [Documentation] | A keyword that creates an Integration Point. 
 | | ... | The value of ${Step1Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 1 form".

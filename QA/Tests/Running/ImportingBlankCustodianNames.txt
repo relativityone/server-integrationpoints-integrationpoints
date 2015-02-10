@@ -10,13 +10,15 @@
 *** Variables ***
 
 | ${WorkspaceName}	                    | LDAP Sync
-| ${ConnectionPath}                     | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
-| ${AuthenticationType}                 | FastBind
-| ${Object Filter String}               | (department=BlankNames)
-| ${IntegrationPoint1}                  | Blank Custodian Names 
-| ${OKButton}                           | xpath=//span[@class='ui-button-text' and text()='OK'] 
-| ${ImportNowButton}                    | xpath=//a[@class='consoleButtonEnabled' and text()='Import Now'] 
-| ${IntegrationPointLink}               | xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationPoint1}']
+#| ${ConnectionPath}                     | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
+#| ${AuthenticationType}                 | FastBind
+#| ${Object Filter String}               | (department=BlankNames)
+#| ${IntegrationPoint1}                  | Blank Custodian Names 
+#| ${OKButton}                           | xpath=//span[@class='ui-button-text' and text()='OK'] 
+#| ${ImportNowButton}                    | xpath=//a[@class='consoleButtonEnabled' and text()='Import Now'] 
+#| ${IntegrationPointLink}               | xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationPoint1}']
+
+
 
 *** Test Cases ***
 
@@ -62,36 +64,6 @@
 | | Create Integration Point
 | | Close All Browsers
 
-| Create Integration Point
-| | [Documentation] | A keyword that creates an Integration Point for this suite. Not suiteable as a generic keyword for other suites.
-| | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form | ${IntegrationPoint1} | Append/Overlay | LDAP | Custodian | no
-| | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form | ConnectionPath=${ConnectionPath} | ObjectFilterString=${Object Filter String} | Authentication=${AuthenticationType} 
-| | Proceed to the Next Step of the Integration Point wizard
-| | Click Workspace Field  | Department
-| | Click Workspace Field  | Email
-| | Click Workspace Field  | UniqueID
-| | Move fields to the Selected Workspace list
-| | Click Workspace Field  | First Name
-| | Click Workspace Field  | Last Name
-| | Move fields to the Selected Workspace list  | #Have to do batches of multiple field selections as RIP arranges the results on the Selected list in alphabetical order
-| | Click Source Attribute Field  | department
-| | Click Source Attribute Field  | mail
-| | Click Source Attribute Field  | objectguid
-| | Move fields to the Selected Source Attribute list
-| | Click Source Attribute Field  | givenname
-| | Click Source Attribute Field  | sn
-| | Move fields to the Selected Source Attribute list
-| | Click | Save
-
-| | Go to the Tab	| Integration Points
-| | Set Filter      | Name | ${IntegrationPoint1}
-| | Click Element   | ${IntegrationPointLink}
-| | Click Element   | ${ImportNowButton} 
-| | Click Element   | ${OKButton}  
-| | Wait Until Integration Point Job Runs | ${IntegrationPoint1} 
-
 | Delete Suite Setup Data
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Open and Log in to Method
@@ -102,19 +74,11 @@
 | | Drop connection to the relativity services api
 | | Close All Browsers
 
-| Delete Integration Point
-| | [Documentation] | A keyword that deletes the specified Integration Point; can be called from anywhere.
-| | [Arguments]     | ${IntegrationPointToDelete}
-| | Go to the Tab	| Integration Points
-| | Set Filter      | Name | ${IntegrationPointToDelete}
-| | Click Element   | xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationPointToDelete}']
-| | Delete this object
-
 *** Settings ***
 | Library	| Collections
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-#| Library	| ${KEYWORD_DIR}/RelativityKeywords.py
+
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
