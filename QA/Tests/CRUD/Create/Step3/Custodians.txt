@@ -10,20 +10,8 @@
 *** Variables ***
 
 | ${WorkspaceName}	| LDAP Sync
-| ${Workspace Field List}				| workspace-fields
-| ${Selected Workspace List}			| selected-workspace-fields
-| ${SelectedAttributeListID}			| selected-source-fields
-| ${SourceAttributeListID}				| source-attributes
-| ${Add All Workspace Fields Icon}		| add-all-workspace-fields
 | ${Add Workspace Field Icon}			| add-workspace-field
-| ${RemoveWorkspaceFieldIcon}			| remove-workspace-field
-| ${Remove All Workspace Fields Icon}	| remove-all-workspace-fields
-| ${MoveWorkspaceFieldUpIcon}			| workspace-field-up
-| ${MoveWorkspaceFieldDownIcon}			| workspace-field-down
 | ${AddAllSourceFieldsIcon}				| add-all-source-fields
-| ${AddSourceFieldIcon}					| add-workspace-field
-| ${RemoveSourceFieldIcon}				| remove-source-field
-| ${RemoveAllSourceFieldsIcon}			| remove-all-source-fields
 | ${ConnectionPath}                     | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
 | ${AuthenticationType}                 | FastBind
 | ${Add Source Attribute Field Icon}    | add-source-field
@@ -96,48 +84,6 @@
 | | Click Source Attribute Field  | mail
 | | Click Source Attribute Field  | objectguid
 | | Move fields to the Selected Source Attribute list
-
-| Verify that the following field is not in the following list
-| | [Documentation] | A keyword that verifies that the specified field is not present in the specified list.
-| | [ARGUMENTS]		| ${FieldName} | ${ListName}
-| | Element should not be visible  |  xpath=//select[@id='${ListName}']/option[text()='${FieldName}']
-
-| Verify that the Selected Workspace fields are in the following order
-| | [Documentation] | A keyword that verifies the fields in the Selected Workspace list are in the desired order.
-| | [Arguments] | @{ExpectedFields}
-| | Wait until keyword succeeds | 20s | 2s | Element Should be Visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Fields list box was not visible.
-| | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-workspace-fields']/option | False 
-| | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
-
-| Click Workspace Field 
-| | [Documentation] | A keyword that clicks an item from the (unselected) Workspace Field list. Multiple calls of select can be used with a single Click of Move.
-| | [ARGUMENTS]		| ${Field}
-| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='workspace-fields'] | The Workspace Fields list box was not visible.
-| | Click | xpath=//select[@id='workspace-fields']/option[text()='${Field}']
-
-| Click Selected Workspace Field 
-| | [Documentation] | A keyword that clicks an item from the Selected Workspace Field list. Multiple calls of select can be used with a single Click of Move.
-| | [ARGUMENTS]		| ${Field}
-| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='selected-workspace-fields'] | The Selected Workspace Fields list box was not visible.
-| | Click | xpath=//select[@id='selected-workspace-fields']/option[text()='${Field}']
-
-| Move fields to the Selected Workspace list
-| | [Documentation] | A keyword that clicks the "Move to Selected Workspace list" icon
-| | Click | ${Add Workspace Field Icon}
-
-| Click Source Attribute Field 
-| | [Documentation] | A keyword that clicks an item from the (unselected) Source Attribute Field list. Multiple calls of select can be used with a single Click of Move.
-| | [ARGUMENTS]		| ${Field}
-| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='source-attributes'] | The Source Attribute Fields list box was not visible.
-| | Click | xpath=//select[@id='source-attributes']/option[text()='${Field}']
-
-| Move fields to the Selected Source Attribute list
-| | [Documentation] | A keyword that clicks the "Move to Selected Source Attributes list" icon
-| | Click | ${Add Source Attribute Field Icon}
-
-| Move fields to the Workspace list
-| | [Documentation] | A keyword that clicks the "Move to Workspace list" icon
-| | Click | ${RemoveWorkspaceFieldIcon}
 
 | Delete Suite Setup Data
 | | [Documentation]	| Delete the Suite Preconditions of Projects, Communications and Custodians.

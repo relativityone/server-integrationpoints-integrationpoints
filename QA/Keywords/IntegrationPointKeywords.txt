@@ -2,10 +2,7 @@
 *** Settings ***
 | Documentation	| This suite of keywords deals with the Integration Point object and its associated pages and actions.
 
-
 *** Variables ***
-
-
 
 *** Keywords ***
 
@@ -199,6 +196,49 @@
 | | Wait Until Page Contains Element	| xpath=//select[@id='source-attributes']/child::option	| 10s	| The unassigned Source Attributes never loaded.
 | | @{SourceAttributes}=	| Get Element Text	| xpath=//select[@id='source-attributes']/child::option	| False
 | | [Return]		| @{SourceAttributes}
+
+| Verify that the following field is not in the following list
+| | [Documentation] | A keyword that verifies that the specified field is not present in the specified list.
+| | ... 			| The value of ${ListName} should be either: workspace-fields, selected-workspace-fields, selected-source-fields, or source-attributes
+| | [ARGUMENTS]		| ${FieldName} | ${ListName}
+| | Element should not be visible  |  xpath=//select[@id='${ListName}']/option[text()='${FieldName}']
+
+| Click Workspace Field 
+| | [Documentation] | A keyword that clicks an item from the (unselected) Workspace Field list. Multiple calls of select can be used with a single click of Move.
+| | [ARGUMENTS]		| ${Field}
+| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='workspace-fields'] | The Workspace Fields list box was not visible.
+| | Click | xpath=//select[@id='workspace-fields']/option[text()='${Field}']
+
+| Click Selected Workspace Field 
+| | [Documentation] | A keyword that clicks an item from the Selected Workspace Field list. Multiple calls of select can be used with a single click of Move.
+| | [ARGUMENTS]		| ${Field}
+| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='selected-workspace-fields'] | The Selected Workspace Fields list box was not visible.
+| | Click | xpath=//select[@id='selected-workspace-fields']/option[text()='${Field}']
+
+| Move fields to the Selected Workspace list
+| | [Documentation] | A keyword that clicks the "Move to Selected Workspace list" icon
+| | Click | ${Add Workspace Field Icon}
+
+| Click Source Attribute Field 
+| | [Documentation] | A keyword that clicks an item from the (unselected) Source Attribute Field list. Multiple calls of select can be used with a single Click of Move.
+| | [ARGUMENTS]		| ${Field}
+| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='source-attributes'] | The Source Attribute Fields list box was not visible.
+| | Click | xpath=//select[@id='source-attributes']/option[text()='${Field}']
+
+| Move fields to the Selected Source Attribute list
+| | [Documentation] | A keyword that clicks the "Move to Selected Source Attributes list" icon
+| | Click | ${Add Source Attribute Field Icon}
+
+| Move fields to the Workspace list
+| | [Documentation] | A keyword that clicks the "Move to Workspace list" icon
+| | Click | ${RemoveWorkspaceFieldIcon}
+
+| Verify that the Selected Workspace fields are in the following order
+| | [Documentation] | A keyword that verifies the fields in the Selected Workspace list are in the desired order.
+| | [Arguments] | @{ExpectedFields}
+| | Wait until keyword succeeds | 20s | 2s | Element Should be Visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Fields list box was not visible.
+| | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-workspace-fields']/option | False 
+| | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
 
 #------------------------------------------------------------------------------------------------------------------------
 # Generic Keywords
