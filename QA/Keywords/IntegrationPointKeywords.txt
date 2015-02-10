@@ -205,13 +205,6 @@
 | | Wait Until Page Contains Element	| id=source-attributes	| 10s	| The unassigned Source Attributes List Box never loaded.
 | | Wait Until Page Contains Element	| xpath=//select[@id='source-attributes']/child::option	| 10s	| The unassigned Source Attributes never loaded.
 | | @{SourceAttributes}=	| Get Element Text	| xpath=//select[@id='source-attributes']/child::option	| False
-| | [Return]		| @{SourceAttributes}
-
-| Verify that the following field is not in the following list
-| | [Documentation] | A keyword that verifies that the specified field is not present in the specified list.
-| | ... 			| The value of ${ListName} should be either: workspace-fields, selected-workspace-fields, selected-source-fields, or source-attributes
-| | [ARGUMENTS]		| ${FieldName} | ${ListName}
-| | Element should not be visible  |  xpath=//select[@id='${ListName}']/option[text()='${FieldName}']
 
 | Click Workspace Field 
 | | [Documentation] | A keyword that clicks an item from the (unselected) Workspace Field list. Multiple calls of select can be used with a single click of Move.
@@ -236,22 +229,6 @@
 | | [ARGUMENTS]		| ${Field}
 | | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='selected-source-attributes'] | The Selected Source Attribute Fields list box was not visible.
 | | Click | xpath=//select[@id='selected-source-attributes']/option[text()='${Field}']
-
-| Move fields to the Selected Workspace list
-| | [Documentation] | A keyword that clicks the "Move to Selected Workspace list" icon
-| | Click | add-workspace-field
-
-| Move fields to the Workspace list
-| | [Documentation] | A keyword that clicks the "Move to Unselected Workspace list" icon
-| | Click | remove-workspace-field
-
-| Move fields to the Selected Source Attribute list
-| | [Documentation] | A keyword that clicks the "Move to Selected Source Attributes list" icon
-| | Click | add-source-field
-
-| Move fields to the Source Attribute list
-| | [Documentation] | A keyword that clicks the "Move to Selected Source Attributes list" icon
-| | Click | remove-source-field
 
 | Move the Following Workspace Fields to the Selected List
 | | [ARGUMENTS]		| @{WorkspaceFields}
@@ -281,10 +258,14 @@
 | | [Documentation] | A keyword that maps all of the specified fields for a RIP on step 3.
 | | [Arguments]     | @{WorkspaceFieldsAndSourceAttributeFields}
 | | :FOR	| ${WorkspaceField}	| ${SourceAttribute}	| IN	| @{WorkspaceFieldsAndSourceAttributeFields}
-| | | Click Workspace Field  | ${WorkspaceField}
-| | | Click | add-workspace-field
-| | | Click Source Attribute Field  | ${SourceAttribute}
-| | | Move fields to the Selected Source Attribute list
+| | | Move the Following Workspace Fields to the Selected List			| ${WorkspaceField}
+| | | Move the Following Source Attribute Fields to the Selected List	| ${SourceAttribute}
+
+| Verify that the following field is not in the following list
+| | [Documentation] | A keyword that verifies that the specified field is not present in the specified list.
+| | ... 			| The value of ${ListName} should be either: workspace-fields, selected-workspace-fields, selected-source-fields, or source-attributes
+| | [ARGUMENTS]		| ${FieldName} | ${ListName}
+| | Element should not be visible  |  xpath=//select[@id='${ListName}']/option[text()='${FieldName}']
 
 | Verify that the Selected Workspace fields are in the following order
 | | [Documentation] | A keyword that verifies the fields in the Selected Workspace list are in the desired order.
