@@ -6,6 +6,7 @@ using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Contracts.Syncronizer;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Conversion;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.Provider;
@@ -22,13 +23,21 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IDataSyncronizerFactory _dataSyncronizerFactory;
 		private IDataProviderFactory _dataProviderFactory;
 		private kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
-
-		public SyncWorker(ICaseServiceContext caseServiceContext, IDataSyncronizerFactory dataSyncronizerFactory, IDataProviderFactory dataProviderFactory, kCura.Apps.Common.Utils.Serializers.ISerializer serializer)
+		private GeneralWithCustodianRdoSynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
+		private IJobManager _jobManager;
+		public SyncWorker(ICaseServiceContext caseServiceContext,
+											IDataSyncronizerFactory dataSyncronizerFactory,
+											IDataProviderFactory dataProviderFactory,
+											kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
+											GeneralWithCustodianRdoSynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+											IJobManager jobManager)
 		{
 			_caseServiceContext = caseServiceContext;
 			_dataSyncronizerFactory = dataSyncronizerFactory;
 			_dataProviderFactory = dataProviderFactory;
 			_serializer = serializer;
+			_appDomainRdoSynchronizerFactoryFactory = appDomainRdoSynchronizerFactoryFactory;
+			_jobManager = jobManager;
 		}
 
 		public void Execute(Job job)
@@ -53,7 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				List<string> entryIDs = _serializer.Deserialize<List<string>>(job.JobDetails);
 				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(rdoIntegrationPoint.SourceProvider.Value);
-				ExecuteImp(rdoIntegrationPoint, entryIDs, sourceProviderRdo);
+				ExecuteImport(rdoIntegrationPoint, entryIDs, sourceProviderRdo, job);
 			}
 			catch
 			{
@@ -65,10 +74,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		private void ExecuteImp(IntegrationPoint rdoIntegrationPoint, List<string> entryIDs, Data.SourceProvider sourceProviderRdo)
+		private void ExecuteImport(IntegrationPoint rdoIntegrationPoint, List<string> entryIDs, Data.SourceProvider sourceProviderRdo, Job job)
 		{
 
-			IDataSourceProvider sourceProvider = GetSourceProvider(sourceProviderRdo);
+			IDataSourceProvider sourceProvider = GetSourceProvider(sourceProviderRdo, job);
 
 			IEnumerable<FieldMap> fieldMap = _serializer.Deserialize<List<FieldMap>>(rdoIntegrationPoint.FieldMappings);
 			fieldMap.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
@@ -77,14 +86,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, rdoIntegrationPoint.SourceConfiguration);
 			Data.DestinationProvider destination = _caseServiceContext.RsapiService.DestinationProviderLibrary.Read(rdoIntegrationPoint.DestinationProvider.Value);
 
-			IDataSyncronizer dataSyncronizer = GetDestinationProvider(destination, rdoIntegrationPoint.DestinationConfiguration);
+			IDataSyncronizer dataSyncronizer = GetDestinationProvider(destination, rdoIntegrationPoint.DestinationConfiguration, job);
 			var objectBuilder = new SynchronizerObjectBuilder(sourceFields);
 			IEnumerable<IDictionary<FieldEntry, object>> data = new DataReaderToEnumerableService(objectBuilder).GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
 
 			dataSyncronizer.SyncData(data, fieldMap, rdoIntegrationPoint.DestinationConfiguration);
 		}
 
-		private IDataSourceProvider GetSourceProvider(SourceProvider sourceProviderRdo)
+		private IDataSourceProvider GetSourceProvider(SourceProvider sourceProviderRdo, Job job)
 		{
 			Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
 			Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
@@ -92,14 +101,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return sourceProvider;
 		}
 
-
-		private IDataSyncronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration)
+		private IDataSyncronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
 		{
-			Guid applicationGuid = new Guid(destinationProviderRdo.ApplicationIdentifier);
 			Guid providerGuid = new Guid(destinationProviderRdo.Identifier);
+			if (_appDomainRdoSynchronizerFactoryFactory is GeneralWithCustodianRdoSynchronizerFactory)
+			{
+				((GeneralWithCustodianRdoSynchronizerFactory)_appDomainRdoSynchronizerFactoryFactory).TaskJobSubmitter =
+					new TaskJobSubmitter(_jobManager, job, TaskType.SyncCustodianManagerWorker);
+			}
+			Contracts.PluginBuilder.Current.SetSynchronizerFactory(_appDomainRdoSynchronizerFactoryFactory);
 			IDataSyncronizer sourceProvider = _dataSyncronizerFactory.GetSyncronizer(providerGuid, configuration);
 			return sourceProvider;
 		}
-
 	}
 }

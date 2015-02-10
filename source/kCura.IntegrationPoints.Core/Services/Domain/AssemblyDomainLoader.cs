@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace kCura.IntegrationPoints.Contracts
+namespace kCura.IntegrationPoints.Core.Domain
 {
 	/// <summary>
 	/// Helper class used to load assemblies in the foreign app domain

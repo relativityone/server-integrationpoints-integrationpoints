@@ -3,6 +3,8 @@ using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.Agent;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Contracts;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Queries;
@@ -67,6 +69,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					return Container.Resolve<SyncManager>();
 				case TaskType.SyncWorker:
 					return Container.Resolve<SyncWorker>();
+				case TaskType.SyncCustodianManagerWorker:
+					return Container.Resolve<SyncCustodianManagerWorker>();
 				default:
 					return null;
 			}

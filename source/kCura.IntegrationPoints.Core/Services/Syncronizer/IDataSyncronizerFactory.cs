@@ -25,16 +25,8 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 
 		public IDataSyncronizer GetSyncronizer(Guid identifier, string options)
 		{
-			var json = JsonConvert.DeserializeObject<ImportSettings>(options);
-			var rdoObjectType = _query.GetObjectType(json.ArtifactTypeId);
-			//name is very bad, we should consider switching to guid
-			switch (rdoObjectType.Name.ToLower())
-			{
-				case "custodian":
-					return _container.Kernel.Resolve<kCura.IntegrationPoints.Synchronizers.RDO.RDOCustodianSynchronizer>();
-				default:
-					return _container.Kernel.Resolve<kCura.IntegrationPoints.Synchronizers.RDO.RdoSynchronizer>();
-			}
+			return kCura.IntegrationPoints.Contracts.PluginBuilder.Current.GetSynchronizerFactory()
+				.CreateSyncronizer(identifier, options);
 		}
 	}
 }

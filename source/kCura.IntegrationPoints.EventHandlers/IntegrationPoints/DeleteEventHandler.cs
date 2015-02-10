@@ -1,5 +1,5 @@
 ﻿using System;
-using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
