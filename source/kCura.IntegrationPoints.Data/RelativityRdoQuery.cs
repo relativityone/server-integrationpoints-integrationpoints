@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Data
 		public RelativityRdoQuery(IRSAPIClient client)
 		{
 			_client = client;
-
 		}
 
 		public virtual List<ObjectType> GetAllRdo(List<int> typeIds = null)

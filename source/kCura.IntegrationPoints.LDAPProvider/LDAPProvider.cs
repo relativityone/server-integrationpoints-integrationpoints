@@ -4,6 +4,7 @@ using System.DirectoryServices;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.LDAPProvider
 {
@@ -11,7 +12,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 	public class LDAPProvider : IDataSourceProvider
 	{
 		private readonly IEncryptionManager _encryptionManager = new DefaultEncryptionManager();
-		
+
 		public LDAPProvider()
 		{ }
 
@@ -53,7 +54,12 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		private LDAPSettings GetSettings(string options)
 		{
-			options = Newtonsoft.Json.JsonConvert.DeserializeObject<string>(options);
+			try
+			{
+				options = Newtonsoft.Json.JsonConvert.DeserializeObject<string>(options);
+			}
+			catch (JsonReaderException e) {/*Already a string this is a backwards compatibility issue*/}
+
 			options = _encryptionManager.Decrypt(options);
 			LDAPSettings settings = Newtonsoft.Json.JsonConvert.DeserializeObject<LDAPSettings>(options);
 
