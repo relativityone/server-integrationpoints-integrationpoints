@@ -30,7 +30,7 @@ ko.validation.rules['uniqueIdIsMapped'] = {
 			}
 		});
 		if (containsIdentifier && rdoIdentifierMapped) {
-			if ($('#uniquIdMissing').length){
+			if ($('#uniquIdMissing').length) {
 				IP.message.error.clear();
 			}
 			return true;
@@ -250,10 +250,49 @@ ko.validation.insertValidationMessage = function (element) {
 				});
 				return [destinationMapped.concat(orphan), sourceMapped];
 			}
+
+
+			function move(source, oldIndex, newIndex) {
+				if (newIndex >= source.length) {
+					var k = newIndex - source.length;
+					while ((k--) + 1) {
+						source.push(undefined);
+					}
+				}
+				source.splice(newIndex, 0, source.splice(oldIndex, 1)[0]);
+			};
+
+
+			var _moveBottom = function (source, selected) {
+				if (selected.length > 0) {
+					var evaled = source();
+					//only move the top most one
+					selected = selected[0];
+					var idx = evaled.indexOf(selected);
+					move(evaled, idx, evaled.length - 1);
+					source.valueHasMutated();
+				}
+			};
+
+			var _moveTop = function (source, selected) {
+				if (selected.length > 0) {
+					var evaled = source();
+					//only move the top most one
+					selected = selected[0];
+					var idx = evaled.indexOf(selected);
+					move(evaled, idx, 0);
+					source.valueHasMutated();
+				}
+			};
+
 			return {
 				getNotMapped: getNotMapped,
-				getMapped: getMapped
+				getMapped: getMapped,
+				moveBottom: _moveBottom,
+				moveTop: _moveTop
 			};
+
+
 		})();
 
 		root.data.deferred().all(promises).then(
@@ -337,9 +376,20 @@ ko.validation.insertValidationMessage = function (element) {
 		this.moveMappedWorkspaceDown = function () { IP.workspaceFieldsControls.down(this.mappedWorkspace, this.selectedMappedWorkspace); };
 		this.moveMappedSourceUp = function () { IP.workspaceFieldsControls.up(this.sourceMapped, this.selectedMappedSource); };
 		this.moveMappedSourceDown = function () { IP.workspaceFieldsControls.down(this.sourceMapped, this.selectedMappedSource); };
-		
-		
-		
+
+		this.moveMappedWorkspaceTop = function () {
+			mapHelper.moveTop(this.mappedWorkspace, this.selectedMappedWorkspace());
+		};
+		this.moveMappedWorkspaceBottom = function () {
+			mapHelper.moveBottom(this.mappedWorkspace, this.selectedMappedWorkspace());
+		};
+		this.moveMappedSourceTop = function () {
+			mapHelper.moveTop(this.sourceMapped, this.selectedMappedSource());
+		};
+		this.moveMappedSourceBottom = function () {
+			mapHelper.moveBottom(this.sourceMapped, this.selectedMappedSource());
+		};
+
 	};// end of the viewmodel
 
 
@@ -365,7 +415,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.key = "";
 		this.loadModel = function (model) {
 			this.hasBeenLoaded = false;
-			
+
 			this.key = JSON.parse(model.destination).artifactTypeID;
 			if (typeof (stepCache[this.key]) === "undefined") {
 
@@ -379,7 +429,7 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 			}
 			this.model = new viewModel(this.returnModel);
-			this.model.errors = ko.validation.group(this.model, { deep: true }); 
+			this.model.errors = ko.validation.group(this.model, { deep: true });
 		};
 		this.getTemplate = function () {
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
@@ -388,7 +438,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.hasTemplate = true;
 				IP.affects.hover();
 			});
-		
+
 		};
 
 		this.bus.subscribe("saveState", function (state) {
