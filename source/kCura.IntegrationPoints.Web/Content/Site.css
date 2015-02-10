@@ -465,3 +465,7 @@ select option.hover
 {
 	text-decoration: underline;
 }
+
+	.filter-container#s2id_timeFormat {
+		width: 75px;
+	}
