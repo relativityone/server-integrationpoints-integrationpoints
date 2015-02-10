@@ -74,7 +74,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Installer\ObjectInstaller.cs" />
     <Compile Include="IntegrationPointSourceProviderUninstaller.cs" />
     <Compile Include="Services\IImportService.cs" />
     <Compile Include="Services\ImportService.cs" />
