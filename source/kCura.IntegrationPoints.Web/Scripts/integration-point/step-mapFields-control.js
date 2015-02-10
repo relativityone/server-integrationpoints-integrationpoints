@@ -58,8 +58,6 @@ IP.workspaceFieldsControls = (function () {
 IP.affects = (function() {
 
 	var hover = function () {
-		
-		
 		$('#selected-workspace-fields').on('mouseenter', function (argument) {
 			
 			if ($(argument.currentTarget).eq(0).is("select")) {

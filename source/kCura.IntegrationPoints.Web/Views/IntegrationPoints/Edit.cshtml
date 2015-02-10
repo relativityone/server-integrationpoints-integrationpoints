@@ -3,8 +3,10 @@
 
 @section header{
 	<div class="header-actions-container">
-	<div class="tooltip bottom" data-title="Help" style="position:absolute; right:30px">
-				<span  class="legal-hold icon-help"> </span>
+		<div style="position:absolute; right:60px"><button class="button generic positive" id="cancel" >Cancel</button></div>
+		
+		<div class="tooltip bottom" data-title="Help" style="position:absolute; right:30px">
+			<span  class="legal-hold icon-help"> </span>
 		</div>
 
 	</div>
@@ -49,6 +51,16 @@
 		IP.data.params['appID'] = @Model.AppID;
 		IP.data.params['artifactID'] = @Model.ArtifactID;
 		IP.data.params['userID'] = @Model.UserID;
+		IP.data.params['URL'] = "@Html.Raw(@Model.URL)";
+		$("#cancel").on("click", function() {
+			
+			var getBasePath = IP.utils.getBasePath();
+			var route = IP.redirect.get();
+			if (!IP.redirect.isEdit()) {
+				route = document.URL.split('CustomPages')[0]+"@Html.Raw(@Model.URL)" ;
+			}
+			window.top.location =route;
+		});
 	</script>
 	@Scripts.Render("~/bundles/ipEdit")
 	@Scripts.Render("~/bundles/dragon")

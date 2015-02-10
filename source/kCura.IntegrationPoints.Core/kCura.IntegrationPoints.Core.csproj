@@ -126,6 +126,8 @@
     <Compile Include="Services\Syncronizer\DataSyncronizerComponetSelector.cs" />
     <Compile Include="Services\Syncronizer\IDataSyncronizerFactory.cs" />
     <Compile Include="Services\Syncronizer\RDOSyncronizerProvider.cs" />
+    <Compile Include="Services\Tabs\ITabService.cs" />
+    <Compile Include="Services\Tabs\RSAPITabService.cs" />
     <Compile Include="Services\UserService.cs" />
   </ItemGroup>
   <ItemGroup>
