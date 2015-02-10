@@ -50,12 +50,12 @@ var ldapHelper = (function (data) {
 
 	function checkLdap(localModel) {
 		return helper.checkLdap(localModel).fail(function (e) {
-			self.publish('saveError', 'Unable to connect to source using the specified settings.');
+			message.publish('saveError', 'Unable to connect to source using the specified settings.');
 		});
 	}
 
 	function encrypt(localModel) {
-		return helper.encryptSettings(localModel);	
+		return helper.encryptSettings(localModel);
 	}
 
 	message.subscribe('submit', function () {
@@ -63,6 +63,7 @@ var ldapHelper = (function (data) {
 		this.publish("saveState", localModel); //save the model incase of error
 		var self = this;
 		if (pageModel.errors().length === 0) {
+			debugger;
 			var p1 = checkLdap(localModel);
 			var p2 = encrypt(localModel);
 			IP.data.deferred().all(p1, p2).then(function () {
@@ -70,7 +71,7 @@ var ldapHelper = (function (data) {
 					self.publish('saveComplete', message);
 				});
 			});
-			
+
 		} else {
 			pageModel.errors.showAllMessages();
 		}
@@ -104,6 +105,12 @@ var ldapHelper = (function (data) {
 	});
 
 	message.subscribe('load', function (model) {
+
+		var _bind = function (model) {
+			pageModel = new viewModel(model);
+			ko.applyBindings(pageModel, document.getElementById('ldapConfiguration'));
+		};
+
 		if (typeof model === "object") {
 			model = JSON.stringify(model);
 		}
@@ -116,8 +123,9 @@ var ldapHelper = (function (data) {
 					jsonResult = {};
 				}
 			}
-			pageModel = new viewModel(jsonResult);
-			ko.applyBindings(pageModel, document.getElementById('ldapConfiguration'));
+			_bind(jsonResult);
+		}, function () {
+			_bind({});
 		});
 
 	});

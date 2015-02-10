@@ -83,7 +83,7 @@
 			this.frameBus.publish('submit');
 			//this is sketchy at best
 			this.bus.subscribe('saveComplete', function (data) {
-				self.model.sourceConfiguration = JSON.stringify(data);
+				self.model.sourceConfiguration = data;
 				
 				stepCache[self.model.source.selectedType] = self.model.sourceConfiguration;
 				d.resolve(self.model);
