@@ -149,7 +149,7 @@
 | | ... | Frequency			| Single Choice			| 
 | | ... | Start Date		| Date					| 
 | | ... | End Date			| Date					| 
-| | ... | Scheduled Time	| Text
+| | ... | Scheduled Time	| Text and Dropdown
 
 
 | The Import Scheduling Section's Fields are of the correct Types when Frequency is set to Weekly
@@ -167,7 +167,7 @@
 | | ... | Send On			| Checkboxes			| 
 | | ... | Start Date		| Date					| 
 | | ... | End Date			| Date					| 
-| | ... | Scheduled Time	| Text
+| | ... | Scheduled Time	| Text and Dropdown
 
 
 | The Import Scheduling Section's Fields are of the correct Types when Frequency is set to Monthly
@@ -186,7 +186,7 @@
 | | ... | Send On			| A Combination of Single Choice and dropdowns	| 
 | | ... | Start Date		| Date					| 
 | | ... | End Date			| Date					| 
-| | ... | Scheduled Time	| Text
+| | ... | Scheduled Time	| Text and Dropdown
 
 
 | The Scheduled Time field has the (local) label
