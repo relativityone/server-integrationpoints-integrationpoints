@@ -1,0 +1,22 @@
+﻿INSERT INTO [eddsdbo].[{0}]
+		(
+			[JobID],
+			[TaskType],
+			[Status],
+			[AgentID],
+			[RelatedObjectArtifactID],
+			[CreatedBy],
+			[CreatedOn],
+			[Details]
+		)
+	VALUES
+		(
+			@JobID
+			,@TaskType
+			,@Status
+			,@AgentID
+			,@RelatedObjectArtifactID 
+			,@CreatedBy
+			,GETUTCDATE()
+			,@Details
+		)

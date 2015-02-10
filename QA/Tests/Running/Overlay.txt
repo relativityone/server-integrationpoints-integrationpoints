@@ -1,0 +1,101 @@
+*** Settings ***
+| Documentation 	| Verify that running an Overlay RIP updates existing records but does not creates new records.
+| Metadata		    | Authors	| Daniel Oliver
+| Force Tags		| in-progress | team.method
+
+*** Variables ***
+
+| ${WorkspaceName}	          | Relativity Legal Hold
+| ${RIPOverlay1}              | Append and Overlay RIP  
+| ${NewObject}                | New Object not in Target 
+| ${ExistingAndUpdatedObject} | Existing Object with an Updated field    
+| ${ExistingNoChangeObject}   | Existing Object no Update     
+| ${ExistingObjectNull}       | Existing Object with a Null field being Updated     
+| ${ExistingObjectNulled}     | Existing Object with a populated field being Updated to Null
+
+*** Test Cases ***
+
+| An Overlay import updates existing modified records
+| | [Documentation] | Verify that when an Overlay RIP is run with an existing record in the Target RDO with updated details in the Source, that it does update the existing records in the Target RDO.
+| | ...				| [id] 139cff40-a89f-11e4-975e-b8ca3a83048f
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. ${NewObject} does not exist in the Target RDO
+| | ... | 2. ${ExistingAndUpdatedObject} exists in the Target RDO, but has updated details in the Source
+| | ... | 3. ${ExistingNoChangeObject} exists in the Target RDO and has the same details as the Source
+| | ... | 4. The ${RIPAppendOverlay1} RIP is set to Append/Overlay
+| | ... |
+| | ... | Steps:
+| | ... | 1. Import Integration Point ${RIPOverlay1} 
+| | ... | 2. Go to the Target RDO's tab
+| | ... | 3. Search for ${ExistingAndUpdatedObject}
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that there is an Update entry for the object ${ExistingAndUpdatedObject}
+
+| An Overlay import does not Create new records
+| | [Documentation] | Verify that when an Overlay RIP is run with an existing record in the Target RDO with identical details in the Source, that it does not update the existing record in the Target RDO.
+| | ...				| [id] 13a00c80-a89f-11e4-a4a8-b8ca3a83048f
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. Require Test Case: An Overlay import updates existing modified records
+| | ... |
+| | ... | Steps:
+| | ... | 1. View the History records for the ${RIPOverlay1} import
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that there is no Create entry for ${NewObject}
+
+| Does not Update when there are no Changes
+| | [Documentation] | Verify that when an Overlay RIP is run with an existing record in the Target RDO with identical details in the Source, that it does not update the existing record in the Target RDO.
+| | ...				| [id] 13a00c81-a89f-11e4-8795-b8ca3a83048f
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. Require Test Case: An Overlay import updates existing modified records
+| | ... |
+| | ... | Steps:
+| | ... | 1. View the History records for the ${RIPOverlay1} import (Action of Import and Update - Import)
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Update entries for the object ${ExistingNoChangeObject} did not change the existing values to new values
+
+| Updates Null to a Value
+| | [Documentation] | Verify that when an Overlay RIP is run with an existing record in the Target RDO with one field set to Null, that it does update the existing record in the Target RDO.
+| | ...				| [id] 13a00c82-a89f-11e4-98bf-b8ca3a83048f
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. Require Test Case: An Overlay import updates existing modified records
+| | ... |
+| | ... | Steps:
+| | ... | 1. View the History records for the ${RIPOverlay1} import
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that there is an Update entry for the object ${ExistingObjectNull}
+
+| Updates a Value to Null
+| | [Documentation] | Verify that when an Overlay RIP is run with an existing record in the Target RDO with one field popuplated, that it does update the existing record in the Target RDO to Null.
+| | ...				| [id] 13a00c83-a89f-11e4-b392-b8ca3a83048f
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. Require Test Case: An Overlay import updates existing modified records
+| | ... |
+| | ... | Steps:
+| | ... | 1. View the History records for the ${RIPOverlay1} import
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that there is an Update entry for the object ${ExistingObjectNulled
+
+*** Keywords *** 
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource  | C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
+

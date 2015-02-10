@@ -1,0 +1,345 @@
+
+*** Settings ***
+| Documentation	| This suite of keywords deals with the Integration Point object and its associated pages and actions.
+
+
+*** Variables ***
+
+
+
+*** Keywords ***
+
+| Proceed to the Next Step of the Integration Point wizard
+| | [Documentation]	| This keyword proceeds to the Next Step of the Integration Point wizard.
+| | Click	| id=stepProgress	| # Click out of any given field
+| | ${PreviousStep}=	| Determine the current Step of the Create Integration Point Process
+| | ${NextStep}=	| Set Variable If	| 
+| | ... | "${PreviousStep}" == "Set Integration Details"	| Connect to Source	| 
+| | ... | "${PreviousStep}" == "Connect to Source"			| Map Fields		| 
+| | ... | "${PreviousStep}" == "Map Fields"					| User Error: Wrong keyword.	| 
+| | ... | Outdated Keyword. Please update step names.	| # Else
+| | Click	| id=next
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${NextStep}
+
+#------------------------------------------------------------------------------------------------------------------------
+# Step 1 Section 
+
+| Fill out the Following Fields of the Integration Point Step 1 form
+| | [Documentation]	| This keyword fills out the Integration Point Step 1 fields.
+| | ... 			| The value of ${Overwrite} should be Append or Append/Overlay.
+| | ... 			| The value of ${Frequency} should be Select.../Daily/Weekly/Monthly.
+| | ... 			| The acceptable values ${SendOn} vary by the selected ${Frequency}.
+| | ... 			| - When ${Frequency} is 'Weekly' then ${SendOn} should be a semicolon seperated list of the desired days of the week (Note: Each day of the week should begin with a capital letter).
+| | ... 			| -- Alternatively, you can clear the checkboxes by passing in the value 'Clear' for ${SendOn}
+| | ... 			| - When ${Frequency} is 'Monthly' then ${SendOn} should be one of two strings: 
+| | ...				| -- 'The <X> <Y> of the month' where X is First, Second, Third, Fourth, or Last, and Y is any day Monday-Sunday or just 'day'.
+| | ...				| -- 'Day <X> of the month' where X is any value from 1-31.
+| | ...				| The value of ${ScheduledTime} should be expressed in military time. I.E. in the format HH:MM.
+| | [ARGUMENTS]		| ${IntegrationName}=NULL	| ${Overwrite}=NULL	| ${SourceProvider}=NULL	| ${DestinationRDO}=NULL	| ${EnableScheduler}=NULL	| ${Frequency}=NULL		| 
+| | ...				| ${Reoccur}=NULL			| ${SendOn}=NULL	| ${StartDate}=NULL			| ${EndDate}=NULL			| ${ScheduledTime}=NULL
+| | Wait Until Page Contains Element	| id=name	| 10s	| The page was not on Step 1 of the Integration Point form.
+| | Run Keyword Unless	| "${IntegrationName}" == "NULL"	| Input Text	| id=name	| ${IntegrationName}
+| | Run Keyword Unless	| "${Overwrite}" == "NULL"			| Select from Select2 Dropdown	| s2id_overwrite	| ${Overwrite}
+| | Run Keyword Unless	| "${SourceProvider}" == "NULL"		| Select from Select2 Dropdown	| s2id_sourceProvider	| ${SourceProvider}
+| | Run Keyword Unless	| "${DestinationRDO}" == "NULL"		| Select from Select2 Dropdown	| s2id_destinationRdo	| ${DestinationRDO}
+
+| | Run Keyword If		| "${EnableScheduler.lower()}" == "yes"		| Select Radio Button	| enable	| true	| 
+| | ... | ELSE IF		| "${EnableScheduler.lower()}" == "no"		| Select Radio Button	| enable	| false	| 
+| | ... | ELSE IF		| "${EnableScheduler.lower()}" != "null"	| Fail	| The variable "EnableScheduler" expected "Yes", "No", or "NULL", but got "${EnableScheduler}".
+
+| | ${SchedulerEnabled}=	| Get Selected Radio Button Value	| enable
+| | @{SchedulerValues}=	| Create List	| ${Frequency}	| ${Reoccur}	| ${SendOn}	| ${StartDate}	| ${EndDate}	| ${ScheduledTime}
+| | @{NullValues}=		| Create List	| NULL			| NULL			| NULL		| NULL			| NULL			| NULL
+| | Run Keyword Unless	| ${${SchedulerEnabled}}	| Lists Should Be Equal	| ${SchedulerValues}	| ${NullValues}	| The Scheduler fields cannot be changed while Enable Scheduler is set to No.
+
+| | Run Keyword Unless	| "${Frequency}" == "NULL"		| Select from Select2 Dropdown	| s2id_frequency	| ${Frequency}
+
+| | ${FrequencyValue}=	| Determine the currently selected value of a select2 Dropdown	| s2id_frequency
+| | @{ConditionalSchedulerValues}=	| Create List	| ${Reoccur}	| ${SendOn}
+| | @{NullValues}=					| Create List	| NULL			| NULL
+| | Run Keyword Unless	| ("${FrequencyValue}" == "Monthly") or ("${FrequencyValue}" == "Weekly")	| Lists Should Be Equal	| ${ConditionalSchedulerValues}	| ${NullValues}	| The Reoccur and Send On fields cannot be changed while Frequency is set to "${FrequencyValue}".
+
+| | Run Keyword Unless	| "${Reoccur}" == "NULL"	| Input Text	| id=reoccur	| ${Reoccur}
+
+| | Run Keyword If	| ("${FrequencyValue}" == "Weekly") and ("${SendOn}" != "NULL")		| IntegrationPointKeywords.Fill out the Send On field for a Weekly Frequency	| ${SendOn}	| 
+| | ... | ELSE IF	| ("${FrequencyValue}" == "Monthly") and ("${SendOn}" != "NULL")	| IntegrationPointKeywords.Fill out the Send On field for a Monthly Frequency	| ${SendOn}
+
+| | Run Keyword Unless	| "${StartDate}" == "NULL"	| Input Text	| id=scheduleRulesStartDate	| ${StartDate}
+
+| | Run Keyword Unless	| "${EndDate}" == "NULL"	| Input Text	| id=scheduleRulesEndDate	| ${EndDate}
+
+| | Run Keyword Unless	| "${ScheduledTime}" == "NULL"	| Input Text	| id=scheduledTime	| ${ScheduledTime}
+
+| Fill out the Send On field for a Weekly Frequency
+| | [Documentation]	| Selects the given checkboxes of the Weekly Send On field's checkboxes.
+| | ... 			| [Tags] private
+| | [ARGUMENTS] 	| ${SendOn}
+| | ${SendOn}=	| Replace String	| ${SendOn}	| ${SPACE}	| ${EMPTY}
+| | IntegrationPointKeywords.Clear the Weekly Send On Field
+| | Run Keyword Unless	| '${SendOn.lower()}' == 'clear'	| IntegrationPointKeywords.Populate the Weekly Send On Field	| ${SendOn}
+
+| Clear the Weekly Send On Field
+| | [Documentation]	| Unselects all of the Weekly Send On field's checkboxes.
+| | ... 			| [Tags] private
+| | Click	| id=name	| # The cursor can get stuck on the Reoccur field. This just clicks out of the field and has no other effects.
+| | @{DaysOfTheWeek}=	| Create List	| Monday	| Tuesday	| Wednesday	| Thursday	| Friday	| Saturday	| Sunday
+| | :FOR	| ${Locator}	| IN RANGE	| 7	| # Run for values 0 to 6
+| | | Unselect Checkbox	| xpath=//input[@type='checkbox' and @value='${DaysOfTheWeek[${Locator}]}']
+
+| Populate the Weekly Send On Field
+| | [Documentation]	| This keywords splits up the given string, which should be a semicolon seperated list of days. 
+| | ... 			| It then selects the Send On field checkboxes for the given days.
+| | ... 			| [Tags] private
+| | [ARGUMENTS] 	| ${SendOn}
+| | @{Days}=	| Split String	| ${SendOn}	| ;	| 6
+| | :FOR	| ${Day}	| IN	| @{Days}
+| | | Element Should Be Visible	| xpath=//input[@type='checkbox' and @value='${Day}']	| Could not find the checkbox for "${Day}". 
+| | | Select Checkbox	| xpath=//input[@type='checkbox' and @value='${Day}']
+
+| Fill out the Send On field for a Monthly Frequency
+| | [Documentation]	| Fills out the Send On fields present when the Frequency is set to Monthly. 
+| | ... 			| [Tags] private
+| | [ARGUMENTS] 	| ${SendOn}
+| | ${FirstWord}=	| Fetch from Left	| ${SendOn}	| ${Space}
+| | Run Keyword If	| '${FirstWord.lower()}' == 'the'	| IntegrationPointKeywords.Select the radio button for The X X of the month	| ${SendOn}
+| | ... | ELSE IF	| '${FirstWord.lower()}' == 'day'	| IntegrationPointKeywords.Select the day X of the month radio button		| ${SendOn}
+| | ... | ELSE		| Fail	| The Send On field could not be filled out. The value "${SendOn}" was not valid.
+
+| Select the day X of the month radio button
+| | [Documentation]	| Selects the values for the Day X of the month option. This includes both setting the dropdown value and the radio button.
+| | ... 			| [Tags] private
+| | [ARGUMENTS] 	| ${SendOn}
+| | ${DayValue}=	| Fetch from Left	| ${SendOn}	| ${Space}of the month
+| | ${DayValue}=	| Fetch from Right	| ${DayValue}	| Day${Space}
+| | Select from select2 Dropdown	| id=s2id_day-select	| ${DayValue}	| # The Send On dropdown
+| | Select Radio Button	| monthly	| days
+
+| Select the radio button for The X X of the month
+| | [Documentation]	| Selects the values for the "The X X of the month." option. This includes setting both the dropdown values and the radio button.
+| | ... 			| [Tags] private
+| | [ARGUMENTS] 	| ${SendOn}
+| | ${BothValues}=	| Fetch from Left	| ${SendOn}	| ${Space}of the month
+| | ${BothValues}=	| Fetch from Right	| ${BothValues}	| The${Space}
+| | ${Occurance}	| ${Day}=	| Split String	| ${BothValues}	| ${Space}
+| | Select from select2 Dropdown	| id=s2id_dayType		| ${Occurance}
+| | Select from select2 Dropdown	| id=s2id_dayOfMonth	| ${Day}
+| | Select Radio Button	| monthly	| month
+
+#------------------------------------------------------------------------------------------------------------------------
+# Step 2 Section
+
+| Fill out the Following Fields of the Integration Point Step 2 form
+| | [Documentation]	| This keyword fills out the Integration Point Step 2 fields.
+| | ... 			| The value of ${Authentication} should be Select.../Anonymous/Encryption/FastBind/Secure/Secure Socket Layer/Readonly server.
+| | ... 			| The value of ${ImportNestedItems} should be Yes or No.
+| | [ARGUMENTS]		| ${ConnectionPath}=NULL		| ${ObjectFilterString}=NULL	| ${Authentication}=NULL	| 
+| | ...				| ${ConnectionUsername}=NULL	| ${ConnectionPassword}=NULL	| ${ImportNestedItems}=NULL
+| | Wait for then Select iFrame	| id=configurationFrame	| 10s	| The page was not on Step 2 of the Integration Point form.
+| | Wait Until Page Contains Element	| id=connectionPath	| 10s	| The page was not on Step 2.
+| | Run Keyword Unless	| "${ConnectionPath}" == "NULL"		| Input Text	| id=connectionPath		| ${ConnectionPath}
+| | Run Keyword Unless	| "${ObjectFilterString}" == "NULL"	| Input Text	| id=connectionFilter	| ${ObjectFilterString}
+| | Run Keyword Unless	| "${Authentication}" == "NULL"		| Select from Select2 Dropdown	| s2id_authentication	| ${Authentication}
+| | Run Keyword Unless	| "${ConnectionUsername}" == "NULL"	| Input Text	| id=connectionUsername	| ${ConnectionUsername}
+| | Run Keyword Unless	| "${ConnectionPassword}" == "NULL"	| Input Text	| id=connectionPassword	| ${ConnectionPassword}
+
+| | Run Keyword If		| "${ImportNestedItems.lower()}" == "yes"	| Select Radio Button	| enable	| true	| 
+| | ... | ELSE IF		| "${ImportNestedItems.lower()}" == "no"	| Select Radio Button	| enable	| false	| 
+| | ... | ELSE IF		| "${ImportNestedItems.lower()}" != "null"	| Fail	| The variable "ImportNestedItems" expected "Yes", "No", or "NULL", but got "${ImportNestedItems}".
+| | Unselect Frame
+| | Select iFrame	| id=_externalPage
+
+#------------------------------------------------------------------------------------------------------------------------
+# Step 3 Section
+
+| Get the Unassigned Workspace Fields
+| | [Documentation]	| Returns a list of the Workspace Fields from the Unassigned Workspace Fields list box on Step 3 of the Integration Point creation process.
+| | Wait Until Page Contains Element	| id=workspace-fields	| 10s	| The unassigned Workspace Fields List Box never loaded.
+| | Wait Until Page Contains Element	| xpath=//select[@id='workspace-fields']/child::option	| 10s	| The unassigned Workspace Fields never loaded.
+| | @{WorkspaceFields}=	| Get Element Text	| xpath=//select[@id='workspace-fields']/child::option	| False
+| | [Return]		| @{WorkspaceFields}
+
+| Verify that the Unassigned Workspace Listbox has the following Fields in order
+| | [Documentation]	| Verifies that the given fields are on the Unassigned Workspace listbox in the given order.
+| | [ARGUMENTS]		| @{ExpectedFields}
+| | @{WorkspaceFields}=	| Get the Unassigned Workspace Fields
+| | Log	| Workspace Fields: ${WorkspaceFields}
+| | Log	| Expected Fields: ${ExpectedFields}
+| | Lists Should Be Equal	| ${WorkspaceFields}	| ${ExpectedFields}
+
+| Get the Assigned Workspace Fields
+| | [Documentation]	| Returns a list of the Workspace Fields from the Assigned Workspace Fields list box on Step 3 of the Integration Point creation process.
+| | Wait Until Page Contains Element	| id=selected-workspace-fields	| 10s	| The assigned Workspace Fields List Box never loaded.
+| | Wait Until Page Contains Element	| xpath=//select[@id='selected-workspace-fields']/child::option	| 10s	| The assigned Workspace Fields never loaded.
+| | @{WorkspaceFields}=	| Get Element Text	| xpath=//select[@id='selected-workspace-fields']/child::option	| False
+| | [Return]		| @{WorkspaceFields}
+
+| Get the Assigned Source Attributes
+| | [Documentation]	| Returns a list of the Workspace Fields from the Assigned Source Attributes list box on Step 3 of the Integration Point creation process.
+| | Wait Until Page Contains Element	| id=selected-source-fields	| 10s	| The assigned Source Attributes List Box never loaded.
+| | Wait Until Page Contains Element	| xpath=//select[@id='selected-source-fields']/child::option	| 10s	| The assigned Source Attributes never loaded.
+| | @{SourceAttributes}=	| Get Element Text	| xpath=//select[@id='selected-source-fields']/child::option	| False
+| | [Return]		| @{SourceAttributes}
+
+| Get the Unassigned Source Attributes
+| | [Documentation]	| Returns a list of the Workspace Fields from the Unassigned Source Attributes list box on Step 3 of the Integration Point creation process.
+| | Wait Until Page Contains Element	| id=source-attributes	| 10s	| The unassigned Source Attributes List Box never loaded.
+| | Wait Until Page Contains Element	| xpath=//select[@id='source-attributes']/child::option	| 10s	| The unassigned Source Attributes never loaded.
+| | @{SourceAttributes}=	| Get Element Text	| xpath=//select[@id='source-attributes']/child::option	| False
+| | [Return]		| @{SourceAttributes}
+
+#------------------------------------------------------------------------------------------------------------------------
+# Generic Keywords
+
+| Get a List of All Non-System Object Types in the Workspace
+| | [Documentation]	| Gets a list of all of the Object types in the Workspace, removes the System Object types, and then return the remainder. 
+| | ${2DGrid}=	| Query Workspace Database	|  
+| | ... | SELECT Name
+| | ... | FROM [EDDSDBO].[ObjectType]
+| | ... | ORDER BY Name
+| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
+| | @{ObjectFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
+| | @{SystemFields}=	| Create List	| 
+| | ... | Agent Type			|
+| | ... | Batch					|
+| | ... | Batch Set				|
+| | ... | Code					|
+| | ... | Event Handler			|
+| | ... | Field					|
+| | ... | Folder				|
+| | ... | Group					|
+| | ... | History				|
+| | ... | Install Event Handler	|
+| | ... | Integration Point		| 
+| | ... | Layout				|
+| | ... | Markup Set			|
+| | ... | Mass Operation		|
+| | ... | Object Rule			|
+| | ... | Object Type			|
+| | ... | Production			|
+| | ... | Relativity Script		|
+| | ... | Report				|
+| | ... | Search				|
+| | ... | Search Container		|
+| | ... | Search Index			|
+| | ... | Source Provider		| 
+| | ... | Tab					|
+| | ... | View					|
+| | ... | Workspace
+| | Remove Values From List	| ${ObjectFields}	| @{SystemFields}
+| | [Return]		| @{ObjectFields}
+
+| Get the Non-System Fields for the following Object Type
+| | [Documentation]	| Gets a list of all of the fields on the given object, removes the five system fields, and then returns the remaining fields.
+| | [ARGUMENTS]		| ${ObjectType}
+| | ${2DGrid}=	| Query Workspace Database	|  
+| | ... | SELECT DisplayName
+| | ... | FROM [EDDSDBO].[Field] f
+| | ... | JOIN [ObjectType] ot on ot.DescriptorArtifactTypeID = f.FieldArtifactTypeID
+| | ... | WHERE ot.Name = '${ObjectType}'
+| | ... | AND f.isVisible != 0	| # Field is not hidden
+| | ... | ORDER BY DisplayName	| # Sort list
+| | Should Not Be Empty	| ${2DGrid}	| No fields were found for the Object Type "${ObjectType}".
+| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
+| | @{NonSystemFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
+| | @{SystemFields}=	| Create List	| System Created By	| System Created On	| System Last Modified By	| System Last Modified On	| Artifact ID
+| | Remove Values From List	| ${NonSystemFields}	| @{SystemFields}
+| | Should Not Be Empty	| ${NonSystemFields}	| No non-object and non-system fields were found for the Object Type "${ObjectType}".
+| | [Return]		| @{NonSystemFields}
+
+| Determine the current Step of the Create Integration Point Process
+| | [Documentation]	| This keyword determines and returns which Step you are in on the Create Integration Point Process.
+| | ...				| The returned value is in text form ("Set Integration Details", "Connect to Source", or "Map Fields"). 
+| | ${ActualStep}=	| Get Text	| xpath=//div[@id='stepProgress']/descendant::li[contains(@class, 'in-progress')]
+| | ${ActualStep}=	| Fetch From Left	| ${ActualStep}	| \n
+| | [Return]		| ${ActualStep}
+
+| Open Create Integration Point
+| | [Documentation]	| Opens the create Integration Point page. Must be called from the All Integration Points page.
+| | Go to the Tab	| Integration Points
+| | Click	| New Integration Point
+| | Wait for then Select iFrame	| id=_externalPage	| 10s	| The Page never redirected after clicking "New Integration Point".
+
+| Verify that the following field is not required
+| | [Documentation]	| A keyword that verifies the specified field does not have the required field indicator (orange line).
+| | [ARGUMENTS] 	| ${FieldName}
+| | Page Should Contain Element		| xpath=//div[text()="${FieldName}"]	| The field "${FieldName}" was not present on the page.
+| | Page Should Not Contain Element	| xpath=//div[contains(@class, "field-label") and contains(@class, "required") and text()="${FieldName}"]	| The field "${FieldName}" is required when it should not have been.
+| | Page Should Contain Element		| xpath=//div[@class="field-label" and text()="${FieldName}"]			| The field "${FieldName}" has unexpected HTML. Please re-write this keyword.
+
+| Verify that the following field is required
+| | [Documentation]	| A keyword that verifies that the specified field has the required field indicator (orange line).
+| | [ARGUMENTS] 	| ${FieldName}
+| | Page Should Contain Element		| xpath=//div[text()="${FieldName}"]	| The field "${FieldName}" was not present on the page.
+| | Page Should Not Contain Element	| xpath=//div[@class="field-label" and text()="${FieldName}"]	| The field "${FieldName}" is not required when it should have been.
+| | Page Should Contain Element		| xpath=//div[contains(@class, "field-label") and contains(@class, "required") and text()="${FieldName}"]	| The field "${FieldName}" has unexpected HTML. Please re-write this keyword.
+
+| Verify that the following radio buttons are grouped together
+| | [Documentation]	| A keyword that verifies that a radio buttons set of options are correct.
+| | ...				| [Tags] mainstream?
+| | [ARGUMENTS] 	| ${GroupName}	| @{ExpectedOptions}
+| | Page Should Contain Element	| xpath=//input[@type="radio" and @name="${GroupName}"]	| No radio button group with the name attribute "${GroupName}" was present on the page.
+| | @{ActualOptions}=	| Get Element Text	| xpath=//input[@type="radio" and @name="${GroupName}"]/parent::*	| False
+| | Sort List	| ${ActualOptions}
+| | Sort List	| ${ExpectedOptions}
+| | Lists Should Be Equal	| ${ExpectedOptions}	| ${ActualOptions}
+
+| Verify that the following field ID has a text input
+| | [Documentation]	| A keyword that verifies the specified field has an input type of Text.
+| | [ARGUMENTS] 	| ${FieldID}
+| | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
+| | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@type="text" and @id="${FieldID}"]	| The "${FieldID}" field does not have an input type of Text.
+
+| Verify that the following field ID has a password input
+| | [Documentation]	| A keyword that verifies the specified field has an input type of Password.
+| | [ARGUMENTS] 	| ${FieldID}
+| | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
+| | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@type="password" and @id="${FieldID}"]	| The "${FieldID}" field does not have an input type of Text.
+
+| Verify that the following field ID has a droplist input
+| | [Documentation]	| A keyword that verifies the specified field has an input type of a drop down list.
+| | [ARGUMENTS]		| ${FieldID}
+| | Page Should Contain Element	| xpath=//div[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
+| | Page Should Contain Element	| xpath=//div[@class="select2-container filter-container" and @id="${FieldID}"]	| The field ID of "${FieldID}" does not have an input type of a drop down list.
+
+| Verify that the following field ID has a listbox input
+| | [Documentation]	| A keyword that verifies the specified field has an input type of a list box.
+| | [ARGUMENTS]		| ${FieldID}
+| | Page Should Contain Element	| xpath=//select[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
+| | Page Should Contain Element	| xpath=//select[@class="list-box" and @id="${FieldID}"]	| The field ID of "${FieldID}" does not have an input type of a list box list.
+
+| Verify that the following section contains the following fields
+| | [Documentation]	| A keyword that verifies that a Section contains the specified fields in the specified order
+| | [ARGUMENTS]		| ${SectionHeading}	| @{ExpectedFields}
+| | Element Should be Visible	| xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]	| The Section "${SectionHeading}" was not found
+| | @{ActualFields}=	| Get Element Text	| xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]/descendant::div[contains(@class, "field-label")]	| False 
+| | Remove values from list	| ${ActualFields}	| ${EMPTY}
+| | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
+
+| Verify that you are on the following Step of the Create Integration Point Process
+| | [Documentation]	| Verifies that you are on the given step of the Create Integration Point process.
+| | ...				| Currently, the acceptable values are: "Set Integration Details", "Connect to Source", and "Map Fields"
+| | [ARGUMENTS] 	| ${ExpectedStep}
+| | Verify that the Header has the Following Text	| Create Integration Point
+| | ${ActualStep}=	| Determine the current Step of the Create Integration Point Process
+| | Run Keyword Unless	| "${ExpectedStep}" == "${ActualStep}"	| Fail	| The current step was not "${ExpectedStep}", it was "${ActualStep}".
+
+| Verify the following Integration Point Field has the following Error
+| | [Documentation]	| Verifies that the given field has the given error.
+| | ... 			| Must be called from the Integration Point Create/Edit pages.
+| | [ARGUMENTS] 	| ${FieldID}	| ${ErrorText}
+| | ${StepText}=	| Determine the current Step of the Create Integration Point Process
+| | Run Keyword If	| "${StepText}" == "Connect to Source"	| Wait for then Select iFrame	| id=configurationFrame	| 10s
+| | ${FieldID}= | fetch from right | ${FieldID} | s2id_
+| | Element Should Be Visible	| css=[id=${FieldID}]	| The field with the ID "${FieldID}" was not found.
+| | Element Should Be Visible	| xpath=//*[@id='${FieldID}']/following-sibling::div/child::*[contains(@class, 'icon-error') and contains(@class, 'field-validation-error')]	| No error was found on the field with the ID "${FieldID}".
+| | ${ActualText}=	| Get Text	| xpath=//*[@id='${FieldID}']/following-sibling::div/child::*[contains(@class, 'icon-error') and contains(@class, 'field-validation-error')]
+| | Run Keyword Unless	| '${ActualText}' == '${ErrorText}'	| Fail	| The error was incorrect. It should have been "${ErrorText}" but it was actually "${ActualText}".
+| | Run Keyword If	| "${StepText}" == "Connect to Source"	| Unselect Frame
+| | Run Keyword If	| "${StepText}" == "Connect to Source"	| Select iFrame	| id=_externalPage
+
+
+*** Settings ***
+| Library	| String
+| Library	| Collections
+| Library 	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt

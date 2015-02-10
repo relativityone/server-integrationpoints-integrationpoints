@@ -1,0 +1,26 @@
+.dragon-pager {
+  float: right;
+  color: #102d4f; }
+  .dragon-pager > span {
+    display: inline-block; }
+  .dragon-pager ul {
+    display: inline-block;
+    padding: 0 5px;
+    margin: 0 0 10px; }
+    .dragon-pager ul li {
+      display: inline-block; }
+      .dragon-pager ul li a {
+        padding: 3px 4px 2px;
+        margin: 1px;
+        border: 1px solid #1b54ab;
+        border-radius: 3px;
+        font-size: .5em;
+        color: #1b54ab;
+        text-decoration: none;
+        vertical-align: middle; }
+        .dragon-pager ul li a.disabled:hover {
+          cursor: default; }
+  .dragon-pager input[type="text"] {
+    width: 30px;
+    text-align: center; }
+

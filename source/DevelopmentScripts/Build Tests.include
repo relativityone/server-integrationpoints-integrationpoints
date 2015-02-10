@@ -1,0 +1,78 @@
+<?xml version="1.0" ?>
+
+<project name="LDAPSync">
+	
+	<!-- Test properties -->
+	<property name="testLogDirectory" value="${source.code.directory}\TestLogs" />
+	<property name="testOutput32" value="${testLogDirectory}\output32.xml" />
+	<property name="testOutput64" value="${testLogDirectory}\output64.xml" />
+	<property name="nunit.tools.location" value="${source.code.directory}\packages\NUnit.Runners.2.6.4\tools" />
+	
+	<property name="NUnit" value="${nunit.tools.location}\nunit-console-x86.exe" unless="${property::exists('NUnit')}" />
+	<property name="NUnit64" value="${nunit.tools.location}\nunit-console.exe" unless="${property::exists('NUnit64')}" />
+	
+	<property name="testDirectory" value="${source.code.directory}" />
+	
+	<target name="start_tests" description="Run automated tests on the LDAPSync codebase." depends="test_initialize, run_tests64, run_tests64_part2" />
+	
+	<target name="test_initialize">
+		<mkdir dir="${testLogDirectory}" failonerror="false" />
+		<if test="${file::exists(testOutput32)}">
+			<delete file="${testOutput32}" failonerror="true" />
+		</if>
+		<if test="${file::exists(testOutput64)}">
+			<delete file="${testOutput64}" failonerror="true" />
+		</if>
+	</target>
+	
+	<target name="run_tests64">
+		<exec program="${NUnit64}" verbose="true" failonerror="true">
+			<arg line="&quot;${fileset::to-string('unitTestAssembliesX64', '&quot; &quot;')}&quot;" />
+			<arg value='/exclude:KnownDefect' />
+			<arg value='/labels' />
+			<arg value='/xml:"${testOutput64}"' />
+			<arg value='/domain:Single' />
+			<arg value='/noshadow' />
+		</exec>
+	</target>
+
+	<target name="run_tests64_part2">
+		<exec program="${NUnit64}" verbose="true" failonerror="true">
+			<arg line="&quot;${fileset::to-string('unitTestAssembliesX64_Part2', '&quot; &quot;')}&quot;" />
+			<arg value='/exclude:KnownDefect' />
+			<arg value='/labels' />
+			<arg value='/xml:"${testOutput64}"' />
+			<arg value='/domain:Single' />
+			<arg value='/noshadow' />
+		</exec>
+	</target>
+	
+	<target name="run_tests32">
+		<exec program="${NUnit}" verbose="true" failonerror="true">
+			<arg line="&quot;${fileset::to-string('unitTestAssembliesX86', '&quot; &quot;')}&quot;" />
+			<arg value='/exclude:KnownDefect' />
+			<arg value='/labels' />
+			<arg value='/xml:"${testOutput32}"' />
+			<arg value='/domain:Single' />
+			<arg value='/noshadow' />
+		</exec>
+	</target>
+	
+	<!-- unitTestAssemblies separated into x86 and x64 filesets -->
+	<assemblyfileset id="unitTestAssembliesX86">
+	</assemblyfileset>
+	
+	<assemblyfileset id="unitTestAssembliesX64">
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.ScheduleQueue.Core.Tests\bin\kCura.ScheduleQueue.Core.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Data.Tests\bin\kCura.IntegrationPoints.Data.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Core.Tests\bin\kCura.IntegrationPoints.Core.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Synchronizers.RDO.Tests\bin\kCura.IntegrationPoints.Synchronizers.RDO.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Agent.Tests\bin\kCura.IntegrationPoints.Agent.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.EventHandlers.Tests\bin\kCura.IntegrationPoints.EventHandlers.Tests.dll')}" />
+	</assemblyfileset>
+
+	<assemblyfileset id="unitTestAssembliesX64_Part2">
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Web.Tests\bin\kCura.IntegrationPoints.Web.Tests.dll')}" />
+	</assemblyfileset>
+
+</project>

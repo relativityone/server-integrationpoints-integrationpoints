@@ -1,0 +1,74 @@
+﻿<div class="card" id="ldapConfiguration">
+	<label class="label">Source Connection</label>
+	<div class="field-row">
+		<div class="field-label required">
+			Connection Path:
+		</div>
+		<div class="field-value">
+			<input type="text" maxlength="255" data-bind="value: connectionPath" id="connectionPath" class=" connection-path">
+		</div>
+	</div>
+
+	<div class="field-row">
+		<div class="field-label">
+			Object Filter String:
+		</div>
+		<div class="field-value">
+			<input type="text" maxlength="255" data-bind="value: filter" id="connectionFilter" class="connection-filter">
+		</div>
+	</div>
+
+	<div class="field-row">
+		<div class="field-label required">
+			Authentication:
+		</div>
+		<div class="field-value">
+			<select id="authentication" data-bind="options: auth, optionsText: 'name', optionsValue: 'id', value: connectionAuthenticationType, optionsCaption: 'Select...', select2: {}">
+			</select>
+		</div>
+	</div>
+
+	<div class="field-row">
+		<div class="field-label">
+			Username:
+		</div>
+		<div class="field-value">
+			<input type="text" maxlength="255" data-bind="value: userName" id="connectionUsername" class="inputBox">
+		</div>
+	</div>
+
+	<div class="field-row">
+		<div class="field-label">
+			Password:
+		</div>
+		<div class="field-value">
+			<input type="password" maxlength="255" data-bind="value: password" id="connectionPassword" class="inputBox">
+		</div>
+	</div>
+
+	<div class="field-row">
+		<div class="field-label">
+			Import Nested Items:
+		</div>
+		<div class="field-value">
+			<ul>
+				<li>
+					<input type="radio" name="enable" value="true" data-bind="checked: importNested" />Yes</li>
+				<li>
+					<input type="radio" name="enable" value="false" data-bind="checked: importNested" />No</li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+@section scripts
+{
+	<script src="~/Scripts/core/data.js"></script>
+	<script src="~/Scripts/core/utils.js"></script>
+	<script src="~/Scripts/knockout-2.2.0.js"></script>
+	<script src="~/Scripts/knockout.validation.js"></script>
+	<script src="~/Scripts/integration-point/binding.js"></script>
+	<script src="~/Scripts/jquery-postMessage.js"></script>
+	<script src="~/Scripts/frame-messaging.js"></script>
+	<script src="~/Scripts/ldap/ldap-edit.js"></script>
+}

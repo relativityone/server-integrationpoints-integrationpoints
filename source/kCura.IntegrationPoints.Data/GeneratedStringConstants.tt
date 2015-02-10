@@ -1,0 +1,251 @@
+﻿<#@ template language="C#" hostspecific="true" debug="true" #>
+<#@ assembly name="$(ProjectDir)\..\Dependencies\Milyli.Relativity.CodeGen\GeneratorHelper.dll" #>
+<#@ assembly name="System.Core.dll" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="Milyli.MRT4.GeneratorHelper" #>
+<#
+var templateFile = Path.GetDirectoryName(Host.TemplateFile); 
+var schemaFile = @"..\source\application\application.xml"; 
+var fullPathSchemaFile = Path.Combine(Path.GetDirectoryName(templateFile), schemaFile);
+var objTypes = SchemaHelper.GetObjectTypes(fullPathSchemaFile);
+var tabTypes = SchemaHelper.GetObjectTypes(fullPathSchemaFile);
+string nameSpaceName = "kCura.IntegrationPoints.Data"; 
+#>
+using kCura.Relativity.Client;
+namespace <#=nameSpaceName#>
+{
+ 
+	public class BaseFields
+	{
+		public const string SystemCreatedOn = "System Created On";
+		public const string SystemCreatedBy = "System Created By";
+		public const string LastModifiedOn = "Last Modified On";
+		public const string LastModifiedBy = "Last Modified By";
+	}
+
+	public class FieldTypes
+	{
+		public const string SingleObject = "Single Object";
+		public const string MultipleObject = "Multiple Object";
+		public const string FixedLengthText = "Fixed Length Text";
+		public const string SingleChoice = "Single Choice";
+		public const string MultipleChoice = "MultipleChoice";
+		public const string LongText = "Long Text";
+		public const string User = "User";
+		public const string YesNo = "Yes/No";
+		public const string WholeNumber = "Whole Number";
+		public const string Currency = "Currency";
+		public const string Decimal = "Decimal";
+		public const string @Date = "Date";
+		public const string File = "File";
+	}
+
+	public partial class ObjectTypes
+	{
+		public const string Workspace = "Workspace";
+		public const string Folder = "Folder";
+	<#
+	foreach  (ObjectTypeDTO objType in objTypes)
+	{
+	#>
+	public const string <#=objType.Name.ToPascalCase()#> = @"<#=objType.Name#>";
+	<#
+	}
+	#>
+	}
+
+	public partial class ObjectTypeGuids
+	{
+	<#
+	foreach  (ObjectTypeDTO objType in objTypes)
+	{
+	#>
+	public const string <#=objType.Name.ToPascalCase()#> = @"<#=objType.Guid#>";
+	<#
+	}
+	#>
+	}
+
+	#region "Field Constants"
+	<#
+	foreach  (ObjectTypeDTO objType in objTypes)
+	{
+	#>
+
+	public partial class <#=objType.Name.ToPascalCase()#>Fields : BaseFields
+	{
+<#
+	foreach (FieldDTO field in objType.SystemFields)
+	{
+		if (field.AssociativeArtifactTypeId > 0)
+		{
+#>
+		public const string <#=field.DisplayName.ToPascalCase()#> = @"<#=field.DisplayName#>";
+<#
+		}
+	}
+	foreach (FieldDTO field in objType.UserFields)
+	{
+#>
+		public const string <#=field.DisplayName.ToPascalCase()#> = @"<#=field.DisplayName#>";
+<#
+	}
+
+#>
+	}
+
+	public partial class <#=objType.Name.ToPascalCase()#>FieldGuids 
+	{
+<#
+	foreach (FieldDTO field in objType.SystemFields)
+	{
+		if (field.AssociativeArtifactTypeId > 0)
+		{
+#>
+		public const string <#=field.DisplayName.ToPascalCase()#> = @"<#=field.Guid#>";
+<#
+		}
+	}
+	foreach (FieldDTO field in objType.UserFields)
+	{
+#>
+		public const string <#=field.DisplayName.ToPascalCase()#> = @"<#=field.Guid#>";
+<#
+	}
+
+#>
+	}
+
+
+<#
+}  
+#>
+
+	#endregion
+
+	#region "Choice Constants"
+<#
+foreach (ObjectTypeDTO objType in objTypes)
+{
+	foreach (FieldDTO field in objType.UserFields)
+	{
+		if (field.Codes.Count()>0)
+		{
+#>
+
+	public partial class <#=field.DisplayName.ToPascalCase()#>Choices
+	{
+<#
+	foreach (CodeDTO code in field.Codes)
+	{
+#>
+		public static Choice <#=(objType.Name+code.Name).ToPascalCase()#> = new Choice(0, @"<#=code.Name#>");
+<#
+	}
+#>
+	}
+<#
+		}
+	}
+}  
+#>
+
+	#endregion								
+
+	#region "Layouts"
+
+<#
+foreach (ObjectTypeDTO objType in objTypes)
+{
+#>
+	public partial class <#=objType.Name.ToPascalCase()#>LayoutGuids
+	{
+<#
+	foreach (LayoutDTO layout in objType.UserLayouts)
+	{
+#>
+		public const string <#=layout.Name.ToPascalCase()#> = @"<#=layout.Guid#>";
+<#
+	}
+#>
+	}
+
+	public partial class <#=objType.Name.ToPascalCase()#>Layouts
+	{
+<#
+	foreach (LayoutDTO layout in objType.UserLayouts)
+	{
+#>
+		public const string <#=layout.Name.ToPascalCase()#> = @"<#=layout.Name#>";
+<#
+	}
+#>
+	}
+
+<#
+}
+#>
+	#endregion
+	
+	
+	#region "Tabs"
+
+<#
+foreach (ObjectTypeDTO objType in objTypes)
+{
+	if (objType.Tab != null)
+	{
+#>
+	public partial class <#=objType.Name.ToPascalCase()#>TabGuids
+	{
+		public const string <#=objType.Tab.Name.ToPascalCase()#> = @"<#=objType.Tab.Guid#>";
+	}
+
+	public partial class <#=objType.Name.ToPascalCase()#>Tabs
+	{
+		public const string <#=objType.Tab.Name.ToPascalCase()#> = @"<#=objType.Tab.Name#>";
+	}
+
+<#
+	}
+}
+#>
+	#endregion
+	
+	#region "Views"
+
+<#
+foreach (ObjectTypeDTO objType in objTypes)
+{
+#>
+	public partial class <#=objType.Name.ToPascalCase()#>ViewGuids
+	{
+<#
+	foreach (ViewDTO view in objType.UserViews)
+	{
+#>
+		public const string <#=view.Name.ToPascalCase()#> = @"<#=view.Guid#>";
+<#
+	}
+#>
+	}
+
+	public partial class <#=objType.Name.ToPascalCase()#>Views
+	{
+<#
+	foreach (ViewDTO view in objType.UserViews)
+	{
+#>
+		public const string <#=view.Name.ToPascalCase()#> = @"<#=view.Name#>";
+<#
+	}
+#>
+	}
+
+<#
+}
+#>
+	#endregion									
+
+}

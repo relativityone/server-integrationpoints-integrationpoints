@@ -98,3 +98,7 @@ kCura.Method.sln.DotSettings
 changesets.txt
 kCura.Method.Web.Tests\Unit\Scripts\Controls\
 ~$*.doc
+~$*.xlsx
+source/TestResults/
+Keyword Testing.txt
+kCura.IntegrationPoints.Documentation\Help\*

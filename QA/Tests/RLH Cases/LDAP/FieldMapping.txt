@@ -1,0 +1,119 @@
+	
+*** Settings ***
+| Documentation		| Verify the mapping of LDAP to RLH fields in Map LDAP Fields from Settings.
+| Metadata		    | Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| manual	| in-progress	| team.method
+#| Suite Setup		| Log	| This is the suite setup keyword.
+#| Test Setup		| Open Browser	| ${ROOT}
+#| Test Teardown 	| Close All Browsers
+#| Suite Teardown	| Log	| This is the suite teardown keyword.
+
+
+*** Test Cases ***
+
+
+| Non Matching field types shown an error in Admin mode after Loading Custodians
+| | [Documentation]	| An Admin error is shown when miss-matching field types are mapped and Custodians are loaded
+| | ...				| [id] 126d0ac0-a89f-11e4-96a3-b8ca3a83048f
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. LDAP Details are configured
+| | ... | 2. The required fields have been mapped
+| | ... | 3. A custodian has data in their LDAP Company field
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Settings tab
+| | ... | 2. Click | Map LDAP Fields
+| | ... | 3. Assign the additional following LDAP and RLH fields
+| | ... | 4. company   \| Employment Start Date #Any miss-matching fields will do
+| | ... | 5. Click		| Save
+| | ... | 6. Click      | Load Custodians
+| | ... | 7. View LDAP import Error in Admin mode
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify an error is displayed similar to "The value of the field <Field Name> (<Field Value>) could not be converted to a <type> for custodian <email>."
+
+
+| Updates to the Field Map are used in future imports
+| | [Documentation]	| Add a new field, run. Remove the new field, and add another field, run
+| | ...				| [id] 127213cf-a89f-11e4-b21c-b8ca3a83048f
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. LDAP Details are configured
+| | ... | 2. The required fields have been mapped
+| | ... | 3. Identify two LDAP fields that have data that can be imported
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Settings tab
+| | ... | 2. Click | Map LDAP Fields
+| | ... | 3. Assign a valid additional field into both lists and Save.
+| | ... | 4. Click | Load Custodians
+| | ... | 5. Click | Map LDAP Fields
+| | ... | 6. Remove the fields added in step 3.
+| | ... | 7. Assign a different valid additional field into both lists and Save.
+| | ... | 8. Add a new Custodian in LDAP who does not have data in the field from step 3, but does have data from the field in step 7
+| | ... | 9. Click | Load Custodians
+| | ... | 10. View the new Custodian in RLH
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the data from step 3 is not populated
+| | ... | 2. Verify that the data from step 7 is populated
+
+
+*** Keywords ***
+
+| Configure LDAP with the Following Values
+| | [ARGUMENTS]	| ${LDAPDomain} 	| ${LDAPUsername}	| ${LDAPPassword}
+| | ... | 1. Click			| Edit
+| | ... | 2. Enter the LDAP Domain	| testing.corp
+| | ... | 3. Enter the LDAP Username	| rellockdown
+| | ... | 4. Enter the LDAP Password	| P@ssw0rd@1
+| | ... | 5. Click			| Save
+
+| Use the Mapping Widget to Map a Method Field to an LDAP Field
+| | [ARGUMENTS]	| ${MethodField}	| ${LDAPField} | 
+| | Run the following manual steps:
+| | ... | 1. Double Click		| ${MethodField}
+| | ... | 2. Double Click		| ${LDAPField}
+
+| Create Basic Method LDAP Mapping
+| | [Documentation]	| Go to the Projects > Configuration tab and map LDAP fields to Method People fields
+| | Select Tab		| Projects
+| | Select Sub-Tab	| Configuration
+| | Click the Button	| LDAP Settings
+| | Map the Fields	| Objectguid	| Unique ID
+| | Map the Fields	| name		| First Name
+| | Map the Fields	| sn		| Last Name
+| | Map the Fields	| mail		| Email
+| | Map the Fields	| countrycode	| Department
+| | Click the Button	| Save
+
+| Match LDAP Data Types and Corresponding Method Fields
+| | ... | 1. For each item in the following table: Double click the matching value from the left-hand column
+| | ... | 2. For each item in the following table: Double the matching value from teh right-hand column 
+| | ... |	MethodField1	|	displayName			| String (Unicode)
+| | ... |	MethodField2	|	allowedAttributes		| Object Identifier (OID)
+| | ... |	MethodField3	|	...				| Case Sensitive String
+| | ... |	MethodField4	|	legacyExchangeDN		| CaseIgnoreString
+| | ... |	MethodField5	|	serialNumber			| String (Printable)
+| | ... |	MethodField6	|	internationalISDNNumber		| String Numberic
+| | ... |	MethodField7	|	authOrig			| Distinguished Name with Binary
+| | ... |	MethodField8	|	isDeleted			| Boolean
+| | ... |	MethodField9	|	countryCode			| Integer
+| | ... |	MethodField10	|	jpegphoto			| String Octet
+| | ... |	MethodField11	|	...				| UTC Time
+| | ... |	MethodField12	|	modifyTimeStamp			| Generalized Time
+| | ... |	MethodField13	|	...				| Presentation Address
+| | ... |	MethodField14	|	assistant			| Distinguished Name
+| | ... |	MethodField15	|	msExchSupervisionUserLink	| Distinguished Name with String
+| | ... |	MethodField16	|	lastLogoff			| Large Integer
+| | ... |	MethodField17	|	...				| OR-Name
+| | ... |	MethodField18	|	tokenGroups			| SID
+| | ... |	MethodField19	|	...				| Security Descriptor
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/Relativity/Shared/RelativityKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt

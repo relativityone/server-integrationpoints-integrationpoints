@@ -1,0 +1,173 @@
+
+*** Settings ***
+| Documentation		| This suite of tests verifies the Integration Point RDO used within the LDAP Sync application.
+| Metadata			| Authors	| William Sehy
+| Force Tags		| rdo	| team.method
+| Suite Setup		| Go to the Fields tab and use the Automated RDO Checking view then filter to the following object type	| Integration Point
+#| Test Setup 		| NONE
+| Test Teardown		| Run Keyword if Test Failed	| Capture Page Screenshot
+| Suite Teardown	| Close All Browsers
+
+
+*** Variables ***
+
+| ${WorkspaceName}	| LDAP Sync
+
+
+*** Test Cases ***
+
+| The Correct Number of Fields have an Object Type of Integration Point
+| | [Documentation]	| This test verifies that the correct number of fields exist with an Object Type of Integration Point.
+| | ...				| [id] 11a240b0-a89f-11e4-9669-b8ca3a83048f
+| | ${Fields}=		| Get the Number of Items in the ItemList
+| | Run Keyword Unless	| '${Fields}' == '16'	| Fail	| There should have been 16 fields, but instead there were ${Fields}.
+
+# The below tests each verify that a Field with the given data is present on the table.
+
+| Artifact ID
+| | [Documentation] | [id] 11a41570-a89f-11e4-a740-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| Artifact ID 	|
+| | ... | Field Type				| Whole Number	|
+| | ... | Is Required				| No			|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Destination Configuration
+| | [Documentation] | [id] 11a41571-a89f-11e4-9c7c-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| Destination Configuration	|
+| | ... | Field Type				| Long Text					|
+| | ... | Is Required				| No						|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Destination Provider
+| | [Documentation] | [id] 11a41572-a89f-11e4-897e-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| Destination Provider	|
+| | ... | Field Type				| Single Object			|
+| | ... | Is Required				| No					|
+| | ... | Associative Object Type	| DestinationProvider
+
+
+| Enable Scheduler
+| | [Documentation] | [id] 11a41573-a89f-11e4-9997-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| Enable Scheduler	|
+| | ... | Field Type				| Yes/No			|
+| | ... | Is Required				| No				|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Field Mappings
+| | [Documentation] | [id] 11a41574-a89f-11e4-8fae-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| Field Mappings	|
+| | ... | Field Type				| Long Text			|
+| | ... | Is Required				| No				|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Last Runtime
+| | [Documentation] | [id] 11a41575-a89f-11e4-a233-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| Last Runtime	|
+| | ... | Field Type				| Date			|
+| | ... | Is Required				| No			|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Name
+| | [Documentation] | [id] 11a41576-a89f-11e4-b405-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| Name				|
+| | ... | Field Type				| Fixed-Length Text	|
+| | ... | Is Required				| No				|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Next Scheduled Runtime
+| | [Documentation] | [id] 11a41577-a89f-11e4-9455-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| Next Scheduled Runtime	|
+| | ... | Field Type				| Date						|
+| | ... | Is Required				| No						|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Overwrite Fields
+| | [Documentation] | [id] 11a41578-a89f-11e4-81f6-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| Overwrite Fields	|
+| | ... | Field Type				| Single Choice		|
+| | ... | Is Required				| No				|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Schedule Rule
+| | [Documentation] | [id] 11a41579-a89f-11e4-9e64-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| Schedule Rule	|
+| | ... | Field Type				| Long Text		|
+| | ... | Is Required				| No			|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Source Configuration
+| | [Documentation] | [id] 11a4157a-a89f-11e4-9918-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| Source Configuration	|
+| | ... | Field Type				| Long Text				|
+| | ... | Is Required				| No					|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Source Provider
+| | [Documentation] | [id] 11a4157b-a89f-11e4-83c9-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| Source Provider	|
+| | ... | Field Type				| Single Object		|
+| | ... | Is Required				| No				|
+| | ... | Associative Object Type	| SourceProvider
+
+
+| System Created By
+| | [Documentation] | [id] 11a4157c-a89f-11e4-a524-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| System Created By |
+| | ... | Field Type				| Fixed-Length Text	|
+| | ... | Is Required				| No				|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| System Created On
+| | [Documentation] | [id] 11a4157d-a89f-11e4-80c0-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| System Created On	|
+| | ... | Field Type				| Date				|
+| | ... | Is Required				| No				|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| System Last Modified By
+| | [Documentation] | [id] 11a48a9e-a89f-11e4-9192-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| System Last Modified By 	|
+| | ... | Field Type				| Fixed-Length Text			|
+| | ... | Is Required				| No						|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| System Last Modified On
+| | [Documentation] | [id] 11a48a9f-a89f-11e4-b0d2-b8ca3a83048f
+| | Find A Row With The Following Data	|
+| | ... | Name						| System Last Modified On	|
+| | ... | Field Type				| Date						|
+| | ... | Is Required				| No						|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt

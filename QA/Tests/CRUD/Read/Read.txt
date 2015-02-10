@@ -1,0 +1,180 @@
+
+*** Settings ***
+| Documentation 	| Verify that the Read pages for Integration Point objects have the fields and sections for given situations.
+| Metadata		    | Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| in-progress | team.method
+#| Suite Setup		| Create Suite Setup Data
+| Test Setup        | Go to the Tab	| Integration Points
+| Test Teardown 	| Capture Screenshot if Test Fails
+#| Suite Teardown	| Delete Suite Setup Data
+
+
+*** Variables ***
+
+| ${WorkspaceName}	   | Relativity Legal Hold
+| ${IP1}               | Integration Point 1 | #Enable Scheduler is set to No
+| ${IP2}               | Integration Point 2 | #Daily Schedule
+| ${IP3}               | Integration Point 3 | #Weekly Schedule
+| ${IP4}               | Integration Point 4 | #Monthly Schedule
+
+
+*** Test Cases ***
+
+| The correct Buttons appear in the Header
+| | [Documentation]	| Verify that the correct buttons appear at the top of the page
+| | ...				| [id] 117f284f-a89f-11e4-ab56-b8ca3a83048f
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | 1. View Integration Point | ${IP1}
+| | ... |
+| | ... | Expected Result:
+| | ... | Verify that the following buttons are present  
+| | ... | - Edit
+| | ... | - Delete
+| | ... | - Back
+| | ... | - Edit Permissions
+| | ... | - View Audit
+
+
+| The Section headings are in the correct order
+| | [Documentation]	| Verify that the Section headings are sorted correctly.
+| | ...				| [id] 1180fd11-a89f-11e4-b0e4-b8ca3a83048f
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. View Integration Point | ${IP1}
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Sections headings are in the following Order:
+| | ... | - General
+| | ... | - Integration
+| | ... | - Import Scheduling
+| | ... | - Status
+
+
+| The General fields are in the correct order
+| | [Documentation]	| Verify that the fields in the General section are sorted correctly.
+| | ...				| [id] 1180fd12-a89f-11e4-a95c-b8ca3a83048f
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. View Integration Point | ${IP1}
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the General Fields are in the following Order:
+| | ... | - Name:
+| | ... | - Overwrite:
+
+
+| The Integration fields are in the correct order
+| | [Documentation]	| Verify that the fields in the Integration section are sorted correctly.
+| | ...				| [id] 1180fd13-a89f-11e4-8169-b8ca3a83048f
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. View Integration Point | ${IP1}
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Integration Fields are in the following Order:
+| | ... | - Destination RDO:
+
+
+| The Import Scheduling fields are in the correct order for an Integration Point with a disabled Scheduler
+| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the Scheduler is disabled.
+| | ...				| [id] 11817240-a89f-11e4-82b7-b8ca3a83048f
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. View Integration Point | ${IP1}
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Import Scheduling Fields are in the following Order:
+| | ... | - Enable Scheduler:
+
+
+#| The Import Scheduling fields are in the correct order for a Daily Integration Point
+#| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the Frequency is Daily.
+#| | [Tags]			| manual
+#| | Run the following manual steps:
+#| | ... | Steps: 
+#| | ... | 1. View Integration Point | ${IP2}
+#| | ... |
+#| | ... | Expected Results:
+#| | ... | Verify that the Import Scheduling Fields are in the following Order:
+#| | ... | - Enable Scheduler: 
+#| | ... | - Frequency:
+#| | ... | - Start Date:
+#| | ... | - End Date:
+#| | ... | - Scheduled Time:
+#
+#
+#| The Import Scheduling fields are in the correct order for a Weekly Integration Point
+#| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the Frequency is Weekly.
+#| | [Tags]			| manual
+#| | Run the following manual steps:
+#| | ... | Steps: 
+#| | ... | 1. View Integration Point | ${IP3}
+#| | ... |
+#| | ... | Expected Results:
+#| | ... | Verify that the Import Scheduling Fields are in the following Order:
+#| | ... | - Enable Scheduler:
+#| | ... | - Frequency:
+#| | ... | - Reoccur:
+#| | ... | - Send On:
+#| | ... | - Start Date:
+#| | ... | - End Date:
+#| | ... | - Scheduled Time:
+#
+#
+#| The Import Scheduling fields are in the correct order for a Monthly Integration Point
+#| | [Documentation]	|  Verify that the fields in the Import Scheduling section are sorted correctly when the Frequency is Monthly.
+#| | [Tags]			| manual
+#| | Run the following manual steps:
+#| | ... | Steps: 
+#| | ... | 1. View Integration Point | ${IP4}
+#| | ... |
+#| | ... | Expected Results:
+#| | ... | Verify that the Import Scheduling Fields are in the following Order:
+#| | ... | - Enable Scheduler:
+#| | ... | - Frequency:
+#| | ... | - Reoccur:
+#| | ... | - Send On:
+#| | ... | - Start Date:
+#| | ... | - End Date:
+#| | ... | - Scheduled Time:
+
+
+| The Status fields are in the correct order when Enable Scheduler is set to No
+| | [Documentation]	| Verify that the fields in the Status section are sorted correctly when Enable Scheduler is set to No.
+| | ...				| [id] 11817241-a89f-11e4-bd3b-b8ca3a83048f
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. View Integration Point | ${IP1}
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Status Fields are in the following Order:
+| | ... | - Next Scheduled Runtime (UTC):
+| | ... | - Last Runtime (UTC):
+
+
+| The Status fields are in the correct order when Enable Scheduler is set to Yes
+| | [Documentation]	| Verify that the fields in the Status section are sorted correctly when Enable Scheduler is set to Yes.
+| | ...				| [id] 11817242-a89f-11e4-82d7-b8ca3a83048f
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. View Integration Point | ${IP2}
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Status Fields are in the following Order:
+| | ... | - Next Scheduled Runtime (UTC):
+| | ... | - Last Runtime (UTC):
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt

@@ -1,0 +1,179 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+kCura.Utility
+</name>
+</assembly>
+<members>
+<member name="M:kCura.Utility.XmlHelper.DeserializeToDictionary(System.String)">
+	<summary>
+ Deserializes the provided input into a dictionary of field value
+ pairs made from the node names and the node contents. The input
+ must be XML formatted and contain a single node with a single-level
+ of unique XML nodes.
+ For example:
+ &lt;data&gt;
+ &lt;field1&gt;value&lt;/field1&gt;
+ &lt;field2&gt;value2&lt;/field2&gt;
+ &lt;/data&gt;
+ </summary>
+	<param name="input">The XML to deserialize</param>
+	<returns>A dictionary keyed with node names with the values from
+ each node, an empty dictionary if the input is <c>null</c> or
+ <c>empty</c>.</returns>
+</member><member name="M:kCura.Utility.Strings.TrimIfQuoted(System.String)">
+	<summary>
+ Trims the input string of surrounding quotation marks if there are any.
+ Trims only a single set of quotation marks.
+ </summary>
+	<param name="input">The input to trim</param>
+	<returns>The trimmed result</returns>
+</member><member name="M:kCura.Utility.Strings.TruncateWithSuffix(System.String,System.Int32,System.String)">
+	<summary>
+ Truncates the input string to be the length provided. Will add suffix the string with given suffix if string is shorter than the given length
+ </summary>
+	<param name="input">string to check / truncate</param>
+	<param name="length">desired maximum length of the whole returned</param>
+	<param name="suffix">desired suffix</param>
+	<returns>truncated (and suffixed) string </returns>
+	<exception cref="T:System.ArgumentException">Thrown if <paramref name="length"/> is less than or equal to 0 or
+ is less than or equal to the length of <paramref name="suffix"/></exception>
+</member><member name="M:kCura.Utility.Strings.SplitCsvString(System.String)">
+	<summary>
+ Splits the specified string into elements according to the rules
+ of comma separated files.
+ </summary>
+	<param name="input">The input to split</param>
+	<returns>The elements of the string</returns>
+</member><member name="M:kCura.Utility.NullableTypesHelper.ConvertNullToDbNull(System.Object)">
+	<summary>
+ Converts a null value to dbNull if necessary. Does nothing otherwise.
+ </summary>
+	<param name="val">The value to compare to null</param>
+	<returns><c>DBNull.Value</c> if <paramref name="val"/> is <c>null</c>,
+ otherwise <paramref name="val"/>.</returns>
+</member><member name="M:kCura.Utility.Extensions.ArrayExtension.ToEnglishList``1(System.Collections.Generic.IEnumerable{``0})">
+	<summary>
+ Converts a collection to an english-style list.
+ </summary>
+	<typeparam name="T"></typeparam>
+	<param name="col"></param>
+	<returns></returns>
+	<remarks>One Item
+ First Item and Second Item
+ First Item, Second Item, and Third Item</remarks>
+</member><member name="M:kCura.Utility.CollectionParameterBuilder`1.#ctor(System.Collections.Generic.IEnumerable{`0},System.Data.SqlDbType)">
+	<summary>
+ Instantiate with an IEnumerable of T and it will create list of sqlParameters and a CSV String of the params to use in a sql query
+ </summary>
+	<remarks></remarks>
+</member><member name="M:kCura.Utility.Directory.DeleteDirectoryIfExists(System.String,System.Boolean,System.Boolean)">
+	<summary>
+ Deletes a directory from the file system if it exists.
+ </summary>
+	<param name="directory">A relative or absolute path to the directory to delete</param>
+	<param name="recursive">Whether or not to recursively delete the files in
+ the directory</param>
+	<param name="exceptOnExistenceCheckError">Whether or not this method
+ should throw an exception if an issue happens when checking if the
+ directory exists</param>
+</member><member name="M:kCura.Utility.Directory.IsEmpty(System.String)">
+	<summary>
+ Checks whether a specified path is empty. Returns <c>True</c> if
+ the user has no access to the directory or the directory does
+ not exist.
+ </summary>
+	<param name="fullPath">The path to check</param>
+	<returns><c>True</c> if the path is empty or the user has no access
+ to the directory, <c>False</c> otherwise</returns>
+</member><member name="M:kCura.Utility.Directory.IsValid(System.String)">
+	<summary>
+ Checks whether a specified path is valid (exists and the current
+ user has access to it)
+ </summary>
+	<param name="fullPath">The path to check</param>
+	<returns><c>True</c> if the path exists and the user has access to
+ it, <c>False</c> otherwise</returns>
+</member><member name="M:kCura.Utility.Directory.Exists(System.String,System.Boolean)">
+	<summary>
+ Checks if a directory exists.
+ </summary>
+	<param name="directory">A relative or absolute path to the directory to delete</param>
+	<param name="exceptOnAccessError">Whether or not this method
+ should throw an exception if an issue happens when checking if the
+ directory exists</param>
+</member><member name="M:kCura.Utility.Directory.GetFiles(System.String)">
+	<summary>
+ Gets the files in the specified directory in no particular order.
+ </summary>
+	<param name="path">The path to get the files from</param>
+	<returns>All of the files in this directory in no
+ specific order</returns>
+</member><member name="M:kCura.Utility.Directory.GetFiles(System.String,System.String,System.IO.SearchOption)">
+	<summary>
+ Returns the names of files in the specified directory that match the specified search pattern, using a value to determine whether to search subdirectories.
+ </summary>
+	<param name="path">The path to get the files from</param>
+	<param name="searchPattern">Search Pattern</param>
+	<param name="searchOption">Search Options</param>
+	<returns>All of the files in this directory in no
+ specific order</returns>
+	<remarks></remarks>
+</member><member name="M:kCura.Utility.Directory.GetFilesAndDirectories(System.String,System.Int32)">
+	<summary>
+ Gets file and directories for a given file path
+ </summary>
+	<param name="fullpath">Full path of the folder</param>
+	<param name="maximumElements">Maximum number of files and folders in a given directory</param>
+	<returns>DirectoryElements object</returns>
+</member><member name="M:kCura.Utility.Directory.IsValidUNCPath(System.String)">
+	<summary>
+ Checks folder path to see if it is valid, unc and absolute paths only
+ </summary>
+	<param name="fullpath">Full path of the folder</param>
+</member><member name="M:kCura.Utility.DataTable.CsvToDataTable(System.IO.Stream)">
+	<summary>
+ Reads a stream that is a CSV formatted file into a datatable with
+ the first row being column headers.
+ </summary>
+	<param name="stream">The stream to read</param>
+	<returns>A data table with basic columns with column names determined
+ by the first line of the stream</returns>
+	<remarks>Currently does not support multi-lined values.
+ Adapted from code sample at http://stackoverflow.com/questions/1050112/how-to-read-a-csv-file-into-a-net-datatable</remarks>
+</member><member name="T:kCura.Utility.DataSetFactory">
+ -----------------------------------------------------------------------------
+ Project	 : kCura.Utility
+ Class	 : Utility.DataSetFactory
+ 
+ -----------------------------------------------------------------------------
+ <summary>
+ Simple class to create a dataset with a single datatable.  This class is useful
+ for testing and building mockups
+ </summary>
+	<remarks>
+	</remarks>
+	<history>
+ 	[asieja]	7/28/2005	Created
+ </history>
+ -----------------------------------------------------------------------------
+
+</member><member name="T:kCura.Utility.NullableTypesEnhanced">
+	<summary>
+ This class has functions with enhanced functionality of some of the functions in nullableTypes
+ </summary>
+	<remarks>The import api and RDC will initially use these</remarks>
+</member><member name="M:kCura.Utility.Extensions.DictionaryExtension.GetValueOrDefault``2(System.Collections.Generic.IDictionary{``0,``1},``0)">
+	<summary>
+ Attempts to get a value from the specified dictionary if
+ the value exists, otherwise returns <c>Nothing</c>.
+ </summary>
+	<typeparam name="TKey">The type of key in the dictionary</typeparam>
+	<typeparam name="TValue">The type of value in the dictionary</typeparam>
+	<param name="d">The dictionary</param>
+	<param name="key">The key to look up</param>
+	<returns>The value in the dictionary if it exists, <c>Nothing</c> otherwise</returns>
+</member>
+</members>
+</doc>

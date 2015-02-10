@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+
+<project name="LDAPSync.Package">
+	
+	<!-- Package properties -->
+	<property name="failonsign" value="true" unless="${property::exists('failonsign')}" />
+	<property name="Package.source.code.directory" value="${root}\bin\${buildconfig}" readonly="false"/>
+	<property name="Package.ProductVersion" value="${Product.Version}" readonly="false"/>
+	<property name="Package.ProductVersionTriplex" value="${Product.Version.Triplex}" />
+	
+	<target name="build_Package" depends="package_master" />
+	
+	<target name="package_master" description="copies the compiled bin folder to a package directory">
+		<exec program="${ldap.scripts.directory}\package.master.bat">
+			<environment>
+				<variable name="version" value="${Product.Version}" />
+				<variable name="basePath" value="${source.code.directory}" />
+				<variable name="revisionDirectory" value="${packageFolder}\${branchDir}\${Product.Version}" />
+			</environment>
+		</exec>
+	</target>
+	
+</project>

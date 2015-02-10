@@ -1,0 +1,224 @@
+
+*** Settings ***
+| Documentation 	| Verify that the Set Intergration Details step of Integration Points shows the correct fields and data.
+| Metadata			| Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| in-progress	| team.method
+| Suite Setup		| Open and Log in to Method
+| Test Setup		| Open Create Integration Point
+| Test Teardown 	| Capture screenshot if test fails
+| Suite Teardown	| Close all browsers
+
+
+*** Variables ***
+
+| ${WorkspaceName}					| LDAP Sync
+| ${Integration Name Field}			| name
+| ${Overwrite DropDown}				| s2id_overwrite
+| ${Source Provider Drop Down}		| s2id_sourceProvider
+| ${Destination RDO Drop Down}		| s2id_destinationRdo
+| ${Enable Scheduler Button Name}	| enable
+
+
+*** Test Cases ***
+
+| Clicking New Integration Point Shows the Create Integration Point Detail screen
+| | [Documentation]	| Verify that clicking New Integration Point from the List view Shows the Create Integration Point Detail screen.
+| | ...				| [id] 0f5a4c80-a89f-11e4-9811-b8ca3a83048f
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Header has the following text | Create Integration Point
+
+
+| The Set Integration Details sections are in the correct order
+| | [Documentation]	| Verify that the Set Integration Details sections are sorted correctly.
+| | ...				| [id] 0f5e1d0f-a89f-11e4-bf47-b8ca3a83048f
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify the sections are ordered correctly	| General	| Integration	| Import Scheduling
+
+
+| The General fields are in the correct order
+| | [Documentation]	| Verify that the fields in the General section are sorted correctly.
+| | ...				| [id] 0f5e1d10-a89f-11e4-a35c-b8ca3a83048f
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following section contains the following fields | General | 
+| | ... | Integration Name: | 
+| | ... | Overwrite:
+
+
+| The Integration fields are in the correct order
+| | [Documentation]	| Verify that the fields in the Integration section are sorted correctly.
+| | ...				| [id] 0f5e1d11-a89f-11e4-ac0d-b8ca3a83048f
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following section contains the following fields | Integration | 
+| | ... | Source Provider: | 
+| | ... | Destination RDO:
+
+
+| The Import Scheduling fields are in the correct order
+| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly.
+| | ...				| [id] 0f5e6b30-a89f-11e4-bc27-b8ca3a83048f
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following section contains the following fields | Import Scheduling | Enable Scheduler:
+
+
+| The Overwrite list has the correct values
+| | [Documentation]	| Verify that the Overwrite List has the correct options
+| | ...				| [id] 0f5e6b31-a89f-11e4-98af-b8ca3a83048f
+| | [Tags]			| automated	
+| | Click  | ${Overwrite DropDown}
+| | Verify that the currently opened select2 Dropdown has the following choices in order | Append/Overlay | Append	| Overlay Only
+
+
+| The Source Provider dropdown contains an alphabetically sorted list of Source Providers
+| | [Documentation]	| Verify that the Source Provider dropdown contains the value Select... followed by an alphabetically sorted list of all of the Source Providers in the current Workspace.
+| | ...				| Since Source Provider is going to be a hidden object type we are not creating any new objects to test alphabetization.
+| | ...				| [id] 0f5e6b32-a89f-11e4-9fc8-b8ca3a83048f
+| | [Tags]			| automated
+| | @{SourceProviders}=	| Get a List of all Source Providers in the current Workspace	| # Already alphabetized
+| | Click	| ${Source Provider Drop Down}
+| | Verify that the currently opened select2 Dropdown has the following choices in order | Select...	| @{SourceProviders}
+
+
+| The Overwrite Field's default value is Append/Overlay
+| | [Documentation]	| Verify that the Overwrite Field's default value is Append/Overlay.
+| | ...				| [id] 0f5e6b33-a89f-11e4-b10b-b8ca3a83048f
+| | [Tags]			| automated
+| | Verify that the following select2 Dropdown currently has the following value selected	| ${Overwrite DropDown}	| Append/Overlay
+
+
+| The Source Provider Field defaults to Select...
+| | [Documentation]	| Verify that the Source Provider Field's dropdown defaults to "Select...".
+| | ...				| [id] 0f5e6b34-a89f-11e4-96a1-b8ca3a83048f
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the following select2 Dropdown currently has the following value selected	|  ${Source Provider Drop Down}	| Select...
+
+
+| The Destination RDO's default value is Select...
+| | [Documentation]	| Verify that the Destination RDO's default value is "Select...".
+| | ...				| [id] 0f5e6b35-a89f-11e4-a7c3-b8ca3a83048f
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the following select2 Dropdown currently has the following value selected	|  ${Destination RDO Drop Down}	| Select...
+
+
+| The Enable Scheduler's default value is No
+| | [Documentation]	| Verify that the Enable Scheduler's default value is No (false)
+| | ...				| [id] 0f5e6b36-a89f-11e4-8635-b8ca3a83048f
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Radio button should be set to	| ${Enable Scheduler Button Name}	| false	| # false = No
+
+
+| Integration Name has the Required Field indicator
+| | [Documentation]	| Verify that the Required Field indicator is present for the correct fields.
+| | ...				| [id] 0f5ee061-a89f-11e4-8ca6-b8ca3a83048f
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the following field is required | Integration Name:
+
+
+| Source Provider has the Required Field indicator
+| | [Documentation]	| Verify that the Required Field indicator is present for the correct fields.
+| | ...				| [id] 0f5ee062-a89f-11e4-a1e0-b8ca3a83048f
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the following field is required | Source Provider:
+
+
+| Destination RDO has the Required Field indicator
+| | [Documentation]	| Verify that the Required Field indicator is present for the correct fields.
+| | ...				| [id] 0f5ee063-a89f-11e4-95d3-b8ca3a83048f
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the following field is required | Destination RDO:
+
+
+| Overwrite is not a Required Field
+| | [Documentation]	| Verify that the Required Field indicator is not present for the correct fields.
+| | ...				| [id] 0f5ee064-a89f-11e4-9d80-b8ca3a83048f
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the following field is not required | Overwrite:
+
+
+| Enable Scheduler is not a Required Field
+| | [Documentation]	| Verify that the Required Field indicator is not present for the correct fields.
+| | ...				| [id] 0f5ee065-a89f-11e4-97d3-b8ca3a83048f
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the following field is not required | Enable Scheduler:
+
+
+| The Set Integration Details Fields are of the correct type
+| | [Documentation]	| Verify that the Set Integration Details Fields are the correct type
+| | ...				| [id] 0f5ee066-a89f-11e4-bdce-b8ca3a83048f
+| | [Tags]			| automated
+| | Run keyword and continue on failure	| Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the following field ID has a text input		| ${Integration Name Field}
+| | Run keyword and continue on failure	| Verify that the following field ID has a droplist input	| ${Overwrite DropDown}
+| | Run keyword and continue on failure	| Verify that the following field ID has a droplist input	| ${Source Provider Drop Down}
+| | Run keyword and continue on failure	| Verify that the following field ID has a droplist input	| ${Destination RDO Drop Down}
+| | # Enable Scheduler is checked in the next test case.
+
+
+| The Enable Scheduler options are Yes and No
+| | [Documentation]	| Verify that the Enable Scheduler radio button options are Yes and No
+| | ...				| [id] 0f5ee067-a89f-11e4-946c-b8ca3a83048f
+| | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the following radio buttons are grouped together | ${Enable Scheduler Button Name}  | Yes | No
+
+
+| The Destination RDO dropdown has the correct values for Admins
+| | [Documentation]	| Verify that the Destination RDO Dropdown has the correct options when you are a user with Admin permissions.
+| | ...				| The expected values are Select..., followed by an alphabetized list of every non-System object type
+| | ...				| [id] 0f5f2e80-a89f-11e4-bde1-b8ca3a83048f
+| | [Tags]			| untested
+| | @{ExpectedFields}=	| Get a List of All Non-System Object Types in the Workspace	| # Already alphabetized
+| | Click	| ${Destination RDO Drop Down}
+| | Verify that the currently opened select2 Dropdown has the following choices in order	| Select...	| @{ExpectedFields}
+
+
+| The Destination RDO dropdown hides Object Types the User does not have Add Permissions for
+| | [Documentation]	| Verify that the Destination RDO Dropdown has the correct options (i.e. you are a user without permission to some RDOs).
+| | ...				| [id] 0f5f2e81-a89f-11e4-961b-b8ca3a83048f
+| | [Tags]			| manual	| unautomateable
+| | Run the following manual steps:
+| | ... | Notes:
+| | ... | - The Destination RDO only shows values that you have Add permissions for.
+| | ... | - The System RDOs are never shown (See "Get a List of All Non-System Object Types in the Workspace" for a list of the System RDOs). 
+| | ... |
+| | ... | Steps:
+| | ... | 1. Go to the Method Tab	| Integration Points
+| | ... | 2. Click	| New Integration Point
+| | ... | 3. Click Destination RDO Dropdown
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the RDOs that you do not have permission for are not visible.
+
+
+*** Keywords *** 
+
+| Get a List of all Source Providers in the current Workspace
+| | [Documentation]	| Returns the Names of every Source Provider in the workspace in an alphabetically sorted list.
+| | ${2DGrid}=	| Query workspace database	| 
+| | ... | SELECT Name
+| | ... | FROM EDDSDBO.SourceProvider
+| | ... | ORDER BY Name
+| | ${1DGrid}=			| Flatten		| ${2DGrid}	| # Converts from 2D grid to 1D grid
+| | @{SourceProviders}=	| Create List	| @{1DGrid}	| # Converts from 1D grid to List
+| | [Return]		| @{SourceProviders}
+
+| Verify the sections are ordered correctly
+| | [Documentation]	| A keyword that compares the actual section headings to the expected section headings
+| | [ARGUMENTS]		| @{ExpectedSections}
+| | @{ActualSections}=	| Get Element Text	| css=div.card > span.label	| False 
+| | Lists should be Equal	| ${ActualSections}	| ${ExpectedSections}
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt

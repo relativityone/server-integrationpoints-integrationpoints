@@ -1,0 +1,44 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+Relativity
+</name>
+</assembly>
+<members>
+<member name="M:Relativity.Query.Query.#ctor">
+	<summary>
+ Added for mocking
+ </summary>
+	<remarks></remarks>
+</member><member name="P:My.Resources.Resources.ResourceManager">
+	<summary>
+  Returns the cached ResourceManager instance used by this class.
+</summary>
+</member><member name="P:My.Resources.Resources.Culture">
+	<summary>
+  Overrides the current thread's CurrentUICulture property for all
+  resource lookups using this strongly typed resource class.
+</summary>
+</member><member name="T:My.Resources.Resources">
+	<summary>
+  A strongly-typed resource class, for looking up localized strings, etc.
+</summary>
+</member><member name="F:Relativity.Export.Constants.TEXT_PRECEDENCE_AWARE_AVF_COLUMN_NAME">
+	<summary>
+ Used to pick out the COALESCED text field from export precedence
+ </summary>
+	<remarks>Spaces are here to ensure that there will never be a a sql column name conflict, because we strip all punctuation out of non-generated fields' column names for query results</remarks>
+</member><member name="F:Relativity.Constants.DEFAULT_FIELD_DELIMITER">
+	<summary>
+ The default field delimiter to use when no other value is set.
+ </summary>
+	<remarks>The document loader is configurable, but the image loader is not</remarks>
+</member><member name="F:Relativity.Constants.ENDLINETERMSTRING">
+	<summary>
+ The value used at the end of a line by the image loader.
+ </summary>
+	<remarks>The document loader is configurable, but the image loader is not</remarks>
+</member>
+</members>
+</doc>

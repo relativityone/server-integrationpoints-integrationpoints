@@ -1,0 +1,79 @@
+<?xml version="1.0" ?>
+
+<project name="LDAPSync.Package">
+	
+	<!-- Package properties -->
+	<property name="root" value="C:\SourceCode\LDAPSync\source" unless="${property::exists('root')}" />
+	<property name="failonsign" value="true" unless="${property::exists('failonsign')}" />
+	<property name="ldap.web.directory" value="${root}\kCura.IntegrationPoints.Web" readonly="false"/>
+	<property name="ldap.web.name" value="kCura.IntegrationPoints.Web.csproj"/>
+	<property name="ldap.web.zip" value="${Product.Version}" readonly="false"/>
+	<property name="Package.ProductVersionTriplex" value="${Product.Version.Triplex}" />
+	<property name="target.web.out" value="${root}\publish\bin\web\${buildconfig}"/>
+	<property name="target.web.publish" value="${root}\publish\web\${buildconfig}"/>
+	<property name="Injections" value="INJECTION" unless="${property::exists('Injections')}" />
+	<property name="TimeMachine" value="TIME_MACHINE" unless="${property::exists('TimeMachine')}" />
+	<property name="windows.sdk.directory" value="${environment::get-variable('ProgramFiles(x86)')}\Microsoft SDKs\Windows\v7.0A" unless="${property::exists('windows.sdk.directory')}" />
+	<property name="signtool" value="${windows.sdk.directory}\Bin\signtool.exe" readonly="true" />
+	<property name="Package.source.code.directory" value="${root}\bin\${buildconfig}" unless="${property::exists('Package.source.code.directory')}"/>
+	<property name="ldap.scripts.directory" value="${path::combine(root, 'DevelopmentScripts')}" />
+	<property name="ldapRelativityBuildServer" value="" unless="${property::exists('ldapRelativityBuildServer')}" />
+	<property name="ldapRelativityBuildCaseID" value="" unless="${property::exists('ldapRelativityBuildCaseID')}" />
+
+	<target name="build_RAP_Package" depends="deploy_web_project,sign_files,build_custom_pages_zip, generate_RAP_package" />
+	
+	<target name="deploy_web_project" description="deployes custom pages to a directory">
+		<exec program="${microsoft.net64.directory}\MSBuild.exe">
+			<arg line='"${ldap.web.directory}\${ldap.web.name}"' />
+			<arg line='/property:SourceRoot="${root}"' />
+			<arg line="/property:Configuration=${buildconfig}" />
+			<arg line="/property:Platform=x64" />
+			<arg line="/property:NoWarn=${ignorewarnings}" />
+			<arg line='/logger:"${logger}"'/>
+			<arg line='/logger:"${buildLogger}";"${buildLoggerLogFile}"'/>
+			<arg value="/noconsolelogger" />
+			<arg value="/filelogger" />
+			<arg value='/flp:LogFile="${logfile}";Verbosity=${verbosity}' />      
+			<arg value='/p:SolutionDir=${root}\'/>
+			<arg value="/verbosity:${verbosity}" />
+			<arg value='/p:DefineConstants="${TimeMachine},${Injections}";OutDir="${target.web.out}";WebProjectOutputDir="${target.web.publish}"' />
+			<arg value="/nologo" />
+		</exec>
+	</target>
+	
+	<target name="sign_files" description="Signs dlls and exes using signtool.exe">
+		<exec program="${ldap.scripts.directory}\sign.ldap.files.bat">
+			<environment>
+				<variable name="SIGNTOOL" value="${signtool}" />
+				<variable name="sourceLDAPDirectory" value="${Package.source.code.directory}" />
+			</environment>
+		</exec>
+	</target>
+	
+	<target name="build_custom_pages_zip" description="zips up custom pages directory">
+		<zip zipfile="${ldap.build.server.share}\DCF6E9D1-22B6-4DA3-98F6-41381E93C30C.zip">
+            <fileset basedir="${target.web.publish}">
+                <include name="**/*" />
+            </fileset>
+        </zip>
+	</target>
+
+	<target name="generate_RAP_package" description="uploads all expected files and downloads back updated RAP file">
+		<exec program="${source.code.directory}\Dependencies\RAPUpdater.exe">
+			<arg value='/package:"${target.code.directory}\RelativityIntegrationPoints.Auto.rap"' />
+			<arg value='/sourcerap:"${source.code.directory}\Application\ldapsync.rap"' />
+			<arg value='/assembly:"${target.code.directory}\kCura.IntegrationPoints.Contracts.dll"' />
+			<arg value='/assembly:"${target.code.directory}\kCura.IntegrationPoints.dll"' />
+			<arg value='/assembly:"${target.code.directory}\kCura.LDAPProvider.dll"' />
+			<arg value='/custompage:"C2C93191-7B15-4A9B-AA56-6A8C2DAC5494=${ldap.build.server.share}\DCF6E9D1-22B6-4DA3-98F6-41381E93C30C.zip"' />
+			<arg value='/masterurl:"${ldapRelativityBuildServer}"' />
+			<arg value='/eddsdbserver:"${ldapRelativityBuildServer}"' />
+			<arg value='/eddsusername:"eddsdbo"' />
+			<arg value='/eddsuserpassword:"P@ssw0rd@1"' />
+			<arg value='/caseid:"${ldapRelativityBuildCaseID}"' />
+			<arg value='/applicationid:"DCF6E9D1-22B6-4DA3-98F6-41381E93C30C"' />
+			<arg value='/version:"${Product.Version}"' />
+		</exec>
+	</target>
+	
+</project>

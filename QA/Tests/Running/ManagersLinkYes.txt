@@ -1,0 +1,230 @@
+*** Settings ***
+| Documentation 	| Verify that the Manager component of importing Custodians works correctly when Custodian Manager Contains Link is set to Yes
+| Metadata		    | Authors	| Daniel Oliver
+| Force Tags		| in-progress | team.method
+
+*** Variables ***
+
+| ${WorkspaceName}	   | Relativity Legal Hold
+| ${Custodian1}        | 
+| ${Custodian2}        | 
+| ${Custodian3}        | 
+| ${Custodian4}        | 
+| ${Custodian5}        | 
+| ${Custodian6}        | 
+| ${Custodian7}        | 
+| ${Manager1}          | 
+| ${Manager2}          | 
+| ${Manager3}          | 
+| ${Manager4}          | 
+| ${Manager5}          | 
+| ${Manager6}          | 
+| ${Manager7}          | 
+| ${Manager8}          | 
+
+*** Test Cases ***
+
+| Custodian Manager Contains Link is shown for Custodian Imports
+| | [Documentation] | Verify that the Custodian Manager Contains Link is shown on step 2 of RIP when the Destination RDO is Custodians
+| | [Tags] | manual  
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Create a new IP using the Destination RDO of Custodian
+| | ... | 2. Go to Step 2
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Custodian Manager Contains Link field is present as the last field 
+| | ... | 2. Verify that the Custodian Manager Contains Link field has radio buttons of Yes and No
+
+| Custodian Manager Contains Link defaults to Yes
+| | [Documentation] | Verify that the Custodian Manager Contains Link defaults to Yes
+| | [Tags] | manual  
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Create a new IP using the Destination RDO of Custodian
+| | ... | 2. Go to Step 2
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Custodian Manager Contains Link field defaults to Yes
+
+| Custodian Manager Contains Link is shown not for non-Custodian Imports
+| | [Documentation] | Verify that the Custodian Manager Contains Link is not shown on step 2 of RIP when the Destination RDO is not Custodians
+| | [Tags] | manual  
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Create a new IP using the Destination RDO of Attachments
+| | ... | 2. Go to Step 2
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Custodian Manager Contains Link field is not present
+
+| Manager names are shown on the Employee record in the Full Name format
+| | [Documentation] | Verify that a succesfully imported Custodian, who has a manager, shows the Manager's name in the correct format
+| | [Tags] | manual | required
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. A RIP is created for Custodians with Custodian Manager Contains Link set to Yes
+| | ... | 2. Niether ${Custodian1} or ${Manager1} are Custodians in RLH
+| | ... | 3. In LDAP, ${Custodian1} has a manager: ${Manager1}
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Import the Custodian RIP
+| | ... | 2. Go to the Method tab | Custodian
+| | ... | 3. View ${Custodian1} 
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Manager field shows ${Manager1}
+
+| Managers that did not previously exist are Created
+| | [Documentation] | Verify that new Managers have their own Manager record created
+| | [Tags] | manual  
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. Requiries that the case "Manager names are shown on the Employee record in the Full Name format" has been run
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Method tab | Custodian
+| | ... | 2. Search for ${Manager1} 
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that a single instance of ${Manager1} exists
+
+| Newly imported Managers have the correct name format on their own Custodian record
+| | [Documentation] | Verify that Newly imported Managers have the correct name format on their own Custodian record
+| | [Tags] | manual  
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. Requiries that the case "Manager names are shown on the Employee record in the Full Name format" has been run
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Method tab | Custodian
+| | ... | 2. View ${Manager1} 
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Name field shows ${Manager1}
+
+| Existing Managers are Linked to their Newly Imported Employees
+| | [Documentation] | Verify that Managers that did exist are Linked to their Newly Imported Employees
+| | [Tags] | manual 
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. A RIP is created for Custodians with Custodian Manager Contains Link set to Yes
+| | ... | 2. ${Custodian2} is not a Custodian in RLH
+| | ... | 3. ${Manager2} is a Custodian in RLH
+| | ... | 4. In LDAP, ${Custodian2} has a manager: ${Manager2}
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Import the Custodian RIP
+| | ... | 2. Go to the Method tab | Custodian
+| | ... | 3. View ${Custodian2} 
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Manager field shows ${Manager2}
+
+| Existing Custodians can become Managers to New Custodians
+| | [Documentation] | Verify that Existing Custodians can become Managers to New Custodians
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. A RIP is created for Custodians with Custodian Manager Contains Link set to Yes
+| | ... | 2. ${Custodian3} is not a Custodian in RLH
+| | ... | 3. ${Manager3} is a Custodian in RLH but is not a manager
+| | ... | 4. In LDAP, ${Custodian3} has a manager: ${Manager3}
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Import the Custodian RIP
+| | ... | 2. Go to the Method tab | Custodian
+| | ... | 3. View ${Custodian3} 
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Manager field shows ${Manager3}
+
+| Existing Custodians can become Managers of Existing Custodians
+| | [Documentation] | Verify that Existing Custodians can become Managers of Existing Custodians
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. A RIP is created for Custodians with Custodian Manager Contains Link set to Yes
+| | ... | 2. ${Custodian4} is a Custodian in RLH
+| | ... | 3. ${Manager4} is a Custodian in RLH but is not a manager
+| | ... | 4. In LDAP, ${Custodian4} has a manager: ${Manager4}
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Import the Custodian RIP
+| | ... | 2. Go to the Method tab | Custodian
+| | ... | 3. View ${Custodian4} 
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Manager field shows ${Manager4}
+
+| Existing Custodians can be linked to Newly created Managers
+| | [Documentation] | Verify that Existing Custodians can be linked to Newly created Managers
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. A RIP is created for Custodians with Custodian Manager Contains Link set to Yes
+| | ... | 2. ${Custodian5} is a Custodian in RLH
+| | ... | 3. ${Manager5} is not a Custodian in RLH
+| | ... | 4. In LDAP, ${Custodian5} has a manager: ${Manager5}
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Import the Custodian RIP
+| | ... | 2. Go to the Method tab | Custodian
+| | ... | 3. View ${Custodian5} 
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Manager field shows ${Manager5}
+
+| Existing Custodians can be given new existing Managers
+| | [Documentation] | Verify that Existing Custodians can be given new existing Managers
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. A RIP is created for Custodians with Custodian Manager Contains Link set to Yes
+| | ... | 2. ${Custodian6} is a Custodian in RLH
+| | ... | 3. ${Custodian6} in RLH has a Manager: ${Manager7}
+| | ... | 4. ${Manager6} is a Custodian in RLH
+| | ... | 4. ${Manager7} is a Custodian in RLH
+| | ... | 5. In LDAP, ${Custodian6} has a manager: ${Manager6}
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Import the Custodian RIP
+| | ... | 2. Go to the Method tab | Custodian
+| | ... | 3. View ${Custodian6} 
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Manager field shows ${Manager7}
+
+| Managers are not linked to the Custodian when the field is not Mapped
+| | [Documentation] | Verify that Managers are not linked to the Custodian when the field is not Mapped
+| | [Tags] | manual 
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. A RIP is created for Custodians with Custodian Manager Contains Link set to Yes, but the manager field is not mapped
+| | ... | 2. ${Custodian7} is not a Custodian in RLH
+| | ... | 3. ${Manager8} is not a Custodian in RLH
+| | ... | 4. In LDAP, ${Custodian7} has a manager: ${Manager8}
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Import the Custodian RIP
+| | ... | 2. Go to the Method tab | Custodian
+| | ... | 3. View ${Custodian7} 
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Manager field is blank
+
+| Managers are Imported when they do not reside in the current Path
+
+| Managers are Imported when they do not met the current filter
+
+| An error occurs when a non-Manager Source field is mapped to the Manager destination 
+
+*** Keywords *** 
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource  | C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
+
