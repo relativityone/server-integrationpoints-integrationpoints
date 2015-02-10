@@ -25,18 +25,18 @@
 | Suite Precondition Test
 | | [Documentation] | Verify that the Import process functions. This is the suite-precondition that can't be automated nicely.
 | | ... | [id] 901a5bc0-ad46-11e4-9a02-90b11c6c5ae4
-| | [Tags] | manual
+| | [Tags] | manual  |  required
 | | Go to the Tab	| Integration Points
 | | Set Filter      | Name | ${IntegrationPoint1}
 | | Click Element   | ${IntegrationPointLink}
-| | Click Element   | ${ImportNowButton} 
-| | Click Element   | ${OKButton}  
-| | Go to the Method Tab  | Custodian
 
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Wait for the Import job to be processed; view the eddsbo.ScheduleAgentQueue for the TaskType of SyncWorker to complete
-| | ... | 2. Filter by the Department of Blank Custodian Names
+| | ... | 1. Click Element   | ${ImportNowButton} 
+| | ... | 2. Click Element   | ${OKButton}  
+| | ... | 3. Wait for the Import job to be processed; view the eddsbo.ScheduleAgentQueue for the TaskType of SyncWorker to complete
+| | ... | 4. Go to the Method Tab  | Custodian
+| | ... | 5. Filter by the Department of Blank Custodian Names
 | | ... | 
 | | ... | Expected Results:
 | | ... | 1. Verify that there are 2 custodians. Now that you know the import has been performed, the remaining automated tests will verify the data is correct.
@@ -44,6 +44,7 @@
 | Custodians with a blank First Name are imported
 | | [Documentation] | Verify that Custodians that do not have their first name populated in LDAP are imported into RLH.
 | | ... | [id] b66ea8d1-b0a7-11e4-b386-90b11c6c5ae4
+| | Require Test Case | Suite Precondition Test
 | | Go to the Method Tab | Custodian
 | | Filter a Text Filter | gbox_custodianGrid | Email | BlankFirstName@law.com
 
@@ -56,6 +57,7 @@
 | Custodians without a Last Name not imported
 | | [Documentation] | Verify that Custodians that do not have their last name populated are imported into RLH.
 | | ... | [id] 93c625b0-ad46-11e4-993c-90b11c6c5ae4
+| | Require Test Case | Suite Precondition Test
 | | Go to the Method Tab | Custodian
 | | Filter a Text Filter | gbox_custodianGrid | Name | BlankLastName
 
@@ -68,6 +70,7 @@
 | Custodians without both a First Name and Last Name are not imported
 | | [Documentation] | Verify that Custodians that do not have both a First Name and Last Name are not imported into RLH.
 | | ... | [id] 98e1d34f-ad46-11e4-8e0c-90b11c6c5ae4
+| | Require Test Case | Suite Precondition Test
 | | Go to the Method Tab | Custodian
 | | Filter a Text Filter | gbox_custodianGrid | Email | BlankFirstAndLastName@law.com
 
