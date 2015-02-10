@@ -104,7 +104,7 @@
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
-| | Verify the following Field's Placeholder Text is	| ${Scheduled Time Field}	| hh:mm 24hr
+| | Verify the following Field's Placeholder Text is	| ${Scheduled Time Field}	| hh:mm 12hr
 
  
 | The Frequency Dropdown List has the correct options
