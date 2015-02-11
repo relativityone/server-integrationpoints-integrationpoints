@@ -2,7 +2,9 @@
 *** Settings ***
 | Documentation	| This suite of keywords deals with the Integration Point object and its associated pages and actions.
 
+
 *** Variables ***
+
 
 *** Keywords ***
 
@@ -162,7 +164,7 @@
 | | [Documentation]	| Returns the Unique field for the given Object Type.
 | | ...				| This field is used in a number of ways on Step 3.
 | | [ARGUMENTS]		| ${ObjectType}
-| | ${2DGrid}=	| Query Workspace Database	|  
+| | ${2DGrid}=	| Query Workspace Database	| 
 | | ... | SELECT f.DisplayName
 | | ... | FROM [EDDSDBO].[Field] f
 | | ... | JOIN [ObjectType] ot on ot.DescriptorArtifactTypeID = f.FieldArtifactTypeID
@@ -206,57 +208,61 @@
 | | Wait Until Page Contains Element	| xpath=//select[@id='source-attributes']/child::option	| 10s	| The unassigned Source Attributes never loaded.
 | | @{SourceAttributes}=	| Get Element Text	| xpath=//select[@id='source-attributes']/child::option	| False
 
-| Click Workspace Field 
+| Click Workspace Field
 | | [Documentation] | A keyword that clicks an item from the (unselected) Workspace Field list. Multiple calls of select can be used with a single click of Move.
 | | [ARGUMENTS]		| ${Field}
-| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='workspace-fields'] | The Workspace Fields list box was not visible.
-| | Click | xpath=//select[@id='workspace-fields']/option[text()='${Field}']
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='workspace-fields']	| The Workspace Fields list box was not visible.
+| | Click	| xpath=//select[@id='workspace-fields']/option[text()='${Field}']
 
-| Click Selected Workspace Field 
+| Click Selected Workspace Field
 | | [Documentation] | A keyword that clicks an item from the Selected Workspace Field list. Multiple calls of select can be used with a single click of Move.
 | | [ARGUMENTS]		| ${Field}
-| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='selected-workspace-fields'] | The Selected Workspace Fields list box was not visible.
-| | Click | xpath=//select[@id='selected-workspace-fields']/option[text()='${Field}']
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Workspace Fields list box was not visible.
+| | Click	| xpath=//select[@id='selected-workspace-fields']/option[text()='${Field}']
 
-| Click Source Attribute Field 
+| Click Source Attribute Field
 | | [Documentation] | A keyword that clicks an item from the (unselected) Source Attribute Field list. Multiple calls of select can be used with a single Click of Move.
 | | [ARGUMENTS]		| ${Field}
-| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='source-attributes'] | The Source Attribute Fields list box was not visible.
-| | Click | xpath=//select[@id='source-attributes']/option[text()='${Field}']
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='source-attributes']	| The Source Attribute Fields list box was not visible.
+| | Click	| xpath=//select[@id='source-attributes']/option[text()='${Field}']
 
-| Click Selected Source Attribute Field 
+| Click Selected Source Attribute Field
 | | [Documentation] | A keyword that clicks an item from the (unselected) Source Attribute Field list. Multiple calls of select can be used with a single Click of Move.
 | | [ARGUMENTS]		| ${Field}
-| | Wait until keyword succeeds | 20s | 2s | Element should be visible  | xpath=//select[@id='selected-source-attributes'] | The Selected Source Attribute Fields list box was not visible.
-| | Click | xpath=//select[@id='selected-source-attributes']/option[text()='${Field}']
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-source-attributes']	| The Selected Source Attribute Fields list box was not visible.
+| | Click	| xpath=//select[@id='selected-source-attributes']/option[text()='${Field}']
 
 | Move the Following Workspace Fields to the Selected List
+| | [Documentation] | 
 | | [ARGUMENTS]		| @{WorkspaceFields}
 | | :FOR	| ${WorkspaceField}	| IN	| @{WorkspaceFields}
-| | | Click Workspace Field  | ${WorkspaceField}
+| | | Click Workspace Field	| ${WorkspaceField}
 | | | Click	| id=add-workspace-field
 
 | Move the Following Workspace Fields from the Selected List
+| | [Documentation] | 
 | | [ARGUMENTS]		| @{WorkspaceFields}
 | | :FOR	| ${WorkspaceField}	| IN	| @{WorkspaceFields}
-| | | Click Selected Workspace Field  | ${WorkspaceField}
+| | | Click Selected Workspace Field	| ${WorkspaceField}
 | | | Click	| id=remove-workspace-field
 
 | Move the Following Source Attribute Fields to the Selected List
+| | [Documentation] | 
 | | [ARGUMENTS]		| @{AttributeFields}
 | | :FOR	| ${AttributeField}	| IN	| @{AttributeFields}
-| | | Click Selected Source Attribute Field   | ${AttributeField}
+| | | Click Selected Source Attribute Field	| ${AttributeField}
 | | | Click	| id=remove-source-field
 
 | Move the Following Source Attribute Fields from the Selected List
+| | [Documentation] | 
 | | [ARGUMENTS]		| @{AttributeFields}
 | | :FOR	| ${AttributeField}	| IN	| @{AttributeFields}
-| | | Click Source Attribute Field   | ${AttributeField}
+| | | Click Source Attribute Field	| ${AttributeField}
 | | | Click	| id=add-source-field
 
 | Map the Following Fields on the Integration Point Step 3 form
 | | [Documentation] | A keyword that maps all of the specified fields for a RIP on step 3.
-| | [Arguments]     | @{WorkspaceFieldsAndSourceAttributeFields}
+| | [ARGUMENTS]		| @{WorkspaceFieldsAndSourceAttributeFields}
 | | :FOR	| ${WorkspaceField}	| ${SourceAttribute}	| IN	| @{WorkspaceFieldsAndSourceAttributeFields}
 | | | Move the Following Workspace Fields to the Selected List			| ${WorkspaceField}
 | | | Move the Following Source Attribute Fields to the Selected List	| ${SourceAttribute}
@@ -264,65 +270,61 @@
 | Verify that the following field is not in the following list
 | | [Documentation] | A keyword that verifies that the specified field is not present in the specified list.
 | | ... 			| The value of ${ListName} should be either: workspace-fields, selected-workspace-fields, selected-source-fields, or source-attributes
-| | [ARGUMENTS]		| ${FieldName} | ${ListName}
-| | Element should not be visible  |  xpath=//select[@id='${ListName}']/option[text()='${FieldName}']
+| | [ARGUMENTS]		| ${FieldName}	| ${ListName}
+| | Element should not be visible	| xpath=//select[@id='${ListName}']/option[text()='${FieldName}']
 
 | Verify that the Selected Workspace fields are in the following order
 | | [Documentation] | A keyword that verifies the fields in the Selected Workspace list are in the desired order.
-| | [Arguments] | @{ExpectedFields}
-| | Wait until keyword succeeds | 20s | 2s | Element Should be Visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Fields list box was not visible.
+| | [ARGUMENTS]		| @{ExpectedFields}
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Fields list box was not visible.
 | | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-workspace-fields']/option | False 
 | | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
 
 #------------------------------------------------------------------------------------------------------------------------
 # Generic Keywords
 
-| Run Import Now on an Integration Point
+| Run Import Now on the Following Integration Point
 | | [Documentation] | A keyword that runs an RIP import; can be called from anywhere.
-| | [Arguments]     | ${IntegrationPoint} 
-| | Go to the Tab	| Integration Points
-| | Set Filter      | Name | ${IntegrationPoint}
-| | Click Element   | xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationPoint}']
-| | Click Element   | xpath=//a[@class='consoleButtonEnabled' and text()='Import Now'] 
-| | Click Element   | xpath=//span[@class='ui-button-text' and text()='OK'] 
+| | [ARGUMENTS]		| ${IntegrationPoint} 
+| | View Integration Point	| ${IntegrationPoint} 
+| | Page Should Contain Element	| xpath=//a[@class='consoleButtonEnabled' and text()='Import Now']	| The Import Now button was disabled for the Integration Point "${IntegrationPoint}".
+| | Click	| Import Now
+| | Click	| xpath=//span[@class='ui-button-text' and text()='OK'] 
 | | Wait Until Integration Point Job Runs | ${IntegrationPoint} 
 
 | View Integration Point
 | | [Documentation] | A keyword that Views an Integration Point. Can be called from any where.
-| | [Arguments]     | ${IntegrationName} 
+| | [ARGUMENTS]		| ${IntegrationName} 
 | | Go to the Tab	| Integration Points
-| | Set Filter      | Name | ${IntegrationName}
-| | Click Element   | xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationName}']
+| | Set Filter		| Name	| ${IntegrationName}
+| | Click Element	| xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationName}']
 
 | Delete the Following Integration Point
 | | [Documentation] | A keyword that deletes the specified Integration Point; can be called from anywhere.
-| | [Arguments]     | ${IntegrationPointToDelete}
-| | Go to the Tab	| Integration Points
-| | Set Filter      | Name | ${IntegrationPointToDelete}
-| | Click Element   | xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationPointToDelete}']
+| | [ARGUMENTS]		| ${IntegrationPointToDelete}
+| | View Integration Point	| ${IntegrationPoint} 
 | | Delete this object
 
 | Create Integration Point
 | | [Documentation] | A keyword that creates an Integration Point. 
-| | ... | The value of ${Step1Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 1 form".
-| | ... | The value of ${Step2Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 2 form".
-| | ... | The value of ${Step3Mapping} are the arguments from "Map the Following Fields on the Integration Point Step 3 form".
-| | ... | The value of ${ParentAttribute} is the Parent RDO for the Destination RDO, which should be NULL or not entered when there is no Parent.
-| | [Arguments] | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | ${Step3UniqueID} | ${ParentAttribute}=NULL
-
+| | ...				| The value of ${Step1Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 1 form".
+| | ...				| The value of ${Step2Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 2 form".
+| | ...				| The value of ${Step3Mapping} are the arguments from "Map the Following Fields on the Integration Point Step 3 form".
+| | ...				| The value of ${ParentAttribute} is the Parent RDO for the Destination RDO, which should be NULL or not entered when there is no Parent.
+| | [ARGUMENTS]		| ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | ${Step3UniqueID} | ${ParentAttribute}=NULL
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form | @{Step1Fields}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the Integration Point Step 2 form | @{Step2Fields}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Map the Following Fields on the Integration Point Step 3 form | @{Step3Mapping}
-| | Select from select2 Dropdown  |  s2id_overlay-identifier | ${Step3UniqueID}
-| | Run Keyword Unless  | '${ParentAttribute}'=='NULL' | Select from select2 Dropdown | s2id_parent-identifier | ${ParentAttribute}
+| | Select from select2 Dropdown	| s2id_overlay-identifier | ${Step3UniqueID}
+| | Run Keyword Unless	| '${ParentAttribute}'=='NULL' | Select from select2 Dropdown | s2id_parent-identifier | ${ParentAttribute}
 | | Click | id=save
 
 | Get a List of All Non-System Object Types in the Workspace
 | | [Documentation]	| Gets a list of all of the Object types in the Workspace, removes the System Object types, and then return the remainder. 
-| | ${2DGrid}=	| Query Workspace Database	|  
+| | ${2DGrid}=	| Query Workspace Database	| 
 | | ... | SELECT Name
 | | ... | FROM [EDDSDBO].[ObjectType]
 | | ... | ORDER BY Name
@@ -361,7 +363,7 @@
 | Get the Non-System Fields for the following Object Type
 | | [Documentation]	| Gets a list of all of the fields on the given object, removes the five system fields, and then returns the remaining fields.
 | | [ARGUMENTS]		| ${ObjectType}
-| | ${2DGrid}=	| Query Workspace Database	|  
+| | ${2DGrid}=	| Query Workspace Database	| 
 | | ... | SELECT DisplayName
 | | ... | FROM [EDDSDBO].[Field] f
 | | ... | JOIN [ObjectType] ot on ot.DescriptorArtifactTypeID = f.FieldArtifactTypeID
