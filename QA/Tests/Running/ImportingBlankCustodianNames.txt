@@ -67,7 +67,7 @@
 | | ... | UniqueID		| objectguid
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 
-| | Run Import Now on an Integration Point | ${IntegrationName}
+| | Run Import Now on the Following Integration Point | ${IntegrationName}
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
