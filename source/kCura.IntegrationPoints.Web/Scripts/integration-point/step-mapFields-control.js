@@ -69,7 +69,7 @@ IP.affects = (function() {
 				}
 				$this.find('option').eq(idx).addClass('hover');
 				$(destination).find('option').removeClass('hover').eq(idx).addClass('hover');
-				$('#forceRedraw').text(idx); //force IE to redraw
+				$('#forceRedraw').text(1); //force IE to redraw
 			});
 		}
 
@@ -80,10 +80,14 @@ IP.affects = (function() {
 				$('#forceRedraw').text(1); //force IE to redraw
 			});
 		}
-		removeHoverClass('#selected-workspace-fields', '#selected-source-fields');
-		removeHoverClass('#selected-source-fields', '#selected-workspace-fields');
-		_init('#selected-workspace-fields', '#selected-source-fields');
-		_init('#selected-source-fields', '#selected-workspace-fields');
+
+		var SOURCE_FIELD = '#selected-source-fields';
+		var WORKSPACE_FIELD ='#selected-workspace-fields' 
+
+		removeHoverClass(WORKSPACE_FIELD, SOURCE_FIELD);
+		removeHoverClass(SOURCE_FIELD, WORKSPACE_FIELD);
+		_init(WORKSPACE_FIELD, SOURCE_FIELD);
+		_init(SOURCE_FIELD, WORKSPACE_FIELD);
 	};
 	return {
 		hover : hover
