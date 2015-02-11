@@ -60,13 +60,28 @@ IP.affects = (function() {
 	var hover = function () {
 		var _init = function (source, destination) {
 			$(source).on('mousemove', function (event) {
-				var $opt = $(this).find('option:hover').addClass('hover');
+				var $this = $(this);
+				var $opt = $this.find('option:hover');
 				var idx = $opt.index();
 				$opt.siblings().removeClass('hover');
+				if (idx < 0) {
+					idx = $this.find('option').length - 1;
+				}
+				$this.find('option').eq(idx).addClass('hover');
 				$(destination).find('option').removeClass('hover').eq(idx).addClass('hover');
 				$('#forceRedraw').text(idx); //force IE to redraw
 			});
 		}
+
+		var removeHoverClass = function (source, destination) {
+			$(source).on('mouseleave', function (event) {
+				$(this).find('option').removeClass('hover');
+				$(destination).find('option').removeClass('hover');
+				$('#forceRedraw').text(1); //force IE to redraw
+			});
+		}
+		removeHoverClass('#selected-workspace-fields', '#selected-source-fields');
+		removeHoverClass('#selected-source-fields', '#selected-workspace-fields');
 		_init('#selected-workspace-fields', '#selected-source-fields');
 		_init('#selected-source-fields', '#selected-workspace-fields');
 	};
