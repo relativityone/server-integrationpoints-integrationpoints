@@ -12,7 +12,8 @@
 | ${IntegrationName}          | Append and Overlay RIP  
 | ${NewObject}                | Man, Cat
 | ${ExistingAndUpdatedObject} | Man, Dog
-| ${ExistingNoChangeObject}   | Man, Bird    
+| ${ExistingNoChangeObject}   | Man, Bird 
+| ${Custodians Grid}		  | gbox_custodianGrid
 
 *** Test Cases ***
 
@@ -22,51 +23,40 @@
 | | [Tags] | autotest
 | | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Email | catman@gameofholdstesting.corp
 
-| | @{Headers}=	| Create List	| Email
-| | @{Values}=	| Create List	| catman@gameofholdstesting.corp
-| | Verify that the following grid has the following headers and rows	| ${Custodians Grid}	| ${Headers}	| ${Values}
+| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
 | An Append import Creates new History objects
 | | [Documentation] | Verify that when an Append RIP is run which has new source recods, that there are history entries for the newly created objects in the target RDO.
 | | ...				| [id] 12e9dbe1-a89f-11e4-b55e-b8ca3a83048f
 | | [Tags] | manual
 | | Run the following manual steps:
-| | ... | Preconditions:
-| | ... | 1. Require Test Case: The "An Append import can Create new objects" case has been run
-| | ... |
 | | ... | Steps:
-| | ... | 1. View the History objects for ${RIPOverlay1} 
+| | ... | 1. View the History objects for ${NewObject} 
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that the object ${NewObject} is present
+| | ... | Verify that there is an entry for ${NewObject} with the Action of Import - Update 
 
 | An Append import does not update existing objects
-| | [Documentation] | Verify that when an Append RIP is run which has updated Source objects that match to existing objects, that it does not update the existing objects in the target RDO.
+| | [Documentation] | Verify that when an Append RIP is run which has updated Source objects that match to existing objects, that it does  update the existing objects in the target RDO.
 | | ...				| [id] 12ea02f0-a89f-11e4-b98c-b8ca3a83048f
 | | [Tags] | manual
 | | Run the following manual steps:
-| | ... | Preconditions:
-| | ... | 1. Require Test Case: The "An Append import can Create new objects" case has been run
-| | ... |
 | | ... | Steps:
-| | ... | 1. View the History objects for ${RIPOverlay1}
+| | ... | 1. View the History objects for ${ExistingAndUpdatedObject}
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that there is no Update entry for the object ${ExistingAndUpdatedObject}
+| | ... | 1. Verify that there is an entry for ${ExistingAndUpdatedObject} with the Action of Import - Update and that the original values are the same as the current values that were not changed, but different for the values that were changed (i.e. Department is not blank)
 
 | An Append import does not update existing unmodified objects
 | | [Documentation] | Verify that when an Append RIP is run which has Source objects that match to existing objects with no changes, that it does not update the existing objects in the target RDO.
 | | ...				| [id] 12ea02f1-a89f-11e4-a719-b8ca3a83048f
 | | [Tags] | manual
 | | Run the following manual steps:
-| | ... | Preconditions:
-| | ... | 1. Require Test Case: An Append import Creates new objects
-| | ... |
 | | ... | Steps:
-| | ... | 1. View the History objects for the ${RIPAppendOverlay1} import
+| | ... | 1. View the History objects for ${ExistingNoChangeObject}
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that there is no Update entry for the object ${ExistingNoChangeObject}
+| | ... | 1. Verify that there is an entry for ${ExistingNoChangeObject} with the Action of Import - Update and that the original values are the same as the current values 
 
 *** Keywords *** 
 
@@ -87,8 +77,7 @@
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
 | | Create a Custodian using API	| 
 | | ... | Full Name		| ${ExistingAndUpdatedObject}	|
-| | ... | Email			| dogman@gameofholdstesting.corp |
-| | ... | Department	| AppendOverlay
+| | ... | Email			| dogman@gameofholdstesting.corp
 
 | | @{Step1Fields}  | Create list | ${IntegrationName} | Append/Overlay |
 | | ... | LDAP | Custodian | no
@@ -100,10 +89,11 @@
 | | ... | First Name | givenname | 
 | | ... | Last Name  | sn | 
 | | ... | UniqueID   | objectguid
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
 
-| | Run Import Now on an Integration Point | ${IntegrationName}  
+| | Run Import Now on the Following Integration Point | ${IntegrationName}  
 
+| | Go to the Method tab | Custodian
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
@@ -116,9 +106,11 @@
 | | Close All Browsers
 
 *** Settings ***
-| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| Collections
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/GridKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource  | C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
 

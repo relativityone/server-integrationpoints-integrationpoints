@@ -288,7 +288,7 @@
 
 | Delete the Following Integration Point
 | | [Documentation] | A keyword that deletes the specified Integration Point; can be called from anywhere.
-| | [ARGUMENTS]		| ${IntegrationPointToDelete}
+| | [ARGUMENTS]		| ${IntegrationPoint}
 | | View Integration Point	| ${IntegrationPoint} 
 | | Delete this object
 
@@ -410,3 +410,4 @@
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
