@@ -30,8 +30,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		{
 			var objectTypeId = _rdoQuery.GetObjectTypeID(Data.ObjectTypes.IntegrationPoint);
 			var tabID = _tabService.GetTabId(objectTypeId);
-			var previousURL = "List.aspx?AppID=" + SessionService.WorkspaceID + "&ArtifactID=" + id.GetValueOrDefault(0) + "&ArtifactTypeID=" + objectTypeId + "&SelectedTab=" + tabID;
-
+			var objectID = _rdoQuery.GetObjectType(objectTypeId).ParentArtifact.ArtifactID;
+			var previousURL = "List.aspx?AppID=" + SessionService.WorkspaceID + "&ArtifactID=" + objectID + "&ArtifactTypeID=" + objectTypeId + "&SelectedTab=" + tabID;
+			
 			return View(new EditPoint
 			{
 				AppID = SessionService.WorkspaceID,
