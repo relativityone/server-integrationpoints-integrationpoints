@@ -21,7 +21,7 @@
 | First Name is a required field
 | | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed without mapping the First Name Workspace field.
 | | ...				| [id] 25a2cdde-ad46-11e4-afd6-90b11c6c5ae4
-| | [Tags]			| required	| untested
+| | [Tags]			| required	| automated
 | | Move the Following Workspace Fields to the Selected List		| UniqueID		| Last Name
 | | Move the Following Source Attribute Fields to the Selected List	| objectguid	| sn
 | | Click | Save
@@ -31,7 +31,7 @@
 
 | A Custodian RIP can be saved after fixing the missing First Name error
 | | [Documentation] | Verify that step 3 of a Custodian the Integration Point can be completed after the First Name was not mapped.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | [Setup]			| Require Test Case	| First Name is a required field
 | | Move the Following Workspace Fields to the Selected List		| First Name
 | | Move the Following Source Attribute Fields to the Selected List	| givenname
@@ -43,7 +43,7 @@
 | Last Name is a required field
 | | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed without mapping the Last Name Workspace field.
 | | ...				| [id] 2cf817d1-ad46-11e4-b34e-90b11c6c5ae4
-| | [Tags]			| required	| untested
+| | [Tags]			| required	| automated
 | | Move the Following Workspace Fields to the Selected List		| UniqueID		| First Name
 | | Move the Following Source Attribute Fields to the Selected List	| objectguid	| givenname
 | | Click | Save
@@ -53,7 +53,7 @@
 
 | A Custodian RIP can be saved after fixing the missing Last Name error
 | | [Documentation] | Verify that step 3 of a Custodian the Integration Point can be completed after the Last Name was not mapped.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | [Setup]			| Require Test Case	| Last Name is a required field
 | | Move the Following Workspace Fields to the Selected List		| Last Name
 | | Move the Following Source Attribute Fields to the Selected List	| sn
@@ -65,7 +65,7 @@
 | Warning message is shown when both First Name and Last Name are not mapped
 | | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed when both First Name and Last Name are not mapped.
 | | ...				| [id] 8ca09e4f-ad46-11e4-b732-90b11c6c5ae4
-| | [Tags]			| required	| untested
+| | [Tags]			| required	| automated
 | | Move the Following Workspace Fields to the Selected List		| UniqueID
 | | Move the Following Source Attribute Fields to the Selected List	| objectguid
 | | Click | Save
@@ -76,7 +76,7 @@
 | A Custodian RIP can be saved after fixing the missing First and Last Name error
 | | [Documentation] | Verify that step 3 of a Custodian the Integration Point can be completed after both First Name and Last Name were not mapped.
 | | ...				| [id] 82b0886e-ad4a-11e4-8cf2-90b11c6c5ae4
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | [Setup]			| Require Test Case	| Warning message is shown when both First Name and Last Name are not mapped
 | | Move the Following Workspace Fields to the Selected List		| Last Name	| First Name
 | | Move the Following Source Attribute Fields to the Selected List	| sn		| givenname
@@ -100,14 +100,16 @@
 | | Open and Log in to Method
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
 
-# | | Delete All Integration Points with the following Name	| Required Custodian Fields
+| | Delete All Integration Points with the following Name using API	| Required Custodian Fields
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
+
 
 *** Settings ***
 | Library	| Collections
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
 | Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
