@@ -35,7 +35,7 @@
 | | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
 | | ... | ConnectionPath=Connection Path			| 
 | | ... | ObjectFilterString=Object Filter String	| 
-| | ... | Authentication=Encryption	| 
+| | ... | Authentication=Secure Socket Layer	| 
 | | ... | Username=User Name		| 
 | | ... | Password=Pass phrase		| 
 | | ... | ImportNestedItems=Yes
@@ -46,7 +46,7 @@
 | | ... | Verify that the Step 2 fields have the following values	| 
 | | ... | Connection Path: Connection Path	| 
 | | ... | Object Filter String: Object Filter String	| 
-| | ... | Authentication: Encryption	| 
+| | ... | Authentication: Secure Socket Layer	| 
 | | ... | Username: User Name	| 
 | | ... | Password: Pass phrase	| 
 | | ... | Import Nested Items: Yes
@@ -142,7 +142,7 @@
 #| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
 #| | ... | ConnectionPath=Connection Path			| 
 #| | ... | ObjectFilterString=Object Filter String	| 
-#| | ... | Authentication=Encryption	| 
+#| | ... | Authentication=Secure Socket Layer	| 
 #| | ... | Username=User Name		| 
 #| | ... | Password=Pass phrase		| 
 #| | ... | ImportNestedItems=Yes
@@ -175,7 +175,7 @@
 #| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
 #| | ... | ConnectionPath=Connection Path			| 
 #| | ... | ObjectFilterString=Object Filter String	| 
-#| | ... | Authentication=Encryption	| 
+#| | ... | Authentication=Secure Socket Layer	| 
 #| | ... | Username=User Name		| 
 #| | ... | Password=Pass phrase		| 
 #| | ... | ImportNestedItems=Yes
@@ -190,7 +190,7 @@
 #| | ... | Verify that the Step 2 fields have the following values	| 
 #| | ... | Connection Path: Connection Path				| 
 #| | ... | Object Filter String: Object Filter String	| 
-#| | ... | Authentication: Encryption	| 
+#| | ... | Authentication: Secure Socket Layer	| 
 #| | ... | Username: User Name			| 
 #| | ... | Password: Pass phrase			| 
 #| | ... | Import Nested Items: Yes
