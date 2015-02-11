@@ -127,7 +127,7 @@
 
 | Fill out the Following Fields of the Integration Point Step 2 form
 | | [Documentation]	| This keyword fills out the Integration Point Step 2 fields.
-| | ... 			| The value of ${Authentication} should be Select.../Anonymous/Encryption/FastBind/Secure/Secure Socket Layer/Readonly server.
+| | ... 			| The value of ${Authentication} should be Select.../Anonymous/FastBind/Secure/Secure Socket Layer/Readonly server.
 | | ... 			| The value of ${ImportNestedItems} should be Yes or No.
 | | [ARGUMENTS]		| ${ConnectionPath}=NULL		| ${ObjectFilterString}=NULL	| ${Authentication}=NULL	| 
 | | ...				| ${ConnectionUsername}=NULL	| ${ConnectionPassword}=NULL	| ${ImportNestedItems}=NULL
@@ -233,7 +233,7 @@
 | | [ARGUMENTS]		| @{AttributeFields}
 | | :FOR	| ${AttributeField}	| IN	| @{AttributeFields}
 | | | Click Selected Source Attribute Field	| ${AttributeField}
-| | | Click	| id=add-source-field
+| | | Click	| id=remove-source-field
 
 | Map the Following Fields on the Integration Point Step 3 form
 | | [Documentation] | A keyword that maps all of the specified fields for a RIP on step 3.

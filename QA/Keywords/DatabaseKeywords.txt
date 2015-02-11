@@ -8,6 +8,44 @@
 
 *** Keywords ***
 
+| Determine if the Following Integration Point Exists in the current Workspace
+| | [Documentation]	| A keyword designed to determine whether an Integration Point with the given name exists in the workspace. Can be run from anywhere without leaving the page.
+| | ... 			| Returns "true" or "false".
+| | [ARGUMENTS]		| ${IntegrationPointName}
+| | ${IntegrationPointName}=	| Replace String	| ${IntegrationPointName}	| '	| ''
+| | ${Exists}=	| Query Workspace Database	| 
+| | ... | SELECT 
+| | ... | CASE WHEN (COUNT([ArtifactID])>0) THEN 'true' ELSE 'false' END 
+| | ... | From EDDSDBO.IntegrationPoint
+| | ... | Where Name = '${IntegrationPointName}'
+| | [Return]		| ${Exists[0][0]}
+
+| Get the ArtifactID of the following Integration Point
+| | [Documentation]	| A keyword designed to return the ArtifactID of the Integration Point object with the given name. \n
+| | ... 			| A database connection must be made for this to run. \n
+| | ... 			| The given Project Name cannot contain any apostrophes or the SQL statement will fail.
+| | [ARGUMENTS]		| ${IntegrationPointName}
+| | ${IntegrationPointName}=	| Replace String	| ${IntegrationPointName}	| '	| ''
+| | ${IntegrationPointID}=	| Query workspace database	| 
+| | ... | Select ArtifactID
+| | ... | From EDDSDBO.IntegrationPoint
+| | ... | Where Name = '$${IntegrationPointName}'
+| | Should Not Be Empty	| ${IntegrationPointID}	| The Integration Point "${IntegrationPointName}" was not found.
+| | [Return]		| ${IntegrationPointID[0][0]}
+
+| Delete the following Integration Point using API
+| | [Documentation]	| Deletes an Integration Point object using the API. \n
+| | ... 			| A database connection must be made for this to run.
+| | [ARGUMENTS]		| ${IntegrationPointName}
+| | ${IntegrationPointID}=	| Get the ArtifactID of the following Integration Point	| ${IntegrationPoint}
+| | Delete an artifact with the following identifier	| Integration Point	| ${IntegrationPointID}
+
+| Delete All Integration Points with the following Name using API
+| | [Documentation]	| Deletes all the Integration Points objects with the given Name using the API. \n
+| | ... 			| A database connection must be made for this to run.
+| | [ARGUMENTS]		| ${IntegrationPointName}
+| | Mass Delete All Artifacts with the Following Properties	| Integration Point	| Name	| ${IntegrationPointName}
+
 | Determine the RDO Identifier Field on the following Object Type
 | | [Documentation]	| Returns the Unique field for the given Object Type.
 | | ...				| This field is used in a number of ways on Step 3.

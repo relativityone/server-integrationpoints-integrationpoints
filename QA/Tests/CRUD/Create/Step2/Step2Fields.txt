@@ -43,7 +43,6 @@
 | | Verify that the currently opened select2 Dropdown has the following choices in order	| 
 | | ... | Select...				| 
 | | ... | Anonymous				| 
-| | ... | Encryption			| 
 | | ... | FastBind				| 
 | | ... | Secure Socket Layer
 
