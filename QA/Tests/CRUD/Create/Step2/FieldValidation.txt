@@ -59,20 +59,27 @@
 | Invalid Connection message is displayed when unable to connect using the given values
 | | [Documentation]	| Verify that the "Unable to connect to source using the specified settings" warning message is displayed after clicking Next while a Connection Path is specified.
 | | ...				| [id] 10332053-a89f-11e4-9135-b8ca3a83048f
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${InvalidConnectionPath}	| Authentication=FastBind
 | | Click	| Next
-| | Verify the following Integration Point Field does have the following Error | ${Connection Path Field} | Unable to connect to source using the specified settings
+| | Wait Until Keyword Succeeds	| 30s	| 2s	| Verify the current Method Page Error has the following Text  | Unable to connect to source using the specified settings.
 
 
 | Proceeding Post-blank Invalid Connection message
 | | [Documentation]	| Verify that the next screen can be reached after the Invalid Connection message is shown.
 | | ...				| [id] 10332054-a89f-11e4-a009-b8ca3a83048f
-| | [Tags]			| untested
+| | [Tags]			| required	| automated
 | | [Setup]			| Require Test Case	| Invalid Connection message is displayed when unable to connect using the given values
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ValidConnectionPath}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Map Fields
+
+
+| After Proceeding Post-blank Invalid Connection message the Error Message is cleared
+| | [Documentation]	| Verify that getting to the next screen after the Invalid Connection message is shown clears the Invalid Connection message.
+| | [Tags]			| automated
+| | [Setup]			| Require Test Case	| Proceeding Post-blank Invalid Connection message
+| | Verify that no Method Page Error is present on the page
 
 
 *** Keywords *** 

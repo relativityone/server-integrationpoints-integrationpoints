@@ -29,7 +29,8 @@
 | | ... | 1. Go to Step 1 of the Create Integration Point Wizard
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Cancel button is on the right side of the header bar
+| | ... | 1. Verify that the Cancel button is on the right side of the header bar
+| | ... | 2. Verify that the Cancel button is grey with black text
 
 
 | The Cancel button does not create an Integration Point object from Step 1

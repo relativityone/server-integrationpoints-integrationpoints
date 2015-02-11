@@ -1,101 +1,112 @@
+
 *** Settings ***
-| Documentation | Verify that the specifics of the Custodian RDO Integration Point functions correctly when creating a new Custodian IP
-| Metadata		| Authors	  | Daniel Oliver
-| Force Tags    | in-progress | team.method
-| Suite Setup		| Create Suite Setup Data
-| Test Setup		| Go to and Setup Step 3
+| Documentation 	| Verify that the specifics of the Custodian RDO Integration Point functions correctly when creating a new Custodian IP.
+| Metadata			| Authors	  | Daniel Oliver	| William Sehy
+| Force Tags		| in-progress | team.method
+| Suite Setup		| Open and Log in to Method
+| Test Setup		| Go to and Step 3 on the Integration Points Wizard
 | Test Teardown		| Run Keyword if Test Failed	| Capture Page Screenshot
-| Suite Teardown	| Delete Suite Setup Data
+| Suite Teardown	| Delete the Objects created in this Suite then Close All Browsers
+
 
 *** Variables ***
 
-| ${WorkspaceName}	| LDAP Sync
-| ${Add Workspace Field Icon}			| add-workspace-field
-| ${AddAllSourceFieldsIcon}				| add-all-source-fields
-| ${ConnectionPath}                     | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
-| ${AuthenticationType}                 | FastBind
-| ${Add Source Attribute Field Icon}    | add-source-field
+| ${WorkspaceName}		| LDAP Sync
+| ${ConnectionPath}		| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
+| ${AuthenticationType}	| FastBind
+
 
 *** Test Cases ***
 
 | First Name is a required field
-| | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed without mapping the First Name Workspace field 
-| | ... | [id] 25a2cdde-ad46-11e4-afd6-90b11c6c5ae4
-| | [Tags] | automated
-| | Click Workspace Field  | Last Name
-| | Move fields to the Selected Workspace list
-| | Click Source Attribute Field | sn
+| | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed without mapping the First Name Workspace field.
+| | ...				| [id] 25a2cdde-ad46-11e4-afd6-90b11c6c5ae4
+| | [Tags]			| required	| untested
+| | Move the Following Workspace Fields to the Selected List		| UniqueID		| Last Name
+| | Move the Following Source Attribute Fields to the Selected List	| objectguid	| sn
 | | Click | Save
 
 | | Verify the current Method Page Error has the following Text  | The First Name field must be mapped.
 
-| Last Name is a required field
-| | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed without mapping the Last Name Workspace field
-| | ... | [id] 2cf817d1-ad46-11e4-b34e-90b11c6c5ae4
-| | [Tags] | automated
-| | Click Workspace Field  | First Name
-| | Move fields to the Selected Workspace list
-| | Click Source Attribute Field | givenname
-| | Click | Save
 
-| | Verify the current Method Page Error has the following Text  | The Last Name field must be mapped.
-
-| Warning message is shown when both First Name and Last Name are not shown
-| | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed when both First Name and Last Name are not mapped
-| | ... | [id] 8ca09e4f-ad46-11e4-b732-90b11c6c5ae4
-| | [Tags] | automated
-| | Click | Save
-
-| | Verify the current Method Page Error has the following Text  | The First Name and Last Name fields must be mapped.
-
-| A Custodian RIP can be saved after fixing the missing name error
-| | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed when both First Name and Last Name are not mapped
-| | ... | [id] 82b0886e-ad4a-11e4-8cf2-90b11c6c5ae4
-| | [Tags] | automated
-| | Click | Save
-| | Click Workspace Field  | Last Name
-| | Click Workspace Field  | First Name
-| | Move fields to the Selected Workspace list
-| | Click Source Attribute Field | sn
-| | Click Source Attribute Field | givenname
-| | Move fields to the Selected Source Attribute list
+| A Custodian RIP can be saved after fixing the missing First Name error
+| | [Documentation] | Verify that step 3 of a Custodian the Integration Point can be completed after the First Name was not mapped.
+| | [Tags]			| untested
+| | [Setup]			| Require Test Case	| First Name is a required field
+| | Move the Following Workspace Fields to the Selected List		| First Name
+| | Move the Following Source Attribute Fields to the Selected List	| givenname
 | | Click | Save
 
 | | Wait until page contains | Integration Point Details
 
+
+| Last Name is a required field
+| | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed without mapping the Last Name Workspace field.
+| | ...				| [id] 2cf817d1-ad46-11e4-b34e-90b11c6c5ae4
+| | [Tags]			| required	| untested
+| | Move the Following Workspace Fields to the Selected List		| UniqueID		| First Name
+| | Move the Following Source Attribute Fields to the Selected List	| objectguid	| givenname
+| | Click | Save
+
+| | Verify the current Method Page Error has the following Text  | The Last Name field must be mapped.
+
+
+| A Custodian RIP can be saved after fixing the missing Last Name error
+| | [Documentation] | Verify that step 3 of a Custodian the Integration Point can be completed after the Last Name was not mapped.
+| | [Tags]			| untested
+| | [Setup]			| Require Test Case	| Last Name is a required field
+| | Move the Following Workspace Fields to the Selected List		| Last Name
+| | Move the Following Source Attribute Fields to the Selected List	| sn
+| | Click | Save
+
+| | Wait until page contains | Integration Point Details
+
+
+| Warning message is shown when both First Name and Last Name are not mapped
+| | [Documentation] | Verify that step 3 of a Custodian the Integration Point can not be completed when both First Name and Last Name are not mapped.
+| | ...				| [id] 8ca09e4f-ad46-11e4-b732-90b11c6c5ae4
+| | [Tags]			| required	| untested
+| | Move the Following Workspace Fields to the Selected List		| UniqueID
+| | Move the Following Source Attribute Fields to the Selected List	| objectguid
+| | Click | Save
+
+| | Verify the current Method Page Error has the following Text  | The First Name and Last Name fields must be mapped.
+
+
+| A Custodian RIP can be saved after fixing the missing First and Last Name error
+| | [Documentation] | Verify that step 3 of a Custodian the Integration Point can be completed after both First Name and Last Name were not mapped.
+| | ...				| [id] 82b0886e-ad4a-11e4-8cf2-90b11c6c5ae4
+| | [Tags]			| untested
+| | [Setup]			| Require Test Case	| Warning message is shown when both First Name and Last Name are not mapped
+| | Move the Following Workspace Fields to the Selected List		| Last Name	| First Name
+| | Move the Following Source Attribute Fields to the Selected List	| sn		| givenname
+| | Click | Save
+
+| | Wait until page contains | Integration Point Details
+
+
 *** Keywords *** 
 
-| Create Suite Setup Data
-| | [Documentation]	| Create the Suite Preconditions
-| | Setup connection to the relativity database
-| | Open and Log in to Method
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
-
-| Go to and Setup Step 3
+| Go to and Step 3 on the Integration Points Wizard
 | | [Documentation]	| A keyword that is used as the test case setup. It goes to Step 3 of RIP for Custodians and maps the Email and ID fields.
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form | Required Custodian Fields | Append/Overlay | LDAP | Custodian | no
+| | Fill out the Following Fields of the Integration Point Step 1 form | Required Custodian Fields	| Append/Overlay	| LDAP	| Custodian	| No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the Integration Point Step 2 form | ConnectionPath=${ConnectionPath} | Authentication=${AuthenticationType} 
 | | Proceed to the Next Step of the Integration Point wizard
-| | Click Workspace Field  | Email
-| | Click Workspace Field  | UniqueID
-| | Move fields to the Selected Workspace list
-| | Click Source Attribute Field  | mail
-| | Click Source Attribute Field  | objectguid
-| | Move fields to the Selected Source Attribute list
 
-| Delete Suite Setup Data
-| | [Documentation]	| Delete the Suite Preconditions of Projects, Communications and Custodians.
+| Delete the Objects created in this Suite then Close All Browsers
+| | [Documentation]	| Delete the Integration Points created in this Suite.
 | | Open and Log in to Method
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+
+# | | Delete All Integration Points with the following Name	| Required Custodian Fields
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
 
 *** Settings ***
 | Library	| Collections
-| Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt

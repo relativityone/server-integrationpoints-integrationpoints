@@ -12,22 +12,26 @@
 *** Variables ***
 
 | ${WorkspaceName}	| LDAP Sync
-| ${WorkspaceFieldListID}			| workspace-fields
-| ${SelectedFieldListID}			| selected-workspace-fields
-| ${SelectedAttributeListID}		| selected-source-fields
-| ${SourceAttributeListID}			| source-attributes
-| ${AddAllWorkspaceFieldsIcon}		| add-all-workspace-fields
-| ${AddWorkspaceFieldIcon}			| add-workspace-field
-| ${RemoveWorkspaceFieldIcon}		| remove-workspace-field
-| ${RemoveWAllWorkspaceFieldsIcon}	| remove-all-workspace-fields
-| ${MoveWorkspaceFieldUpIcon}		| workspace-field-up
-| ${MoveWorkspaceFieldDownIcon}		| workspace-field-down
-| ${MoveAttributeFieldUpIcon}		| attribute-field-up
-| ${MoveAttributeFieldDownIcon}		| attribute-field-down
-| ${AddAllSourceFieldsIcon}			| add-all-source-fields
-| ${AddSourceFieldIcon}				| add-source-field
-| ${RemoveSourceFieldIcon}			| remove-source-field
-| ${RemoveAllSourceFieldsIcon}		| remove-all-source-fields
+| ${WorkspaceFieldListID}					| workspace-fields
+| ${SelectedFieldListID}					| selected-workspace-fields
+| ${SelectedAttributeListID}				| selected-source-fields
+| ${SourceAttributeListID}					| source-attributes
+| ${AddAllWorkspaceFieldsIcon}				| add-all-workspace-fields
+| ${AddWorkspaceFieldIcon}					| add-workspace-field
+| ${RemoveWorkspaceFieldIcon}				| remove-workspace-field
+| ${RemoveWAllWorkspaceFieldsIcon}			| remove-all-workspace-fields
+| ${Move Workspace Field to Top Icon}		| workspaceFieldTop
+| ${MoveWorkspaceFieldUpIcon}				| workspace-field-up
+| ${MoveWorkspaceFieldDownIcon}				| workspace-field-down
+| ${Move Workspace Field to Bottom Icon}	| workspaceFieldBottom
+| ${Move Attribute Field to Top Icon}		| attributeFieldTop
+| ${MoveAttributeFieldUpIcon}				| attribute-field-up
+| ${MoveAttributeFieldDownIcon}				| attribute-field-down
+| ${Move Attribute Field to Bottom Icon}	| attributeFieldBottom
+| ${AddAllSourceFieldsIcon}					| add-all-source-fields
+| ${AddSourceFieldIcon}						| add-source-field
+| ${RemoveSourceFieldIcon}					| remove-source-field
+| ${RemoveAllSourceFieldsIcon}				| remove-all-source-fields
 
 
 *** Test Cases ***
@@ -79,15 +83,17 @@
 | Workspace Fields Up and Down Icons are present and sorted correctly
 | | [Documentation]	| Verify that the Workspace Fields Up and Down movement icons are present and sorted correctly.
 | | ...				| [id] 115ea805-a89f-11e4-b854-b8ca3a83048f
-| | [Tags]			| automated
-| | Verify that the following icons are grouped together and sorted correctly	| ${MoveWorkspaceFieldUpIcon}	| ${MoveWorkspaceFieldDownIcon}
+| | [Tags]			| untested
+| | Verify that the following icons are grouped together and sorted correctly	| 
+| | ... | ${Move Workspace Field to Top Icon}		| ${MoveWorkspaceFieldUpIcon}	| ${MoveWorkspaceFieldDownIcon}	| ${Move Workspace Field to Bottom Icon}
 
 
 | Source Attribute Up and Down Icons are present and sorted correctly
 | | [Documentation]	| Verify that the Source Attributes Up and Down movement icons are present and sorted correctly.
 | | ...				| [id] 115ea806-a89f-11e4-8e69-b8ca3a83048f
-| | [Tags]			| automated
-| | Verify that the following icons are grouped together and sorted correctly	| ${MoveAttributeFieldUpIcon}	| ${MoveAttributeFieldDownIcon}
+| | [Tags]			| untested
+| | Verify that the following icons are grouped together and sorted correctly	| 
+| | ... | ${Move Attribute Field to Top Icon}	| ${MoveAttributeFieldUpIcon}	| ${MoveAttributeFieldDownIcon}	| ${Move Attribute Field to Bottom Icon}
 
 
 *** Keywords *** 
