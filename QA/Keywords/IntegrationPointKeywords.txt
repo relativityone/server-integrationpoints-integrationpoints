@@ -310,6 +310,7 @@
 | | Select from select2 Dropdown	| s2id_overlay-identifier | ${Step3UniqueID}
 | | Run Keyword Unless	| '${ParentAttribute}'=='NULL' | Select from select2 Dropdown | s2id_parent-identifier | ${ParentAttribute}
 | | Click | id=save
+| | Wait Until Keyword Succeeds	| 30s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${Step1Fields[0]}
 
 | Determine the current Step of the Create Integration Point Process
 | | [Documentation]	| This keyword determines and returns which Step you are in on the Create Integration Point Process.
@@ -407,4 +408,5 @@
 | Library	| String
 | Library	| Collections
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
