@@ -233,7 +233,7 @@
 | | [ARGUMENTS]		| @{AttributeFields}
 | | :FOR	| ${AttributeField}	| IN	| @{AttributeFields}
 | | | Click Selected Source Attribute Field	| ${AttributeField}
-| | | Click	| id=add-source-field
+| | | Click	| id=remove-source-field
 
 | Map the Following Fields on the Integration Point Step 3 form
 | | [Documentation] | A keyword that maps all of the specified fields for a RIP on step 3.
