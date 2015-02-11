@@ -83,9 +83,8 @@ h1
 	right: 0;
 }
 
-#headerContainer button
-{
-	width: 80px;
+#headerContainer button{
+	width: 77px;
 }
 
 #bodyContainer

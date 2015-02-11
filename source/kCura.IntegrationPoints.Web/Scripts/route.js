@@ -14,17 +14,17 @@ IP.redirect = (function (undefined) {
 	var _setURL = function (_url) {
 			localStorage.setItem("URL", _url);
 	};
-	var _setEditFlag = function(bool)
-	{
-			localStorage.setItem("edit", bool);
-	}
-	var edit = function () {
+	var _setEditFlag = function(bool) {
+		localStorage.setItem("edit", bool);
+	};
+	var edit = function() {
 		var routedFromEdit = false;
-		if (localStorage.edit !==  "undefined" && localStorage.edit !== "false") {
+		if (localStorage.edit !== "undefined" && localStorage.edit !== "false") {
 			routedFromEdit = localStorage.edit;
-		} localStorage.setItem("edit", undefined);
+		}
+		localStorage.setItem("edit", undefined);
 		return routedFromEdit;
-	}
+	};
 	return {
 		get: _getURL,
 		set: _setURL,
