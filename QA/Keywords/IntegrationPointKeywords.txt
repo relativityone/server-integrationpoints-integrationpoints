@@ -8,18 +8,6 @@
 
 *** Keywords ***
 
-| Proceed to the Next Step of the Integration Point wizard
-| | [Documentation]	| This keyword proceeds to the Next Step of the Integration Point wizard.
-| | Click	| id=stepProgress	| # Click out of any given field
-| | ${PreviousStep}=	| Determine the current Step of the Create Integration Point Process
-| | ${NextStep}=	| Set Variable If	| 
-| | ... | "${PreviousStep}" == "Set Integration Details"	| Connect to Source	| 
-| | ... | "${PreviousStep}" == "Connect to Source"			| Map Fields		| 
-| | ... | "${PreviousStep}" == "Map Fields"					| User Error: Wrong keyword.	| 
-| | ... | Outdated Keyword. Please update step names.	| # Else
-| | Click	| id=next
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${NextStep}
-
 #------------------------------------------------------------------------------------------------------------------------
 # Step 1 Section 
 
@@ -160,19 +148,6 @@
 #------------------------------------------------------------------------------------------------------------------------
 # Step 3 Section
 
-| Determine the RDO Identifier Field on the following Object Type
-| | [Documentation]	| Returns the Unique field for the given Object Type.
-| | ...				| This field is used in a number of ways on Step 3.
-| | [ARGUMENTS]		| ${ObjectType}
-| | ${2DGrid}=	| Query Workspace Database	| 
-| | ... | SELECT f.DisplayName
-| | ... | FROM [EDDSDBO].[Field] f
-| | ... | JOIN [ObjectType] ot on ot.DescriptorArtifactTypeID = f.FieldArtifactTypeID
-| | ... | WHERE ot.Name = '${ObjectType}'
-| | ... | AND f.FieldCategoryID = 2	| # Unique Value
-| | Should Not Be Empty	| ${2DGrid}	| No Unique fields were found for the Object Type "${ObjectType}".
-| | [Return]		| ${2DGrid[0][0]}
-
 | Get the Unassigned Workspace Fields
 | | [Documentation]	| Returns a list of the Workspace Fields from the Unassigned Workspace Fields list box on Step 3 of the Integration Point creation process.
 | | Wait Until Page Contains Element	| id=workspace-fields	| 10s	| The unassigned Workspace Fields List Box never loaded.
@@ -283,6 +258,18 @@
 #------------------------------------------------------------------------------------------------------------------------
 # Generic Keywords
 
+| Proceed to the Next Step of the Integration Point wizard
+| | [Documentation]	| This keyword proceeds to the Next Step of the Integration Point wizard.
+| | Click	| id=stepProgress	| # Click out of any given field
+| | ${PreviousStep}=	| Determine the current Step of the Create Integration Point Process
+| | ${NextStep}=	| Set Variable If	| 
+| | ... | "${PreviousStep}" == "Set Integration Details"	| Connect to Source	| 
+| | ... | "${PreviousStep}" == "Connect to Source"			| Map Fields		| 
+| | ... | "${PreviousStep}" == "Map Fields"					| User Error: Wrong keyword.	| 
+| | ... | Outdated Keyword. Please update step names.	| # Else
+| | Click	| id=next
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${NextStep}
+
 | Run Import Now on the Following Integration Point
 | | [Documentation] | A keyword that runs an RIP import; can be called from anywhere.
 | | [ARGUMENTS]		| ${IntegrationPoint} 
@@ -315,68 +302,14 @@
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form | @{Step1Fields}
 | | Proceed to the Next Step of the Integration Point wizard
+
 | | Fill out the Following Fields of the Integration Point Step 2 form | @{Step2Fields}
 | | Proceed to the Next Step of the Integration Point wizard
+
 | | Map the Following Fields on the Integration Point Step 3 form | @{Step3Mapping}
 | | Select from select2 Dropdown	| s2id_overlay-identifier | ${Step3UniqueID}
 | | Run Keyword Unless	| '${ParentAttribute}'=='NULL' | Select from select2 Dropdown | s2id_parent-identifier | ${ParentAttribute}
 | | Click | id=save
-
-| Get a List of All Non-System Object Types in the Workspace
-| | [Documentation]	| Gets a list of all of the Object types in the Workspace, removes the System Object types, and then return the remainder. 
-| | ${2DGrid}=	| Query Workspace Database	| 
-| | ... | SELECT Name
-| | ... | FROM [EDDSDBO].[ObjectType]
-| | ... | ORDER BY Name
-| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
-| | @{ObjectFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
-| | @{SystemFields}=	| Create List	| 
-| | ... | Agent Type			|
-| | ... | Batch					|
-| | ... | Batch Set				|
-| | ... | Code					|
-| | ... | Event Handler			|
-| | ... | Field					|
-| | ... | Folder				|
-| | ... | Group					|
-| | ... | History				|
-| | ... | Install Event Handler	|
-| | ... | Integration Point		| 
-| | ... | Layout				|
-| | ... | Markup Set			|
-| | ... | Mass Operation		|
-| | ... | Object Rule			|
-| | ... | Object Type			|
-| | ... | Production			|
-| | ... | Relativity Script		|
-| | ... | Report				|
-| | ... | Search				|
-| | ... | Search Container		|
-| | ... | Search Index			|
-| | ... | Source Provider		| 
-| | ... | Tab					|
-| | ... | View					|
-| | ... | Workspace
-| | Remove Values From List	| ${ObjectFields}	| @{SystemFields}
-| | [Return]		| @{ObjectFields}
-
-| Get the Non-System Fields for the following Object Type
-| | [Documentation]	| Gets a list of all of the fields on the given object, removes the five system fields, and then returns the remaining fields.
-| | [ARGUMENTS]		| ${ObjectType}
-| | ${2DGrid}=	| Query Workspace Database	| 
-| | ... | SELECT DisplayName
-| | ... | FROM [EDDSDBO].[Field] f
-| | ... | JOIN [ObjectType] ot on ot.DescriptorArtifactTypeID = f.FieldArtifactTypeID
-| | ... | WHERE ot.Name = '${ObjectType}'
-| | ... | AND f.isVisible != 0	| # Field is not hidden
-| | ... | ORDER BY DisplayName	| # Sort list
-| | Should Not Be Empty	| ${2DGrid}	| No fields were found for the Object Type "${ObjectType}".
-| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
-| | @{NonSystemFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
-| | @{SystemFields}=	| Create List	| System Created By	| System Created On	| System Last Modified By	| System Last Modified On	| Artifact ID
-| | Remove Values From List	| ${NonSystemFields}	| @{SystemFields}
-| | Should Not Be Empty	| ${NonSystemFields}	| No non-object and non-system fields were found for the Object Type "${ObjectType}".
-| | [Return]		| @{NonSystemFields}
 
 | Determine the current Step of the Create Integration Point Process
 | | [Documentation]	| This keyword determines and returns which Step you are in on the Create Integration Point Process.
@@ -390,12 +323,6 @@
 | | Go to the Tab	| Integration Points
 | | Click	| New Integration Point
 | | Wait for then Select iFrame	| id=_externalPage	| 10s	| The Page never redirected after clicking "New Integration Point".
-
-| Wait Until Integration Point Job Runs
-| | [Documentation]	| This keyword waits until the given Integration Point's Job finishes running.
-| | [ARGUMENTS]		| ${IntegreationPointName}	| ${RunTime}=60s
-| | Wait Until Keyword Succeeds	| 20s			| 2s	| Verify that the following Integration Point has a Running Job				| ${IntegreationPointName}
-| | Wait Until Keyword Succeeds	| ${RunTime}	| 2s	| Verify that the following Integration Point does not have a Running Job	| ${IntegreationPointName}
 
 | Verify that the following field is not required
 | | [Documentation]	| A keyword that verifies the specified field does not have the required field indicator (orange line).
@@ -474,34 +401,6 @@
 | | Run Keyword Unless	| '${ActualText}' == '${ErrorText}'	| Fail	| The error was incorrect. It should have been "${ErrorText}" but it was actually "${ActualText}".
 | | Run Keyword If	| "${StepText}" == "Connect to Source"	| Unselect Frame
 | | Run Keyword If	| "${StepText}" == "Connect to Source"	| Select iFrame	| id=_externalPage
-
-| Determine if the following Integration Point has a Currently Running Job
-| | [Documentation]	| This keyword searches the database to determine if the given Integration Point currently has a Job that is currently running and then returns true/false.
-| | ...				| [Tags] private
-| | [ARGUMENTS]		| ${IntegreationPointName}
-| | ${Exists}= 	| Query workspace database	| 
-| | ... | IF EXISTS(SELECT TOP 1 1
-| | ... | FROM [EDDSDBO].[IntegrationPoint] as IP
-| | ... | JOIN [EDDS].[eddsdbo].[ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D] as SAQ
-| | ... | ON IP.ArtifactID = SAQ.RelatedObjectArtifactID
-| | ... | WHERE IP.Name = '${IntegreationPointName}'
-| | ... | AND SAQ.LockedByAgentID is not NULL)
-| | ... | SELECT 'true'
-| | ... | ELSE
-| | ... | SELECT 'false'
-| | [Return]		| ${Exists[0][0]}
-
-| Verify that the following Integration Point has a Running Job
-| | [Documentation]	| This keyword searches the database to verify that the given Integration Point currently has a Job in progress.
-| | [ARGUMENTS]		| ${IntegreationPointName}
-| | ${Exists}=	| Determine if the following Integration Point has a Currently Running Job	| ${IntegreationPointName}
-| | Run Keyword Unless	| ${${Exists}}	| Fail	| The Integration Point "${IntegreationPointName}" did not have a Scheduled Job.
-
-| Verify that the following Integration Point does not have a Running Job
-| | [Documentation]	| This keyword searches the database to verify that the given Integration Point currently does not have a Job in progress.
-| | [ARGUMENTS]		| ${IntegreationPointName}
-| | ${Exists}=	| Determine if the following Integration Point has a Currently Running Job	| ${IntegreationPointName}
-| | Run Keyword If	| ${${Exists}}	| Fail	| The Integration Point "${IntegreationPointName}" had a Scheduled Job.
 
 
 *** Settings ***
