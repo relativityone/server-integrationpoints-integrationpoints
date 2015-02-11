@@ -58,78 +58,17 @@ IP.workspaceFieldsControls = (function () {
 IP.affects = (function() {
 
 	var hover = function () {
-		$('#selected-workspace-fields').on('mouseenter', function (argument) {
-			
-			if ($(argument.currentTarget).eq(0).is("select")) {
-				var index = $('#selected-workspace-fields')[0].length-1;
-				var $soureField = $("#selected-source-fields option").eq(index);
-				var $workspaceField = $('#selected-workspace-fields option').eq(index);
-				$soureField.addClass("hover");
-				$workspaceField.addClass("hover");
-			}
-		});
-		$('#selected-workspace-fields').on('mouseleave', function (argument) {
-			if ($(argument.currentTarget).eq(0).is("select")) {
-				var index = $('#selected-workspace-fields')[0].length - 1;
-				var $soureField = $("#selected-source-fields option").eq(index);
-				var $workspaceField = $('#selected-workspace-fields option').eq(index);
-				$soureField.removeClass("hover");
-				$workspaceField.removeClass("hover");
-			}
-		});
-		$('#selected-source-fields').on('mouseenter', function (argument) {
-			if ($(argument.currentTarget).eq(0).is("select")) {
-				var index = $('#selected-source-fields')[0].length - 1;
-				var $soureField = $("#selected-source-fields option").eq(index);
-				var $workspaceField = $('#selected-workspace-fields option').eq(index);
-				$soureField.addClass("hover");
-				$workspaceField.addClass("hover");
-			}
-		});
-		$('#selected-source-fields').on('mouseleave', function (argument) {
-			if ($(argument.currentTarget).eq(0).is("select")) {
-				var index = $('#selected-source-fields')[0].length - 1;
-				var $soureField = $("#selected-source-fields option").eq(index);
-				var $workspaceField = $('#selected-workspace-fields option').eq(index);
-				$soureField.removeClass("hover");
-				$workspaceField.removeClass("hover");
-			}
-		});
-
-		$('#selected-workspace-fields').on('mouseenter', 'option', function () {
-			var index = $(this).index();
-			var soureField = $("#selected-source-fields option")[index];
-			$(soureField).addClass("hover");
-			$(this).addClass("hover");
-
-		});
-		$('#selected-source-fields ').on('mouseenter', 'option', function () {
-			var index = $(this).index();
-			var soureField = $("#selected-workspace-fields option")[index];
-			$(soureField).addClass("hover");
-			$(this).addClass("hover");
-
-		});
-		$('#selected-workspace-fields').on('mouseleave', 'option', function () {
-			var index = $(this).index();
-			var soureField = $("#selected-source-fields option")[index];
-			$(soureField).removeClass("hover");
-			$(this).removeClass("hover");
-		});
-		
-		$('#selected-source-fields').on('mouseleave', 'option', function () {
-			var index = $(this).index();
-			var soureField = $("#selected-workspace-fields option")[index];
-			$(soureField).removeClass("hover");
-			$(this).removeClass("hover");
-		});
-
-		//$('#selected-source-fields').on('mouseenter', function () {
-		//	var index = $("#selected-workspace-fields option")["last-child"];
-		//	var soureField = $("#selected-workspace-fields option")[index];
-		//	$(soureField).removeClass("hover");
-		//	$(this).removeClass("hover");
-		//});
+		var _init = function (source, destination) {
+			$(source).on('mousemove', function (event) {
+				var $opt = $(this).find('option:hover').addClass('hover');
+				var idx = $opt.index();
+				$opt.siblings().removeClass('hover');
+				$(destination).find('option').removeClass('hover').eq(idx).addClass('hover');
+				$('#forceRedraw').text(idx); //force IE to redraw
+			});
+		}
+		_init('#selected-workspace-fields', '#selected-source-fields');
+		_init('#selected-source-fields', '#selected-workspace-fields');
 	};
 	return {
 		hover : hover
