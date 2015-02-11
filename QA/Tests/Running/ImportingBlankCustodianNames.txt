@@ -1,58 +1,51 @@
+
 *** Settings ***
-| Documentation | Verify that Custodians that have both a blank first name and blank last name will not be imported
-| Metadata		| Authors	  | Daniel Oliver
-| Force Tags    | in-progress | team.method
+| Documentation 	| Verify that Custodians that have both a blank first name and blank last name will not be imported
+| Metadata			| Authors	| Daniel Oliver
+| Force Tags		| in-progress	| team.method
 | Suite Setup		| Create Suite Setup Data
-| Test Setup		| Open and Log in to Method
+#| Test Setup		| NONE
 | Test Teardown 	| Capture screenshot on failure and run keyword	| Close All Browsers
 | Suite Teardown	| Delete Suite Setup Data
 
+
 *** Variables ***
 
-| ${WorkspaceName}	                    | LDAP Sync
-#| ${ConnectionPath}                     | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
-#| ${AuthenticationType}                 | FastBind
-#| ${Object Filter String}               | (department=BlankNames)
-#| ${IntegrationPoint1}                  | Blank Custodian Names 
-#| ${OKButton}                           | xpath=//span[@class='ui-button-text' and text()='OK'] 
-#| ${ImportNowButton}                    | xpath=//a[@class='consoleButtonEnabled' and text()='Import Now'] 
-#| ${IntegrationPointLink}               | xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationPoint1}']
-
+| ${WorkspaceName}			| LDAP Sync
+| ${IntegrationPoint}		| Blank Custodian Names
+| ${Custodians Grid}		| gbox_custodianGrid
+#| ${ConnectionPath}		| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
+#| ${AuthenticationType}	| FastBind
+#| ${Object Filter String}	| (department=BlankNames)
+#| ${OKButton}				| xpath=//span[@class='ui-button-text' and text()='OK'] 
+#| ${ImportNowButton}		| xpath=//a[@class='consoleButtonEnabled' and text()='Import Now'] 
+#| ${IntegrationPointLink}	| xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationPoint1}']
 
 
 *** Test Cases ***
 
 | Custodians with a blank First Name are imported
 | | [Documentation] | Verify that Custodians that do not have their first name populated in LDAP are imported into RLH.
-| | ... | [id] b66ea8d1-b0a7-11e4-b386-90b11c6c5ae4
-| | Go to the Method Tab | Custodian
-| | Filter a Text Filter | gbox_custodianGrid | Email | BlankFirstName@law.com
-
+| | ...				| [id] b66ea8d1-b0a7-11e4-b386-90b11c6c5ae4
 | | @{Headers}=	| Create List	| Name
 | | @{Values}=	| Create List	| BlankFirstName
+| | Verify that the following grid has the following headers and rows		| ${Custodians Grid}	| ${Headers}	| ${Values}
 
-| | Verify that the following Grid contains the following number of Rows  | gbox_custodianGrid | 1
-| | Verify that the following grid has the following headers and rows	  | gbox_custodianGrid | ${Headers}	| ${Values}
 
 | Custodians without a Last Name not imported
 | | [Documentation] | Verify that Custodians that do not have their last name populated are imported into RLH.
-| | ... | [id] 93c625b0-ad46-11e4-993c-90b11c6c5ae4
-| | Go to the Method Tab | Custodian
-| | Filter a Text Filter | gbox_custodianGrid | Name | BlankLastName
-
+| | ...				| [id] 93c625b0-ad46-11e4-993c-90b11c6c5ae4
 | | @{Headers}=	| Create List	| Name
 | | @{Values}=	| Create List	| BlankLastName
-
-| | Verify that the following Grid contains the following number of Rows  | gbox_custodianGrid | 1
-| | Verify that the following grid has the following headers and rows	  | gbox_custodianGrid | ${Headers}	| ${Values}
+| | Verify that the following grid has the following headers and rows		| ${Custodians Grid}	| ${Headers}	| ${Values}
 
 | Custodians without both a First Name and Last Name are not imported
 | | [Documentation] | Verify that Custodians that do not have both a First Name and Last Name are not imported into RLH.
-| | ... | [id] 98e1d34f-ad46-11e4-8e0c-90b11c6c5ae4
-| | Go to the Method Tab | Custodian
-| | Filter a Text Filter | gbox_custodianGrid | Email | BlankFirstAndLastName@law.com
+| | ...				| [id] 98e1d34f-ad46-11e4-8e0c-90b11c6c5ae4
+| | @{Headers}=	| Create List	| Name
+| | @{Values}=	| Create List	| ${EMPTY}
+| | Verify that the following grid does not have the following headers and rows		| ${Custodians Grid}	| ${Headers}	| ${Values}
 
-| | Verify that the following Grid contains the following number of Rows  | gbox_custodianGrid | 0
 
 *** Keywords *** 
 
@@ -61,25 +54,29 @@
 | | Setup connection to the relativity database
 | | Open and Log in to Method
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
-| | Create Integration Point
-| | Close All Browsers
+
+| | Create Integration Point	| #Variables
+
+| | Go to the Method Tab	| Custodian
+| | Filter a Text Filter	| ${Custodians Grid}	| Department	| BlankNames
+| | [Teardown]		| Drop connection to the relativity services api
 
 | Delete Suite Setup Data
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
-| | Open and Log in to Method
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
-| | Delete Integration Point | ${IntegrationPoint1}
+
+| | Delete Integration Point	| ${IntegrationPoint1}
 | | Delete the Custodians in the Following Department using API	| BlankNames
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
 
+
 *** Settings ***
 | Library	| Collections
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-
+| Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
 | Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
