@@ -2,35 +2,29 @@
 | Documentation 	| Verify that running an Append RIP creates new objects, but does not update existing objects.
 | Metadata		    | Authors	| Daniel Oliver
 | Force Tags		| in-progress | team.method
+| Suite Setup		| Create Suite Setup Data
+| Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
+| Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
 
 *** Variables ***
 
-| ${WorkspaceName}	    | Relativity Legal Hold
-| ${RIPAppend1}         | Append and Overlay RIP  
-| ${NewObject}                | New Object not in Target 
-| ${ExistingAndUpdatedObject} | Existing Object with Update    
-| ${ExistingNoChangeObject}   | Existing Object no Update     
+| ${WorkspaceName}	          | LDAP Sync
+| ${IntegrationName}          | Append and Overlay RIP  
+| ${NewObject}                | Man, Cat
+| ${ExistingAndUpdatedObject} | Man, Dog
+| ${ExistingNoChangeObject}   | Man, Bird    
 
 *** Test Cases ***
 
 | An Append import Creates new objects
 | | [Documentation] | Verify that when an Append RIP is run which has new Source objects, that it creates new objects in the Target RDO.
-| | ...				| [id] 12e54800-a89f-11e4-bb62-b8ca3a83048f
-| | [Tags] | manual  | required
-| | Run the following manual steps:
-| | ... | Preconditions:
-| | ... | 1. ${NewObject} does not exist in the Target RDO
-| | ... | 2. ${ExistingAndUpdatedObject} exists in the Target RDO, but has updated details in the Source
-| | ... | 3. ${ExistingNoChangeObject} exists in the Target RDO and has the same details as the Source
-| | ... | 4. The ${RIPAppendOverlay1} RIP is set to Append/Overlay
-| | ... |
-| | ... | Steps:
-| | ... | 1. Import Integration Point ${RIPAppend1} 
-| | ... | 2. Go to the Target RDO's tab
-| | ... | 3. Search for ${NewObject}
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the object ${NewObject} is present
+| | ...				| [id] 9632b8ae-b203-11e4-8099-90b11c6c5ae4
+| | [Tags] | autotest
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Email | catman@gameofholdstesting.corp
+
+| | @{Headers}=	| Create List	| Email
+| | @{Values}=	| Create List	| catman@gameofholdstesting.corp
+| | Verify that the following grid has the following headers and rows	| ${Custodians Grid}	| ${Headers}	| ${Values}
 
 | An Append import Creates new History objects
 | | [Documentation] | Verify that when an Append RIP is run which has new source recods, that there are history entries for the newly created objects in the target RDO.
@@ -75,6 +69,51 @@
 | | ... | 1. Verify that there is no Update entry for the object ${ExistingNoChangeObject}
 
 *** Keywords *** 
+
+| Create Suite Setup Data
+| | [Documentation]	| Create the Suite Preconditions
+| | Setup connection to the relativity database
+| | Open and Log in to Method
+| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
+| | Create a Custodian using API	| 
+| | ... | Full Name		| ${ExistingNoChangeObject}	|
+| | ... | Email			| birdman@gameofholdstesting.corp |
+| | ... | Department	| AppendOverlay
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingAndUpdatedObject}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
+| | Create a Custodian using API	| 
+| | ... | Full Name		| ${ExistingAndUpdatedObject}	|
+| | ... | Email			| dogman@gameofholdstesting.corp |
+| | ... | Department	| AppendOverlay
+
+| | @{Step1Fields}  | Create list | ${IntegrationName} | Append/Overlay |
+| | ... | LDAP | Custodian | no
+| | @{Step2Fields}  | Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
+| | ... | (department=AppendOverlay) | FastBind 
+| | @{Step3Mapping} | Create list |
+| | ... | Email      | mail | 
+| | ... | Department | department | 
+| | ... | First Name | givenname | 
+| | ... | Last Name  | sn | 
+| | ... | UniqueID   | objectguid
+| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+
+| | Run Import Now on an Integration Point | ${IntegrationName}  
+
+
+| Delete the Objects created in the Suite then Close All Browsers
+| | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
+| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+
+| | Delete the Following Integration Point | ${IntegrationName}
+| | Delete the Custodians in the Following Department using API	| AppendOverlay
+
+| | Drop connection to the relativity services api
+| | Close All Browsers
 
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py

@@ -5,20 +5,14 @@
 | Metadata			| Authors	| Daniel Oliver
 | Force Tags		| in-progress	| team.method
 | Suite Setup		| Create Suite Setup Data
-#| Test Setup		| NONE
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
-
 
 *** Variables ***
 
 | ${WorkspaceName}			| LDAP Sync
 | ${IntegrationName}		| Blank Custodian Names 
 | ${Custodians Grid}		| gbox_custodianGrid
-#| ${ConnectionPath}		| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
-#| ${AuthenticationType}	| FastBind
-#| ${Object Filter String}	| (department=BlankNames)
-
 
 *** Test Cases ***
 
@@ -68,6 +62,9 @@
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}
+
+| | Go to the Method tab | Custodian
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Department | BlankNames
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
