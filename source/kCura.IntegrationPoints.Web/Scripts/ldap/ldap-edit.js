@@ -84,7 +84,6 @@ var ldapHelper = (function (data) {
 		this.filter = ko.observable(state.filter);
 		this.auth = ko.observableArray([
 			{ name: 'Anonymous', id: 16 },
-			{ name: 'Encryption', id: 2 },
 			{ name: 'FastBind', id: 32 },
 			{ name: 'Secure Socket Layer', id: 2 }
 		]);
