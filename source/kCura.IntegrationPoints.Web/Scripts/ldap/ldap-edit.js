@@ -50,7 +50,7 @@ var ldapHelper = (function (data) {
 
 	function checkLdap(localModel) {
 		return helper.checkLdap(localModel).fail(function (e) {
-			self.publish('saveError', 'Unable to connect to source using the specified settings.');
+			message.publish('saveError', 'Unable to connect to source using the specified settings.');
 		});
 	}
 
@@ -83,7 +83,6 @@ var ldapHelper = (function (data) {
 		this.filter = ko.observable(state.filter);
 		this.auth = ko.observableArray([
 			{ name: 'Anonymous', id: 16 },
-			{ name: 'Encryption', id: 2 },
 			{ name: 'FastBind', id: 32 },
 			{ name: 'Secure Socket Layer', id: 2 }
 		]);

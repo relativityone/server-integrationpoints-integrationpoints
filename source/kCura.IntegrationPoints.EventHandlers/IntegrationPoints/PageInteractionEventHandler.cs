@@ -23,6 +23,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			if (base.PageMode == EventHandler.Helper.PageMode.View)
 			{
+				this.RegisterLinkedClientScript(applicationPath + "/Scripts/route.js");
 				this.RegisterLinkedCss(applicationPath + "/Content/jquery.jqGrid/ui.jqgrid.css");
 				this.RegisterLinkedCss(applicationPath + "/Content/integration-points-fonts.css");
 				this.RegisterLinkedCss(applicationPath + "/Content/legal-hold-fonts.css");
@@ -57,6 +58,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/grid/dragon-utils.js");
 				
 			}
+			
+
 			return response;
 		}
 
