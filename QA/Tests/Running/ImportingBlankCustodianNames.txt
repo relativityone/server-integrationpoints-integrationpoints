@@ -1,5 +1,5 @@
 *** Settings ***
-| Documentation | Verify that Custodians that have both a blank first name and blank last name will not be imported
+| Documentation | Verify that Custodians that have both a blank first name and blank last name will not be imported, but Custodians with only one blank value are imported
 | Metadata		| Authors	  | Daniel Oliver
 | Force Tags    | in-progress | team.method
 | Suite Setup		| Create Suite Setup Data
@@ -10,15 +10,7 @@
 *** Variables ***
 
 | ${WorkspaceName}	                    | LDAP Sync
-#| ${ConnectionPath}                     | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
-#| ${AuthenticationType}                 | FastBind
-#| ${Object Filter String}               | (department=BlankNames)
-#| ${IntegrationPoint1}                  | Blank Custodian Names 
-#| ${OKButton}                           | xpath=//span[@class='ui-button-text' and text()='OK'] 
-#| ${ImportNowButton}                    | xpath=//a[@class='consoleButtonEnabled' and text()='Import Now'] 
-#| ${IntegrationPointLink}               | xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationPoint1}']
-
-
+| ${IntegrationName}                  | Blank Custodian Names 
 
 *** Test Cases ***
 
@@ -34,7 +26,7 @@
 | | Verify that the following Grid contains the following number of Rows  | gbox_custodianGrid | 1
 | | Verify that the following grid has the following headers and rows	  | gbox_custodianGrid | ${Headers}	| ${Values}
 
-| Custodians without a Last Name not imported
+| Custodians without a Last Name imported
 | | [Documentation] | Verify that Custodians that do not have their last name populated are imported into RLH.
 | | ... | [id] 93c625b0-ad46-11e4-993c-90b11c6c5ae4
 | | Go to the Method Tab | Custodian
@@ -61,14 +53,28 @@
 | | Setup connection to the relativity database
 | | Open and Log in to Method
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
-| | Create Integration Point
+
+| | @{Step1Fields}  | Create list | ${IntegrationName} | Append/Overlay |
+| | ... | LDAP | Custodian | no
+| | @{Step2Fields}  | Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
+| | ... | (department=BlankNames) | FastBind 
+| | @{Step3Mapping} | Create list |
+| | ... | Email      | mail | 
+| | ... | Department | department | 
+| | ... | First Name | givenname | 
+| | ... | Last Name  | sn | 
+| | ... | UniqueID   | objectguid
+| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+
+| | Run Import Now on an Integration Point | ${IntegrationName}  
+
 | | Close All Browsers
 
 | Delete Suite Setup Data
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Open and Log in to Method
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
-| | Delete Integration Point | ${IntegrationPoint1}
+| | Delete the Following Integration Point | ${IntegrationName}
 | | Delete the Custodians in the Following Department using API	| BlankNames
 
 | | Drop connection to the relativity services api
@@ -78,7 +84,6 @@
 | Library	| Collections
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt

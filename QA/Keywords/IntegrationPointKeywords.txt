@@ -257,15 +257,19 @@
 #------------------------------------------------------------------------------------------------------------------------
 # Generic Keywords
 
-| Run Import Now on the Current Integration Point
-| | [Documentation] | A keyword that runs an RIP import. Must be called from the Integration Point view screen.
-| | Click Element   | ${ImportNowButton} 
-| | Click Element   | ${OKButton}  
-| | Wait Until Integration Point Job Runs | ${IntegrationPoint1} 
+| Run Import Now on an Integration Point
+| | [Documentation] | A keyword that runs an RIP import; can be called from anywhere.
+| | [Arguments]     | ${IntegrationPoint} 
+| | Go to the Tab	| Integration Points
+| | Set Filter      | Name | ${IntegrationPoint}
+| | Click Element   | xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationPoint}']
+| | Click Element   | xpath=//a[@class='consoleButtonEnabled' and text()='Import Now'] 
+| | Click Element   | xpath=//span[@class='ui-button-text' and text()='OK'] 
+| | Wait Until Integration Point Job Runs | ${IntegrationPoint} 
 
 | View Integration Point
 | | [Documentation] | A keyword that Views an Integration Point. Can be called from any where.
-| | [Arguments]     | ${IntegrationName}  | 
+| | [Arguments]     | ${IntegrationName} 
 | | Go to the Tab	| Integration Points
 | | Set Filter      | Name | ${IntegrationName}
 | | Click Element   | xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationName}']
