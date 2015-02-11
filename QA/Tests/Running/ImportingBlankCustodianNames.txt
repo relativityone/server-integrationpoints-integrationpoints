@@ -1,12 +1,13 @@
 
 *** Settings ***
-| Documentation		| Verify that Custodians that have both a blank first name and blank last name will not be imported, but Custodians with only one blank value are imported.
+| Documentation		| Verify that Custodians that have both a blank first name and blank last name will not be imported, 
+| ...				| but Custodians with only one blank value are imported.
 | Metadata			| Authors	| Daniel Oliver
 | Force Tags		| in-progress	| team.method
 | Suite Setup		| Create Suite Setup Data
 #| Test Setup		| NONE
-| Test Teardown 	| Capture screenshot on failure and run keyword	| Close All Browsers
-| Suite Teardown	| Delete Suite Setup Data
+| Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
+| Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
 
 
 *** Variables ***
@@ -17,9 +18,6 @@
 #| ${ConnectionPath}		| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
 #| ${AuthenticationType}	| FastBind
 #| ${Object Filter String}	| (department=BlankNames)
-#| ${OKButton}				| xpath=//span[@class='ui-button-text' and text()='OK'] 
-#| ${ImportNowButton}		| xpath=//a[@class='consoleButtonEnabled' and text()='Import Now'] 
-#| ${IntegrationPointLink}	| xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationPoint1}']
 
 
 *** Test Cases ***
@@ -29,7 +27,7 @@
 | | ...				| [id] b66ea8d1-b0a7-11e4-b386-90b11c6c5ae4
 | | @{Headers}=	| Create List	| Name
 | | @{Values}=	| Create List	| BlankFirstName
-| | Verify that the following grid has the following headers and rows		| ${Custodians Grid}	| ${Headers}	| ${Values}
+| | Verify that the following grid has the following headers and rows	| ${Custodians Grid}	| ${Headers}	| ${Values}
 
 
 | Custodians without a Last Name imported
@@ -37,7 +35,8 @@
 | | ...				| [id] 93c625b0-ad46-11e4-993c-90b11c6c5ae4
 | | @{Headers}=	| Create List	| Name
 | | @{Values}=	| Create List	| BlankLastName
-| | Verify that the following grid has the following headers and rows		| ${Custodians Grid}	| ${Headers}	| ${Values}
+| | Verify that the following grid has the following headers and rows	| ${Custodians Grid}	| ${Headers}	| ${Values}
+
 
 | Custodians without both a First Name and Last Name are not imported
 | | [Documentation] | Verify that Custodians that do not have both a First Name and Last Name are not imported into RLH.
@@ -53,12 +52,13 @@
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
 | | Open and Log in to Method
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
 
 | | @{Step1Fields}=		| Create List | ${IntegrationName} | Append/Overlay |
-| | ... | LDAP | Custodian | no
-| | @{Step2Fields}=		| Create List | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
-| | ... | (department=BlankNames) | FastBind 
+| | ... | LDAP | Custodian | No
+| | @{Step2Fields}=		| Create List | 
+| | ... | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp	| 
+| | ... | (department=BlankNames)	| 
+| | ... | FastBind
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Email			| mail			| 
 | | ... | Department	| department	| 
@@ -67,10 +67,9 @@
 | | ... | UniqueID		| objectguid
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 
-| | Run Import Now on an Integration Point | ${IntegrationName}  
-| | [Teardown]		| Drop connection to the relativity services api
+| | Run Import Now on an Integration Point | ${IntegrationName}
 
-| Delete Suite Setup Data
+| Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
 
