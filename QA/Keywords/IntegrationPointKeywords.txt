@@ -225,14 +225,14 @@
 | | [Documentation] | 
 | | [ARGUMENTS]		| @{AttributeFields}
 | | :FOR	| ${AttributeField}	| IN	| @{AttributeFields}
-| | | Click | Source Attribute Field	| ${AttributeField}
+| | | Click Source Attribute Field	| ${AttributeField}
 | | | Click	| id=add-source-field
 
 | Move the Following Source Attribute Fields from the Selected List
 | | [Documentation] | 
 | | [ARGUMENTS]		| @{AttributeFields}
 | | :FOR	| ${AttributeField}	| IN	| @{AttributeFields}
-| | | Click Source Attribute Field	| ${AttributeField}
+| | | Click Selected Source Attribute Field	| ${AttributeField}
 | | | Click	| id=add-source-field
 
 | Map the Following Fields on the Integration Point Step 3 form

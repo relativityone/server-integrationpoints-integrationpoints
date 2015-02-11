@@ -86,7 +86,7 @@
 | | ... | - Last Name	: sn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
-| | ... | - Unique ID	: objectguid
+| | ... | - UniqueID	: objectguid
 
 
 | Returning to Step 3 from Step 1 without changing anything Saves all Step 3 data
@@ -111,7 +111,7 @@
 | | ... | - Last Name	: sn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
-| | ... | - Unique ID	: objectguid
+| | ... | - UniqueID	: objectguid
 | | ... | 7. Select the following Unique Identifier	| Email
 | | ... | 8. Click Back
 | | ... | 9. Click Back
@@ -125,7 +125,7 @@
 | | ... | - Last Name	: sn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
-| | ... | - Unique ID	: objectguid
+| | ... | - UniqueID	: objectguid
 
 
 #| Returning to Step 2 from Step 1 after changing the Source Provider clears all fields on Step 2
@@ -220,7 +220,7 @@
 | | ... | - Last Name	: sn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
-| | ... | - Unique ID	: objectguid
+| | ... | - UniqueID	: objectguid
 | | ... | 7. Select the following Unique Identifier	| Email
 | | ... | 8. Click Back
 | | ... | 9. Fill out the Following Fields of the Integration Point Step 2 form	| 
@@ -231,7 +231,7 @@
 | | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Email
 | | ... | 2. Verify that the following fields are mapped together in order	| 
 | | ... | - Department	: countrycode
-| | ... | - Unique ID	: objectguid
+| | ... | - UniqueID	: objectguid
 | | ... | - First Name	: (NONE)
 | | ... | - Last Name	: (NONE)
 | | ... | - Email		: (NONE)
@@ -260,7 +260,7 @@
 | | ... | - Last Name	: sn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
-| | ... | - Unique ID	: objectguid
+| | ... | - UniqueID	: objectguid
 | | ... | 7. Select the following Unique Identifier	| Email
 | | ... | 8. Click Back
 | | ... | 9. Click Back
