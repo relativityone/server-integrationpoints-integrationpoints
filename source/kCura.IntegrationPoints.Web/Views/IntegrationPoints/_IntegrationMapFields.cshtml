@@ -87,6 +87,21 @@
 					</select>
 				</div>
 			</div>
+			
+				<div class="field-row" data-bind="visible: showManager">
+				<div class="field-label required ">Custodian Manager<br/>
+							Contains Link:</div>
+				<div class="field-value ">					
+					<ul>
+				<li>
+					<input type="radio" name="enable" value="true" data-bind="checked: CustodianManagerFieldContainsLink">Yes</li>
+				<li>
+					<input type="radio" name="enable" value="false" data-bind="checked: CustodianManagerFieldContainsLink">No</li>
+				</ul>
+					
+				</div>
+			</div>
+			
 		</div>
 	</div>
 		

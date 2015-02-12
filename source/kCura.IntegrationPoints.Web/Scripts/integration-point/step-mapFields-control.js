@@ -44,12 +44,45 @@ IP.workspaceFieldsControls = (function () {
 			}
 		}
 	};
+	function moveField(source, oldIndex, newIndex) {
+		if (newIndex >= source.length) {
+			var k = newIndex - source.length;
+			while ((k--) + 1) {
+				source.push(undefined);
+			}
+		}
+		source.splice(newIndex, 0, source.splice(oldIndex, 1)[0]);
+	};
 
+
+	var _moveBottom = function (source, selected) {
+		if (selected.length > 0) {
+			var evaled = source();
+			//only move the top most one
+			selected = selected[0];
+			var idx = evaled.indexOf(selected);
+			moveField(evaled, idx, evaled.length - 1);
+			source.valueHasMutated();
+		}
+	};
+
+	var _moveTop = function (source, selected) {
+		if (selected.length > 0) {
+			var evaled = source();
+			//only move the top most one
+			selected = selected[0];
+			var idx = evaled.indexOf(selected);
+			moveField(evaled, idx, 0);
+			source.valueHasMutated();
+		}
+	};
 	return {
 		add: add,
 		addAll: addAll,
 		down: down,
-		up: up
+		up: up,
+		moveBottom: _moveBottom,
+		moveTop : _moveTop
 	};
 
 	
