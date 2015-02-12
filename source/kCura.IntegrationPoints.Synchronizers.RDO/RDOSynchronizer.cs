@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.AccessControl;
 using System.Threading;
-using kCura.Apps.Common.Config;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
@@ -113,7 +110,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		}
 
 		private string _webAPIPath;
-
 		public string WebAPIPath
 		{
 			get

@@ -65,6 +65,7 @@
     </Compile>
     <Compile Include="Agent\IJobManager.cs" />
     <Compile Include="Agent\ITaskJobSubmitter.cs" />
+    <Compile Include="Custodian\CustodianConstants.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">

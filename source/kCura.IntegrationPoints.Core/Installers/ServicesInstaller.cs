@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
+using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -64,6 +65,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<ChoiceService>().ImplementedBy<ChoiceService>().LifeStyle.Transient);
 
 			container.Register(Component.For<GeneralWithCustodianRdoSynchronizerFactory>().ImplementedBy<GeneralWithCustodianRdoSynchronizerFactory>().DependsOn(new { container = container }).LifestyleTransient());
+			container.Register(Component.For<ManagerQueueService>().ImplementedBy<ManagerQueueService>().LifestyleTransient());
 		}
 	}
 }

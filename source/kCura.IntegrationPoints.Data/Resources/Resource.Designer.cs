@@ -61,6 +61,29 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SET ANSI_NULLS ON
+        ///SET QUOTED_IDENTIFIER ON
+        ///
+        ///IF NOT EXISTS (SELECT * FROM EDDSResource.sys.objects WHERE object_id = OBJECT_ID(N&apos;[EDDSResource].[eddsdbo].[{0}]&apos;) AND type in (N&apos;U&apos;))
+        ///BEGIN
+        ///	CREATE TABLE [EDDSResource].[eddsdbo].[{0}](
+        ///		[ID] [bigint] IDENTITY(1,1) NOT NULL,
+        ///		[CustodianID] [nvarchar](1000) NOT NULL,
+        ///		[ManagerID] [nvarchar](1000) NOT NULL,
+        ///		[LockedByJobID] [int] NULL,
+        ///		[Done] [bit] NULL,
+        ///		[CreatedOn] [datetime] NOT NULL,
+        ///		CONSTRAINT [PK_{0}] PRIMARY KEY CLUSTERED 
+        ///		(
+        ///			[ID]  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string CreateCustodianManagerResourceTable {
+            get {
+                return ResourceManager.GetString("CreateCustodianManagerResourceTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SELECT 
         ///					RF.[ArtifactID]
         ///					,RF.[Name]
@@ -83,8 +106,8 @@ namespace kCura.IntegrationPoints.Data.Resources {
         
         /// <summary>
         ///   Looks up a localized string similar to SELECT		[ArtifactGuid]
-        ///FROM			[EDDSDBO].[ApplicationGuid] AG WITH(NOLOCK)
-        ///WHERE 		AG.[ApplicationID] = @ApplicationID.
+        ///FROM			[EDDSDBO].[ArtifactGuid] AG WITH(NOLOCK)
+        ///WHERE 		AG.[ArtifactID] = @ApplicationID.
         /// </summary>
         internal static string GetApplicationGuid {
             get {
@@ -102,6 +125,29 @@ namespace kCura.IntegrationPoints.Data.Resources {
         internal static string GetArtifactIDByGuid {
             get {
                 return ResourceManager.GetString("GetArtifactIDByGuid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SET ANSI_NULLS ON
+        ///SET QUOTED_IDENTIFIER ON
+        ///
+        ///IF NOT EXISTS (SELECT * FROM EDDSResource.sys.objects WHERE object_id = OBJECT_ID(N&apos;[EDDSResource].[eddsdbo].[{0}]&apos;) AND type in (N&apos;U&apos;))
+        ///BEGIN
+        ///	CREATE TABLE [EDDSResource].[eddsdbo].[{0}](
+        ///		[ID] [bigint] IDENTITY(1,1) NOT NULL,
+        ///		[CustodianID] [nvarchar](1000) NOT NULL,
+        ///		[ManagerID] [nvarchar](1000) NOT NULL,
+        ///		[LockedByJobID] [int] NULL,
+        ///		[Done] [bit] NULL,
+        ///		[CreatedOn] [datetime] NOT NULL,
+        ///		CONSTRAINT [PK_{0}] PRIMARY KEY CLUSTERED 
+        ///		(
+        ///			[ID]  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string GetJobCustodianManagerLinks {
+            get {
+                return ResourceManager.GetString("GetJobCustodianManagerLinks", resourceCulture);
             }
         }
     }

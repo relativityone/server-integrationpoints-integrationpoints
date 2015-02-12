@@ -96,6 +96,8 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Models\ApplicationBinary.cs" />
+    <Compile Include="Queries\GetJobCustodianManagerLinks.cs" />
+    <Compile Include="Queries\CreateCustodianManagerResourceTable.cs" />
     <Compile Include="Queries\GetApplicationBinaries.cs" />
     <Compile Include="Queries\GetApplicationGuid.cs" />
     <Compile Include="RdoGetter.cs" />
@@ -168,6 +170,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\GetJobCustodianManagerLinks.sql" />
+    <Content Include="Resources\CreateCustodianManagerResourceTable.sql" />
     <Content Include="Resources\GetApplicationBinaries.sql" />
     <Content Include="Resources\GetApplicationGuid.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />

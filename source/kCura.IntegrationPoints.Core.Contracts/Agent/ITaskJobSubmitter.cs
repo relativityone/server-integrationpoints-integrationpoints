@@ -4,7 +4,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 {
 	public interface ITaskJobSubmitter
 	{
-		void SubmitJob(string jobDetails);
+		void SubmitJob(string serializedJobDetails);
 	}
 
 	public class TaskJobSubmitter : ITaskJobSubmitter
@@ -19,9 +19,9 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 			_taskToSubmit = taskToSubmit;
 		}
 
-		public void SubmitJob(string jobDetails)
+		public void SubmitJob(string serializedJobDetails)
 		{
-			_jobManager.CreateJob(jobDetails, _taskToSubmit, _parentJob.WorkspaceID, _parentJob.RelatedObjectArtifactID);
+			_jobManager.CreateJob(_parentJob.WorkspaceID, _parentJob.RelatedObjectArtifactID, _taskToSubmit, serializedJobDetails);
 		}
 	}
 }
