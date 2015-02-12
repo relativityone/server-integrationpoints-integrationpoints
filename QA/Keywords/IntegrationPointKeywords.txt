@@ -284,7 +284,7 @@
 | | [ARGUMENTS]		| ${IntegrationName}
 | | Go to the Tab	| Integration Points
 | | Set Filter	| Name	| ${IntegrationName}
-| | Page Should Contian Element	| xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationName}']	| The Integration Point "${IntegrationName}" was not found.
+| | Page Should Contain Element	| xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationName}']	| The Integration Point "${IntegrationName}" was not found.
 | | Click	| xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationName}']
 
 | Delete the Following Integration Point
