@@ -170,6 +170,14 @@
 | | @{WorkspaceFields}=	| Get Element Text	| xpath=//select[@id='selected-workspace-fields']/child::option	| False
 | | [Return]		| @{WorkspaceFields}
 
+| Verify that the Assigned Workspace Listbox has the following Fields in order
+| | [Documentation]	| Verifies that the given fields are on the Assigned Workspace listbox in the given order.
+| | [ARGUMENTS]		| @{ExpectedFields}
+| | @{WorkspaceFields}=	| Get the Assigned Workspace Fields
+| | Log	| Workspace Fields: ${WorkspaceFields}
+| | Log	| Expected Fields: ${ExpectedFields}
+| | Lists Should Be Equal	| ${WorkspaceFields}	| ${ExpectedFields}
+
 | Get the Assigned Source Attributes
 | | [Documentation]	| Returns a list of the Workspace Fields from the Assigned Source Attributes list box on Step 3 of the Integration Point creation process.
 | | Wait Until Page Contains Element	| id=selected-source-fields	| 10s	| The assigned Source Attributes List Box never loaded.
@@ -269,6 +277,7 @@
 | | ... | Outdated Keyword. Please update step names.	| # Else
 | | Click	| id=next
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${NextStep}
+| | Wait for the Loading Indicator to disappear
 
 | Run Import Now on the Following Integration Point
 | | [Documentation] | A keyword that runs an RIP import; can be called from anywhere.

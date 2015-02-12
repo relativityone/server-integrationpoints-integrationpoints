@@ -29,7 +29,7 @@
 | | [Tags]			| automated
 | | Move the Following Workspace Fields to the Selected List	| ${Field1}
 
-| | Verify that the Selected Workspace fields are in the following order | ${Field1}
+| | Verify that the Assigned Workspace Listbox has the following Fields in order | ${Field1}
 
 
 | Fields are removed from the Workspace list when they are put into the Selected Workspace list
@@ -38,7 +38,7 @@
 | | [Tags]			| automated
 | | Move the Following Workspace Fields to the Selected List	| ${Field1}
 
-| | Verify that the following field is not in the following list  | ${Field1} | ${Workspace Field List} 
+| | Verify that the following field is not in the following list	| ${Field1} | ${Workspace Field List} 
 
 
 | Multiple Individual fields can be selected and moved individually
@@ -47,18 +47,18 @@
 | | [Tags]			| automated
 | | Move the Following Workspace Fields to the Selected List	| ${Field1}	| ${Field2}
 
-| | Verify that the Selected Workspace fields are in the following order | ${Field1} | ${Field2}
+| | Verify that the Assigned Workspace Listbox has the following Fields in order | ${Field1} | ${Field2}
 
 
 | Mutliple Fields can be selected and moved with one click 
 | | [Documentation] | Verify that mutliple Fields can be selected, and then they are all moved by clicking the Move to Selected list icon. The sort order of the newly moved fields is then alphabetical (assuming they were just in alphabetical order).
 | | ...				| [id] 116f70e3-a89f-11e4-acb3-b8ca3a83048f
 | | [Tags]			| automated
-| | Click Workspace Field  | ${Field2}
-| | Click Workspace Field  | ${Field1}
+| | Click Workspace Field	| ${Field2}
+| | Click Workspace Field	| ${Field1}
 | | Click	| ${Add Workspace Field Icon}
 
-| | Verify that the Selected Workspace fields are in the following order | ${Field1} | ${Field2}
+| | Verify that the Assigned Workspace Listbox has the following Fields in order | ${Field1} | ${Field2}
 
 
 | Fields are removed from the Selected Workspace list when they are put into the Workspace list
@@ -68,56 +68,50 @@
 | | Move the Following Workspace Fields to the Selected List	| ${Field1}
 | | Move the Following Workspace Fields from the Selected List	| ${Field1}
 
-| | Verify that the following field is not in the following list  | ${Field1} | ${Selected Workspace List} 
+| | Verify that the following field is not in the following list	| ${Field1} | ${Selected Workspace List} 
 
 
 | Moving a field back to Workspace Fields adds it to the bottom of the list
 | | [Documentation] | Verify that moving a field back to the Workspace field list places the field at the bottom of the list.
 | | ...				| [id] 116fe611-a89f-11e4-b602-b8ca3a83048f
-| | [Tags]			|  manual	| automateable
+| | [Tags]			| automated
 | | Move the Following Workspace Fields to the Selected List	| ${Field1}
+| | @{UnassignedFields}=	| Get the Unassigned Workspace Fields
 | | Move the Following Workspace Fields from the Selected List	| ${Field1}
 
-| | Run the following manual steps:
-| | ... | Expected Results:
-| | ... | Verify that ${Field1} has is at the end of the Workspace list
+| | Verify that the Unassigned Workspace Listbox has the following Fields in order	| @{UnassignedFields}	| ${Field1}
 
 
 | Clicking the Move All Workspace icon moves all fields from the Workspace Fields to Selected Fields 
 | | [Documentation] | Verify that clicking the Move All Workspace icon moves all fields from the Workspace Fields to Selected Fields 
 | | ...				| [id] 116fe612-a89f-11e4-ac0a-b8ca3a83048f
-| | [Tags]			| manual	| automateable
+| | [Tags]			| automated
+| | @{AllFields}=	| Get the Unassigned Workspace Fields
 | | Click	| ${Add All Workspace Fields Icon}
 
-| | Run the following manual steps:
-| | ... | Expected Results:
-| | ... | 1. Verify that the Workspace list is empty
-| | ... | 2. Verify that the Select Workspace list contains every field
+| | Run Keyword and Continue on Failure	| Verify that the Unassigned Workspace Listbox has no Fields in it
+| | Run Keyword and Continue on Failure	| Verify that the Assigned Workspace Listbox has the following Fields in order	| @{AllFields} 
 
 
-| Clicking the Move All Selected icon moves all fields from the Selected Fields list to the 
+| Clicking the Move All Selected icon moves all fields from the Selected Fields list to the Unselected list
 | | [Documentation] | Verify that clicking the Move All Workspace icon moves all fields from the Selected Fields list to the Workspace Field list
 | | ...				| [id] 116fe613-a89f-11e4-a08c-b8ca3a83048f
-| | [Tags]			| manual	| automateable
+| | [Tags]			| automated
+| | @{AllFields}=	| Get the Unassigned Workspace Fields
 | | Click	| ${Add All Workspace Fields Icon}
 | | Click	| ${Remove All Workspace Fields Icon}
 
-| | Run the following manual steps:
-| | ... | Expected Results:
-| | ... | 1. Verify that the Select Workspace list is empty
-| | ... | 2. Verify that the Workspace list contains every field
+| | Run Keyword and Continue on Failure	| Verify that the Assigned Workspace Listbox has no Fields in it
+| | Run Keyword and Continue on Failure	| Verify that the Unassigned Workspace Listbox has the following Fields in order	| @{AllFields}
 
 
 | Double clicking a field moves it
-| | [Documentation] | Verify that a double clicking a field moves it to the other field, in this case from Workspace to Selected Workspace.
-| | ...				| [id] 116fe618-a89f-11e4-b5da-b8ca3a83048f
-| | [Tags]			| manual	| automateable
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Double clicking one field in the Workspace Fields list.
-| | ... | 
-| | ... | Expected Results:
-| | ... | Verify that the field has been moved to the Selected Workspace list
+| | [Documentation]	| Verify that a double clicking a field moves it to the other field, in this case from Workspace to Selected Workspace.
+| | ... 			| [id] 116fe618-a89f-11e4-b5da-b8ca3a83048f
+| | [Tags]			| automated
+| | Double Click Workspace Field	| ${Field1}
+
+| | Verify that the Assigned Workspace Listbox has the following Fields in order | ${Field1}
 
 
 | Multiple Fields can be selected be clicking and dragging
@@ -217,19 +211,29 @@
 | | ... | Verify that the hovering over the whitespace below the last Selected Workspace field acts the same as hovering over the last Selected Workspace field
 
 
-*** Keywords *** 
+*** Keywords ***
+
+| Verify that the Unassigned Workspace Listbox has no Fields in it
+| | [Documentation]	| Verifies that the unassigned Workspace listbox currently has no fields in it.
+| | Wait Until Page Contains Element	| id=workspace-fields	| 10s	| The unassigned Workspace Fields List Box never loaded.
+| | Page Should Not Contain Element	| xpath=//select[@id='workspace-fields']/child::option	| The unassigned Workspace Listbox had a field in it when it should have been empty.
+
+| Verify that the Assigned Workspace Listbox has no Fields in it
+| | [Documentation]	| Verifies that the assigned Workspace listbox currently has no fields in it.
+| | Wait Until Page Contains Element	| id=selected-workspace-fields	| 10s	| The assigned Workspace Fields List Box never loaded.
+| | Page Should Not Contain Element	| xpath=//select[@id='selected-workspace-fields']/child::option	| The assigned Workspace Listbox had a field in it when it should have been empty.
+
+| Double Click Workspace Field
+| | [Documentation] | A keyword that double clicks an item from the (unselected) Workspace Field list.
+| | [ARGUMENTS]		| ${Field}
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='workspace-fields']	| The Workspace Fields list box was not visible.
+| | Click Element	| xpath=//select[@id='workspace-fields']/option[text()='${Field}']	| # The field must be selected before double clicking in automation works.
+| | Double Click Element	| xpath=//select[@id='workspace-fields']/option[text()='${Field}']
 
 | Verify that the following field is not in the following list
 | | [Documentation] | A keyword that verifies that the specified field is not present in the specified list.
-| | [ARGUMENTS]		| ${FieldName} | ${ListName}
-| | Element should not be visible  |  xpath=//select[@id='${ListName}']/option[text()='${FieldName}']
-
-| Verify that the Selected Workspace fields are in the following order
-| | [Documentation] | A keyword that verifies the fields in the Selected Workspace list are in the desired order.
-| | [Arguments] | @{ExpectedFields}
-| | Wait until keyword succeeds | 20s | 2s | Element Should be Visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Fields list box was not visible.
-| | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-workspace-fields']/option | False 
-| | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
+| | [ARGUMENTS]		| ${FieldName}	| ${ListName}
+| | Element should not be visible	| xpath=//select[@id='${ListName}']/option[text()='${FieldName}']
 
 | Go to Step 3 of the Create Integration Point Process
 | | Open Create Integration Point
