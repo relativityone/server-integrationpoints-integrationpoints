@@ -187,9 +187,9 @@
 
 | Get the Unassigned Source Attributes
 | | [Documentation]	| Returns a list of the Workspace Fields from the Unassigned Source Attributes list box on Step 3 of the Integration Point creation process.
-| | Wait Until Page Contains Element	| id=source-attributes	| 10s	| The unassigned Source Attributes List Box never loaded.
-| | Wait Until Page Contains Element	| xpath=//select[@id='source-attributes']/child::option	| 10s	| The unassigned Source Attributes never loaded.
-| | @{SourceAttributes}=	| Get Element Text	| xpath=//select[@id='source-attributes']/child::option	| False
+| | Wait Until Page Contains Element	| id=source-fields	| 10s	| The unassigned Source Attributes List Box never loaded.
+| | Wait Until Page Contains Element	| xpath=//select[@id='source-fields']/child::option	| 10s	| The unassigned Source Attributes never loaded.
+| | @{SourceAttributes}=	| Get Element Text	| xpath=//select[@id='source-fields']/child::option	| False
 
 | Click Workspace Field
 | | [Documentation] | A keyword that clicks an item from the (unselected) Workspace Field list. Multiple calls of select can be used with a single click of Move.
@@ -206,14 +206,14 @@
 | Click Source Attribute Field
 | | [Documentation] | A keyword that clicks an item from the (unselected) Source Attribute Field list. Multiple calls of select can be used with a single Click of Move.
 | | [ARGUMENTS]		| ${Field}
-| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='source-attributes']	| The Source Attribute Fields list box was not visible.
-| | Click	| xpath=//select[@id='source-attributes']/option[text()='${Field}']
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='source-fields']	| The Source Attribute Fields list box was not visible.
+| | Click	| xpath=//select[@id='source-fields']/option[text()='${Field}']
 
 | Click Selected Source Attribute Field
 | | [Documentation] | A keyword that clicks an item from the (unselected) Source Attribute Field list. Multiple calls of select can be used with a single Click of Move.
 | | [ARGUMENTS]		| ${Field}
-| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-source-attributes']	| The Selected Source Attribute Fields list box was not visible.
-| | Click	| xpath=//select[@id='selected-source-attributes']/option[text()='${Field}']
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-source-fields']	| The Selected Source Attribute Fields list box was not visible.
+| | Click	| xpath=//select[@id='selected-source-fields']/option[text()='${Field}']
 
 | Move the Following Workspace Fields to the Selected List
 | | [Documentation] | 
@@ -252,7 +252,7 @@
 
 | Verify that the following field is not in the following list
 | | [Documentation] | A keyword that verifies that the specified field is not present in the specified list.
-| | ... 			| The value of ${ListName} should be either: workspace-fields, selected-workspace-fields, selected-source-fields, or source-attributes
+| | ... 			| The value of ${ListName} should be either: workspace-fields, selected-workspace-fields, selected-source-fields, or source-fields
 | | [ARGUMENTS]		| ${FieldName}	| ${ListName}
 | | Element should not be visible	| xpath=//select[@id='${ListName}']/option[text()='${FieldName}']
 
@@ -261,6 +261,13 @@
 | | [ARGUMENTS]		| @{ExpectedFields}
 | | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Fields list box was not visible.
 | | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-workspace-fields']/option | False 
+| | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
+
+| Verify that the Selected Source Attribute fields are in the following order
+| | [Documentation] | A keyword that verifies the fields in the Selected Source Attribute list are in the desired order.
+| | [ARGUMENTS]		| @{ExpectedFields}
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-source-fields']	| The Selected Fields list box was not visible.
+| | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-source-fields']/option | False 
 | | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
 
 #------------------------------------------------------------------------------------------------------------------------

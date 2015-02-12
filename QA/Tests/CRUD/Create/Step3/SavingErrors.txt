@@ -16,7 +16,7 @@
 | ${WorkspaceFieldListID}		| workspace-fields
 | ${SelectedFieldListID}		| selected-workspace-fields
 | ${SelectedAttributeListID}	| selected-source-fields
-| ${SourceAttributeListID}		| source-attributes
+| ${SourceAttributeListID}		| source-fields
 
 
 *** Test Cases ***
