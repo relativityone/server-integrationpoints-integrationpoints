@@ -91,32 +91,42 @@ IP.workspaceFieldsControls = (function () {
 IP.affects = (function() {
 
 	var hover = function () {
+		var SOURCE_FIELD = '#selected-source-fields';
+		var WORKSPACE_FIELD = '#selected-workspace-fields'
+		var HOVER_CLASS = 'hover';
+
+
+		var _forceIERedraw = function () {
+			$('#forceRedraw').text(1); //force IE to redraw
+		};
 		var _init = function (source, destination) {
 			$(source).on('mousemove', function (event) {
 				var $this = $(this);
 				var $opt = $this.find('option:hover');
 				var idx = $opt.index();
-				$opt.siblings().removeClass('hover');
+				$opt.siblings().removeClass(HOVER_CLASS);
 				if (idx < 0) {
 					idx = $this.find('option').length - 1;
 				}
-				$this.find('option').eq(idx).addClass('hover');
-				$(destination).find('option').removeClass('hover').eq(idx).addClass('hover');
-				$('#forceRedraw').text(idx); //force IE to redraw
+				$this.find('option').eq(idx).addClass(HOVER_CLASS);
+				$(destination).find('option').removeClass(HOVER_CLASS).eq(idx).addClass(HOVER_CLASS);
+				_forceIERedraw();
 			});
-		}
+		};
 
 		var removeHoverClass = function (source, destination) {
 			$(source).on('mouseleave', function (event) {
-				$(this).find('option').removeClass('hover');
-				$(destination).find('option').removeClass('hover');
-				$('#forceRedraw').text(1); //force IE to redraw
+				$(this).find('option').removeClass(HOVER_CLASS);
+				$(destination).find('option').removeClass(HOVER_CLASS);
+				_forceIERedraw();
 			});
-		}
-		removeHoverClass('#selected-workspace-fields', '#selected-source-fields');
-		removeHoverClass('#selected-source-fields', '#selected-workspace-fields');
-		_init('#selected-workspace-fields', '#selected-source-fields');
-		_init('#selected-source-fields', '#selected-workspace-fields');
+		};
+
+		
+		removeHoverClass(WORKSPACE_FIELD, SOURCE_FIELD);
+		removeHoverClass(SOURCE_FIELD, WORKSPACE_FIELD);
+		_init(WORKSPACE_FIELD, SOURCE_FIELD);
+		_init(SOURCE_FIELD, WORKSPACE_FIELD);
 	};
 	return {
 		hover : hover
