@@ -281,10 +281,11 @@
 
 | View Integration Point
 | | [Documentation] | A keyword that Views an Integration Point. Can be called from any where.
-| | [ARGUMENTS]		| ${IntegrationName} 
+| | [ARGUMENTS]		| ${IntegrationName}
 | | Go to the Tab	| Integration Points
-| | Set Filter		| Name	| ${IntegrationName}
-| | Click Element	| xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationName}']
+| | Set Filter	| Name	| ${IntegrationName}
+| | Page Should Contian Element	| xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationName}']	| The Integration Point "${IntegrationName}" was not found.
+| | Click	| xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationName}']
 
 | Delete the Following Integration Point
 | | [Documentation] | A keyword that deletes the specified Integration Point; can be called from anywhere.
