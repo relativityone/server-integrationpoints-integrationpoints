@@ -96,11 +96,13 @@
 
 | | Go to the Method tab | Custodian
 
+| | [Teardown] | Drop connection to the relativity services api
+
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
 
-| | Delete the Following Integration Point | ${IntegrationName}
+| | Delete the following Integration Point using API | ${IntegrationName}
 | | Delete the Custodians in the Following Department using API	| Append
 
 | | Drop connection to the relativity services api

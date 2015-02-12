@@ -29,7 +29,7 @@
 | | ${IntegrationPointID}=	| Query workspace database	| 
 | | ... | Select ArtifactID
 | | ... | From EDDSDBO.IntegrationPoint
-| | ... | Where Name = '$${IntegrationPointName}'
+| | ... | Where Name = '${IntegrationPointName}'
 | | Should Not Be Empty	| ${IntegrationPointID}	| The Integration Point "${IntegrationPointName}" was not found.
 | | [Return]		| ${IntegrationPointID[0][0]}
 

@@ -71,6 +71,9 @@
 | | ... | Email			| msun@gameofholdstesting.corp |
 | | ... | Department	| AppendAndOverla
 
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
+
 | | @{Step1Fields}  | Create list | ${IntegrationName} | Append/Overlay |
 | | ... | LDAP | Custodian | no
 | | @{Step2Fields}  | Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
@@ -86,6 +89,8 @@
 | | Run Import Now on the Following Integration Point | ${IntegrationName}  
 
 | | Go to the Method tab | Custodian
+
+| | [Teardown] | Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
