@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
+    <Compile Include="Services\CustodianService.cs" />
     <Compile Include="Services\Domain\AssemblyDomainLoader.cs" />
     <Compile Include="Services\Domain\DataReaderWrapper.cs" />
     <Compile Include="Services\Domain\DomainHelper.cs" />

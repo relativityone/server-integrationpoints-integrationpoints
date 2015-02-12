@@ -62,6 +62,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return View("LDAPConfiguration", "_StepLayout");
 		}
 
+	
 		public ActionResult Details(int id)
 		{
 			var integrationViewModel = _reader.ReadIntegrationPoint(id);

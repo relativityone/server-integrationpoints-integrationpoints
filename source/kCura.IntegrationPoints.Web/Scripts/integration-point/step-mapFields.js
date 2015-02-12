@@ -119,7 +119,7 @@ ko.validation.insertValidationMessage = function (element) {
 		var self = this;
 		this.hasBeenLoaded = model.hasBeenLoaded;
 		this.showErrors = ko.observable(false);
-		var artifactTypeId = model.destination.artifactTypeId;
+		var artifactTypeId = JSON.parse(model.destination).artifactTypeID;
 		var artifactId = model.artifactID || 0;
 		this.workspaceFields = ko.observableArray([]).extend({
 			fieldsMustBeMapped: {
@@ -156,7 +156,8 @@ ko.validation.insertValidationMessage = function (element) {
 				params: this.mappedWorkspace
 			}
 		});
-
+		
+		this.CustodianManagerFieldContainsLink = ko.observable(model.CustodianManagerFieldContainsLink || "false");
 		this.sourceField = ko.observableArray([]);
 		this.selectedWorkspaceField = ko.observableArray([]);
 		this.selectedMappedWorkspace = ko.observableArray([]);
@@ -173,8 +174,14 @@ ko.validation.insertValidationMessage = function (element) {
 				message: 'The Parent Attribute is required.',
 			}
 		});
-
+		this.showManager = ko.observable(false);
 		this.cacheMapped = ko.observableArray([]);
+		root.data.ajax({
+			type: 'POST', url: root.utils.generateWebAPIURL('Custodian/' + artifactTypeId)
+		}).then(function (result) {
+			self.showManager(result);
+		});
+
 		var workspaceFieldPromise = root.data.ajax({
 			type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({
 				settings: model.destination
@@ -182,6 +189,7 @@ ko.validation.insertValidationMessage = function (element) {
 		}).then(function (result) {
 			return result;
 		});
+
 		var sourceFieldPromise = root.data.ajax({
 			type: 'Post', url: root.utils.generateWebAPIURL('SourceFields'), data: JSON.stringify({
 				'options': model.sourceConfiguration,
@@ -250,46 +258,10 @@ ko.validation.insertValidationMessage = function (element) {
 				});
 				return [destinationMapped.concat(orphan), sourceMapped];
 			}
-
-
-			function move(source, oldIndex, newIndex) {
-				if (newIndex >= source.length) {
-					var k = newIndex - source.length;
-					while ((k--) + 1) {
-						source.push(undefined);
-					}
-				}
-				source.splice(newIndex, 0, source.splice(oldIndex, 1)[0]);
-			};
-
-
-			var _moveBottom = function (source, selected) {
-				if (selected.length > 0) {
-					var evaled = source();
-					//only move the top most one
-					selected = selected[0];
-					var idx = evaled.indexOf(selected);
-					move(evaled, idx, evaled.length - 1);
-					source.valueHasMutated();
-				}
-			};
-
-			var _moveTop = function (source, selected) {
-				if (selected.length > 0) {
-					var evaled = source();
-					//only move the top most one
-					selected = selected[0];
-					var idx = evaled.indexOf(selected);
-					move(evaled, idx, 0);
-					source.valueHasMutated();
-				}
-			};
-
 			return {
 				getNotMapped: getNotMapped,
 				getMapped: getMapped,
-				moveBottom: _moveBottom,
-				moveTop: _moveTop
+				
 			};
 
 
@@ -376,18 +348,17 @@ ko.validation.insertValidationMessage = function (element) {
 		this.moveMappedWorkspaceDown = function () { IP.workspaceFieldsControls.down(this.mappedWorkspace, this.selectedMappedWorkspace); };
 		this.moveMappedSourceUp = function () { IP.workspaceFieldsControls.up(this.sourceMapped, this.selectedMappedSource); };
 		this.moveMappedSourceDown = function () { IP.workspaceFieldsControls.down(this.sourceMapped, this.selectedMappedSource); };
-
 		this.moveMappedWorkspaceTop = function () {
-			mapHelper.moveTop(this.mappedWorkspace, this.selectedMappedWorkspace());
+			IP.workspaceFieldsControls.moveTop(this.mappedWorkspace, this.selectedMappedWorkspace());
 		};
 		this.moveMappedWorkspaceBottom = function () {
-			mapHelper.moveBottom(this.mappedWorkspace, this.selectedMappedWorkspace());
+			IP.workspaceFieldsControls.moveBottom(this.mappedWorkspace, this.selectedMappedWorkspace());
 		};
 		this.moveMappedSourceTop = function () {
-			mapHelper.moveTop(this.sourceMapped, this.selectedMappedSource());
+			IP.workspaceFieldsControls.moveTop(this.sourceMapped, this.selectedMappedSource());
 		};
 		this.moveMappedSourceBottom = function () {
-			mapHelper.moveBottom(this.sourceMapped, this.selectedMappedSource());
+			IP.workspaceFieldsControls.moveBottom(this.sourceMapped, this.selectedMappedSource());
 		};
 
 	};// end of the viewmodel
@@ -400,7 +371,8 @@ ko.validation.insertValidationMessage = function (element) {
 			stepCache[key] = {
 				map: model.map,
 				parentIdentifier: model.parentIdentifier,
-				identifer: model.identifer
+				identifer: model.identifer,
+				CustodianManagerFieldContainsLink: model.CustodianManagerFieldContainsLink
 			} || '';
 		}
 
@@ -414,9 +386,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.bus = IP.frameMessaging();
 		this.key = "";
 		this.loadModel = function (model) {
-			this.hasBeenLoaded = false;
-
-			this.key = JSON.parse(model.destination).artifactTypeID;
+		this.key = JSON.parse(model.destination).artifactTypeID;
 			if (typeof (stepCache[this.key]) === "undefined") {
 
 				setCache(model, this.key);
@@ -455,9 +425,6 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.back = function () {
 			var d = root.data.deferred().defer();
-
-
-
 			this.returnModel.identifer = this.model.selectedUniqueId();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 			var map = [];
@@ -473,8 +440,9 @@ ko.validation.insertValidationMessage = function (element) {
 				});
 			}
 
-			this.returnModel.map = JSON.stringify(map);
 
+			this.returnModel.map = JSON.stringify(map);
+			this.returnModel.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
 			setCache(this.returnModel, self.key);
 
 			d.resolve(this.returnModel);
@@ -525,7 +493,9 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.map = JSON.stringify(map);
 				this.returnModel.identifer = this.model.selectedUniqueId();
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
-
+				var _destination = JSON.parse(this.returnModel.destination);
+				_destination.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
+				this.returnModel.destination = JSON.stringify(_destination);
 				d.resolve(this.returnModel);
 			} else {
 				this.model.errors.showAllMessages();
