@@ -30,7 +30,7 @@ ko.validation.rules['uniqueIdIsMapped'] = {
 			}
 		});
 		if (containsIdentifier && rdoIdentifierMapped) {
-			if ($('#uniquIdMissing').length){
+			if ($('#uniquIdMissing').length) {
 				IP.message.error.clear();
 			}
 			return true;
@@ -119,7 +119,7 @@ ko.validation.insertValidationMessage = function (element) {
 		var self = this;
 		this.hasBeenLoaded = model.hasBeenLoaded;
 		this.showErrors = ko.observable(false);
-		var artifactTypeId = model.destination.artifactTypeId;
+		var artifactTypeId = JSON.parse(model.destination).artifactTypeID;
 		var artifactId = model.artifactID || 0;
 		this.workspaceFields = ko.observableArray([]).extend({
 			fieldsMustBeMapped: {
@@ -156,7 +156,8 @@ ko.validation.insertValidationMessage = function (element) {
 				params: this.mappedWorkspace
 			}
 		});
-
+		
+		this.CustodianManagerFieldContainsLink = ko.observable(model.CustodianManagerFieldContainsLink || "false");
 		this.sourceField = ko.observableArray([]);
 		this.selectedWorkspaceField = ko.observableArray([]);
 		this.selectedMappedWorkspace = ko.observableArray([]);
@@ -173,8 +174,14 @@ ko.validation.insertValidationMessage = function (element) {
 				message: 'The Parent Attribute is required.',
 			}
 		});
-
+		this.showManager = ko.observable(false);
 		this.cacheMapped = ko.observableArray([]);
+		root.data.ajax({
+			type: 'POST', url: root.utils.generateWebAPIURL('Custodian/' + artifactTypeId)
+		}).then(function (result) {
+			self.showManager(result);
+		});
+
 		var workspaceFieldPromise = root.data.ajax({
 			type: 'POST', url: root.utils.generateWebAPIURL('WorkspaceField'), data: JSON.stringify({
 				settings: model.destination
@@ -182,6 +189,7 @@ ko.validation.insertValidationMessage = function (element) {
 		}).then(function (result) {
 			return result;
 		});
+
 		var sourceFieldPromise = root.data.ajax({
 			type: 'Post', url: root.utils.generateWebAPIURL('SourceFields'), data: JSON.stringify({
 				'options': model.sourceConfiguration,
@@ -252,8 +260,11 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 			return {
 				getNotMapped: getNotMapped,
-				getMapped: getMapped
+				getMapped: getMapped,
+				
 			};
+
+
 		})();
 
 		root.data.deferred().all(promises).then(
@@ -337,9 +348,19 @@ ko.validation.insertValidationMessage = function (element) {
 		this.moveMappedWorkspaceDown = function () { IP.workspaceFieldsControls.down(this.mappedWorkspace, this.selectedMappedWorkspace); };
 		this.moveMappedSourceUp = function () { IP.workspaceFieldsControls.up(this.sourceMapped, this.selectedMappedSource); };
 		this.moveMappedSourceDown = function () { IP.workspaceFieldsControls.down(this.sourceMapped, this.selectedMappedSource); };
-		
-		
-		
+		this.moveMappedWorkspaceTop = function () {
+			IP.workspaceFieldsControls.moveTop(this.mappedWorkspace, this.selectedMappedWorkspace());
+		};
+		this.moveMappedWorkspaceBottom = function () {
+			IP.workspaceFieldsControls.moveBottom(this.mappedWorkspace, this.selectedMappedWorkspace());
+		};
+		this.moveMappedSourceTop = function () {
+			IP.workspaceFieldsControls.moveTop(this.sourceMapped, this.selectedMappedSource());
+		};
+		this.moveMappedSourceBottom = function () {
+			IP.workspaceFieldsControls.moveBottom(this.sourceMapped, this.selectedMappedSource());
+		};
+
 	};// end of the viewmodel
 
 
@@ -350,7 +371,8 @@ ko.validation.insertValidationMessage = function (element) {
 			stepCache[key] = {
 				map: model.map,
 				parentIdentifier: model.parentIdentifier,
-				identifer: model.identifer
+				identifer: model.identifer,
+				CustodianManagerFieldContainsLink: model.CustodianManagerFieldContainsLink
 			} || '';
 		}
 
@@ -364,9 +386,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.bus = IP.frameMessaging();
 		this.key = "";
 		this.loadModel = function (model) {
-			this.hasBeenLoaded = false;
-			
-			this.key = JSON.parse(model.destination).artifactTypeID;
+		this.key = JSON.parse(model.destination).artifactTypeID;
 			if (typeof (stepCache[this.key]) === "undefined") {
 
 				setCache(model, this.key);
@@ -379,7 +399,7 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 			}
 			this.model = new viewModel(this.returnModel);
-			this.model.errors = ko.validation.group(this.model, { deep: true }); 
+			this.model.errors = ko.validation.group(this.model, { deep: true });
 		};
 		this.getTemplate = function () {
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
@@ -388,7 +408,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.hasTemplate = true;
 				IP.affects.hover();
 			});
-		
+
 		};
 
 		this.bus.subscribe("saveState", function (state) {
@@ -405,9 +425,6 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.back = function () {
 			var d = root.data.deferred().defer();
-
-
-
 			this.returnModel.identifer = this.model.selectedUniqueId();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 			var map = [];
@@ -423,8 +440,9 @@ ko.validation.insertValidationMessage = function (element) {
 				});
 			}
 
-			this.returnModel.map = JSON.stringify(map);
 
+			this.returnModel.map = JSON.stringify(map);
+			this.returnModel.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
 			setCache(this.returnModel, self.key);
 
 			d.resolve(this.returnModel);
@@ -475,7 +493,9 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.map = JSON.stringify(map);
 				this.returnModel.identifer = this.model.selectedUniqueId();
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
-
+				var _destination = JSON.parse(this.returnModel.destination);
+				_destination.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
+				this.returnModel.destination = JSON.stringify(_destination);
 				d.resolve(this.returnModel);
 			} else {
 				this.model.errors.showAllMessages();

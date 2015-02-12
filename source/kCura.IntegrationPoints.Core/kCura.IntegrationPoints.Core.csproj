@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
+    <Compile Include="Services\CustodianService.cs" />
     <Compile Include="Services\CustodianManager\CustodianManagerDataReaderEnumerable.cs" />
     <Compile Include="Services\CustodianManager\CustodianManagerJobParameters.cs" />
     <Compile Include="Services\CustodianManager\CustodianManagerMap.cs" />
@@ -133,6 +134,8 @@
     <Compile Include="Services\Syncronizer\GeneralWithCustodianRdoSynchronizerFactory.cs" />
     <Compile Include="Services\Syncronizer\IDataSyncronizerFactory.cs" />
     <Compile Include="Services\Syncronizer\RDOSyncronizerProvider.cs" />
+    <Compile Include="Services\Tabs\ITabService.cs" />
+    <Compile Include="Services\Tabs\RSAPITabService.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\Domain\SynchronizerWrapper.cs" />
     <Compile Include="Utils.cs" />

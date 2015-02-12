@@ -82,9 +82,11 @@
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="EddsResourceConnection.cs" />
     <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="Extensions\GenericLibraryExtensions.cs" />
     <Compile Include="GetObjectBase.cs" />
+    <Compile Include="IEddsResourceConnection.cs" />
     <Compile Include="Installers\RSAPIServiceInstaller.cs">
       <DependentUpon>RSAPIServiceInstaller.tt</DependentUpon>
       <AutoGen>True</AutoGen>

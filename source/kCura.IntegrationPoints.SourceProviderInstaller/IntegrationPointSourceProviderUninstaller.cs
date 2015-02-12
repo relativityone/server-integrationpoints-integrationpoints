@@ -7,15 +7,37 @@ using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	public delegate void PreUninstallPreExecuteEvent();
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="isUninstalled"></param>
+	/// <param name="ex"></param>
 	public delegate void PreUninstallPostExecuteEvent(bool isUninstalled, Exception ex);
 
+	/// <summary>
+	/// Provides a means to remove a source provider when the application is uninstalled.
+	/// </summary>
 	public abstract class IntegrationPointSourceProviderUninstaller : kCura.EventHandler.PreUninstallEventHandler
 	{
+		/// <summary>
+		/// Event that is raised before the source provider is removed.
+		/// </summary>
 		public event PreUninstallPreExecuteEvent RaisePreUninstallPreExecuteEvent;
+
+		/// <summary>
+		/// Event that is raised after all the source providers for the current application are removed.
+		/// </summary>
 		public event PreUninstallPostExecuteEvent RaisePreUninstallPostExecuteEvent;
 
-		public IntegrationPointSourceProviderUninstaller()
+		/// <summary>
+		/// Creates a new instance of the source uninstall provider.
+		/// </summary>
+		protected IntegrationPointSourceProviderUninstaller()
 		{
 		}
 
@@ -80,12 +102,19 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			ImportService.UninstallProvider(base.ApplicationArtifactId);
 		}
 
+
+		/// <summary>
+		/// Raises the RaisePreUninstallPreExecuteEvent
+		/// </summary>
 		protected void OnRaisePreUninstallPreExecuteEvent()
 		{
 			if (RaisePreUninstallPreExecuteEvent != null)
 				RaisePreUninstallPreExecuteEvent();
 		}
 
+		/// <summary>
+		/// Raises the RaisePreUninstallPostExecuteEvent
+		/// </summary>
 		protected void OnRaisePreUninstallPostExecuteEvent(bool isUninstalled, Exception ex)
 		{
 			if (RaisePreUninstallPostExecuteEvent != null)

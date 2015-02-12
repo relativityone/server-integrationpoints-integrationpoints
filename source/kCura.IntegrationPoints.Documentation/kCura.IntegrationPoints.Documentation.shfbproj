@@ -50,6 +50,8 @@
     <DocumentationSources>
       <DocumentationSource sourceFile="..\kCura.IntegrationPoints.Contracts\bin\kCura.IntegrationPoints.Contracts.XML" />
       <DocumentationSource sourceFile="..\kCura.IntegrationPoints.Contracts\bin\kCura.IntegrationPoints.Contracts.dll" />
+      <DocumentationSource sourceFile="..\kCura.IntegrationPoints.SourceProviderInstaller\bin\kCura.IntegrationPoints.SourceProviderInstaller.dll" />
+      <DocumentationSource sourceFile="..\kCura.IntegrationPoints.SourceProviderInstaller\bin\kCura.IntegrationPoints.SourceProviderInstaller.xml" />
     </DocumentationSources>
     <FeedbackEMailLinkText>kCura documentation</FeedbackEMailLinkText>
     <FeedbackEMailAddress>documentation%40kcura.com</FeedbackEMailAddress>

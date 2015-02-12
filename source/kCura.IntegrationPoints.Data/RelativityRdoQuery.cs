@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Data
 		public RelativityRdoQuery(IRSAPIClient client)
 		{
 			_client = client;
-
 		}
 
 		public virtual List<ObjectType> GetAllRdo(List<int> typeIds = null)
@@ -77,8 +76,7 @@ namespace kCura.IntegrationPoints.Data
 		{
 			return GetAllRdo(new List<int>{typeID}).First();
 		}
-
-
+		
 		public virtual ObjectType GetType(int typeId)
 		{
 			return this.GetAllRdo(new List<int> {typeId}).FirstOrDefault();
