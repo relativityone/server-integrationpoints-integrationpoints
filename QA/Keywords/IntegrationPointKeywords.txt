@@ -281,9 +281,22 @@
 | | ... | "${PreviousStep}" == "Set Integration Details"	| Connect to Source	| 
 | | ... | "${PreviousStep}" == "Connect to Source"			| Map Fields		| 
 | | ... | "${PreviousStep}" == "Map Fields"					| User Error: Wrong keyword.	| 
-| | ... | Outdated Keyword. Please update step names.	| # Else
+| | ... | Outdated Keyword call. Please update step names as "${NextStep}" was not found.	| # Else
 | | Click	| id=next
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${NextStep}
+| | Wait for the Loading Indicator to disappear
+
+| Proceed to the Previous Step of the Integration Point wizard
+| | [Documentation]	| This keyword goes to the previous Step of the Integration Point wizard.
+| | Click	| id=stepProgress	| # Click out of any given field
+| | ${CurrentStep}=	| Determine the current Step of the Create Integration Point Process
+| | ${PreviousStep}=	| Set Variable If	| 
+| | ... | "${CurrentStep}" == "Set Integration Details"	| User Error: Wrong keyword.	| 
+| | ... | "${CurrentStep}" == "Connect to Source"		| Set Integration Details	| 
+| | ... | "${CurrentStep}" == "Map Fields"				| Connect to Source		| 
+| | ... | Outdated Keyword call. Please update step names as "${PreviousStep}" was not found.	| # Else
+| | Click	| id=back
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${PreviousStep}
 | | Wait for the Loading Indicator to disappear
 
 | Run Import Now on the Following Integration Point
