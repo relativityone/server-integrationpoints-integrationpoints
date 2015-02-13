@@ -141,7 +141,13 @@
 | | [Documentation]	| A keyword that verifies that an Integration Point with the given name exists in the workspace. Can be run from anywhere without leaving the page.
 | | [ARGUMENTS]		| ${IntegrationPointName}
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPointName}
-| | Run Keyword Unless	| ${${IntegrationPointExists}}	| FAIL	| The Integration Point "${IntegrationPointName}" was not found on the current Workspace.
+| | Run Keyword Unless	| ${${IntegrationPointExists}}	| FAIL	| The Integration Point "${IntegrationPointName}" was not found in the current Workspace.
+
+| Verify that the Following Integration Point does not Exist in the current Workspace
+| | [Documentation]	| A keyword that verifies that no Integration Point with the given name exists in the workspace. Can be run from anywhere without leaving the page.
+| | [ARGUMENTS]		| ${IntegrationPointName}
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPointName}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| FAIL	| The Integration Point "${IntegrationPointName}" was found in the current Workspace.
 
 | Verify that the following Integration Point has a Running Job
 | | [Documentation]	| This keyword searches the database to verify that the given Integration Point currently has a Job in progress.
