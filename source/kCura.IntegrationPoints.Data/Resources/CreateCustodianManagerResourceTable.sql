@@ -16,11 +16,13 @@ BEGIN
 	) ON [PRIMARY]
 END
 
+--TODO: Delete old tables
+
 --delete records older than 1 day
-DELETE FROM [EDDSResource].[eddsdbo].[{0}]
-WHERE	
-			DATEDIFF(HOUR,[CreatedOn],GETUTCDATE()) > 24
-AND 
-			NOT [LockedByJobID] IS NULL
+--DELETE FROM [EDDSResource].[eddsdbo].[{0}]
+--WHERE	
+--			DATEDIFF(HOUR,[CreatedOn],GETUTCDATE()) > 24
+--AND 
+--			NOT [LockedByJobID] IS NULL
 
  

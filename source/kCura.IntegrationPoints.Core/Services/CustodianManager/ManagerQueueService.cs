@@ -16,19 +16,19 @@ namespace kCura.IntegrationPoints.CustodianManager
 			_caseServiceContext = caseServiceContext;
 		}
 
-		public string GetTempTableName(Job job)
+		public string GetTempTableName(Job job, Guid batchInstance)
 		{
-			return this.GetTempTableName(job.WorkspaceID, job.RelatedObjectArtifactID);
+			return this.GetTempTableName(job.WorkspaceID, job.RelatedObjectArtifactID, batchInstance);
 		}
-		public string GetTempTableName(int workspaceID, int relatedObjectArtifactID)
+		public string GetTempTableName(int workspaceID, int relatedObjectArtifactID, Guid batchInstance)
 		{
-			return string.Format("RIP_CustodianManager_{0}_{1}", workspaceID.ToString("D7"), relatedObjectArtifactID.ToString("D7"));
+			return string.Format("RIP_CustodianManager_{0}_{1}_{2}", workspaceID.ToString("D7"), relatedObjectArtifactID.ToString("D7"), batchInstance.ToString());
 		}
 
-		public List<CustodianManagerMap> GetCustodianManagerLinksToProcess(Job job, List<CustodianManagerMap> jobCustodianManagerMap)
+		public List<CustodianManagerMap> GetCustodianManagerLinksToProcess(Job job, Guid batchInstance, List<CustodianManagerMap> jobCustodianManagerMap)
 		{
 			//Create temp table if does not exist and delete old links
-			string tableName = GetTempTableName(job);
+			string tableName = GetTempTableName(job, batchInstance);
 			new CreateCustodianManagerResourceTable(_caseServiceContext.SqlContext).Execute(tableName);
 
 			//insert job Custodian Manager links
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.CustodianManager
 			DataTable dtInsertRows = GetDataTable(jobCustodianManagerMap);
 			using (SqlBulkCopy sbc = new SqlBulkCopy(_caseServiceContext.SqlContext.GetConnection()))
 			{
-				sbc.DestinationTableName = string.Format("EDDSResource.eddsdbo.{0}", tableName);
+				sbc.DestinationTableName = string.Format("[EDDSResource].[eddsdbo].[{0}]", tableName);
 
 				// Map the Source Column from DataTabel to the Destination Columns
 				sbc.ColumnMappings.Add("CustodianID", "CustodianID");

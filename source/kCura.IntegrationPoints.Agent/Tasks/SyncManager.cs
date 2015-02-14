@@ -40,7 +40,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_scheduleRuleFactory = scheduleRuleFactory;
 			base.RaiseJobPreExecute += new JobPreExecuteEvent(JobPreExecute);
 			base.RaiseJobPostExecute += new JobPostExecuteEvent(JobPostExecute);
+			BatchInstance = Guid.NewGuid();
 		}
+
+		public Guid BatchInstance { get; set; }
 
 		public override int BatchSize
 		{
@@ -72,7 +75,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public override void CreateBatchJob(Job job, List<string> batchIDs)
 		{
-			_jobManager.CreateJob(batchIDs, TaskType.SyncWorker, job.WorkspaceID, job.RelatedObjectArtifactID);
+			TaskParameters taskParameters = new TaskParameters()
+			{
+				BatchInstance = this.BatchInstance,
+				BatchParameters = batchIDs
+			};
+			_jobManager.CreateJob(taskParameters, TaskType.SyncWorker, job.WorkspaceID, job.RelatedObjectArtifactID);
 		}
 
 		private class ReaderEnumerable : IEnumerable<string>

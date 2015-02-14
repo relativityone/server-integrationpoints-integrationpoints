@@ -88,9 +88,24 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return originalSourceConfiguration;
 		}
 
+		internal Guid BatchInstance { get; set; }
+
 		internal virtual List<string> GetEntryIDs(Job job)
 		{
-			return _serializer.Deserialize<List<string>>(job.JobDetails);
+			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+			this.BatchInstance = taskParameters.BatchInstance;
+			if (taskParameters.BatchParameters != null)
+			{
+				if (taskParameters.BatchParameters is Newtonsoft.Json.Linq.JArray)
+				{
+					return ((Newtonsoft.Json.Linq.JArray)taskParameters.BatchParameters).ToObject<List<string>>();
+				}
+				else if (taskParameters.BatchParameters is List<string>)
+				{
+					return (List<string>)taskParameters.BatchParameters;
+				}
+			}
+			return new List<string>();
 		}
 
 		internal virtual IEnumerable<FieldMap> GetFieldMap(string serializedFieldMappings)
@@ -142,7 +157,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			if (_appDomainRdoSynchronizerFactoryFactory is GeneralWithCustodianRdoSynchronizerFactory)
 			{
 				((GeneralWithCustodianRdoSynchronizerFactory)_appDomainRdoSynchronizerFactoryFactory).TaskJobSubmitter =
-					new TaskJobSubmitter(_jobManager, job, TaskType.SyncCustodianManagerWorker);
+					new TaskJobSubmitter(_jobManager, job, TaskType.SyncCustodianManagerWorker, this.BatchInstance);
 			}
 			Contracts.PluginBuilder.Current.SetSynchronizerFactory(_appDomainRdoSynchronizerFactoryFactory);
 			IDataSyncronizer sourceProvider = _dataSyncronizerFactory.GetSyncronizer(providerGuid, configuration);

@@ -152,9 +152,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				ManagerFieldMap = fieldMap
 			};
 
-			string jobDetails = JsonConvert.SerializeObject(jobParameters);
-
-			TaskJobSubmitter.SubmitJob(jobDetails);
+			TaskJobSubmitter.SubmitJob(jobParameters);
 		}
 
 		public static string GenerateFullName(string lastName, string firstName)

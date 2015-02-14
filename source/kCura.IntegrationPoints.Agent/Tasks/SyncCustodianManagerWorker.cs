@@ -52,27 +52,21 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-				CustodianManagerJobParameters jobParameters = JsonConvert.DeserializeObject<CustodianManagerJobParameters>(job.JobDetails);
-				_custodianManagerMap = jobParameters.CustodianManagerMap.Select(x => new CustodianManagerMap() { CustodianID = x.Key, OldManagerID = x.Value }).ToList();
-				_custodianManagerFieldMap = jobParameters.CustodianManagerFieldMap;
-				_managerFieldMap = jobParameters.ManagerFieldMap;
-				_managerFieldIdIsBinary = jobParameters.ManagerFieldIdIsBinary;
+				//get all job parameters
+				GetParameters(job);
 
-				SetManagerFieldIDs(_custodianManagerFieldMap, _managerFieldMap);
+				//update common queue for this job using passed Custodian/Manager links and get the next unprocessed links
+				_custodianManagerMap = _managerQueueService.GetCustodianManagerLinksToProcess(job, this.BatchInstance, _custodianManagerMap);
 
-				//update common queue for this job and get the next unprocessed links
-				_custodianManagerMap = _managerQueueService.GetCustodianManagerLinksToProcess(job, _custodianManagerMap);
-				
 				//if no links to process - exit
 				if (!_custodianManagerMap.Any()) return;
 
 				//import Managers as Custodians which were passed to this job 
-					//and create another recursive job to process Managers of these Managers if needed
+				//and create another recursive job to process Managers of these Managers if needed
 				base.ExecuteTask(job);
 
-
+				//Get ArtifactIDs for newly created Managers
 				int custodianManagerFieldArtifactID = GetCustodianManagerFieldArtifactID();
-
 				List<string> missingManagers = _custodianManagerMap.Where(x => !_convertDataService.ManagerOldNewKeyMap.ContainsKey(x.OldManagerID)).Select(x => x.OldManagerID).ToList();
 				_custodianManagerMap.ForEach(x => x.NewManagerID = _convertDataService.ManagerOldNewKeyMap.ContainsKey(x.OldManagerID) ? _convertDataService.ManagerOldNewKeyMap[x.OldManagerID] : null);
 				string[] managerUniqueIDs = _custodianManagerMap.Where(x => x.NewManagerID != null).Select(x => x.NewManagerID).Distinct().ToArray();
@@ -84,14 +78,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_custodianManagerMap.ForEach(x => x.ManagerArtifactID =
 					(x.NewManagerID != null && managerArtifactIDs.ContainsKey(x.NewManagerID)) ? managerArtifactIDs[x.NewManagerID] : 0);
 
-
+				//change import api settings to be able to overlay and set Custodian/Manager links
 				ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(_destinationConfiguration);
 				importSettings.ObjectFieldIdListContainsArtifactId = new int[] { custodianManagerFieldArtifactID };
 				importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
 				importSettings.CustodianManagerFieldContainsLink = false;
 				string newDestinationConfiguration = JsonConvert.SerializeObject(importSettings);
 
-
+				//run import api to link corresponding Managers to Custodians
 				FieldEntry fieldEntryCustodianIdentifier =
 					_managerFieldMap.Where(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).Select(x => x.SourceField).First();
 				FieldEntry fieldEntryManagerIdentifier =
@@ -122,6 +116,30 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				//rdo last run and next scheduled time will be updated in Manager job
 			}
+		}
+
+		private void GetParameters(Job job)
+		{
+			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+			this.BatchInstance = taskParameters.BatchInstance;
+			CustodianManagerJobParameters jobParameters = null;
+			if (taskParameters.BatchParameters is Newtonsoft.Json.Linq.JObject)
+			{
+				jobParameters =
+					((Newtonsoft.Json.Linq.JObject)taskParameters.BatchParameters).ToObject<CustodianManagerJobParameters>();
+			}
+			else
+			{
+				jobParameters = (CustodianManagerJobParameters)taskParameters.BatchParameters;
+			}
+			_custodianManagerMap =
+				jobParameters.CustodianManagerMap.Select(x => new CustodianManagerMap() { CustodianID = x.Key, OldManagerID = x.Value })
+					.ToList();
+			_custodianManagerFieldMap = jobParameters.CustodianManagerFieldMap;
+			_managerFieldMap = jobParameters.ManagerFieldMap;
+			_managerFieldIdIsBinary = jobParameters.ManagerFieldIdIsBinary;
+
+			SetManagerFieldIDs(_custodianManagerFieldMap, _managerFieldMap);
 		}
 
 		internal override IDataSyncronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
