@@ -11,3 +11,4 @@
   where UserArtifactID = @userID AND p.[Type] = 6 
 )
 AND IsSystem = 0
+order by ot.Name
