@@ -1,0 +1,94 @@
+
+*** Settings ***
+| Documentation 	| Verify that a RIP can import items from a nested folder
+| Metadata		    | Authors	| William Sehy
+| Force Tags		| in-progress | team.method  | manual
+| Suite Setup		| Create Suite Setup Data
+| Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
+| Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
+
+
+*** Variables ***
+
+| ${WorkspaceName}	    | LDAP Sync
+| ${IntegrationName}    | Nested Folders
+| ${NestedObject}       | Nest, Bird
+| ${RootObject}         | Nest, Rat
+| ${Custodians Grid}	| gbox_custodianGrid
+
+
+*** Test Cases ***
+
+| Nested users are imported 
+| | [Documentation] | Verify that when an Append RIP is run which has new Source records, that it creates new records from a nested folder.
+| | ...				| [id] 78e9da30-b2f9-11e4-b2bb-90b11c6c5ae4
+| | [Tags] | automated
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name  | ${NestedObject} 
+
+| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
+
+| Root users are imported 
+| | [Documentation] | Verify that when an Append RIP is run which has new Source records, that it creates new records from the root folder.
+| | ...				| [id] 653348c0-b2fc-11e4-bc4d-90b11c6c5ae4
+| | [Tags] | automated
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name  | ${RootObject} 
+
+| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
+
+*** Keywords *** 
+
+| Create Suite Setup Data
+| | [Documentation]	| Create the Suite Preconditions
+| | Setup connection to the relativity database
+| | Open and Log in to Method
+| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${NestedObject}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${NestedObject}
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${RootObject}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${RootObject}
+
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
+
+| | @{Step1Fields}  | Create list | ${IntegrationName} | Append/Overlay |
+| | ... | LDAP | Custodian | no
+| | @{Step2Fields}  | Create list | testing.corp/OU=Testing - Users,DC=testing,DC=corp |
+| | ... | (department=Nested) | FastBind | rellockdown | P@ssw0rd@1 | Yes
+| | @{Step3Mapping}=	| Create List	|
+| | ... | Email			| mail			| 
+| | ... | First Name	| givenname		| 
+| | ... | Last Name		| sn			| 
+| | ... | UniqueID		| objectguid
+
+| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
+
+| | Run Import Now on the Following Integration Point | ${IntegrationName}  
+
+| | Go to the Method tab | Custodian
+
+| | [Teardown] | Drop connection to the relativity services api
+
+| Delete the Objects created in the Suite then Close All Browsers
+| | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
+| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+
+| | Delete the following Integration Point using API | ${IntegrationName}
+
+| | Delete the Custodians in the Following Department using API  | Nested
+
+| | Drop connection to the relativity services api
+| | Close All Browsers
+
+*** Settings ***
+| Library	| Collections
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/GridKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/QuestionnaireKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
+

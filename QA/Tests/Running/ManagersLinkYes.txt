@@ -6,14 +6,14 @@
 *** Variables ***
 
 | ${WorkspaceName}	   | Relativity Legal Hold
-| ${Custodian1}        | 
+| ${Custodian1}        | Worker, Alpha
 | ${Custodian2}        | 
 | ${Custodian3}        | 
 | ${Custodian4}        | 
 | ${Custodian5}        | 
 | ${Custodian6}        | 
 | ${Custodian7}        | 
-| ${Manager1}          | 
+| ${Manager1}          | Manager, Alpha
 | ${Manager2}          | 
 | ${Manager3}          | 
 | ${Manager4}          | 
@@ -47,7 +47,7 @@
 | | ... | Expected Results:
 | | ... | 1. Verify that the Custodian Manager Contains Link field defaults to Yes
 
-| Custodian Manager Contains Link is shown not for non-Custodian Imports
+| Custodian Manager Contains Link is not shown for non-Custodian Imports
 | | [Documentation] | Verify that the Custodian Manager Contains Link is not shown on step 2 of RIP when the Destination RDO is not Custodians
 | | [Tags] | manual  
 | | Run the following manual steps:
