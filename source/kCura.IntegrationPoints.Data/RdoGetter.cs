@@ -9,9 +9,9 @@ namespace kCura.IntegrationPoints.Data
 {
 	public class RdoGetter
 	{
-		public RelativityRdoQuery _RdoQuery;
+		public RSAPIRdoQuery _RdoQuery;
 
-		public RdoGetter(RelativityRdoQuery rdoQuery)
+		public RdoGetter(RSAPIRdoQuery rdoQuery)
 		{
 			_RdoQuery = rdoQuery; 
 		}

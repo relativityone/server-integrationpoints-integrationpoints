@@ -16,12 +16,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 	public class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Syncronizer.IDataSyncronizer
 	{
 		protected readonly RelativityFieldQuery FieldQuery;
-		protected readonly RelativityRdoQuery RdoQuery;
 
-		public RdoSynchronizer(RelativityFieldQuery fieldQuery, RelativityRdoQuery rdoQuery)
+		public RdoSynchronizer(RelativityFieldQuery fieldQuery)
 		{
 			FieldQuery = fieldQuery;
-			RdoQuery = rdoQuery;
 		}
 
 		private List<string> IgnoredList

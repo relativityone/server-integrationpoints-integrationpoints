@@ -17,9 +17,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
 	public class IntegrationPointsController : BaseController
 	{
 		private readonly IntegrationPointService _reader;
-		private readonly RelativityRdoQuery _rdoQuery;
+		private readonly RSAPIRdoQuery _rdoQuery;
 		private readonly ITabService _tabService;
-		public IntegrationPointsController(IntegrationPointService reader, RelativityRdoQuery relativityRdoQuery, ITabService tabService)
+		public IntegrationPointsController(IntegrationPointService reader, RSAPIRdoQuery relativityRdoQuery, ITabService tabService)
 		{
 			_reader = reader;
 			_rdoQuery = relativityRdoQuery;

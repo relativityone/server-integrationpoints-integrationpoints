@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		public void RelativityRdoQueryReturnsData()
 		{
 			var client = NSubstitute.Substitute.For<IRSAPIClient>();
-			var rdoMock = NSubstitute.Substitute.For<RelativityRdoQuery>(client);
+			var rdoMock = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
 
 			var testRdoQuery = new RdoGetter(rdoMock); 
 
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		public void RelativityRdoQueryThrowsException()
 		{
 			var client = NSubstitute.Substitute.For<IRSAPIClient>();
-			var rdoMock = NSubstitute.Substitute.For<RelativityRdoQuery>(client);
+			var rdoMock = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
 			
 			var testRdoQuery = new RdoGetter(rdoMock);
 

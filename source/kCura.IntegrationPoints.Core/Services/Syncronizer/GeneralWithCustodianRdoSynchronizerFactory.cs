@@ -11,8 +11,8 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 	public class GeneralWithCustodianRdoSynchronizerFactory : kCura.IntegrationPoints.Contracts.ISynchronizerFactory
 	{
 		private readonly IWindsorContainer _container;
-		private readonly RelativityRdoQuery _query;
-		public GeneralWithCustodianRdoSynchronizerFactory(IWindsorContainer container, RelativityRdoQuery query)
+		private readonly RSAPIRdoQuery _query;
+		public GeneralWithCustodianRdoSynchronizerFactory(IWindsorContainer container, RSAPIRdoQuery query)
 		{
 			_container = container;
 			_query = query;
