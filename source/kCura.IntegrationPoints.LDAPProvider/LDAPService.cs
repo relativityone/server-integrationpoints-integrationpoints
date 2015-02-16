@@ -45,7 +45,41 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public IEnumerable<SearchResult> FetchItems(string filter, int? overrideSizeLimit)
 		{
-			using (DirectorySearcher searcher = new DirectorySearcher(_searchRoot, filter))
+			return FetchItems(_searchRoot, filter, overrideSizeLimit);
+		}
+
+		public IEnumerable<SearchResult> FetchItemsUpTheTree(string filter, int? overrideSizeLimit)
+		{
+			DirectoryEntry currentSearchRoot = _searchRoot;
+			_settings.ImportNested = true;
+			List<string> searchedPaths = new List<string>();
+			searchedPaths.Add(currentSearchRoot.Path);
+			bool isNewPath = true;
+			IEnumerable<SearchResult> items = null;
+			do
+			{
+				items = FetchItems(currentSearchRoot, filter, overrideSizeLimit);
+				try
+				{
+					isNewPath = false;
+					currentSearchRoot = currentSearchRoot.Parent;
+					if (!searchedPaths.Contains(currentSearchRoot.Path))
+					{
+						isNewPath = true;
+						searchedPaths.Add(currentSearchRoot.Path);
+					}
+				}
+				catch
+				{
+				}
+			} while ((items == null || items.Count() == 0) && currentSearchRoot != null && isNewPath);
+
+			return items;
+		}
+
+		private IEnumerable<SearchResult> FetchItems(DirectoryEntry searchRoot, string filter, int? overrideSizeLimit)
+		{
+			using (DirectorySearcher searcher = new DirectorySearcher(searchRoot, filter))
 			{
 				searcher.AttributeScopeQuery = _settings.AttributeScopeQuery;
 				searcher.ExtendedDN = _settings.ExtendedDN;
@@ -86,9 +120,10 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			HashSet<string> properties = new HashSet<string>();
 			foreach (SearchResult item in previewItems)
 			{
-				foreach (object p in item.Properties.PropertyNames)
+				foreach (object property in item.Properties.PropertyNames)
 				{
-					properties.Add(p.ToString());
+					//GetPropertyType(property.ToString(), item);
+					properties.Add(property.ToString());
 				}
 			}
 			//if (properties.Count > 0) properties.Add("path");
@@ -97,5 +132,24 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			listProperties.Sort();
 			return listProperties;
 		}
+
+		//private object GetPropertyType(string property, SearchResult item)
+		//{
+		//	DirectoryEntry de = new DirectoryEntry(item.Path, _settings.UserName, _settings.Password, _settings.AuthenticationType);
+		//	DirectoryEntry schema = de.SchemaEntry;
+
+		//	foreach (DirectoryEntry myChildDirectoryEntry in schema.Children)
+		//	{
+		//		Console.WriteLine(myChildDirectoryEntry.Path);
+		//	}
+
+		//	foreach (var prop in schema.Properties.PropertyNames)
+		//	{
+		//		string propName = prop.ToString();
+		//		var propValue = schema.Properties[propName].Value;
+		//	}
+
+		//	return null;
+		//}
 	}
 }

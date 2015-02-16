@@ -19,12 +19,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class SyncWorker : ITask
 	{
-		private ICaseServiceContext _caseServiceContext;
-		private IDataSyncronizerFactory _dataSyncronizerFactory;
-		private IDataProviderFactory _dataProviderFactory;
-		private kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
-		private GeneralWithCustodianRdoSynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
-		private IJobManager _jobManager;
+		internal ICaseServiceContext _caseServiceContext;
+		internal IDataSyncronizerFactory _dataSyncronizerFactory;
+		internal IDataProviderFactory _dataProviderFactory;
+		internal kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
+		internal GeneralWithCustodianRdoSynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
+		internal IJobManager _jobManager;
 		public SyncWorker(ICaseServiceContext caseServiceContext,
 											IDataSyncronizerFactory dataSyncronizerFactory,
 											IDataProviderFactory dataProviderFactory,
@@ -41,6 +41,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 
 		public void Execute(Job job)
+		{
+			ExecuteTask(job);
+		}
+
+		internal virtual void ExecuteTask(Job job)
 		{
 			IntegrationPoint rdoIntegrationPoint = null;
 			try
@@ -60,9 +65,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					throw new ArgumentException("Cannot import destination provider with unknown id.");
 				}
-				List<string> entryIDs = _serializer.Deserialize<List<string>>(job.JobDetails);
+				List<string> entryIDs = GetEntryIDs(job);
 				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(rdoIntegrationPoint.SourceProvider.Value);
-				ExecuteImport(rdoIntegrationPoint, entryIDs, sourceProviderRdo, job);
+				Data.DestinationProvider destinationProvider = _caseServiceContext.RsapiService.DestinationProviderLibrary.Read(rdoIntegrationPoint.DestinationProvider.Value);
+				IEnumerable<FieldMap> fieldMap = GetFieldMap(rdoIntegrationPoint.FieldMappings);
+				string sourceConfiguration = GetSourceConfiguration(rdoIntegrationPoint.SourceConfiguration);
+				ExecuteImport(fieldMap, sourceConfiguration, rdoIntegrationPoint.DestinationConfiguration, entryIDs,
+					sourceProviderRdo, destinationProvider, job);
 			}
 			catch
 			{
@@ -74,26 +83,67 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		private void ExecuteImport(IntegrationPoint rdoIntegrationPoint, List<string> entryIDs, Data.SourceProvider sourceProviderRdo, Job job)
+		internal virtual string GetSourceConfiguration(string originalSourceConfiguration)
 		{
-
-			IDataSourceProvider sourceProvider = GetSourceProvider(sourceProviderRdo, job);
-
-			IEnumerable<FieldMap> fieldMap = _serializer.Deserialize<List<FieldMap>>(rdoIntegrationPoint.FieldMappings);
-			fieldMap.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
-			List<FieldEntry> sourceFields = fieldMap.Select(f => f.SourceField).ToList();
-
-			IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, rdoIntegrationPoint.SourceConfiguration);
-			Data.DestinationProvider destination = _caseServiceContext.RsapiService.DestinationProviderLibrary.Read(rdoIntegrationPoint.DestinationProvider.Value);
-
-			IDataSyncronizer dataSyncronizer = GetDestinationProvider(destination, rdoIntegrationPoint.DestinationConfiguration, job);
-			var objectBuilder = new SynchronizerObjectBuilder(sourceFields);
-			IEnumerable<IDictionary<FieldEntry, object>> data = new DataReaderToEnumerableService(objectBuilder).GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
-
-			dataSyncronizer.SyncData(data, fieldMap, rdoIntegrationPoint.DestinationConfiguration);
+			return originalSourceConfiguration;
 		}
 
-		private IDataSourceProvider GetSourceProvider(SourceProvider sourceProviderRdo, Job job)
+		internal Guid BatchInstance { get; set; }
+
+		internal virtual List<string> GetEntryIDs(Job job)
+		{
+			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+			this.BatchInstance = taskParameters.BatchInstance;
+			if (taskParameters.BatchParameters != null)
+			{
+				if (taskParameters.BatchParameters is Newtonsoft.Json.Linq.JArray)
+				{
+					return ((Newtonsoft.Json.Linq.JArray)taskParameters.BatchParameters).ToObject<List<string>>();
+				}
+				else if (taskParameters.BatchParameters is List<string>)
+				{
+					return (List<string>)taskParameters.BatchParameters;
+				}
+			}
+			return new List<string>();
+		}
+
+		internal virtual IEnumerable<FieldMap> GetFieldMap(string serializedFieldMappings)
+		{
+			IEnumerable<FieldMap> fieldMap = _serializer.Deserialize<List<FieldMap>>(serializedFieldMappings);
+			fieldMap.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
+			return fieldMap;
+		}
+
+		internal virtual void ExecuteImport(IEnumerable<FieldMap> fieldMap,
+			string sourceConfiguration, string destinationConfiguration, List<string> entryIDs,
+			Data.SourceProvider sourceProviderRdo, Data.DestinationProvider destinationProvider, Job job)
+		{
+			IDataSourceProvider sourceProvider = GetSourceProvider(sourceProviderRdo, job);
+
+			List<FieldEntry> sourceFields = GetSourceFields(fieldMap);
+
+			IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration);
+
+			IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
+
+			IDataSyncronizer dataSyncronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+
+			dataSyncronizer.SyncData(sourceData, fieldMap, destinationConfiguration);
+		}
+
+		internal virtual List<FieldEntry> GetSourceFields(IEnumerable<FieldMap> fieldMap)
+		{
+			return fieldMap.Select(f => f.SourceField).ToList();
+		}
+
+		internal virtual IEnumerable<IDictionary<FieldEntry, object>> GetSourceData(List<FieldEntry> sourceFields, IDataReader sourceDataReader)
+		{
+			var objectBuilder = new SynchronizerObjectBuilder(sourceFields);
+			return new DataReaderToEnumerableService(objectBuilder).GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
+		}
+
+		internal virtual IDataSourceProvider GetSourceProvider(SourceProvider sourceProviderRdo, Job job)
 		{
 			Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
 			Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
@@ -101,13 +151,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return sourceProvider;
 		}
 
-		private IDataSyncronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
+		internal virtual IDataSyncronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
 		{
 			Guid providerGuid = new Guid(destinationProviderRdo.Identifier);
 			if (_appDomainRdoSynchronizerFactoryFactory is GeneralWithCustodianRdoSynchronizerFactory)
 			{
 				((GeneralWithCustodianRdoSynchronizerFactory)_appDomainRdoSynchronizerFactoryFactory).TaskJobSubmitter =
-					new TaskJobSubmitter(_jobManager, job, TaskType.SyncCustodianManagerWorker);
+					new TaskJobSubmitter(_jobManager, job, TaskType.SyncCustodianManagerWorker, this.BatchInstance);
 			}
 			Contracts.PluginBuilder.Current.SetSynchronizerFactory(_appDomainRdoSynchronizerFactoryFactory);
 			IDataSyncronizer sourceProvider = _dataSyncronizerFactory.GetSyncronizer(providerGuid, configuration);

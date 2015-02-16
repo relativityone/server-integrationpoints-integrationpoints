@@ -118,6 +118,9 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="CreateCustodianManagerResourceTable" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>createcustodianmanagerresourcetable.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="GetApplicationBinaries" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>getapplicationbinaries.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
@@ -126,6 +129,9 @@
   </data>
   <data name="GetArtifactIDByGuid" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>getartifactidbyguid.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="GetJobCustodianManagerLinks" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>getjobcustodianmanagerlinks.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="GetObjectTypes" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>getobjecttypes.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

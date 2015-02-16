@@ -50,5 +50,17 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
 			}
 		}
+
+		public void CreateJob(int workspaceID, int integrationPointID, TaskType task, string serializedDetails)
+		{
+			try
+			{
+				_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID);
+			}
+			catch (AgentNotFoundException anfe)
+			{
+				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
+			}
+		}
 	}
 }
