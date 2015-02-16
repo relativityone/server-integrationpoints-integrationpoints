@@ -16,8 +16,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public ITaskJobSubmitter TaskJobSubmitter { get; set; }
 
-		public RDOCustodianSynchronizer(RelativityFieldQuery fieldQuery, RelativityRdoQuery rdoQuery)
-			: base(fieldQuery, rdoQuery)
+		public RDOCustodianSynchronizer(RelativityFieldQuery fieldQuery)
+			: base(fieldQuery)
 		{ }
 
 		public string FirstNameSourceFieldId { get; set; }

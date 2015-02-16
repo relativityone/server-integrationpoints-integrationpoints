@@ -86,12 +86,13 @@
     <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="Extensions\GenericLibraryExtensions.cs" />
     <Compile Include="GetObjectBase.cs" />
-    <Compile Include="IEddsResourceConnection.cs" />
+    <Compile Include="IWorkspaceDBContext.cs" />
     <Compile Include="Installers\RSAPIServiceInstaller.cs">
       <DependentUpon>RSAPIServiceInstaller.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="IObjectTypeQuery.cs" />
     <Compile Include="IRSAPIService.cs">
       <DependentUpon>IRSAPIService.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -123,6 +124,7 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="SqlObjectTypeQuery.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeneratedStringConstants.cs">
@@ -177,6 +179,7 @@
     <Content Include="Resources\GetApplicationBinaries.sql" />
     <Content Include="Resources\GetApplicationGuid.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
+    <Content Include="Resources\GetObjectTypes.sql" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

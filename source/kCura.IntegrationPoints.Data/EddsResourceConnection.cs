@@ -10,10 +10,10 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data
 {
-	public class EddsResourceConnection : IEddsResourceConnection
+	public class WorkspaceContext : IWorkspaceDBContext
 	{
 		private readonly IDBContext _context;
-		public EddsResourceConnection(IDBContext context)
+		public WorkspaceContext(IDBContext context)
 		{
 			_context = context;
 		}

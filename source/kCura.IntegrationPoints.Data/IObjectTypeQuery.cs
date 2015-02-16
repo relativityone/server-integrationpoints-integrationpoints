@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Relativity.API;
+using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Data
 {
-	interface IEddsResourceConnection : IDBContext
+	public interface IObjectTypeQuery
 	{
+		List<ObjectType> GetAllTypes(int userId);
 	}
 }
