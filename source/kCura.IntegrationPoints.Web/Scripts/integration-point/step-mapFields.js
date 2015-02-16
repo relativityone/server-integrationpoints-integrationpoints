@@ -156,7 +156,10 @@ ko.validation.insertValidationMessage = function (element) {
 				params: this.mappedWorkspace
 			}
 		});
-		
+
+		if (typeof model.CustodianManagerFieldContainsLink === "undefined") {
+			model.CustodianManagerFieldContainsLink = "true";
+		}
 		this.CustodianManagerFieldContainsLink = ko.observable(model.CustodianManagerFieldContainsLink || "false");
 		this.sourceField = ko.observableArray([]);
 		this.selectedWorkspaceField = ko.observableArray([]);
@@ -261,7 +264,7 @@ ko.validation.insertValidationMessage = function (element) {
 			return {
 				getNotMapped: getNotMapped,
 				getMapped: getMapped,
-				
+
 			};
 
 
@@ -386,7 +389,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.bus = IP.frameMessaging();
 		this.key = "";
 		this.loadModel = function (model) {
-		this.key = JSON.parse(model.destination).artifactTypeID;
+			this.key = JSON.parse(model.destination).artifactTypeID;
 			if (typeof (stepCache[this.key]) === "undefined") {
 
 				setCache(model, this.key);
