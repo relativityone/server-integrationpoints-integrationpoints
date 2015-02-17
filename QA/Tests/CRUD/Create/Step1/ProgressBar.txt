@@ -59,7 +59,7 @@
 | | ... | 
 | | ... | Expected Results
 | | ... | 1. Verify that Step 1's heading uses grey font 
-| | ... | 2. Verify that Step 1's circle has the blue completed tick mark in it
+| | ... | 2. Verify that Step 1's circle has the grey completed tick mark in it
 | | ... | 3. Verify that Step 2's heading and number are in blue font 
 | | ... | 4. Verify that Step 3's heading and number are in grey font 
 
@@ -79,8 +79,8 @@
 | | ... | 
 | | ... | Expected Results
 | | ... | 1. Verify that Step 1's heading uses grey font 
-| | ... | 2. Verify that Step 1's circle has the blue completed tick
-| | ... | 3. Verify that Step 2's circle has the blue completed tick
+| | ... | 2. Verify that Step 1's circle has the grey completed tick
+| | ... | 3. Verify that Step 2's circle has the grey completed tick
 | | ... | 4. Verify that Step 3's heading and number are in blue font 
 
 
