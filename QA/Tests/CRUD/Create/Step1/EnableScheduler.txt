@@ -22,7 +22,7 @@
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
-| | Verify that the following section contains the following fields	| Import Scheduling	| 
+| | Verify that the following Card contains the following fields	| Import Scheduling	| 
 | | ... | Enable Scheduler:	| 
 | | ... | Frequency:        | 
 | | ... | Start Date:		| 
@@ -37,7 +37,7 @@
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=No
 
-| | Verify that the following section contains the following fields	| Import Scheduling	| 
+| | Verify that the following Card contains the following fields	| Import Scheduling	| 
 | | ... | Enable Scheduler:
 
 

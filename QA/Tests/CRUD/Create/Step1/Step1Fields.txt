@@ -39,7 +39,7 @@
 | | [Documentation]	| Verify that the fields in the General section are sorted correctly.
 | | ...				| [id] 0f5e1d10-a89f-11e4-a35c-b8ca3a83048f
 | | [Tags]			| automated
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following section contains the following fields | General | 
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following Card contains the following fields | General | 
 | | ... | Integration Name: | 
 | | ... | Overwrite:
 
@@ -48,7 +48,7 @@
 | | [Documentation]	| Verify that the fields in the Integration section are sorted correctly.
 | | ...				| [id] 0f5e1d11-a89f-11e4-ac0d-b8ca3a83048f
 | | [Tags]			| automated
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following section contains the following fields | Integration | 
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following Card contains the following fields | Integration | 
 | | ... | Source Provider: | 
 | | ... | Destination RDO:
 
@@ -57,7 +57,7 @@
 | | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly.
 | | ...				| [id] 0f5e6b30-a89f-11e4-bc27-b8ca3a83048f
 | | [Tags]			| automated
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following section contains the following fields | Import Scheduling | Enable Scheduler:
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following Card contains the following fields | Import Scheduling | Enable Scheduler:
 
 
 | The Overwrite list has the correct values

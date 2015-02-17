@@ -26,7 +26,7 @@
 | | [Tags]			| golden	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
-| | Verify that the following section contains the following fields	| Import Scheduling	| 
+| | Verify that the following Card contains the following fields	| Import Scheduling	| 
 | | ... | Enable Scheduler:	| 
 | | ... | Frequency:		| 
 | | ... | Start Date:		| 
@@ -40,7 +40,7 @@
 | | [Tags]			| golden	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Daily
 
-| | Verify that the following section contains the following fields	| Import Scheduling	| 
+| | Verify that the following Card contains the following fields	| Import Scheduling	| 
 | | ... | Enable Scheduler:	| 
 | | ... | Frequency:		| 
 | | ... | Start Date:		| 
@@ -54,7 +54,7 @@
 | | [Tags]			| golden	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Weekly
 
-| | Verify that the following section contains the following fields	| Import Scheduling	| 
+| | Verify that the following Card contains the following fields	| Import Scheduling	| 
 | | ... | Enable Scheduler:	| 
 | | ... | Frequency:		| 
 | | ... | Reoccur:			| 
@@ -70,7 +70,7 @@
 | | [Tags]			| golden	| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes	| Frequency=Monthly
 
-| | Verify that the following section contains the following fields	| Import Scheduling	| 
+| | Verify that the following Card contains the following fields	| Import Scheduling	| 
 | | ... | Enable Scheduler:	| 
 | | ... | Frequency:		| 
 | | ... | Reoccur:			| 

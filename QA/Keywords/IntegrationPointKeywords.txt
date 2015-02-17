@@ -403,12 +403,14 @@
 | | Page Should Contain Element	| xpath=//select[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
 | | Page Should Contain Element	| xpath=//select[@class="list-box" and @id="${FieldID}"]	| The field ID of "${FieldID}" does not have an input type of a list box list.
 
-| Verify that the following section contains the following fields
+| Verify that the following Card contains the following fields
 | | [Documentation]	| A keyword that verifies that a Section contains the specified fields in the specified order
 | | [ARGUMENTS]		| ${SectionHeading}	| @{ExpectedFields}
-| | Element Should be Visible	| xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]	| The Section "${SectionHeading}" was not found
+| | Element Should be Visible	| xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]	| The Card "${SectionHeading}" was not found
 | | @{ActualFields}=	| Get Element Text	| xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]/descendant::div[contains(@class, "field-label")]	| False 
 | | Remove values from list	| ${ActualFields}	| ${EMPTY}
+| | Log	| Expected Fields: ${ExpectedFields}
+| | Log	| Actual Fields: ${ActualFields}
 | | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
 
 | Verify that you are on the following Step of the Create Integration Point Process

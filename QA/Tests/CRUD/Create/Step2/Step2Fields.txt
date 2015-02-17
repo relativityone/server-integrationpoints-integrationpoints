@@ -26,7 +26,7 @@
 | | [Documentation]	| Verify that the fields in the Source Connection section are sorted correctly.
 | | ...				| [id] 1057bf4f-a89f-11e4-96af-b8ca3a83048f
 | | [Tags]			| automated
-| | Verify that the following section contains the following fields	| Source Connection	| 
+| | Verify that the following Card contains the following fields	| Source Connection	| 
 | | ... | Connection Path:		| 
 | | ... | Object Filter String:	| 
 | | ... | Authentication:		| 
