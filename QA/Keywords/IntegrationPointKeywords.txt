@@ -358,16 +358,16 @@
 | Verify that the following field is not required
 | | [Documentation]	| A keyword that verifies the specified field does not have the required field indicator (orange line).
 | | [ARGUMENTS] 	| ${FieldName}
-| | Page Should Contain Element		| xpath=//div[text()="${FieldName}"]	| The field "${FieldName}" was not present on the page.
-| | Page Should Not Contain Element	| xpath=//div[contains(@class, "field-label") and contains(@class, "required") and text()="${FieldName}"]	| The field "${FieldName}" is required when it should not have been.
-| | Page Should Contain Element		| xpath=//div[@class="field-label" and text()="${FieldName}"]			| The field "${FieldName}" has unexpected HTML. Please re-write this keyword.
+| | Page Should Contain Element		| xpath=//div[contains(text(), "${FieldName}")]	| The field "${FieldName}" was not present on the page.
+| | Page Should Not Contain Element	| xpath=//div[contains(@class, "field-label") and contains(@class, "required") and contains(text(), "${FieldName}")]	| The field "${FieldName}" is required when it should not have been.
+| | Page Should Contain Element		| xpath=//div[@class="field-label" and contains(text(), "${FieldName}")]	| The field "${FieldName}" has unexpected HTML. Please re-write this keyword.
 
 | Verify that the following field is required
 | | [Documentation]	| A keyword that verifies that the specified field has the required field indicator (orange line).
 | | [ARGUMENTS] 	| ${FieldName}
-| | Page Should Contain Element		| xpath=//div[text()="${FieldName}"]	| The field "${FieldName}" was not present on the page.
-| | Page Should Not Contain Element	| xpath=//div[@class="field-label" and text()="${FieldName}"]	| The field "${FieldName}" is not required when it should have been.
-| | Page Should Contain Element		| xpath=//div[contains(@class, "field-label") and contains(@class, "required") and text()="${FieldName}"]	| The field "${FieldName}" has unexpected HTML. Please re-write this keyword.
+| | Page Should Contain Element		| xpath=//div[contains(text(), "${FieldName}")]	| The field "${FieldName}" was not present on the page.
+| | Page Should Not Contain Element	| xpath=//div[@class="field-label" and contains(text(), "${FieldName}")]	| The field "${FieldName}" is not required when it should have been.
+| | Page Should Contain Element		| xpath=//div[contains(@class, "field-label") and contains(@class, "required") and contains(text(), "${FieldName}")]	| The field "${FieldName}" has unexpected HTML. Please re-write this keyword.
 
 | Verify that the following radio buttons are grouped together
 | | [Documentation]	| A keyword that verifies that a radio buttons set of options are correct.
