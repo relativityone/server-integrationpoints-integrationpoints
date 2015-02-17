@@ -55,10 +55,11 @@
 
 
 | The Import Nested Items options are Yes and No
-| | [Documentation]	| Verify that the Import Nested Items radio button options are Yes and No (true and false).
+| | [Documentation]	| Verify that the Import Nested Items radio button options are Yes and No.
 | | ...				| [id] 105d1682-a89f-11e4-9d3e-b8ca3a83048f
 | | [Tags]			| automated
-| | Verify that the following radio buttons are grouped together	| ${Import Nested Items}	| true	| false
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the following radio buttons are grouped together | ${Import Nested Items}  | Yes | No
 
 
 | Import Nested Items default value is No
@@ -90,14 +91,6 @@
 | | Run Keyword And Continue On Failure	| Verify that the following field ID has a text input		| ${Username Field} 
 | | Run Keyword And Continue On Failure	| Verify that the following field ID has a password input	| ${Password Field}
 | | # Import Nested Items is checked in the next test case.
-
-
-| The Import Nested Items options are Yes and No
-| | [Documentation]	| Verify that the Import Nested Items radio button options are Yes and No.
-| | ...				| [id] 105d64a2-a89f-11e4-b843-b8ca3a83048f
-| | [Tags]			| automated
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
-| | ... | Verify that the following radio buttons are grouped together | ${Import Nested Items}  | Yes | No
 
 
 *** Keywords *** 
