@@ -48,7 +48,7 @@
 | | [Documentation]	| Deletes all the Integration Points objects with the given Name using the API. \n
 | | ... 			| A database connection must be made for this to run.
 | | [ARGUMENTS]		| ${IntegrationPointName}
-| | Mass Delete All Artifacts with the Following Properties	| Integration Point	| Name	| ${IntegrationPointName}
+| | Delete all instances of a Following Object Type with the Following Properties	| IntegrationPoint	| Name	| ${IntegrationPointName}
 
 | Determine the RDO Identifier Field on the following Object Type
 | | [Documentation]	| Returns the Unique field for the given Object Type.

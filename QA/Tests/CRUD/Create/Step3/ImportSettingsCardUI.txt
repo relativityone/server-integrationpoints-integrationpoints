@@ -81,6 +81,15 @@
 | | Element Should Be Visible	| xpath=//div[@class='card']	| No cards were visible on the page.
 | | Element Should Be Visible	| xpath=//div[@class='card']/descendant::span[@class="label title" and text()="${ExpectedText}"]	| No card with the title "${ExpectedText}" was visible on the page.
 
+| Verify that the following Card contains the following Fields in Order
+| | [ARGUMENTS]		| ${CardTitle}	| @{ExpectedFields}
+| | Verify that a Card with the following Title Text is visible	| ${CardTitle}
+| | @{ActualFields}=	| Get Element Text	| xpath=//div[@class='card' and descendant::text()="${CardTitle}"]/descendant::div[contains(@class, 'field-label')]	| False
+| | Remove Values From List	| ${ActualFields}	| ${EMPTY}	| # Strip out the hidden fields
+| | Log	| Expected Fields: ${ExpectedFields}
+| | Log	| Actual Fields: ${ActualFields}
+| | Lists Should Be Equal	| ${ExpectedFields}	| ${ActualFields}
+
 | Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value
 | | [ARGUMENTS]		| ${OverwriteValue}
 | | Open Create Integration Point
