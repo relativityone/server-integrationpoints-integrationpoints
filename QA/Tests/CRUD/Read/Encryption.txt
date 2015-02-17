@@ -62,7 +62,6 @@
 | | ... | LDAP						| 
 | | ... | Custodian					| 
 | | ... | No
-| | Verify that the Following Integration Point Exists in the current Workspace	| ${Step1Fields[0]}
 | | @{Step2Fields}=		| Create List | 
 | | ... | ${ConnectionPath}		| 
 | | ... | ${ObjectFilterString}	| 

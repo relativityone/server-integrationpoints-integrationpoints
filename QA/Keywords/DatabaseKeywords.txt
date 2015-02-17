@@ -39,6 +39,7 @@
 | | [ARGUMENTS]		| ${IntegrationPointName}
 | | ${IntegrationPointID}=	| Get the ArtifactID of the following Integration Point	| ${IntegrationPointName}
 #| | Delete an artifact with the following identifier	| Integration Point	| ${IntegrationPointID}
+| | Given we have a REST Session
 | | ${URI}=	| Get URI Variable	| Integration Point
 | | Perform a Delete	| ${URI}/${IntegrationPointID}
 | | Fail if the Perform a Delete Statement Failed	| The Integration Point "${IntegrationPointName}" was not deleted.
