@@ -38,7 +38,10 @@
 | | ... 			| A database connection must be made for this to run.
 | | [ARGUMENTS]		| ${IntegrationPointName}
 | | ${IntegrationPointID}=	| Get the ArtifactID of the following Integration Point	| ${IntegrationPointName}
-| | Delete an artifact with the following identifier	| Integration Point	| ${IntegrationPointID}
+#| | Delete an artifact with the following identifier	| Integration Point	| ${IntegrationPointID}
+| | ${URI}=	| Get URI Variable	| Integration Point
+| | Perform a Delete	| ${URI}/${IntegrationPointID}
+| | Fail if the Perform a Delete Statement Failed	| The Integration Point "${IntegrationPointName}" was not deleted.
 
 | Delete All Integration Points with the following Name using API
 | | [Documentation]	| Deletes all the Integration Points objects with the given Name using the API. \n
@@ -166,4 +169,5 @@
 | Library	| String
 | Library	| Collections
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
