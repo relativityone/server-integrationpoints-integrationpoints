@@ -79,11 +79,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					(x.NewManagerID != null && managerArtifactIDs.ContainsKey(x.NewManagerID)) ? managerArtifactIDs[x.NewManagerID] : 0);
 
 				//change import api settings to be able to overlay and set Custodian/Manager links
-				ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(_destinationConfiguration);
-				importSettings.ObjectFieldIdListContainsArtifactId = new int[] { custodianManagerFieldArtifactID };
-				importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
-				importSettings.CustodianManagerFieldContainsLink = false;
-				string newDestinationConfiguration = JsonConvert.SerializeObject(importSettings);
+				var newDestinationConfiguration = ReconfigureImportAPISettings(custodianManagerFieldArtifactID);
 
 				//run import api to link corresponding Managers to Custodians
 				FieldEntry fieldEntryCustodianIdentifier =
@@ -116,6 +112,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				//rdo last run and next scheduled time will be updated in Manager job
 			}
+		}
+
+		private string ReconfigureImportAPISettings(int custodianManagerFieldArtifactID)
+		{
+			ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(_destinationConfiguration);
+			importSettings.ObjectFieldIdListContainsArtifactId = new int[] {custodianManagerFieldArtifactID};
+			importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
+			importSettings.CustodianManagerFieldContainsLink = false;
+			string newDestinationConfiguration = JsonConvert.SerializeObject(importSettings);
+			return newDestinationConfiguration;
 		}
 
 		private void GetParameters(Job job)
