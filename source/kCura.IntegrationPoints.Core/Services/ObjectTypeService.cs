@@ -12,8 +12,8 @@ namespace kCura.IntegrationPoints.Core.Services
 	{
 		public const int NON_SYSTEM_FIELD_IDS = 1000000;
 
-		private readonly RelativityRdoQuery _rdoQuery;
-		public ObjectTypeService(RelativityRdoQuery rdoQuery)
+		private readonly RSAPIRdoQuery _rdoQuery;
+		public ObjectTypeService(RSAPIRdoQuery rdoQuery)
 		{
 			_rdoQuery = rdoQuery;
 		}

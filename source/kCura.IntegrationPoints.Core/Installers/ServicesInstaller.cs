@@ -3,12 +3,17 @@ using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Domain;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
+using kCura.IntegrationPoints.CustodianManager;
+using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -25,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IErrorService>().ImplementedBy<Services.ErrorService>().Named("ErrorService").LifestyleTransient());
 			container.Register(Component.For<Core.Services.ObjectTypeService>().ImplementedBy<Core.Services.ObjectTypeService>().LifestyleTransient());
 
-			container.Register(Component.For<IDataSyncronizerFactory>().ImplementedBy<MockFactory>().DependsOn(new { container = container }));
+			container.Register(Component.For<IDataSyncronizerFactory>().ImplementedBy<MockFactory>().DependsOn(new { container = container }).LifeStyle.Transient);
 			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<AppDomainFactory>().LifestyleTransient());
 			container.Register(Component.For<DomainHelper>().ImplementedBy<DomainHelper>().LifestyleTransient());
 
@@ -50,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 				Component.For<GetSourceProviderRdoByIdentifier>()
 					.ImplementedBy<GetSourceProviderRdoByIdentifier>()
 					.LifeStyle.Transient);
-			
+
 
 			container.Register(Component.For<SourceTypeFactory>().ImplementedBy<SourceTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<RsapiClientFactory>().ImplementedBy<RsapiClientFactory>().LifestyleTransient());
@@ -59,8 +64,11 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<UserService>().ImplementedBy<UserService>().LifestyleTransient());
 			container.Register(Component.For<ChoiceService>().ImplementedBy<ChoiceService>().LifeStyle.Transient);
-			
-			
+			container.Register(Component.For<CustodianService>().ImplementedBy<CustodianService>().LifestyleTransient());
+
+			container.Register(Component.For<ITabService>().ImplementedBy<RSAPITabService>().LifeStyle.Transient);
+			container.Register(Component.For<GeneralWithCustodianRdoSynchronizerFactory>().ImplementedBy<GeneralWithCustodianRdoSynchronizerFactory>().DependsOn(new { container = container }).LifestyleTransient());
+			container.Register(Component.For<ManagerQueueService>().ImplementedBy<ManagerQueueService>().LifestyleTransient());
 		}
 	}
 }

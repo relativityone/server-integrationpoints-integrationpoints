@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Domain;
 using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -11,10 +12,10 @@ using kCura.IntegrationPoints.Data.Queries;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 {
-	public class ImportService : IImportService
+	internal class ImportService : IImportService
 	{
-		private ICaseServiceContext _caseContext;
-		private IEddsServiceContext _eddsContext;
+		private readonly ICaseServiceContext _caseContext;
+		private readonly IEddsServiceContext _eddsContext;
 		public ImportService(ICaseServiceContext caseContext, IEddsServiceContext eddsContext)
 		{
 			_caseContext = caseContext;
@@ -89,12 +90,12 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 		private void UpdateExistingProviders(IEnumerable<Data.SourceProvider> providersToBeUpdated,
 			IEnumerable<SourceProviderInstaller.SourceProvider> providers)
 		{
-			if (providersToBeUpdated.Any())
+			var enumerated = providersToBeUpdated.ToList();
+			if (enumerated.Any())
 			{
-				providersToBeUpdated.ToList().ForEach(x => x.Name = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Name).First());
-				providersToBeUpdated.ToList().ForEach(x => x.SourceConfigurationUrl = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Url).First());
-
-				_caseContext.RsapiService.SourceProviderLibrary.Update(providersToBeUpdated);
+				enumerated.ForEach(x => x.Name = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Name).First());
+				enumerated.ForEach(x => x.SourceConfigurationUrl = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Url).First());
+				_caseContext.RsapiService.SourceProviderLibrary.Update(enumerated);
 			}
 		}
 

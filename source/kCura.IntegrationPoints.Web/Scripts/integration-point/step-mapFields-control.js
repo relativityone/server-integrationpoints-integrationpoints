@@ -6,21 +6,22 @@ IP.workspaceFieldsControls = (function () {
 		move(fields(), to);
 		from.removeAll(fields());
 		fields.splice(0, fields().length);
-	}
+	};
 
 	function addAll(from, fields, destination) {
 		var to = destination;
 		move(from(), to);
 		from.removeAll();
 		fields.splice(0, fields().length);
-	}
-	var move = function (from, to) {
-		$.each(from, function () {
+	};
+
+	var move = function(from, to) {
+		$.each(from, function() {
 			to.push(this);
 		});
-	}
-	var down = function (field, selected) {
-		for (var j = selected().length - 1; j >= 0 ; j--) {
+	};
+	var down = function(field, selected) {
+		for (var j = selected().length - 1; j >= 0; j--) {
 			var i = field().indexOf(selected()[j]);
 			var length = field().length - 1;
 			if ((i + 1) <= length) {
@@ -30,9 +31,10 @@ IP.workspaceFieldsControls = (function () {
 				break;
 			}
 		}
-	}
-	var up = function (field, selected) {
-		for (var j = 0; j < selected().length ; j++) {
+	};
+
+	var up = function(field, selected) {
+		for (var j = 0; j < selected().length; j++) {
 			var i = field.indexOf(selected()[j]);
 			if (i >= 1) {
 				var array = field();
@@ -41,12 +43,92 @@ IP.workspaceFieldsControls = (function () {
 				break;
 			}
 		}
-	}
+	};
+	function moveField(source, oldIndex, newIndex) {
+		if (newIndex >= source.length) {
+			var k = newIndex - source.length;
+			while ((k--) + 1) {
+				source.push(undefined);
+			}
+		}
+		source.splice(newIndex, 0, source.splice(oldIndex, 1)[0]);
+	};
 
+
+	var _moveBottom = function (source, selected) {
+		if (selected.length > 0) {
+			var evaled = source();
+			//only move the top most one
+			selected = selected[0];
+			var idx = evaled.indexOf(selected);
+			moveField(evaled, idx, evaled.length - 1);
+			source.valueHasMutated();
+		}
+	};
+
+	var _moveTop = function (source, selected) {
+		if (selected.length > 0) {
+			var evaled = source();
+			//only move the top most one
+			selected = selected[0];
+			var idx = evaled.indexOf(selected);
+			moveField(evaled, idx, 0);
+			source.valueHasMutated();
+		}
+	};
 	return {
 		add: add,
 		addAll: addAll,
 		down: down,
-		up: up
-	}
+		up: up,
+		moveBottom: _moveBottom,
+		moveTop : _moveTop
+	};
+
+	
+})();
+
+IP.affects = (function() {
+
+	var hover = function () {
+		var SOURCE_FIELD = '#selected-source-fields';
+		var WORKSPACE_FIELD = '#selected-workspace-fields'
+		var HOVER_CLASS = 'hover';
+
+
+		var _forceIERedraw = function () {
+			$('#forceRedraw').text(1); //force IE to redraw
+		};
+		var _init = function (source, destination) {
+			$(source).on('mousemove', function (event) {
+				var $this = $(this);
+				var $opt = $this.find('option:hover');
+				var idx = $opt.index();
+				$opt.siblings().removeClass(HOVER_CLASS);
+				if (idx < 0) {
+					idx = $this.find('option').length - 1;
+				}
+				$this.find('option').eq(idx).addClass(HOVER_CLASS);
+				$(destination).find('option').removeClass(HOVER_CLASS).eq(idx).addClass(HOVER_CLASS);
+				_forceIERedraw();
+			});
+		};
+
+		var removeHoverClass = function (source, destination) {
+			$(source).on('mouseleave', function (event) {
+				$(this).find('option').removeClass(HOVER_CLASS);
+				$(destination).find('option').removeClass(HOVER_CLASS);
+				_forceIERedraw();
+			});
+		};
+
+		
+		removeHoverClass(WORKSPACE_FIELD, SOURCE_FIELD);
+		removeHoverClass(SOURCE_FIELD, WORKSPACE_FIELD);
+		_init(WORKSPACE_FIELD, SOURCE_FIELD);
+		_init(SOURCE_FIELD, WORKSPACE_FIELD);
+	};
+	return {
+		hover : hover
+	};
 })();

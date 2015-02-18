@@ -58,6 +58,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public int StartRecordNumber { get; set; }
 		public IList<int> ObjectFieldIdListContainsArtifactId { get; set; }
 		public ImportOverlayBehaviorEnum ImportOverlayBehavior { get; set; }
+		public bool CustodianManagerFieldContainsLink{ get; set; }
 		#endregion
 
 		#region "Internal Properties"

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -16,9 +18,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		{
 			//ARRANGEk
 			var client = NSubstitute.Substitute.For<IRSAPIClient>();
-			var rdoMock = NSubstitute.Substitute.For<RelativityRdoQuery>(client);
-			var rdoFilter = new RdoFilter(rdoMock);
-			rdoMock.GetAllRdo().Returns( new List<ObjectType>
+			var rdoMock = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
+			var context = NSubstitute.Substitute.For<ICaseServiceContext>();
+			context.WorkspaceUserID = 3;
+			var rdoFilter = new RdoFilter(rdoMock, context);
+			rdoMock.GetAllRdo().Returns(new List<ObjectType>
 			{
 				 new ObjectType
 				{
@@ -51,9 +55,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 				}
 			};
 
-			var actual = rdoFilter.FilterRdo();
+			var actual = rdoFilter.FilterRdo().ToList();
 
-			Assert.AreEqual(expected.Count, actual.Count);
+			Assert.AreEqual(expected.Count, actual.Count());
 			for (int i = 0; i < expected.Count; i++)
 			{
 				if (expected[i].Name != actual[i].Name)

@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 {
-	public interface IImportService
+	internal interface IImportService
 	{
 		void InstallProviders(IEnumerable<SourceProvider> providers);
 		void UninstallProvider(int applicationID);

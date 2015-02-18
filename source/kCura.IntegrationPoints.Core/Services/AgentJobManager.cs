@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -46,6 +43,18 @@ namespace kCura.IntegrationPoints.Core.Services
 			try
 			{
 				string serializedDetails = _serializer.Serialize(jobDetails);
+				_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID);
+			}
+			catch (AgentNotFoundException anfe)
+			{
+				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
+			}
+		}
+
+		public void CreateJob(int workspaceID, int integrationPointID, TaskType task, string serializedDetails)
+		{
+			try
+			{
 				_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID);
 			}
 			catch (AgentNotFoundException anfe)

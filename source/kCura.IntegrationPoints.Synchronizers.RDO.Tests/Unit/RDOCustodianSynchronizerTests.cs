@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Contracts.Custodian;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -41,14 +42,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			artifacts.Add(new Artifact
 			{
 				ArtifactID = 2,
-				ArtifactGuids = new List<Guid> { Guid.Parse(RDOCustodianSynchronizer.CustodianFieldGuids.FirstName) },
+				ArtifactGuids = new List<Guid> { Guid.Parse(CustodianFieldGuids.FirstName) },
 				Name = "Test1"
 			});
 
 			fieldQuery.GetFieldsForRDO(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RdoSynchronizerTest.ChangeWebAPIPath(new RDOCustodianSynchronizer(fieldQuery, null));
+			var sync = RdoSynchronizerTest.ChangeWebAPIPath(new RDOCustodianSynchronizer(fieldQuery));
 			var fields = sync.GetFields(_settings);
 
 
@@ -74,14 +75,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			artifacts.Add(new Artifact
 			{
 				ArtifactID = 2,
-				ArtifactGuids = new List<Guid> { Guid.Parse(RDOCustodianSynchronizer.CustodianFieldGuids.LastName) },
+				ArtifactGuids = new List<Guid> { Guid.Parse(CustodianFieldGuids.LastName) },
 				Name = "Test1"
 			});
 
 			fieldQuery.GetFieldsForRDO(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RdoSynchronizerTest.ChangeWebAPIPath(new RDOCustodianSynchronizer(fieldQuery, null));
+			var sync = RdoSynchronizerTest.ChangeWebAPIPath(new RDOCustodianSynchronizer(fieldQuery));
 			var fields = sync.GetFields(_settings);
 
 
@@ -106,14 +107,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			artifacts.Add(new Artifact
 			{
 				ArtifactID = 2,
-				ArtifactGuids = new List<Guid> { Guid.Parse(RDOCustodianSynchronizer.CustodianFieldGuids.UniqueID) },
+				ArtifactGuids = new List<Guid> { Guid.Parse(CustodianFieldGuids.UniqueID) },
 				Name = "Test1"
 			});
 
 			fieldQuery.GetFieldsForRDO(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RdoSynchronizerTest.ChangeWebAPIPath(new RDOCustodianSynchronizer(fieldQuery, null));
+			var sync = RdoSynchronizerTest.ChangeWebAPIPath(new RDOCustodianSynchronizer(fieldQuery));
 			var fields = sync.GetFields(_settings).ToList();
 
 

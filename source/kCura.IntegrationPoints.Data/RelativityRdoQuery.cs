@@ -11,14 +11,13 @@ using Field = kCura.Relativity.Client.Field;
 
 namespace kCura.IntegrationPoints.Data
 {
-	public class RelativityRdoQuery
+	public class RSAPIRdoQuery : IObjectTypeQuery
 	{
 		private readonly IRSAPIClient _client;
 
-		public RelativityRdoQuery(IRSAPIClient client)
+		public RSAPIRdoQuery(IRSAPIClient client)
 		{
 			_client = client;
-
 		}
 
 		public virtual List<ObjectType> GetAllRdo(List<int> typeIds = null)
@@ -51,15 +50,16 @@ namespace kCura.IntegrationPoints.Data
 			}
 			else
 			{
+				 
 				var condition1 = new WholeNumberCondition()
 				{
-					Field = "Descriptor Artifact Type ID",// Relativity.Client.DTOs.ObjectTypeFieldNames.DescriptorArtifactTypeID,
+					Field = ObjectTypeFieldNames.DescriptorArtifactTypeID,// Relativity.Client.DTOs.ObjectTypeFieldNames.DescriptorArtifactTypeID,
 					Operator = NumericConditionEnum.GreaterThan,
 					Value = new List<int>() { 1000000 }
 				};
 				var condition2 = new WholeNumberCondition()
 				{
-					Field = "Descriptor Artifact Type ID",
+					Field = ObjectTypeFieldNames.DescriptorArtifactTypeID,
 					Operator = NumericConditionEnum.In,
 					Value = new List<int>() { 10}
 				};
@@ -77,8 +77,7 @@ namespace kCura.IntegrationPoints.Data
 		{
 			return GetAllRdo(new List<int>{typeID}).First();
 		}
-
-
+		
 		public virtual ObjectType GetType(int typeId)
 		{
 			return this.GetAllRdo(new List<int> {typeId}).FirstOrDefault();
@@ -101,7 +100,11 @@ namespace kCura.IntegrationPoints.Data
 				throw new Exception(string.Format("Object type with name {0} was not found in workspace {1}.", objectTypeName, _client.APIOptions.WorkspaceID));
 			}
 			return result.Results.First().Artifact.DescriptorArtifactTypeID.Value;
-		} 
+		}
 
+		public List<ObjectType> GetAllTypes(int userId)
+		{
+			return GetAllRdo();
+		}
 	}
 }
