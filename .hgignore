@@ -101,4 +101,5 @@ kCura.Method.Web.Tests\Unit\Scripts\Controls\
 ~$*.xlsx
 source/TestResults/
 Keyword Testing.txt
+Regression Automation */
 kCura.IntegrationPoints.Documentation\Help\*
