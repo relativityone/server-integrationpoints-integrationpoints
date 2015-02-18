@@ -1,0 +1,118 @@
+
+*** Settings ***
+| Documentation 	| Verify that the Job History tab's List View is correct.
+| Metadata		    | Authors	| William Sehy
+| Force Tags		| in-progress	| team.method	| manual
+#| Suite Setup		| 
+#| Test Setup		| 
+#| Test Teardown 	| 
+#| Suite Teardown	| 
+
+
+*** Variables ***
+
+| ${WorkspaceName}	| LDAP Sync
+
+
+*** Test Cases ***
+
+| The Default View on the Job History List View
+| | [Documentation] | Verifies that the default View on the Job History list view page.
+| | [Tags]			| manual	| automateable
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Job History
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the default view is "All Jobs"
+
+
+| The Views on the Job History List View are correct
+| | [Documentation] | Verifies that the Views on the Integration Points list view page are correct.
+| | [Tags]			| manual	| automateable?
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Job History
+| | ... | 2. Click the View dropdown
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the views are "All Jobs" and "All Jobs with Errors"
+
+
+| The Columns on the "All Jobs" View are correct
+| | [Documentation] | Verifies that the "All Jobs" View on the Job History list view page has the correct columns.
+| | [Tags]			| manual	| automateable?
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Job History
+| | ... | 2. Ensure that the "All Jobs" View is selected
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the table has the following columns in order	| 
+| | ... | - Integration Point	| 
+| | ... | - Job Status			| 
+| | ... | - Records Imported	| 
+| | ... | - Records with Errors	| 
+| | ... | - Start Time (UTC)
+
+
+| The Sorting on the "All Jobs" View is correct
+| | [Documentation] | Verifies that the "All Jobs" View on the Job History list view page has the correct sorting.
+| | [Tags]			| manual	| automateable?
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Job History
+| | ... | 2. Ensure that the "All Jobs" View is selected
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the table is sorted by (guess -->) Start Time (UTC) from most recent to least recent
+
+
+| The Columns on the "All Jobs with Errors" View are correct
+| | [Documentation] | Verifies that the "All Jobs with Errors" View on the Job History list view page has the correct columns.
+| | [Tags]			| manual	| automateable?
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Job History
+| | ... | 2. Ensure that the "All Jobs with Errors" View is selected
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the table has the following columns in order	| 
+| | ... | - Integration Point	| 
+| | ... | - Job Status			| 
+| | ... | - Records Imported	| 
+| | ... | - Records with Errors	| 
+| | ... | - Start Time (UTC)
+
+
+| The Sorting on the "All Jobs with Errors" View is correct
+| | [Documentation] | Verifies that the "All Jobs with Errors" View on the Job History list view page has the correct sorting.
+| | [Tags]			| manual	| automateable?
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Job History
+| | ... | 2. Ensure that the "All Jobs with Errors" View is selected
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the table is sorted by (guess -->) Start Time (UTC) from most recent to least recent
+
+
+| The Integration Point link goes to the Job Details Layout for that Job
+| | [Documentation] | Verifies that clicking a Job's Integration Point link goes to the Job Details Layout for that Job.
+| | [Tags]			| manual	| automateable?
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. A Job History entry exists on the workspace
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Job History
+| | ... | 2. Click the Integration Point link
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that you are sent to a Job Details Layout
+| | ... | 2. Verify that you are on the correct Job
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
