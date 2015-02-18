@@ -1,0 +1,50 @@
+*** Settings ***
+| Documentation | Verify that the Configuration table's kCura.IntegrationPoints: IntegrationPointsWebAPIPath is correctly populated after installing RIP
+| Force Tags    | in-progress
+| Metadata		| Authors	| Daniel Oliver
+
+*** Test Cases ***
+
+| The RIP configuration value uses the DBMT WebAPIPath when RIP is installed on an environment without Processing
+| | [Documentation] | Verify that the RIP configuration value is the same as the kCura.EDDS.DBMT>WebAPIPath value
+| | ...				| [id] e6eaf60f-b7b1-11e4-9fe6-90b11c6c5ae4
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Install RIP for the first time on an enviroment that does not have Processing installed
+| | ... | 2. Open SQL Server Manager
+| | ... | 3. View Databases > EDDS > Tables > System Tables > eddsdbo.Configuration
+| | ... | 4. Find the entry for: Section:kCura.EDDS.DBMT; Name:WebAPIPath. Note what this value is.
+| | ... | 5. Find the entry for: Section:kCura.IntegrationPoints; Name: IntegrationPointsWebAPIPath 
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the value for kCura.IntegrationPoints>IntegrationPointsWebAPIPath is the same value as kCura.EDDS.DBMT>WebAPIPath
+
+| The RIP configuration value uses the ProcessingWebAPIPath when RIP is installed on an environment with Processing
+| | [Documentation] | Verify that the RIP configuration value is the same as the Relativity.Core>ProcessingWebAPIPath value
+| | ...				| [id] 809d02c0-b7b3-11e4-b2be-90b11c6c5ae4
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Install RIP for the first time on an enviroment that does not have Processing installed
+| | ... | 2. Open SQL Server Manager
+| | ... | 3. View Databases > EDDS > Tables > System Tables > eddsdbo.Configuration
+| | ... | 4. Find the entry for: Section:Relativity.Core; Name: ProcessingWebAPIPath. Note what this value is.
+| | ... | 5. Find the entry for: Section:kCura.IntegrationPoints; Name: IntegrationPointsWebAPIPath 
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the value for kCura.IntegrationPoints>IntegrationPointsWebAPIPath is the same value as Relativity.Core>ProcessingWebAPIPath
+
+| Check that the IntegrationPointsWebAPIPath description is correct
+| | [Documentation] | Verify that the Description is correct for the IntegrationPointsWebAPIPath
+| | ...				| [id] e6eaf60f-b7b1-11e4-9fe6-90b11c6c5ae48313cf21-b7b3-11e4-8964-90b11c6c5ae4
+| | [Tags] | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Install RIP on an enviroment
+| | ... | 2. Open SQL Server Manager
+| | ... | 3. View Databases > EDDS > Tables > System Tables > eddsdbo.Configuration
+| | ... | 4. Find the entry for: Section:kCura.IntegrationPoints; Name: IntegrationPointsWebAPIPath 
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the description is: The URL for the Windows Authenticated Relativity Web API endpoint used by Integration Points.

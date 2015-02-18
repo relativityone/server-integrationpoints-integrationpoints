@@ -16,7 +16,6 @@
 | ${RootObject}         | Nest, Rat
 | ${Custodians Grid}	| gbox_custodianGrid
 
-
 *** Test Cases ***
 
 | Nested users are imported 
@@ -60,6 +59,7 @@
 | | ... | Email			| mail			| 
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
+| | ... | Department    | department    | 
 | | ... | UniqueID		| objectguid
 
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
