@@ -81,8 +81,9 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ConsoleEventHandlerBase.cs" />
-    <Compile Include="Installers\Uninstaller.cs" />
     <Compile Include="Installers\RunEveryTimeInstaller.cs" />
+    <Compile Include="Installers\Uninstaller.cs" />
+    <Compile Include="Installers\RegisterLDAPInstaller.cs" />
     <Compile Include="IntegrationPoints\ConsoleEventHandler.cs" />
     <Compile Include="Constant.cs" />
     <Compile Include="ExternalTabURLService.cs" />

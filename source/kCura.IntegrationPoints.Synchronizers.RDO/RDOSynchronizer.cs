@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				if (string.IsNullOrEmpty(_webAPIPath))
 				{
-					_webAPIPath = kCura.Apps.Common.Config.Sections.EddsDbmtConfig.WebAPIPath;
+					_webAPIPath = Config.WebAPIPath;
 				}
 				return _webAPIPath;
 			}
@@ -185,6 +185,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			if (string.IsNullOrEmpty(settings.WebServiceURL))
 			{
 				settings.WebServiceURL = this.WebAPIPath;
+				if (string.IsNullOrEmpty(settings.WebServiceURL))
+				{
+					throw new Exception("No WebAPI path set for integration points.");
+				}
 				//kCura.Apps.Common.Config.Sections.EddsDbmtConfig.WebAPIPath; //one day we will switch to this;
 			}
 			return settings;
