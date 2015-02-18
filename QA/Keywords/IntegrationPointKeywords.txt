@@ -306,7 +306,7 @@
 | | Page Should Contain Element	| xpath=//a[@class='consoleButtonEnabled' and text()='Import Now']	| The Import Now button was disabled for the Integration Point "${IntegrationPoint}".
 | | Click	| Import Now
 | | Click	| xpath=//span[@class='ui-button-text' and text()='OK'] 
-| | Wait Until Integration Point Job Runs | ${IntegrationPoint} 
+| | Wait Until Integration Point Job Runs	| ${IntegrationPoint}	| 60S
 
 | View Integration Point
 | | [Documentation] | A keyword that Views an Integration Point. Can be called from any where.

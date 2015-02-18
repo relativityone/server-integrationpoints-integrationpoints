@@ -1,63 +1,69 @@
+
 *** Settings ***
 | Documentation 	| Verify that running an Overlay RIP updates existing records but does not creates new records.
-| Metadata		    | Authors	| Daniel Oliver
-| Force Tags		| in-progress | team.method
+| Metadata			| Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| in-progress	| team.method
 | Suite Setup		| Create Suite Setup Data
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
 
+
 *** Variables ***
 
-| ${WorkspaceName}	          | LDAP Sync
-| ${IntegrationName}          | Overlay 
-| ${ExistingAndUpdatedObject} | Time, Night
-| ${NewObject}                | Time, Sleep
-| ${ExistingNoChangeObject}   | Time, Day
-| ${ExistingObjectNulled}     | Time, Lunch
-| ${Custodians Grid}		  | gbox_custodianGrid
+| ${WorkspaceName}				| LDAP Sync
+| ${IntegrationName}			| Overlay 
+| ${ExistingAndUpdatedObject}	| Time, Night
+| ${NewObject}					| Time, Sleep
+| ${ExistingNoChangeObject}		| Time, Day
+| ${ExistingObjectNulled}		| Time, Lunch
+| ${Custodians Grid}	| gbox_custodianGrid
+
 
 *** Test Cases ***
 
 | An Overlay import updates existing modified records
 | | [Documentation] | Verify that when an Overlay RIP is run with an existing record in the Target RDO with updated details in the Source, that it does update the existing records in the Target RDO. In this test, the Custodian's Department is updated.
 | | ...				| [id] 139cff40-a89f-11e4-975e-b8ca3a83048f
-| | [Tags] | automated
-| | Filter the following Grid on the following Columns by the following Values | ${Custodians Grid} | 
-| | ... | Name | ${ExistingAndUpdatedObject}  | 
-| | ... | Department | Time
+| | [Tags]			| automated
+| | Filter the following Grid on the following Columns by the following Values	| ${Custodians Grid}	| 
+| | ... | Name			| ${ExistingAndUpdatedObject}	| 
+| | ... | Department	| Time
 
-| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
+| | Verify that the following Grid contains the following number of Rows	| ${Custodians Grid}	| 1
+
 
 | An Overlay import does not Create new records
 | | [Documentation] | Verify that when an Overlay RIP is run with an existing record in the Target RDO with identical details in the Source, that it does not update the existing record in the Target RDO.
 | | ...				| [id] 13a00c80-a89f-11e4-a4a8-b8ca3a83048f
-| | [Tags] | automated
-| | Filter the following Grid on the following Column by the following Value  | ${Custodians Grid} | Name | ${NewObject}  
+| | [Tags]			| automated
+| | Filter the following Grid on the following Column by the following Value	| ${Custodians Grid}	| Name	| ${NewObject}  
 
-| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 0
+| | Verify that the following Grid contains the following number of Rows	| ${Custodians Grid}	| 0
+
 
 | Updates a Value to Null
 | | [Documentation] | Verify that when an Overlay RIP is run with an existing record in the Target RDO with one field popuplated, that it does update the existing record in the Target RDO to Null.
 | | ...				| [id] 13a00c83-a89f-11e4-b392-b8ca3a83048f
-| | [Tags] | automated
-| | Filter the following Grid on the following Columns by the following Values | ${Custodians Grid} | 
-| | ... | Name | ${ExistingObjectNulled}  
+| | [Tags]			| automated
+| | Filter the following Grid on the following Columns by the following Values	| ${Custodians Grid}	| 
+| | ... | Name	| ${ExistingObjectNulled}  
 
-| | @{Headers}=		| Create List	| Name	| Department
-| | @{Values}=		| Create List	| ${ExistingObjectNulled} 	| ${EMPTY}
+| | @{Headers}=	| Create List	| Name						| Department
+| | @{Values}=	| Create List	| ${ExistingObjectNulled} 	| ${EMPTY}
 
-| | Verify that the following grid with the following headers does not have the following rows | ${Custodians Grid} | ${Headers}	| ${Values}
+| | Verify that the following grid with the following headers does not have the following rows	| ${Custodians Grid}	| ${Headers}	| ${Values}
+
 
 | Does not Update when there are no Changes
 | | [Documentation] | Verify that when an Overlay RIP is run with an existing record in the Target RDO with identical details in the Source, that it does not update the existing record in the Target RDO.
 | | ...				| [id] 13a00c81-a89f-11e4-8795-b8ca3a83048f
-| | [Tags] | manual
+| | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. View the History records for the ${ExistingNoChangeObject} import (Action of Import and Update - Import)
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that the Update entries for the object ${ExistingNoChangeObject} did not change the existing values to new values
+| | ... | Verify that the Update entries for the object ${ExistingNoChangeObject} did not change the existing values to new values
 
 
 *** Keywords *** 
@@ -71,45 +77,43 @@
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingAndUpdatedObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${ExistingAndUpdatedObject}  |
+| | ... | Full Name		| ${ExistingAndUpdatedObject}	|
 | | ... | Email			| ntime@gameofholdstesting.corp 
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${ExistingNoChangeObject}  |
-| | ... | Email			| dtime@gameofholdstesting.corp  |
-| | ... | Department    | Time
+| | ... | Full Name		| ${ExistingNoChangeObject}		|
+| | ... | Email			| dtime@gameofholdstesting.corp	|
+| | ... | Department	| Time
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingObjectNulled}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingObjectNulled}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${ExistingObjectNulled}  |
-| | ... | Email			| ltime@gameofholdstesting.corp  | 
-| | ... | Department    | Time
+| | ... | Full Name		| ${ExistingObjectNulled}		|
+| | ... | Email			| ltime@gameofholdstesting.corp	| 
+| | ... | Department	| Time
 
-| | @{Step1Fields}  | Create list | ${IntegrationName} | Overlay Only | LDAP | Custodian | no
-| | @{Step2Fields}  | Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
-| | ... | (department=Time) | FastBind 
+| | @{Step1Fields}=	| Create List	| ${IntegrationName}	| Overlay Only	| LDAP	| Custodian	| No
+| | @{Step2Fields}=	| Create List	| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp	| (department=Time)	| FastBind
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Email			| mail			| 
 | | ... | Department	| department	| 
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
+| | Create Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Email
 
-| | Run Import Now on the Following Integration Point | ${IntegrationName}  
+| | Run Import Now on the Following Integration Point	| ${IntegrationName}  
 
-| | Go to the Method tab | Custodian
-
-| | [Teardown] | Drop connection to the relativity services api
+| | Go to the Method Tab	| Custodian
+| | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
 
-| | Delete the Following Integration Point | ${IntegrationName}
+| | Delete the Following Integration Point	| ${IntegrationName}
 
 | | Delete the Custodians in the Following Department using API	| Time
 
@@ -122,6 +126,7 @@
 | | Drop connection to the relativity services api
 | | Close All Browsers
 
+
 *** Settings ***
 | Library	| Collections
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
@@ -130,4 +135,3 @@
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
-
