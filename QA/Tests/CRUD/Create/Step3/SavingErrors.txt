@@ -1,22 +1,21 @@
 
 *** Settings ***
-| Documentation 	| Verify that the Map Fields step of Integration Points shows the correct error messages, and that the record can be saved after correcting the errors
+| Documentation 	| Verify that the Map Fields step of Integration Points shows the correct error messages, and that the record can be saved after correcting the errors.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.method	| manual
-| Suite Setup		| Open and Log in to Method
-| Test Setup		| Go to Step 3 of the Create Integration Point Process
-| Test Teardown 	| Capture screenshot if test fails
-| Suite Teardown	| Close all browsers
+#| Suite Setup		| Open and Log in to Method
+#| Test Setup		| Go to Step 3 of the Create Integration Point Process
+#| Test Teardown 	| Capture screenshot if test fails
+#| Suite Teardown	| Close all browsers
 
 
 *** Variables ***
 
 | ${WorkspaceName}				| Relativity Legal Hold
-| ${ValidConnectionPath}		| 
 | ${WorkspaceFieldListID}		| workspace-fields
 | ${SelectedFieldListID}		| selected-workspace-fields
 | ${SelectedAttributeListID}	| selected-source-fields
-| ${SourceAttributeListID}		| source-attributes
+| ${SourceAttributeListID}		| source-fields
 
 
 *** Test Cases ***
@@ -56,6 +55,7 @@
 | Saving Post "The overlay identifier must be mapped." message is displayed works by changing the Overlay value
 | | [Documentation]	| Verify that the Integration Point can be saved after the "The overlay identifier must be mapped." message is displayed works by changing the Overlay value
 | | ...				| [id] 11208d92-a89f-11e4-8a6c-b8ca3a83048f
+| | [Tags]			| dao049
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Move one field to the Selected Workspace Fields list
@@ -107,8 +107,8 @@
 | | ... | Verify that the Integration Point detail view is shown
 
 
-| When the conditions for both invalid messages are met, the "All selected items have not been mapped" message is displayed
-| | [Documentation]	| Verify that the conditions are met for both messages (Overlay not mapped, and Uneven field count), that the "All selected items have not been mapped" message is displayed.
+| When the conditions for both invalid messages are met, both messages are displayed
+| | [Documentation]	| Verify that the conditions are met for both messages (Overlay not mapped, and Uneven field count), that both messages are displayed.
 | | ...				| [id] 11208d96-a89f-11e4-826e-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Steps:
@@ -117,7 +117,8 @@
 | | ... | 3. Click Save
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify that the message "All selected items have not been mapped." is displayed
+| | ... | 1. Verify that the message "All selected items have not been mapped." is displayed
+| | ... | 2. Verify that the message "The object identifier field must be mapped." is displayed
 
 
 | When the conditions for both invalid messages are met and then the initial message is cleared, the second message can be displayed

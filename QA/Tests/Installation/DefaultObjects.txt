@@ -1,0 +1,73 @@
+
+*** Settings ***
+| Documentation 	| This suite of tests verifies the Objects created upon the installation of the LDAP Sync application.
+| ...				| This should be run immediately after installing the LDAP Sync application on the LDAP Sync workspace.
+| Metadata			| Authors	| William Sehy
+| Force Tags		| team.method	| in-progress
+| Suite Setup		| Open and Log in to Method
+#| Test Setup 		| NONE
+#| Test Teardown 	| NONE
+| Suite Teardown	| Close All Browsers
+
+
+*** Variables ***
+
+| ${WorkspaceName}	| LDAP Sync
+
+
+*** Test Cases ***
+
+| Verify that the default Source Providers are created
+| | [Documentation]	| Verifies that the default Source Provider created is "LDAP" and that no other Source Providers were created.
+| | [Tags]			| automated
+| | Verify that only the following Source Providers exist in the workspace	| LDAP
+
+
+| Verify that the default Destination Providers are created
+| | [Documentation]	| Verifies that the default Destination Provider created is "RDO" and that no other Destination Providers were created.
+| | [Tags]			| automated
+| | Verify that only the following Destination Providers exist in the workspace	| RDO
+
+
+| Verify that the no default Integration Points are created
+| | [Documentation]	| Verifies that no Integration Point was created by default. 
+| | [Tags]			| automated
+| | Verify that no Integration Points exist in the workspace
+
+
+*** Keywords ***
+
+| Verify that only the following Source Providers exist in the workspace
+| | [Documentation]	| Verifies that only the given Source Provider(s) exist in the current workspace.
+| | [ARGUMENTS]		| @{ExpectedSourceProviders}
+| | ${2DGrid}=	| Query workspace database	| 
+| | ... | SELECT Name
+| | ... | FROM EDDSDBO.SourceProvider
+| | ${1DGrid}=					| Flatten		| ${2DGrid}	| # Converts from 2D grid to 1D grid
+| | @{ActualSourceProviders}=	| Create List	| @{1DGrid}	| # Converts from 1D grid to List
+| | Lists Should Be Equal	| ${ExpectedSourceProviders}	| ${ActualSourceProviders}
+
+| Verify that only the following Destination Providers exist in the workspace
+| | [Documentation]	| Verifies that only the given Destination Provider(s) exist in the current workspace.
+| | [ARGUMENTS]		| @{ExpectedDestinationProviders}
+| | ${2DGrid}=	| Query workspace database	| 
+| | ... | SELECT Name
+| | ... | FROM EDDSDBO.DestinationProvider
+| | ${1DGrid}=						| Flatten		| ${2DGrid}	| # Converts from 2D grid to 1D grid
+| | @{ActualDestinationProviders}=	| Create List	| @{1DGrid}	| # Converts from 1D grid to List
+| | Lists Should Be Equal	| ${ExpectedDestinationProviders}	| ${ActualDestinationProviders}
+
+| Verify that no Integration Points exist in the workspace
+| | [Documentation]	| Verifies that no Integration Points exist in the current workspace.
+| | ${2DGrid}=	| Query workspace database	| 
+| | ... | SELECT Name
+| | ... | FROM EDDSDBO.IntegrationPoint
+| | ${1DGrid}=						| Flatten		| ${2DGrid}	| # Converts from 2D grid to 1D grid
+| | @{ActualDestinationProviders}=	| Create List	| @{1DGrid}	| # Converts from 1D grid to List
+| | @{EmptyList}=					| Create List
+| | Lists Should Be Equal	| ${EmptyList}	| ${ActualDestinationProviders}
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt

@@ -14,7 +14,7 @@
 			<div data-bind="validationMessage: mappedWorkspace" class="icon-error legal-hold field-validation-error"></div>
 			<div class="table" id="mapFields">
 				<div class="cell">
-					<select id="workspace-fields" class="list-box" name="workspace-field" data-bind="options: workspaceFields, selectedOptions: selectedWorkspaceField, optionsText: 'name', doubleClick: addSelectFields" id="AvailableSelectedMembers" multiple="multiple" name="AvailableSelectedMembers"></select>
+					<select id="workspace-fields" class="list-box" name="workspace-field" data-bind="options: workspaceFields, selectedOptions: selectedWorkspaceField, optionsText: 'name', doubleClick: addSelectFields" multiple="multiple"></select>
 				</div>
 				<div class="cell selection map-move">
 					<div>
@@ -60,7 +60,7 @@
 
 				<div class="cell">
 					<div>
-						<select class="list-box" id="source-attributes" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'name', doubleClick: addToMappedSource">
+						<select class="list-box" id="source-fields" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'name', doubleClick: addToMappedSource">
 						</select>
 					</div>
 				</div>
@@ -87,6 +87,21 @@
 					</select>
 				</div>
 			</div>
+			
+				<div class="field-row" data-bind="visible: showManager">
+				<div class="field-label required ">Custodian Manager<br/>
+							Contains Link:</div>
+				<div class="field-value ">					
+					<ul>
+				<li>
+					<input type="radio" name="enable" value="true" data-bind="checked: CustodianManagerFieldContainsLink">Yes</li>
+				<li>
+					<input type="radio" name="enable" value="false" data-bind="checked: CustodianManagerFieldContainsLink">No</li>
+				</ul>
+					
+				</div>
+			</div>
+			
 		</div>
 	</div>
 		

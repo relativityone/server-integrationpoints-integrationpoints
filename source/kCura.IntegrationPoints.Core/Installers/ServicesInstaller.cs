@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
+using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
@@ -63,10 +64,11 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<UserService>().ImplementedBy<UserService>().LifestyleTransient());
 			container.Register(Component.For<ChoiceService>().ImplementedBy<ChoiceService>().LifeStyle.Transient);
+			container.Register(Component.For<CustodianService>().ImplementedBy<CustodianService>().LifestyleTransient());
 
 			container.Register(Component.For<ITabService>().ImplementedBy<RSAPITabService>().LifeStyle.Transient);
 			container.Register(Component.For<GeneralWithCustodianRdoSynchronizerFactory>().ImplementedBy<GeneralWithCustodianRdoSynchronizerFactory>().DependsOn(new { container = container }).LifestyleTransient());
-			
+			container.Register(Component.For<ManagerQueueService>().ImplementedBy<ManagerQueueService>().LifestyleTransient());
 		}
 	}
 }

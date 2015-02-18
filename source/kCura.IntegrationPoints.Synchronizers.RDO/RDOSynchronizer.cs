@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.AccessControl;
 using System.Threading;
-using kCura.Apps.Common.Config;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
@@ -16,12 +13,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 	public class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Syncronizer.IDataSyncronizer
 	{
 		protected readonly RelativityFieldQuery FieldQuery;
-		protected readonly RelativityRdoQuery RdoQuery;
 
-		public RdoSynchronizer(RelativityFieldQuery fieldQuery, RelativityRdoQuery rdoQuery)
+		public RdoSynchronizer(RelativityFieldQuery fieldQuery)
 		{
 			FieldQuery = fieldQuery;
-			RdoQuery = rdoQuery;
 		}
 
 		private List<string> IgnoredList
@@ -113,7 +108,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		}
 
 		private string _webAPIPath;
-
 		public string WebAPIPath
 		{
 			get

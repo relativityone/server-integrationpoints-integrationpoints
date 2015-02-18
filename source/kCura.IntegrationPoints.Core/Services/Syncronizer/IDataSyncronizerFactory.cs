@@ -16,8 +16,8 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 	public class MockFactory : IDataSyncronizerFactory
 	{
 		private readonly IWindsorContainer _container;
-		private readonly RelativityRdoQuery _query;
-		public MockFactory(IWindsorContainer container, RelativityRdoQuery query)
+		private readonly RSAPIRdoQuery _query;
+		public MockFactory(IWindsorContainer container, RSAPIRdoQuery query)
 		{
 			_container = container;
 			_query = query;

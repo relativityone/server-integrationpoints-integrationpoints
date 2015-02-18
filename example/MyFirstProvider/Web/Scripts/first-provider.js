@@ -3,7 +3,7 @@
 	var message = IP.frameMessaging();
 
 	var _getModel = function () {
-		return $('#fileLocation').val()
+		return $('#fileLocation').val();
 	};
 
 	//raised when the user has clicked the submit button

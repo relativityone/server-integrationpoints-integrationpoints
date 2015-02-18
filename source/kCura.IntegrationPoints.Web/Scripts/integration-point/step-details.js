@@ -144,7 +144,7 @@ var IP = IP || {};
 
 		this.templateID = 'ldapDestinationConfig';
 		this.rdoTypes = ko.observableArray();
-		
+
 		self.artifactTypeID = ko.observable().extend({ required: true });
 	    //CaseArtifactId
 		//ParentObjectIdSourceFieldName
@@ -396,13 +396,12 @@ var IP = IP || {};
 		var settings = $.extend({}, m);
 		var self = this;
 		this.name = ko.observable(settings.name).extend({ required: true });
-
 		this.source = new Source(settings.source);
 		this.destination = new Destination(settings.destination);
 		this.destinationProvider = settings.destinationProvider;
 		this.overwrite = ko.observableArray([
 			'Append/Overlay', 'Append', 'Overlay Only']);
-		
+		this.CustodianManagerFieldContainsLink = JSON.parse(settings.destination ||"{}").CustodianManagerFieldContainsLink; 
 		this.selectedOverwrite = ko.observable(settings.selectedOverwrite);
 		this.scheduler = new Scheduler(settings.scheduler);
 		this.submit = function () {
@@ -441,8 +440,9 @@ var IP = IP || {};
 				this.model.destination = JSON.stringify({
 					artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,
 					ImportOverwriteMode: ko.toJS(this.model.selectedOverwrite).replace('/', '').replace(' ', ''),
-					CaseArtifactId: IP.data.params['appID']
-				});
+					CaseArtifactId: IP.data.params['appID'],
+					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
+			});
 				
 				this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
 				this.model.sourceProvider = this.model.source.sourceProvider;
