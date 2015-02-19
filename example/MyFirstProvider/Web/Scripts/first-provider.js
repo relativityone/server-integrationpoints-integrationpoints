@@ -1,27 +1,27 @@
 ﻿$(function () {
-	//create a new communication object to talk to the host page.
+	//Create a new communication object that talks to the host page.
 	var message = IP.frameMessaging();
 
 	var _getModel = function () {
-		return $('#fileLocation').val();
+		return $('#fileLocation').val()
 	};
 
-	//raised when the user has clicked the submit button
+	//An event raised when the user has clicked the Next or Save button.
 	message.subscribe('submit', function () {
-		//do any save logic to persist the state here
+		//Execute save logic that persists the state.
 		var localModel = _getModel();
 		this.publish("saveState", localModel);
-		//tell the host page that it is ok to continue
+		//Communicate to the host page that it to continue.
 		this.publish('saveComplete', localModel);
 	});
 
-	//raised when a user clicks the back button
+	//An event raised when a user clicks the Back button.
 	message.subscribe('back', function () {
-		//do any save logic to persist the state here
+		//Execute save logic that persists the state.
 		this.publish('saveState', _getModel());
 	});
 
-	//raised when the host page has loaded the current settings page.
+	//An event raised when the host page has loaded the current settings page.
 	message.subscribe('load', function (model) {
 		$('#fileLocation').val(model);
 	});
