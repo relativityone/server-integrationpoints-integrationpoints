@@ -396,11 +396,17 @@ var IP = IP || {};
 		var settings = $.extend({}, m);
 		var self = this;
 		this.name = ko.observable(settings.name).extend({ required: true });
+		this.overwrite = ko.observableArray([
+			'Append/Overlay', 'Append', 'Overlay Only']);
+		if (typeof settings.logErrors === "undefined") {
+			settings.logErrors = "true";
+		}
+		this.logErrors = ko.observable(settings.logErrors.toString());
+
 		this.source = new Source(settings.source);
 		this.destination = new Destination(settings.destination);
 		this.destinationProvider = settings.destinationProvider;
-		this.overwrite = ko.observableArray([
-			'Append/Overlay', 'Append', 'Overlay Only']);
+		
 		this.CustodianManagerFieldContainsLink = JSON.parse(settings.destination ||"{}").CustodianManagerFieldContainsLink; 
 		this.selectedOverwrite = ko.observable(settings.selectedOverwrite);
 		this.scheduler = new Scheduler(settings.scheduler);
