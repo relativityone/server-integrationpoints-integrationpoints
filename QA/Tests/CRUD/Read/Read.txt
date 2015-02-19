@@ -77,7 +77,8 @@
 | | Verify the current layout has the following fields for the category	| General	| # broken
 | | ... | Name:				| 
 | | ... | Source Provider:	| 
-| | ... | Overwrite:
+| | ... | Overwrite:		| 
+| | ... | Log Errors:
 
 
 | The Status fields are in the correct order when Enable Scheduler is set to No
