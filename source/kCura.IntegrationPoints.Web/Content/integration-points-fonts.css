@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 
 @font-face {
   font-family: "integration-points";
@@ -127,4 +127,13 @@
 }
 .icon-sort-desc:before {
   content: "D";
+}
+.icon-settings:before {
+  content: "E";
+}
+.icon-move-to-bottom:before {
+  content: "F";
+}
+.icon-move-to-top:before {
+  content: "G";
 }

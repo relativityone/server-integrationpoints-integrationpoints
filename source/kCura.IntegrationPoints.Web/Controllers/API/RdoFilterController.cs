@@ -8,13 +8,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class RdoFilterController : ApiController
 	{
-		private Core.Models.RdoFilter _rdoFilter;
+		private readonly Core.Models.RdoFilter _rdoFilter;
 
 		public RdoFilterController(Core.Models.RdoFilter rdoFilter)
 		{
 			_rdoFilter = rdoFilter;
 		}
-		
+
 		// GET api/<controller>
 		[HttpGet]
 		public HttpResponseMessage Get()
@@ -22,6 +22,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			var list = _rdoFilter.FilterRdo().Select(x => new { name = x.Name, value = x.DescriptorArtifactTypeID }).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, list);
 		}
-		
+
 	}
 }

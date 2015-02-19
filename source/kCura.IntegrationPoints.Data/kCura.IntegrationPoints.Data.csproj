@@ -82,20 +82,30 @@
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="EddsDbContext.cs" />
+    <Compile Include="IEddsDBContext.cs" />
+    <Compile Include="EddsResourceConnection.cs" />
     <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="Extensions\GenericLibraryExtensions.cs" />
     <Compile Include="GetObjectBase.cs" />
+    <Compile Include="IWorkspaceDBContext.cs" />
     <Compile Include="Installers\RSAPIServiceInstaller.cs">
       <DependentUpon>RSAPIServiceInstaller.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="IObjectTypeQuery.cs" />
     <Compile Include="IRSAPIService.cs">
       <DependentUpon>IRSAPIService.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Migrations\AddWebApiConfigValueMigration.cs" />
+    <Compile Include="Migrations\IMigration.cs" />
+    <Compile Include="Migrations\MigrationRunner.cs" />
     <Compile Include="Models\ApplicationBinary.cs" />
+    <Compile Include="Queries\GetJobCustodianManagerLinks.cs" />
+    <Compile Include="Queries\CreateCustodianManagerResourceTable.cs" />
     <Compile Include="Queries\GetApplicationBinaries.cs" />
     <Compile Include="Queries\GetApplicationGuid.cs" />
     <Compile Include="RdoGetter.cs" />
@@ -119,6 +129,7 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="SqlObjectTypeQuery.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeneratedStringConstants.cs">
@@ -168,9 +179,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\AddWebApiConfig.sql" />
+    <Content Include="Resources\GetJobCustodianManagerLinks.sql" />
+    <Content Include="Resources\CreateCustodianManagerResourceTable.sql" />
     <Content Include="Resources\GetApplicationBinaries.sql" />
     <Content Include="Resources\GetApplicationGuid.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
+    <Content Include="Resources\GetObjectTypes.sql" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			//ARRANGE
 			var client = NSubstitute.Substitute.For<IRSAPIClient>();
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client);
-			var rdoQuery = NSubstitute.Substitute.For<RelativityRdoQuery>(client);
+			var rdoQuery = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
 			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectType
 			{
 				ArtifactTypeID = 1,
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				Name = "Document"
 			});
 			//
-			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, rdoQuery));
+			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock));
 			var options = new ImportSettings();
 			options.ArtifactTypeId = 1268820;
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
@@ -66,14 +66,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			//ARRANGE
 			var client = NSubstitute.Substitute.For<IRSAPIClient>();
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client);
-			var rdoQuery = NSubstitute.Substitute.For<RelativityRdoQuery>(client);
+			var rdoQuery = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
 			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectType
 			{
 				ArtifactTypeID = 1,
 				DescriptorArtifactTypeID = 1,
 				Name = "Document"
 			});
-			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, rdoQuery));
+			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock));
 			var options = new ImportSettings { ArtifactTypeId = 1268820 };
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
@@ -111,14 +111,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			var client = NSubstitute.Substitute.For<IRSAPIClient>();
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client);
 			//
-			var rdoQuery = NSubstitute.Substitute.For<RelativityRdoQuery>(client);
+			var rdoQuery = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
 			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectType
 				 {
 					 ArtifactTypeID = 1,
 					 DescriptorArtifactTypeID = 1,
 					 Name = "Document"
 				 });
-			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, rdoQuery));
+			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock));
 			var options = new ImportSettings();
 			options.ArtifactTypeId = 1268820;
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
@@ -146,14 +146,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			//ARRANGEk
 			var client = NSubstitute.Substitute.For<IRSAPIClient>();
 			var fieldMock = NSubstitute.Substitute.For<RelativityFieldQuery>(client);
-			var rdoQuery = NSubstitute.Substitute.For<RelativityRdoQuery>(client);
+			var rdoQuery = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
 			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectType
 			{
 				ArtifactTypeID = 1,
 				DescriptorArtifactTypeID = 1,
 				Name = "Document"
 			});
-			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, rdoQuery));
+			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock));
 			var options = new ImportSettings { ArtifactTypeId = 1268820 };
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
