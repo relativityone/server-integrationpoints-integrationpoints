@@ -20,7 +20,7 @@
 | | [Documentation]	| This test verifies that the correct number of fields exist with an Object Type of Integration Point.
 | | ...				| [id] 11a240b0-a89f-11e4-9669-b8ca3a83048f
 | | ${Fields}=		| Get the Number of Items in the ItemList
-| | Run Keyword Unless	| '${Fields}' == '16'	| Fail	| There should have been 16 fields, but instead there were ${Fields}.
+| | Run Keyword Unless	| '${Fields}' == '17'	| Fail	| There should have been 17 fields, but instead there were ${Fields}.
 
 # The below tests each verify that a Field with the given data is present on the table.
 
@@ -67,6 +67,14 @@
 | | ... | Field Type				| Long Text			|
 | | ... | Is Required				| No				|
 | | ... | Associative Object Type	| ${EMPTY}
+
+
+| Integration Point
+| | Find A Row With The Following Data	|
+| | ... | Name						| Integration Point	|
+| | ... | Field Type				| Multiple Object	|
+| | ... | Is Required				| No				|
+| | ... | Associative Object Type	| JobHistory
 
 
 | Last Runtime (UTC)

@@ -24,14 +24,14 @@
 
 | The Default View on the Job History List View
 | | [Documentation] | Verifies that the default View on the Job History list view page.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Go to the Tab	| Job History
 | | Verify that the view dropdown is set to the following value	| All Jobs
 
 
 | The Views on the Job History List View are correct
 | | [Documentation] | Verifies that the Views on the Integration Points list view page are correct.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Go to the Tab	| Job History
 | | Verify that the View Dropdown only has the following Views	| All Jobs	| All Jobs with Errors
 
@@ -42,6 +42,7 @@
 | | Go to the Tab	| Job History
 | | Set View	| All Jobs
 | | Verify that the item list contains the following fields	| 
+| | ... | Name
 | | ... | Integration Point		| 
 | | ... | Job Status			| 
 | | ... | Records Imported		| 
@@ -63,6 +64,7 @@
 | | Go to the Tab	| Job History
 | | Set View	| All Jobs with Errors
 | | Verify that the item list contains the following fields	| 
+| | ... | Name					| 
 | | ... | Integration Point		| 
 | | ... | Job Status			| 
 | | ... | Records Imported		| 
