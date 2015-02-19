@@ -61,6 +61,7 @@
 	<include buildfile="Build Tests.include" />
 	<include buildfile="Build RAP Package.include" />
 	<include buildfile="Update Storyboard.include"/>
+	<include buildfile="Build Projects.Coverage.include"/>
 
 	<!-- Build all LDAPSync projects- presence of a Build.log file indicates failure -->
 	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, merge_ldap, merge_source_provider_installer, embed_binaries_into_application">				
