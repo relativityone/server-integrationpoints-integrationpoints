@@ -18,6 +18,7 @@
 | ${ConnectionUsername}		| testing\\administrator
 | ${ConnectionPassword}		| P@ssw0rd@1
 | ${ImportNestedItems}		| Yes
+| ${New Integration Point Button}	| xpath=//a[@class='actionButtonSmall' and text()='New Integration Point']
 
 
 *** Test Cases ***
@@ -46,6 +47,13 @@
 | | ... | Enable Scheduler		| 
 | | ... | Last Runtime (UTC)	| 
 | | ... | Next Scheduled Runtime (UTC)
+
+
+| The New Job History Button is visible on the page
+| | [Documentation] | Verifies that the "New Integration Point" Button is visible on the page.
+| | [Tags]			| untested
+| | Go to the Tab	| Integration Points
+| | Element Should Be Visible	| ${New Integration Point Button}	| The "New Integration Point" Button was not visible on the page.
 
 
 | The Item List on the "All Integration Points" View is sorted by Name
