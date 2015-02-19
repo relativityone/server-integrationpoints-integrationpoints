@@ -10,7 +10,7 @@
 	<property name="coverageFilePaths" value="${ncover.output.directory}\coverage\" />
 	<property name="forceCodeCoverage" value="False" unless="${property::exists('forceCodeCoverage')}" />
 	<property name="reportsDir" value="${ncover.output.directory}\Reports\" />
-	<property name="excludedAssemblies" value=".*StackTraceDeobfuscator.*;.*NSubstitute.*;.*UnitTest.*;.*AjaxPro.*;kCura.IntegrationPoints.dll;kCura.LDAPProvider.dll;kCura.SourceProviderInstaller.dll;.*Castle.*;.*DevExpress.*;.*dtSearch.*;.*FreeImage.*;.*Iconic.*;.*itextsharp.*;.*Neovolve.*;.*Ninject.*;.*NUnit.*;.*Tests.*;.*Telerik.*;.*WCFExtras.*;.*SystemWrapper.*;.*EventHandler.TestDLL.*" />
+	<property name="excludedAssemblies" value=".*StackTraceDeobfuscator.*;.*NSubstitute.*;.*UnitTest.*;.*AjaxPro.*;kCura.IntegrationPoints.Contracts.dll;kCura.IntegrationPoints.Core.Contracts.dll;kCura.IntegrationPoints.dll;kCura.LDAPProvider.dll;kCura.SourceProviderInstaller.dll;.*Castle.*;.*DevExpress.*;.*dtSearch.*;.*FreeImage.*;.*Iconic.*;.*itextsharp.*;.*Neovolve.*;.*Ninject.*;.*NUnit.*;.*Tests.*;.*Telerik.*;.*WCFExtras.*;.*SystemWrapper.*;.*EventHandler.TestDLL.*" />
 	<property name="excludeAttributes" value=".*My.*" />
 	<target name="start_codecoverage">
 		<!-- Run coverage on first build only -->
