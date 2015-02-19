@@ -1,54 +1,72 @@
 
 *** Settings ***
 | Documentation 	| Verify that the Read pages for Integration Point objects have the fields and sections for given situations.
-| Metadata		    | Authors	| Daniel Oliver	| William Sehy
-| Force Tags		| in-progress | team.method
-#| Suite Setup		| Create Suite Setup Data
-| Test Setup        | Go to the Tab	| Integration Points
+| Metadata			| Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| in-progress	| team.method
+| Suite Setup		| Suite Setup Keyword
+| Test Setup		| View Integration Point	| ${IntegrationPoint1}
 | Test Teardown 	| Capture Screenshot if Test Fails
-#| Suite Teardown	| Delete Suite Setup Data
+| Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
 
 
 *** Variables ***
 
-| ${WorkspaceName}	   | Relativity Legal Hold
-| ${IP1}               | Integration Point 1 | #Enable Scheduler is set to No
-| ${IP2}               | Integration Point 2 | #Daily Schedule
-| ${IP3}               | Integration Point 3 | #Weekly Schedule
-| ${IP4}               | Integration Point 4 | #Monthly Schedule
+| ${WorkspaceName}		| LDAP Sync
+| ${IntegrationPoint1}	| Integration Point 1	| # Enable Scheduler is set to No
+| ${IntegrationPoint2}	| Integration Point 2	| # Daily Schedule
+| ${ConnectionPath}		| testing.corp/CN=Users,DC=testing,DC=corp
+| ${ObjectFilterString}	| (objectClass=*)
+| ${Authentication}		| FastBind
+| ${ConnectionUsername}	| testing\\administrator
+| ${ConnectionPassword}	| P@ssw0rd@1
+| ${ImportNestedItems}	| Yes
 
 
 *** Test Cases ***
 
-| The correct Buttons appear in the Header
-| | [Documentation]	| Verify that the correct buttons appear at the top of the page
-| | ...				| [id] 117f284f-a89f-11e4-ab56-b8ca3a83048f
-| | [Tags]			| manual
+| The Integration Point Read page defaults to the correct Layout
+| | [Documentation]	| Verify that the default Layout on an Integration Point Read page is "Integration Point Details". 
+| | ...				| 
+| | [Tags]			| automated
+| | Verify that the layout dropdown is set to "Integration Point Details"
+
+
+| The Integration Point Read page has the correct Layouts
+| | [Documentation]	| Verify that the Integration Point Read page has only the "Integration Point Details" Layout. 
+| | ...				| 
+| | [Tags]			| manual	| automateable?
 | | Run the following manual steps:
-| | ... | 1. View Integration Point | ${IP1}
+| | ... | Steps: 
+| | ... | 1. View Integration Point | ${IntegrationPoint1}
+| | ... | 2. Click the Layout dropdown
 | | ... |
 | | ... | Expected Result:
-| | ... | Verify that the following buttons are present  
-| | ... | - Edit
-| | ... | - Delete
-| | ... | - Back
-| | ... | - Edit Permissions
-| | ... | - View Audit
+| | ... | Verify that the only Layout is "Integration Point Details"
+
+
+| The correct Buttons appear in the Header
+| | [Documentation]	| Verify that the correct buttons appear at the top of the page.
+| | ...				| [id] 117f284f-a89f-11e4-ab56-b8ca3a83048f
+| | [Tags]			| automated
+| | Verify the buttons are available on the layout	| 
+| | ... | Edit				| 
+| | ... | Delete			| 
+| | ... | Back				| 
+| | ... | Edit Permissions	| 
+| | ... | View Audit
 
 
 | The Section headings are in the correct order
 | | [Documentation]	| Verify that the Section headings are sorted correctly.
 | | ...				| [id] 1180fd11-a89f-11e4-b0e4-b8ca3a83048f
-| | [Tags]			| manual
+| | [Tags]			| manual	| automateable?
 | | Run the following manual steps:
 | | ... | Steps: 
-| | ... | 1. View Integration Point | ${IP1}
+| | ... | 1. View Integration Point | ${IntegrationPoint1}
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Sections headings are in the following Order:
 | | ... | - General
-| | ... | - Integration
-| | ... | - Import Scheduling
 | | ... | - Status
 
 
@@ -56,105 +74,19 @@
 | | [Documentation]	| Verify that the fields in the General section are sorted correctly.
 | | ...				| [id] 1180fd12-a89f-11e4-a95c-b8ca3a83048f
 | | [Tags]			| manual
-| | Run the following manual steps:
-| | ... | Steps: 
-| | ... | 1. View Integration Point | ${IP1}
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the General Fields are in the following Order:
-| | ... | - Name:
-| | ... | - Overwrite:
-
-
-| The Integration fields are in the correct order
-| | [Documentation]	| Verify that the fields in the Integration section are sorted correctly.
-| | ...				| [id] 1180fd13-a89f-11e4-8169-b8ca3a83048f
-| | [Tags]			| manual
-| | Run the following manual steps:
-| | ... | Steps: 
-| | ... | 1. View Integration Point | ${IP1}
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Integration Fields are in the following Order:
-| | ... | - Destination RDO:
-
-
-| The Import Scheduling fields are in the correct order for an Integration Point with a disabled Scheduler
-| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the Scheduler is disabled.
-| | ...				| [id] 11817240-a89f-11e4-82b7-b8ca3a83048f
-| | [Tags]			| manual
-| | Run the following manual steps:
-| | ... | Steps: 
-| | ... | 1. View Integration Point | ${IP1}
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Import Scheduling Fields are in the following Order:
-| | ... | - Enable Scheduler:
-
-
-#| The Import Scheduling fields are in the correct order for a Daily Integration Point
-#| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the Frequency is Daily.
-#| | [Tags]			| manual
-#| | Run the following manual steps:
-#| | ... | Steps: 
-#| | ... | 1. View Integration Point | ${IP2}
-#| | ... |
-#| | ... | Expected Results:
-#| | ... | Verify that the Import Scheduling Fields are in the following Order:
-#| | ... | - Enable Scheduler: 
-#| | ... | - Frequency:
-#| | ... | - Start Date:
-#| | ... | - End Date:
-#| | ... | - Scheduled Time:
-#
-#
-#| The Import Scheduling fields are in the correct order for a Weekly Integration Point
-#| | [Documentation]	| Verify that the fields in the Import Scheduling section are sorted correctly when the Frequency is Weekly.
-#| | [Tags]			| manual
-#| | Run the following manual steps:
-#| | ... | Steps: 
-#| | ... | 1. View Integration Point | ${IP3}
-#| | ... |
-#| | ... | Expected Results:
-#| | ... | Verify that the Import Scheduling Fields are in the following Order:
-#| | ... | - Enable Scheduler:
-#| | ... | - Frequency:
-#| | ... | - Reoccur:
-#| | ... | - Send On:
-#| | ... | - Start Date:
-#| | ... | - End Date:
-#| | ... | - Scheduled Time:
-#
-#
-#| The Import Scheduling fields are in the correct order for a Monthly Integration Point
-#| | [Documentation]	|  Verify that the fields in the Import Scheduling section are sorted correctly when the Frequency is Monthly.
-#| | [Tags]			| manual
-#| | Run the following manual steps:
-#| | ... | Steps: 
-#| | ... | 1. View Integration Point | ${IP4}
-#| | ... |
-#| | ... | Expected Results:
-#| | ... | Verify that the Import Scheduling Fields are in the following Order:
-#| | ... | - Enable Scheduler:
-#| | ... | - Frequency:
-#| | ... | - Reoccur:
-#| | ... | - Send On:
-#| | ... | - Start Date:
-#| | ... | - End Date:
-#| | ... | - Scheduled Time:
+| | Verify the current layout has the following fields for the category	| General	| # broken
+| | ... | Name:				| 
+| | ... | Source Provider:	| 
+| | ... | Overwrite:
 
 
 | The Status fields are in the correct order when Enable Scheduler is set to No
 | | [Documentation]	| Verify that the fields in the Status section are sorted correctly when Enable Scheduler is set to No.
 | | ...				| [id] 11817241-a89f-11e4-bd3b-b8ca3a83048f
 | | [Tags]			| manual
-| | Run the following manual steps:
-| | ... | Steps: 
-| | ... | 1. View Integration Point | ${IP1}
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Status Fields are in the following Order:
-| | ... | - Next Scheduled Runtime (UTC):
+| | Verify the current layout has the following fields for the category	| Status	| # broken
+| | ... | - Enable Scheduler:				| 
+| | ... | - Next Scheduled Runtime (UTC):	| 
 | | ... | - Last Runtime (UTC):
 
 
@@ -162,19 +94,83 @@
 | | [Documentation]	| Verify that the fields in the Status section are sorted correctly when Enable Scheduler is set to Yes.
 | | ...				| [id] 11817242-a89f-11e4-82d7-b8ca3a83048f
 | | [Tags]			| manual
-| | Run the following manual steps:
-| | ... | Steps: 
-| | ... | 1. View Integration Point | ${IP2}
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Status Fields are in the following Order:
-| | ... | - Next Scheduled Runtime (UTC):
+| | [Setup]			| View Integration Point	| ${IntegrationPoint2}
+| | Verify the current layout has the following fields for the category	| Status	| # broken
+| | ... | - Enable Scheduler:				| 
+| | ... | - Next Scheduled Runtime (UTC):	| 
 | | ... | - Last Runtime (UTC):
+
+
+*** Keywords *** 
+
+| Suite Setup Keyword
+| | [Documentation]	| Create the Suite Preconditions
+| | Setup connection to the relativity database
+| | Open and Log in to Method
+| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+
+| | @{DisabledStep1Fields}=	| Create List	| 
+| | ... | ${IntegrationPoint1}	| 
+| | ... | Append/Overlay		| 
+| | ... | LDAP					| 
+| | ... | Custodian				| 
+| | ... | No
+
+| | @{ActiveStep1Fields}=	| Create List	| 
+| | ... | ${IntegrationPoint2}	| 
+| | ... | Append/Overlay		| 
+| | ... | LDAP					| 
+| | ... | Custodian				| 
+| | ... | Yes					| 
+| | ... | Daily					| 
+| | ... | NULL					| 
+| | ... | NULL					| 
+| | ... | 2/15/2025				| 
+| | ... | 2/16/2025				| 
+| | ... | 12:30 PM
+
+| | @{Step2Fields}=		| Create List	| 
+| | ... | ${ConnectionPath}		| 
+| | ... | ${ObjectFilterString}	| 
+| | ... | ${Authentication}		| 
+| | ... | ${ConnectionUsername}	| 
+| | ... | ${ConnectionPassword}	| 
+| | ... | ${ImportNestedItems}
+
+| | @{Step3Mapping}=	| Create List	| 
+| | ... | Email			| mail			| 
+| | ... | Department	| countrycode	| 
+| | ... | First Name	| givenname		| 
+| | ... | Last Name		| sn			| 
+| | ... | UniqueID		| objectguid
+
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint1}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint1}
+| | Create Integration Point | ${DisabledStep1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint2}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint2}
+| | Create Integration Point | ${ActiveStep1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | [Teardown]		| Drop connection to the relativity services api
+
+| Delete the Objects created in the Suite then Close All Browsers
+| | [Documentation]	| Delete the Integration Points created in this suite then closes all open browsers.
+| | ...				| This is run as the Suite Teardown.
+| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+
+| | Delete the following Integration Point using API	| ${IntegrationPoint1}
+| | Delete the following Integration Point using API	| ${IntegrationPoint2}
+
+| | Drop connection to the relativity services api
+| | Close All Browsers
 
 
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/Relativity/Processing/Processing/Relativity_Keywords_General.txt
+| Resource	| ${KEYWORD_DIR}/Relativity/Shared/RelativityKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
 | Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt

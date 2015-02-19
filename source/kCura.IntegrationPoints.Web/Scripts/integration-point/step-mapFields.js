@@ -53,6 +53,9 @@ ko.validation.rules['mustContainIdentifer'] = {
 			if (current.isIdentifier) {
 				return true;
 			}
+			else if (params[1]() == current.name) {
+				return true;
+			}
 		}
 		IP.message.error.raise('The object identifier field must be mapped.');
 	},

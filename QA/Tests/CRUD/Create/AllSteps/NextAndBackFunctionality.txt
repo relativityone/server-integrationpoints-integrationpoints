@@ -35,7 +35,7 @@
 | | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
 | | ... | ConnectionPath=Connection Path			| 
 | | ... | ObjectFilterString=Object Filter String	| 
-| | ... | Authentication=Encryption	| 
+| | ... | Authentication=Secure Socket Layer	| 
 | | ... | Username=User Name		| 
 | | ... | Password=Pass phrase		| 
 | | ... | ImportNestedItems=Yes
@@ -46,7 +46,7 @@
 | | ... | Verify that the Step 2 fields have the following values	| 
 | | ... | Connection Path: Connection Path	| 
 | | ... | Object Filter String: Object Filter String	| 
-| | ... | Authentication: Encryption	| 
+| | ... | Authentication: Secure Socket Layer	| 
 | | ... | Username: User Name	| 
 | | ... | Password: Pass phrase	| 
 | | ... | Import Nested Items: Yes
@@ -72,23 +72,21 @@
 | | ... | 6. Map the Following Fields together
 | | ... | - First Name	: givenName
 | | ... | - Last Name	: sn
-| | ... | - Full Name	: cn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
 | | ... | - Unique ID	: objectguid
-| | ... | 7. Select the following Unique Identifier	| Full Name
+| | ... | 7. Select the following Unique Identifier	| Email
 | | ... | 8. Click Back
 | | ... | 9. Click Next
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Full Name
+| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Email
 | | ... | 2. Verify that the following fields are mapped together	| 
 | | ... | - First Name	: givenName
 | | ... | - Last Name	: sn
-| | ... | - Full Name	: cn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
-| | ... | - Unique ID	: objectguid
+| | ... | - UniqueID	: objectguid
 
 
 | Returning to Step 3 from Step 1 without changing anything Saves all Step 3 data
@@ -111,25 +109,23 @@
 | | ... | 6. Map the Following Fields together
 | | ... | - First Name	: givenName
 | | ... | - Last Name	: sn
-| | ... | - Full Name	: cn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
-| | ... | - Unique ID	: objectguid
-| | ... | 7. Select the following Unique Identifier	| Full Name
+| | ... | - UniqueID	: objectguid
+| | ... | 7. Select the following Unique Identifier	| Email
 | | ... | 8. Click Back
 | | ... | 9. Click Back
 | | ... | 10. Click Next
 | | ... | 11. Click Next
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Full Name
+| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Email
 | | ... | 2. Verify that the following fields are mapped together	| 
 | | ... | - First Name	: givenName
 | | ... | - Last Name	: sn
-| | ... | - Full Name	: cn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
-| | ... | - Unique ID	: objectguid
+| | ... | - UniqueID	: objectguid
 
 
 #| Returning to Step 2 from Step 1 after changing the Source Provider clears all fields on Step 2
@@ -146,7 +142,7 @@
 #| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
 #| | ... | ConnectionPath=Connection Path			| 
 #| | ... | ObjectFilterString=Object Filter String	| 
-#| | ... | Authentication=Encryption	| 
+#| | ... | Authentication=Secure Socket Layer	| 
 #| | ... | Username=User Name		| 
 #| | ... | Password=Pass phrase		| 
 #| | ... | ImportNestedItems=Yes
@@ -179,7 +175,7 @@
 #| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
 #| | ... | ConnectionPath=Connection Path			| 
 #| | ... | ObjectFilterString=Object Filter String	| 
-#| | ... | Authentication=Encryption	| 
+#| | ... | Authentication=Secure Socket Layer	| 
 #| | ... | Username=User Name		| 
 #| | ... | Password=Pass phrase		| 
 #| | ... | ImportNestedItems=Yes
@@ -194,7 +190,7 @@
 #| | ... | Verify that the Step 2 fields have the following values	| 
 #| | ... | Connection Path: Connection Path				| 
 #| | ... | Object Filter String: Object Filter String	| 
-#| | ... | Authentication: Encryption	| 
+#| | ... | Authentication: Secure Socket Layer	| 
 #| | ... | Username: User Name			| 
 #| | ... | Password: Pass phrase			| 
 #| | ... | Import Nested Items: Yes
@@ -222,22 +218,20 @@
 | | ... | 6. Map the Following Fields together in this order	| 
 | | ... | - First Name	: givenName
 | | ... | - Last Name	: sn
-| | ... | - Full Name	: cn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
-| | ... | - Unique ID	: objectguid
-| | ... | 7. Select the following Unique Identifier	| Full Name
+| | ... | - UniqueID	: objectguid
+| | ... | 7. Select the following Unique Identifier	| Email
 | | ... | 8. Click Back
 | | ... | 9. Fill out the Following Fields of the Integration Point Step 2 form	| 
 | | ... | - ConnectionPath=${ConnectionPath2}
 | | ... | 10. Click Next
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Full Name
+| | ... | 1. Verify that the Unique Indentifier dropdown is set to	| Email
 | | ... | 2. Verify that the following fields are mapped together in order	| 
-| | ... | - Full Name	: cn
 | | ... | - Department	: countrycode
-| | ... | - Unique ID	: objectguid
+| | ... | - UniqueID	: objectguid
 | | ... | - First Name	: (NONE)
 | | ... | - Last Name	: (NONE)
 | | ... | - Email		: (NONE)
@@ -264,11 +258,10 @@
 | | ... | 6. Map the Following Fields together in this order	| 
 | | ... | - First Name	: givenName
 | | ... | - Last Name	: sn
-| | ... | - Full Name	: cn
 | | ... | - Email		: mail
 | | ... | - Department	: countrycode
-| | ... | - Unique ID	: objectguid
-| | ... | 7. Select the following Unique Identifier	| Full Name
+| | ... | - UniqueID	: objectguid
+| | ... | 7. Select the following Unique Identifier	| Email
 | | ... | 8. Click Back
 | | ... | 9. Click Back
 | | ... | 10. Choose Communication as the Destination RDO
@@ -276,7 +269,7 @@
 | | ... | 12. Click Next
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the Unique Indentifier dropdown is NOT set to	| Full Name
+| | ... | 1. Verify that the Unique Indentifier dropdown is NOT set to	| Email
 | | ... | 2. Verify that the field mappings are empty. No fields have been selected on either side.
 
 

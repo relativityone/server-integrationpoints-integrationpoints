@@ -6,14 +6,14 @@
 *** Variables ***
 
 | ${WorkspaceName}	   | Relativity Legal Hold
-| ${Custodian1}        | 
+| ${Custodian1}        | Worker, Alpha
 | ${Custodian2}        | 
 | ${Custodian3}        | 
 | ${Custodian4}        | 
 | ${Custodian5}        | 
 | ${Custodian6}        | 
 | ${Custodian7}        | 
-| ${Manager1}          | 
+| ${Manager1}          | Manager, Alpha
 | ${Manager2}          | 
 | ${Manager3}          | 
 | ${Manager4}          | 
@@ -26,40 +26,44 @@
 
 | Custodian Manager Contains Link is shown for Custodian Imports
 | | [Documentation] | Verify that the Custodian Manager Contains Link is shown on step 2 of RIP when the Destination RDO is Custodians
+| | ... | [id] a4804940-b605-11e4-82f6-90b11c6c5ae4
 | | [Tags] | manual  
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Create a new IP using the Destination RDO of Custodian
-| | ... | 2. Go to Step 2
+| | ... | 2. Go to Step 3
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that the Custodian Manager Contains Link field is present as the last field 
+| | ... | 1. Verify that the Custodian Manager Contains Link field is present as the last field on the Import Settings card
 | | ... | 2. Verify that the Custodian Manager Contains Link field has radio buttons of Yes and No
 
 | Custodian Manager Contains Link defaults to Yes
 | | [Documentation] | Verify that the Custodian Manager Contains Link defaults to Yes
+| | ... | [id] ae2ca28f-b605-11e4-a642-90b11c6c5ae4
 | | [Tags] | manual  
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Create a new IP using the Destination RDO of Custodian
-| | ... | 2. Go to Step 2
+| | ... | 2. Go to Step 3
 | | ... |
 | | ... | Expected Results:
 | | ... | 1. Verify that the Custodian Manager Contains Link field defaults to Yes
 
-| Custodian Manager Contains Link is shown not for non-Custodian Imports
+| Custodian Manager Contains Link is not shown for non-Custodian Imports
 | | [Documentation] | Verify that the Custodian Manager Contains Link is not shown on step 2 of RIP when the Destination RDO is not Custodians
+| | ... | [id] b34c6ede-b605-11e4-9740-90b11c6c5ae4
 | | [Tags] | manual  
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Create a new IP using the Destination RDO of Attachments
-| | ... | 2. Go to Step 2
+| | ... | 2. Go to Step 3
 | | ... |
 | | ... | Expected Results:
 | | ... | 1. Verify that the Custodian Manager Contains Link field is not present
 
 | Manager names are shown on the Employee record in the Full Name format
 | | [Documentation] | Verify that a succesfully imported Custodian, who has a manager, shows the Manager's name in the correct format
+| | ... | [id] b8e6c261-b605-11e4-aaf4-90b11c6c5ae4
 | | [Tags] | manual | required
 | | Run the following manual steps:
 | | ... | Pre-conditions:
@@ -77,6 +81,7 @@
 
 | Managers that did not previously exist are Created
 | | [Documentation] | Verify that new Managers have their own Manager record created
+| | ... | [id] bb77584f-b605-11e4-8ae0-90b11c6c5ae4
 | | [Tags] | manual  
 | | Run the following manual steps:
 | | ... | Pre-conditions:
@@ -91,6 +96,7 @@
 
 | Newly imported Managers have the correct name format on their own Custodian record
 | | [Documentation] | Verify that Newly imported Managers have the correct name format on their own Custodian record
+| | ... | [id] bf3068b0-b605-11e4-8b69-90b11c6c5ae4
 | | [Tags] | manual  
 | | Run the following manual steps:
 | | ... | Pre-conditions:
@@ -105,6 +111,7 @@
 
 | Existing Managers are Linked to their Newly Imported Employees
 | | [Documentation] | Verify that Managers that did exist are Linked to their Newly Imported Employees
+| | ... | [id] c28279de-b605-11e4-b74f-90b11c6c5ae4
 | | [Tags] | manual 
 | | Run the following manual steps:
 | | ... | Pre-conditions:
@@ -123,6 +130,7 @@
 
 | Existing Custodians can become Managers to New Custodians
 | | [Documentation] | Verify that Existing Custodians can become Managers to New Custodians
+| | ... | [id] c7a41aee-b605-11e4-91e0-90b11c6c5ae4
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Pre-conditions:
@@ -141,6 +149,7 @@
 
 | Existing Custodians can become Managers of Existing Custodians
 | | [Documentation] | Verify that Existing Custodians can become Managers of Existing Custodians
+| | ... | [id] cab886de-b605-11e4-bdd1-90b11c6c5ae4
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Pre-conditions:
@@ -159,6 +168,7 @@
 
 | Existing Custodians can be linked to Newly created Managers
 | | [Documentation] | Verify that Existing Custodians can be linked to Newly created Managers
+| | ... | [id] cf715400-b605-11e4-a0ec-90b11c6c5ae4
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Pre-conditions:
@@ -177,6 +187,7 @@
 
 | Existing Custodians can be given new existing Managers
 | | [Documentation] | Verify that Existing Custodians can be given new existing Managers
+| | ... | [id]  d20656c0-b605-11e4-8c82-90b11c6c5ae4
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Pre-conditions:
@@ -197,6 +208,7 @@
 
 | Managers are not linked to the Custodian when the field is not Mapped
 | | [Documentation] | Verify that Managers are not linked to the Custodian when the field is not Mapped
+| | ... | [id] db3450ee-b608-11e4-a852-90b11c6c5ae4
 | | [Tags] | manual 
 | | Run the following manual steps:
 | | ... | Pre-conditions:
@@ -214,10 +226,64 @@
 | | ... | 1. Verify that the Manager field is blank
 
 | Managers are Imported when they do not reside in the current Path
+| | [Documentation] | Verify that  Managers are Imported when they do not reside in the current Path
+| | ... | [id] d9bdbdde-b605-11e4-b062-90b11c6c5ae4
+| | [Tags] | manual 
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. A RIP is created for Custodians where the Manager is in a nested folder
+| | ... | 2. ${Custodian8} is not a Custodian in RLH
+| | ... | 3. ${Manager9} is not a Custodian in RLH
+| | ... | 4. In LDAP, ${Custodian8} has a manager: ${Manager9}
+| | ... | 5. ${Manager9} is not in the same folder branch as ${Custodian8} 
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Import the Custodian RIP
+| | ... | 2. Go to the Method tab | Custodian
+| | ... | 3. View ${Custodian8} 
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Manager field is ${Manager9} 
+
+| Managers are Imported when they do not reside in the current Folder Branch
+| | [Documentation] | Verify that  Managers are Imported when they do not reside in the current folder branch
+| | ... | [id] dc2b898f-b605-11e4-bfb4-90b11c6c5ae4
+| | [Tags] | manual 
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. A RIP is created for Custodians
+| | ... | 2. ${Custodian9} is not a Custodian in RLH
+| | ... | 3. ${Manager10} is not a Custodian in RLH
+| | ... | 4. In LDAP, ${Custodian9} has a manager: ${Manager10}
+| | ... | 5. ${Manager10} is not in the same folder branch as ${Custodian9} 
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Import the Custodian RIP
+| | ... | 2. Go to the Method tab | Custodian
+| | ... | 3. View ${Custodian9} 
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Manager field is ${Manager10} 
 
 | Managers are Imported when they do not met the current filter
-
-| An error occurs when a non-Manager Source field is mapped to the Manager destination 
+| | [Documentation] | Verify that  Managers are Imported when they  do not met the current filter
+| | ... | [id] df7a8d80-b605-11e4-9c30-90b11c6c5ae4
+| | [Tags] | manual 
+| | Run the following manual steps:
+| | ... | Pre-conditions:
+| | ... | 1. A RIP is created for Custodians with a department fitler; e.g. (department=test)
+| | ... | 2. ${Custodian10} is not a Custodian in RLH
+| | ... | 3. ${Manager11} is not a Custodian in RLH
+| | ... | 4. In LDAP, ${Custodian10} has a manager: ${Manager11}
+| | ... | 5. ${Manager11} does not have the same department as ${Custodian10} 
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Import the Custodian RIP
+| | ... | 2. Go to the Method tab | Custodian
+| | ... | 3. View ${Custodian10} 
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Manager field is ${Manager11} 
 
 *** Keywords *** 
 

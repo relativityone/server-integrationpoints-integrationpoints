@@ -3259,7 +3259,7 @@ $.jgrid.extend({
 					if(air) { t.p.afterInsertRow.call(t,rowid,data,data); }
 					k++;
 					if (t.p.datatype === 'local') {
-						debugger;
+						
 						lcdata[t.p.localReader.id] = id;
 						t.p._index[id] = t.p.data.length;
 						t.p.data.push(lcdata);

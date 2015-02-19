@@ -56,7 +56,7 @@
 | | Find A Row With The Following Data	|
 | | ... | Name						| Enable Scheduler	|
 | | ... | Field Type				| Yes/No			|
-| | ... | Is Required				| No				|
+| | ... | Is Required				| Yes				|
 | | ... | Associative Object Type	| ${EMPTY}
 
 
@@ -69,12 +69,12 @@
 | | ... | Associative Object Type	| ${EMPTY}
 
 
-| Last Runtime
+| Last Runtime (UTC)
 | | [Documentation] | [id] 11a41575-a89f-11e4-a233-b8ca3a83048f
 | | Find A Row With The Following Data	|
-| | ... | Name						| Last Runtime	|
-| | ... | Field Type				| Date			|
-| | ... | Is Required				| No			|
+| | ... | Name						| Last Runtime (UTC)	|
+| | ... | Field Type				| Date					|
+| | ... | Is Required				| No					|
 | | ... | Associative Object Type	| ${EMPTY}
 
 
@@ -90,9 +90,9 @@
 | Next Scheduled Runtime
 | | [Documentation] | [id] 11a41577-a89f-11e4-9455-b8ca3a83048f
 | | Find A Row With The Following Data	|
-| | ... | Name						| Next Scheduled Runtime	|
-| | ... | Field Type				| Date						|
-| | ... | Is Required				| No						|
+| | ... | Name						| Next Scheduled Runtime (UTC)	|
+| | ... | Field Type				| Date							|
+| | ... | Is Required				| No							|
 | | ... | Associative Object Type	| ${EMPTY}
 
 

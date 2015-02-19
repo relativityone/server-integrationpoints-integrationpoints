@@ -6,20 +6,7 @@
 *** Variables ***
 
 
-
 *** Keywords ***
-
-| Proceed to the Next Step of the Integration Point wizard
-| | [Documentation]	| This keyword proceeds to the Next Step of the Integration Point wizard.
-| | Click	| id=stepProgress	| # Click out of any given field
-| | ${PreviousStep}=	| Determine the current Step of the Create Integration Point Process
-| | ${NextStep}=	| Set Variable If	| 
-| | ... | "${PreviousStep}" == "Set Integration Details"	| Connect to Source	| 
-| | ... | "${PreviousStep}" == "Connect to Source"			| Map Fields		| 
-| | ... | "${PreviousStep}" == "Map Fields"					| User Error: Wrong keyword.	| 
-| | ... | Outdated Keyword. Please update step names.	| # Else
-| | Click	| id=next
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${NextStep}
 
 #------------------------------------------------------------------------------------------------------------------------
 # Step 1 Section 
@@ -34,7 +21,7 @@
 | | ... 			| - When ${Frequency} is 'Monthly' then ${SendOn} should be one of two strings: 
 | | ...				| -- 'The <X> <Y> of the month' where X is First, Second, Third, Fourth, or Last, and Y is any day Monday-Sunday or just 'day'.
 | | ...				| -- 'Day <X> of the month' where X is any value from 1-31.
-| | ...				| The value of ${ScheduledTime} should be expressed in military time. I.E. in the format HH:MM.
+| | ...				| The value of ${ScheduledTime} should be expressed HH:MM AM/PM.
 | | [ARGUMENTS]		| ${IntegrationName}=NULL	| ${Overwrite}=NULL	| ${SourceProvider}=NULL	| ${DestinationRDO}=NULL	| ${EnableScheduler}=NULL	| ${Frequency}=NULL		| 
 | | ...				| ${Reoccur}=NULL			| ${SendOn}=NULL	| ${StartDate}=NULL			| ${EndDate}=NULL			| ${ScheduledTime}=NULL
 | | Wait Until Page Contains Element	| id=name	| 10s	| The page was not on Step 1 of the Integration Point form.
@@ -64,11 +51,11 @@
 | | Run Keyword If	| ("${FrequencyValue}" == "Weekly") and ("${SendOn}" != "NULL")		| IntegrationPointKeywords.Fill out the Send On field for a Weekly Frequency	| ${SendOn}	| 
 | | ... | ELSE IF	| ("${FrequencyValue}" == "Monthly") and ("${SendOn}" != "NULL")	| IntegrationPointKeywords.Fill out the Send On field for a Monthly Frequency	| ${SendOn}
 
+| | Run Keyword Unless	| "${ScheduledTime}" == "NULL"	| Fill Out the Scheduled Time field	| ${ScheduledTime}	| # Out of order due to date picker issues with the End Date. This does not work when date picker overlaps dropdown.
+
 | | Run Keyword Unless	| "${StartDate}" == "NULL"	| Input Text	| id=scheduleRulesStartDate	| ${StartDate}
 
 | | Run Keyword Unless	| "${EndDate}" == "NULL"	| Input Text	| id=scheduleRulesEndDate	| ${EndDate}
-
-| | Run Keyword Unless	| "${ScheduledTime}" == "NULL"	| Input Text	| id=scheduledTime	| ${ScheduledTime}
 
 | Fill out the Send On field for a Weekly Frequency
 | | [Documentation]	| Selects the given checkboxes of the Weekly Send On field's checkboxes.
@@ -114,6 +101,16 @@
 | | Select from select2 Dropdown	| id=s2id_day-select	| ${DayValue}	| # The Send On dropdown
 | | Select Radio Button	| monthly	| days
 
+| Fill Out the Scheduled Time field
+| | [Documentation]	| Enters the Hour:Minute value and selects the AM/PM value.
+| | ... 			| [Tags] private
+| | [ARGUMENTS] 	| ${ScheduledTimeValue}
+| | ${AMPMValue}=		| Fetch from Right	| ${ScheduledTimeValue}	| ${Space}
+| | ${HourMinuteValue}=	| Fetch from Left	| ${ScheduledTimeValue}	| ${Space}
+| | Input Text	| id=scheduledTime	| ${HourMinuteValue}
+| | Select From Select2 Dropdown	| s2id_timeFormat	| ${AMPMValue.upper()}
+
+
 | Select the radio button for The X X of the month
 | | [Documentation]	| Selects the values for the "The X X of the month." option. This includes setting both the dropdown values and the radio button.
 | | ... 			| [Tags] private
@@ -130,7 +127,7 @@
 
 | Fill out the Following Fields of the Integration Point Step 2 form
 | | [Documentation]	| This keyword fills out the Integration Point Step 2 fields.
-| | ... 			| The value of ${Authentication} should be Select.../Anonymous/Encryption/FastBind/Secure/Secure Socket Layer/Readonly server.
+| | ... 			| The value of ${Authentication} should be Select.../Anonymous/FastBind/Secure/Secure Socket Layer/Readonly server.
 | | ... 			| The value of ${ImportNestedItems} should be Yes or No.
 | | [ARGUMENTS]		| ${ConnectionPath}=NULL		| ${ObjectFilterString}=NULL	| ${Authentication}=NULL	| 
 | | ...				| ${ConnectionUsername}=NULL	| ${ConnectionPassword}=NULL	| ${ImportNestedItems}=NULL
@@ -173,6 +170,14 @@
 | | @{WorkspaceFields}=	| Get Element Text	| xpath=//select[@id='selected-workspace-fields']/child::option	| False
 | | [Return]		| @{WorkspaceFields}
 
+| Verify that the Assigned Workspace Listbox has the following Fields in order
+| | [Documentation]	| Verifies that the given fields are on the Assigned Workspace listbox in the given order.
+| | [ARGUMENTS]		| @{ExpectedFields}
+| | @{WorkspaceFields}=	| Get the Assigned Workspace Fields
+| | Log	| Workspace Fields: ${WorkspaceFields}
+| | Log	| Expected Fields: ${ExpectedFields}
+| | Lists Should Be Equal	| ${WorkspaceFields}	| ${ExpectedFields}
+
 | Get the Assigned Source Attributes
 | | [Documentation]	| Returns a list of the Workspace Fields from the Assigned Source Attributes list box on Step 3 of the Integration Point creation process.
 | | Wait Until Page Contains Element	| id=selected-source-fields	| 10s	| The assigned Source Attributes List Box never loaded.
@@ -182,69 +187,161 @@
 
 | Get the Unassigned Source Attributes
 | | [Documentation]	| Returns a list of the Workspace Fields from the Unassigned Source Attributes list box on Step 3 of the Integration Point creation process.
-| | Wait Until Page Contains Element	| id=source-attributes	| 10s	| The unassigned Source Attributes List Box never loaded.
-| | Wait Until Page Contains Element	| xpath=//select[@id='source-attributes']/child::option	| 10s	| The unassigned Source Attributes never loaded.
-| | @{SourceAttributes}=	| Get Element Text	| xpath=//select[@id='source-attributes']/child::option	| False
-| | [Return]		| @{SourceAttributes}
+| | Wait Until Page Contains Element	| id=source-fields	| 10s	| The unassigned Source Attributes List Box never loaded.
+| | Wait Until Page Contains Element	| xpath=//select[@id='source-fields']/child::option	| 10s	| The unassigned Source Attributes never loaded.
+| | @{SourceAttributes}=	| Get Element Text	| xpath=//select[@id='source-fields']/child::option	| False
+
+| Click Workspace Field
+| | [Documentation] | A keyword that clicks an item from the (unselected) Workspace Field list. Multiple calls of select can be used with a single click of Move.
+| | [ARGUMENTS]		| ${Field}
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='workspace-fields']	| The Workspace Fields list box was not visible.
+| | Click	| xpath=//select[@id='workspace-fields']/child::option[text()='${Field}']
+
+| Click Selected Workspace Field
+| | [Documentation] | A keyword that clicks an item from the Selected Workspace Field list. Multiple calls of select can be used with a single click of Move.
+| | [ARGUMENTS]		| ${Field}
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Workspace Fields list box was not visible.
+| | Click	| xpath=//select[@id='selected-workspace-fields']/child::option[text()='${Field}']
+
+| Click Source Attribute Field
+| | [Documentation] | A keyword that clicks an item from the (unselected) Source Attribute Field list. Multiple calls of select can be used with a single Click of Move.
+| | [ARGUMENTS]		| ${Field}
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='source-fields']	| The Source Attribute Fields list box was not visible.
+| | Click	| xpath=//select[@id='source-fields']/child::option[text()='${Field}']
+
+| Click Selected Source Attribute Field
+| | [Documentation] | A keyword that clicks an item from the (unselected) Source Attribute Field list. Multiple calls of select can be used with a single Click of Move.
+| | [ARGUMENTS]		| ${Field}
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-source-fields']	| The Selected Source Attribute Fields list box was not visible.
+| | Click	| xpath=//select[@id='selected-source-fields']/child::option[text()='${Field}']
+
+| Move the Following Workspace Fields to the Selected List
+| | [Documentation] | 
+| | [ARGUMENTS]		| @{WorkspaceFields}
+| | :FOR	| ${WorkspaceField}	| IN	| @{WorkspaceFields}
+| | | Click Workspace Field	| ${WorkspaceField}
+| | | Click	| id=add-workspace-field
+
+| Move the Following Workspace Fields from the Selected List
+| | [Documentation] | 
+| | [ARGUMENTS]		| @{WorkspaceFields}
+| | :FOR	| ${WorkspaceField}	| IN	| @{WorkspaceFields}
+| | | Click Selected Workspace Field	| ${WorkspaceField}
+| | | Click	| id=remove-workspace-field
+
+| Move the Following Source Attribute Fields to the Selected List
+| | [Documentation] | 
+| | [ARGUMENTS]		| @{AttributeFields}
+| | :FOR	| ${AttributeField}	| IN	| @{AttributeFields}
+| | | Click Source Attribute Field	| ${AttributeField}
+| | | Click	| id=add-source-field
+
+| Move the Following Source Attribute Fields from the Selected List
+| | [Documentation] | 
+| | [ARGUMENTS]		| @{AttributeFields}
+| | :FOR	| ${AttributeField}	| IN	| @{AttributeFields}
+| | | Click Selected Source Attribute Field	| ${AttributeField}
+| | | Click	| id=remove-source-field
+
+| Map the Following Fields on the Integration Point Step 3 form
+| | [Documentation] | A keyword that maps all of the specified fields for a RIP on step 3.
+| | [ARGUMENTS]		| @{WorkspaceFieldsAndSourceAttributeFields}
+| | :FOR	| ${WorkspaceField}	| ${SourceAttribute}	| IN	| @{WorkspaceFieldsAndSourceAttributeFields}
+| | | Move the Following Workspace Fields to the Selected List			| ${WorkspaceField}
+| | | Move the Following Source Attribute Fields to the Selected List	| ${SourceAttribute}
+
+| Verify that the following field is not in the following list
+| | [Documentation] | A keyword that verifies that the specified field is not present in the specified list.
+| | ... 			| The value of ${ListName} should be either: workspace-fields, selected-workspace-fields, selected-source-fields, or source-fields
+| | [ARGUMENTS]		| ${FieldName}	| ${ListName}
+| | Element should not be visible	| xpath=//select[@id='${ListName}']/child::option[text()='${FieldName}']
+
+| Verify that the Selected Workspace fields are in the following order
+| | [Documentation] | A keyword that verifies the fields in the Selected Workspace list are in the desired order.
+| | [ARGUMENTS]		| @{ExpectedFields}
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Fields list box was not visible.
+| | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-workspace-fields']/child::option | False 
+| | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
+
+| Verify that the Selected Source Attribute fields are in the following order
+| | [Documentation] | A keyword that verifies the fields in the Selected Source Attribute list are in the desired order.
+| | [ARGUMENTS]		| @{ExpectedFields}
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-source-fields']	| The Selected Fields list box was not visible.
+| | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-source-fields']/child::option | False 
+| | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
 
 #------------------------------------------------------------------------------------------------------------------------
 # Generic Keywords
 
-| Get a List of All Non-System Object Types in the Workspace
-| | [Documentation]	| Gets a list of all of the Object types in the Workspace, removes the System Object types, and then return the remainder. 
-| | ${2DGrid}=	| Query Workspace Database	|  
-| | ... | SELECT Name
-| | ... | FROM [EDDSDBO].[ObjectType]
-| | ... | ORDER BY Name
-| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
-| | @{ObjectFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
-| | @{SystemFields}=	| Create List	| 
-| | ... | Agent Type			|
-| | ... | Batch					|
-| | ... | Batch Set				|
-| | ... | Code					|
-| | ... | Event Handler			|
-| | ... | Field					|
-| | ... | Folder				|
-| | ... | Group					|
-| | ... | History				|
-| | ... | Install Event Handler	|
-| | ... | Integration Point		| 
-| | ... | Layout				|
-| | ... | Markup Set			|
-| | ... | Mass Operation		|
-| | ... | Object Rule			|
-| | ... | Object Type			|
-| | ... | Production			|
-| | ... | Relativity Script		|
-| | ... | Report				|
-| | ... | Search				|
-| | ... | Search Container		|
-| | ... | Search Index			|
-| | ... | Source Provider		| 
-| | ... | Tab					|
-| | ... | View					|
-| | ... | Workspace
-| | Remove Values From List	| ${ObjectFields}	| @{SystemFields}
-| | [Return]		| @{ObjectFields}
+| Proceed to the Next Step of the Integration Point wizard
+| | [Documentation]	| This keyword proceeds to the Next Step of the Integration Point wizard.
+| | Click	| id=stepProgress	| # Click out of any given field
+| | ${PreviousStep}=	| Determine the current Step of the Create Integration Point Process
+| | ${NextStep}=	| Set Variable If	| 
+| | ... | "${PreviousStep}" == "Set Integration Details"	| Connect to Source	| 
+| | ... | "${PreviousStep}" == "Connect to Source"			| Map Fields		| 
+| | ... | "${PreviousStep}" == "Map Fields"					| User Error: Wrong keyword.	| 
+| | ... | Outdated Keyword call. Please update step names as "${NextStep}" was not found.	| # Else
+| | Click	| id=next
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${NextStep}
+| | Wait for the Loading Indicator to disappear
 
-| Get the Non-System Fields for the following Object Type
-| | [Documentation]	| Gets a list of all of the fields on the given object, removes the five system fields, and then returns the remaining fields.
-| | [ARGUMENTS]		| ${ObjectType}
-| | ${2DGrid}=	| Query Workspace Database	|  
-| | ... | SELECT DisplayName
-| | ... | FROM [EDDSDBO].[Field] f
-| | ... | JOIN [ObjectType] ot on ot.DescriptorArtifactTypeID = f.FieldArtifactTypeID
-| | ... | WHERE ot.Name = '${ObjectType}'
-| | ... | AND f.isVisible != 0	| # Field is not hidden
-| | ... | ORDER BY DisplayName	| # Sort list
-| | Should Not Be Empty	| ${2DGrid}	| No fields were found for the Object Type "${ObjectType}".
-| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
-| | @{NonSystemFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
-| | @{SystemFields}=	| Create List	| System Created By	| System Created On	| System Last Modified By	| System Last Modified On	| Artifact ID
-| | Remove Values From List	| ${NonSystemFields}	| @{SystemFields}
-| | Should Not Be Empty	| ${NonSystemFields}	| No non-object and non-system fields were found for the Object Type "${ObjectType}".
-| | [Return]		| @{NonSystemFields}
+| Proceed to the Previous Step of the Integration Point wizard
+| | [Documentation]	| This keyword goes to the previous Step of the Integration Point wizard.
+| | Click	| id=stepProgress	| # Click out of any given field
+| | ${CurrentStep}=	| Determine the current Step of the Create Integration Point Process
+| | ${PreviousStep}=	| Set Variable If	| 
+| | ... | "${CurrentStep}" == "Set Integration Details"	| User Error: Wrong keyword.	| 
+| | ... | "${CurrentStep}" == "Connect to Source"		| Set Integration Details	| 
+| | ... | "${CurrentStep}" == "Map Fields"				| Connect to Source		| 
+| | ... | Outdated Keyword call. Please update step names as "${PreviousStep}" was not found.	| # Else
+| | Click	| id=back
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${PreviousStep}
+| | Wait for the Loading Indicator to disappear
+
+| Run Import Now on the Following Integration Point
+| | [Documentation] | A keyword that runs an RIP import; can be called from anywhere.
+| | [ARGUMENTS]		| ${IntegrationPoint} 
+| | View Integration Point	| ${IntegrationPoint} 
+| | Page Should Contain Element	| xpath=//a[@class='consoleButtonEnabled' and text()='Import Now']	| The Import Now button was disabled for the Integration Point "${IntegrationPoint}".
+| | Click	| Import Now
+| | Click	| xpath=//span[@class='ui-button-text' and text()='OK'] 
+| | Wait Until Integration Point Job Runs	| ${IntegrationPoint}	| 60S
+
+| View Integration Point
+| | [Documentation] | A keyword that Views an Integration Point. Can be called from any where.
+| | [ARGUMENTS]		| ${IntegrationName}
+| | Go to the Tab	| Integration Points
+| | Set Filter	| Name	| ${IntegrationName}
+| | Page Should Contain Element	| xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationName}']	| The Integration Point "${IntegrationName}" was not found.
+| | Click	| xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationName}']
+
+| Delete the Following Integration Point
+| | [Documentation] | A keyword that deletes the specified Integration Point; can be called from anywhere.
+| | [ARGUMENTS]		| ${IntegrationPoint}
+| | View Integration Point	| ${IntegrationPoint} 
+| | Delete this object
+
+| Create Integration Point
+| | [Documentation] | A keyword that creates an Integration Point. 
+| | ...				| The value of ${Step1Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 1 form".
+| | ...				| The value of ${Step2Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 2 form".
+| | ...				| The value of ${Step3Mapping} are the arguments from "Map the Following Fields on the Integration Point Step 3 form".
+| | ...				| The value of ${ParentAttribute} is the Parent RDO for the Destination RDO, which should be NULL or not entered when there is no Parent.
+| | [ARGUMENTS]		| ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | ${Step3UniqueID} | ${ParentAttribute}=NULL
+| | Open Create Integration Point
+| | Fill out the Following Fields of the Integration Point Step 1 form | @{Step1Fields}
+| | Proceed to the Next Step of the Integration Point wizard
+
+| | Fill out the Following Fields of the Integration Point Step 2 form | @{Step2Fields}
+| | Proceed to the Next Step of the Integration Point wizard
+| | Wait Until Element Is Visible	| xpath=//select[@id='source-fields']/child::option	| 15s	| No Attribute fields were found.
+
+| | Map the Following Fields on the Integration Point Step 3 form | @{Step3Mapping}
+| | Select from select2 Dropdown	| s2id_overlay-identifier | ${Step3UniqueID}
+| | Run Keyword Unless	| '${ParentAttribute}'=='NULL' | Select from select2 Dropdown | s2id_parent-identifier | ${ParentAttribute}
+| | Click | id=save
+| | Wait Until Keyword Succeeds	| 30s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${Step1Fields[0]}
 
 | Determine the current Step of the Create Integration Point Process
 | | [Documentation]	| This keyword determines and returns which Step you are in on the Create Integration Point Process.
@@ -254,7 +351,7 @@
 | | [Return]		| ${ActualStep}
 
 | Open Create Integration Point
-| | [Documentation]	| Opens the create Integration Point page. Must be called from the All Integration Points page.
+| | [Documentation]	| Opens the create Integration Point page. 
 | | Go to the Tab	| Integration Points
 | | Click	| New Integration Point
 | | Wait for then Select iFrame	| id=_externalPage	| 10s	| The Page never redirected after clicking "New Integration Point".
@@ -262,16 +359,16 @@
 | Verify that the following field is not required
 | | [Documentation]	| A keyword that verifies the specified field does not have the required field indicator (orange line).
 | | [ARGUMENTS] 	| ${FieldName}
-| | Page Should Contain Element		| xpath=//div[text()="${FieldName}"]	| The field "${FieldName}" was not present on the page.
-| | Page Should Not Contain Element	| xpath=//div[contains(@class, "field-label") and contains(@class, "required") and text()="${FieldName}"]	| The field "${FieldName}" is required when it should not have been.
-| | Page Should Contain Element		| xpath=//div[@class="field-label" and text()="${FieldName}"]			| The field "${FieldName}" has unexpected HTML. Please re-write this keyword.
+| | Page Should Contain Element		| xpath=//div[contains(text(), "${FieldName}")]	| The field "${FieldName}" was not present on the page.
+| | Page Should Not Contain Element	| xpath=//div[contains(@class, "field-label") and contains(@class, "required") and contains(text(), "${FieldName}")]	| The field "${FieldName}" is required when it should not have been.
+| | Page Should Contain Element		| xpath=//div[@class="field-label" and contains(text(), "${FieldName}")]	| The field "${FieldName}" has unexpected HTML. Please re-write this keyword.
 
 | Verify that the following field is required
 | | [Documentation]	| A keyword that verifies that the specified field has the required field indicator (orange line).
 | | [ARGUMENTS] 	| ${FieldName}
-| | Page Should Contain Element		| xpath=//div[text()="${FieldName}"]	| The field "${FieldName}" was not present on the page.
-| | Page Should Not Contain Element	| xpath=//div[@class="field-label" and text()="${FieldName}"]	| The field "${FieldName}" is not required when it should have been.
-| | Page Should Contain Element		| xpath=//div[contains(@class, "field-label") and contains(@class, "required") and text()="${FieldName}"]	| The field "${FieldName}" has unexpected HTML. Please re-write this keyword.
+| | Page Should Contain Element		| xpath=//div[contains(text(), "${FieldName}")]	| The field "${FieldName}" was not present on the page.
+| | Page Should Not Contain Element	| xpath=//div[@class="field-label" and contains(text(), "${FieldName}")]	| The field "${FieldName}" is not required when it should have been.
+| | Page Should Contain Element		| xpath=//div[contains(@class, "field-label") and contains(@class, "required") and contains(text(), "${FieldName}")]	| The field "${FieldName}" has unexpected HTML. Please re-write this keyword.
 
 | Verify that the following radio buttons are grouped together
 | | [Documentation]	| A keyword that verifies that a radio buttons set of options are correct.
@@ -307,12 +404,14 @@
 | | Page Should Contain Element	| xpath=//select[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
 | | Page Should Contain Element	| xpath=//select[@class="list-box" and @id="${FieldID}"]	| The field ID of "${FieldID}" does not have an input type of a list box list.
 
-| Verify that the following section contains the following fields
+| Verify that the following Card contains the following fields
 | | [Documentation]	| A keyword that verifies that a Section contains the specified fields in the specified order
 | | [ARGUMENTS]		| ${SectionHeading}	| @{ExpectedFields}
-| | Element Should be Visible	| xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]	| The Section "${SectionHeading}" was not found
+| | Element Should be Visible	| xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]	| The Card "${SectionHeading}" was not found
 | | @{ActualFields}=	| Get Element Text	| xpath=//div[@class="card" and descendant::text()="${SectionHeading}"]/descendant::div[contains(@class, "field-label")]	| False 
 | | Remove values from list	| ${ActualFields}	| ${EMPTY}
+| | Log	| Expected Fields: ${ExpectedFields}
+| | Log	| Actual Fields: ${ActualFields}
 | | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
 
 | Verify that you are on the following Step of the Create Integration Point Process
@@ -342,4 +441,6 @@
 | Library	| String
 | Library	| Collections
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt

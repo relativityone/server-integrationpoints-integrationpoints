@@ -1,6 +1,6 @@
 
 *** Settings ***
-| Documentation 	| Verify that the Parent Attribtue list is shown at the correct times with the correct values
+| Documentation 	| Verify that the Parent Attribtue list is shown at the correct times with the correct values.
 | Metadata		    | Authors	| Daniel Oliver
 | Force Tags		| in-progress	| team.method
 | Suite Setup		| Open and Log in to Method
@@ -17,7 +17,7 @@
 | ${WorkspaceFieldListID}   | workspace-fields
 | ${SelectedFieldListID}    | selected-workspace-fields
 | ${SelectedAttributeListID}    | selected-source-fields
-| ${SourceAttributeListID}      | source-attributes
+| ${SourceAttributeListID}      | source-fields
 | ${AddAllWorkspaceFieldsIcon}   | add-all-workspace-fields
 | ${AddWorkspaceFieldIcon}       | add-workspace-field
 | ${RemoveWorkspaceFieldIcon}    | remove-workspace-field
@@ -32,6 +32,7 @@
 | ${RemoveAllSourceFieldsIcon} | remove-all-source-fields
 | ${OverlayID} | 
 | ${ParentAttributeID} | 
+
 
 *** Test Cases ***
 
@@ -71,18 +72,6 @@
 | | ... | Verify that the following field ID has a droplist input | ${ParentAttributeID}
 
 
-| The Parent Attribute list is required
-| | [Documentation] | Verify that the Parent Attribute list is a required field
-| | ...				| [id] 10e61c9e-a89f-11e4-ba2a-b8ca3a83048f
-| | [Tags]			| manual	| automateable
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the following field is required    | ${ParentAttributeID}
-
-
 | Parent Attribute's Default value is Select...
 | | [Documentation] | Verify that the Parent Attribute's Default value is "Select..."
 | | ...				| [id] 10e61c9f-a89f-11e4-a418-b8ca3a83048f
@@ -93,6 +82,35 @@
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Parent Attribute's Default value is "Select..."
+
+
+| A Mapping cannot be Saved while Parent Attribute's value is Select...
+| | [Documentation] | Verify that Mappings cannot be Saved while Parent Attribute's value is "Select...".
+| | [Tags]			| manual	| dan650
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
+| | ... | 2. Create an otherwise valid Mapping, but leave Parent Attribute as "Select..."
+| | ... | 3. Click Save
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Parent Attribute field throws the following error: "The Parent Attribute is required."
+
+
+| A Mapping can be Saved after the Parent Attribute's validation
+| | [Documentation] | Verify that Mappings can be Saved after Parent Attribute's validation was triggered.
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
+| | ... | 2. Create an otherwise valid Mapping, but leave Parent Attribute as "Select..."
+| | ... | 3. Click Save
+| | ... | 4. Wait until the Parent Attribute field throws the its error
+| | ... | 5. Select any Parent Attribute besides "Select..."
+| | ... | 6. Click Save
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Integration Point is saved with the given Parent Attribute
 
 
 | Parent Attribute list has the correct values
@@ -121,24 +139,6 @@
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the IP has been created.
-
-
-*** Keywords *** 
-
-| Verify that the following icons are present and sorted correctly
-| | [Documentation]	| A keyword that verifies that a set of icons, on the same element, are present and in the specified order
-| | [ARGUMENTS]		| @{ExpectedFields}
-| | ${ExpectedXpath} | Set Variable  | xpath=//*[@id='${ExpectedFields[0]}']
-| | Page Should Contain Element | ${ExpectedXpath}  | Could not find the first icon.
-| | ${FieldCount} | Get Length  | ${ExpectedFields}
-| | :FOR  | ${i}  | IN RANGE  | 1 | ${FieldCount}
-| | | ${ExpectedXpath}= | Set Variable   | ${ExpectedXpath}/following-sibling::*[@id='${ExpectedFields[0]}']
-| | | Page should contain element  | ${ExpectedXpath} | The icons are not in the desired order.
-
-| Go to Step 3 of the Create Integration Point Process
-| | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Testing | Append/Overlay | LDAP | Custodian Role | no
-| | Fill out the Following Fields of the Integration Point Step 2 form | ${ValidConnectionPath}
 
 
 *** Settings ***
