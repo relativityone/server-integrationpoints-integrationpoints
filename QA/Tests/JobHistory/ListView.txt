@@ -18,6 +18,7 @@
 | ${ConnectionUsername}		| testing\\administrator
 | ${ConnectionPassword}		| P@ssw0rd@1
 | ${ImportNestedItems}		| Yes
+| ${New Job History Button}	| xpath=//a[@class='actionButtonSmall' and text()='New Job History']
 
 
 *** Test Cases ***
@@ -94,6 +95,13 @@
 | | ... | Expected Results:
 | | ... | 1. Verify that you are sent to a Job Details Layout
 | | ... | 2. Verify that you are on the correct Job
+
+
+| The New Job History Button is not on the page
+| | [Documentation] | Verifies that the "New Job History" Button is not on the page.
+| | [Tags]			| untested
+| | Go to the Tab	| Job History
+| | Page Should Not Contain Element	| ${New Job History Button}	| The "New Job History" Button was present on the page.
 
 
 *** Keywords ***

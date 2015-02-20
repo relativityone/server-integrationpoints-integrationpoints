@@ -35,7 +35,7 @@
 | | [Documentation]	| Verify that the Integration Point Read page has only the "Integration Point Details" Layout. 
 | | ...				| 
 | | [Tags]			| automated
-| | Verify that the Layout Dropdown only has the following Views	| Integration Point Details
+| | Verify that the Layout Dropdown only has the following Layouts	| Integration Point Details
 
 
 | The correct Buttons appear in the Header
@@ -53,39 +53,73 @@
 | The Category Headings are in the correct order
 | | [Documentation]	| Verify that the Category headings are sorted correctly on the Integration Point Details" Layout.
 | | ...				| [id] 1180fd11-a89f-11e4-b0e4-b8ca3a83048f
-| | [Tags]			| automated
+| | [Tags]			| untested
 | | Verify that the current Layout has the following Categories in Order	| 
-| | ... | General	| 
-| | ... | Status
+| | ... | General			| 
+| | ... | Status			| 
+| | ... | Import Scheduling	| 
+| | ... | Source Connection
 
 
 | The correct Fields are present when Enable Scheduler is set to No
 | | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to No.
 | | ...				| [id] 1180fd12-a89f-11e4-a95c-b8ca3a83048f
-| | [Tags]			| automated
-| | Verify the current layout has the following fields	| # and only the following fields
-| | ... | Name							| 
-| | ... | Source Provider				| 
-| | ... | Overwrite						| 
-#| | ... | Log Errors						| 
-| | ... | Enable Scheduler				|
-| | ... | Next Scheduled Runtime (UTC)	| 
-| | ... | Last Runtime (UTC)
+| | [Tags]			| manual	| field_placement
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | 1. Verify that the "General" Category has the following fields in order:	| 
+| | ... | - Name			| 
+| | ... | - Overwrite		| 
+| | ... | - Source Provider	| 
+| | ... | - Destination RDO
+| | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
+| | ... | - Job Status						|
+| | ... | - Next Scheduled Runtime (UTC)	| 
+| | ... | - Last Runtime (UTC)
+| | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
+| | ... | - Enable Scheduler	|
+| | ... | - Frequency			| 
+| | ... | - Start Date			| 
+| | ... | - End Date			| 
+| | ... | - Scheduled Time
+| | ... | 4. Verify that the "Source Connection" Category has the following fields in order:	| 
+| | ... | - Connection Path			| 
+| | ... | - Object Filter String	| 
+| | ... | - Authentication			| 
+| | ... | - Username				| 
+| | ... | - Password				| 
+| | ... | - Import Nested Items
 
 
 | The correct Fields are present when Enable Scheduler is set to Yes
 | | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes.
 | | ...				| [id] 11817242-a89f-11e4-82d7-b8ca3a83048f
-| | [Tags]			| automated
+| | [Tags]			| manual	| field_placement
 | | [Setup]			| View Integration Point	| ${IntegrationPoint2}
-| | Verify the current layout has the following fields	| # and only the following fields
-| | ... | Name							| 
-| | ... | Source Provider				| 
-| | ... | Overwrite						| 
-#| | ... | Log Errors						| 
-| | ... | Enable Scheduler				|
-| | ... | Next Scheduled Runtime (UTC)	| 
-| | ... | Last Runtime (UTC)
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | 1. Verify that the "General" Category has the following fields in order:	| 
+| | ... | - Name			| 
+| | ... | - Overwrite		| 
+| | ... | - Source Provider	| 
+| | ... | - Destination RDO
+| | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
+| | ... | - Job Status						|
+| | ... | - Next Scheduled Runtime (UTC)	| 
+| | ... | - Last Runtime (UTC)
+| | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
+| | ... | - Enable Scheduler	|
+| | ... | - Frequency			| 
+| | ... | - Start Date			| 
+| | ... | - End Date			| 
+| | ... | - Scheduled Time
+| | ... | 4. Verify that the "Source Connection" Category has the following fields in order:	| 
+| | ... | - Connection Path			| 
+| | ... | - Object Filter String	| 
+| | ... | - Authentication			| 
+| | ... | - Username				| 
+| | ... | - Password				| 
+| | ... | - Import Nested Items
 
 
 *** Keywords ***
@@ -99,7 +133,7 @@
 | | Log	| Actual Categories: ${ActualCategories}
 | | Lists Should Be Equal	| ${ExpectedCategories}	| ${ActualCategories}
 
-| Verify that the Layout Dropdown only has the following Views
+| Verify that the Layout Dropdown only has the following Layouts
 | | [Documentation]	| This keyword verifies that the Layout dropdown has only the given Layouts in any order.
 | | ...				| This keyword assumes that the Layout dropdown's name is "_dynamicTemplate$ctl03".
 | | [ARGUMENTS]		| @{ExpectedLayouts}

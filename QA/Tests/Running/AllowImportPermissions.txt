@@ -87,7 +87,7 @@
 
 
 | Users with the Allow Import permission can Import Now
-| | [Documentation] |  Verify that Users with the Allow Import permission can see the Import Now button and use it without issue.
+| | [Documentation] | Verify that Users with the Allow Import permission can see the Import Now button and use it without issue.
 | | [Tags]			| manual	| permissions
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -107,6 +107,20 @@
 | | ... | Expected Results:
 | | ... | 1. Verify that the Integration Point Layout does show the Import Now button
 | | ... | 2. Verify that the Import Now operation succeeds
+
+
+| The Allow Import Permission works with DBMT'd Users 
+| | [Documentation] | Verify that Users DBMT'd into the environment work correctly with the Allow Import permission.
+| | [Tags]			| manual	| permissions	| dbmt
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Re-run "Users without the Allow Import permission cannot Create an Integration Point" using a DBMT'ed User
+| | ... | 2. Re-run "Users without the Allow Import permission cannot Import Now" using a DBMT'ed User
+| | ... | 3. Re-run "Users with the Allow Import permission can Create an Integration Point" using a DBMT'ed User
+| | ... | 4. Re-run "Users with the Allow Import permission can Import Now" using a DBMT'ed User
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that DBMT'd Users work correctly with the Allow Import permission
 
 
 *** Settings ***

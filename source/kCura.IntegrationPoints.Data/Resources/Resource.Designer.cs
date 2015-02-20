@@ -80,6 +80,20 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to select gu.UserArtifactID 
+        ///  From [EDDSDBO].[GroupUser] gu
+        ///  join [EDDSDBO].[AccessControlListPermission]  acl on gu.GroupArtifactID = acl.GroupID
+        ///  join [EDDSDBO].[Permission] p on p.PermissionID = acl.PermissionID
+        ///  where UserArtifactID = @userID AND p.[PermissionID] = 158
+        ///.
+        /// </summary>
+        internal static string CheckImportPermission {
+            get {
+                return ResourceManager.GetString("CheckImportPermission", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SET ANSI_NULLS ON
         ///SET QUOTED_IDENTIFIER ON
         ///
@@ -178,18 +192,18 @@ namespace kCura.IntegrationPoints.Data.Resources {
         
         /// <summary>
         ///   Looks up a localized string similar to SELECT
-        ///		ot.DescriptorArtifactTypeID
-        ///		,ot.Name
-        ///  FROM [EDDSDBO].ObjectType ot
-        ///  WHERE DescriptorArtifactTypeID in 
-        ///  (select atg.ArtifactTypeID
-        ///  From [EDDSDBO].[GroupUser] gu
-        ///  join [EDDSDBO].[AccessControlListPermission]  acl on gu.GroupArtifactID = acl.GroupID
-        ///  join [EDDSDBO].[Permission] p on p.PermissionID = acl.PermissionID
-        ///  join [EDDSDBO].[ArtifactTypeGrouping] atg on atg.ArtifactGroupingID = p.ArtifactGrouping
-        ///  where UserArtifactID = @userID AND p.[Type] = 6 
+        ///ot.DescriptorArtifactTypeID
+        ///,ot.Name
+        ///FROM [EDDSDBO].ObjectType ot
+        ///WHERE DescriptorArtifactTypeID in
+        ///(select atg.ArtifactTypeID
+        ///From [EDDSDBO].[GroupUser] gu
+        ///join [EDDSDBO].[AccessControlListPermission]  acl on gu.GroupArtifactID = acl.GroupID
+        ///join [EDDSDBO].[Permission] p on p.PermissionID = acl.PermissionID
+        ///join [EDDSDBO].[ArtifactTypeGrouping] atg on atg.ArtifactGroupingID = p.ArtifactGrouping
+        ///where UserArtifactID = @userID AND p.[Type] = 6
         ///)
-        ///AND (DescriptorArtifac [rest of string was truncated]&quot;;.
+        ///AND (DescriptorArtifactTypeID &gt; 1000000 OR D [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string GetObjectTypes {
             get {
