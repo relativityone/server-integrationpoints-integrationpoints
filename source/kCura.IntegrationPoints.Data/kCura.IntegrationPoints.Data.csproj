@@ -90,12 +90,14 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="IPermissionService.cs" />
     <Compile Include="IRSAPIService.cs">
       <DependentUpon>IRSAPIService.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Models\ApplicationBinary.cs" />
+    <Compile Include="PermissionService.cs" />
     <Compile Include="Queries\GetApplicationBinaries.cs" />
     <Compile Include="Queries\GetApplicationGuid.cs" />
     <Compile Include="RdoGetter.cs" />
@@ -141,6 +143,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IRSAPIService.cs</LastGenOutput>
     </None>
+    <Content Include="Resources\GetObjectTypes.sql" />
     <None Include="RSAPIService.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>RSAPIService.cs</LastGenOutput>
@@ -168,6 +171,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\CheckImportPermission.sql" />
     <Content Include="Resources\GetApplicationBinaries.sql" />
     <Content Include="Resources\GetApplicationGuid.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
