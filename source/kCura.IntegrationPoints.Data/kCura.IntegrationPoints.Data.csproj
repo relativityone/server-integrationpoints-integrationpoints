@@ -94,6 +94,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="IPermissionService.cs" />
     <Compile Include="IObjectTypeQuery.cs" />
     <Compile Include="IRSAPIService.cs">
       <DependentUpon>IRSAPIService.tt</DependentUpon>
@@ -104,6 +105,7 @@
     <Compile Include="Migrations\IMigration.cs" />
     <Compile Include="Migrations\MigrationRunner.cs" />
     <Compile Include="Models\ApplicationBinary.cs" />
+    <Compile Include="PermissionService.cs" />
     <Compile Include="Queries\GetJobCustodianManagerLinks.cs" />
     <Compile Include="Queries\CreateCustodianManagerResourceTable.cs" />
     <Compile Include="Queries\GetApplicationBinaries.cs" />
@@ -176,9 +178,11 @@
     <EmbeddedResource Include="Resources\Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\CheckImportPermission.sql" />
     <Content Include="Resources\AddWebApiConfig.sql" />
     <Content Include="Resources\GetJobCustodianManagerLinks.sql" />
     <Content Include="Resources\CreateCustodianManagerResourceTable.sql" />
