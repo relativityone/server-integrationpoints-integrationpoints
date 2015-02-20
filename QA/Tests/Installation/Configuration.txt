@@ -11,11 +11,11 @@
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Install RIP for the first time on an enviroment that does not have Processing installed
+| | ... | 1. Install RIP for the first time on an environment that does not have Processing installed
 | | ... | 2. Open SQL Server Manager
 | | ... | 3. View Databases > EDDS > Tables > System Tables > eddsdbo.Configuration
 | | ... | 4. Find the entry for: Section:kCura.EDDS.DBMT; Name:WebAPIPath. Note what this value is.
-| | ... | 5. Find the entry for: Section:kCura.IntegrationPoints; Name: IntegrationPointsWebAPIPath 
+| | ... | 5. Find the entry for: Section:kCura.Relativity.IntegrationPoints; Name: IntegrationPointsWebAPIPath 
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the value for kCura.IntegrationPoints>IntegrationPointsWebAPIPath is the same value as kCura.EDDS.DBMT>WebAPIPath
@@ -26,11 +26,11 @@
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Install RIP for the first time on an enviroment that does not have Processing installed
+| | ... | 1. Install RIP for the first time on an environment that does have Processing installed
 | | ... | 2. Open SQL Server Manager
 | | ... | 3. View Databases > EDDS > Tables > System Tables > eddsdbo.Configuration
 | | ... | 4. Find the entry for: Section:Relativity.Core; Name: ProcessingWebAPIPath. Note what this value is.
-| | ... | 5. Find the entry for: Section:kCura.IntegrationPoints; Name: IntegrationPointsWebAPIPath 
+| | ... | 5. Find the entry for: Section:kCura.Relativity.IntegrationPoints; Name: IntegrationPointsWebAPIPath 
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the value for kCura.IntegrationPoints>IntegrationPointsWebAPIPath is the same value as Relativity.Core>ProcessingWebAPIPath
@@ -40,11 +40,13 @@
 | | ...				| [id] e6eaf60f-b7b1-11e4-9fe6-90b11c6c5ae48313cf21-b7b3-11e4-8964-90b11c6c5ae4
 | | [Tags] | manual
 | | Run the following manual steps:
+| | ... | Precondition:
+| | ... | 1. RIP is installed on an environment
+| | ... |
 | | ... | Steps:
-| | ... | 1. Install RIP on an enviroment
-| | ... | 2. Open SQL Server Manager
-| | ... | 3. View Databases > EDDS > Tables > System Tables > eddsdbo.Configuration
-| | ... | 4. Find the entry for: Section:kCura.IntegrationPoints; Name: IntegrationPointsWebAPIPath 
+| | ... | 1. Open SQL Server Manager
+| | ... | 2. View Databases > EDDS > Tables > System Tables > eddsdbo.Configuration
+| | ... | 3. Find the entry for: Section:kCura.IntegrationPoints; Name: IntegrationPointsWebAPIPath 
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the description is: The URL for the Windows Authenticated Relativity Web API endpoint used by integration points.
