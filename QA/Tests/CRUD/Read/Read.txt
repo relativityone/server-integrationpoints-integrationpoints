@@ -62,30 +62,34 @@
 | The correct Fields are present when Enable Scheduler is set to No
 | | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to No.
 | | ...				| [id] 1180fd12-a89f-11e4-a95c-b8ca3a83048f
-| | [Tags]			| automated
-| | Verify the current layout has the following fields	| # and only the following fields
-| | ... | Name							| 
-| | ... | Source Provider				| 
-| | ... | Overwrite						| 
-#| | ... | Log Errors						| 
-| | ... | Enable Scheduler				|
-| | ... | Next Scheduled Runtime (UTC)	| 
-| | ... | Last Runtime (UTC)
+| | [Tags]			| manual	| field_placement
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | 1. Verify that the General Category has the following fields in order:	| 
+| | ... | - Name			| 
+| | ... | - Source Provider	| 
+| | ... | - Overwrite
+| | ... | 2. Verify that the Status Category has the following fields in order:	| 
+| | ... | - Enable Scheduler				|
+| | ... | - Next Scheduled Runtime (UTC)	| 
+| | ... | - Last Runtime (UTC)
 
 
 | The correct Fields are present when Enable Scheduler is set to Yes
 | | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes.
 | | ...				| [id] 11817242-a89f-11e4-82d7-b8ca3a83048f
-| | [Tags]			| automated
+| | [Tags]			| manual	| field_placement
 | | [Setup]			| View Integration Point	| ${IntegrationPoint2}
-| | Verify the current layout has the following fields	| # and only the following fields
-| | ... | Name							| 
-| | ... | Source Provider				| 
-| | ... | Overwrite						| 
-#| | ... | Log Errors						| 
-| | ... | Enable Scheduler				|
-| | ... | Next Scheduled Runtime (UTC)	| 
-| | ... | Last Runtime (UTC)
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | 1. Verify that the General Category has the following fields in order:	| 
+| | ... | - Name			| 
+| | ... | - Source Provider	| 
+| | ... | - Overwrite
+| | ... | 2. Verify that the Status Category has the following fields in order:	| 
+| | ... | - Enable Scheduler				|
+| | ... | - Next Scheduled Runtime (UTC)	| 
+| | ... | - Last Runtime (UTC)
 
 
 *** Keywords ***

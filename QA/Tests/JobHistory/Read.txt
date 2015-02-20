@@ -60,27 +60,27 @@
 
 | The correct Fields are present on the Job Details Layout
 | | [Documentation]	| Verify that the correct Fields are present on the "Job Details" Layout.
-| | [Tags]			| untested
-| | Verify the current layout has the following fields	| # and only the following fields
-| | ... | Integration Point		| 
-| | ... | Status				| 
-| | ... | Job Error				| 
-| | ... | Start Time (UTC)		| 
-| | ... | End Time (UTC)		|
-| | ... | Records Imported		| 
-| | ... | Records with Errors
+| | [Tags]			| manual	| field_placement
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | 1. Verify that the Job Details Category has the following fields in order:	| 
+| | ... | - Integration Point	| 
+| | ... | - Status				| 
+| | ... | - Job Error			| 
+| | ... | - Start Time (UTC)	| 
+| | ... | - End Time (UTC)		|
+| | ... | 2. Verify that the Import Statistics Category has the following fields in order:	| 
+| | ... | - Records Imported	| 
+| | ... | - Records with Errors
 
 
 | The Columns on the Records With Errors table are correct
 | | [Documentation] | Verifies that the Records With Errors table on the Job History View page has the correct columns.
 | | [Tags]			| untested
 | | Verify that the item list contains the following fields	| 
-| | ... | Name
-| | ... | Integration Point		| 
-| | ... | Job Status			| 
-| | ... | Records Imported		| 
-| | ... | Records with Errors	| 
-| | ... | Start Time (UTC)
+| | ... | Source Unique ID	| 
+| | ... | Error				| 
+| | ... | Timestamp (UTC)
 
 
 | The Sorting on the Records With Errors table is correct
