@@ -68,15 +68,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.API, Version=9.1.87.2, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
@@ -101,9 +96,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Integration\PermissionServiceIntegrationTest.cs" />
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />
-    <Compile Include="Unit\PermissionServiceTest.cs" />
     <Compile Include="Unit\RdoGetterTest.cs" />
     <Compile Include="Unit\RSAPIServiceInstallerTests.cs" />
   </ItemGroup>
