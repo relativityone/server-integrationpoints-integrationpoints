@@ -24,9 +24,12 @@ namespace kCura.ScheduleQueue.Core.Logging
 
 				new InsertJobLogEntry(qDBContext).Execute(
 						job.JobId,
+						job.RootJobId,
+						job.ParentJobId,
 						job.TaskType,
 						(int)state,
 						job.LockedByAgentID,
+						job.WorkspaceID,
 						job.RelatedObjectArtifactID,
 						job.SubmittedBy,
 						details

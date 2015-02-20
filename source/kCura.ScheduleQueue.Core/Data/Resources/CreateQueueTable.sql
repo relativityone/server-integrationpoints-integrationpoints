@@ -13,6 +13,8 @@ IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[eddsdbo]
 BEGIN
 CREATE TABLE [eddsdbo].[{0}](
 	[JobID] [bigint] IDENTITY(1,1) NOT NULL,
+	[RootJobID] [bigint] NULL,
+	[ParentJobID] [bigint] NULL,
 	[AgentTypeID] [int] NOT NULL,
 	[LockedByAgentID] [int] NULL,
 	[WorkspaceID] [int] NOT NULL,
@@ -48,3 +50,13 @@ CREATE NONCLUSTERED INDEX [IX_{0}_WorkspaceID_RelatedObjectArtifactID_TaskType] 
 	[RelatedObjectArtifactID] ASC,
 	[TaskType] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+
+IF NOT EXISTS(SELECT * FROM sys.columns WHERE [name] = N'RootJobID' AND [object_id] = OBJECT_ID(N'[eddsdbo].[{0}]'))
+BEGIN
+   ALTER TABLE [eddsdbo].[{0}] ADD [RootJobID] [bigint] NULL
+END
+
+IF NOT EXISTS(SELECT * FROM sys.columns WHERE [name] = N'ParentJobID' AND [object_id] = OBJECT_ID(N'[eddsdbo].[{0}]'))
+BEGIN
+   ALTER TABLE [eddsdbo].[{0}] ADD [ParentJobID] bigint NULL
+END

@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				BatchInstance = this.BatchInstance,
 				BatchParameters = batchIDs
 			};
-			_jobManager.CreateJob(taskParameters, TaskType.SyncWorker, job.WorkspaceID, job.RelatedObjectArtifactID);
+			_jobManager.CreateJob(job, taskParameters, TaskType.SyncWorker);
 		}
 
 		private class ReaderEnumerable : IEnumerable<string>

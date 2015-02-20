@@ -1,8 +1,8 @@
-﻿IF NOT EXISTS (SELECT * FROM [eddsdbo].[Configuration] WHERE [Section] = 'kCura.Relativity.IntegrationPoints' AND [Name] = 'WebAPIPath')
+﻿IF NOT EXISTS (SELECT * FROM [eddsdbo].[Configuration] WHERE [Section] = 'kCura.IntegrationPoints' AND [Name] = 'WebAPIPath')
 BEGIN
 	insert into [eddsdbo].[Configuration] ([Section], [Name], [Value],  [MachineName], [Description])
 	SELECT TOP 1 
-		'kCura.Relativity.IntegrationPoints' as [Section],
+		'kCura.IntegrationPoints' as [Section],
 		'WebAPIPath' as [Name],
 		value as [Value],
 		'' as [MachineName],

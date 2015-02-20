@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Config
 		private static IDictionary _underlyingSetting;
 		protected static IDictionary ConfigSettings
 		{
-			get { return _underlyingSetting ?? (_underlyingSetting = Manager.Instance.GetConfig("kCura.Relativity.IntegrationPoints")); }
+			get { return _underlyingSetting ?? (_underlyingSetting = Manager.Instance.GetConfig("kCura.IntegrationPoints")); }
 		}
 
 		private const int BATCH_SIZE_DEFAULT = 1000;
@@ -24,7 +24,5 @@ namespace kCura.IntegrationPoints.Config
 				return value;
 			}
 		}
-
-
 	}
 }

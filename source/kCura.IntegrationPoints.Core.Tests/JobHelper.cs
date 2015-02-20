@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.ScheduleQueue.Core;
 
-namespace kCura.IntegrationPoints.Agent.Tests
+namespace kCura.IntegrationPoints.Core.Tests
 {
 	public class JobHelper
 	{

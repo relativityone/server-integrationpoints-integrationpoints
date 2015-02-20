@@ -1,6 +1,8 @@
 ﻿DECLARE @job table
 (
 		[JobID] [bigint] NOT NULL,
+		[RootJobID] [bigint] NULL,
+		[ParentJobID] [bigint] NULL,
 		[AgentTypeID] [int] NOT NULL,
 		[LockedByAgentID] [int] NULL,
 		[WorkspaceID] [int] NOT NULL,
@@ -24,6 +26,8 @@ SET
 		,[JobDetails] = @JobDetails
 OUTPUT 
 		Inserted.[JobID]
+		,Inserted.[RootJobID]
+		,Inserted.[ParentJobID]
 		,Inserted.[AgentTypeID]
 		,Inserted.[LockedByAgentID]
 		,Inserted.[WorkspaceID]
@@ -74,7 +78,9 @@ BEGIN
 	BEGIN
 		INSERT INTO [eddsdbo].[{0}]
 		(
-			[AgentTypeID]
+			[RootJobID]
+			,[ParentJobID]
+			,[AgentTypeID]
 			,[LockedByAgentID]
 			,[WorkspaceID]
 			,[RelatedObjectArtifactID]
@@ -90,6 +96,8 @@ BEGIN
 		)
 		OUTPUT 
 			Inserted.[JobID]
+			,Inserted.[RootJobID]
+			,Inserted.[ParentJobID]
 			,Inserted.[AgentTypeID]
 			,Inserted.[LockedByAgentID]
 			,Inserted.[WorkspaceID]
@@ -107,7 +115,9 @@ BEGIN
 			@job
 		VALUES
 		(
-			@AgentTypeID
+			@RootJobID
+			,@ParentJobID
+			,@AgentTypeID
 			,NULL
 			,@WorkspaceID
 			,@RelatedObjectArtifactID
@@ -125,6 +135,8 @@ BEGIN
 END
 SELECT 
 		[JobID]
+		,[RootJobID]
+		,[ParentJobID]
 		,[AgentTypeID]
 		,[LockedByAgentID]
 		,[WorkspaceID]
