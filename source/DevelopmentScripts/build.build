@@ -35,6 +35,8 @@
 	<property name="Injections" value="INJECTION" unless="${property::exists('Injections')}" />
 	<property name="TimeMachine" value="TIME_MACHINE" unless="${property::exists('TimeMachine')}" />
 	<property name="DevEnv" value="DEVENV" unless="${property::exists('DevEnv')}" />
+	<property name="ncover.install.directory" value="${environment::get-variable('ProgramW6432')}\NCover" />
+	<property name="ncover.output.directory" value="D:\NCover" unless="${property::exists('ncover.output.directory')}" />
 
 	<!-- Microsoft .NET folders -->
 	<property name="microsoft.net.directory" value="${environment::get-variable('windir')}\Microsoft.NET\Framework\v4.0.30319" unless="${property::exists('microsoft.net.directory')}" />

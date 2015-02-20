@@ -10,7 +10,7 @@
 	<property name="coverageFilePaths" value="${ncover.output.directory}\coverage\" />
 	<property name="forceCodeCoverage" value="False" unless="${property::exists('forceCodeCoverage')}" />
 	<property name="reportsDir" value="${ncover.output.directory}\Reports\" />
-	<property name="excludedAssemblies" value=".*StackTraceDeobfuscator.*;.*NSubstitute.*;.*UnitTest.*;.*AjaxPro.*;kCura.IntegrationPoints.dll.*;kCura.LDAPProvider.dll;kCura.SourceProviderInstaller.dll;.*Castle.*;.*DevExpress.*;.*dtSearch.*;.*FreeImage.*;.*Iconic.*;.*itextsharp.*;.*Neovolve.*;.*Ninject.*;.*NUnit.*;.*Tests.*;.*Telerik.*;.*WCFExtras.*;.*SystemWrapper.*;.*EventHandler.TestDLL.*" />
+	<property name="excludedAssemblies" value=".*StackTraceDeobfuscator.*;.*NSubstitute.*;.*UnitTest.*;.*AjaxPro.*;kCura.IntegrationPoints.Contracts.dll;kCura.IntegrationPoints.Core.Contracts.dll;kCura.IntegrationPoints.dll;kCura.LDAPProvider.dll;kCura.SourceProviderInstaller.dll;.*Castle.*;.*DevExpress.*;.*dtSearch.*;.*FreeImage.*;.*Iconic.*;.*itextsharp.*;.*Neovolve.*;.*Ninject.*;.*NUnit.*;.*Tests.*;.*Telerik.*;.*WCFExtras.*;.*SystemWrapper.*;.*EventHandler.TestDLL.*" />
 	<property name="excludeAttributes" value=".*My.*" />
 	<target name="start_codecoverage">
 		<!-- Run coverage on first build only -->
@@ -31,12 +31,12 @@
 	</target>
 	
 	<target name="run_codeCoverage">
-		<exec program="${nCoverExe}" commandline="&quot;${NUnit64}&quot; &quot;${fileset::to-string('unitTestAssembliesX64', '&quot; &quot;')},${fileset::to-string('unitTestAssembliesX64_Part2', '&quot; &quot;')}&quot; /exclude:Integration //w &quot;${dllDirectoryToCover}&quot; //at &quot;${trendFilePaths}${trendFile}&quot; //x &quot;${coverageFilePaths}${coverageFile}&quot; //p &quot;${projectName}&quot;  //eas ${excludedAssemblies} //ea ${excludeAttributes}  //onlywithsource"  />
+		<exec program="${nCoverExe}" commandline="&quot;${NUnit64}&quot; &quot;${fileset::to-string('unitTestAssembliesX64', '&quot; &quot;')}&quot; &quot;${fileset::to-string('unitTestAssembliesX64_Part2', '&quot; &quot;')}&quot; /exclude:Integration //w &quot;${dllDirectoryToCover}&quot; //at &quot;${trendFilePaths}${trendFile}&quot; //x &quot;${coverageFilePaths}${coverageFile}&quot; //p &quot;${projectName}&quot;  //eas ${excludedAssemblies} //ea ${excludeAttributes}  //onlywithsource"  />
 	</target>
 	
 	<target name="create_report" depends="create_htmlreport, create_trendreport, create_fullcoveragereport" />
   
-  <target name="create_htmlreport" description="Create a summary report from coverage data">
+	<target name="create_htmlreport" description="Create a summary report from coverage data">
 		<ncoverreporting program="${nCoverReportingExe}"
 						 outputPath="${reportsDir}"
 						 projectName="LDAPSync"
