@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Data.Installers
 		{
 			container.Register(Component.For<Queries.CreateErrorRdo>().ImplementedBy<Queries.CreateErrorRdo>().LifestyleTransient());
 			container.Register(Component.For<IObjectTypeQuery>().ImplementedBy<SqlObjectTypeQuery>().LifestyleTransient());
+			container.Register(Component.For<IPermissionService>().ImplementedBy<PermissionService>().LifestyleTransient());
 			container.Register(Component.For<RSAPIRdoQuery>().ImplementedBy<RSAPIRdoQuery>().LifeStyle.Transient);
 			container.Register(Component.For<ChoiceQuery>().ImplementedBy<ChoiceQuery>().LifeStyle.Transient);
 		}
