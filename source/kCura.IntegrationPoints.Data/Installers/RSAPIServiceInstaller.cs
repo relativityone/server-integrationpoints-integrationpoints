@@ -15,6 +15,8 @@ namespace kCura.IntegrationPoints.Data.Installers
 			container.Register(Component.For<IGenericLibrary<IntegrationPoint>>().ImplementedBy<RsapiClientLibrary<IntegrationPoint>>().LifestyleTransient());
 			container.Register(Component.For<IGenericLibrary<SourceProvider>>().ImplementedBy<RsapiClientLibrary<SourceProvider>>().LifestyleTransient());
 			container.Register(Component.For<IGenericLibrary<DestinationProvider>>().ImplementedBy<RsapiClientLibrary<DestinationProvider>>().LifestyleTransient());
+			container.Register(Component.For<IGenericLibrary<JobHistory>>().ImplementedBy<RsapiClientLibrary<JobHistory>>().LifestyleTransient());
+			container.Register(Component.For<IGenericLibrary<JobHistoryError>>().ImplementedBy<RsapiClientLibrary<JobHistoryError>>().LifestyleTransient());
 		}
 	}
 }

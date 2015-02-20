@@ -90,6 +90,7 @@
     <Compile Include="IntegrationPoints\DeleteEventHandler.cs" />
     <Compile Include="IntegrationPoints\PageInteractionEventHandler.cs" />
     <Compile Include="IntegrationPoints\PreLoadEventHandler.cs" />
+    <Compile Include="JobHistory\JobHistoryPreDelete.cs" />
     <Compile Include="TagBuilder.cs" />
     <Compile Include="PreLoadEventHandlerBase.cs" />
   </ItemGroup>
