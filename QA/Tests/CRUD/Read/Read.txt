@@ -67,8 +67,9 @@
 | | ... | Expected Results:
 | | ... | 1. Verify that the General Category has the following fields in order:	| 
 | | ... | - Name			| 
+| | ... | - Overwrite		| 
 | | ... | - Source Provider	| 
-| | ... | - Overwrite
+| | ... | - Destination RDO
 | | ... | 2. Verify that the Status Category has the following fields in order:	| 
 | | ... | - Enable Scheduler				|
 | | ... | - Next Scheduled Runtime (UTC)	| 
@@ -84,8 +85,9 @@
 | | ... | Expected Results:
 | | ... | 1. Verify that the General Category has the following fields in order:	| 
 | | ... | - Name			| 
+| | ... | - Overwrite		| 
 | | ... | - Source Provider	| 
-| | ... | - Overwrite
+| | ... | - Destination RDO
 | | ... | 2. Verify that the Status Category has the following fields in order:	| 
 | | ... | - Enable Scheduler				|
 | | ... | - Next Scheduled Runtime (UTC)	| 
