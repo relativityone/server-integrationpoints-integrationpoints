@@ -1,10 +1,10 @@
 
 *** Settings ***
-| Documentation 	| Verify that the Read pages for Integration Point objects have the fields and sections for given situations.
+| Documentation 	| Verify that the Read pages for Job History objects have the fields and sections for given situations.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.method
 | Suite Setup		| Suite Setup Keyword
-| Test Setup		| View Integration Point	| ${IntegrationPoint1}
+| Test Setup		| View Job History	| ${JobHistory1}
 | Test Teardown 	| Capture Screenshot if Test Fails
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
 
@@ -12,8 +12,8 @@
 *** Variables ***
 
 | ${WorkspaceName}		| LDAP Sync
-| ${IntegrationPoint1}	| Integration Point 1	| # Enable Scheduler is set to No
-| ${IntegrationPoint2}	| Integration Point 2	| # Daily Schedule
+| ${JobHistory1}		| Integration Point 1
+| ${JobHistory2}		| Integration Point 2
 | ${ConnectionPath}		| testing.corp/CN=Users,DC=testing,DC=corp
 | ${ObjectFilterString}	| (objectClass=*)
 | ${Authentication}		| FastBind
@@ -24,24 +24,23 @@
 
 *** Test Cases ***
 
-| The Integration Point Read page defaults to the correct Layout
-| | [Documentation]	| Verify that the default Layout on an Integration Point Read page is "Integration Point Details". 
+| The Job History Read page defaults to the correct Layout
+| | [Documentation]	| Verify that the default Layout on a Job History Read page is "Job Details". 
 | | ...				| 
-| | [Tags]			| automated
-| | Verify that the layout dropdown is set to "Integration Point Details"
+| | [Tags]			| untested
+| | Verify that the layout dropdown is set to "Job Details"
 
 
-| The Integration Point Read page has the correct Layouts
-| | [Documentation]	| Verify that the Integration Point Read page has only the "Integration Point Details" Layout. 
+| The Job History Read page has the correct Layouts
+| | [Documentation]	| Verify that the Job History Read page has only the "Job Details" Layout. 
 | | ...				| 
-| | [Tags]			| automated
-| | Verify that the Layout Dropdown only has the following Layouts	| Integration Point Details
+| | [Tags]			| untested
+| | Verify that the Layout Dropdown only has the following Layouts	| Job Details
 
 
 | The correct Buttons appear in the Header
 | | [Documentation]	| Verify that the correct buttons appear at the top of the page.
-| | ...				| [id] 117f284f-a89f-11e4-ab56-b8ca3a83048f
-| | [Tags]			| automated
+| | [Tags]			| untested
 | | Verify the buttons are available on the layout	| 
 | | ... | Edit				| 
 | | ... | Delete			| 
@@ -52,40 +51,42 @@
 
 | The Category Headings are in the correct order
 | | [Documentation]	| Verify that the Category headings are sorted correctly on the Integration Point Details" Layout.
-| | ...				| [id] 1180fd11-a89f-11e4-b0e4-b8ca3a83048f
-| | [Tags]			| automated
+| | [Tags]			| untested
 | | Verify that the current Layout has the following Categories in Order	| 
-| | ... | General	| 
-| | ... | Status
+| | ... | Job Details		| 
+| | ... | Import Statistics	| 
+| | ... | Records with Errors
 
 
-| The correct Fields are present when Enable Scheduler is set to No
-| | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to No.
-| | ...				| [id] 1180fd12-a89f-11e4-a95c-b8ca3a83048f
-| | [Tags]			| automated
+| The correct Fields are present on the Job Details Layout
+| | [Documentation]	| Verify that the correct Fields are present on the "Job Details" Layout.
+| | [Tags]			| untested
 | | Verify the current layout has the following fields	| # and only the following fields
-| | ... | Name							| 
-| | ... | Source Provider				| 
-| | ... | Overwrite						| 
-#| | ... | Log Errors						| 
-| | ... | Enable Scheduler				|
-| | ... | Next Scheduled Runtime (UTC)	| 
-| | ... | Last Runtime (UTC)
+| | ... | Integration Point		| 
+| | ... | Status				| 
+| | ... | Job Error				| 
+| | ... | Start Time (UTC)		| 
+| | ... | End Time (UTC)		|
+| | ... | Records Imported		| 
+| | ... | Records with Errors
 
 
-| The correct Fields are present when Enable Scheduler is set to Yes
-| | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes.
-| | ...				| [id] 11817242-a89f-11e4-82d7-b8ca3a83048f
-| | [Tags]			| automated
-| | [Setup]			| View Integration Point	| ${IntegrationPoint2}
-| | Verify the current layout has the following fields	| # and only the following fields
-| | ... | Name							| 
-| | ... | Source Provider				| 
-| | ... | Overwrite						| 
-#| | ... | Log Errors						| 
-| | ... | Enable Scheduler				|
-| | ... | Next Scheduled Runtime (UTC)	| 
-| | ... | Last Runtime (UTC)
+| The Columns on the Records With Errors table are correct
+| | [Documentation] | Verifies that the Records With Errors table on the Job History View page has the correct columns.
+| | [Tags]			| untested
+| | Verify that the item list contains the following fields	| 
+| | ... | Name
+| | ... | Integration Point		| 
+| | ... | Job Status			| 
+| | ... | Records Imported		| 
+| | ... | Records with Errors	| 
+| | ... | Start Time (UTC)
+
+
+| The Sorting on the Records With Errors table is correct
+| | [Documentation] | Verifies that the Records With Errors table on the Job History View page has the correct sorting.
+| | [Tags]			| untested
+| | Verify that the Item List is sorted by the following Date Column in Ascending Order	| Timestamp (UTC)
 
 
 *** Keywords ***
@@ -119,7 +120,7 @@
 # --------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=		| Create List	| 
-| | ... | ${IntegrationPoint1}	| 
+| | ... | ${JobHistory1}	| 
 | | ... | Append/Overlay		| 
 | | ... | LDAP					| 
 | | ... | Custodian				| 
@@ -140,37 +141,19 @@
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
 
-| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint1}
-| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint1}
+| | ${JobHistoryExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Job History Testing
+| | Run Keyword If	| ${${JobHistoryExists}}	| Delete the following Integration Point using API	| Job History Testing
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 
-# --------------------------------------------------------------------------------------------------------
-
-| | @{Step1Fields}=	| Create List	| 
-| | ... | ${IntegrationPoint2}	| 
-| | ... | Append/Overlay		| 
-| | ... | LDAP					| 
-| | ... | Custodian				| 
-| | ... | Yes					| 
-| | ... | Daily					| 
-| | ... | NULL					| 
-| | ... | NULL					| 
-| | ... | 2/15/2025				| 
-| | ... | 2/16/2025				| 
-| | ... | 12:30 PM
-
-| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint2}
-| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint2}
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Run Import Now on the Following Integration Point	| Job History Testing
 | | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
-| | [Documentation]	| Delete the Integration Points created in this suite then closes all open browsers.
+| | [Documentation]	| Delete the Integration Point created in this suite then closes all open browsers.
 | | ...				| This is run as the Suite Teardown.
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
 
-| | Delete the following Integration Point using API	| ${IntegrationPoint1}
-| | Delete the following Integration Point using API	| ${IntegrationPoint2}
+| | Delete the following Integration Point using API	| Job History Testing
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
@@ -181,6 +164,7 @@
 | Resource	| ${KEYWORD_DIR}/Relativity/Processing/Processing/Relativity_Keywords_General.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/Layouts/LayoutKeywords.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/RelativityKeywords.txt
+| Resource	| ${KEYWORD_DIR}/Relativity/Shared/Views/ItemListKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
