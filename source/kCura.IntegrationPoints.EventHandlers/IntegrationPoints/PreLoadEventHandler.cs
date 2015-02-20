@@ -26,7 +26,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			if (base.PageMode == EventHandler.Helper.PageMode.Edit)
 			{
 				action = Constant.URL_FOR_INTEGRATIONPOINTS_EDIT;
-
 				var id = ActiveArtifact.ArtifactID != 0 ? ActiveArtifact.ArtifactID.ToString() : string.Empty;
 				var url = String.Format(@"{0}/{1}/{2}/{3}?StandardsCompliance=true", Constant.URL_FOR_WEB,
 											Constant.URL_FOR_INTEGRATIONPOINTSCONTROLLER,

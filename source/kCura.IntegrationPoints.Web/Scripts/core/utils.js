@@ -78,7 +78,16 @@
 			array.push(settings.WEB_GUID);
 			return array.join('/');
 		};
-
+		utils.getBasePath = function () {
+			var array = [];
+			array.push(window.location.protocol);
+			array.push(''); //for the extra / in http(s):/
+			array.push(window.location.host);
+			array.push(settings.APP_NAME);
+			array.push(settings.CS_NAME);
+			array.push(settings.WEB_GUID);
+			return array;
+		}
 		utils.generateWebURL = function () {
 			var array = [];
 			array.push(utils.getBaseURL());

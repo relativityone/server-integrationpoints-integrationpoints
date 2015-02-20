@@ -20,7 +20,7 @@
 | | [Documentation]	| This test verifies that the correct number of fields exist with an Object Type of Integration Point.
 | | ...				| [id] 11a240b0-a89f-11e4-9669-b8ca3a83048f
 | | ${Fields}=		| Get the Number of Items in the ItemList
-| | Run Keyword Unless	| '${Fields}' == '16'	| Fail	| There should have been 16 fields, but instead there were ${Fields}.
+| | Run Keyword Unless	| '${Fields}' == '17'	| Fail	| There should have been 17 fields, but instead there were ${Fields}.
 
 # The below tests each verify that a Field with the given data is present on the table.
 
@@ -56,7 +56,7 @@
 | | Find A Row With The Following Data	|
 | | ... | Name						| Enable Scheduler	|
 | | ... | Field Type				| Yes/No			|
-| | ... | Is Required				| No				|
+| | ... | Is Required				| Yes				|
 | | ... | Associative Object Type	| ${EMPTY}
 
 
@@ -69,12 +69,20 @@
 | | ... | Associative Object Type	| ${EMPTY}
 
 
-| Last Runtime
+| Integration Point
+| | Find A Row With The Following Data	|
+| | ... | Name						| Integration Point	|
+| | ... | Field Type				| Multiple Object	|
+| | ... | Is Required				| No				|
+| | ... | Associative Object Type	| JobHistory
+
+
+| Last Runtime (UTC)
 | | [Documentation] | [id] 11a41575-a89f-11e4-a233-b8ca3a83048f
 | | Find A Row With The Following Data	|
-| | ... | Name						| Last Runtime	|
-| | ... | Field Type				| Date			|
-| | ... | Is Required				| No			|
+| | ... | Name						| Last Runtime (UTC)	|
+| | ... | Field Type				| Date					|
+| | ... | Is Required				| No					|
 | | ... | Associative Object Type	| ${EMPTY}
 
 
@@ -90,9 +98,9 @@
 | Next Scheduled Runtime
 | | [Documentation] | [id] 11a41577-a89f-11e4-9455-b8ca3a83048f
 | | Find A Row With The Following Data	|
-| | ... | Name						| Next Scheduled Runtime	|
-| | ... | Field Type				| Date						|
-| | ... | Is Required				| No						|
+| | ... | Name						| Next Scheduled Runtime (UTC)	|
+| | ... | Field Type				| Date							|
+| | ... | Is Required				| No							|
 | | ... | Associative Object Type	| ${EMPTY}
 
 

@@ -26,11 +26,14 @@ ko.validation.rules["time"] = {
 	validator: function (value) {
 		if (value !== undefined) {
 			var date = Date.parseExact(value, "HH:mm") || Date.parseExact(value, "H:mm");
+			if (value != null && value.split(':')[0] > 12) {
+				return false;
+			}
 			return !!date;
 		}
 		return true;
 	},
-	message: 'Please enter a valid time (24-hour format).'
+	message: 'Please enter a valid time (12-hour format).'
 };
 ko.validation.rules["minArray"] = {
 		validator: function (value, params) {
@@ -93,6 +96,7 @@ var IP = IP || {};
 		var self = this;
 
 		this.sourceTypes = ko.observableArray();
+		
 		this.selectedType = ko.observable().extend({ required: true });
 		this.sourceProvider = settings.sourceProvider || 0;
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
@@ -140,7 +144,7 @@ var IP = IP || {};
 
 		this.templateID = 'ldapDestinationConfig';
 		this.rdoTypes = ko.observableArray();
-		
+
 		self.artifactTypeID = ko.observable().extend({ required: true });
 	    //CaseArtifactId
 		//ParentObjectIdSourceFieldName
@@ -384,20 +388,20 @@ var IP = IP || {};
 				}
 			}
 		});
-
+		this.timeFormat = ko.observableArray(['AM', 'PM']);//
+		this.selectedTimeFormat = ko.observable(options.selectedTimeFormat);
 	};
 
 	var Model = function (m) {
 		var settings = $.extend({}, m);
 		var self = this;
 		this.name = ko.observable(settings.name).extend({ required: true });
-
 		this.source = new Source(settings.source);
 		this.destination = new Destination(settings.destination);
 		this.destinationProvider = settings.destinationProvider;
 		this.overwrite = ko.observableArray([
 			'Append/Overlay', 'Append', 'Overlay Only']);
-
+		this.CustodianManagerFieldContainsLink = JSON.parse(settings.destination ||"{}").CustodianManagerFieldContainsLink; 
 		this.selectedOverwrite = ko.observable(settings.selectedOverwrite);
 		this.scheduler = new Scheduler(settings.scheduler);
 		this.submit = function () {
@@ -436,8 +440,9 @@ var IP = IP || {};
 				this.model.destination = JSON.stringify({
 					artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,
 					ImportOverwriteMode: ko.toJS(this.model.selectedOverwrite).replace('/', '').replace(' ', ''),
-					CaseArtifactId: IP.data.params['appID']
-				});
+					CaseArtifactId: IP.data.params['appID'],
+					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
+			});
 				
 				this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
 				this.model.sourceProvider = this.model.source.sourceProvider;

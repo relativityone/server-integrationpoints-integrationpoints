@@ -17,6 +17,7 @@
 | ${Source Provider Drop Down}		| s2id_sourceProvider
 | ${Destination RDO Drop Down}		| s2id_destinationRdo
 | ${Enable Scheduler Button Name}	| enable
+| ${Log Errors Button Name}			| 
 
 
 *** Test Cases ***
@@ -38,10 +39,11 @@
 | The General fields are in the correct order
 | | [Documentation]	| Verify that the fields in the General section are sorted correctly.
 | | ...				| [id] 0f5e1d10-a89f-11e4-a35c-b8ca3a83048f
-| | [Tags]			| automated
+| | [Tags]			| untested
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following Card contains the following fields | General | 
 | | ... | Integration Name: | 
-| | ... | Overwrite:
+| | ... | Overwrite:		| 
+| | ... | Log Errors:
 
 
 | The Integration fields are in the correct order
@@ -83,6 +85,13 @@
 | | ...				| [id] 0f5e6b33-a89f-11e4-b10b-b8ca3a83048f
 | | [Tags]			| automated
 | | Verify that the following select2 Dropdown currently has the following value selected	| ${Overwrite DropDown}	| Append/Overlay
+
+
+| The Log Errors field's default value is Yes
+| | [Documentation]	| Verify that Log Errors' default value is Yes (true).
+| | [Tags]			| untested
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Radio button should be set to	| ${Log Errors Button Name}	| true	| # true = Yes
 
 
 | The Source Provider Field defaults to Select...
@@ -133,8 +142,15 @@
 | | ... | Verify that the following field is required | Destination RDO:
 
 
+| Log Errors is not a Required Field
+| | [Documentation]	| Verify that the Required Field indicator is not present for the Log Errors field.
+| | [Tags]			| untested
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the following field is not required | Log Errors:
+
+
 | Overwrite is not a Required Field
-| | [Documentation]	| Verify that the Required Field indicator is not present for the correct fields.
+| | [Documentation]	| Verify that the Required Field indicator is not present for the Overwrite field.
 | | ...				| [id] 0f5ee064-a89f-11e4-9d80-b8ca3a83048f
 | | [Tags]			| automated
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| 
@@ -142,7 +158,7 @@
 
 
 | Enable Scheduler is not a Required Field
-| | [Documentation]	| Verify that the Required Field indicator is not present for the correct fields.
+| | [Documentation]	| Verify that the Required Field indicator is not present for the Enable Scheduler field.
 | | ...				| [id] 0f5ee065-a89f-11e4-97d3-b8ca3a83048f
 | | [Tags]			| automated
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| 
@@ -150,7 +166,7 @@
 
 
 | The Set Integration Details Fields are of the correct type
-| | [Documentation]	| Verify that the Set Integration Details Fields are the correct type
+| | [Documentation]	| Verify that the Set Integration Details Fields are the correct type.
 | | ...				| [id] 0f5ee066-a89f-11e4-bdce-b8ca3a83048f
 | | [Tags]			| automated
 | | Run keyword and continue on failure	| Wait Until Keyword Succeeds	| 10s	| 2s	| 
@@ -158,13 +174,20 @@
 | | Run keyword and continue on failure	| Verify that the following field ID has a droplist input	| ${Overwrite DropDown}
 | | Run keyword and continue on failure	| Verify that the following field ID has a droplist input	| ${Source Provider Drop Down}
 | | Run keyword and continue on failure	| Verify that the following field ID has a droplist input	| ${Destination RDO Drop Down}
-| | # Enable Scheduler is checked in the next test case.
+| | # Enable Scheduler and Log Errors are checked in the next test cases.
 
 
 | The Enable Scheduler options are Yes and No
 | | [Documentation]	| Verify that the Enable Scheduler radio button options are Yes and No
 | | ...				| [id] 0f5ee067-a89f-11e4-946c-b8ca3a83048f
 | | [Tags]			| automated
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the following radio buttons are grouped together | ${Enable Scheduler Button Name}  | Yes | No
+
+
+| The Log Errors options are Yes and No
+| | [Documentation]	| Verify that the Log Errors radio button options are Yes and No.
+| | [Tags]			| untested
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| 
 | | ... | Verify that the following radio buttons are grouped together | ${Enable Scheduler Button Name}  | Yes | No
 

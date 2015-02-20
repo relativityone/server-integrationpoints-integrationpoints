@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client.DTOs;
 
@@ -11,14 +12,16 @@ namespace kCura.IntegrationPoints.Core.Models
 {
 	public class RdoFilter
 	{
-		private RelativityRdoQuery _rdoQuery;
-
-		public RdoFilter(RelativityRdoQuery rdoQuery)
+		private IObjectTypeQuery _rdoQuery;
+		private readonly ICaseServiceContext _serviceContext;
+		public RdoFilter(IObjectTypeQuery rdoQuery, ICaseServiceContext serviceContext)
 		{
 			_rdoQuery = rdoQuery;
+			_serviceContext = serviceContext;
 		}
 
-		private List<string> systemRdo {
+		private List<string> systemRdo
+		{
 			get
 			{
 				return new List<string>
@@ -28,19 +31,10 @@ namespace kCura.IntegrationPoints.Core.Models
 			}
 		}
 
-
-		public List<ObjectType> FilterRdo()
+		public IEnumerable<ObjectType> FilterRdo()
 		{
-			var list = _rdoQuery.GetAllRdo();
-			for (var i = 0; i < list.Count; i++)
-			{
-				if (systemRdo.Contains(list[i].Name))
-				{
-					list.Remove(list[i]);
-				}
-			}
-			return list ; 
+			var list = _rdoQuery.GetAllTypes(_serviceContext.WorkspaceUserID);
+			return list.Where(ot => !systemRdo.Contains(ot.Name));
 		}
-
 	}
 }

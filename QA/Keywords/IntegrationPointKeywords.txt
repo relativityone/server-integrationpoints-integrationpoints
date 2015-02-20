@@ -195,25 +195,25 @@
 | | [Documentation] | A keyword that clicks an item from the (unselected) Workspace Field list. Multiple calls of select can be used with a single click of Move.
 | | [ARGUMENTS]		| ${Field}
 | | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='workspace-fields']	| The Workspace Fields list box was not visible.
-| | Click	| xpath=//select[@id='workspace-fields']/option[text()='${Field}']
+| | Click	| xpath=//select[@id='workspace-fields']/child::option[text()='${Field}']
 
 | Click Selected Workspace Field
 | | [Documentation] | A keyword that clicks an item from the Selected Workspace Field list. Multiple calls of select can be used with a single click of Move.
 | | [ARGUMENTS]		| ${Field}
 | | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Workspace Fields list box was not visible.
-| | Click	| xpath=//select[@id='selected-workspace-fields']/option[text()='${Field}']
+| | Click	| xpath=//select[@id='selected-workspace-fields']/child::option[text()='${Field}']
 
 | Click Source Attribute Field
 | | [Documentation] | A keyword that clicks an item from the (unselected) Source Attribute Field list. Multiple calls of select can be used with a single Click of Move.
 | | [ARGUMENTS]		| ${Field}
 | | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='source-fields']	| The Source Attribute Fields list box was not visible.
-| | Click	| xpath=//select[@id='source-fields']/option[text()='${Field}']
+| | Click	| xpath=//select[@id='source-fields']/child::option[text()='${Field}']
 
 | Click Selected Source Attribute Field
 | | [Documentation] | A keyword that clicks an item from the (unselected) Source Attribute Field list. Multiple calls of select can be used with a single Click of Move.
 | | [ARGUMENTS]		| ${Field}
 | | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-source-fields']	| The Selected Source Attribute Fields list box was not visible.
-| | Click	| xpath=//select[@id='selected-source-fields']/option[text()='${Field}']
+| | Click	| xpath=//select[@id='selected-source-fields']/child::option[text()='${Field}']
 
 | Move the Following Workspace Fields to the Selected List
 | | [Documentation] | 
@@ -254,20 +254,20 @@
 | | [Documentation] | A keyword that verifies that the specified field is not present in the specified list.
 | | ... 			| The value of ${ListName} should be either: workspace-fields, selected-workspace-fields, selected-source-fields, or source-fields
 | | [ARGUMENTS]		| ${FieldName}	| ${ListName}
-| | Element should not be visible	| xpath=//select[@id='${ListName}']/option[text()='${FieldName}']
+| | Element should not be visible	| xpath=//select[@id='${ListName}']/child::option[text()='${FieldName}']
 
 | Verify that the Selected Workspace fields are in the following order
 | | [Documentation] | A keyword that verifies the fields in the Selected Workspace list are in the desired order.
 | | [ARGUMENTS]		| @{ExpectedFields}
 | | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Fields list box was not visible.
-| | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-workspace-fields']/option | False 
+| | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-workspace-fields']/child::option | False 
 | | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
 
 | Verify that the Selected Source Attribute fields are in the following order
 | | [Documentation] | A keyword that verifies the fields in the Selected Source Attribute list are in the desired order.
 | | [ARGUMENTS]		| @{ExpectedFields}
 | | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-source-fields']	| The Selected Fields list box was not visible.
-| | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-source-fields']/option | False 
+| | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-source-fields']/child::option | False 
 | | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
 
 #------------------------------------------------------------------------------------------------------------------------
@@ -306,7 +306,7 @@
 | | Page Should Contain Element	| xpath=//a[@class='consoleButtonEnabled' and text()='Import Now']	| The Import Now button was disabled for the Integration Point "${IntegrationPoint}".
 | | Click	| Import Now
 | | Click	| xpath=//span[@class='ui-button-text' and text()='OK'] 
-| | Wait Until Integration Point Job Runs | ${IntegrationPoint} 
+| | Wait Until Integration Point Job Runs	| ${IntegrationPoint}	| 60S
 
 | View Integration Point
 | | [Documentation] | A keyword that Views an Integration Point. Can be called from any where.
@@ -335,6 +335,7 @@
 
 | | Fill out the Following Fields of the Integration Point Step 2 form | @{Step2Fields}
 | | Proceed to the Next Step of the Integration Point wizard
+| | Wait Until Element Is Visible	| xpath=//select[@id='source-fields']/child::option	| 15s	| No Attribute fields were found.
 
 | | Map the Following Fields on the Integration Point Step 3 form | @{Step3Mapping}
 | | Select from select2 Dropdown	| s2id_overlay-identifier | ${Step3UniqueID}

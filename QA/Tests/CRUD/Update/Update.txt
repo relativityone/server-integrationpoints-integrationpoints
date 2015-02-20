@@ -1,13 +1,14 @@
 	
 *** Settings ***
-| Documentation		| Verify that changes to the field map are used in future RIP imports 
+| Documentation		| Verify that changes to the field map are used in future RIP imports.
 | Metadata		    | Authors	| Daniel Oliver	
 | Force Tags		| manual	| in-progress	| team.method
+
 
 *** Test Cases ***
 
 | Updates to the Field Map are used in Future imports
-| | [Documentation]	| Verify that changes to an IP's field map are used in future imports
+| | [Documentation]	| Verify that changes to an IP's field map are used in future imports.
 | | ...				| [id] 127213cf-a89f-11e4-b21c-b8ca3a83048f
 | | Run the following manual steps:
 | | ... | Pre-conditions:
@@ -24,6 +25,7 @@
 | | ... | 1. Verify the added field has been imported
 | | ... | 2. Verify that the removed field has not been imported
 
-*** Keywords ***
 
 *** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py

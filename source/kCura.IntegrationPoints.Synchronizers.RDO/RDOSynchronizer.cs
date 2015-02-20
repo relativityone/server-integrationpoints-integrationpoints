@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.AccessControl;
 using System.Threading;
-using kCura.Apps.Common.Config;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
@@ -16,12 +13,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 	public class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Syncronizer.IDataSyncronizer
 	{
 		protected readonly RelativityFieldQuery FieldQuery;
-		protected readonly RelativityRdoQuery RdoQuery;
 
-		public RdoSynchronizer(RelativityFieldQuery fieldQuery, RelativityRdoQuery rdoQuery)
+		public RdoSynchronizer(RelativityFieldQuery fieldQuery)
 		{
 			FieldQuery = fieldQuery;
-			RdoQuery = rdoQuery;
 		}
 
 		private List<string> IgnoredList
@@ -108,17 +103,18 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			} while (!isJobDone);
 
 			ProcessExceptions(settings);
+
+			FinalizeSyncData(data, fieldMap, settings);
 		}
 
 		private string _webAPIPath;
-
 		public string WebAPIPath
 		{
 			get
 			{
 				if (string.IsNullOrEmpty(_webAPIPath))
 				{
-					_webAPIPath = kCura.Apps.Common.Config.Sections.EddsDbmtConfig.WebAPIPath;
+					_webAPIPath = Config.WebAPIPath;
 				}
 				return _webAPIPath;
 			}
@@ -177,6 +173,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return importRow;
 		}
 
+		protected virtual void FinalizeSyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, ImportSettings settings)
+		{
+			return;
+		}
+
 		protected ImportSettings GetSettings(string options)
 		{
 			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
@@ -184,6 +185,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			if (string.IsNullOrEmpty(settings.WebServiceURL))
 			{
 				settings.WebServiceURL = this.WebAPIPath;
+				if (string.IsNullOrEmpty(settings.WebServiceURL))
+				{
+					throw new Exception("No WebAPI path set for integration points.");
+				}
 				//kCura.Apps.Common.Config.Sections.EddsDbmtConfig.WebAPIPath; //one day we will switch to this;
 			}
 			return settings;

@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 					{
 						_position++;
 						string filter = string.Format("({0}={1})", _identifier, _entryIds.Current);
-						IEnumerable<SearchResult> items = _ldapService.FetchItems(filter, null);
+						IEnumerable<SearchResult> items = _ldapService.FetchItemsUpTheTree(filter, null);
 						if (items != null && items.Count() > 0)
 						{
 							_currentItem = items.First();
