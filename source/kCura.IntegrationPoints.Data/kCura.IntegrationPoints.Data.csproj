@@ -154,7 +154,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IRSAPIService.cs</LastGenOutput>
     </None>
-    <Content Include="Resources\GetObjectTypes.sql" />
     <None Include="RSAPIService.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>RSAPIService.cs</LastGenOutput>

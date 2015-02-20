@@ -159,5 +159,56 @@ namespace kCura.IntegrationPoints.Data.Resources {
                 return ResourceManager.GetString("GetArtifactIDByGuid", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to --bypass duplicate records
+        ///UPDATE	[EDDSResource].[eddsdbo].[{0}]
+        ///SET
+        ///				[LockedByJobID]	= -1
+        ///FROM 
+        ///				[EDDSResource].[eddsdbo].[{0}] t1 
+        ///JOIN
+        ///				(
+        ///					SELECT * FROM [EDDSResource].[eddsdbo].[{0}] WHERE NOT [LockedByJobID] IS NULL
+        ///				) t2
+        ///	ON		t1.[CustodianID] = t2.[CustodianID] AND t1.[ManagerID] = t2.[ManagerID] 
+        ///WHERE
+        ///				t1.[LockedByJobID] IS NULL
+        ///				
+        ///
+        ///--get next batch
+        ///UPDATE	[EDDSResource].[eddsdbo].[{0}]
+        ///SET
+        ///				[LockedByJobID]	= @JobID
+        ///OUTPUT 
+        ///				INSERTED.[CustodianID],
+        ///			 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string GetJobCustodianManagerLinks {
+            get {
+                return ResourceManager.GetString("GetJobCustodianManagerLinks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SELECT
+        ///ot.DescriptorArtifactTypeID
+        ///,ot.Name
+        ///FROM [EDDSDBO].ObjectType ot
+        ///WHERE DescriptorArtifactTypeID in
+        ///(select atg.ArtifactTypeID
+        ///From [EDDSDBO].[GroupUser] gu
+        ///join [EDDSDBO].[AccessControlListPermission]  acl on gu.GroupArtifactID = acl.GroupID
+        ///join [EDDSDBO].[Permission] p on p.PermissionID = acl.PermissionID
+        ///join [EDDSDBO].[ArtifactTypeGrouping] atg on atg.ArtifactGroupingID = p.ArtifactGrouping
+        ///where UserArtifactID = @userID AND p.[Type] = 6
+        ///)
+        ///AND (DescriptorArtifactTypeID &gt; 1000000 OR D [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string GetObjectTypes {
+            get {
+                return ResourceManager.GetString("GetObjectTypes", resourceCulture);
+            }
+        }
     }
 }
