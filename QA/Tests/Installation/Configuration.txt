@@ -47,4 +47,4 @@
 | | ... | 4. Find the entry for: Section:kCura.IntegrationPoints; Name: IntegrationPointsWebAPIPath 
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify that the description is: The URL for the Windows Authenticated Relativity Web API endpoint used by Integration Points.
+| | ... | Verify that the description is: The URL for the Windows Authenticated Relativity Web API endpoint used by integration points.
