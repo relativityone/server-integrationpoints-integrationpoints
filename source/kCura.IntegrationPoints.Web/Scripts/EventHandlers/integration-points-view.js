@@ -23,8 +23,7 @@
 			}
 		});
 	};
-
-
+	
 	var _convertUTCToLocal = function() {
 
 	};
@@ -57,7 +56,9 @@
 	});
 
 })(IP);
-
+$(window).load(function() {
+	$(".consoleContainer .consoleButtonDisabled").attr("title", "Please contact your administrator for the correct permissions.");
+});
 $(window).unload(function () {
 	
 	if (IP.isEdit === "Edit") {
