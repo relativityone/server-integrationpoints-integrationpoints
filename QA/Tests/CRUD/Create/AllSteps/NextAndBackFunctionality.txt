@@ -26,7 +26,7 @@
 | Returning to Step 2 from Step 1 without changing anything Saves all Step 2 data
 | | [Documentation]	| Verify that if you fill out steps 1 and 2, go back to step 1, then return to step 2, that all of the previously entered data on step 2 will still be present.
 | | ...				| [id] 0ecbef30-a89f-11e4-81ef-b8ca3a83048f
-| | [Tags]			| manual	| automateable
+| | [Tags]			| manual	| unautomateable
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Open a new Create Integration Point Wizard
