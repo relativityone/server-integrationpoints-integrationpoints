@@ -19,11 +19,13 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		private readonly IntegrationPointService _reader;
 		private readonly RSAPIRdoQuery _rdoQuery;
 		private readonly ITabService _tabService;
-		public IntegrationPointsController(IntegrationPointService reader, RSAPIRdoQuery relativityRdoQuery, ITabService tabService)
+		private readonly IPermissionService _permissionService;
+		public IntegrationPointsController(IntegrationPointService reader, RSAPIRdoQuery relativityRdoQuery, ITabService tabService,IPermissionService permissionService)
 		{
 			_reader = reader;
 			_rdoQuery = relativityRdoQuery;
 			_tabService = tabService;
+			_permissionService = permissionService;
 		}
 
 		public ActionResult Edit(int? id)
@@ -32,14 +34,18 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			var tabID = _tabService.GetTabId(objectTypeId);
 			var objectID = _rdoQuery.GetObjectType(objectTypeId).ParentArtifact.ArtifactID;
 			var previousURL = "List.aspx?AppID=" + SessionService.WorkspaceID + "&ArtifactID=" + objectID + "&ArtifactTypeID=" + objectTypeId + "&SelectedTab=" + tabID;
-			
-			return View(new EditPoint
+			if (_permissionService.userCanImport(SessionService.UserID))
 			{
-				AppID = SessionService.WorkspaceID,
-				ArtifactID = id.GetValueOrDefault(0),
-				UserID = base.SessionService.UserID,
-				URL = previousURL
-			});
+				return View(new EditPoint
+				{
+					AppID = SessionService.WorkspaceID,
+					ArtifactID = id.GetValueOrDefault(0),
+					UserID = base.SessionService.UserID,
+					URL = previousURL
+				});
+			}
+			return View("NotEnoughPermission", new EditPoint {URL = previousURL});
+
 		}
 
 		public ActionResult StepDetails()
