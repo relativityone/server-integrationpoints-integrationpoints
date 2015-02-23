@@ -38,7 +38,7 @@
 
 | | @{Step1Fields}  | Create list | ${IntegrationName} | Append | LDAP | Questionnaire | no
 | | @{Step2Fields}  | Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
-| | ... | (department=Questionnaire) | FastBind 
+| | ... | (department=Questionnaire) | FastBind | testing\\rellockdown | P@ssw0rd@1
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Name [Object Identifier]  	| givenname
 

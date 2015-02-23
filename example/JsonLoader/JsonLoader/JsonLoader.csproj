@@ -54,15 +54,17 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.EventHandler">
-      <HintPath>..\..\..\source\Dependencies\kCura\kCura.EventHandler.dll</HintPath>
+    <Reference Include="kCura.EventHandler, Version=9.1.87.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ProviderIncludes\Provider\kCura.EventHandler.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints.Contracts">
-      <HintPath>..\..\..\source\bin\Debug\kCura.IntegrationPoints.Contracts.dll</HintPath>
+    <Reference Include="kCura.IntegrationPoints.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ProviderIncludes\Provider\kCura.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>
     <Reference Include="kCura.SourceProviderInstaller, Version=2.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\source\bin\Debug\kCura.SourceProviderInstaller.dll</HintPath>
+      <HintPath>..\..\ProviderIncludes\Provider\kCura.SourceProviderInstaller.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>

@@ -49,16 +49,20 @@
 
 | | @{Step1Fields}=		| Create List | ${IntegrationName} | Append/Overlay |
 | | ... | LDAP | Custodian | No
+
 | | @{Step2Fields}=		| Create List | 
 | | ... | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp	| 
 | | ... | (department=BlankNames)	| 
-| | ... | FastBind
+| | ... | FastBind | 
+| | ... | testing\\rellockdown | P@ssw0rd@1
+
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Email			| mail			| 
 | | ... | Department	| department	| 
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
+
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}

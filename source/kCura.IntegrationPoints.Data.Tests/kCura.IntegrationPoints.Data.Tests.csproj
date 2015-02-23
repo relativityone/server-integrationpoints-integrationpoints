@@ -101,9 +101,12 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IntegrationTestAttribute.cs" />
+    <Compile Include="Integration\Migration\AddWebApiConfigValueMigrationTests.cs" />
     <Compile Include="Integration\PermissionServiceIntegrationTest.cs" />
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />
     <Compile Include="Unit\BaseRDOTests.cs" />
+    <Compile Include="MockDBContext.cs" />
     <Compile Include="Unit\PermissionServiceTest.cs" />
     <Compile Include="Unit\RdoGetterTest.cs" />
     <Compile Include="Unit\RSAPIServiceInstallerTests.cs" />

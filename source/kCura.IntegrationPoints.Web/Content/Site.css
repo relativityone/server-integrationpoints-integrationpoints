@@ -468,3 +468,13 @@ select option.hover
 	.filter-container#s2id_timeFormat {
 		width: 75px;
 	}
+
+
+#notEnoughPermission {
+  width:500px;
+    margin: 0 auto;
+}
+
+#notEnoughPermission #cancel {
+	float:right;
+}

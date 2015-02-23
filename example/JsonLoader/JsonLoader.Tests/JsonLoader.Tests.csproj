@@ -59,14 +59,17 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.IntegrationPoints.Contracts">
-      <HintPath>..\..\..\source\bin\Debug\kCura.IntegrationPoints.Contracts.dll</HintPath>
+    <Reference Include="kCura.IntegrationPoints.Contracts, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ProviderIncludes\Provider\kCura.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.Client">
-      <HintPath>..\..\..\source\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
+    <Reference Include="kCura.Relativity.Client, Version=9.1.87.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ProviderIncludes\kCura.Relativity.Client.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.SourceProviderInstaller">
-      <HintPath>..\..\..\source\bin\Debug\kCura.SourceProviderInstaller.dll</HintPath>
+    <Reference Include="kCura.SourceProviderInstaller, Version=2.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ProviderIncludes\Provider\kCura.SourceProviderInstaller.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -77,6 +80,13 @@
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.API, Version=9.1.87.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ProviderIncludes\Relativity.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.CustomPages">
+      <HintPath>..\..\ProviderIncludes\Relativity.CustomPages.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
