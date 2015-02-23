@@ -37,7 +37,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 
 			Job jobOld = jobService.GetJob(workspaceID, relatedObjectArtifactID, taskType);
 			if (jobOld != null) jobService.DeleteJob(jobOld.JobId);
-			Job job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
+			Job job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121, null, null);
 			Job job1 = jobService.GetJob(job.JobId);
 			Job job2 = jobService.GetJob(workspaceID, job.RelatedObjectArtifactID, taskType);
 			Job job3 = jobService.GetNextQueueJob(new int[] { 1015040 }, 1111111);
@@ -65,7 +65,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 
 			Job jobOld = jobService.GetJob(workspaceID, relatedObjectArtifactID, taskType);
 			if (jobOld != null) jobService.DeleteJob(jobOld.JobId);
-			Job job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, sr, "My Test Job Detail", 1212121);
+			Job job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, sr, "My Test Job Detail", 1212121, null, null);
 			Job job2 = null;
 			DateTime dt = DateTime.Now;
 			while (DateTime.Now.Subtract(dt).Minutes < 4)
@@ -181,11 +181,11 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 				jobService.DeleteJob(jobOld.JobId);
 				jobOld = jobService.GetJob(workspaceID, relatedObjectArtifactID, taskType);
 			}
-			Job job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
-			job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
-			job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
-			job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
-			job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
+			Job job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121, null, null);
+			job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121, null, null);
+			job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121, null, null);
+			job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121, null, null);
+			job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121, null, null);
 			Job nextJob1 = jobService.GetNextQueueJob(new int[] { 1015040 }, 1111111);
 			Job nextJob2 = jobService.GetNextQueueJob(new int[] { 1015040 }, 1111112);
 			Job nextJob3 = jobService.GetNextQueueJob(new int[] { 1015040 }, 1111113);

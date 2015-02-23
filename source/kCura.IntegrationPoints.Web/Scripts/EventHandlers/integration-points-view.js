@@ -23,8 +23,7 @@
 			}
 		});
 	};
-
-
+	
 	var _convertUTCToLocal = function() {
 
 	};
@@ -57,7 +56,9 @@
 	});
 
 })(IP);
-
+$(window).load(function() {
+	$(".consoleContainer .consoleButtonDisabled").attr("title", "You do not have permission to import.");
+});
 $(window).unload(function () {
 	
 	if (IP.isEdit === "Edit") {

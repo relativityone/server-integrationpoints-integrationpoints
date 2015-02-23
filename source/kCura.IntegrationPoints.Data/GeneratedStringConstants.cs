@@ -127,6 +127,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string StartTimeUTC = @"Start Time (UTC)";
 		public const string EndTimeUTC = @"End Time (UTC)";
 		public const string IntegrationPoint = @"Integration Point";
+		public const string BatchInstance = @"Batch Instance";
 		public const string Name = @"Name";
 	}
 
@@ -138,6 +139,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string StartTimeUTC = @"25b7c8ef-66d9-41d1-a8de-29a93e47fb11";
 		public const string EndTimeUTC = @"4736cf49-ad0f-4f02-aaaa-898e07400f22";
 		public const string IntegrationPoint = @"d3e791d3-2e21-45f4-b403-e7196bd25eea";
+		public const string BatchInstance = @"08ba2c77-a9cd-4faf-a77a-be35e1ef1517";
 		public const string Name = @"07061466-5fab-4581-979c-c801e8207370";
 	}
 

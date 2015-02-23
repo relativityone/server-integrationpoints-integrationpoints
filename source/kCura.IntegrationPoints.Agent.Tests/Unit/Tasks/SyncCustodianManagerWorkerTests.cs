@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 
 			//ASSERT
 			Assert.AreEqual(new Guid("2b7bda1b-11c9-4349-b446-ae5c8ca2c408"), task.GetType().GetProperty("BatchInstance", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task));
-			
+
 			List<CustodianManagerMap> _custodianManagerMap = (List<CustodianManagerMap>)task.GetType().GetField("_custodianManagerMap", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).GetValue(task);
 			Assert.AreEqual(3, _custodianManagerMap.Count);
 			Assert.AreEqual("779561316F4CE44191B150453DE9A745", _custodianManagerMap[1].CustodianID);
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 
 		private Job GetJob(string jobDetails)
 		{
-			return JobHelper.GetJob(1, 1, 1, 111, 222, TaskType.SyncCustodianManagerWorker, new DateTime(), null, jobDetails,
+			return JobHelper.GetJob(1, null, null, 1, 1, 111, 222, TaskType.SyncCustodianManagerWorker, new DateTime(), null, jobDetails,
 				0, new DateTime(), 1, null, null);
 		}
 	}

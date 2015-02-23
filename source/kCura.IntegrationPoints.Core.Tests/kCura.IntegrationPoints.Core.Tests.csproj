@@ -87,10 +87,16 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Integration\Installers\ServiceInstallerTests.cs" />
+    <Compile Include="JobHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\AgentJobManagerTest.cs" />
     <Compile Include="Unit\RdoFilterTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
       <Name>kCura.IntegrationPoints.Core</Name>

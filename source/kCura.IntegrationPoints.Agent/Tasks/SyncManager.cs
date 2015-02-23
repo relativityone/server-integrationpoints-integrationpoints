@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				BatchInstance = this.BatchInstance,
 				BatchParameters = batchIDs
 			};
-			_jobManager.CreateJob(taskParameters, TaskType.SyncWorker, job.WorkspaceID, job.RelatedObjectArtifactID);
+			_jobManager.CreateJob(job, taskParameters, TaskType.SyncWorker);
 		}
 
 		private class ReaderEnumerable : IEnumerable<string>
@@ -107,8 +107,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void JobPreExecute(Job job)
 		{
-			//do nothing
-			return;
+			this.BatchInstance = GetBatchInstance(job);
 		}
 
 		private void JobPostExecute(Job job, TaskResult taskResult)
@@ -130,6 +129,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 			}
 			catch { }
+		}
+
+		private Guid GetBatchInstance(Job job)
+		{
+			return Guid.NewGuid();
 		}
 
 		public void Dispose()

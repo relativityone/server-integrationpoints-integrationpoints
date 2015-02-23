@@ -492,6 +492,7 @@
     <Content Include="Scripts\postal\postal.min.js.map">
       <DependentUpon>postal.js</DependentUpon>
     </Content>
+    <Content Include="Views\IntegrationPoints\NotEnoughPermission.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

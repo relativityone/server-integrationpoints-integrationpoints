@@ -60,7 +60,9 @@
 | | ... | 4. View any Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Integration Point Layout does not show the Import Now button
+| | ... | 1. Verify that the Integration Point Layout does not show the Import Now button
+| | ... | 2. Verify that the Integration Point Layout does not show the IMPORT text on the console
+| | ... | 3. Verify that the Integration Point Layout does show the console
 
 
 | Users with the Allow Import permission can Create an Integration Point

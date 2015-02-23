@@ -96,7 +96,7 @@
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
 
-| | Delete the Following Integration Point | ${IntegrationName}
+| | Delete the following Integration Point using API | ${IntegrationName}
 | | Delete the Custodians in the Following Department using API	| AppendAndOverlay
 
 | | Drop connection to the relativity services api

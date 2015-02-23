@@ -4,6 +4,8 @@ BEGIN
 	--So, pick it up again and finish it.
 	SELECT TOP (1)
 				[JobID],
+				[RootJobID],
+				[ParentJobID],
 				[AgentTypeID],
 				[LockedByAgentID],
 				[WorkspaceID],
@@ -29,6 +31,8 @@ BEGIN
 			[LockedByAgentID]	= @AgentID
 	OUTPUT 
 			INSERTED.[JobID],
+			INSERTED.[RootJobID],
+			INSERTED.[ParentJobID],
 			INSERTED.[AgentTypeID],
 			INSERTED.[LockedByAgentID],
 			INSERTED.[WorkspaceID],

@@ -71,7 +71,8 @@
 | | ... | - Name			| 
 | | ... | - Overwrite		| 
 | | ... | - Source Provider	| 
-| | ... | - Destination RDO
+| | ... | - Destination RDO	| 
+| | ... | - Log Errors
 | | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
 | | ... | - Job Status						|
 | | ... | - Next Scheduled Runtime (UTC)	| 
@@ -102,7 +103,8 @@
 | | ... | - Name			| 
 | | ... | - Overwrite		| 
 | | ... | - Source Provider	| 
-| | ... | - Destination RDO
+| | ... | - Destination RDO	| 
+| | ... | - Log Errors
 | | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
 | | ... | - Job Status						|
 | | ... | - Next Scheduled Runtime (UTC)	| 

@@ -85,8 +85,8 @@ namespace kCura.ScheduleQueue.Core.Services
 			new UnlockScheduledJob(QDBContext).Execute(agentID);
 		}
 
-		public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType,
-													IScheduleRule scheduleRule, string jobDetails, int SubmittedBy)
+		public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType, 
+			IScheduleRule scheduleRule, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
 		{
 			AgentService.CreateQueueTableOnce();
 
@@ -108,7 +108,9 @@ namespace kCura.ScheduleQueue.Core.Services
 					serializedScheduleRule,
 					jobDetails,
 					0,
-					SubmittedBy);
+					SubmittedBy,
+					rootJobID,
+					parentJobID);
 
 				if (row != null) job = new Job(row);
 			}
@@ -116,7 +118,7 @@ namespace kCura.ScheduleQueue.Core.Services
 		}
 
 		public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType,
-													DateTime nextRunTime, string jobDetails, int SubmittedBy)
+			DateTime nextRunTime, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
 		{
 			AgentService.CreateQueueTableOnce();
 
@@ -131,7 +133,9 @@ namespace kCura.ScheduleQueue.Core.Services
 				null,
 				jobDetails,
 				0,
-				SubmittedBy);
+				SubmittedBy,
+				rootJobID,
+				parentJobID);
 
 			if (row != null) job = new Job(row);
 

@@ -212,6 +212,11 @@
       <ColumnName>ArtifactID</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1001381</ArtifactViewFieldId>
+      <ArtifactTypeId>1000034</ArtifactTypeId>
+      <ColumnName>BatchInstance</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001345</ArtifactViewFieldId>
       <ArtifactTypeId>1000034</ArtifactTypeId>
       <ColumnName>Edit</ColumnName>
@@ -364,7 +369,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2015-02-19T22:04:48.2851394Z</ExtractionDate>
+  <ExtractionDate>2015-02-23T14:23:46.1683647Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -1164,6 +1169,23 @@
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
+              <CategoryId>1000290</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>1</Column>
+              <FieldArtifactId>1038745</FieldArtifactId>
+              <FieldDisplayTypeId>9</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>false</IsReadOnly>
+              <LayoutArtifactId>1038682</LayoutArtifactId>
+              <NameValue>Log Errors</NameValue>
+              <Order>30</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>0</RepeatColumn>
+              <Row>1</Row>
+              <Rows>1</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
               <CategoryId>1000291</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
@@ -1219,7 +1241,7 @@
           <Name>Integration Point Details</Name>
           <Notes />
           <Order>10</Order>
-          <ApplicationVersion>1.0.91.2</ApplicationVersion>
+          <ApplicationVersion>1.1.18.12</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Integration Point</Name>
@@ -3123,6 +3145,58 @@
           <AutoAddChoices>false</AutoAddChoices>
           <ApplicationVersion>1.1.17.5</ApplicationVersion>
         </Field>
+        <Field>
+          <AllowHTML>false</AllowHTML>
+          <ArtifactId>1038746</ArtifactId>
+          <ArtifactViewFieldId>1001381</ArtifactViewFieldId>
+          <AssociativeArtifactTypeId xsi:nil="true" />
+          <Codes />
+          <CodeTypeId xsi:nil="true" />
+          <ConnectorFieldArtifactId xsi:nil="true" />
+          <DisplayName>Batch Instance</DisplayName>
+          <DisplayValueFalse />
+          <DisplayValueTrue />
+          <FieldArtifactTypeId>1000034</FieldArtifactTypeId>
+          <FieldCategoryId>0</FieldCategoryId>
+          <FieldTypeId>0</FieldTypeId>
+          <FilterType>Search</FilterType>
+          <FormatString />
+          <FriendlyName />
+          <Guids>08ba2c77-a9cd-4faf-a77a-be35e1ef1517</Guids>
+          <Guid>08ba2c77-a9cd-4faf-a77a-be35e1ef1517</Guid>
+          <ImportBehavior xsi:nil="true" />
+          <EnableDataGrid>false</EnableDataGrid>
+          <OverlayBehavior xsi:nil="true" />
+          <IsAdditionalFileField>false</IsAdditionalFileField>
+          <IsArtifactBaseField>false</IsArtifactBaseField>
+          <IsAvailableInChoiceTree>false</IsAvailableInChoiceTree>
+          <IsAvailableToAssociativeObjects>false</IsAvailableToAssociativeObjects>
+          <IsEditable>true</IsEditable>
+          <IsGroupByEnabled>false</IsGroupByEnabled>
+          <IsIndexEnabled>false</IsIndexEnabled>
+          <IsLinked>false</IsLinked>
+          <IsRemovable>true</IsRemovable>
+          <IsRequired>false</IsRequired>
+          <IsSortable>true</IsSortable>
+          <IsVisible>true</IsVisible>
+          <Keywords />
+          <LinkType>false</LinkType>
+          <MaxLength>50</MaxLength>
+          <Notes />
+          <RelationalIndexViewArtifactID xsi:nil="true" />
+          <SourceFieldArtifactId xsi:nil="true" />
+          <UseUnicodeEncoding>true</UseUnicodeEncoding>
+          <Width />
+          <Wrapping>true</Wrapping>
+          <AllowPivot>false</AllowPivot>
+          <AllowGroupBy>false</AllowGroupBy>
+          <AvailableInViewer>false</AvailableInViewer>
+          <PopupPickerView xsi:nil="true" />
+          <FieldTreeView xsi:nil="true" />
+          <SiblingFieldArtifactID xsi:nil="true" />
+          <AutoAddChoices>false</AutoAddChoices>
+          <ApplicationVersion>1.1.21.4</ApplicationVersion>
+        </Field>
       </Fields>
       <Guid>08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9</Guid>
       <KeyWords />
@@ -3612,7 +3686,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>1.1.17.16</ApplicationVersion>
+          <ApplicationVersion>1.1.21.4</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -4405,7 +4479,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>1.1.17.16</ApplicationVersion>
+          <ApplicationVersion>1.1.21.4</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -4457,7 +4531,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>1.1.17.16</ApplicationVersion>
+          <ApplicationVersion>1.1.21.4</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -4517,7 +4591,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.1.100.1</RelativityVersion>
-  <Version>1.1.17.16</Version>
+  <Version>1.1.21.4</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>cd571c6b-4904-4d52-9585-1717ceb4678a</OriginSignature>
   <MasterScripts />
@@ -4526,10 +4600,10 @@
     <CustomPage>
       <ArtifactID>1038685</ArtifactID>
       <Guid>c2c93191-7b15-4a9b-aa56-6a8c2dac5494</Guid>
-      <ApplicationVersion>1.1.17.16</ApplicationVersion>
+      <ApplicationVersion>1.1.21.4</ApplicationVersion>
       <Name>Web</Name>
       <FileName>DCF6E9D1-22B6-4DA3-98F6-41381E93C30C.zip</FileName>
-      <Size>6427117</Size>
+      <Size>6435257</Size>
       <Keywords />
       <Notes />
     </CustomPage>
@@ -4546,7 +4620,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>1.1.17.16</ApplicationVersion>
+      <ApplicationVersion>1.1.21.4</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038625</ArtifactId>
@@ -4557,7 +4631,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>1.1.17.16</ApplicationVersion>
+      <ApplicationVersion>1.1.21.4</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038688</ArtifactId>
@@ -4568,7 +4642,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>1.1.17.16</ApplicationVersion>
+      <ApplicationVersion>1.1.21.4</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />
@@ -4628,6 +4702,7 @@
     <Id>1038737</Id>
     <Id>1038742</Id>
     <Id>1038745</Id>
+    <Id>1038746</Id>
   </FieldIds>
   <ChoiceIds>
     <Id>1038670</Id>

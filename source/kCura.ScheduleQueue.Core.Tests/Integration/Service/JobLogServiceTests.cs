@@ -35,8 +35,8 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			if (jobOld != null) jobService.DeleteJob(jobOld.JobId);
 			jobOld = jobService.GetJob(caseID2, relatedObjectArtifactID, taskType);
 			if (jobOld != null) jobService.DeleteJob(jobOld.JobId);
-			Job job1 = jobService.CreateJob(caseID1, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
-			Job job2 = jobService.CreateJob(caseID2, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121);
+			Job job1 = jobService.CreateJob(caseID1, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121, null, null);
+			Job job2 = jobService.CreateJob(caseID2, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121, null, null);
 
 			agentHelper.GetDBContext(Arg.Is(caseID1)).Returns(c1Context);
 			agentHelper.GetDBContext(Arg.Is(caseID2)).Returns(c2Context);
