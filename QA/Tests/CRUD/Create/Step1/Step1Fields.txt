@@ -17,7 +17,7 @@
 | ${Source Provider Drop Down}		| s2id_sourceProvider
 | ${Destination RDO Drop Down}		| s2id_destinationRdo
 | ${Enable Scheduler Button Name}	| enable
-| ${Log Errors Button Name}			| 
+| ${Log Errors Button Name}			| logErrors
 
 
 *** Test Cases ***
@@ -39,7 +39,7 @@
 | The General fields are in the correct order
 | | [Documentation]	| Verify that the fields in the General section are sorted correctly.
 | | ...				| [id] 0f5e1d10-a89f-11e4-a35c-b8ca3a83048f
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following Card contains the following fields | General | 
 | | ... | Integration Name: | 
 | | ... | Overwrite:		| 
@@ -89,7 +89,7 @@
 
 | The Log Errors field's default value is Yes
 | | [Documentation]	| Verify that Log Errors' default value is Yes (true).
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| 
 | | ... | Radio button should be set to	| ${Log Errors Button Name}	| true	| # true = Yes
 
@@ -144,7 +144,7 @@
 
 | Log Errors is not a Required Field
 | | [Documentation]	| Verify that the Required Field indicator is not present for the Log Errors field.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| 
 | | ... | Verify that the following field is not required | Log Errors:
 
@@ -187,7 +187,7 @@
 
 | The Log Errors options are Yes and No
 | | [Documentation]	| Verify that the Log Errors radio button options are Yes and No.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| 
 | | ... | Verify that the following radio buttons are grouped together | ${Enable Scheduler Button Name}  | Yes | No
 
@@ -196,7 +196,7 @@
 | | [Documentation]	| Verify that the Destination RDO Dropdown has the correct options when you are a user with Admin permissions.
 | | ...				| The expected values are Select..., followed by an alphabetized list of every non-System object type
 | | ...				| [id] 0f5f2e80-a89f-11e4-bde1-b8ca3a83048f
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | @{ExpectedFields}=	| Get a List of All Non-System Object Types in the Workspace	| # Already alphabetized
 | | Click	| ${Destination RDO Drop Down}
 | | Verify that the currently opened select2 Dropdown has the following choices in order	| Select...	| @{ExpectedFields}
