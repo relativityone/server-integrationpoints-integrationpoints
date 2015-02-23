@@ -107,8 +107,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void JobPreExecute(Job job)
 		{
-			//do nothing
-			return;
+			this.BatchInstance = GetBatchInstance(job);
 		}
 
 		private void JobPostExecute(Job job, TaskResult taskResult)
@@ -130,6 +129,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 			}
 			catch { }
+		}
+
+		private Guid GetBatchInstance(Job job)
+		{
+			return Guid.NewGuid();
 		}
 
 		public void Dispose()

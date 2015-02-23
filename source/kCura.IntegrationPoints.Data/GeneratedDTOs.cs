@@ -410,6 +410,19 @@ namespace kCura.IntegrationPoints.Data
 				SetField<int[]>(new System.Guid(JobHistoryFieldGuids.IntegrationPoint), value);
 			}
 		}
+		public const int BatchInstanceFieldLength = 50;
+		[DynamicField(JobHistoryFields.BatchInstance, JobHistoryFieldGuids.BatchInstance, FieldTypes.FixedLengthText, 50)]
+		public string BatchInstance
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(JobHistoryFieldGuids.BatchInstance));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(JobHistoryFieldGuids.BatchInstance), value);
+			}
+		}
 		public const int NameFieldLength = 255;
 		[DynamicField(JobHistoryFields.Name, JobHistoryFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
 		public string Name
