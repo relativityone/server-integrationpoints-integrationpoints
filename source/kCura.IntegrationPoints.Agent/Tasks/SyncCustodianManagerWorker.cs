@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Syncronizer;
+using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.Provider;
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				var managerLinkMap = _managerFieldMap.Where(x =>
 					(x.SourceField.FieldIdentifier.Equals(fieldEntryCustodianIdentifier.FieldIdentifier) ||
 					 x.SourceField.FieldIdentifier.Equals(fieldEntryManagerIdentifier.FieldIdentifier)));
-				IDataSyncronizer dataSyncronizer = base.GetDestinationProvider(_destinationProviderRdo, newDestinationConfiguration, job);
+				IDataSynchronizer dataSyncronizer = base.GetDestinationProvider(_destinationProviderRdo, newDestinationConfiguration, job);
 				dataSyncronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration);
 
 				if (missingManagers.Any())
@@ -148,7 +148,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			SetManagerFieldIDs(_custodianManagerFieldMap, _managerFieldMap);
 		}
 
-		internal override IDataSyncronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
+		internal override IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
 		{
 			_destinationProviderRdo = destinationProviderRdo;
 			_destinationConfiguration = configuration;

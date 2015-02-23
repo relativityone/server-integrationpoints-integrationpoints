@@ -1,0 +1,49 @@
+*** Settings ***
+| Documentation     | Verify that Deleting a Source Provider Application deletes both the associate RIP and its Scheduled Job
+| Metadata		    | Authors	| Daniel Oliver
+| Force Tags		| in-progress | team.method
+
+
+*** Variables ***
+
+| ${WorkspaceName}	         | LDAP Sync
+| ${Source}                  |  
+| ${IntegrationPoint}        | 
+
+
+*** Test Cases ***
+
+| Uninstalling a RIP Source Provider Application deletes the RIP
+| | [Documentation] | Verify that deleting a Source Provider application that is used by an RIP also deletes the RIP
+| | ...				| [id] 
+| | [Tags]          | manual  | required
+| | Run the following manual steps:
+| | ... | Notes:
+| | ... | ${Source} can be found at the following location \\\
+| | ... |
+| | ... | Preconditions:
+| | ... | 1. ${Source} is installed 
+| | ... | 2. ${IntegrationPoint} uses the Source Provider ${Source} 
+| | ... | 3. ${IntegrationPoint} has a Scheduled enabled for a future job
+| | ... |
+| | ... | Steps:
+| | ... | 1. View the application ${Source} 
+| | ... | 2. Uninstall the application 
+| | ... | 3. Go to the tab | Integration Points
+| | ... | 4. Filter for ${IntegrationPoint}
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Integration Point has been deleted
+
+| Uninstalling a RIP Source Provider Application deletes the RIP's scheduled job
+| | [Documentation] | Verify that deleting a Source Provider application that is used by an RIP also deletes the RIP's scheduled job
+| | ...				| [id] 
+| | [Tags]          | manual 
+| | Require Test Case | Uninstalling a RIP Source Provider Application deletes the RIP  
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Open SQL Server Manager 
+| | ... | 2. Navigate to EDDS > Tables > System Tables > eddsdbo.ScheduleAgentQueue
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the Scheduled Job was removed for the deleted Integration Point

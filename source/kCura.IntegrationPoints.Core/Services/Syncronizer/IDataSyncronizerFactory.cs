@@ -1,6 +1,6 @@
 ﻿using System;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Contracts.Syncronizer;
+using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 {
 	public interface IDataSyncronizerFactory
 	{
-		IDataSyncronizer GetSyncronizer(Guid identifier, string options);
+		IDataSynchronizer GetSyncronizer(Guid identifier, string options);
 	}
 
 	public class MockFactory : IDataSyncronizerFactory
@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 			_query = query;
 		}
 
-		public IDataSyncronizer GetSyncronizer(Guid identifier, string options)
+		public IDataSynchronizer GetSyncronizer(Guid identifier, string options)
 		{
 			return kCura.IntegrationPoints.Contracts.PluginBuilder.Current.GetSynchronizerFactory()
 				.CreateSyncronizer(identifier, options);
