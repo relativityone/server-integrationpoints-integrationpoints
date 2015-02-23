@@ -57,7 +57,7 @@
 
 })(IP);
 $(window).load(function() {
-	$(".consoleContainer .consoleButtonDisabled").attr("title", "Please contact your administrator for the correct permissions.");
+	$(".consoleContainer .consoleButtonDisabled").attr("title", "You do not have permission to import.");
 });
 $(window).unload(function () {
 	
