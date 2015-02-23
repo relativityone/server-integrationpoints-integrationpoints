@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts.Syncronizer;
+using kCura.IntegrationPoints.Contracts.Synchronizer;
 
 namespace kCura.IntegrationPoints.Contracts
 {
@@ -18,6 +18,6 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <param name="identifier">A guid representing the identifier to find the DataSynchronizer.</param>
 		/// <param name="options">The options specific to the current integration point identifier.</param>
 		/// <returns>A new instance of the data synchronizer.</returns>
-		IDataSyncronizer CreateSyncronizer(Guid identifier, string options);
+		IDataSynchronizer CreateSyncronizer(Guid identifier, string options);
 	}
 }

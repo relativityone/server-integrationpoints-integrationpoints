@@ -1,6 +1,6 @@
 ﻿using System;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Contracts.Syncronizer;
+using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 
 		public ITaskJobSubmitter TaskJobSubmitter { get; set; }
 
-		public IDataSyncronizer CreateSyncronizer(Guid identifier, string options)
+		public IDataSynchronizer CreateSyncronizer(Guid identifier, string options)
 		{
 			var json = JsonConvert.DeserializeObject<ImportSettings>(options);
 			var rdoObjectType = _query.GetObjectType(json.ArtifactTypeId);
