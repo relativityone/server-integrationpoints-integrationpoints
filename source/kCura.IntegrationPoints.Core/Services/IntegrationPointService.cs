@@ -28,9 +28,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobService = jobService;
 		}
 
-		private Data.IntegrationPoint GetRDO(int rdoID)
+		public Data.IntegrationPoint GetRDO(int rdoID)
 		{
-			if (_rdo == null)
+			if (_rdo == null || _rdo.ArtifactId != rdoID)
 			{
 				_rdo = _context.RsapiService.IntegrationPointLibrary.Read(rdoID);
 			}

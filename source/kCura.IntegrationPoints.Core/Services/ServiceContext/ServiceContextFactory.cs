@@ -22,7 +22,9 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 			{
 				IntegrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(client),
 				SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(client),
-				DestinationProviderLibrary = new RsapiClientLibrary<DestinationProvider>(client)
+				DestinationProviderLibrary = new RsapiClientLibrary<DestinationProvider>(client),
+				JobHistoryLibrary = new RsapiClientLibrary<JobHistory>(client),
+				JobHistoryErrorLibrary = new RsapiClientLibrary<JobHistoryError>(client)
 			};
 		}
 	}

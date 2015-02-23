@@ -103,6 +103,7 @@
   <ItemGroup>
     <Compile Include="Integration\PermissionServiceIntegrationTest.cs" />
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />
+    <Compile Include="Unit\BaseRDOTests.cs" />
     <Compile Include="Unit\PermissionServiceTest.cs" />
     <Compile Include="Unit\RdoGetterTest.cs" />
     <Compile Include="Unit\RSAPIServiceInstallerTests.cs" />

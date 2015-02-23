@@ -24,12 +24,18 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IJobService _jobService;
 		private IntegrationPointService _helper;
 		private IScheduleRuleFactory _scheduleRuleFactory;
+		private kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
+		private IGuidService _guidService;
+		private JobHistoryService _jobHistoryService;
 
 		public SyncManager(ICaseServiceContext caseServiceContext,
 			IDataProviderFactory providerFactory,
 			IJobManager jobManager,
 			IJobService jobService,
 			IntegrationPointService helper,
+			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
+			IGuidService guidService,
+			JobHistoryService jobHistoryService,
 			IScheduleRuleFactory scheduleRuleFactory)
 		{
 			_caseServiceContext = caseServiceContext;
@@ -37,13 +43,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobManager = jobManager;
 			_jobService = jobService;
 			_helper = helper;
+			_serializer = serializer;
+			_guidService = guidService;
+			_jobHistoryService = jobHistoryService;
 			_scheduleRuleFactory = scheduleRuleFactory;
 			base.RaiseJobPreExecute += new JobPreExecuteEvent(JobPreExecute);
 			base.RaiseJobPostExecute += new JobPostExecuteEvent(JobPostExecute);
+			BatchJobCount = 0;
 			BatchInstance = Guid.NewGuid();
 		}
 
+		public Data.IntegrationPoint IntegrationPoint { get; set; }
+		public Data.JobHistory JobHistory { get; set; }
 		public Guid BatchInstance { get; set; }
+		public int BatchJobCount { get; set; }
 
 		public override int BatchSize
 		{
@@ -52,22 +65,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public override IEnumerable<string> GetUnbatchedIDs(Job job)
 		{
-			if (job.RelatedObjectArtifactID < 1)
-			{
-				throw new ArgumentNullException("Job must have a Related Object ArtifactID");
-			}
-			var integrationPointID = job.RelatedObjectArtifactID;
-			var rdoIntegrationPoint = _helper.ReadIntegrationPoint(job.RelatedObjectArtifactID);
-			if (rdoIntegrationPoint.SourceProvider == 0)
-			{
-				throw new Exception("Cannot import source provider with unknown id.");
-			}
-			Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(rdoIntegrationPoint.SourceProvider);
+			Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
 			Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
 			Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
 			IDataSourceProvider provider = _providerFactory.GetDataProvider(applicationGuid, providerGuid);
-			FieldEntry idField = _helper.GetIdentifierFieldEntry(integrationPointID);
-			string options = _helper.GetSourceOptions(integrationPointID);
+			FieldEntry idField = _helper.GetIdentifierFieldEntry(this.IntegrationPoint.ArtifactId);
+			string options = _helper.GetSourceOptions(this.IntegrationPoint.ArtifactId);
 			IDataReader idReader = provider.GetBatchableIds(idField, options);
 
 			return new ReaderEnumerable(idReader);
@@ -81,6 +84,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				BatchParameters = batchIDs
 			};
 			_jobManager.CreateJob(job, taskParameters, TaskType.SyncWorker);
+			BatchJobCount++;
 		}
 
 		private class ReaderEnumerable : IEnumerable<string>
@@ -108,32 +112,65 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void JobPreExecute(Job job)
 		{
 			this.BatchInstance = GetBatchInstance(job);
+			if (job.RelatedObjectArtifactID < 1)
+			{
+				throw new ArgumentNullException("Job must have a Related Object ArtifactID");
+			}
+			var integrationPointID = job.RelatedObjectArtifactID;
+			this.IntegrationPoint = _helper.GetRDO(job.RelatedObjectArtifactID);
+			if (this.IntegrationPoint.SourceProvider == 0)
+			{
+				throw new Exception("Cannot import source provider with unknown id.");
+			}
+			Data.JobHistory jobHistory = _jobHistoryService.CreateRDO(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
+			if (!jobHistory.StartTimeUTC.HasValue)
+			{
+				jobHistory.StartTimeUTC = DateTime.UtcNow;
+				//TODO: jobHistory.JobStatus = "";
+				_jobHistoryService.UpdateRDO(jobHistory);
+			}
 		}
 
 		private void JobPostExecute(Job job, TaskResult taskResult)
 		{
 			try
 			{
-				int integrationPointID = job.RelatedObjectArtifactID;
-				IntegrationPoint rdoIntegrationPoint =
-					_caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
-				if (rdoIntegrationPoint != null)
+				this.IntegrationPoint.LastRuntimeUTC = DateTime.UtcNow;
+				if (job.SerializedScheduleRule != null)
 				{
-					rdoIntegrationPoint.LastRuntimeUTC = DateTime.UtcNow;
-					if (job.SerializedScheduleRule != null)
-					{
-						rdoIntegrationPoint.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory,
-							taskResult);
-					}
-					_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(rdoIntegrationPoint);
+					this.IntegrationPoint.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory,
+						taskResult);
+				}
+				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPoint);
+
+				if (BatchJobCount == 0)
+				{
+					//no worker jobs were submitted
+					this.JobHistory.EndTimeUTC = DateTime.UtcNow;
+					_caseServiceContext.RsapiService.JobHistoryLibrary.Update(this.JobHistory);
 				}
 			}
-			catch { }
+			catch (Exception ex)
+			{
+				throw new Exception("Failed to update job statistics.", ex);
+			}
 		}
 
 		private Guid GetBatchInstance(Job job)
 		{
-			return Guid.NewGuid();
+			Guid newBatchInstance = _guidService.NewGuid();
+			if (!string.IsNullOrWhiteSpace(job.JobDetails))
+			{
+				try
+				{
+					newBatchInstance = _serializer.Deserialize<Guid>(job.JobDetails);
+				}
+				catch (Exception ex)
+				{
+					throw new Exception("Failed to get Batch Instance.", ex);
+				}
+			}
+			return newBatchInstance;
 		}
 
 		public void Dispose()
