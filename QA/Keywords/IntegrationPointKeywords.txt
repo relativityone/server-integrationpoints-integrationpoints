@@ -436,6 +436,22 @@
 | | Run Keyword If	| "${StepText}" == "Connect to Source"	| Unselect Frame
 | | Run Keyword If	| "${StepText}" == "Connect to Source"	| Select iFrame	| id=_externalPage
 
+| Verify that a Card with the following Title Text is Visible
+| | [Documentation]	| Verifies that a Card with the given title text is visible on the page.
+| | [ARGUMENTS]		| ${ExpectedText}
+| | Element Should Be Visible	| xpath=//div[@class='card']	| No cards were visible on the page.
+| | Element Should Be Visible	| xpath=//div[@class='card']/descendant::span[@class="label title" and text()="${ExpectedText}"]	| No card with the title "${ExpectedText}" was visible on the page.
+
+| Verify that the following Card contains the following Fields in Order
+| | [Documentation]	| Verifies that the Card with the given Title Text has the given fields in the given order.
+| | [ARGUMENTS]		| ${CardTitle}	| @{ExpectedFields}
+| | Verify that a Card with the following Title Text is visible	| ${CardTitle}
+| | @{ActualFields}=	| Get Element Text	| xpath=//div[@class='card' and descendant::text()="${CardTitle}"]/descendant::div[contains(@class, 'field-label')]	| False
+| | Remove Values From List	| ${ActualFields}	| ${EMPTY}	| # Strip out the hidden fields
+| | Log	| Expected Fields: ${ExpectedFields}
+| | Log	| Actual Fields: ${ActualFields}
+| | Lists Should Be Equal	| ${ExpectedFields}	| ${ActualFields}
+
 
 *** Settings ***
 | Library	| String
