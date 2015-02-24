@@ -149,11 +149,54 @@
 | | ... | Verify that the message "The overlay identifier field must be mapped." is displayed
 
 
+| A Mapping cannot be Saved while Parent Attribute's value is Select...
+| | [Documentation] | Verify that Mappings cannot be Saved while Parent Attribute's value is "Select...".
+| | [Tags]			| manual	| dan650
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
+| | ... | 2. Create an otherwise valid Mapping, but leave Parent Attribute as "Select..."
+| | ... | 3. Click Save
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Parent Attribute field throws the following error: "The Parent Attribute is required."
+
+
+| A Mapping can be Saved after the Parent Attribute's validation
+| | [Documentation] | Verify that Mappings can be Saved after Parent Attribute's validation was triggered.
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
+| | ... | 2. Create an otherwise valid Mapping, but leave Parent Attribute as "Select..."
+| | ... | 3. Click Save
+| | ... | 4. Wait until the Parent Attribute field throws the its error
+| | ... | 5. Select any Parent Attribute besides "Select..."
+| | ... | 6. Click Save
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Integration Point is saved with the given Parent Attribute
+
+
+| Integration Points can be created when Parent Attribute is hidden
+| | [Documentation] | Verify that when the Parent Attribute list hidden, that the Create Integration Point Process can be completed.
+| | ...				| [id] 10e61ca1-a89f-11e4-8dcb-b8ca3a83048f
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
+| | ... | 2. Complete the required fields for this screen
+| | ... | 3. Click | Save
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the IP has been created.
+
+
 *** Keywords *** 
 
 | Go to Step 3 of the Create Integration Point Process
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form	| Generic Selectable Field tests	| Append/Overlay	| LDAP	| Custodian	| no
+| | Fill out the Following Fields of the Integration Point Step 1 form	| Generic Selectable Field tests	| Append/Overlay	| LDAP	| Custodian	| No
 | | Click	| Next
 | | Fill out the Following Fields of the Integration Point Step 2 form	| ${ValidConnectionPath}
 | | Click	| Next

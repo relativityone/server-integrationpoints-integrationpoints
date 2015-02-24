@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Data
 
 		public virtual void SetField<T>(Guid fieldName, T fieldValue, Boolean markAsUpdated = true)
 		{
-			object value = ConvertValue(fieldName, fieldValue);
+			object value = ConvertValue(FieldMetadata[fieldName].Type, fieldValue);
 			if (!Rdo.Fields.Any(x => x.Guids.Contains(fieldName)))
 			{
 				Rdo.Fields.Add(new FieldValue(fieldName, value));
@@ -67,12 +67,12 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 
-		private object ConvertValue(Guid fieldName, object value)
+		internal object ConvertValue(string fieldType, object value)
 		{
 			if (value == null) return value;
 			object newValue = null;
 
-			switch (FieldMetadata[fieldName].Type)
+			switch (fieldType)
 			{
 				case FieldTypes.MultipleChoice:
 					Choice[] choices = null;
