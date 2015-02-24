@@ -5,25 +5,25 @@ using kCura.IntegrationPoints.Contracts.Models;
 namespace kCura.IntegrationPoints.Contracts.Provider
 {
 	/// <summary>
-	/// Represents an integration point where the data will flow from into the system.
+	/// Represents a source provider used for importing data into the system.
 	/// </summary>
 	public interface IDataSourceProvider : IFieldProvider
 	{
 		/// <summary>
-		/// Determins the Data from the source that will flow into the system.
+		/// Retreives data from a data source and imports it into the system.
 		/// </summary>
-		/// <param name="fields">The fields that are requested from the data source.</param>
-		/// <param name="entryIds">The requested IDs that are expected to be read.</param>
-		/// <param name="options">The source providers options that have been previously set.</param>
-		/// <returns>A stream that represents the data based on the requested fields and the requested entryIds.</returns>
+		/// <param name="fields">The fields requested from the data source.</param>
+		/// <param name="entryIds">The IDs for the requested fields.</param>
+        /// <param name="options">The options on a source provider that a user has set.</param>
+		/// <returns>A stream containing data from based on requested fields and their IDs.</returns>
 		IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options);
 		
 		/// <summary>
-		/// Determins the identifer for the current ids.
+		/// Retreives the IDs from the source data used as identifiers for workspace fields.
 		/// </summary>
-		/// <param name="identifier">The identifier field used to batch up jobs.</param>
-		/// <param name="options">The source providers options that have been previously set.</param>
-		/// <returns>A stream that represents all the ids with just the identifier field.</returns>
+		/// <param name="identifier">The identifier field used for batching jobs.</param>
+		/// <param name="options">The options on a source provider that a user has set.</param>
+		/// <returns>A stream containing only IDs retrieved from the identifier fields.</returns>
 		IDataReader GetBatchableIds(FieldEntry identifier, string options);
 	}
 }

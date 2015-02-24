@@ -5,16 +5,16 @@ using kCura.IntegrationPoints.Contracts.Provider;
 namespace kCura.IntegrationPoints.Contracts.Syncronizer
 {
 	/// <summary>
-	/// Represents and inflow of data into the system.
+	/// Imports data from the source provider into Relativity.
 	/// </summary>
 	public interface IDataSyncronizer : IFieldProvider
 	{
 		/// <summary>
-		/// Used to bring data into the system.
+        /// Synchronizes data from the data source provider and imports it into Relativity.
 		/// </summary>
-		/// <param name="data">The records that are expected to be inserted.</param>
-		/// <param name="fieldMap">The field mapping that will insert the data into the system.</param>
-		/// <param name="options">The options that are provided to sync data to the destination.</param>
+		/// <param name="data">The records to insert into the system.</param>
+		/// <param name="fieldMap">The field mapping used to import data into the system.</param>
+		/// <param name="options">The option settings used to synchronize the source data with the destination.</param>
 		void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options);
 	}
 }
