@@ -6,24 +6,28 @@ using kCura.IntegrationPoints.Contracts.Provider;
 namespace kCura.IntegrationPoints.Contracts
 {
 	/// <summary>
-	/// Represents the default provider to create data providers.
+	/// Represents a default provider used to create data source providers.
 	/// </summary>
 	public class DefaultProviderFactory : IProviderFactory
 	{
-		public DefaultProviderFactory() { }
+
+        /// <summary>
+        ///Initializes an new instance of the DefaultProviderFactory class.
+        /// </summary>     
+        public DefaultProviderFactory() { }
 
 		/// <summary>
-		/// Creates a new provider based on the identifier guid
+		/// Creates a new data source provider using the GUID specified as the identifier.
 		/// </summary>
-		/// <param name="identifier">The identifier that should be decorated on the class to access it.</param>
-		/// <returns>A new instance of a DataSource provider.</returns>
+		/// <param name="identifier"> A GUID decorating the class so that it can be accessed.</param>
+        /// <returns>A new instance of a data source provider.</returns>
 		public IDataSourceProvider CreateProvider(Guid identifier)
 		{
 			Type t = GetType(identifier);
 			return CreateInstance(t);
 		}
 		/// <summary>
-		/// Gets the type through
+		/// Gets the Type of the current instance.
 		/// </summary>
 		/// <param name="identifer"></param>
 		/// <returns></returns>
@@ -46,10 +50,10 @@ namespace kCura.IntegrationPoints.Contracts
 			return providerTypes.First();
 		}
 		/// <summary>
-		/// Creates a new instance of the provider type with an empty constructor using Activator
+        /// Creates a new instance of the provider type using the Activator with an empty constructor.
 		/// </summary>
-		/// <param name="providerType">The type of the provider that will be create.</param>
-		/// <returns>A new instance of the Datasource provider.</returns>
+		/// <param name="providerType">The type of the provider to create.</param>
+        /// <returns>A new instance of a data source provider.</returns>
 		protected virtual IDataSourceProvider CreateInstance(Type providerType)
 		{
 			var provider = Activator.CreateInstance(providerType) as IDataSourceProvider;
