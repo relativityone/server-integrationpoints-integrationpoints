@@ -5,7 +5,7 @@ using System.Linq;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Contracts.Synchronizer;
+using kCura.IntegrationPoints.Contracts.Syncronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Conversion;
 using kCura.IntegrationPoints.Core.Services.Conversion;
@@ -127,7 +127,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
 
-			IDataSynchronizer dataSyncronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+			IDataSyncronizer dataSyncronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
 
 			dataSyncronizer.SyncData(sourceData, fieldMap, destinationConfiguration);
 		}
@@ -151,7 +151,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return sourceProvider;
 		}
 
-		internal virtual IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
+		internal virtual IDataSyncronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
 		{
 			Guid providerGuid = new Guid(destinationProviderRdo.Identifier);
 			if (_appDomainRdoSynchronizerFactoryFactory is GeneralWithCustodianRdoSynchronizerFactory)
@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					new TaskJobSubmitter(_jobManager, job, TaskType.SyncCustodianManagerWorker, this.BatchInstance);
 			}
 			Contracts.PluginBuilder.Current.SetSynchronizerFactory(_appDomainRdoSynchronizerFactoryFactory);
-			IDataSynchronizer sourceProvider = _dataSyncronizerFactory.GetSyncronizer(providerGuid, configuration);
+			IDataSyncronizer sourceProvider = _dataSyncronizerFactory.GetSyncronizer(providerGuid, configuration);
 			return sourceProvider;
 		}
 	}

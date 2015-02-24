@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Domain;
 
 namespace kCura.IntegrationPoints.Contracts
@@ -55,7 +54,7 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <param name="identifier">The identifier that represents the synchronizer to create.</param>
 		/// <param name="options">The options for that synchronizer that will be passed on initialization.</param>
 		/// <returns>A synchronizer that will bring data into a system.</returns>
-		public IDataSynchronizer GetSyncronizer(Guid identifier, string options)
+		public Syncronizer.IDataSyncronizer GetSyncronizer(Guid identifier, string options)
 		{
 			return new SynchronizerWrapper(PluginBuilder.Current.GetSynchronizerFactory().CreateSyncronizer(identifier, options));
 		}

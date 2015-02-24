@@ -80,7 +80,7 @@
     <Compile Include="Provider\IDataSourceProvider.cs" />
     <Compile Include="Provider\IFieldProvider.cs" />
     <Compile Include="IStartUp.cs" />
-    <Compile Include="Synchronizer\IDataSynchronizer.cs" />
+    <Compile Include="Syncronizer\IDataSyncronizer.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

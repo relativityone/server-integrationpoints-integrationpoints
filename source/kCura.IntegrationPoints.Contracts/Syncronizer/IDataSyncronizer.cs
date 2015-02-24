@@ -2,12 +2,12 @@
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 
-namespace kCura.IntegrationPoints.Contracts.Synchronizer
+namespace kCura.IntegrationPoints.Contracts.Syncronizer
 {
 	/// <summary>
 	/// Represents and inflow of data into the system.
 	/// </summary>
-	public interface IDataSynchronizer : IFieldProvider
+	public interface IDataSyncronizer : IFieldProvider
 	{
 		/// <summary>
 		/// Used to bring data into the system.

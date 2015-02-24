@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Synchronizer.IDataSynchronizer
+	public class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Syncronizer.IDataSyncronizer
 	{
 		protected readonly RelativityFieldQuery FieldQuery;
 
