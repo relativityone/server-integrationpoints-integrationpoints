@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 {
 	public class MockDBContext : IDBContext
 	{
+		public const int DEFAULT_TIMEOUT = 600;
 		private readonly string _connectionString;
 		public MockDBContext(string connectionString)
 		{
@@ -75,57 +76,78 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 		public DataTable ExecuteSqlStatementAsDataTable(string sqlStatement)
 		{
-			throw new NotImplementedException();
+			return this.ExecuteSqlStatementAsDataTable(sqlStatement, DEFAULT_TIMEOUT, new List<SqlParameter>());
 		}
 
 		public DataTable ExecuteSqlStatementAsDataTable(string sqlStatement, int timeoutValue)
 		{
-			throw new NotImplementedException();
+			return this.ExecuteSqlStatementAsDataTable(sqlStatement, timeoutValue, new List<SqlParameter>());
 		}
 
 		public DataTable ExecuteSqlStatementAsDataTable(string sqlStatement, IEnumerable<SqlParameter> parameters)
 		{
-			throw new NotImplementedException();
+			return this.ExecuteSqlStatementAsDataTable(sqlStatement, DEFAULT_TIMEOUT, parameters);
 		}
 
 		public DataTable ExecuteSqlStatementAsDataTable(string sqlStatement, int timeoutValue, IEnumerable<SqlParameter> parameters)
 		{
-			throw new NotImplementedException();
+			using (var con = this.GetConnection(true))
+			{
+				using (var cmd = con.CreateCommand())
+				{
+					cmd.CommandText = sqlStatement;
+					cmd.CommandTimeout = timeoutValue;
+					cmd.Parameters.AddRange(parameters.ToArray());
+					var dt = new DataTable();
+					dt.Load(cmd.ExecuteReader());
+					return dt;
+				}
+			}
 		}
 
+		
 		public T ExecuteSqlStatementAsScalar<T>(string sqlStatement)
 		{
-			throw new NotImplementedException();
+			return this.ExecuteSqlStatementAsScalar<T>(sqlStatement, new List<SqlParameter>(), DEFAULT_TIMEOUT);
 		}
 
 		public T ExecuteSqlStatementAsScalar<T>(string sqlStatement, IEnumerable<SqlParameter> parameters)
 		{
-			throw new NotImplementedException();
+			return this.ExecuteSqlStatementAsScalar<T>(sqlStatement, parameters, DEFAULT_TIMEOUT);
 		}
 
 		public T ExecuteSqlStatementAsScalar<T>(string sqlStatement, int timeoutValue)
 		{
-			throw new NotImplementedException();
+			return this.ExecuteSqlStatementAsScalar<T>(sqlStatement, new List<SqlParameter>(), timeoutValue);
 		}
 
 		public T ExecuteSqlStatementAsScalar<T>(string sqlStatement, IEnumerable<SqlParameter> parameters, int timeoutValue)
 		{
-			throw new NotImplementedException();
+			return (T)this.ExecuteSqlStatementAsScalar(sqlStatement, parameters, timeoutValue);
 		}
 
 		public T ExecuteSqlStatementAsScalar<T>(string sqlStatement, params SqlParameter[] parameters)
 		{
-			throw new NotImplementedException();
+			return this.ExecuteSqlStatementAsScalar<T>(sqlStatement, parameters, DEFAULT_TIMEOUT);
 		}
 
 		public object ExecuteSqlStatementAsScalar(string sqlStatement, params SqlParameter[] parameters)
 		{
-			throw new NotImplementedException();
+			return this.ExecuteSqlStatementAsScalar(sqlStatement, parameters, DEFAULT_TIMEOUT);
 		}
 
 		public object ExecuteSqlStatementAsScalar(string sqlStatement, IEnumerable<SqlParameter> parameters, int timeoutValue)
 		{
-			throw new NotImplementedException();
+			using (var con = this.GetConnection(true))
+			{
+				using (var cmd = con.CreateCommand())
+				{
+					cmd.CommandText = sqlStatement;
+					cmd.Parameters.AddRange(parameters.ToArray());
+					cmd.CommandTimeout = timeoutValue;
+					return cmd.ExecuteScalar();
+				}
+			}
 		}
 
 		public object ExecuteSqlStatementAsScalarWithInnerTransaction(string sqlStatement, IEnumerable<SqlParameter> parameters, int timeoutValue)
@@ -147,17 +169,26 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 		public int ExecuteNonQuerySQLStatement(string sqlStatement, int timeoutValue)
 		{
-			throw new NotImplementedException();
+			return this.ExecuteNonQuerySQLStatement(sqlStatement, new List<SqlParameter>(), DEFAULT_TIMEOUT);
 		}
 
 		public int ExecuteNonQuerySQLStatement(string sqlStatement, IEnumerable<SqlParameter> parameters)
 		{
-			throw new NotImplementedException();
+			return this.ExecuteNonQuerySQLStatement(sqlStatement, parameters, DEFAULT_TIMEOUT);
 		}
 
 		public int ExecuteNonQuerySQLStatement(string sqlStatement, IEnumerable<SqlParameter> parameters, int timeoutValue)
 		{
-			throw new NotImplementedException();
+			using (var con = this.GetConnection(true))
+			{
+				using (var cmd = con.CreateCommand())
+				{
+					cmd.CommandText = sqlStatement;
+					cmd.Parameters.AddRange(parameters.ToArray());
+					cmd.CommandTimeout = timeoutValue;
+					return cmd.ExecuteNonQuery();
+				}
+			}
 		}
 
 		public DbDataReader ExecuteSqlStatementAsDbDataReader(string sqlStatement)
