@@ -7,15 +7,13 @@ using System.Threading.Tasks;
 namespace kCura.IntegrationPoints.Contracts
 {
 	/// <summary>
-	/// First call made into the app domain to do any setup work required.
-	/// It is expected that there is only one class that implements this interface
-	/// per library.
-	/// The implementing class must have an empty constructor.
+	/// Makes an initial call into an application domain to perform setup work.
 	/// </summary>
+    /// <remarks>Only a single class per library should implement this interface. This class must contain an empty constructor.</remarks>
 	public interface IStartUp
 	{
 		/// <summary>
-		/// The function that will do any setup work.
+		/// Performs setup work required prior to running a provider.
 		/// </summary>
 		void Execute();
 	}

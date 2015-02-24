@@ -10,28 +10,34 @@ using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
 	/// <summary>
-	/// Event Executed before post install will begin.
+	/// Occurs immediately before the execution of a Post Install event handler.
 	/// </summary>
 	public delegate void PostInstallPreExecuteEvent();
 	/// <summary>
-	/// Event executed after all source providers are registered
+	/// Occurs after all source providers are registered.
 	/// </summary>
-	/// <param name="isInstalled">Whether the source providers were installed.</param>
-	/// <param name="ex">The exception that occured if there were errors in installing the source provider.</param>
+	/// <param name="isInstalled">Indicates whether the source providers were installed.</param>
+	/// <param name="ex">An exception thrown when errors occur during the installation of a data source provider.</param>
 	public delegate void PostInstallPostExecuteEvent(bool isInstalled, Exception ex);
 	
 	/// <summary>
-	/// Provides a means to register new source providers with Relativity Integration points.
+	/// Registers the new data source providers with Relativity Integration Points.
 	/// </summary>
 	public abstract class IntegrationPointSourceProviderInstaller : kCura.EventHandler.PostInstallEventHandler
 	{
-		public event PostInstallPreExecuteEvent RaisePostInstallPreExecuteEvent;
+		/// <summary>
+        /// Raised immediately before the execution of a Post Install event handler.
+		/// </summary>
+        public event PostInstallPreExecuteEvent RaisePostInstallPreExecuteEvent;
+        /// <summary>
+        /// Raised after all source providers are registered.
+        /// </summary>
 		public event PostInstallPostExecuteEvent RaisePostInstallPostExecuteEvent;
 
 		/// <summary>
-		/// Gets all the source providers that will be registered with this application.
+		/// Retrieves the data source providers for registration with the application.
 		/// </summary>
-		/// <returns>Source providers that are expected to be registered.</returns>
+		/// <returns>The data source providers for registration.</returns>
 		public abstract IDictionary<Guid, SourceProvider> GetSourceProviders();
 
 		protected IntegrationPointSourceProviderInstaller()
@@ -115,7 +121,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		}
 
 		/// <summary>
-		/// Raise the event for post install pre execute.
+		/// Raises an event prior to the execution of a Post Install event handler.
 		/// </summary>
 		protected void OnRaisePostInstallPreExecuteEvent()
 		{
@@ -124,10 +130,10 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		}
 
 		/// <summary>
-		/// Raise event after the registration process was completed.
+		/// Occurs after the registration process completes.
 		/// </summary>
-		/// <param name="isInstalled">Whether the source providers were installed.</param>
-		/// <param name="ex">The exception that occured if there were errors in installing the source provider.</param>
+		/// <param name="isInstalled">Indicates whether the data source providers were installed.</param>
+		/// <param name="ex">An exception thrown when errors occur during the installation of the data source provider.</param>
 		protected void OnRaisePostInstallPostExecuteEvent(bool isInstalled, Exception ex)
 		{
 			if (RaisePostInstallPostExecuteEvent != null)
