@@ -66,7 +66,10 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			}
 			set { _importService = value; }
 		}
-
+        /// <summary>
+        /// Runs when the event handler is called during the installation of the data source provider.
+        /// </summary>
+        /// <returns>An object of type Response, which frequently contains a message.</returns>
 		public override sealed Response Execute()
 		{
 			bool isSuccess = false;
