@@ -8,34 +8,34 @@ using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
 	/// <summary>
-	/// 
+    /// Occurs immediately before the execution of a Pre Uninstall event handler.
 	/// </summary>
 	public delegate void PreUninstallPreExecuteEvent();
 
 	/// <summary>
-	/// 
+    /// Occurs after the source provider is removed from the database table.
 	/// </summary>
 	/// <param name="isUninstalled"></param>
 	/// <param name="ex"></param>
 	public delegate void PreUninstallPostExecuteEvent(bool isUninstalled, Exception ex);
 
 	/// <summary>
-	/// Provides a means to remove a source provider when the application is uninstalled.
+	/// Removes a data source provider when the user uninstalls the application from a workspace.
 	/// </summary>
 	public abstract class IntegrationPointSourceProviderUninstaller : kCura.EventHandler.PreUninstallEventHandler
 	{
 		/// <summary>
-		/// Event that is raised before the source provider is removed.
+		/// Occurs before the removal of the data source provider.
 		/// </summary>
 		public event PreUninstallPreExecuteEvent RaisePreUninstallPreExecuteEvent;
 
 		/// <summary>
-		/// Event that is raised after all the source providers for the current application are removed.
+		/// Occurs after the removal of all the data source providers in the current application.
 		/// </summary>
 		public event PreUninstallPostExecuteEvent RaisePreUninstallPostExecuteEvent;
 
 		/// <summary>
-		/// Creates a new instance of the source uninstall provider.
+		/// Creates a new instance of the data source uninstall provider.
 		/// </summary>
 		protected IntegrationPointSourceProviderUninstaller()
 		{
@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 
 		/// <summary>
-		/// Raises the RaisePreUninstallPreExecuteEvent
+		/// Raises the RaisePreUninstallPreExecuteEvent.
 		/// </summary>
 		protected void OnRaisePreUninstallPreExecuteEvent()
 		{
@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		}
 
 		/// <summary>
-		/// Raises the RaisePreUninstallPostExecuteEvent
+		/// Raises the RaisePreUninstallPostExecuteEvent.
 		/// </summary>
 		protected void OnRaisePreUninstallPostExecuteEvent(bool isUninstalled, Exception ex)
 		{

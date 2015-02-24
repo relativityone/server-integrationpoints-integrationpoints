@@ -3,24 +3,24 @@
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
 	/// <summary>
-	/// A C# object that describes a source provider registration.
+	/// Provides the information for the registration of a data source provider.
 	/// </summary>
 	public class SourceProvider
 	{
 		/// <summary>
-		/// The source provider guid used to identify the provider
+		/// Gets or sets the GUID identifying the data source provider.
 		/// </summary>
 		internal Guid GUID { get; set; }
 		
 		internal Guid ApplicationGUID { get; set; }
 		internal int ApplicationID { get; set; }
 		/// <summary>
-		/// The display name of the source provider, used to show a user which provider will be used
+		/// Gets or sets the name of the data source provider displayed in the Relativity UI.
 		/// </summary>
 		public string Name { get; set; }
 		
 		/// <summary>
-		/// The url fot the configuration that will be used in the setting of the providers settings.
+		/// Gets or sets the URL used to configure the data source provider.
 		/// </summary>
 		public string Url { get; set; }
 	}

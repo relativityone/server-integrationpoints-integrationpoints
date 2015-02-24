@@ -8,14 +8,19 @@ using kCura.IntegrationPoints.Contracts.Provider;
 namespace kCura.IntegrationPoints.Contracts
 {
 	/// <summary>
-	/// Represents the class that will resolve how the Provider will be created.
+	/// Defines the process required to build a provider.
 	/// </summary>
+    /// <remarks>The PulginBuilder class is a singleton used to build a data source provider. However, you can also implement a custom plugin builder class to control how your data source provider is constructed.</remarks>
 	public class PluginBuilder
 	{
 		private readonly static PluginBuilder _instance = new PluginBuilder();
 		private IProviderFactory _providerFactory;
 		private ISynchronizerFactory _synchronizerFactory;
-		public static PluginBuilder Current
+		/// <summary>
+		/// Gets the current instance of the PluginBuilder class.
+		/// </summary>
+        
+        public static PluginBuilder Current
 		{
 			get { return _instance; }
 		}
@@ -26,18 +31,18 @@ namespace kCura.IntegrationPoints.Contracts
 			_synchronizerFactory = new DefaultSynchronizerFactory();
 		}
 		/// <summary>
-		/// Gets the factory that will be used to create the provider.
+		/// Gets the factory used to create the provider.
 		/// </summary>
-		/// <returns>The newly created provider used to integrate with the source.</returns>
+		/// <returns>The newly created provider for integration with a data source.</returns>
 		public IProviderFactory GetProviderFactory()
 		{
 			return Current._providerFactory;
 		}
 
 		/// <summary>
-		/// Sets the factory that will be used to create the provider.
+		/// Sets the factory used to create the provider.
 		/// </summary>
-		/// <param name="factory">The factory that will be used to create the provider to integrate with the source.</param>
+        /// <param name="factory">The factory used to create the provider for integration with a data source.</param>
 		public void SetProviderFactory(IProviderFactory factory)
 		{
 			if (factory == null)
@@ -48,9 +53,9 @@ namespace kCura.IntegrationPoints.Contracts
 		}
 
 		/// <summary>
-		/// Sets the factory that will be used to create the Syncronizer.
+		/// Sets the factory used to create the synchronizer.
 		/// </summary>
-		/// <param name="factory">The factory that will be used to create the synchronizer to integrate the destination.</param>
+		/// <param name="factory">The factory used to create a synchronizer for integration with a destination.</param>
 		public void SetSynchronizerFactory(ISynchronizerFactory factory)
 		{
 			if (factory == null)
@@ -60,9 +65,9 @@ namespace kCura.IntegrationPoints.Contracts
 			Current._synchronizerFactory = factory;
 		}
 		/// <summary>
-		/// Gets the factory that will be used to create the syncronizer.
+		/// Gets the factory used to create a synchronizer.
 		/// </summary>
-		/// <returns>The newly created synchronizer to integrate with the destination.</returns>
+		/// <returns>The newly created synchronizer for integration with a destination.</returns>
 		public ISynchronizerFactory GetSynchronizerFactory()
 		{
 			return Current._synchronizerFactory;

@@ -35,10 +35,10 @@
     <PresentationStyle>VS2013</PresentationStyle>
     <Preliminary>False</Preliminary>
     <NamingMethod>MemberName</NamingMethod>
-    <HelpTitle>Relativity Integration Points</HelpTitle>
+    <HelpTitle>Relativity Integration Points API</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
-    <HelpFileFormat>Website</HelpFileFormat>
+    <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
     <IndentHtml>False</IndentHtml>
     <KeepLogFile>True</KeepLogFile>
     <DisableCodeBlockComponent>False</DisableCodeBlockComponent>
@@ -57,9 +57,24 @@
     <FeedbackEMailAddress>documentation%40kcura.com</FeedbackEMailAddress>
     <CopyrightText>2015 kCura Corporation</CopyrightText>
     <CopyrightHref>http://www.kcura.com</CopyrightHref>
-    <ProjectSummary>The kCura.IntegrationPoints.Contracts namespace contains all base functionality to create source providers to integrate into a relativity data object.</ProjectSummary>
+    <ProjectSummary>The kCura.IntegrationPoints.Contracts namespace contains all base functionality used for creating source providers for integrating data into a Relativity object.</ProjectSummary>
     <VisibleItems>InheritedMembers, InheritedFrameworkMembers, ProtectedInternalAsProtected</VisibleItems>
     <MissingTags>None</MissingTags>
+    <ApiFilter>
+      <Filter entryType="Namespace" fullName="kCura.IntegrationPoints.Contracts" isExposed="True">
+  <Filter entryType="Interface" fullName="kCura.IntegrationPoints.Contracts.ISynchronizerFactory" filterName="ISynchronizerFactory" isExposed="False" />
+</Filter>
+    </ApiFilter>
+    <NamespaceSummaries>
+      <NamespaceSummaryItem name="kCura.IntegrationPoints.Contracts" isDocumented="True">The kCura.IntegrationPoints.Contracts includes classes and interfaces for building a data source provider and deploying the provider in its own application domain.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="kCura.IntegrationPoints.Contracts.Models" isDocumented="True">The kCura.IntegrationPoints.Contracts.Models namespace provides classes and enumerations used to map data from the source fields to workspace fields.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="kCura.IntegrationPoints.Contracts.Provider" isDocumented="True">The kCura.IntegrationPoints.Contracts.Provider namespace includes interfaces for the batching and importing of unique identifiers on data fields, and the data stored in these fields.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="kCura.IntegrationPoints.Contracts.Syncronizer" isDocumented="True">The kCura.IntegrationPoints.Contracts.Synchronizer namespace provides interfaces that define how data is handled during import.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="kCura.IntegrationPoints.SourceProviderInstaller" isDocumented="True">The kCura.IntegrationPoints.SourceProviderInstaller namespace includes the classes and delegates used to register the provider with Relativity and uninstall the provider from a workspace.</NamespaceSummaryItem></NamespaceSummaries>
+    <WebsiteSdkLinkType>Msdn</WebsiteSdkLinkType>
+    <HtmlSdkLinkType>Msdn</HtmlSdkLinkType>
+    <IncludeFavorites>False</IncludeFavorites>
+    <BinaryTOC>True</BinaryTOC>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
 			 the build.  The others are optional common platform types that may appear. -->
