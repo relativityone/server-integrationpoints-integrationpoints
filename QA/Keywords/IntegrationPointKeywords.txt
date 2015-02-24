@@ -190,6 +190,7 @@
 | | Wait Until Page Contains Element	| id=source-fields	| 10s	| The unassigned Source Attributes List Box never loaded.
 | | Wait Until Page Contains Element	| xpath=//select[@id='source-fields']/child::option	| 10s	| The unassigned Source Attributes never loaded.
 | | @{SourceAttributes}=	| Get Element Text	| xpath=//select[@id='source-fields']/child::option	| False
+| | [Return]		| @{SourceAttributes}
 
 | Click Workspace Field
 | | [Documentation] | A keyword that clicks an item from the (unselected) Workspace Field list. Multiple calls of select can be used with a single click of Move.
