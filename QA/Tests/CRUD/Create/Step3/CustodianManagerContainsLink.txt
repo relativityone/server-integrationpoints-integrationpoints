@@ -41,18 +41,20 @@
 
 | Custodian Manager Contains Link is not shown for Custodian Role Integration Points
 | | [Documentation] | Verify that the Custodian Manager Contains Link is not shown on Step 3 of the Integration Point wizard when the Destination RDO is Custodian Role.
-| | [Tags]			| automated	| dao195
+| | [Tags]			| automated
 | | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Destination RDO	| Custodian Role
 | | Verify that the following Card contains the following Fields in Order	| Import Settings	| 
-| | ... | Unique Identifier:
+| | ... | Unique Identifier:	| 
+| | ... | Parent Attribute:		| # shown because it is a child RDO
 
 
 | Custodian Manager Contains Link is not shown for Custodian Status Integration Points
 | | [Documentation] | Verify that the Custodian Manager Contains Link is not shown on Step 3 of the Integration Point wizard when the Destination RDO is Custodian Status.
-| | [Tags]			| automated	| dao195
+| | [Tags]			| automated
 | | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Destination RDO	| Custodian Status
 | | Verify that the following Card contains the following Fields in Order	| Import Settings	| 
-| | ... | Unique Identifier:
+| | ... | Unique Identifier:	| 
+| | ... | Parent Attribute:		| # shown because it is a child RDO
 
 
 | Custodian Manager Contains Link is not shown for Non-Custodian Integration Points
