@@ -73,6 +73,7 @@
       <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -88,7 +89,9 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -101,6 +104,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config.cs" />
     <Compile Include="IntegrationTestAttribute.cs" />
     <Compile Include="Integration\Migration\AddWebApiConfigValueMigrationTests.cs" />
     <Compile Include="Integration\PermissionServiceIntegrationTest.cs" />
