@@ -1,296 +1,220 @@
 *** Settings ***
-| Documentation 	| Verify that the Manager component of importing Custodians works correctly when Custodian Manager Contains Link is set to Yes
+| Documentation 	| Verify that when Managers are imported and Custodian Manager Contains Link is set to Yes, that the Custodian records are created and linked to the Manager Custodians.
 | Metadata		    | Authors	| Daniel Oliver
 | Force Tags		| in-progress | team.method
+| Suite Setup		| Create Suite Setup Data
+| Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
+| Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
 
 *** Variables ***
 
-| ${WorkspaceName}	   | Relativity Legal Hold
+| ${WorkspaceName}	   | LDAP Sync
 | ${Custodian1}        | Worker, Alpha
-| ${Custodian2}        | 
-| ${Custodian3}        | 
-| ${Custodian4}        | 
-| ${Custodian5}        | 
-| ${Custodian6}        | 
-| ${Custodian7}        | 
+| ${Custodian2}        | Worker, Bravo
+| ${CustodianB2}       | Worker, BravoTwo
+| ${Custodian3}        | Worker, Charlie
+| ${Custodian4}        | Worker, Delta
+| ${Custodian5}        | Worker, AlphaTwo
+| ${Custodian6}        | Worker, Echo
 | ${Manager1}          | Manager, Alpha
-| ${Manager2}          | 
-| ${Manager3}          | 
-| ${Manager4}          | 
-| ${Manager5}          | 
-| ${Manager6}          | 
-| ${Manager7}          | 
-| ${Manager8}          | 
+| ${Manager2}          | Manager, Bravo
+| ${Manager3}          | Manager, Charlie
+| ${Manager4}          | Manager, Delta
+| ${Manager6}          | Manager, Echo
+| ${Manager7}          | Manager, Foxtrot
+| ${IntegrationName}   | Managers
+| ${Department}        | Managers
+| ${CustodianGrid}     | gbox_custodianGrid
 
 *** Test Cases ***
 
-| Custodian Manager Contains Link is shown for Custodian Imports
-| | [Documentation] | Verify that the Custodian Manager Contains Link is shown on step 2 of RIP when the Destination RDO is Custodians
-| | ... | [id] a4804940-b605-11e4-82f6-90b11c6c5ae4
-| | [Tags] | manual  
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Create a new IP using the Destination RDO of Custodian
-| | ... | 2. Go to Step 3
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Custodian Manager Contains Link field is present as the last field on the Import Settings card
-| | ... | 2. Verify that the Custodian Manager Contains Link field has radio buttons of Yes and No
-
-| Custodian Manager Contains Link defaults to Yes
-| | [Documentation] | Verify that the Custodian Manager Contains Link defaults to Yes
-| | ... | [id] ae2ca28f-b605-11e4-a642-90b11c6c5ae4
-| | [Tags] | manual  
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Create a new IP using the Destination RDO of Custodian
-| | ... | 2. Go to Step 3
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Custodian Manager Contains Link field defaults to Yes
-
-| Custodian Manager Contains Link is not shown for non-Custodian Imports
-| | [Documentation] | Verify that the Custodian Manager Contains Link is not shown on step 2 of RIP when the Destination RDO is not Custodians
-| | ... | [id] b34c6ede-b605-11e4-9740-90b11c6c5ae4
-| | [Tags] | manual  
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Create a new IP using the Destination RDO of Attachments
-| | ... | 2. Go to Step 3
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Custodian Manager Contains Link field is not present
-
-| Manager names are shown on the Employee record in the Full Name format
-| | [Documentation] | Verify that a succesfully imported Custodian, who has a manager, shows the Manager's name in the correct format
+| Manager names are shown on their Report's Custodian Detail View
+| | [Documentation] | Verify that an imported Custodian who has a manager is linked to the Manager on the Custodian Detail View
 | | ... | [id] b8e6c261-b605-11e4-aaf4-90b11c6c5ae4
-| | [Tags] | manual | required
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. A RIP is created for Custodians with Custodian Manager Contains Link set to Yes
-| | ... | 2. Niether ${Custodian1} or ${Manager1} are Custodians in RLH
-| | ... | 3. In LDAP, ${Custodian1} has a manager: ${Manager1}
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Import the Custodian RIP
-| | ... | 2. Go to the Method tab | Custodian
-| | ... | 3. View ${Custodian1} 
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Manager field shows ${Manager1}
+| | [Tags] | automated
+| | Go to the Method Tab | Custodian
+| | View Custodian | ${Custodian1} 
+
+| | Verify the Custodian has the Following Manager | ${Manager1}
 
 | Managers that did not previously exist are Created
-| | [Documentation] | Verify that new Managers have their own Manager record created
+| | [Documentation] | Verify that new Managers have their own Custodian record created
 | | ... | [id] bb77584f-b605-11e4-8ae0-90b11c6c5ae4
-| | [Tags] | manual  
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. Requiries that the case "Manager names are shown on the Employee record in the Full Name format" has been run
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Go to the Method tab | Custodian
-| | ... | 2. Search for ${Manager1} 
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that a single instance of ${Manager1} exists
+| | [Tags] | automated
+| | Go to the Method Tab | Custodian
+| | Filter the following Grid on the following Column by the following Value | ${CustodianGrid}  | Email | alphamanager@gameofholds.testing.corp
 
-| Newly imported Managers have the correct name format on their own Custodian record
-| | [Documentation] | Verify that Newly imported Managers have the correct name format on their own Custodian record
+| | Verify that the following Grid contains the following number of Rows | ${CustodianGrid}  | 1
+
+| Imported Managers have the correct name format on their own Custodian record
+| | [Documentation] | Verify that newly imported Managers have the correct name format on their own Custodian record
 | | ... | [id] bf3068b0-b605-11e4-8b69-90b11c6c5ae4
-| | [Tags] | manual  
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. Requiries that the case "Manager names are shown on the Employee record in the Full Name format" has been run
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Go to the Method tab | Custodian
-| | ... | 2. View ${Manager1} 
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Name field shows ${Manager1}
+| | [Tags] | automated 
+| | Go to the Method Tab | Custodian
+| | View Custodian | ${Manager1} 
 
-| Existing Managers are Linked to their Newly Imported Employees
-| | [Documentation] | Verify that Managers that did exist are Linked to their Newly Imported Employees
+| | Verify the current Custodian's Details have the following values | Alpha	| Manager	| alphamanager@gameofholds.testing.corp	| ${Department}	| ${EMPTY}
+
+| Existing Managers names are shown on their Report's Custodian Detail View
+| | [Documentation] | Verify that a Manager who already existed is linked to their Reports on the Custodian Detail View
 | | ... | [id] c28279de-b605-11e4-b74f-90b11c6c5ae4
-| | [Tags] | manual 
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. A RIP is created for Custodians with Custodian Manager Contains Link set to Yes
-| | ... | 2. ${Custodian2} is not a Custodian in RLH
-| | ... | 3. ${Manager2} is a Custodian in RLH
-| | ... | 4. In LDAP, ${Custodian2} has a manager: ${Manager2}
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Import the Custodian RIP
-| | ... | 2. Go to the Method tab | Custodian
-| | ... | 3. View ${Custodian2} 
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Manager field shows ${Manager2}
+| | [Tags] | automated
+| | Go to the Method Tab | Custodian
+| | View Custodian | ${Custodian2} 
+
+| | Verify the Custodian has the Following Manager | ${Manager2}
 
 | Existing Custodians can become Managers to New Custodians
 | | [Documentation] | Verify that Existing Custodians can become Managers to New Custodians
 | | ... | [id] c7a41aee-b605-11e4-91e0-90b11c6c5ae4
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. A RIP is created for Custodians with Custodian Manager Contains Link set to Yes
-| | ... | 2. ${Custodian3} is not a Custodian in RLH
-| | ... | 3. ${Manager3} is a Custodian in RLH but is not a manager
-| | ... | 4. In LDAP, ${Custodian3} has a manager: ${Manager3}
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Import the Custodian RIP
-| | ... | 2. Go to the Method tab | Custodian
-| | ... | 3. View ${Custodian3} 
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Manager field shows ${Manager3}
+| | [Tags] | automated
+| | Go to the Method Tab | Custodian
+| | View Custodian | ${Custodian3} 
+
+| | Verify the Custodian has the Following Manager | ${Manager3}
 
 | Existing Custodians can become Managers of Existing Custodians
 | | [Documentation] | Verify that Existing Custodians can become Managers of Existing Custodians
 | | ... | [id] cab886de-b605-11e4-bdd1-90b11c6c5ae4
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. A RIP is created for Custodians with Custodian Manager Contains Link set to Yes
-| | ... | 2. ${Custodian4} is a Custodian in RLH
-| | ... | 3. ${Manager4} is a Custodian in RLH but is not a manager
-| | ... | 4. In LDAP, ${Custodian4} has a manager: ${Manager4}
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Import the Custodian RIP
-| | ... | 2. Go to the Method tab | Custodian
-| | ... | 3. View ${Custodian4} 
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Manager field shows ${Manager4}
+| | [Tags] | automated
+| | Go to the Method Tab | Custodian
+| | View Custodian | ${Custodian4} 
+
+| | Verify the Custodian has the Following Manager | ${Manager4}
 
 | Existing Custodians can be linked to Newly created Managers
 | | [Documentation] | Verify that Existing Custodians can be linked to Newly created Managers
 | | ... | [id] cf715400-b605-11e4-a0ec-90b11c6c5ae4
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. A RIP is created for Custodians with Custodian Manager Contains Link set to Yes
-| | ... | 2. ${Custodian5} is a Custodian in RLH
-| | ... | 3. ${Manager5} is not a Custodian in RLH
-| | ... | 4. In LDAP, ${Custodian5} has a manager: ${Manager5}
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Import the Custodian RIP
-| | ... | 2. Go to the Method tab | Custodian
-| | ... | 3. View ${Custodian5} 
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Manager field shows ${Manager5}
+| | [Tags] | automated
+| | Go to the Method Tab | Custodian
+| | View Custodian | ${Custodian5} 
+
+| | Verify the Custodian has the Following Manager | ${Manager1}
 
 | Existing Custodians can be given new existing Managers
 | | [Documentation] | Verify that Existing Custodians can be given new existing Managers
 | | ... | [id]  d20656c0-b605-11e4-8c82-90b11c6c5ae4
-| | [Tags] | manual
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. A RIP is created for Custodians with Custodian Manager Contains Link set to Yes
-| | ... | 2. ${Custodian6} is a Custodian in RLH
-| | ... | 3. ${Custodian6} in RLH has a Manager: ${Manager7}
-| | ... | 4. ${Manager6} is a Custodian in RLH
-| | ... | 4. ${Manager7} is a Custodian in RLH
-| | ... | 5. In LDAP, ${Custodian6} has a manager: ${Manager6}
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Import the Custodian RIP
-| | ... | 2. Go to the Method tab | Custodian
-| | ... | 3. View ${Custodian6} 
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Manager field shows ${Manager7}
+| | [Tags] | automated
+| | Go to the Method Tab | Custodian
+| | View Custodian | ${Custodian6} 
 
-| Managers are not linked to the Custodian when the field is not Mapped
-| | [Documentation] | Verify that Managers are not linked to the Custodian when the field is not Mapped
-| | ... | [id] db3450ee-b608-11e4-a852-90b11c6c5ae4
-| | [Tags] | manual 
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. A RIP is created for Custodians with Custodian Manager Contains Link set to Yes, but the manager field is not mapped
-| | ... | 2. ${Custodian7} is not a Custodian in RLH
-| | ... | 3. ${Manager8} is not a Custodian in RLH
-| | ... | 4. In LDAP, ${Custodian7} has a manager: ${Manager8}
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Import the Custodian RIP
-| | ... | 2. Go to the Method tab | Custodian
-| | ... | 3. View ${Custodian7} 
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Manager field is blank
-
-| Managers are Imported when they do not reside in the current Path
-| | [Documentation] | Verify that  Managers are Imported when they do not reside in the current Path
-| | ... | [id] d9bdbdde-b605-11e4-b062-90b11c6c5ae4
-| | [Tags] | manual 
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. A RIP is created for Custodians where the Manager is in a nested folder
-| | ... | 2. ${Custodian8} is not a Custodian in RLH
-| | ... | 3. ${Manager9} is not a Custodian in RLH
-| | ... | 4. In LDAP, ${Custodian8} has a manager: ${Manager9}
-| | ... | 5. ${Manager9} is not in the same folder branch as ${Custodian8} 
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Import the Custodian RIP
-| | ... | 2. Go to the Method tab | Custodian
-| | ... | 3. View ${Custodian8} 
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Manager field is ${Manager9} 
-
-| Managers are Imported when they do not reside in the current Folder Branch
-| | [Documentation] | Verify that  Managers are Imported when they do not reside in the current folder branch
-| | ... | [id] dc2b898f-b605-11e4-bfb4-90b11c6c5ae4
-| | [Tags] | manual 
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. A RIP is created for Custodians
-| | ... | 2. ${Custodian9} is not a Custodian in RLH
-| | ... | 3. ${Manager10} is not a Custodian in RLH
-| | ... | 4. In LDAP, ${Custodian9} has a manager: ${Manager10}
-| | ... | 5. ${Manager10} is not in the same folder branch as ${Custodian9} 
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Import the Custodian RIP
-| | ... | 2. Go to the Method tab | Custodian
-| | ... | 3. View ${Custodian9} 
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Manager field is ${Manager10} 
-
-| Managers are Imported when they do not met the current filter
-| | [Documentation] | Verify that  Managers are Imported when they  do not met the current filter
-| | ... | [id] df7a8d80-b605-11e4-9c30-90b11c6c5ae4
-| | [Tags] | manual 
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. A RIP is created for Custodians with a department fitler; e.g. (department=test)
-| | ... | 2. ${Custodian10} is not a Custodian in RLH
-| | ... | 3. ${Manager11} is not a Custodian in RLH
-| | ... | 4. In LDAP, ${Custodian10} has a manager: ${Manager11}
-| | ... | 5. ${Manager11} does not have the same department as ${Custodian10} 
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Import the Custodian RIP
-| | ... | 2. Go to the Method tab | Custodian
-| | ... | 3. View ${Custodian10} 
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the Manager field is ${Manager11} 
+| | Verify the Custodian has the Following Manager | ${Manager7}
 
 *** Keywords *** 
 
+| Create Suite Setup Data
+| | [Documentation]	| Create the Suite Preconditions
+| | Setup connection to the relativity database
+| | Open and Log in to Method
+| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+
+#-----------------------------------------------------------
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Manager2}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Manager2}
+| | Create a Custodian using API	| 
+| | ... | Full Name		| ${Manager2}	|
+| | ... | Email			| bm@gameofholds.testing.corp |
+| | ... | Department	| ${Department}
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Manager7}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Manager7}
+| | Create a Custodian using API	| 
+| | ... | Full Name		| ${Manager7}	|
+| | ... | Email			| FoxtrotManager@gameofholds.testing.corp |
+| | ... | Department	| ${Department}
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Custodian5}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Custodian5}
+| | Create a Custodian using API	| 
+| | ... | Full Name		| ${Custodian5}	|
+| | ... | Email			| AlphaTwoWorker@gameofholds.testing.corp |
+| | ... | Department	| ${Department}
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${CustodianB2}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${CustodianB2}
+| | Create a Custodian using API	| 
+| | ... | Full Name		| ${CustodianB2}	|
+| | ... | Email			| BravoTwoWorker@gameofholds.testing.corp |
+| | ... | Manager       | ${Manager2}	|
+| | ... | Department	| ${Department}
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Manager3}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Manager3}
+| | Create a Custodian using API	| 
+| | ... | Full Name		| ${Manager3}	|
+| | ... | Email			| CharlieManager@gameofholds.testing.corp |
+| | ... | Department	| ${Department}
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Custodian4}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Custodian4}
+| | Create a Custodian using API	| 
+| | ... | Full Name		| ${Custodian4}	|
+| | ... | Email			| DeltaWorker@gameofholds.testing.corp |
+| | ... | Department	| ${Department}
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Manager4}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Manager4}
+| | Create a Custodian using API	| 
+| | ... | Full Name		| ${Manager4}	|
+| | ... | Email			| DeltaManager@gameofholds.testing.corp |
+| | ... | Department	| ${Department}
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Custodian6}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Custodian6}
+| | Create a Custodian using API	| 
+| | ... | Full Name		| ${Custodian6}	|
+| | ... | Email			| EchoWorker@gameofholds.testing.corp |
+| | ... | Manager       | ${Manager7}	|
+| | ... | Department	| ${Department}
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Manager6}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Manager6}
+| | Create a Custodian using API	| 
+| | ... | Full Name		| ${Manager6}	|
+| | ... | Email			| EchoManager@gameofholds.testing.corp |
+| | ... | Department	| ${Department}
+
+#-----------------------------------------------------------
+
+| | @{Step1Fields}  | Create list | ${IntegrationName} | Append/Overlay |
+| | ... | LDAP | Custodian | no
+
+| | @{Step2Fields}  | Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
+| | ... | (department=${Department}) | FastBind | testing\\rellockdown | P@ssw0rd@1
+
+| | @{Step3Mapping}=	| Create List	|
+| | ... | Email			| mail			| 
+| | ... | Department	| department	| 
+| | ... | First Name	| givenname		| 
+| | ... | Last Name		| sn			| 
+| | ... | Manager       | manager       | 
+| | ... | UniqueID		| objectguid
+
+| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
+
+| | Run Import Now on the Following Integration Point | ${IntegrationName}  
+
+| | Go to the Method tab | Custodian
+
+| | [Teardown] | Drop connection to the relativity services api
+
+| Delete the Objects created in the Suite then Close All Browsers
+| | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
+| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+
+| | Delete the following Integration Point using API | ${IntegrationName}
+| | Delete the Custodians in the Following Department using API	| ${Department}
+
+| | Drop connection to the relativity services api
+| | Close All Browsers
+
 *** Settings ***
-| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| Collections
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/GridKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource  | C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
 
