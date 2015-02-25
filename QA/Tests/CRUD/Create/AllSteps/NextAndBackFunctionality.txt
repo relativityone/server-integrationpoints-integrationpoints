@@ -26,6 +26,70 @@
 
 *** Test Cases ***
 
+| Returning to Step 3 from Step 1 without changing anything Saves all Step 3 data
+| | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 1, then return to step 3, that all of the previously entered data on step 3 will still be present.
+| | ...				| [id] 0ed034ee-a89f-11e4-93a5-b8ca3a83048f
+| | [Tags]			| automated
+| | @{Step1Fields}  | Create list | ${IntegrationName1} | Append | LDAP | Custodian | no
+| | @{Step2Fields}  | Create list | ${ConnectionPath1} | ${ObjectFilterString} | ${Authentication} | ${IPUsername} | ${IPPassword}
+| | @{Step3Mapping}=	| Create List	|
+| | ... | Email			| mail			
+| | Create Integration Point without Saving | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email 
+| | Select Radio Button  | ${ManagerRadioButton} | false
+| | Proceed to the Previous Step of the Integration Point wizard
+| | Proceed to the Previous Step of the Integration Point wizard
+| | Proceed to the Next Step of the Integration Point wizard
+| | Proceed to the Next Step of the Integration Point wizard
+
+| | Verify that the Selected Workspace fields are in the following order | Email
+| | Verify that the Selected Source Attribute fields are in the following order | mail
+| | Verify that the following select2 Dropdown currently has the following value selected | ${UniqueIdentifierList} | Email
+| | Radio button should be set to  | ${ManagerRadioButton} | false
+
+| Going back from Step 3 and changing the Connection Path in Step 2 to remove some of the Source Attributes selections on Step 3 maintains the Mappings
+| | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 2 and change the Connection Path in step 2 to 
+| | ...				| something that does not have some of the selected Source Attributes, then when you return to step 3 the remaining Source Attribute selections 
+| | ...				| will still be correctly mapped with the Workspace Fields selections. Also the Unique Identifier dropdown value will be saved.
+| | ...				| [id] 0ed0830f-a89f-11e4-9c79-b8ca3a83048f
+| | [Tags]			| automated | dan682
+| | @{Step1Fields}  | Create list | ${IntegrationName1} | Append | LDAP | Custodian | no
+| | @{Step2Fields}  | Create list | ${ConnectionPath1} | ${ObjectFilterString} | ${Authentication} | ${IPUsername} | ${IPPassword}
+| | @{Step3Mapping}=	| Create List	|
+| | ... | Department	| objectguid |
+| | ... | Email			| mail 
+| | Create Integration Point without Saving | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email 
+| | Select Radio Button  | ${ManagerRadioButton} | false
+| | Proceed to the Previous Step of the Integration Point wizard
+| | Fill out the Following Fields of the Integration Point Step 2 form | ${ConnectionPath2}
+| | Proceed to the Next Step of the Integration Point wizard
+
+| | Verify that the Selected Workspace fields are in the following order | Department | Email
+| | Verify that the following select2 Dropdown currently has the following value selected | ${UniqueIdentifierList} | Email
+| | Verify that the Selected Source Attribute fields are in the following order | objectguid
+| | Radio button should be set to  | ${ManagerRadioButton} | false
+
+| Going back from Step 3 and changing Step 1's Destination RDO resets everything on Step 3 except the Source Attribute selections
+| | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 1 and change the Destination RDO, then when you return to step 3 
+| | ...				| all of the Workspace Fields selections and the dropdowns will be reset, but the Source Attribute selections will be saved.
+| | ...				| [id] 0ed08310-a89f-11e4-ae95-b8ca3a83048f
+| | [Tags]			| automated
+
+| | @{Step1Fields}  | Create list | ${IntegrationName1} | Append | LDAP | Custodian | no
+| | @{Step2Fields}  | Create list | ${ConnectionPath1} | ${ObjectFilterString} | ${Authentication} | ${IPUsername} | ${IPPassword}
+| | @{Step3Mapping}=	| Create List	|
+| | ... | Department	| objectguid |
+| | ... | Email			| mail
+| | Create Integration Point without Saving | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email 
+| | Select Radio Button  | ${ManagerRadioButton} | false
+| | Proceed to the Previous Step of the Integration Point wizard
+| | Proceed to the Previous Step of the Integration Point wizard
+| | Fill out the Following Fields of the Integration Point Step 1 form | ${IntegrationName1} | Append | LDAP | Questionnaire | no
+| | Proceed to the Next Step of the Integration Point wizard
+| | Proceed to the Next Step of the Integration Point wizard
+
+| | Verify that the Selected Field Mapping list is empty
+| | Verify that the Selected Source Attributes list is empty
+
 | Returning to Step 2 from Step 1 without changing anything Saves all Step 2 data
 | | [Documentation]	| Verify that if you fill out steps 1 and 2, go back to step 1, then return to step 2, that all of the previously entered data on step 2 will still be present.
 | | ...				| [id] 0ecbef30-a89f-11e4-81ef-b8ca3a83048f
@@ -90,171 +154,6 @@
 | | ... | - Department	: countrycode
 | | ... | - UniqueID	: objectguid
 
-| Returning to Step 3 from Step 1 without changing anything Saves all Step 3 data
-| | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 1, then return to step 3, that all of the previously entered data on step 3 will still be present.
-| | ...				| [id] 0ed034ee-a89f-11e4-93a5-b8ca3a83048f
-| | [Tags]			| automated
-| | @{Step1Fields}  | Create list | ${IntegrationName1} | Append | LDAP | Custodian | no
-| | @{Step2Fields}  | Create list | ${ConnectionPath1} | ${ObjectFilterString} | ${Authentication} | ${IPUsername} | ${IPPassword}
-| | @{Step3Mapping}=	| Create List	|
-| | ... | Email			| mail			
-| | Create Integration Point without Saving | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email 
-| | Select Radio Button  | ${ManagerRadioButton} | false
-| | Proceed to the Previous Step of the Integration Point wizard
-| | Proceed to the Previous Step of the Integration Point wizard
-| | Proceed to the Next Step of the Integration Point wizard
-| | Proceed to the Next Step of the Integration Point wizard
-
-| | Verify that the Selected Workspace fields are in the following order | Email
-| | Verify that the Selected Source Attribute fields are in the following order | mail
-| | Verify that the following select2 Dropdown currently has the following value selected | ${UniqueIdentifierList} | Email
-| | Radio button should be set to  | ${ManagerRadioButton} | false
-
-| Going back from Step 3 and changing the Connection Path in Step 2 to remove some of the Source Attributes selections on Step 3 maintains the Mappings
-| | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 2 and change the Connection Path in step 2 to 
-| | ...				| something that does not have some of the selected Source Attributes, then when you return to step 3 the remaining Source Attribute selections 
-| | ...				| will still be correctly mapped with the Workspace Fields selections. Also the Unique Identifier dropdown value will be saved.
-| | ...				| [id] 0ed0830f-a89f-11e4-9c79-b8ca3a83048f
-| | [Tags]			| automated | dan682
-| | @{Step1Fields}  | Create list | ${IntegrationName1} | Append | LDAP | Custodian | no
-| | @{Step2Fields}  | Create list | ${ConnectionPath1} | ${ObjectFilterString} | ${Authentication} | ${IPUsername} | ${IPPassword}
-| | @{Step3Mapping}=	| Create List	|
-| | ... | Department	| objectguid |
-| | ... | Email			| mail 
-| | Create Integration Point without Saving | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email 
-| | Select Radio Button  | ${ManagerRadioButton} | false
-| | Proceed to the Previous Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form | ${ConnectionPath2}
-| | Proceed to the Next Step of the Integration Point wizard
-
-| | Verify that the Selected Workspace fields are in the following order | Department | Email
-| | Verify that the following select2 Dropdown currently has the following value selected | ${UniqueIdentifierList} | Email
-| | Verify that the Selected Source Attribute fields are in the following order | objectguid
-| | Radio button should be set to  | ${ManagerRadioButton} | false
-
-| Going back from Step 3 and changing Step 1's Destination RDO resets everything on Step 3 except the Source Attribute selections
-| | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 1 and change the Destination RDO, then when you return to step 3 
-| | ...				| all of the Workspace Fields selections and the dropdowns will be reset, but the Source Attribute selections will be saved.
-| | ...				| [id] 0ed08310-a89f-11e4-ae95-b8ca3a83048f
-| | [Tags]			| automated1
-
-| | @{Step1Fields}  | Create list | ${IntegrationName1} | Append | LDAP | Custodian | no
-| | @{Step2Fields}  | Create list | ${ConnectionPath1} | ${ObjectFilterString} | ${Authentication} | ${IPUsername} | ${IPPassword}
-| | @{Step3Mapping}=	| Create List	|
-| | ... | Department	| objectguid |
-| | ... | Email			| mail
-| | Create Integration Point without Saving | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email 
-| | Select Radio Button  | ${ManagerRadioButton} | false
-| | Proceed to the Previous Step of the Integration Point wizard
-| | Proceed to the Previous Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 1 form | ${IntegrationName1} | Append | LDAP | Questionniare | no
-| | Proceed to the Next Step of the Integration Point wizard
-| | Proceed to the Next Step of the Integration Point wizard
-
-| | Verify that the Selected Workspace fields are in the following order | Department | Email
-| | Verify that the following select2 Dropdown currently has the following value selected | ${UniqueIdentifierList} | Email
-| | Verify that the Selected Source Attribute fields are in the following order | objectguid
-| | Radio button should be set to  | ${ManagerRadioButton} | false
-
-
-#| | Run the following manual steps:
-#| | ... | Steps:
-#| | ... | 1. Open a new Create Integration Point Wizard
-#| | ... | 2. Fill out all of the Required Step 1 fields choosing Custodian as the Destination RDO
-#| | ... | 3. Click Next
-#| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
-#| | ... | ConnectionPath=${ConnectionPath1}			| 
-#| | ... | ObjectFilterString=${ObjectFilterString}	| 
-#| | ... | Authentication=${Authentication}			| 
-#| | ... | IPUsername=${IPUsername}			| 
-#| | ... | IPPassword=${IPPassword}			| 
-#| | ... | ImportNestedItems=${ImportNestedItems}
-#| | ... | 5. Click Next
-#| | ... | 6. Map the Following Fields together in this order	| 
-#| | ... | - First Name	: givenName
-#| | ... | - Last Name	: sn
-#| | ... | - Email		: mail
-#| | ... | - Department	: countrycode
-#| | ... | - UniqueID	: objectguid
-#| | ... | 7. Select the following Unique Identifier	| Email
-#| | ... | 8. Click Back
-#| | ... | 9. Click Back
-#| | ... | 10. Choose Communication as the Destination RDO
-#| | ... | 11. Click Next
-#| | ... | 12. Click Next
-#| | ... | 
-#| | ... | Expected Results:
-#| | ... | 1. Verify that the Unique Indentifier dropdown is NOT set to	| Email
-#| | ... | 2. Verify that the field mappings are empty. No fields have been selected on either side.
-
-#| Returning to Step 2 from Step 1 after changing the Source Provider clears all fields on Step 2
-#| | [Documentation]	| Verify that if you fill out steps 1 and 2, go back to step 1, change the Source Provider, then return to step 2, that all the step 2 fields will be cleared.
-#| | [Tags]			| manual	| automateable
-#| | Run the following manual steps:
-#| | ... | Preconditions:
-#| | ... | 1. At least two Source Providers exist in the workspace, including "LDAP"
-#| | ... | 
-#| | ... | Steps:
-#| | ... | 1. Go to Step 1 of the Create Integration Point Wizard
-#| | ... | 2. Fill out all of the Required fields selecting the "LDAP" Source Provider
-#| | ... | 3. Click Next
-#| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
-#| | ... | ConnectionPath=Connection Path			| 
-#| | ... | ObjectFilterString=Object Filter String	| 
-#| | ... | Authentication=Secure Socket Layer	| 
-#| | ... | IPUsername=User Name		| 
-#| | ... | IPPassword=Pass phrase		| 
-#| | ... | ImportNestedItems=Yes
-#| | ... | 5. Click Back
-#| | ... | 6. Select any other Source Provider
-#| | ... | 7. Click Next
-#| | ... | 
-#| | ... | Expected Results:
-#| | ... | Verify that the Step 2 fields have the following values	| 
-#| | ... | Connection Path: (Empty)		| 
-#| | ... | Object Filter String: (Empty)	| 
-#| | ... | Authentication: Select...		| 
-#| | ... | IPUsername: (Empty)				| 
-#| | ... | IPPassword: (Empty)				| 
-#| | ... | Import Nested Items: No
-
-
-#| Reverting a Source Provider change restores the original data on Step 2
-#| | [Documentation]	| Verify that if you fill out steps 1 and 2, go back to step 1, change the Source Provider, then return to step 2, that all the step 2 fields will be cleared,
-#| | ...				| but your previous data can be restored if you go back to step 1, reselect the original Source Provider, and then go back to step 2.
-#| | [Tags]			| manual	| automateable
-#| | Run the following manual steps:
-#| | ... | Preconditions:
-#| | ... | 1. At least two Source Providers exist in the workspace, including "LDAP"
-#| | ... | 
-#| | ... | Steps:
-#| | ... | 1. Go to Step 1 of the Create Integration Point Wizard
-#| | ... | 2. Fill out all of the Required fields selecting the "LDAP" Source Provider
-#| | ... | 3. Click Next
-#| | ... | 4. Fill out the Following Fields of the Integration Point Step 2 form	| 
-#| | ... | ConnectionPath=Connection Path			| 
-#| | ... | ObjectFilterString=Object Filter String	| 
-#| | ... | Authentication=Secure Socket Layer	| 
-#| | ... | IPUsername=User Name		| 
-#| | ... | IPPassword=Pass phrase		| 
-#| | ... | ImportNestedItems=Yes
-#| | ... | 5. Click Back
-#| | ... | 6. Select any other Source Provider
-#| | ... | 7. Click Next
-#| | ... | 8. Click Back
-#| | ... | 9. Select the "LDAP" Source Provider
-#| | ... | 10. Click Next
-#| | ... | 
-#| | ... | Expected Results:
-#| | ... | Verify that the Step 2 fields have the following values	| 
-#| | ... | Connection Path: Connection Path				| 
-#| | ... | Object Filter String: Object Filter String	| 
-#| | ... | Authentication: Secure Socket Layer	| 
-#| | ... | IPUsername: User Name			| 
-#| | ... | IPPassword: Pass phrase			| 
-#| | ... | Import Nested Items: Yes
-
-
 *** Keywords ***
 
 | Verify that the Selected Source Attributes list is empty
@@ -262,6 +161,12 @@
 | | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-source-fields']	| The Selected Fields list box was not visible.
 
 | | Element should not be visible	| xpath=//select[@id='selected-source-fields']/child::option]
+
+| Verify that the Selected Field Mapping list is empty
+| | [Documentation]	| A keyword that confirms that the Selected Field Mapping list does not have any fields allocated to it
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Element should be visible	| xpath=//select[@id='selected-workspace-fields']	| The Selected Fields list box was not visible.
+
+| | Element should not be visible	| xpath=//select[@id='selected-workspace-fields']/child::option]
 
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
@@ -292,8 +197,6 @@
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
-
-#| | Delete the following Integration Point using API | ${IntegrationName}
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
