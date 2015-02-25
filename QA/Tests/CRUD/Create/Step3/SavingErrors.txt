@@ -93,7 +93,7 @@
 | When the Object Identifier is not mapped the correct errors are triggered
 | | [Documentation]	| Verify that when the Object Identifier is not in the Selected Workspace Field list and Save is clicked, 
 | | ...				| that the correct Card error and Page error are displayed.
-| | [Tags]			| automated	| dao074
+| | [Tags]			| automated	| dao074	| dao221
 | | [Setup]			| Require Test Case	| When the Object Identifier is not mapped an Integration Point Cannot be Created
 | | Run Keyword and Continue on Failure	| Verify the current Method Page Error has the following Text	| Error: The unique identifier field, Name [Object Identifier], must be mapped.
 | | Run Keyword and Continue on Failure	| Verify that the Field Mappings Card has the following Errors	| The unique identifier field must be mapped.
