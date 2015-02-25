@@ -43,30 +43,17 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			var console = new Console();
 			console.Title = "IMPORT";
 			console.ButtonList = new List<ConsoleButton>();
-			if (PermissionService.userCanImport(base.Helper.GetAuthenticationManager().UserInfo.ArtifactID))
-			{
+			bool isEnabled = PermissionService.userCanImport(base.Helper.GetAuthenticationManager().UserInfo.ArtifactID);
+			
+			console.ButtonList.Add(new ConsoleButton
+				{
+					DisplayText = "Import Now",
+					RaisesPostBack = false,
+					Enabled = isEnabled,
+					OnClickEvent = "IP.importNow(" + this.ActiveArtifact.ArtifactID + "," + this.Application.ArtifactID + ")",
 
-				console.ButtonList.Add(new ConsoleButton
-				{
-					DisplayText = "Import Now",
-					RaisesPostBack = false,
-					Enabled = true,
-					OnClickEvent = "IP.importNow(" + this.ActiveArtifact.ArtifactID + "," + this.Application.ArtifactID + ")",
-					ToolTip = "Oh yes"
 				});
-			}
-			else
-			{
-				console.ButtonList.Add(new ConsoleButton
-				{
-					DisplayText = "Import Now",
-					RaisesPostBack = false,
-					Enabled = false,
-					OnClickEvent = "IP.importNow(" + this.ActiveArtifact.ArtifactID + "," + this.Application.ArtifactID + ")",
-					ToolTip = "Oh noes"
-				});
-				
-			}
+			
 			return console;
 		}
 
