@@ -1,149 +1,88 @@
 
 *** Settings ***
 | Documentation 	| Verify that the Parent Attribtue list is shown at the correct times with the correct values.
-| Metadata		    | Authors	| Daniel Oliver
+| Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.method
 | Suite Setup		| Open and Log in to Method
-| Test Setup        | Go to Step 3 of the Create Integration Point Process
+#| Test Setup		| NONE
 | Test Teardown 	| Capture screenshot if test fails
 | Suite Teardown	| Close all browsers
 
 
 *** Variables ***
 
-| ${WorkspaceName}	     | Relativity Legal Hold
-| ${ValidConnectionPath} | 
-| ${OverlayIdentifierID} | 
-| ${WorkspaceFieldListID}   | workspace-fields
-| ${SelectedFieldListID}    | selected-workspace-fields
-| ${SelectedAttributeListID}    | selected-source-fields
-| ${SourceAttributeListID}      | source-fields
-| ${AddAllWorkspaceFieldsIcon}   | add-all-workspace-fields
-| ${AddWorkspaceFieldIcon}       | add-workspace-field
-| ${RemoveWorkspaceFieldIcon}    | remove-workspace-field
-| ${RemoveWAllWorkspaceFieldsIcon} | remove-all-workspace-fields
-| ${MoveWorkspaceFieldUpIcon}        | workspace-field-up
-| ${MoveWorkspaceFieldDownIcon}      | workspace-field-down
-| ${MoveSourceFieldUpIcon} | 
-| ${MoveSourceFieldDownIcon} |
-| ${AddAllSourceFieldsIcon}   | add-all-source-fields
-| ${AddSourceFieldIcon}       | add-workspace-field
-| ${RemoveSourceFieldIcon}    | remove-source-field
-| ${RemoveAllSourceFieldsIcon} | remove-all-source-fields
-| ${OverlayID} | 
-| ${ParentAttributeID} | 
+| ${WorkspaceName}		| LDAP Sync
+| ${Parent Attribute}	| s2id_parent-identifier
 
 
 *** Test Cases ***
 
-| The Parent Attribute list is present when the RDO is a Child
-| | [Documentation] | Verify that RDO's that are have a parent show the Parent Attribute list on the Map Fields screen
-| | ...				| [id] 10e188c0-a89f-11e4-b7a1-b8ca3a83048f
-| | [Tags]			| manual	| automateable
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Parent Attribute list is present under the Overlay Identifier field
-
-
 | The Parent Attribute list is not present when the RDO is not a child
-| | [Documentation] | Verify that RDO's that are do not have parent, do not show the Parent Attribute list on the Map Fields screen
+| | [Documentation] | Verify that RDO's that are do not have parent, do not show the Parent Attribute list on the Map Fields screen.
 | | ...				| [id] 10e5ce80-a89f-11e4-bb74-b8ca3a83048f
-| | [Tags]			| manual	| automateable
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Document
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Parent Attribute list is not present under the Overlay Identifier field
+| | [Tags]			| automated
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Destination RDO	| Project
+| | Verify that the following Card contains the following Fields in Order	| Import Settings	| 
+| | ... | Unique Identifier: 
+
+
+| The Parent Attribute list is present when the RDO is a Child
+| | [Documentation] | Verify that RDO's that are have a parent show the Parent Attribute list on the Map Fields screen.
+| | ...				| [id] 10e188c0-a89f-11e4-b7a1-b8ca3a83048f
+| | [Tags]			| automated	| required
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Destination RDO	| Questionnaire Question
+| | Verify that the following Card contains the following Fields in Order	| Import Settings	| 
+| | ... | Unique Identifier:	| 
+| | ... | Parent Attribute:
 
 
 | The Parent Attribute field is a drop list
-| | [Documentation] | Verify that the Parent Attribute list is a select2 drop list
+| | [Documentation] | Verify that the Parent Attribute list is a select2 drop list.
 | | ...				| [id] 10e5ce81-a89f-11e4-adc1-b8ca3a83048f
-| | [Tags]			| manual	| visual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the following field ID has a droplist input | ${ParentAttributeID}
+| | [Tags]			| automated
+| | [Setup]			| Require Test Case	| The Parent Attribute list is present when the RDO is a Child
+| | Verify that the following field ID has a droplist input	| ${Parent Attribute}
 
 
 | Parent Attribute's Default value is Select...
 | | [Documentation] | Verify that the Parent Attribute's Default value is "Select..."
 | | ...				| [id] 10e61c9f-a89f-11e4-a418-b8ca3a83048f
-| | [Tags]			| manual	| automateable
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Parent Attribute's Default value is "Select..."
-
-
-| A Mapping cannot be Saved while Parent Attribute's value is Select...
-| | [Documentation] | Verify that Mappings cannot be Saved while Parent Attribute's value is "Select...".
-| | [Tags]			| manual	| dan650
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
-| | ... | 2. Create an otherwise valid Mapping, but leave Parent Attribute as "Select..."
-| | ... | 3. Click Save
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Parent Attribute field throws the following error: "The Parent Attribute is required."
-
-
-| A Mapping can be Saved after the Parent Attribute's validation
-| | [Documentation] | Verify that Mappings can be Saved after Parent Attribute's validation was triggered.
-| | [Tags]			| manual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
-| | ... | 2. Create an otherwise valid Mapping, but leave Parent Attribute as "Select..."
-| | ... | 3. Click Save
-| | ... | 4. Wait until the Parent Attribute field throws the its error
-| | ... | 5. Select any Parent Attribute besides "Select..."
-| | ... | 6. Click Save
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Integration Point is saved with the given Parent Attribute
+| | [Tags]			| automated
+| | [Setup]			| Require Test Case	| The Parent Attribute list is present when the RDO is a Child
+| | Verify that the following select2 Dropdown currently has the following value selected	| ${Parent Attribute}	| Select...
 
 
 | Parent Attribute list has the correct values
-| | [Documentation] | Verify that the Parent Attribute list values are correct
+| | [Documentation] | Verify that the Parent Attribute list values match the Source Attributes list values.
 | | ...				| [id] 10e61ca0-a89f-11e4-99dc-b8ca3a83048f
-| | [Tags]			| manual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
-| | ... | 2. Click the Parent Attribute list
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the currently opened select2 Dropdown has the following choices in order | ${ParentAttributeID} | Every field from the Source Attribute list 
-| | ... | 2. Verify that the list is sorted alphabetically.
+| | [Tags]			| automated
+| | [Setup]			| Require Test Case	| The Parent Attribute list is present when the RDO is a Child
+| | Click	| ${Parent Attribute}
+| | @{ParentAttributes}=	| Get the Unassigned Source Attributes
+| | Verify that the currently opened select2 Dropdown has the following choices in order	| Select...	| @{ParentAttributes}
 
 
-| Can create when Parent Attribute is hidden
-| | [Documentation] | Verify that when the Parent Attribute list hidden, that the Create IP Process can be completed
-| | ...				| [id] 10e61ca1-a89f-11e4-8dcb-b8ca3a83048f
-| | [Tags]			| manual
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to step 3 using the Destination RDO of Custodian Role
-| | ... | 2. Complete the required fields for this screen
-| | ... | 3. Click | Save
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the IP has been created.
+*** Keywords *** 
+
+| Go to Step 3 of the Integration Point wizard using the following Destination RDO
+| | [Documentation]	| 
+| | [ARGUMENTS] 	| ${DestinationRDO}
+| | Open Create Integration Point
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${DestinationRDO} Parent Attribute Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${DestinationRDO}	| EnableScheduler=No
+| | Proceed to the Next Step of the Integration Point wizard
+| | Fill out the Following Fields of the Integration Point Step 2 form	| 
+| | ... | ConnectionPath=testing.corp/CN=Users,DC=testing,DC=corp	| 
+| | ... | ObjectFilterString=(objectClass=*)		| 
+| | ... | Authentication=FastBind					| 
+| | ... | ConnectionUsername=testing\\administrator	| 
+| | ... | ConnectionPassword=P@ssw0rd@1				| 
+| | ... | ImportNestedItems=Yes
+| | Proceed to the Next Step of the Integration Point wizard
 
 
 *** Settings ***
-| Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource  | C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
+| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
