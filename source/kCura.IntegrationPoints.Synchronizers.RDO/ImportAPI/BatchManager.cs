@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {

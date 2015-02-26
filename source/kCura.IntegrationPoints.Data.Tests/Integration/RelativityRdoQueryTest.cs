@@ -4,8 +4,6 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration
 {
-
-
 	[TestFixture]
 	public class RelativityRdoQueryTest
 	{
@@ -21,6 +19,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 
 			var data = rdoQuery.GetAllRdo();
 		}
+
 
 	}
 }

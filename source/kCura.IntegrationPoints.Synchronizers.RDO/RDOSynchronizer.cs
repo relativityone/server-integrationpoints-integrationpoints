@@ -3,15 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.DataReaderClient;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Synchronizer.IDataSynchronizer
+	public class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Synchronizer.IDataSynchronizer, IBatchReporter
 	{
+		public event BatchCompleted OnBatchComplete;
+		public event BatchSubmitted OnBatchSubmit;
+		public event BatchCreated OnBatchCreate;
+		public event JobError OnJobError;
+		public event RowError OnDocumentError;
+
 		protected readonly RelativityFieldQuery FieldQuery;
 
 		public RdoSynchronizer(RelativityFieldQuery fieldQuery)
@@ -127,6 +133,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			importService.OnBatchComplete += new BatchCompleted(Finish);
 			importService.OnDocumentError += new RowError(ItemError);
 			importService.OnJobError += new JobError(JobError);
+
+			if (OnBatchComplete != null) importService.OnBatchComplete += OnBatchComplete;
+			if (OnBatchSubmit != null) importService.OnBatchSubmit += OnBatchSubmit;
+			if (OnBatchCreate != null) importService.OnBatchCreate += OnBatchCreate;
+			if (OnJobError != null) importService.OnJobError += OnJobError;
+			if (OnDocumentError != null) importService.OnDocumentError += OnDocumentError;
+
 			importService.Initialize();
 
 			return importService;

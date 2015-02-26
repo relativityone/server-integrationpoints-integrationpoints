@@ -1,11 +1,14 @@
+
 *** Settings ***
-| Documentation     | Verify that Job History and their Errors can be deleted 
+| Documentation     | Verify that Job History and their Errors can be deleted.
 | Metadata		    | Authors	| Daniel Oliver
-| Force Tags		| in-progress | team.method
+| Force Tags		| in-progress	| team.method
+
 
 *** Variables ***
 
-| ${WorkspaceName}	          | LDAP Sync
+| ${WorkspaceName}	| LDAP Sync
+
 
 *** Test Cases ***
 
@@ -22,7 +25,8 @@
 | | ... | 2. Delete an Error
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that the Error is removed from the Job History object
+| | ... | Verify that the Error is removed from the Job History object
+
 
 | Job History with Errors can be Deleted
 | | [Documentation] | Verify that Job History objects with Errors can be Deleted
@@ -37,12 +41,13 @@
 | | ... | 2. Delete the Job History object
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that the Job History object is removed
+| | ... | Verify that the Job History object is removed
+
 
 | Job History without Errors can be Deleted
 | | [Documentation] | Verify that Job History objects without Errors can be Deleted
 | | ...				| [id] 71e559f0-b93c-11e4-aa4c-90b11c6c5ae4
-| | [Tags]          | manual
+| | [Tags]          | manual	| automateable
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. A Job History exists that does not have any errors
@@ -52,4 +57,9 @@
 | | ... | 2. Delete the Job History object
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that the Job History object is removed
+| | ... | Verify that the Job History object is removed
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py

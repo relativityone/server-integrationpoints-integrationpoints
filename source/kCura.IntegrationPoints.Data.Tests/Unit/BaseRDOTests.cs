@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
@@ -8,6 +11,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 {
 	public class BaseRDOTests
 	{
+		private Guid guidChoice1 = Guid.Parse("E68EF4BE-EB69-4CB6-94FC-D205F2096411");
+		private Guid guidChoice2 = Guid.Parse("5F8731F3-C899-4419-BA0F-7E05E4F739DF");
+
 		[Test]
 		public void ConvertValue_MultipleChoiceFieldValueNull_CorrectValue()
 		{
@@ -24,15 +30,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			Assert.IsNull(returnValue);
 		}
 
-		
+
 		[Test]
 		public void ConvertValue_MultipleChoiceFieldValueNotNull_CorrectValue()
 		{
 			//ARRANGE
 			Choice[] choices = new Choice[]
 			{
-				new Choice(){ArtifactID = 111, Name = "AAA"},
-				new Choice(){ArtifactID = 222, Name= "bbb" }
+				new Choice(){ArtifactGuids = new List<Guid>(){guidChoice1}, Name = "AAA"},
+				new Choice(){ArtifactGuids = new List<Guid>(){guidChoice2}, Name= "bbb" }
 			};
 			TestBaseRdo baseRdo = new TestBaseRdo();
 
@@ -46,17 +52,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			Assert.IsTrue(returnValue is MultiChoiceFieldValueList);
 			MultiChoiceFieldValueList returnedChoices = (MultiChoiceFieldValueList)returnValue;
 			Assert.AreEqual(2, returnedChoices.Count);
-			Assert.AreEqual(111, returnedChoices[0].ArtifactID);
+			Assert.AreEqual(guidChoice1, returnedChoices[0].Guids.First());
 			Assert.AreEqual("AAA", returnedChoices[0].Name);
-			Assert.AreEqual(222, returnedChoices[1].ArtifactID);
+			Assert.AreEqual(guidChoice2, returnedChoices[1].Guids.First());
 			Assert.AreEqual("bbb", returnedChoices[1].Name);
 		}
-		
+
 		[Test]
 		public void ConvertValue_SingleChoiceFieldValueNotNull_CorrectValue()
 		{
 			//ARRANGE
-			Choice myChoice = new Choice() { ArtifactID = 111, Name = "AAA" };
+			Choice myChoice = new Choice() { ArtifactGuids = new List<Guid>() { guidChoice1 }, Name = "AAA" };
 			TestBaseRdo baseRdo = new TestBaseRdo();
 
 
@@ -68,7 +74,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			//ASSERT 
 			Assert.IsTrue(returnValue is Relativity.Client.DTOs.Choice);
 			Relativity.Client.DTOs.Choice returnedChoice = (Relativity.Client.DTOs.Choice)returnValue;
-			Assert.AreEqual(111, returnedChoice.ArtifactID);
+			Assert.AreEqual(guidChoice1, returnedChoice.Guids.First());
 			Assert.AreEqual("AAA", returnedChoice.Name);
 		}
 
@@ -179,7 +185,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new Artifact(123),
 				new Artifact(456)
 			};
-			
+
 			TestBaseRdo baseRdo = new TestBaseRdo();
 
 
@@ -189,7 +195,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			//ASSERT 
 			Assert.IsTrue(returnValue is System.Int32[]);
-			Assert.AreEqual(123,((int[]) returnValue)[0]);
+			Assert.AreEqual(123, ((int[])returnValue)[0]);
 			Assert.AreEqual(456, ((int[])returnValue)[1]);
 		}
 	}

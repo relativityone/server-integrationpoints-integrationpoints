@@ -3,8 +3,17 @@
 
 
 <div class="card smaller-card clear-fix" id="notEnoughPermission">
-	<h3>You do not have permission to import. Please contact your administrator for the correct permissions.</h3>
-	<button class="button secondary positive float-right" id="cancel">Cancel</button>
+	<label class="label"><h3>Source Connection</h3></label>
+	
+	<div class="field-row">
+
+		<div class="">
+			
+			You do not have permission to import. Please contact your administrator for the correct permissions.
+			
+		</div>
+		<button class="button generic positive float-right" id="cancel">Cancel</button>
+	</div>
 </div>
 
 @section scripts{
@@ -17,8 +26,11 @@
 			var route = IP.redirect.get();
 			if (!IP.redirect.isEdit()) {
 				route = document.URL.split('CustomPages')[0] + "@Html.Raw(@Model.URL)";
-		}
-		window.top.location = route;
-	});</script>
+	}
+	window.top.location = route;
+		});
+		$("#bodyContainer").css("background-color", "#c1c1c1");
+	</script>
+	
 }
 
