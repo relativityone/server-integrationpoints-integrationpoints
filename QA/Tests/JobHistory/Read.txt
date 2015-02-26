@@ -4,7 +4,7 @@
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.method
 | Suite Setup		| Suite Setup Keyword
-| Test Setup		| View Job History	| ${JobHistory1}
+| Test Setup		| View Job History	| ${IntegrationPoint1}
 | Test Teardown 	| Capture Screenshot if Test Fails
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
 
@@ -12,8 +12,7 @@
 *** Variables ***
 
 | ${WorkspaceName}		| LDAP Sync
-| ${JobHistory1}		| Integration Point 1
-| ${JobHistory2}		| Integration Point 2
+| ${IntegrationPoint1}	| Integration Point 1
 | ${ConnectionPath}		| testing.corp/CN=Users,DC=testing,DC=corp
 | ${ObjectFilterString}	| (objectClass=*)
 | ${Authentication}		| FastBind
@@ -26,21 +25,19 @@
 
 | The Job History Read page defaults to the correct Layout
 | | [Documentation]	| Verify that the default Layout on a Job History Read page is "Job Details". 
-| | ...				| 
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Verify that the layout dropdown is set to "Job Details"
 
 
 | The Job History Read page has the correct Layouts
 | | [Documentation]	| Verify that the Job History Read page has only the "Job Details" Layout. 
-| | ...				| 
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Verify that the Layout Dropdown only has the following Layouts	| Job Details
 
 
 | The correct Buttons appear in the Header
 | | [Documentation]	| Verify that the correct buttons appear at the top of the page.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Verify the buttons are available on the layout	| 
 | | ... | Edit				| 
 | | ... | Delete			| 
@@ -50,12 +47,11 @@
 
 
 | The Category Headings are in the correct order
-| | [Documentation]	| Verify that the Category headings are sorted correctly on the Integration Point Details" Layout.
-| | [Tags]			| untested
+| | [Documentation]	| Verify that the Category headings are sorted correctly on the "Job Details" Layout.
+| | [Tags]			| automated
 | | Verify that the current Layout has the following Categories in Order	| 
 | | ... | Job Details		| 
-| | ... | Import Statistics	| 
-| | ... | Records with Errors
+| | ... | Import Statistics
 
 
 | The correct Fields are present on the Job Details Layout
@@ -64,6 +60,7 @@
 | | Run the following manual steps:
 | | ... | Expected Results:
 | | ... | 1. Verify that the Job Details Category has the following fields in order:	| 
+| | ... | - Name
 | | ... | - Integration Point	| 
 | | ... | - Status				| 
 | | ... | - Job Error			| 
@@ -74,19 +71,33 @@
 | | ... | - Records with Errors
 
 
+| The Table has the Title Job History Error
+| | [Documentation]	| Verify that the Table on the Job Details layout has the title "Job History Error".
+| | [Tags]			| manual	| automateable?
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | Verify that the table has the title "Job History Error"
+
+
 | The Columns on the Records With Errors table are correct
 | | [Documentation] | Verifies that the Records With Errors table on the Job History View page has the correct columns.
-| | [Tags]			| untested
+| | [Tags]			| manual	| automateable?
 | | Verify that the item list contains the following fields	| 
 | | ... | Source Unique ID	| 
 | | ... | Error				| 
-| | ... | Timestamp (UTC)
+| | ... | Timestamp (UTC)	| 
+| | ... | Error Type
 
 
 | The Sorting on the Records With Errors table is correct
 | | [Documentation] | Verifies that the Records With Errors table on the Job History View page has the correct sorting.
-| | [Tags]			| untested
-| | Verify that the Item List is sorted by the following Date Column in Ascending Order	| Timestamp (UTC)
+| | [Tags]			| manual	| unimplemented
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. At least three records appear in the ItemList
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Item List is sorted by the following Date Column in Ascending Order	| Timestamp (UTC)
 
 
 *** Keywords ***
@@ -120,7 +131,7 @@
 # --------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=		| Create List	| 
-| | ... | ${JobHistory1}	| 
+| | ... | ${IntegrationPoint1}	| 
 | | ... | Append/Overlay		| 
 | | ... | LDAP					| 
 | | ... | Custodian				| 
@@ -141,11 +152,11 @@
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
 
-| | ${JobHistoryExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Job History Testing
-| | Run Keyword If	| ${${JobHistoryExists}}	| Delete the following Integration Point using API	| Job History Testing
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint1}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint1}
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 
-| | Run Import Now on the Following Integration Point	| Job History Testing
+| | Run Import Now on the Following Integration Point	| ${IntegrationPoint1}
 | | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
@@ -153,13 +164,14 @@
 | | ...				| This is run as the Suite Teardown.
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
 
-| | Delete the following Integration Point using API	| Job History Testing
+| | Delete the following Integration Point using API	| ${IntegrationPoint1}
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
 
 
 *** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/Relativity/Processing/Processing/Relativity_Keywords_General.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/Layouts/LayoutKeywords.txt

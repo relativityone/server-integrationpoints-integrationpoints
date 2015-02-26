@@ -101,12 +101,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Integration\Migration\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="IntegrationTestAttribute.cs" />
-    <Compile Include="Integration\Migration\AddWebApiConfigValueMigrationTests.cs" />
     <Compile Include="Integration\PermissionServiceIntegrationTest.cs" />
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />
     <Compile Include="Unit\BaseRDOTests.cs" />
