@@ -1,5 +1,7 @@
 ﻿using System;
+using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
@@ -12,6 +14,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	{
 
 		private IAgentService _agentService;
+		
 		public IAgentService AgentService
 		{
 			get
@@ -21,7 +24,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				return _agentService;
 			}
 		}
-
+		
 		private IJobService _jobService;
 		public IJobService JobService
 		{
@@ -50,6 +53,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				int workspaceID = this.Helper.GetActiveCaseID();
 				int integrationPointID = this.ActiveArtifact.ArtifactID;
 				Job job = JobService.GetJob(workspaceID, integrationPointID, TaskType.SyncManager.ToString());
+				
 				if (job != null)
 				{
 					this.JobService.DeleteJob(job.JobId);
@@ -66,7 +70,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		public override EventHandler.FieldCollection RequiredFields
 		{
-			get { return null; }
+			get { return new FieldCollection {new Field(Guid.Parse(IntegrationPointFieldGuids.JobHistory))}; }
 		}
 
 		public override void Rollback()

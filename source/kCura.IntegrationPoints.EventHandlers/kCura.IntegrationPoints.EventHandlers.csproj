@@ -89,8 +89,10 @@
     <Compile Include="ExternalTabURLService.cs" />
     <Compile Include="IntegrationPoints\DeleteEventHandler.cs" />
     <Compile Include="IntegrationPoints\PageInteractionEventHandler.cs" />
+    <Compile Include="IntegrationPoints\PreCascadeDeleteEventHandler.cs" />
     <Compile Include="IntegrationPoints\PreLoadEventHandler.cs" />
-    <Compile Include="IntegrationPoints\IntegrationPointPreDelete.cs" />
+    <Compile Include="IntegrationPoints\PreMassDeleteEventHandler.cs" />
+    <Compile Include="PreMassDeleteEventHandlerBase.cs" />
     <Compile Include="TagBuilder.cs" />
     <Compile Include="PreLoadEventHandlerBase.cs" />
   </ItemGroup>

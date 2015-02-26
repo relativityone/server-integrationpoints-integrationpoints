@@ -469,12 +469,21 @@ select option.hover
 		width: 75px;
 	}
 
-
-#notEnoughPermission {
-  width:500px;
-    margin: 0 auto;
+.smaller-card {
+	width: 525px;
+	margin-left: auto;
+	margin-right: auto;
 }
 
-#notEnoughPermission #cancel {
+.float-right {
 	float:right;
+}
+
+.clear-fix:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
 }

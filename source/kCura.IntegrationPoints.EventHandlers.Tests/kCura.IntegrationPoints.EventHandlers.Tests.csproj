@@ -86,6 +86,7 @@
   <ItemGroup>
     <Compile Include="Integration\Installers\InstallEveryTimeTests.cs" />
     <Compile Include="Integration\InstallDllTests.cs" />
+    <Compile Include="Integration\DeleteHistoryServiceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

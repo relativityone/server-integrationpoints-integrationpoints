@@ -1,36 +1,62 @@
 
 *** Settings ***
-| Documentation 	| Verify that a RIP can import items from a nested folder
-| Metadata		    | Authors	| William Sehy
-| Force Tags		| in-progress | team.method  | manual
+| Documentation 	| Verify that Custodians and Managers from a nested folder/outside of the proivded filter, are imported when Import Nested Items is set to Yes
+| Metadata		    | Authors	| William Sehy | Daniel Oliver
+| Force Tags		| in-progress | team.method
 | Suite Setup		| Create Suite Setup Data
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
-
 
 *** Variables ***
 
 | ${WorkspaceName}	    | LDAP Sync
 | ${IntegrationName}    | Nested Folders
-| ${NestedObject}       | Nest, Bird
-| ${RootObject}         | Nest, Rat
+| ${NestedCustodian}    | Nest, Bird
+| ${NestedManager}      | Manager, Middle
+| ${RootManager}        | Manager, Top
+| ${AnotherFolderManager} | Manager, AnotherFolder
+| ${RootCustodian}      | Nest, Rat
 | ${Custodians Grid}	| gbox_custodianGrid
 
 *** Test Cases ***
 
-| Nested users are imported 
-| | [Documentation] | Verify that when an Append RIP is run which has new Source records, that it creates new records from a nested folder.
-| | ...				| [id] 78e9da30-b2f9-11e4-b2bb-90b11c6c5ae4
+| Root Custodians are imported 
+| | [Documentation] |  Verify that Custodians in the rorr folder are imported
+| | ...				| [id] 653348c0-b2fc-11e4-bc4d-90b11c6c5ae4
 | | [Tags] | automated
-| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name  | ${NestedObject} 
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name  | ${RootCustodian} 
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
-| Root users are imported 
-| | [Documentation] | Verify that when an Append RIP is run which has new Source records, that it creates new records from the root folder.
-| | ...				| [id] 653348c0-b2fc-11e4-bc4d-90b11c6c5ae4
+| Nested Custodians are imported 
+| | [Documentation] | Verify that Custodians in a nested folder are imported
+| | ...				| [id] 78e9da30-b2f9-11e4-b2bb-90b11c6c5ae4
 | | [Tags] | automated
-| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name  | ${RootObject} 
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name  | ${NestedCustodian} 
+
+| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
+
+| Nested Managers are Imported
+| | [Documentation] | Verify that Managers in a nested folder are imported
+| | ... | [id] d9bdbdde-b605-11e4-b062-90b11c6c5ae4
+| | [Tags] | manual1 
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name  | ${NestedManager} 
+
+| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
+
+| Managers are Imported when they do not reside in the current Folder Branch
+| | [Documentation] | Verify that Managers are Imported when they reside outside of the connection path folder or sub-folders
+| | ... | [id] dc2b898f-b605-11e4-bfb4-90b11c6c5ae4
+| | [Tags] | manual1 
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name  | ${AnotherFolderManager} 
+
+| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
+
+| Managers are Imported when they do not met the Object Filter String
+| | [Documentation] | Verify that Managers are Imported when they would normally be excluded due to a non-matching Object Filter String
+| | ... | [id] df7a8d80-b605-11e4-9c30-90b11c6c5ae4
+| | [Tags] | manual1
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name  | ${RootManager} 
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
@@ -42,11 +68,11 @@
 | | Open and Log in to Method
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
 
-| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${NestedObject}
-| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${NestedObject}
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${NestedCustodian}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${NestedCustodian}
 
-| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${RootObject}
-| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${RootObject}
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${RootCustodian}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${RootCustodian}
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
@@ -77,6 +103,7 @@
 | | Delete the following Integration Point using API | ${IntegrationName}
 
 | | Delete the Custodians in the Following Department using API  | Nested
+| | Delete the Custodians in the Following Department using API  | RootNested
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
@@ -89,6 +116,6 @@
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/QuestionnaireKeywords.txt
-| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
-| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
 

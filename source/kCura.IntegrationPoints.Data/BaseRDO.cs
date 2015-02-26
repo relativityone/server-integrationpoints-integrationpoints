@@ -35,18 +35,8 @@ namespace kCura.IntegrationPoints.Data
 		public virtual T GetField<T>(Guid fieldGuid)
 		{
 			var value = Rdo[fieldGuid].Value;
-			var choice = value as Relativity.Client.DTOs.Choice;
-			if (choice != null)
-			{
-				value = new Choice(choice.ArtifactID, choice.Name);
-			}
-			var artifact = value as Artifact;
-			if (artifact != null)
-			{
-				value = artifact.ArtifactID;
-			}
-
-			return (T)value;
+			object v = ConvertForGet(FieldMetadata[fieldGuid].Type, value);
+			return (T)v;
 		}
 
 		public string GetFieldName(Guid fieldGuid)
@@ -65,6 +55,36 @@ namespace kCura.IntegrationPoints.Data
 			{
 				Rdo[fieldName].Value = value;
 			}
+		}
+
+		internal object ConvertForGet(string fieldType, object value)
+		{
+			switch (fieldType)
+			{
+				case FieldTypes.MultipleObject:
+					if (value is FieldValueList<Artifact>)
+					{
+						return ((FieldValueList<Artifact>)value).Select(x => x.ArtifactID).ToArray();
+					}
+					return new int[]{};
+				case FieldTypes.SingleObject:
+					var a = value as Artifact;
+					if (a != null)
+					{
+						return a.ArtifactID;
+					}
+					return value;
+				case FieldTypes.SingleChoice:
+					var choice = value as Relativity.Client.DTOs.Choice;
+					if (choice != null)
+					{
+						return new Choice(choice.ArtifactID, choice.Name);
+					}
+					return value;
+				default:
+					return value;
+			}
+
 		}
 
 		internal object ConvertValue(string fieldType, object value)

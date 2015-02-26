@@ -24,6 +24,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			Assert.IsNull(returnValue);
 		}
 
+		
 		[Test]
 		public void ConvertValue_MultipleChoiceFieldValueNotNull_CorrectValue()
 		{
@@ -50,7 +51,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			Assert.AreEqual(222, returnedChoices[1].ArtifactID);
 			Assert.AreEqual("bbb", returnedChoices[1].Name);
 		}
-
+		
 		[Test]
 		public void ConvertValue_SingleChoiceFieldValueNotNull_CorrectValue()
 		{
@@ -94,6 +95,102 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			Assert.AreEqual(2, returnedObjects.Count);
 			Assert.AreEqual(111, returnedObjects[0].ArtifactID);
 			Assert.AreEqual(222, returnedObjects[1].ArtifactID);
+		}
+
+		// ConvertForGet
+
+		[Test]
+		public void ConvertForGet_MultipleChoiceFieldValueNull_CorrectValue()
+		{
+			//ARRANGE
+			TestBaseRdo baseRdo = new TestBaseRdo();
+			//ACT
+			MethodInfo dynMethod = baseRdo.GetType().GetMethod("ConvertForGet", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.MultipleChoice, null });
+			//ASSERT 
+			Assert.IsNull(returnValue);
+		}
+
+		[Test]
+		public void ConvertForGet_SingleChoiceFieldValueNotNull_CorrectValue()
+		{
+			//ARRANGE
+			Choice myChoice = new Choice() { ArtifactID = 111, Name = "AAA" };
+			TestBaseRdo baseRdo = new TestBaseRdo();
+
+
+			//ACT
+			MethodInfo dynMethod = baseRdo.GetType().GetMethod("ConvertForGet", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.SingleChoice, myChoice });
+
+
+			//ASSERT 
+			Assert.IsTrue(returnValue is kCura.Relativity.Client.Choice);
+			var returnedChoice = (kCura.Relativity.Client.Choice)returnValue;
+			Assert.AreEqual(111, returnedChoice.ArtifactID);
+			Assert.AreEqual("AAA", returnedChoice.Name);
+		}
+
+		[Test]
+		public void ConvertForGet_MultipleObjectFieldValueIsNull_CorrectValue()
+		{
+			//ARRANGE
+			int[] multiObjectIDs = new int[]
+			{
+				111,
+				222 
+			};
+			TestBaseRdo baseRdo = new TestBaseRdo();
+
+
+			//ACT
+			MethodInfo dynMethod = baseRdo.GetType().GetMethod("ConvertForGet", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.MultipleObject, multiObjectIDs });
+
+
+			//ASSERT 
+			Assert.IsTrue(returnValue is System.Int32[]);
+		}
+		[Test]
+		public void ConvertForGet_MultipleObjectFieldValueEmptyArray_CorrectValue()
+		{
+			//ARRANGE
+			int[] multiObjectIDs = new int[]
+			{
+				111,
+				222 
+			};
+			TestBaseRdo baseRdo = new TestBaseRdo();
+
+
+			//ACT
+			MethodInfo dynMethod = baseRdo.GetType().GetMethod("ConvertForGet", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.MultipleObject, multiObjectIDs });
+
+			//ASSERT 
+			Assert.IsTrue(returnValue is System.Int32[]);
+		}
+		[Test]
+		public void ConvertForGet_MultipleObjectFieldValueFieldValueList_CorrectValue()
+		{
+			//ARRANGE
+			var fieldList = new FieldValueList<Artifact>()
+			{
+				new Artifact(123),
+				new Artifact(456)
+			};
+			
+			TestBaseRdo baseRdo = new TestBaseRdo();
+
+
+			//ACT
+			MethodInfo dynMethod = baseRdo.GetType().GetMethod("ConvertForGet", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+			object returnValue = dynMethod.Invoke(baseRdo, new object[] { FieldTypes.MultipleObject, fieldList });
+
+			//ASSERT 
+			Assert.IsTrue(returnValue is System.Int32[]);
+			Assert.AreEqual(123,((int[]) returnValue)[0]);
+			Assert.AreEqual(456, ((int[])returnValue)[1]);
 		}
 	}
 

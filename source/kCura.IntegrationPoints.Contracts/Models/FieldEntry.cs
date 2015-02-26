@@ -2,39 +2,46 @@
 
 namespace kCura.IntegrationPoints.Contracts.Models
 {
-	public enum FieldType
+	
+    /// <summary>
+    /// Specifies the data type of a field.
+    /// </summary>
+    public enum FieldType
 	{
-		String = 1
+		/// <summary>
+		/// The field type of String.
+		/// </summary>
+        String = 1
 	}
 
 	/// <summary>
-	/// Responsible for going to a datasource and returning what fields can be mapped
+	/// Retrieves fields from the data source that users can map in the Relativity UI.
 	/// </summary>
 	[Serializable]
 	public class FieldEntry
 	{
 		/// <summary>
-		/// Friendly name that will be displayed
+		/// Gets or set a user-friendly name for display in the Relativity UI.
 		/// </summary>
 		public string DisplayName { get; set; }
 
 		/// <summary>
-		/// Field identifier. This is the value that should be used when mapping.
+		/// Gets or sets a field identifier used when mapping data source fields to workspace fields.
 		/// </summary>
 		public string FieldIdentifier { get; set; }
 
 		/// <summary>
-		/// Field type. 
+		/// Gets or sets the field type. 
 		/// </summary>
 		public FieldType FieldType { get; set; }
 
 		/// <summary>
-		/// This flag indicates if field will contain data unique identifier 
+		/// Gets or sets a flag indicating whether the field contains a unique identifier for the data.
 		/// </summary>
 		public bool IsIdentifier { get; set; }
 
 		/// <summary>
-		/// Determines if the field is required to be mapped
+		/// Gets or sets a flag indicating whether a field in the data source must be mapped.
 		/// </summary>
 		public bool IsRequired { get; set; }
 	}
