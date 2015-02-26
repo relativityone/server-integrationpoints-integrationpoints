@@ -58,6 +58,21 @@
 | | ... | Start Time (UTC)
 
 
+| The "All Jobs" View shows Jobs of all Statuses
+| | [Documentation] | Verifies that the "All Jobs" View on the Job History list view page shows Jobs with all types of Job Status.
+| | [Tags]			| manual	| timing
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. At least one job of each Job Status exists in the workspace
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Job History
+| | ... | 2. Ensure that the View is	| All Jobs
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Item List shows all Jobs in the Workspace
+
+
 | The Sorting on the "All Jobs" View is correct
 | | [Documentation] | Verifies that the "All Jobs" View on the Job History list view page has the correct sorting.
 | | [Tags]			| manual	| partially_automated	| sorting
@@ -83,15 +98,33 @@
 | | ... | Start Time (UTC)
 
 
+| The "All Jobs with Errors" View shows only Jobs with error Statuses
+| | [Documentation] | Verifies that the "All Jobs with Errors" View on the Job History list view page 
+| | ...				| shows only Jobs with the Job Statuses: Completed with errors, Error - job failed.
+| | [Tags]			| manual	| timing
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. At least one job of each Job Status exists in the workspace
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Job History
+| | ... | 2. Ensure that the View is	| All Jobs with Errors
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Item List shows only Jobs with the following Job Statuses	| Completed with errors	| Error - job failed.
+
+
 | The Sorting on the "All Jobs with Errors" View is correct
 | | [Documentation] | Verifies that the "All Jobs with Errors" View on the Job History list view page has the correct sorting.
 | | [Tags]			| manual	| sorting
-| | Go to the Tab	| Job History
-| | Set View	| All Jobs with Errors
-
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. At least three jobs with errors exist in the workspace
+| | ... | 2. Jobs with both Error Job Statuses exist in the workspace
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Job History
+| | ... | 2. Ensure that the View is	| All Jobs with Errors
 | | ... | 
 | | ... | Expected Results:
 | | ... | Verify that the Item List is sorted by the following Date Column in Ascending Order	| Start Time (UTC)
