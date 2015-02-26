@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			bool authentic = false;
 			try
 			{
-				object nativeObject = _searchRoot.NativeObject;
+				object nativeObject = FetchItems(1).ToList();
 				authentic = true;
 			}
 			catch (DirectoryServicesCOMException) { }
