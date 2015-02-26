@@ -115,7 +115,7 @@
     <Compile Include="Queries\CreateCustodianManagerResourceTable.cs" />
     <Compile Include="Queries\GetApplicationBinaries.cs" />
     <Compile Include="Queries\GetApplicationGuid.cs" />
-    <Compile Include="Queries\GetRecentJobHistory.cs" />
+    <Compile Include="Queries\JobHistoryErrorQuery.cs" />
     <Compile Include="RdoGetter.cs" />
     <Compile Include="RDOHelper.cs" />
     <Compile Include="RelativityRdoQuery.cs" />

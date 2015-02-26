@@ -14,8 +14,8 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public class JobStatusUpdater : IJobStatusUpdater
 	{
-		private readonly GetRecentJobHistory _service;
-		public JobStatusUpdater(GetRecentJobHistory service)
+		private readonly JobHistoryErrorQuery _service;
+		public JobStatusUpdater(JobHistoryErrorQuery service)
 		{
 			_service = service;
 		}
@@ -31,15 +31,14 @@ namespace kCura.IntegrationPoints.Core.Services
 			//if(lastJob){
 			// return JobStatusChoices.JobHistoryProcessing
 			//}
-
-			var recent = _service.Execute(jobHistory.ArtifactId);
+			var recent = _service.GetJobErrorFailedStatus(jobHistory.ArtifactId);
 			if (recent != null)
 			{
 				if (recent.ErrorType.EqualsToChoice(Data.ErrorTypeChoices.JobHistoryErrorItem))
 				{
 					return Data.JobStatusChoices.JobHistoryCompletedWithErrors;
 				}
-				if (recent.ErrorType.EqualsToChoice(Data.ErrorTypeChoices.JobHistoryErrorItem))
+				if (recent.ErrorType.EqualsToChoice(Data.ErrorTypeChoices.JobHistoryErrorJob))
 				{
 					return Data.JobStatusChoices.JobHistoryErrorJobFailed;
 				}
