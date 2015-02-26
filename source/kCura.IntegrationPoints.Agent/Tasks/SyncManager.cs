@@ -122,12 +122,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				throw new Exception("Cannot import source provider with unknown id.");
 			}
-			Data.JobHistory jobHistory = _jobHistoryService.CreateRDO(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
-			if (!jobHistory.StartTimeUTC.HasValue)
+			this.JobHistory = _jobHistoryService.CreateRDO(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
+			if (!this.JobHistory.StartTimeUTC.HasValue)
 			{
-				jobHistory.StartTimeUTC = DateTime.UtcNow;
+				this.JobHistory.StartTimeUTC = DateTime.UtcNow;
 				//TODO: jobHistory.JobStatus = "";
-				_jobHistoryService.UpdateRDO(jobHistory);
+				_jobHistoryService.UpdateRDO(this.JobHistory);
 			}
 		}
 
@@ -143,7 +143,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPoint);
 
-				if (BatchJobCount == 0)
+				if (BatchJobCount == 0 && this.JobHistory != null)
 				{
 					//no worker jobs were submitted
 					this.JobHistory.EndTimeUTC = DateTime.UtcNow;

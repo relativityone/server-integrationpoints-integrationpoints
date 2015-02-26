@@ -5,6 +5,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -28,11 +29,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 										IDataProviderFactory dataProviderFactory,
 										kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 										GeneralWithCustodianRdoSynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+										JobHistoryService jobHistoryService,
+										JobHistoryErrorService jobHistoryErrorService,
 										IJobManager jobManager,
 										IRSAPIClient workspaceRsapiClient,
 										ManagerQueueService managerQueueService)
 			: base(caseServiceContext, dataSyncronizerFactory, dataProviderFactory, serializer,
-			appDomainRdoSynchronizerFactoryFactory, jobManager)
+			appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager)
 		{
 			_workspaceRsapiClient = workspaceRsapiClient;
 			_managerQueueService = managerQueueService;
@@ -117,7 +120,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private string ReconfigureImportAPISettings(int custodianManagerFieldArtifactID)
 		{
 			ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(_destinationConfiguration);
-			importSettings.ObjectFieldIdListContainsArtifactId = new int[] {custodianManagerFieldArtifactID};
+			importSettings.ObjectFieldIdListContainsArtifactId = new int[] { custodianManagerFieldArtifactID };
 			importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
 			importSettings.CustodianManagerFieldContainsLink = false;
 			string newDestinationConfiguration = JsonConvert.SerializeObject(importSettings);

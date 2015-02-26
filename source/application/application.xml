@@ -369,7 +369,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2015-02-23T14:23:46.1683647Z</ExtractionDate>
+  <ExtractionDate>2015-02-26T18:19:21.4934469Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -418,6 +418,17 @@
           <Guid>f1094843-acc1-4595-921e-af1d46118519</Guid>
           <SyncDll>kCura.IntegrationPoints</SyncDll>
           <ApplicationVersion>1.0.86.8</ApplicationVersion>
+        </ActiveSync>
+        <ActiveSync>
+          <Id>1038749</Id>
+          <ArtifactTypeId>1000031</ArtifactTypeId>
+          <AssemblyArtifactId>1015805</AssemblyArtifactId>
+          <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.PreCascadeDeleteEventHandler</ClassName>
+          <Description />
+          <ExecutionType>6</ExecutionType>
+          <Guid>b5f2d14c-2c46-43af-aa00-78c1560c8f84</Guid>
+          <SyncDll>kCura.IntegrationPoints</SyncDll>
+          <ApplicationVersion>1.1.24.7</ApplicationVersion>
         </ActiveSync>
       </ActiveSyncs>
       <ArtifactId>1038635</ArtifactId>
@@ -1173,7 +1184,7 @@
               <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038745</FieldArtifactId>
-              <FieldDisplayTypeId>9</FieldDisplayTypeId>
+              <FieldDisplayTypeId>7</FieldDisplayTypeId>
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>false</IsReadOnly>
               <LayoutArtifactId>1038682</LayoutArtifactId>
@@ -1241,7 +1252,7 @@
           <Name>Integration Point Details</Name>
           <Notes />
           <Order>10</Order>
-          <ApplicationVersion>1.1.18.12</ApplicationVersion>
+          <ApplicationVersion>1.1.24.6</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Integration Point</Name>
@@ -3686,7 +3697,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>1.1.21.4</ApplicationVersion>
+          <ApplicationVersion>1.1.24.10</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -4155,7 +4166,7 @@
       <ObjectRules>
         <ObjectRule>
           <Name>Only show delete</Name>
-          <Action>&lt;action&gt;&lt;listoptions&gt;&lt;showNew&gt;False&lt;/showNew&gt;&lt;showDelete&gt;True&lt;/showDelete&gt;&lt;showLink&gt;False&lt;/showLink&gt;&lt;showUnlink&gt;False&lt;/showUnlink&gt;&lt;/listoptions&gt;&lt;/action&gt;</Action>
+          <Action>&lt;action&gt;&lt;listoptions&gt;&lt;showNew&gt;False&lt;/showNew&gt;&lt;showDelete&gt;False&lt;/showDelete&gt;&lt;showLink&gt;False&lt;/showLink&gt;&lt;showUnlink&gt;False&lt;/showUnlink&gt;&lt;/listoptions&gt;&lt;/action&gt;</Action>
           <ArtifactTypeID>1000036</ArtifactTypeID>
           <FieldArtifactID>0</FieldArtifactID>
           <Guid>66226013-5ec9-4855-9f9d-05a502f951f5</Guid>
@@ -4163,7 +4174,7 @@
           <Operator />
           <Type>GlobalButtonVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>1.1.17.5</ApplicationVersion>
+          <ApplicationVersion>1.1.23.4</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -4479,7 +4490,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>1.1.21.4</ApplicationVersion>
+          <ApplicationVersion>1.1.24.10</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -4531,7 +4542,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>1.1.21.4</ApplicationVersion>
+          <ApplicationVersion>1.1.24.10</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -4591,7 +4602,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.1.100.1</RelativityVersion>
-  <Version>1.1.21.4</Version>
+  <Version>1.1.24.10</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>cd571c6b-4904-4d52-9585-1717ceb4678a</OriginSignature>
   <MasterScripts />
@@ -4600,10 +4611,10 @@
     <CustomPage>
       <ArtifactID>1038685</ArtifactID>
       <Guid>c2c93191-7b15-4a9b-aa56-6a8c2dac5494</Guid>
-      <ApplicationVersion>1.1.21.4</ApplicationVersion>
+      <ApplicationVersion>1.1.24.10</ApplicationVersion>
       <Name>Web</Name>
       <FileName>DCF6E9D1-22B6-4DA3-98F6-41381E93C30C.zip</FileName>
-      <Size>6435257</Size>
+      <Size>6448445</Size>
       <Keywords />
       <Notes />
     </CustomPage>
@@ -4620,7 +4631,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>1.1.21.4</ApplicationVersion>
+      <ApplicationVersion>1.1.24.10</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038625</ArtifactId>
@@ -4631,18 +4642,18 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>1.1.21.4</ApplicationVersion>
+      <ApplicationVersion>1.1.24.10</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
-      <ArtifactId>1038688</ArtifactId>
+      <ArtifactId>1038748</ArtifactId>
       <AssemblyArtifactId>1015805</AssemblyArtifactId>
       <Name>kCura.IntegrationPoints.EventHandlers.Installers.RunEveryTimeInstaller</Name>
       <Guid>fb52b882-22d3-481f-b000-b976c13baf49</Guid>
-      <Guids>88dc0fe4-ca10-4d1e-973e-a9c9dac5acfe</Guids>
+      <Guids>b69e1d1a-498d-49b3-aee8-7f073244205a</Guids>
       <ExecutionType>8</ExecutionType>
-      <Order>20</Order>
+      <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>1.1.21.4</ApplicationVersion>
+      <ApplicationVersion>1.1.24.10</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />

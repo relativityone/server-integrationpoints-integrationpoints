@@ -1,4 +1,5 @@
-﻿using kCura.Relativity.Client;
+﻿using System;
+using kCura.Relativity.Client;
 namespace kCura.IntegrationPoints.Data
 {
  
@@ -173,24 +174,24 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class OverwriteFieldsChoices
 	{
-		public static Choice IntegrationPointAppend = new Choice(0, @"Append");
-		public static Choice IntegrationPointAppendOverlay = new Choice(0, @"Append/Overlay");
-		public static Choice IntegrationPointOverlayOnly = new Choice(0, @"Overlay Only");
+		public static Choice IntegrationPointAppend = new Choice(Guid.Parse("998c2b04-d42e-435b-9fba-11fec836aad8"), @"Append");
+		public static Choice IntegrationPointAppendOverlay = new Choice(Guid.Parse("5450ebc3-ac57-4e6a-9d28-d607bbdcf6fd"), @"Append/Overlay");
+		public static Choice IntegrationPointOverlayOnly = new Choice(Guid.Parse("70a1052d-93a3-4b72-9235-ac65f0d5a515"), @"Overlay Only");
 	}
 
 	public partial class JobStatusChoices
 	{
-		public static Choice JobHistoryPending = new Choice(0, @"Pending");
-		public static Choice JobHistoryProcessing = new Choice(0, @"Processing");
-		public static Choice JobHistoryCompleted = new Choice(0, @"Completed");
-		public static Choice JobHistoryCompletedWithErrors = new Choice(0, @"Completed with errors");
-		public static Choice JobHistoryErrorJobFailed = new Choice(0, @"Error - job failed");
+		public static Choice JobHistoryPending = new Choice(Guid.Parse("24512aba-b8aa-4858-9324-5799033d7e96"), @"Pending");
+		public static Choice JobHistoryProcessing = new Choice(Guid.Parse("bb170e53-2264-4708-9b00-86156187ed54"), @"Processing");
+		public static Choice JobHistoryCompleted = new Choice(Guid.Parse("c7d1eb34-166e-48d0-bce7-0be0df43511c"), @"Completed");
+		public static Choice JobHistoryCompletedWithErrors = new Choice(Guid.Parse("c0f4a2b2-499e-45bc-96d7-f8bc25e18b37"), @"Completed with errors");
+		public static Choice JobHistoryErrorJobFailed = new Choice(Guid.Parse("3152ece9-40e6-44dd-afc8-1004f55dfb63"), @"Error - job failed");
 	}
 
 	public partial class ErrorTypeChoices
 	{
-		public static Choice JobHistoryErrorItem = new Choice(0, @"Item");
-		public static Choice JobHistoryErrorJob = new Choice(0, @"Job");
+		public static Choice JobHistoryErrorItem = new Choice(Guid.Parse("9ddc4914-fef3-401f-89b7-2967cd76714b"), @"Item");
+		public static Choice JobHistoryErrorJob = new Choice(Guid.Parse("fa8bb625-05e6-4bf7-8573-012146baf19b"), @"Job");
 	}
 
 	#endregion								
