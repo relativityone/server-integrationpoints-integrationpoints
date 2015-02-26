@@ -171,6 +171,7 @@
 
 
 *** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/Relativity/Processing/Processing/Relativity_Keywords_General.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/Layouts/LayoutKeywords.txt

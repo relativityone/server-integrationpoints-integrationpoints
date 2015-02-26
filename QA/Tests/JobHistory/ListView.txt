@@ -23,6 +23,13 @@
 
 *** Test Cases ***
 
+| The New Job History Button is not on the page
+| | [Documentation] | Verifies that the "New Job History" Button is not on the page.
+| | [Tags]			| automated
+| | Go to the Tab	| Job History
+| | Page Should Not Contain Element	| ${New Job History Button}	| The "New Job History" Button was present on the page.
+
+
 | The Default View on the Job History List View
 | | [Documentation] | Verifies that the default View on the Job History list view page.
 | | [Tags]			| automated
@@ -39,7 +46,7 @@
 
 | The Columns on the "All Jobs" View are correct
 | | [Documentation] | Verifies that the "All Jobs" View on the Job History list view page has the correct columns.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Go to the Tab	| Job History
 | | Set View	| All Jobs
 | | Verify that the item list contains the following fields	| 
@@ -53,15 +60,18 @@
 
 | The Sorting on the "All Jobs" View is correct
 | | [Documentation] | Verifies that the "All Jobs" View on the Job History list view page has the correct sorting.
-| | [Tags]			| untested
+| | [Tags]			| manual	| partially_automated	| sorting
 | | Go to the Tab	| Job History
 | | Set View	| All Jobs
-| | Verify that the Item List is sorted by the following Date Column in Ascending Order	| Start Time (UTC)
+
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | Verify that the Item List is sorted by the following Date Column in Ascending Order	| Start Time (UTC)
 
 
 | The Columns on the "All Jobs with Errors" View are correct
 | | [Documentation] | Verifies that the "All Jobs with Errors" View on the Job History list view page has the correct columns.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Go to the Tab	| Job History
 | | Set View	| All Jobs with Errors
 | | Verify that the item list contains the following fields	| 
@@ -75,33 +85,30 @@
 
 | The Sorting on the "All Jobs with Errors" View is correct
 | | [Documentation] | Verifies that the "All Jobs with Errors" View on the Job History list view page has the correct sorting.
-| | [Tags]			| untested
+| | [Tags]			| manual	| sorting
 | | Go to the Tab	| Job History
 | | Set View	| All Jobs with Errors
-| | Verify that the Item List is sorted by the following Date Column in Ascending Order	| Start Time (UTC)
+
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. At least three jobs with errors exist in the workspace
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the Item List is sorted by the following Date Column in Ascending Order	| Start Time (UTC)
 
 
 | The Integration Point link goes to the Job Details Layout for that Job
 | | [Documentation] | Verifies that clicking a Job's Integration Point link goes to the Job Details Layout for that Job.
-| | [Tags]			| manual	| automateable?
+| | [Tags]			| manual	| partially_automated	| automateable?
+| | Go to the Tab	| Job History
+
 | | Run the following manual steps:
-| | ... | Preconditions:
-| | ... | 1. A Job History entry exists on the workspace
-| | ... | 
 | | ... | Steps:
-| | ... | 1. Go to the Tab	| Job History
-| | ... | 2. Click the Integration Point link
+| | ... | 1. Click a Name link
 | | ... | 
 | | ... | Expected Results:
 | | ... | 1. Verify that you are sent to a Job Details Layout
 | | ... | 2. Verify that you are on the correct Job
-
-
-| The New Job History Button is not on the page
-| | [Documentation] | Verifies that the "New Job History" Button is not on the page.
-| | [Tags]			| untested
-| | Go to the Tab	| Job History
-| | Page Should Not Contain Element	| ${New Job History Button}	| The "New Job History" Button was present on the page.
 
 
 *** Keywords ***
@@ -126,9 +133,9 @@
 | | ${Table}=	| Find Element	| id=ctl00_ctl00_itemList_tableDiv
 | | ${Headers}=	| Get Table Column Headers	| ${Table}
 | | ${Column Index}=	| Get From Dictionary	| ${Headers}	| ${ColumnHeader}
-| | ${Column Index}=	| Set Variable	| ${Column Index} - 1	| # Dictionary starts from 1, not from 0
+| | ${Column Index}=	| Evaluate	| ${Column Index} - 1	| # Dictionary starts from 1, not from 0
 | | @{Values}=	| Create list
-| | @{Table}=	| Get table | ctl00_ctl00_itemList_listTable | 6
+| | @{Table}=	| Get table | ctl00_ctl00_itemList_listTable | 7
 | | :FOR | ${Row} | IN | @{Table}
 | | | Append to list | ${Values} | ${Row[${Column Index}].lower()}
 | | [Return]	| ${Values}
@@ -139,12 +146,12 @@
 | | ...				| [Tags] itemlist
 | | [ARGUMENTS]		| ${ColumnHeader}
 | | @{Values}=	| Get the values for the following Column from the item list	| ${ColumnHeader}
+| | Log	| Actual Values: ${Values}
 | | ${RowCount}=	| Get Length	| ${Values}
 | | ${PreviousRowValue}=	| Set Variable	| ${Values[0]}
 
 | | :FOR	| ${RowNum}	| IN RANGE	| 1	| ${RowCount}
 | | | ${CurrentRowValue}=	| Set Variable	| ${Values[${RowNum}]}
-| | | Log	| "${PreviousRowValue}" was before "${CurrentRowValue}"
 | | | ${CurrentMonth}	| ${CurrentDay}		| ${CurrentYear}=	| Run Keyword Unless	| "${CurrentRowValue}" == "${SPACE}"	| Split String	| ${CurrentRowValue}	| /	| 2
 | | | ${PreviousMonth}	| ${PreviousDay}	| ${PreviousYear}=	| Run Keyword Unless	| "${PreviousRowValue}" == "${SPACE}"	| Split String	| ${PreviousRowValue}	| /	| 2
 | | | Run Keyword If	| ("${CurrentRowValue}" == "${SPACE}") and ("${PreviousRowValue}" != "${SPACE}")	| Fail	| The entry "${PreviousRowValue}" was above the entry "${CurrentRowValue}".
@@ -229,6 +236,7 @@
 
 
 *** Settings ***
+| Library	| Collections
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/Views/ItemListKeywords.txt
