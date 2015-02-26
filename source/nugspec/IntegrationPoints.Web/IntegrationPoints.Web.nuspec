@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>kCura.IntegrationPoints.Web</id>
-    <version>0.9.0.1</version>
+    <version>1.1.0.0</version>
     <authors>Relativity Integration Points</authors>
     <owners>Relativity Integration Points </owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
