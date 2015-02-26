@@ -309,6 +309,15 @@
 | | Click	| xpath=//span[@class='ui-button-text' and text()='OK'] 
 | | Wait Until Integration Point Job Runs	| ${IntegrationPoint}	| 60S
 
+| View Job History
+| | [Documentation] | A keyword that Views a Job History entry. Can be called from any where.
+| | [ARGUMENTS]		| ${IntegrationPointName}	| ${Date}=
+| | Go to the Tab	| Job History
+| | Set Filter	| Name	| ${IntegrationPointName}
+| | Run Keyword Unless	| "${Date}" == "${EMPTY}"	| Set Filter	| Start Time (UTC)	| ${Date}
+| | Page Should Contain Element	| xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationPointName}']	| The Job History entry for the Integration Point "${IntegrationPointName}" was not found.
+| | Click	| xpath=//a[@class='itemListPrimaryLink' and text()='${IntegrationPointName}']
+
 | View Integration Point
 | | [Documentation] | A keyword that Views an Integration Point. Can be called from any where.
 | | [ARGUMENTS]		| ${IntegrationName}
@@ -458,6 +467,6 @@
 | Library	| String
 | Library	| Collections
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
-| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt

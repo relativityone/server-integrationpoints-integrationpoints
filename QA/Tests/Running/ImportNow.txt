@@ -35,99 +35,66 @@
 | Import Now is active when there is no Schedule
 | | [Documentation] | Verify that the Import Now button is active when Enable Scheduler is set to No
 | | ...				| [id] 7e0125a1-ad54-11e4-b89d-90b11c6c5ae4
-| | [Tags]			| manual	| automateable
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. ${IntegrationPoint2} has the Enable Scheduler set to No
-| | ... |
-| | ... | Steps:
-| | ... | 1. Go to the Tab	| Integration Points
-| | ... | 2. View Integration Point	| ${IntegrationPoint2}
-| | ... | 
-| | ... | Expected Results:
-| | ... | Verify that the Import Now button is active
+| | [Tags]			| automated
+| | View Integration Point	| ${IntegrationPoint2}
+| | Verify console buttons are enabled or disabled	| Import Now	| Enabled
 
 
 | Import Now is active when there is a Schedule
 | | [Documentation] | Verify that the Import Now button is active when Enable Scheduler is set to Yes 
 | | ...				| [id] 7fadc430-ad54-11e4-be8a-90b11c6c5ae4
-| | [Tags]			| manual	| automateable
-| | Run the following manual steps:
-| | ... | Pre-conditions:
-| | ... | 1. ${IntegrationPoint3} has the Enable Scheduler set to Yes
-| | ... | 
-| | ... | Steps:
-| | ... | 1. Go to the Tab	| Integration Points
-| | ... | 2. View Integration Point	| ${IntegrationPoint1}
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Import Now button is active
+| | [Tags]			| automated
+| | View Integration Point	| ${IntegrationPoint1}
+| | Verify console buttons are enabled or disabled	| Import Now	| Enabled
 
 
 | Import Now Dialog UI format is correct
 | | [Documentation] | Verify that the Import Now dialogs UI is correct.
 | | ...				| [id] 8988c740-ad57-11e4-969f-90b11c6c5ae4
-| | [Tags]			| manual	| automateable
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Tab	| Integration Points
-| | ... | 2. View Integration Point	| ${IntegrationPoint3}
-| | ... | 3. Click	| Import Now
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that the heading is: Import Now
-| | ... | 2. Verify that the text is: Are you sure you want to import data now?
-| | ... | 3. Verify that the OK and Cancel buttons are present in the bottom right corner
+| | [Tags]			| automated
+| | View Integration Point	| ${IntegrationPoint1}
+| | Click	| Import Now
+| | Verify that the Import Now dialog box has the correct UI Elements
 
 
 | Clicking Cancel from the Dialog does not create a new Import job
 | | [Documentation] | Verify that clicking Cancel from the Dialog does not create a new Import job.
 | | ...				| [id] 8b5dae51-ad57-11e4-bcb9-90b11c6c5ae4
-| | [Tags]			| manual	| automateable
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Tab	| Integration Points
-| | ... | 2. View Integration Point	| ${IntegrationPoint3}
-| | ... | 3. Click	| Import Now
-| | ... | 4. Click	| Cancel
-| | ... | 5. View the eddsdbo.ScheduleAgentQueue
-| | ... | 
-| | ... | Expected Results:
-| | ... | Verify that no SyncManager (TaskType column) has been created
+| | [Tags]			| automated
+| | View Integration Point	| ${IntegrationPoint1}
+| | Click	| Import Now
+
+| | Click	| Cancel
+| | Repeat Keyword	| 100 times	| Verify that the following Integration Point does not have a Running Job	| ${IntegrationPoint1}	| # Runs over ~10 seconds
 
 
 | Clicking OK from the Dialog creates a new Job
 | | [Documentation] | Verify that clicking OK from the Dialog creates a new Job.
 | | ...				| [id] 873c6d9e-ad54-11e4-9396-90b11c6c5ae4
-| | [Tags]			| manual	| automateable?
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Tab	| Integration Points
-| | ... | 2. View Integration Point	| ${IntegrationPoint3}
-| | ... | 3. Click	| Import Now
-| | ... | 4. Click	| OK
-| | ... | 5. View the eddsdbo.ScheduleAgentQueue
-| | ... | 
-| | ... | Expected Results:
-| | ... | Verify that a SyncManager (TaskType column) has been created
+| | [Tags]			| automated
+| | View Integration Point	| ${IntegrationPoint1}
+| | Click	| Import Now
+| | Click	| OK
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Verify that the following Integration Point has a Running Job	| ${IntegrationPoint1}
 
 
-| The Importing Now message is correct
-| | [Documentation] | Verify that using the Import Now button shows a message with the text "Data will now be imported from the source provider.".
-| | [Tags]			| manual	| automateable
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Go to the Tab	| Integration Points
-| | ... | 2. View Integration Point	| ${IntegrationPoint3}
-| | ... | 3. Click	| Import Now
-| | ... | 4. Click	| OK
-| | ... | 
-| | ... | Expected Results:
-| | ... | 1. Verify that a green message appears between the Layout dropdown's row and the General card
-| | ... | 2. Verify that the message has the following text	| "Data will now be imported from the source provider."
+| The Importing Now success message is correct
+| | [Documentation] | Verify that using the Import Now button shows a success message with the text "Data will now be imported from the source provider.".
+| | [Tags]			| automated
+| | View Integration Point	| ${IntegrationPoint1}
+| | Click	| Import Now
+| | Click	| Import Now
+| | Click	| OK
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Verify that the following Method Feedback Message is Present	| Data will now be imported from the source provider.
 
 
 *** Keywords ***
+
+| Verify that the Import Now dialog box has the correct UI Elements
+| | [Documentation]	| Verifies that the three main pieces of the Import Now dialog box, the Title, the body text, and the buttons, are present and correct.
+| | Run Keyword and Continue on Failure	| Element Text Should Be	| id=ui-dialog-title-msgDiv		| Import Now	| # Title
+| | Run Keyword and Continue on Failure	| Element Text Should Be	| css=div[id=msgDiv] > label	| Are you sure you want to import data now?	| # Body
+| | Run Keyword and Continue on Failure	| Verify that the current Dialog Box contains the following Buttons	| OK	| Cancel
 
 | Open the Browser and Create the Integration Points needed by the Suite
 | | [Documentation]	| Opens the browser and then creates both of the Integration Points used in this suite.
@@ -147,35 +114,37 @@
 #------------------------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=	| Create List	| ${IntegrationPoint1}	| Append		| LDAP	| Custodian	| 
-| | ...	| Yes		| Daily	| NULL	| NULL	| 02/25/2015	| 02/26/2025	| 11:25
+| | ...	| Yes		| Daily	| NULL	| NULL	| 02/25/2015	| 02/26/2025	| 11:25 AM
 
 | | @{Step2Fields}=	| Create List	| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp	| 
-| | ... | (objectClass=*)	| FastBind	| testing\\rellockdown	| P@ssw0rd@1
+| | ... | (department=Import Now Tester)	| FastBind	| testing\\rellockdown	| P@ssw0rd@1
 
 | | @{Step3Mapping}=	| Create List	|
-| | ... | First Name	| givenName		| 
+| | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
 | | ... | Email			| mail			| 
-| | ... | Department	| countrycode	| 
+| | ... | Department	| department	| 
 | | ... | UniqueID		| objectguid
 
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Create Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| UniqueID
 
 #------------------------------------------------------------------------------------------------------------------------
 
-| | @{Step1Fields}=	| Create List	| ${IntegrationPoint1}	| Append	| LDAP	| Custodian	| No
+| | @{Step1Fields}=	| Create List	| ${IntegrationPoint2}	| Append	| LDAP	| Custodian	| No
 
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
-| | [Teardown] | Drop connection to the relativity services api
+| | Create Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| UniqueID
+| | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Integration Points created in this Suite then Close All Browsers
 | | [Documentation]	| Delete the Integration Points that were created in the Suite and then closes any open browsers.
 | | ...				| Run as the Suite Teardown.
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
 
-| | Delete the following Integration Point using API 	| ${IntegrationPoint1}
+| | Delete the following Integration Point using API	| ${IntegrationPoint1}
 
-| | Delete the following Integration Point using API 	| ${IntegrationPoint2}
+| | Delete the following Integration Point using API	| ${IntegrationPoint2}
+
+| | Delete the Custodians in the Following Department using API	| Import Now Tester
 
 | | Close All Browsers
 | | Drop connection to the relativity services api
@@ -184,7 +153,8 @@
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
-| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
