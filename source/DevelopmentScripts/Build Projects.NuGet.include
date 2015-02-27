@@ -16,12 +16,12 @@
 	
 	<target name="NuGet_nuspec_update" description="Updates NuGet nuspec file.">
 		<xmlpoke
-			file="${nuspec.directory}\kCura.ImageExporter.nuspec"
+			file="${nuspec.directory}\IntegrationPoints.Contracts\IntegrationPoints.Contracts.nuspec"
 			xpath="/package/metadata/version"
 			value="${NuGet.Version}">
 		</xmlpoke>
 		<xmlpoke
-			file="${nuspec.directory}\kCura.ImageViewer.nuspec"
+			file="${nuspec.directory}\IntegrationPoints.Web\IntegrationPoints.Web.nuspec"
 			xpath="/package/metadata/version"
 			value="${NuGet.Version}">
 		</xmlpoke>
