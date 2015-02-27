@@ -46,9 +46,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				var destinationFieldID = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationConfiguration));
 				var destinationProviderFieldID = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationProvider));
 				var sourceProviderFieldID = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.SourceProvider));
-
-
+				var scheduleRuleFieldID = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.ScheduleRule));
+				
 				var lastTimefieldID = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.LastRuntimeUTC));
+				var sourceConfigurationFieldId =
+					base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.SourceConfiguration));
 
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL2343243453", Script = "<script>var IP = IP ||{};IP.nextTimeid= ['" + fieldID + "', '" + lastTimefieldID + "'] ;</script>" });
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.destinationid= '" + destinationFieldID + "';</script>" });
@@ -56,7 +58,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.sourceProviderId= '" + sourceProviderFieldID + "';</script>" });
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.artifactid= '" + base.ActiveArtifact.ArtifactID + "';</script>" });
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.appid= '" + base.Application.ArtifactID + "';</script>" });
+				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.scheduleRuleId= '" + scheduleRuleFieldID + "';</script>" });
+				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.sourceConfiguration= '" + sourceConfigurationFieldId + "';</script>" });
 				
+
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-grid.js");
 			
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-view.js");
