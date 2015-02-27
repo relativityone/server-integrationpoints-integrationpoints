@@ -1,6 +1,7 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Data.Queries;
 
 namespace kCura.IntegrationPoints.Data.Installers
 {
@@ -12,7 +13,7 @@ namespace kCura.IntegrationPoints.Data.Installers
 			container.Register(Component.For<IObjectTypeQuery>().ImplementedBy<SqlObjectTypeQuery>().LifestyleTransient());
 			container.Register(Component.For<RSAPIRdoQuery>().ImplementedBy<RSAPIRdoQuery>().LifeStyle.Transient);
 			container.Register(Component.For<ChoiceQuery>().ImplementedBy<ChoiceQuery>().LifeStyle.Transient);
-			
+			container.Register(Component.For<JobHistoryError>().ImplementedBy<JobHistoryError>().LifeStyle.Transient);
 		}
 	}
 }

@@ -1,0 +1,81 @@
+<?xml version="1.0" ?>
+
+<project name="EDDS.NuGet">
+
+	<property name="build.source.code.directory" value="${packageFolder}\${branchDir}\${Product.Version}" />
+	
+	<property name="nuspec.directory" value="${path::combine(source.code.directory, 'nugspec')}" />
+	<property name="NuGet.exe.directory" value="C:\NuGet" />
+	<property name="NuGet_exe" value="C:\NuGet\NuGet.exe" unless="${property::exists('NuGet_exe')}" />
+	<property name="NuGet.Server" value="http://dv-scm-nuget.kcura.corp/NuGet/nuget" />
+	<property name="NuGet.Server.Source" value="http://dv-scm-nuget.kcura.corp/NuGet/" />
+	<property name="NuGet.Version" value="9.2.0.0" unless="${property::exists('Product.Version')}" />
+	<property name="NuGet.Version" value="${Product.Version}" />
+	
+	<target name="build_NuGet" depends="NuGet_nuspec_update,NuGet_pack" />
+	
+	<target name="NuGet_nuspec_update" description="Updates NuGet nuspec file.">
+		<xmlpoke
+			file="${nuspec.directory}\kCura.ImageExporter.nuspec"
+			xpath="/package/metadata/version"
+			value="${NuGet.Version}">
+		</xmlpoke>
+		<xmlpoke
+			file="${nuspec.directory}\kCura.ImageViewer.nuspec"
+			xpath="/package/metadata/version"
+			value="${NuGet.Version}">
+		</xmlpoke>
+	</target>
+	
+	<target name="NuGet_pack" description="Packages and creates a new NuGet package.">	
+		<choose>
+			<when test="${string::contains(branchDir,'default')}">
+				<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
+					<arg line="pack ${nuspec.directory}\kCura.ImageExporter.nuspec" />
+				</exec>
+				<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
+					<arg line="pack ${nuspec.directory}\kCura.ImageViewer.nuspec" />
+				</exec>
+				<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
+					<arg line="pack ${nuspec.directory}\Relativity.ImportAPI.Wrapper.nuspec" />
+				</exec>
+				<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
+					<arg line="pack ${nuspec.directory}\Relativity.Oracle.FileIdentification.nuspec" />
+				</exec>
+			</when>
+			<otherwise>
+				<echo message="Based on ${branchDir} BranchDir and it not being default, NuGet package will NOT be created." />
+			</otherwise>
+		</choose>
+	</target>
+	
+	<target name="NuGet_publish" description="Publishes NuGet package to server">
+		<choose>
+			<when test="${string::contains(branchDir,'default')}">
+				<choose>
+					<when test="${string::contains(buildType,'GOLD')}">
+						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
+							<arg line="push kCura.ImageExporter.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
+						</exec>
+						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
+							<arg line="push kCura.ImageViewer.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
+						</exec>
+						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
+							<arg line="push Relativity.ImportAPI.Wrapper.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
+						</exec>
+						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
+							<arg line="push Relativity.Oracle.FileIdentification.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
+						</exec>
+					</when>
+					<otherwise>
+						<echo message="Based on ${buildType} BuildType NuGet package will NOT be published." />
+					</otherwise>
+				</choose>
+			</when>
+			<otherwise>
+				<echo message="Based on ${branchDir} BranchDir and it not being default, NuGet package will NOT be published." />
+			</otherwise>
+		</choose>
+	</target>
+	
+</project>
