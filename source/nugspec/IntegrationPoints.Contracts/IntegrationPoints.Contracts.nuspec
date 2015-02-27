@@ -12,8 +12,8 @@
 		<tags>kCura IntegrationPoints Contracts</tags>
 	</metadata>
 	<files>
-		<file src="..\..\bin\Debug\kCura.IntegrationPoints.Contracts.dll" target="lib\net45\" />
-		<file src="..\..\bin\Debug\kCura.IntegrationPoints.SourceProviderInstaller.dll" target="lib\net45\" />
+		<file src="..\..\bin\Release\kCura.IntegrationPoints.Contracts.dll" target="lib\net45\" />
+		<file src="..\..\bin\Release\kCura.IntegrationPoints.SourceProviderInstaller.dll" target="lib\net45\" />
 		<file src="..\..\Dependencies\kCura\kCura.EventHandler.dll" target="lib\net45\" />
 	</files>
 </package>
