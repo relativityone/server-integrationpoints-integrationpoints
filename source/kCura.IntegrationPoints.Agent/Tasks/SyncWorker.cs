@@ -60,16 +60,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
-				int integrationPointID = job.RelatedObjectArtifactID;
-				this.IntegrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
-				if (this.IntegrationPoint == null)
-				{
-					throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
-				}
-		
+				GetIntegrationPointRDO(job);
+
 				List<string> entryIDs = GetEntryIDs(job);
-				this.JobHistory = _jobHistoryService.CreateRDO(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
-				_jobHistoryErrorService.JobHistory = this.JobHistory;
+
+				GetJobHistoryRDO();
 
 				if (this.IntegrationPoint.SourceProvider.GetValueOrDefault(0) == 0)
 				{
@@ -96,6 +91,26 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				//rdo last run and next scheduled time will be updated in Manager job
 				_jobHistoryErrorService.CommitErrors();
 			}
+		}
+
+		internal void GetIntegrationPointRDO(Job job)
+		{
+			if (this.IntegrationPoint != null) return;
+
+			int integrationPointID = job.RelatedObjectArtifactID;
+			this.IntegrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
+			if (this.IntegrationPoint == null)
+			{
+				throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
+			}
+		}
+
+		internal void GetJobHistoryRDO()
+		{
+			if (this.JobHistory != null) return;
+
+			this.JobHistory = _jobHistoryService.CreateRDO(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
+			_jobHistoryErrorService.JobHistory = this.JobHistory;
 		}
 
 		internal virtual string GetSourceConfiguration(string originalSourceConfiguration)
