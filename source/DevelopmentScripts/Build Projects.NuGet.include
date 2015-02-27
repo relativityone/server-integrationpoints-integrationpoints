@@ -31,16 +31,10 @@
 		<choose>
 			<when test="${string::contains(branchDir,'default')}">
 				<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-					<arg line="pack ${nuspec.directory}\kCura.ImageExporter.nuspec" />
+					<arg line="pack ${nuspec.directory}\IntegrationPoints.Contracts\IntegrationPoints.Contracts.nuspec" />
 				</exec>
 				<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-					<arg line="pack ${nuspec.directory}\kCura.ImageViewer.nuspec" />
-				</exec>
-				<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-					<arg line="pack ${nuspec.directory}\Relativity.ImportAPI.Wrapper.nuspec" />
-				</exec>
-				<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-					<arg line="pack ${nuspec.directory}\Relativity.Oracle.FileIdentification.nuspec" />
+					<arg line="pack ${nuspec.directory}\IntegrationPoints.Web\IntegrationPoints.Web.nuspec" />
 				</exec>
 			</when>
 			<otherwise>
@@ -55,16 +49,10 @@
 				<choose>
 					<when test="${string::contains(buildType,'GOLD')}">
 						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-							<arg line="push kCura.ImageExporter.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
+							<arg line="push IntegrationPoints.Contracts.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
 						</exec>
 						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-							<arg line="push kCura.ImageViewer.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
-						</exec>
-						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-							<arg line="push Relativity.ImportAPI.Wrapper.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
-						</exec>
-						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-							<arg line="push Relativity.Oracle.FileIdentification.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
+							<arg line="push IntegrationPoints.Contracts.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
 						</exec>
 					</when>
 					<otherwise>
