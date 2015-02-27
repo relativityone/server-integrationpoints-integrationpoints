@@ -58,6 +58,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				//get all job parameters
 				GetParameters(job);
 
+				base.GetIntegrationPointRDO(job);
+
+				base.GetJobHistoryRDO();
+
 				//update common queue for this job using passed Custodian/Manager links and get the next unprocessed links
 				_custodianManagerMap = _managerQueueService.GetCustodianManagerLinksToProcess(job, this.BatchInstance, _custodianManagerMap);
 
@@ -99,6 +103,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					(x.SourceField.FieldIdentifier.Equals(fieldEntryCustodianIdentifier.FieldIdentifier) ||
 					 x.SourceField.FieldIdentifier.Equals(fieldEntryManagerIdentifier.FieldIdentifier)));
 				IDataSynchronizer dataSyncronizer = base.GetDestinationProvider(_destinationProviderRdo, newDestinationConfiguration, job);
+				base._jobHistoryErrorService.SubscribeToBatchReporterEvents(dataSyncronizer);
 				dataSyncronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration);
 
 				if (missingManagers.Any())
@@ -107,13 +112,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						string.Join("; ", missingManagers.ToArray())));
 				}
 			}
-			catch
+			catch(Exception ex)
 			{
-				throw;
+				base._jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 			}
 			finally
 			{
 				//rdo last run and next scheduled time will be updated in Manager job
+				base._jobHistoryErrorService.CommitErrors();
 			}
 		}
 

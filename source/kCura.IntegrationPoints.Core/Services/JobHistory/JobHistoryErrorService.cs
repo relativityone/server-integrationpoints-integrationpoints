@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private void OnRowError(string documentIdentifier, string errorMessage)
 		{
-			AddError(ErrorTypeChoices.JobHistoryErrorItem, errorMessage);
+			AddError(ErrorTypeChoices.JobHistoryErrorItem, documentIdentifier, errorMessage);
 		}
 
 		private void OnJobError(Exception ex)
@@ -73,10 +73,10 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void AddError(Relativity.Client.Choice errorType, Exception ex)
 		{
-			AddError(errorType, GenerateErrorMessage(ex));
+			AddError(errorType, string.Empty, GenerateErrorMessage(ex));
 		}
 
-		public void AddError(Relativity.Client.Choice errorType, string errorMessage)
+		public void AddError(Relativity.Client.Choice errorType, string documentIdentifier, string errorMessage)
 		{
 			lock (_jobHistoryErrorList)
 			{
@@ -86,6 +86,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				jobHistoryError.JobHistory = this.JobHistory.ArtifactId;
 				jobHistoryError.Name = Guid.NewGuid().ToString();
 				jobHistoryError.ErrorType = errorType;
+				jobHistoryError.SourceUniqueID = documentIdentifier;
 				jobHistoryError.Error = errorMessage;
 				jobHistoryError.TimestampUTC = DateTime.UtcNow;
 
