@@ -1,13 +1,13 @@
 ﻿var IP = IP || {};
-(function(root) {
-	root.importNow = function(artifactId, appid) {
-		
+(function (root) {
+	root.importNow = function (artifactId, appid) {
+
 		window.Dragon.dialogs.showConfirm({
 			message: 'Are you sure you want to import data now?',
 			title: 'Import Now',
 			showCancel: true,
 			width: 450,
-			success: function(calls) {
+			success: function (calls) {
 				calls.close();
 				var ajax = IP.data.ajax({
 					type: 'post',
@@ -17,14 +17,14 @@
 						"artifactId": artifactId
 					})
 				});
-				ajax.then(function() {
+				ajax.then(function () {
 					IP.message.info.raise("Data will now be imported from the source provider.", $(".cardContainer"));
 				});
 			}
 		});
 	};
-	
-	var _convertUTCToLocal = function() {
+
+	var _convertUTCToLocal = function () {
 
 	};
 
@@ -34,7 +34,7 @@
 		}
 	};
 	IP.redirect.set(document.URL);
-	
+
 
 	$(function () {
 		var $editButtons = $(":contains('Edit')").closest('a');
@@ -56,15 +56,52 @@
 	});
 
 })(IP);
-$(window).load(function() {
+$(window).load(function () {
 	$(".consoleContainer .consoleButtonDisabled").attr("title", "You do not have permission to import.");
 });
 
 $(window).unload(function () {
-	
+
 	if (IP.isEdit === "Edit") {
 		IP.redirect.reset(true);
 	} else {
 		IP.redirect.reset(false);
 	}
 });
+
+
+//$(function () {
+//	//Scheduler
+//	var $field = IP.utils.getViewField(1037500).siblings('.dynamicViewFieldValue');
+//	$field.text('');
+//	IP.data.ajax({
+//		url: IP.utils.generateWebAPIURL('IntegrationPointsAPI', IP.artifactid),
+//		type: 'Get'
+//	}).then(function (result) {
+//		result = result.scheduler;
+//		$field.text(result.selectedFrequency);
+//		var $tr = $field.parent('tr');
+//		var $newTr;
+
+//		var obj = {
+//			'Frequency': result.selectedFrequency,
+//			'Start Date': result.startDate,
+//			'End Date': result.endDate,
+//			'Scheduled Time': result.scheduledTime
+//		};
+
+//		for (var k in obj) {
+//			if (obj.hasOwnProperty(k)) {
+//				$newTr = $tr.clone();
+//				$newTr.find('.dynamicViewFieldName').text(k);
+//				$newTr.find('.dynamicViewFieldValue').text(obj[k]);
+//				$tr.after($newTr);
+//			}
+//		}
+
+//	}, function () {
+//		debugger;
+//	});
+
+
+//});

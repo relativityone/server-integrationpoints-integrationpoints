@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				var fieldID = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.NextScheduledRuntimeUTC));
 				var destinationFieldID = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationConfiguration));
 				var destinationProviderFieldID = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationProvider));
-				var sourceProviderFieldID = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationProvider));
+				var sourceProviderFieldID = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.SourceProvider));
 
 
 				var lastTimefieldID = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.LastRuntimeUTC));
@@ -57,8 +57,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.artifactid= '" + base.ActiveArtifact.ArtifactID + "';</script>" });
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.appid= '" + base.Application.ArtifactID + "';</script>" });
 				
-
-
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-grid.js");
 			
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-view.js");
@@ -69,8 +67,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/grid/dragon-grid.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/grid/dragon-grid-pager.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/grid/dragon-utils.js");
-
-
 				
 			}
 			

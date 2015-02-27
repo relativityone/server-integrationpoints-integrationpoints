@@ -29,4 +29,9 @@ $(function () {
 	IP.utils.getViewField(IP.destinationProviderid).siblings('.dynamicViewFieldValue').find('a').replaceWith(function(){
 		return '<span>' + $(this).text() + '</span';
 	});
+
+	IP.utils.getViewField(IP.sourceProviderId).siblings('.dynamicViewFieldValue').find('a').replaceWith(function () {
+		return '<span>' + $(this).text() + '</span';
+	});
+
 })();
