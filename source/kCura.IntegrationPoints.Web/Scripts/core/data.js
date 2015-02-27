@@ -73,6 +73,9 @@
 			return data.deferred($.ajax(settings));
 		};
 
+		data.get = function (url) {
+			return data.ajax({ url: url, type: 'get' });
+		};
 		//move to RLH.async
 		data.deferred = (function (q) {
 			return function (obj) {

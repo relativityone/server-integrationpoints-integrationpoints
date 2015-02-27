@@ -8,12 +8,12 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>Provides the public contracts to create an integration point.</description>
 		<releaseNotes>Release</releaseNotes>
-		<copyright>Copyright 2014</copyright>
-		<tags>kCura</tags>
+		<copyright>Copyright 2015</copyright>
+		<tags>kCura IntegrationPoints Contracts</tags>
 	</metadata>
 	<files>
-		<file src="..\..\bin\Debug\kCura.IntegrationPoints.Contracts.dll" target="lib\net45\" />
-		<file src="..\..\bin\Debug\kCura.IntegrationPoints.SourceProviderInstaller.dll" target="lib\net45\" />
+		<file src="..\..\bin\Release\kCura.IntegrationPoints.Contracts.dll" target="lib\net45\" />
+		<file src="..\..\bin\Release\kCura.IntegrationPoints.SourceProviderInstaller.dll" target="lib\net45\" />
 		<file src="..\..\Dependencies\kCura\kCura.EventHandler.dll" target="lib\net45\" />
 	</files>
 </package>
