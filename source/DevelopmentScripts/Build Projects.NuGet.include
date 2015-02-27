@@ -49,10 +49,10 @@
 				<choose>
 					<when test="${string::contains(buildType,'GOLD')}">
 						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-							<arg line="push IntegrationPoints.Contracts.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
+							<arg line="push kCura.IntegrationPoints.Contracts.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
 						</exec>
 						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-							<arg line="push IntegrationPoints.Contracts.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
+							<arg line="push kCura.IntegrationPoints.Web.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
 						</exec>
 					</when>
 					<otherwise>
