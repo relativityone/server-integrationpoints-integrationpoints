@@ -75,7 +75,8 @@ IP.utils.createFields = function ($root, fields) {
 	var $tr = $root.parent('tr');
 	$.each(fields || [], function () {
 		var $newTr = $tr.clone();
-		IP.utils.updateField($newTr, this.key, this.value);
+		var v = IP.utils.stringNullOrEmpty(this.value) ? '' : this.value;
+		IP.utils.updateField($newTr, this.key, v);
 		$newTr.find('input').attr('id', IP.utils.toCamelCase(this.key)).removeAttr('faartifactid').removeAttr('fafriendlyname');
 		$tr.after($newTr);
 		$tr = $newTr;
@@ -107,14 +108,32 @@ $(function () {
 });
 
 $(function () {
+	var _getAppPath = function () {
+		var newPath = window.location.pathname.split('/')[1];
+		var url = window.location.protocol + '//' + window.location.host + '/' + newPath;
+		return url;
+	};
 
 	//source settings
 	var _getSource = function (str) {
 		var d = IP.data.deferred().defer();
-		d.resolve([
-			{ 'key': 'asdf', value: 'f3f3' },
-			{ 'key': 'asdf', value: 'f3f4' }
-		]);
+		
+		var appID = IP.utils.getParameterByName('AppID', window.top);
+		var artifactID = IP.artifactid;
+		var obj = {
+			applicationPath: _getAppPath(),
+			appID: appID,
+			artifactID: artifactID
+		};
+		var url = IP.utils.format(IP.params['sourceUrl'], obj);
+		IP.data.ajax({
+			url: url,
+			data: str,
+			type: 'post'
+		}).then(function (result) {
+			d.resolve(result);
+		});
+
 		return d.promise;
 	};
 	var $field = IP.utils.getViewField(IP.sourceConfiguration).siblings('.dynamicViewFieldValue');

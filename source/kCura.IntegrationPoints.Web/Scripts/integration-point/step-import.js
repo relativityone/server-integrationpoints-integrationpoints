@@ -8,17 +8,7 @@
 	};
 
 	var parseURL = function (url, obj) {
-		var urlFormat = url;
-		if (urlFormat[0] === '/') {
-			urlFormat = urlFormat.slice(1, urlFormat.length);
-		}
-		for (var key in obj) {
-			if (obj.hasOwnProperty(key)) {
-				var regEx = new RegExp('%' + key + '%', "ig")
-				urlFormat = urlFormat.replace(regEx, obj[key]);
-			}
-		}
-		return urlFormat;
+		return root.utils.format(url, obj);
 	};
 
 	var Step = function (settings) {

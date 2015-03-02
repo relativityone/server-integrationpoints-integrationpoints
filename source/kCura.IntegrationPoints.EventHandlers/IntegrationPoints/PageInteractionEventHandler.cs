@@ -8,7 +8,8 @@ using kCura.EventHandler;
 
 //http://platform.kcura.com/9.0/index.htm#Customizing_workflows/Page_Interaction_event_handlers.htm?Highlight=javascript
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-
+using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.Data.Extensions;
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
 	[System.Runtime.InteropServices.Guid("d62ec71f-f8c1-4344-aabb-b23e376d93df")]
@@ -108,8 +109,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		public virtual string GetSourceViewUrl()
 		{
-			
-			return string.Empty;
+			var ip = this.ServiceContext.RsapiService.IntegrationPointLibrary.Read(this.ActiveArtifact.ArtifactID,
+				Guid.Parse(Data.IntegrationPointFieldGuids.SourceProvider));
+			if (!ip.SourceProvider.HasValue)
+			{
+				throw new ArgumentException(string.Format("Source provider for integration point: {0} is not valid.", this.ActiveArtifact.ArtifactID));
+			}
+			var provider = this.ServiceContext.RsapiService.SourceProviderLibrary.Read(ip.SourceProvider.Value, Guid.Parse(Data.SourceProviderFieldGuids.ViewConfigurationUrl));
+			return provider.ViewConfigurationUrl;
 		}
 
 		/// <summary>
@@ -124,9 +131,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			string[] urlSplit = System.Text.RegularExpressions.Regex.Split(currentUrl, "/Case/", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
 			retVal = urlSplit[0] + string.Format("/CustomPages/{0}", Core.Application.GUID);
 			return retVal;
-
 		}
-
+		
 		public override FieldCollection RequiredFields
 		{
 			get { return new FieldCollection(); }

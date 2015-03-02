@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			return fields.Select(f => new FieldEntry() { DisplayName = f, FieldIdentifier = f });
 		}
 
-		private LDAPSettings GetSettings(string options)
+		public LDAPSettings GetSettings(string options)
 		{
 			try
 			{
