@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 	[TestFixture]
 	public class IntegrationPointQueryTest
 	{
+		[Explicit]
 		[Test]
 		public void GetIntegrationPoints_SourceProviderId_IntegrationPoint()
 		{
