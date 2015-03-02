@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace kCura.IntegrationPoints.Data.Migrations
 {
 	public class UpdateJobErrorsBlankToNo : IMigration
-	{	private readonly IEddsDBContext _context;
-	public UpdateJobErrorsBlankToNo(IEddsDBContext context)
+	{	private readonly IWorkspaceDBContext _context;
+	public UpdateJobErrorsBlankToNo(IWorkspaceDBContext context)
 		{
 			_context = context;
 		}
@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Data.Migrations
 		public void Execute()
 		{
 			var sql = Resources.Resource.SetBlankLogErrorsToNo;
-			_context.ExecuteNonQuerySQLStatement(sql);
+			_context.ExecuteSqlStatementAsDataTable(sql);
 		}
 	}
 }
