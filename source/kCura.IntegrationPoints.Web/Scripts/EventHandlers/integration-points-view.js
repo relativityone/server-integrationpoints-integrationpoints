@@ -93,12 +93,11 @@ $(function () {
 		type: 'Get'
 	}).then(function (result) {
 		var result = result.scheduler;
-
 		var obj = [
 			{ key: 'Frequency', value: result.selectedFrequency },
 			{ key: 'Start Date', value: result.startDate },
 			{ key: 'End Date', value: result.endDate },
-			{ key: 'Scheduled Time (UTC)', value: result.scheduledTime }
+			{ key: 'Scheduled Time (UTC)', value: IP.timeUtil.utcToAmPm(result.scheduledTime) }
 		];
 		IP.utils.createFields($field, obj);
 	}, function () {
