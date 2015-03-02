@@ -7,6 +7,7 @@ using kCura.EventHandler;
 using System.Runtime.InteropServices;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Migrations;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
@@ -17,7 +18,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	{
 		public override Response Execute()
 		{
-			new MigrationRunner(new EddsContext(Helper.GetDBContext(-1))).Run();
+			
+			new MigrationRunner(new EddsContext(Helper.GetDBContext(-1)), new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID()))).Run();
 			return new Response { Success = true };
 		}
 	}
