@@ -85,7 +85,8 @@ IP.utils.createFields = function ($root, fields) {
 
 $(function () {
 	//Scheduler
-	var $field = IP.utils.getViewField(IP.scheduleRuleId).siblings('.dynamicViewFieldValue');
+	var ruleFieldId = IP.params['scheduleRuleId'];
+	var $field = IP.utils.getViewField(ruleFieldId).siblings('.dynamicViewFieldValue');
 	$field.text('');
 	IP.data.ajax({
 		url: IP.utils.generateWebAPIURL('IntegrationPointsAPI', IP.artifactid),
