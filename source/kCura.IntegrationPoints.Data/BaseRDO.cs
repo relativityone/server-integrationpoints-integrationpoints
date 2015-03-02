@@ -116,7 +116,19 @@ namespace kCura.IntegrationPoints.Data
 					if (value is Choice)
 					{
 						singleChoice = (Choice)value;
-						newValue = new Relativity.Client.DTOs.Choice(singleChoice.ArtifactGuids.First()) { Name = singleChoice.Name };
+
+						if (!singleChoice.ArtifactGuids.Any() && singleChoice.ArtifactID > 0)
+						{
+							newValue = new Relativity.Client.DTOs.Choice(singleChoice.ArtifactID) {Name = singleChoice.Name};
+						}
+						else if (singleChoice.ArtifactGuids.Any())
+						{
+							newValue = new Relativity.Client.DTOs.Choice(singleChoice.ArtifactGuids.First()) {Name = singleChoice.Name};
+						}
+						else
+						{
+							throw new Exception("Can not determine choice with no artifact id or guid.");
+						}
 					}
 					break;
 				case FieldTypes.SingleObject:
