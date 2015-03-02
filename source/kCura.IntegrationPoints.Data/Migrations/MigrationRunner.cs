@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Data.Migrations
 		public virtual IEnumerable<IMigration> GetMigrations()
 		{
 			yield return new AddWebApiConfigValueMigration(_context);
-			yield return new AddWebApiConfigValueMigration(_context);
+			yield return new UpdateJobErrorsBlankToNo(_context);
 		}
 
 	}

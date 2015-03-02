@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.Data.Migrations
 {
-	public class UpdateJobErrorsBlankToNo
+	public class UpdateJobErrorsBlankToNo : IMigration
 	{	private readonly IEddsDBContext _context;
 	public UpdateJobErrorsBlankToNo(IEddsDBContext context)
 		{
