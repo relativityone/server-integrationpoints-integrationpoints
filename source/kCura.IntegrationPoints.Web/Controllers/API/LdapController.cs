@@ -33,6 +33,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpPost]
 		public IHttpActionResult Decrypt([FromBody] string message)
 		{
+			var decryptedText = this.GetSettings(message);
+			return Ok(decryptedText);
+		}
+
+		private string GetSettings(string message)
+		{
 			var decryptedText = string.Empty;
 			try
 			{
@@ -46,7 +52,22 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				catch (Exception strException) {/*just a regular string so we pass and decrypt it.*/ }
 				decryptedText = _manager.Decrypt(message);
 			}
-			return Ok(decryptedText);
+			return decryptedText;
+		}
+
+		[HttpPost]
+		public IHttpActionResult GetViewFields(object data)
+		{
+			var provider = new LDAPProvider.LDAPProvider();
+			LDAPSettings settings = provider.GetSettings(data.ToString());
+			var result = new List<KeyValuePair<string, string>>();
+			result.Add(new KeyValuePair<string, string>("Connection Path", settings.ConnectionPath));
+			result.Add(new KeyValuePair<string, string>("Object Filter String", settings.Filter));
+			result.Add(new KeyValuePair<string, string>("Authentication", settings.ConnectionAuthenticationType.ToString()));
+			result.Add(new KeyValuePair<string, string>("Username", settings.UserName ?? string.Empty));
+			result.Add(new KeyValuePair<string, string>("Password", "******"));
+			result.Add(new KeyValuePair<string, string>("Import Nested Items", settings.ImportNested.ToString()));
+			return Ok(result);
 		}
 
 	}

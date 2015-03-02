@@ -146,7 +146,8 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 				GUID = x.Key,
 				ApplicationID = base.ApplicationArtifactId,
 				Name = x.Value.Name,
-				Url = x.Value.Url
+				Url = x.Value.Url,
+				ViewDataUrl = x.Value.ViewDataUrl
 			}).ToList();
 
 			ImportService.InstallProviders(sourceProviders);

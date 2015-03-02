@@ -126,5 +126,18 @@
 			});
 			return out;
 		};
+		utils.format = function (strTemp, obj) {
+			var urlFormat = strTemp;
+			if (urlFormat[0] === '/') {
+				urlFormat = urlFormat.slice(1, urlFormat.length);
+			}
+			for (var key in obj) {
+				if (obj.hasOwnProperty(key)) {
+					var regEx = new RegExp('%' + key + '%', "ig")
+					urlFormat = urlFormat.replace(regEx, obj[key]);
+				}
+			}
+			return urlFormat;
+		};
 	})(root.utils || (root.utils = {}));
 })(IP || (IP = {}));
