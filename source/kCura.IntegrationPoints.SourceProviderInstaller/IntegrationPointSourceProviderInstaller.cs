@@ -4,7 +4,9 @@ using System.Linq;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
@@ -62,13 +64,43 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			}
 			set { _eddsContext = value; }
 		}
+		private IntegrationPointQuery _integrationPointQuery;
+		private DeleteHistoryService _deleteHistoryService;
+		private IRSAPIService _service;
 
+		public IntegrationPointQuery IntegrationPoint
+		{
+			get
+			{
+				return _integrationPointQuery ?? (_integrationPointQuery = new IntegrationPointQuery(_service));
+			}
+		}
+
+		public DeleteHistoryService DeleteHistory
+		{
+			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(_service)); }
+		}
+
+		public IRSAPIService Service
+		{
+			get { return _service ?? (new RSAPIService()); }
+		}
+
+		private DeleteIntegrationPoints _deleteIntegrationPoints;
+		internal DeleteIntegrationPoints DeleteIntegrationPoints
+		{
+			get
+			{
+				return _deleteIntegrationPoints ?? (_deleteIntegrationPoints = new DeleteIntegrationPoints(IntegrationPoint, DeleteHistory, Service));
+			}
+			set { _deleteIntegrationPoints = value; }
+		}
 		private IImportService _importService;
 		internal IImportService ImportService
 		{
 			get
 			{
-				return _importService ?? (_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext));
+				return _importService ?? (_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext,DeleteIntegrationPoints));
 			}
 			set { _importService = value; }
 		}
