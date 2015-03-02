@@ -92,6 +92,7 @@
     <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="Extensions\GenericLibraryExtensions.cs" />
     <Compile Include="GetObjectBase.cs" />
+    <Compile Include="IntegrationPointQuery.cs" />
     <Compile Include="IWorkspaceDBContext.cs" />
     <Compile Include="Installers\RSAPIServiceInstaller.cs">
       <DependentUpon>RSAPIServiceInstaller.tt</DependentUpon>
@@ -108,6 +109,7 @@
     <Compile Include="Migrations\AddWebApiConfigValueMigration.cs" />
     <Compile Include="Migrations\IMigration.cs" />
     <Compile Include="Migrations\MigrationRunner.cs" />
+    <Compile Include="Migrations\UpdateJobErrorsBlankToNo.cs" />
     <Compile Include="Models\ApplicationBinary.cs" />
     <Compile Include="PermissionService.cs" />
     <Compile Include="Queries\GetJobCustodianManagerLinks.cs" />
@@ -194,6 +196,7 @@
     <Content Include="Resources\GetApplicationGuid.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
     <Content Include="Resources\GetObjectTypes.sql" />
+    <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
