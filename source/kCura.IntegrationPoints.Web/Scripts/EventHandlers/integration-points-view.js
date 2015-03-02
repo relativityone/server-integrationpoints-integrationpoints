@@ -35,6 +35,8 @@
 	};
 	IP.redirect.set(document.URL);
 
+	IP.config = IP.config || {};
+	IP.config.time = config.time;
 
 	$(function () {
 		var $editButtons = $(":contains('Edit')").closest('a');
@@ -69,39 +71,61 @@ $(window).unload(function () {
 	}
 });
 
+IP.utils.createFields = function ($root, fields) {
+	var $tr = $root.parent('tr');
+	$.each(fields || [], function () {
+		var $newTr = $tr.clone();
+		IP.utils.updateField($newTr, this.key, this.value);
+		$newTr.find('input').attr('id', IP.utils.toCamelCase(this.key)).removeAttr('faartifactid').removeAttr('fafriendlyname');
+		$tr.after($newTr);
+		$tr = $newTr;
+	});
+	$root.parent('tr').hide();
+};
 
-//$(function () {
-//	//Scheduler
-//	var $field = IP.utils.getViewField(1037500).siblings('.dynamicViewFieldValue');
-//	$field.text('');
-//	IP.data.ajax({
-//		url: IP.utils.generateWebAPIURL('IntegrationPointsAPI', IP.artifactid),
-//		type: 'Get'
-//	}).then(function (result) {
-//		result = result.scheduler;
-//		$field.text(result.selectedFrequency);
-//		var $tr = $field.parent('tr');
-//		var $newTr;
+$(function () {
+	//Scheduler
+	var ruleFieldId = IP.params['scheduleRuleId'];
+	var $field = IP.utils.getViewField(ruleFieldId).siblings('.dynamicViewFieldValue');
+	$field.text('');
+	IP.data.ajax({
+		url: IP.utils.generateWebAPIURL('IntegrationPointsAPI', IP.artifactid),
+		type: 'Get'
+	}).then(function (result) {
+		var result = result.scheduler;
 
-//		var obj = {
-//			'Frequency': result.selectedFrequency,
-//			'Start Date': result.startDate,
-//			'End Date': result.endDate,
-//			'Scheduled Time': result.scheduledTime
-//		};
+		var obj = [
+			{ key: 'Frequency', value: result.selectedFrequency },
+			{ key: 'Start Date', value: result.startDate },
+			{ key: 'End Date', value: result.endDate },
+			{ key: 'Scheduled Time (UTC)', value: result.scheduledTime }
+		];
+		IP.utils.createFields($field, obj);
+	}, function () {
+		//TODO: what!?
+		debugger;
+	});
+});
 
-//		for (var k in obj) {
-//			if (obj.hasOwnProperty(k)) {
-//				$newTr = $tr.clone();
-//				$newTr.find('.dynamicViewFieldName').text(k);
-//				$newTr.find('.dynamicViewFieldValue').text(obj[k]);
-//				$tr.after($newTr);
-//			}
-//		}
+$(function () {
 
-//	}, function () {
-//		debugger;
-//	});
+	//source settings
+	var _getSource = function (str) {
+		var d = IP.data.deferred().defer();
+		d.resolve([
+			{ 'key': 'asdf', value: 'f3f3' },
+			{ 'key': 'asdf', value: 'f3f4' }
+		]);
+		return d.promise;
+	};
+	var $field = IP.utils.getViewField(IP.sourceConfiguration).siblings('.dynamicViewFieldValue');
+	var settings = $field.text();
+	$field.text('');
+	_getSource(settings).then(function (result) {
+		IP.utils.createFields($field, result);
+	}, function () {
+		//TODO: what!?
+		debugger;
+	});
 
-
-//});
+});
