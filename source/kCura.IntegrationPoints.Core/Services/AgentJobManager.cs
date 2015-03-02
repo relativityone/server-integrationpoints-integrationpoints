@@ -22,7 +22,8 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			try
 			{
-				string serializedDetails = _serializer.Serialize(jobDetails);
+				string serializedDetails = null;
+				if (jobDetails != null) serializedDetails = _serializer.Serialize(jobDetails);
 				if (rule != null)
 				{
 					_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), rule, serializedDetails, _context.UserID, rootJobID, parentJobID);
@@ -47,7 +48,8 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			try
 			{
-				string serializedDetails = _serializer.Serialize(jobDetails);
+				string serializedDetails = null;
+				if (jobDetails != null) serializedDetails = _serializer.Serialize(jobDetails);
 				_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID, rootJobID, parentJobID);
 			}
 			catch (AgentNotFoundException anfe)

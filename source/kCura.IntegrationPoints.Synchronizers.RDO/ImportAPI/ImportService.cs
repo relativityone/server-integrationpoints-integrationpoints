@@ -5,10 +5,11 @@ using System.Reflection;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
+using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
-	public class ImportService : IImportService
+	public class ImportService : IImportService, IBatchReporter
 	{
 		private IImportAPI _importAPI;
 		private BatchManager _batchManager;

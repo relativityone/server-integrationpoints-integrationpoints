@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Conversion;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -23,6 +24,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		internal IDataSyncronizerFactory _dataSyncronizerFactory;
 		internal IDataProviderFactory _dataProviderFactory;
 		internal kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
+		internal JobHistoryService _jobHistoryService;
+		internal JobHistoryErrorService _jobHistoryErrorService;
 		internal GeneralWithCustodianRdoSynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
 		internal IJobManager _jobManager;
 		public SyncWorker(ICaseServiceContext caseServiceContext,
@@ -30,6 +33,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 											IDataProviderFactory dataProviderFactory,
 											kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 											GeneralWithCustodianRdoSynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+											JobHistoryService jobHistoryService,
+											JobHistoryErrorService jobHistoryErrorService,
 											IJobManager jobManager)
 		{
 			_caseServiceContext = caseServiceContext;
@@ -37,8 +42,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_dataProviderFactory = dataProviderFactory;
 			_serializer = serializer;
 			_appDomainRdoSynchronizerFactoryFactory = appDomainRdoSynchronizerFactoryFactory;
+			_jobHistoryService = jobHistoryService;
+			_jobHistoryErrorService = jobHistoryErrorService;
 			_jobManager = jobManager;
 		}
+
+		internal Data.IntegrationPoint IntegrationPoint { get; set; }
+		internal Data.JobHistory JobHistory { get; set; }
+		internal Guid BatchInstance { get; set; }
 
 		public void Execute(Job job)
 		{
@@ -47,48 +58,65 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		internal virtual void ExecuteTask(Job job)
 		{
-			IntegrationPoint rdoIntegrationPoint = null;
 			try
 			{
-				int integrationPointID = job.RelatedObjectArtifactID;
-				rdoIntegrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
-				if (rdoIntegrationPoint == null)
-				{
-					throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
-				}
-				if (rdoIntegrationPoint.SourceProvider.GetValueOrDefault(0) == 0)
+				GetIntegrationPointRDO(job);
+
+				List<string> entryIDs = GetEntryIDs(job);
+
+				GetJobHistoryRDO();
+
+				if (this.IntegrationPoint.SourceProvider.GetValueOrDefault(0) == 0)
 				{
 					throw new ArgumentException("Cannot import source provider with unknown id.");
 				}
-
-				if (rdoIntegrationPoint.DestinationProvider.GetValueOrDefault(0) == 0)
+				if (this.IntegrationPoint.DestinationProvider.GetValueOrDefault(0) == 0)
 				{
 					throw new ArgumentException("Cannot import destination provider with unknown id.");
 				}
-				List<string> entryIDs = GetEntryIDs(job);
-				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(rdoIntegrationPoint.SourceProvider.Value);
-				Data.DestinationProvider destinationProvider = _caseServiceContext.RsapiService.DestinationProviderLibrary.Read(rdoIntegrationPoint.DestinationProvider.Value);
-				IEnumerable<FieldMap> fieldMap = GetFieldMap(rdoIntegrationPoint.FieldMappings);
-				string sourceConfiguration = GetSourceConfiguration(rdoIntegrationPoint.SourceConfiguration);
-				ExecuteImport(fieldMap, sourceConfiguration, rdoIntegrationPoint.DestinationConfiguration, entryIDs,
+				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
+				Data.DestinationProvider destinationProvider = _caseServiceContext.RsapiService.DestinationProviderLibrary.Read(this.IntegrationPoint.DestinationProvider.Value);
+				IEnumerable<FieldMap> fieldMap = GetFieldMap(this.IntegrationPoint.FieldMappings);
+				string sourceConfiguration = GetSourceConfiguration(this.IntegrationPoint.SourceConfiguration);
+
+				ExecuteImport(fieldMap, sourceConfiguration, this.IntegrationPoint.DestinationConfiguration, entryIDs,
 					sourceProviderRdo, destinationProvider, job);
 			}
-			catch
+			catch (Exception ex)
 			{
-				throw;
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 			}
 			finally
 			{
 				//rdo last run and next scheduled time will be updated in Manager job
+				_jobHistoryErrorService.CommitErrors();
 			}
+		}
+
+		internal void GetIntegrationPointRDO(Job job)
+		{
+			if (this.IntegrationPoint != null) return;
+
+			int integrationPointID = job.RelatedObjectArtifactID;
+			this.IntegrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
+			if (this.IntegrationPoint == null)
+			{
+				throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
+			}
+		}
+
+		internal void GetJobHistoryRDO()
+		{
+			if (this.JobHistory != null) return;
+
+			this.JobHistory = _jobHistoryService.CreateRDO(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
+			_jobHistoryErrorService.JobHistory = this.JobHistory;
 		}
 
 		internal virtual string GetSourceConfiguration(string originalSourceConfiguration)
 		{
 			return originalSourceConfiguration;
 		}
-
-		internal Guid BatchInstance { get; set; }
 
 		internal virtual List<string> GetEntryIDs(Job job)
 		{
@@ -128,6 +156,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
 
 			IDataSynchronizer dataSyncronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+
+			_jobHistoryErrorService.SubscribeToBatchReporterEvents(dataSyncronizer);
 
 			dataSyncronizer.SyncData(sourceData, fieldMap, destinationConfiguration);
 		}

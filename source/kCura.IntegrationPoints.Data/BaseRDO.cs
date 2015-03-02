@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.Data
 					{
 						foreach (var choice in choices)
 						{
-							var choiceDto = new Relativity.Client.DTOs.Choice(choice.ArtifactID) { Name = choice.Name };
+							var choiceDto = new Relativity.Client.DTOs.Choice(choice.ArtifactGuids.First()) { Name = choice.Name };
 							multiChoices.Add(choiceDto);
 						}
 						newValue = multiChoices;
@@ -116,7 +116,14 @@ namespace kCura.IntegrationPoints.Data
 					if (value is Choice)
 					{
 						singleChoice = (Choice)value;
-						newValue = new Relativity.Client.DTOs.Choice(singleChoice.ArtifactID) { Name = singleChoice.Name };
+						newValue = new Relativity.Client.DTOs.Choice(singleChoice.ArtifactGuids.First()) { Name = singleChoice.Name };
+					}
+					break;
+				case FieldTypes.SingleObject:
+					if (value is int)
+					{
+						RDO obj = new RDO((int)value);
+						newValue = obj;
 					}
 					break;
 				case FieldTypes.MultipleObject:
@@ -169,7 +176,24 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 
-		public int? ParentArtifactId { get; set; }
+		public int? ParentArtifactId
+		{
+			get
+			{
+				if (this.Rdo.ParentArtifact != null)
+				{
+					return this.Rdo.ParentArtifact.ArtifactID;
+				}
+				return null;
+			}
+			set
+			{
+				if (value.HasValue)
+				{
+					this.Rdo.ParentArtifact = new kCura.Relativity.Client.DTOs.Artifact(value.Value);
+				}
+			}
+		}
 		public abstract Dictionary<Guid, DynamicFieldAttribute> FieldMetadata { get; }
 		public abstract DynamicObjectAttribute ObjectMetadata { get; }
 	}

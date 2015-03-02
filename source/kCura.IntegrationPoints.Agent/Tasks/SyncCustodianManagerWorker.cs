@@ -5,6 +5,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -28,11 +29,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 										IDataProviderFactory dataProviderFactory,
 										kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 										GeneralWithCustodianRdoSynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+										JobHistoryService jobHistoryService,
+										JobHistoryErrorService jobHistoryErrorService,
 										IJobManager jobManager,
 										IRSAPIClient workspaceRsapiClient,
 										ManagerQueueService managerQueueService)
 			: base(caseServiceContext, dataSyncronizerFactory, dataProviderFactory, serializer,
-			appDomainRdoSynchronizerFactoryFactory, jobManager)
+			appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager)
 		{
 			_workspaceRsapiClient = workspaceRsapiClient;
 			_managerQueueService = managerQueueService;
@@ -54,6 +57,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				//get all job parameters
 				GetParameters(job);
+
+				base.GetIntegrationPointRDO(job);
+
+				base.GetJobHistoryRDO();
 
 				//update common queue for this job using passed Custodian/Manager links and get the next unprocessed links
 				_custodianManagerMap = _managerQueueService.GetCustodianManagerLinksToProcess(job, this.BatchInstance, _custodianManagerMap);
@@ -96,6 +103,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					(x.SourceField.FieldIdentifier.Equals(fieldEntryCustodianIdentifier.FieldIdentifier) ||
 					 x.SourceField.FieldIdentifier.Equals(fieldEntryManagerIdentifier.FieldIdentifier)));
 				IDataSynchronizer dataSyncronizer = base.GetDestinationProvider(_destinationProviderRdo, newDestinationConfiguration, job);
+				base._jobHistoryErrorService.SubscribeToBatchReporterEvents(dataSyncronizer);
 				dataSyncronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration);
 
 				if (missingManagers.Any())
@@ -104,20 +112,21 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						string.Join("; ", missingManagers.ToArray())));
 				}
 			}
-			catch
+			catch(Exception ex)
 			{
-				throw;
+				base._jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 			}
 			finally
 			{
 				//rdo last run and next scheduled time will be updated in Manager job
+				base._jobHistoryErrorService.CommitErrors();
 			}
 		}
 
 		private string ReconfigureImportAPISettings(int custodianManagerFieldArtifactID)
 		{
 			ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(_destinationConfiguration);
-			importSettings.ObjectFieldIdListContainsArtifactId = new int[] {custodianManagerFieldArtifactID};
+			importSettings.ObjectFieldIdListContainsArtifactId = new int[] { custodianManagerFieldArtifactID };
 			importSettings.ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly;
 			importSettings.CustodianManagerFieldContainsLink = false;
 			string newDestinationConfiguration = JsonConvert.SerializeObject(importSettings);

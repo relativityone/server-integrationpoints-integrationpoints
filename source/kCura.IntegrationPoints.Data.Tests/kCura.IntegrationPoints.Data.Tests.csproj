@@ -101,7 +101,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Integration\Migration\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +108,7 @@
     <Compile Include="IntegrationTestAttribute.cs" />
     <Compile Include="Integration\IntegrationPointQueryTest.cs" />
     <Compile Include="Integration\PermissionServiceIntegrationTest.cs" />
+    <Compile Include="Integration\Queries\GetRecentJobHistoryTests.cs" />
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />
     <Compile Include="Unit\BaseRDOTests.cs" />
     <Compile Include="MockDBContext.cs" />
