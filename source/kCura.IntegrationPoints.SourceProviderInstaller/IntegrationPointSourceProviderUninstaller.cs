@@ -6,16 +6,18 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
+using kCura.Relativity.Client;
+using Relativity.API;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller 
+namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
 	/// <summary>
-    /// Occurs immediately before the execution of a Pre Uninstall event handler.
+	/// Occurs immediately before the execution of a Pre Uninstall event handler.
 	/// </summary>
 	public delegate void PreUninstallPreExecuteEvent();
 
 	/// <summary>
-    /// Occurs after the source provider is removed from the database table.
+	/// Occurs after the source provider is removed from the database table.
 	/// </summary>
 	/// <param name="isUninstalled"></param>
 	/// <param name="ex"></param>
@@ -48,7 +50,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			return _workspaceDbContext ??
 						 (_workspaceDbContext = new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID())));
 		}
-		
+
 		private ICaseServiceContext _caseContext;
 		internal ICaseServiceContext CaseServiceContext
 		{
@@ -58,26 +60,26 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			}
 			set { _caseContext = value; }
 		}
-		private  IntegrationPointQuery _integrationPointQuery;
-		private  DeleteHistoryService _deleteHistoryService;
-		private  IRSAPIService _service;
+		private IntegrationPointQuery _integrationPointQuery;
+		private DeleteHistoryService _deleteHistoryService;
+		private IRSAPIService _service;
 
 		public IntegrationPointQuery IntegrationPoint
 		{
 			get
 			{
-				return _integrationPointQuery ?? (_integrationPointQuery = new IntegrationPointQuery(_service));
+				return _integrationPointQuery ?? (_integrationPointQuery = new IntegrationPointQuery(Service));
 			}
 		}
 
 		public DeleteHistoryService DeleteHistory
 		{
-			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(_service)); }
+			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(Service)); }
 		}
 
 		public IRSAPIService Service
 		{
-			get { return _service ?? (new RSAPIService()); }
+			get { return _service ?? (_service = new RSAPIService(base.Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))); }
 		}
 
 		private DeleteIntegrationPoints _deleteIntegrationPoints;
@@ -85,7 +87,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		{
 			get
 			{
-				return _deleteIntegrationPoints ?? (_deleteIntegrationPoints = new DeleteIntegrationPoints(IntegrationPoint,DeleteHistory,Service));
+				return _deleteIntegrationPoints ?? (_deleteIntegrationPoints = new DeleteIntegrationPoints(IntegrationPoint, DeleteHistory, Service));
 			}
 			set { _deleteIntegrationPoints = value; }
 		}
@@ -105,16 +107,16 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		{
 			get
 			{
-				return _importService ?? (_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext,this.DeleteIntegrationPoints));
+				return _importService ?? (_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext, this.DeleteIntegrationPoints));
 			}
 			set { _importService = value; }
 		}
 
 		/// <summary>
-        /// Runs when the event handler is called during the removal of the data source provider.
+		/// Runs when the event handler is called during the removal of the data source provider.
 		/// </summary>
-        /// <returns>An object of type Response, which frequently contains a message.</returns>
-        public override sealed Response Execute()
+		/// <returns>An object of type Response, which frequently contains a message.</returns>
+		public override sealed Response Execute()
 		{
 			bool isSuccess = false;
 			Exception ex = null;
@@ -123,7 +125,6 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 				OnRaisePreUninstallPreExecuteEvent();
 				UninstallSourceProvider();
 				isSuccess = true;
-				var id = this.ApplicationArtifactId;
 			}
 			catch (Exception e)
 			{
