@@ -15,7 +15,7 @@
 | ${IntegrationPoint1}	| Integration Point 1	| # Enable Scheduler is set to No
 | ${IntegrationPoint2}	| Integration Point 2	| # Daily Schedule
 | ${ConnectionPath}		| testing.corp/CN=Users,DC=testing,DC=corp
-| ${ObjectFilterString}	| (objectClass=*)
+| ${ObjectFilterString}	| (department=*)
 | ${Authentication}		| FastBind
 | ${ConnectionUsername}	| testing\\administrator
 | ${ConnectionPassword}	| P@ssw0rd@1
@@ -64,7 +64,7 @@
 | The correct Fields are present when Enable Scheduler is set to No
 | | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to No.
 | | ...				| [id] 1180fd12-a89f-11e4-a95c-b8ca3a83048f
-| | [Tags]			| manual	| field_placement
+| | [Tags]			| manual	| partially_automated	| field_placement
 | | Run the following manual steps:
 | | ... | Expected Results:
 | | ... | 1. Verify that the "General" Category has the following fields in order:	| 
@@ -95,7 +95,7 @@
 | The correct Fields are present when Enable Scheduler is set to Yes
 | | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes.
 | | ...				| [id] 11817242-a89f-11e4-82d7-b8ca3a83048f
-| | [Tags]			| manual	| field_placement
+| | [Tags]			| manual	| partially_automated	| field_placement
 | | [Setup]			| View Integration Point	| ${IntegrationPoint2}
 | | Run the following manual steps:
 | | ... | Expected Results:
@@ -122,6 +122,34 @@
 | | ... | - Username				| 
 | | ... | - Password				| 
 | | ... | - Import Nested Items
+
+
+| The Password Field shows six asterixes when not populated
+| | [Documentation]	| Verify that the Password field in the Source Connection Category is shown as "******" when no value was entered during creation.
+| | [Tags]			| untested
+| | [Setup]			| View Integration Point	| ${IntegrationPoint2}
+| | Verify the current layout has fields with the following values	| Password	| ******
+
+
+| The Password Field shows six asterixes when populated
+| | [Documentation]	| Verify that the Password field in the Source Connection Category is shown as "******" when a value was entered during creation.
+| | [Tags]			| untested
+| | [Setup]			| View Integration Point	| ${IntegrationPoint1}
+| | Verify the current layout has fields with the following values	| Password	| ******
+
+
+| The Object Filter String Field shows (objectClass=*) when not populated
+| | [Documentation]	| Verify that the Object Filter String field in the Source Connection Category is shown as "(objectClass=*)" when no value was entered during creation.
+| | [Tags]			| untested
+| | [Setup]			| View Integration Point	| ${IntegrationPoint2}
+| | Verify the current layout has fields with the following values	| Object Filter String	| (objectClass=*)
+
+
+| The Object Filter String Field shows the correct value when populated
+| | [Documentation]	| Verify that the Object Filter String field in the Source Connection Category is shown as the value that was entered during creation.
+| | [Tags]			| untested
+| | [Setup]			| View Integration Point	| ${IntegrationPoint1}
+| | Verify the current layout has fields with the following values	| Object Filter String	| ${ObjectFilterString}
 
 
 *** Keywords ***
@@ -181,6 +209,14 @@
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 
 # --------------------------------------------------------------------------------------------------------
+
+| | @{Step2Fields}=		| Create List	| 
+| | ... | ${ConnectionPath}		| 
+| | ... | ${EMPTY}				| 
+| | ... | ${Authentication}		| 
+| | ... | ${EMPTY}				| 
+| | ... | ${EMPTY}				| 
+| | ... | ${ImportNestedItems}
 
 | | @{Step1Fields}=	| Create List	| 
 | | ... | ${IntegrationPoint2}	| 
