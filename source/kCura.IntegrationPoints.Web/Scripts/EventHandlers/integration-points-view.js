@@ -86,6 +86,25 @@ IP.utils.createFields = function ($root, fields) {
 
 $(function () {
 	//Scheduler
+	var dayLookUp = {
+		'1': 'first',
+		'2': 'second',
+		'3': 'third',
+		'4': 'fourth',
+		'5': 'last'
+	};
+	var dayOfMonthLookup = {
+		'1': 'Monday',
+		'2': 'Tuesday',
+		'4': 'Wednesday',
+		'8': 'Thursday',
+		'16': 'Friday',
+		'32': 'Saturday',
+		'64': 'Sunday',
+		'128': 'day'
+
+	};
+
 	var ruleFieldId = IP.params['scheduleRuleId'];
 	var $field = IP.utils.getViewField(ruleFieldId).siblings('.dynamicViewFieldValue');
 	$field.text('');
@@ -93,17 +112,37 @@ $(function () {
 		url: IP.utils.generateWebAPIURL('IntegrationPointsAPI', IP.artifactid),
 		type: 'Get'
 	}).then(function (result) {
-		var result = result.scheduler;
+		var result = result.scheduler || {};
+		var sendOn;
 		var obj = [
-			{ key: 'Frequency', value: result.selectedFrequency },
-			{ key: 'Start Date', value: result.startDate },
-			{ key: 'End Date', value: result.endDate },
-			{ key: 'Scheduled Time (UTC)', value: IP.timeUtil.utcToAmPm(result.scheduledTime) }
+			{ key: 'Frequency', value: result.selectedFrequency || '' }
 		];
+
+		if (result.selectedFrequency === "Weekly") {
+			obj.push({ 'key': 'Reoccur', value: 'Every ' + result.reoccur + ' week(s).' });
+			sendOn = '<ul style="list-style-type: none; padding: 0; margin: 0;">';
+			$.each(JSON.parse(result.sendOn).selectedDays || [], function(){
+				sendOn+= '<li>'+this + '</li>';
+			});
+			sendOn += '</ul>';
+			obj.push({ 'key': 'Send On', value: sendOn });
+		}
+		else if (result.selectedFrequency === "Monthly") {
+			sendOn = JSON.parse(result.sendOn);
+			obj.push({ 'key': 'Reoccur', value: 'Every ' + result.reoccur + ' month(s).' });
+			
+			if (sendOn.monthChoice === 1) {
+				obj.push({ key: 'Send On', value: 'The ' + dayLookUp[sendOn.selectedType] + ' ' + dayOfMonthLookup[sendOn.selectedDayOfTheMonth] + ' of the Month.' });
+			} else if (sendOn.monthChoice == 2) {
+				obj.push({ key: 'Send On', value: 'Day ' + sendOn.selectedDay + ' of the Month.'});
+			}
+		}
+		obj.push({ key: 'Start Date', value: result.startDate || '' });
+		obj.push({ key: 'End Date', value: result.endDate || '' });
+		obj.push({ key: 'Scheduled Time (UTC)', value: IP.timeUtil.utcToAmPm(result.scheduledTime || '') });
 		IP.utils.createFields($field, obj);
 	}, function () {
-		//TODO: what!?
-		debugger;
+		$field.text('There was an error retreving the scheduling information.');
 	});
 });
 
@@ -117,7 +156,6 @@ $(function () {
 	//source settings
 	var _getSource = function (str) {
 		var d = IP.data.deferred().defer();
-		
 		var appID = IP.utils.getParameterByName('AppID', window.top);
 		var artifactID = IP.artifactid;
 		var obj = {
@@ -128,22 +166,24 @@ $(function () {
 		var url = IP.utils.format(IP.params['sourceUrl'], obj);
 		IP.data.ajax({
 			url: url,
-			data: str,
+			data: JSON.stringify(str),
 			type: 'post'
 		}).then(function (result) {
 			d.resolve(result);
+		}, function (r) {
+			d.reject(r);
 		});
 
 		return d.promise;
 	};
+
 	var $field = IP.utils.getViewField(IP.sourceConfiguration).siblings('.dynamicViewFieldValue');
 	var settings = $field.text();
 	$field.text('');
 	_getSource(settings).then(function (result) {
 		IP.utils.createFields($field, result);
 	}, function () {
-		//TODO: what!?
-		debugger;
+		$field.text('There was an error retrieving the source configuration.');
 	});
 
 });
