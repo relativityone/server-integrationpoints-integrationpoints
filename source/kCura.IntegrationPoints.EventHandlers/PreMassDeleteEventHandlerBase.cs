@@ -9,7 +9,7 @@ using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.EventHandlers
 {
-public abstract class PreMassDeleteEventHandlerBase : PreMassDeleteEventHandler
+	public abstract class PreMassDeleteEventHandlerBase :  PreMassDeleteEventHandler
 	{
 	private IWorkspaceDBContext _workspaceDbContext;
 		public IWorkspaceDBContext GetWorkspaceDbContext()

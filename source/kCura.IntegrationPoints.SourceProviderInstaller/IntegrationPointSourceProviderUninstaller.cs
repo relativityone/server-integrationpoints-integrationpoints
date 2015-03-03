@@ -2,10 +2,12 @@
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 
-namespace kCura.IntegrationPoints.SourceProviderInstaller
+namespace kCura.IntegrationPoints.SourceProviderInstaller 
 {
 	/// <summary>
     /// Occurs immediately before the execution of a Pre Uninstall event handler.
@@ -40,7 +42,13 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		protected IntegrationPointSourceProviderUninstaller()
 		{
 		}
-
+		private IWorkspaceDBContext _workspaceDbContext;
+		public IWorkspaceDBContext GetWorkspaceDbContext()
+		{
+			return _workspaceDbContext ??
+						 (_workspaceDbContext = new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID())));
+		}
+		
 		private ICaseServiceContext _caseContext;
 		internal ICaseServiceContext CaseServiceContext
 		{
@@ -49,6 +57,37 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 				return _caseContext ?? (_caseContext = ServiceContextFactory.CreateCaseServiceContext(base.Helper, base.Helper.GetActiveCaseID()));
 			}
 			set { _caseContext = value; }
+		}
+		private  IntegrationPointQuery _integrationPointQuery;
+		private  DeleteHistoryService _deleteHistoryService;
+		private  IRSAPIService _service;
+
+		public IntegrationPointQuery IntegrationPoint
+		{
+			get
+			{
+				return _integrationPointQuery ?? (_integrationPointQuery = new IntegrationPointQuery(_service));
+			}
+		}
+
+		public DeleteHistoryService DeleteHistory
+		{
+			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(_service)); }
+		}
+
+		public IRSAPIService Service
+		{
+			get { return _service ?? (new RSAPIService()); }
+		}
+
+		private DeleteIntegrationPoints _deleteIntegrationPoints;
+		internal DeleteIntegrationPoints DeleteIntegrationPoints
+		{
+			get
+			{
+				return _deleteIntegrationPoints ?? (_deleteIntegrationPoints = new DeleteIntegrationPoints(IntegrationPoint,DeleteHistory,Service));
+			}
+			set { _deleteIntegrationPoints = value; }
 		}
 
 		private IEddsServiceContext _eddsContext;
@@ -66,7 +105,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		{
 			get
 			{
-				return _importService ?? (_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext));
+				return _importService ?? (_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext,this.DeleteIntegrationPoints));
 			}
 			set { _importService = value; }
 		}
@@ -84,6 +123,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 				OnRaisePreUninstallPreExecuteEvent();
 				UninstallSourceProvider();
 				isSuccess = true;
+				var id = this.ApplicationArtifactId;
 			}
 			catch (Exception e)
 			{

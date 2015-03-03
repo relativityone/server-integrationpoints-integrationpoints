@@ -8,10 +8,12 @@ namespace kCura.IntegrationPoints.Data.Migrations
 {
 	public class MigrationRunner
 	{
-		private readonly IEddsDBContext _context;
-		public MigrationRunner(IEddsDBContext context)
+		private readonly IEddsDBContext _eddsContext;
+		private readonly IWorkspaceDBContext _workspaceContext;
+		public MigrationRunner(IEddsDBContext eddsContext,IWorkspaceDBContext workspaceContext)
 		{
-			_context = context;
+			_eddsContext = eddsContext;
+			_workspaceContext = workspaceContext;
 		}
 		public void Run()
 		{
@@ -23,7 +25,8 @@ namespace kCura.IntegrationPoints.Data.Migrations
 
 		public virtual IEnumerable<IMigration> GetMigrations()
 		{
-			yield return new AddWebApiConfigValueMigration(_context);
+			yield return new AddWebApiConfigValueMigration(_eddsContext);
+			yield return new UpdateJobErrorsBlankToNo(_workspaceContext);
 		}
 
 	}

@@ -51,7 +51,7 @@
 				var timeSplit = time.split(':');
 				
 				if ((timeSplit[0] - 12) >= 1) {
-					result.scheduler.scheduledTime = timeSplit[0] - 12 + ":" + timeSplit[1];
+					result.scheduler.scheduledTime = timeSplit[0] - 11 + ":" + timeSplit[1];
 					result.scheduler.selectedTimeFormat='PM';
 				} else {
 					result.scheduler.scheduledTime = timeSplit[0] + ":" + timeSplit[1];
@@ -90,14 +90,16 @@
 		IP.messaging.subscribe('save', function () {
 			_next().then(function (result) {
 				if (result.scheduler && result.scheduler.scheduledTime) {
-					
+					var timeSplit = result.scheduler.scheduledTime.split(':');
+					var time = result.scheduler.scheduledTime; 
 					if (result.scheduler.selectedTimeFormat == "AM") {
-						result.scheduler.scheduledTime = helper.timeLocalToUtc(result.scheduler.scheduledTime);
+						result.scheduler.scheduledTime = timeSplit[0] == 12 ? helper.timeLocalToUtc(0+':'+timeSplit[1]) : helper.timeLocalToUtc(time);
 					} else {
-						var timeSplit = result.scheduler.scheduledTime.split(':');
+						
 						var hour = parseInt(timeSplit[0]) + 12;
 						result.scheduler.scheduledTime = helper.timeLocalToUtc(hour+':'+timeSplit[1]);
 					}
+					
 				}
 				IP.messaging.publish('saveComplete', result);
 			}, function (error) {
@@ -109,7 +111,7 @@
 		IP.messaging.subscribe('saveComplete', function (model) {
 			IP.data.ajax({ type: 'POST', url: IP.utils.generateWebAPIURL('IntegrationPointsAPI'), data: JSON.stringify(model) }).then(function (result) {
 				//redirect to page!!
-				var prefix = window.top.location.protocol + "//" + window.top.location.host + '/';
+				var prefix = window.top.location.protocol + "//" + window.top.location.host;
 				window.top.location = prefix + result.returnURL;
 			}, function (error) {
 				IP.message.error.raise(error);

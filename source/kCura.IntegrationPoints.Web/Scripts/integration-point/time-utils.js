@@ -20,6 +20,33 @@ IP.timeUtil = (function () {
 		}
 		return inDateMod.toString(dateFormat);
 	}
+	function utcToTime(time) {
+		if (time === '') {
+			return '';
+		}
+		var timeSplit = time.split(':');
+		
+		if (timeSplit[0] < 13) {
+			timeSplit[0] = timeSplit[0].length == 1 ? "0" + timeSplit[0] : timeSplit[0];
+			return timeSplit.join(':') + " AM";
+		}
+		timeSplit[0] = parseInt(timeSplit[0]) - 12;
+		timeSplit[0] = timeSplit[0].length == 1 ? "0" + timeSplit[0] : timeSplit[0];
+		return timeSplit.join(':') + " PM";
+	}
+	function utcToLocalAmPm(time) {
+		
+		var scheduleTime = "";
+		var timeSplit = utcToLocal(time.split(':'), "HH:mm").split(':');
+		if ((timeSplit[0] - 12) >= 1) {
+			scheduleTime = timeSplit[0] - 12 + ":" + timeSplit[1] + " PM";
+		} else {
+			scheduleTime = (timeSplit[0].length==2)  + ":" + timeSplit[1] + ' AM';
+		}
+		return scheduleTime;
+	}
+
+	
 
 	function timeUtcToLocal(time, timeFormat) {
 
@@ -57,7 +84,9 @@ IP.timeUtil = (function () {
 	return {
 		utcToLocal: utcToLocal,
 		timeLocalToUtc: timeLocalToUtc,
-		utcDateToLocal: _noOp
+		utcDateToLocal: _noOp,
+		utcToAmPm: utcToTime,
+		utcToLocalAmPm : utcToLocalAmPm
 	};
 
 }());

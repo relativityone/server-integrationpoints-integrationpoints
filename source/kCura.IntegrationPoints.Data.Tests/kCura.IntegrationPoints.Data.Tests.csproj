@@ -106,6 +106,7 @@
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="IntegrationTestAttribute.cs" />
+    <Compile Include="Integration\IntegrationPointQueryTest.cs" />
     <Compile Include="Integration\PermissionServiceIntegrationTest.cs" />
     <Compile Include="Integration\Queries\GetRecentJobHistoryTests.cs" />
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />

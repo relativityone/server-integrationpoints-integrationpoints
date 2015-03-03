@@ -22,6 +22,13 @@ defaults: new { controller = "ldap", action = "Encrypt" }
 );
 
 			config.Routes.MapHttpRoute(
+				name: "LDAPViewSettings",
+				routeTemplate: "{workspaceID}/api/ldap/view",
+				defaults: new { controller = "ldap", action = "GetViewFields" }
+		);
+
+
+			config.Routes.MapHttpRoute(
 					name: "DefaultApi",
 					routeTemplate: "{workspaceID}/api/{controller}/{id}",
 					defaults: new { id = RouteParameter.Optional }
