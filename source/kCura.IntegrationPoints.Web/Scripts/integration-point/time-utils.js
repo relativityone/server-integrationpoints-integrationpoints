@@ -25,13 +25,15 @@ IP.timeUtil = (function () {
 			return '';
 		}
 		var timeSplit = time.split(':');
-		
+		debugger;
 		if (timeSplit[0] < 13) {
-			timeSplit[0] = timeSplit[0].length == 1 ? "0" + timeSplit[0] : timeSplit[0];
+			timeSplit[0] = timeSplit[0] < 10 ? "0" + timeSplit[0] : timeSplit[0];
+			timeSplit[1] = timeSplit[1] < 10 ? "0" + timeSplit[1]  : timeSplit[1];
 			return timeSplit.join(':') + " AM";
 		}
 		timeSplit[0] = parseInt(timeSplit[0]) - 12;
-		timeSplit[0] = timeSplit[0].length == 1 ? "0" + timeSplit[0] : timeSplit[0];
+		timeSplit[0] = timeSplit[0] < 10 ? "0" + timeSplit[0] : timeSplit[0];
+		timeSplit[1] = timeSplit[1] < 10 ? "0" + timeSplit[1]  : timeSplit[1];
 		return timeSplit.join(':') + " PM";
 	}
 	function utcToLocalAmPm(time) {
