@@ -68,6 +68,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				GetJobHistoryRDO();
 
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
+
 				if (this.IntegrationPoint.SourceProvider.GetValueOrDefault(0) == 0)
 				{
 					throw new ArgumentException("Cannot import source provider with unknown id.");

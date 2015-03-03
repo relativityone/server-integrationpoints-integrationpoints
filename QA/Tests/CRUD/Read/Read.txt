@@ -14,6 +14,8 @@
 | ${WorkspaceName}		| LDAP Sync
 | ${IntegrationPoint1}	| Integration Point 1	| # Enable Scheduler is set to No
 | ${IntegrationPoint2}	| Integration Point 2	| # Daily Schedule
+| ${IntegrationPoint2}	| Integration Point 3	| # Weekly Schedule
+| ${IntegrationPoint2}	| Integration Point 4	| # Monthly Schedule
 | ${ConnectionPath}		| testing.corp/CN=Users,DC=testing,DC=corp
 | ${ObjectFilterString}	| (department=*)
 | ${Authentication}		| FastBind
@@ -80,6 +82,8 @@
 | | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
 | | ... | - Enable Scheduler	|
 | | ... | - Frequency			| 
+| | ... | -	Reoccur				| 
+| | ... | -	Send On				| 
 | | ... | - Start Date			| 
 | | ... | - End Date			| 
 | | ... | - Scheduled Time (UTC)
@@ -92,8 +96,8 @@
 | | ... | - Import Nested Items
 
 
-| The correct Fields are present when Enable Scheduler is set to Yes
-| | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes.
+| The correct Fields are present when Frequency is set to Daily
+| | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes and Frequency is set to Daily.
 | | ...				| [id] 11817242-a89f-11e4-82d7-b8ca3a83048f
 | | [Tags]			| manual	| partially_automated	| field_placement
 | | [Setup]			| View Integration Point	| ${IntegrationPoint2}
@@ -112,6 +116,136 @@
 | | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
 | | ... | - Enable Scheduler	|
 | | ... | - Frequency			| 
+| | ... | -	Reoccur				| 
+| | ... | -	Send On				| 
+| | ... | - Start Date			| 
+| | ... | - End Date			| 
+| | ... | - Scheduled Time (UTC)
+| | ... | 4. Verify that the "Source Connection" Category has the following fields in order:	| 
+| | ... | - Connection Path			| 
+| | ... | - Object Filter String	| 
+| | ... | - Authentication			| 
+| | ... | - Username				| 
+| | ... | - Password				| 
+| | ... | - Import Nested Items
+
+
+| The correct Fields are present when Frequency is set to Weekly
+| | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes and Frequency is set to Weekly.
+| | [Tags]			| manual	| partially_automated	| field_placement
+| | @{Step1Fields}=	| Create List	| 
+| | ... | ${IntegrationPoint3}	| 
+| | ... | Append/Overlay		| 
+| | ... | LDAP					| 
+| | ... | Custodian				| 
+| | ... | Yes					| 
+| | ... | Weekly				| 
+| | ... | 3						| 
+| | ... | Monday; Friday		| 
+| | ... | 2/10/2025				| 
+| | ... | 2/18/2025				| 
+| | ... | 12:30 PM
+
+| | @{Step2Fields}=		| Create List	| 
+| | ... | ${ConnectionPath}		| 
+| | ... | ${ObjectFilterString}	| 
+| | ... | ${Authentication}		| 
+| | ... | ${ConnectionUsername}	| 
+| | ... | ${ConnectionPassword}	| 
+| | ... | ${ImportNestedItems}
+
+| | @{Step3Mapping}=	| Create List	| 
+| | ... | Email			| mail			| 
+| | ... | Department	| countrycode	| 
+| | ... | First Name	| givenname		| 
+| | ... | Last Name		| sn			| 
+| | ... | UniqueID		| objectguid
+
+| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+
+| | View Integration Point	| ${IntegrationPoint3}
+
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | 1. Verify that the "General" Category has the following fields in order:	| 
+| | ... | - Name			| 
+| | ... | - Overwrite		| 
+| | ... | - Source Provider	| 
+| | ... | - Destination RDO	| 
+| | ... | - Log Errors
+| | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
+| | ... | - Job Status						|
+| | ... | - Next Scheduled Runtime (UTC)	| 
+| | ... | - Last Runtime (UTC)
+| | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
+| | ... | - Enable Scheduler	|
+| | ... | - Frequency			| 
+| | ... | -	Reoccur				| 
+| | ... | -	Send On				| 
+| | ... | - Start Date			| 
+| | ... | - End Date			| 
+| | ... | - Scheduled Time (UTC)
+| | ... | 4. Verify that the "Source Connection" Category has the following fields in order:	| 
+| | ... | - Connection Path			| 
+| | ... | - Object Filter String	| 
+| | ... | - Authentication			| 
+| | ... | - Username				| 
+| | ... | - Password				| 
+| | ... | - Import Nested Items
+
+
+| The correct Fields are present when Frequency is set to Monthly
+| | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes and Frequency is set to Mothly.
+| | [Tags]			| manual	| partially_automated	| field_placement
+| | @{Step1Fields}=	| Create List	| 
+| | ... | ${IntegrationPoint4}	| 
+| | ... | Append/Overlay		| 
+| | ... | LDAP					| 
+| | ... | Custodian				| 
+| | ... | Yes					| 
+| | ... | Monthly				| 
+| | ... | 3						| 
+| | ... | Day 15 of the month	| 
+| | ... | 2/15/2025				| 
+| | ... | 2/16/2025				| 
+| | ... | 12:30 PM
+
+| | @{Step2Fields}=		| Create List	| 
+| | ... | ${ConnectionPath}		| 
+| | ... | ${ObjectFilterString}	| 
+| | ... | ${Authentication}		| 
+| | ... | ${ConnectionUsername}	| 
+| | ... | ${ConnectionPassword}	| 
+| | ... | ${ImportNestedItems}
+
+| | @{Step3Mapping}=	| Create List	| 
+| | ... | Email			| mail			| 
+| | ... | Department	| countrycode	| 
+| | ... | First Name	| givenname		| 
+| | ... | Last Name		| sn			| 
+| | ... | UniqueID		| objectguid
+
+| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+
+| | View Integration Point	| ${IntegrationPoint4}
+
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | 1. Verify that the "General" Category has the following fields in order:	| 
+| | ... | - Name			| 
+| | ... | - Overwrite		| 
+| | ... | - Source Provider	| 
+| | ... | - Destination RDO	| 
+| | ... | - Log Errors
+| | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
+| | ... | - Job Status						|
+| | ... | - Next Scheduled Runtime (UTC)	| 
+| | ... | - Last Runtime (UTC)
+| | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
+| | ... | - Enable Scheduler	|
+| | ... | - Frequency			| 
+| | ... | -	Reoccur				| 
+| | ... | -	Send On				| 
 | | ... | - Start Date			| 
 | | ... | - End Date			| 
 | | ... | - Scheduled Time (UTC)
@@ -190,6 +324,20 @@
 
 # --------------------------------------------------------------------------------------------------------
 
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint1}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint1}
+
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint2}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint2}
+
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint3}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint3}
+
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint4}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint4}
+
+# --------------------------------------------------------------------------------------------------------
+
 | | @{Step1Fields}=		| Create List	| 
 | | ... | ${IntegrationPoint1}	| 
 | | ... | Append/Overlay		| 
@@ -212,8 +360,6 @@
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
 
-| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint1}
-| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint1}
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 
 # --------------------------------------------------------------------------------------------------------
@@ -224,9 +370,9 @@
 | | ... | LDAP					| 
 | | ... | Custodian				| 
 | | ... | Yes					| 
-| | ... | Weekly				| 
-| | ... | 2						| 
-| | ... | Monday; Wednesday		| 
+| | ... | Daily					| 
+| | ... | NULL					| 
+| | ... | NULL					| 
 | | ... | 2/15/2025				| 
 | | ... | 2/16/2025				| 
 | | ... | 12:30 PM
@@ -239,8 +385,6 @@
 | | ... | ${EMPTY}				| 
 | | ... | ${ImportNestedItems}
 
-| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint2}
-| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint2}
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 | | [Teardown]		| Drop connection to the relativity services api
 
@@ -251,6 +395,12 @@
 
 | | Delete the following Integration Point using API	| ${IntegrationPoint1}
 | | Delete the following Integration Point using API	| ${IntegrationPoint2}
+
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint3}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint3}
+
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint4}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint4}
 
 | | Drop connection to the relativity services api
 | | Close All Browsers

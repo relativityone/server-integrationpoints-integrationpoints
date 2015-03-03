@@ -1,0 +1,26 @@
+*** Settings ***
+| Documentation | Verify that the correct job status is displayed for Integration Points that have been imported
+| Metadata      | Authors	| Daniel Oliver	
+| Force Tags    | in-progress | team.method
+
+*** Test Cases ***
+
+| Status is blank when the Integration Point has not been run
+| | [Documentation] | Verify that Integration Points that have not been imported have no value in the Status field
+
+| Status is Pending when the Integration Point is about to be run
+| | [Documentation] | Verify that Integration Points that are about to be imported have a Status of Pending
+
+| Status is Processing when the Integration Point is currently running
+| | [Documentation] | Verify that Integration Points that are currently importing have a Status of Processing 
+
+| Status is Complete when the Integration Point has run without error
+| | [Documentation] | Verify that Integration Points that have successfully completed without error have a Status of Complete
+
+| Status is Complete with Errors when the Integration Point has run with errors
+| | [Documentation] | Verify that Integration Points that have successfully completed with some errors have a Status of Complete with errors
+
+| Status is Error - job failed when the Integration Point has failed
+| | [Documentation] | Verify that Integration Points that have failed have a Status of Error - job failed 
+
+
