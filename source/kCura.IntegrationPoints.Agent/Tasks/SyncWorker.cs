@@ -60,6 +60,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
+
 				GetIntegrationPointRDO(job);
 
 				List<string> entryIDs = GetEntryIDs(job);
