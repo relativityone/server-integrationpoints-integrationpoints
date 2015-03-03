@@ -46,7 +46,7 @@
 		}).then(function (result) {
 			vm = new viewModel();
 			if (result.scheduler && result.scheduler.scheduledTime) {
-				debugger;
+				
 				var time = helper.utcToLocal(result.scheduler.scheduledTime.split(':'), "HH:mm");
 				var timeSplit = time.split(':');
 				
@@ -90,7 +90,6 @@
 		IP.messaging.subscribe('save', function () {
 			_next().then(function (result) {
 				if (result.scheduler && result.scheduler.scheduledTime) {
-					debugger;
 					var timeSplit = result.scheduler.scheduledTime.split(':');
 					var time = result.scheduler.scheduledTime; 
 					if (result.scheduler.selectedTimeFormat == "AM") {
