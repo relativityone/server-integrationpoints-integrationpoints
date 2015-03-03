@@ -82,8 +82,6 @@
 | | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
 | | ... | - Enable Scheduler	|
 | | ... | - Frequency			| 
-| | ... | -	Reoccur				| 
-| | ... | -	Send On				| 
 | | ... | - Start Date			| 
 | | ... | - End Date			| 
 | | ... | - Scheduled Time (UTC)
@@ -116,8 +114,6 @@
 | | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
 | | ... | - Enable Scheduler	|
 | | ... | - Frequency			| 
-| | ... | -	Reoccur				| 
-| | ... | -	Send On				| 
 | | ... | - Start Date			| 
 | | ... | - End Date			| 
 | | ... | - Scheduled Time (UTC)
@@ -130,7 +126,7 @@
 | | ... | - Import Nested Items
 
 
-| The correct Fields are present when Frequency is set to Weekly
+| All Fields are present when Frequency is set to Weekly
 | | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes and Frequency is set to Weekly.
 | | [Tags]			| manual	| partially_automated	| field_placement
 | | @{Step1Fields}=	| Create List	| 
@@ -194,7 +190,7 @@
 | | ... | - Import Nested Items
 
 
-| The correct Fields are present when Frequency is set to Monthly
+| All Fields are present when Frequency is set to Monthly
 | | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes and Frequency is set to Mothly.
 | | [Tags]			| manual	| partially_automated	| field_placement
 | | @{Step1Fields}=	| Create List	| 
