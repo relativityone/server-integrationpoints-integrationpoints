@@ -295,17 +295,6 @@ namespace kCura.ScheduleQueue.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Update [eddsdbo].[IntegrationPoint]
-        ///set LogErrors = 0
-        ///where LogErrors IS NULL.
-        /// </summary>
-        internal static string SetBlankLogErrorsToNo {
-            get {
-                return ResourceManager.GetString("SetBlankLogErrorsToNo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to UPDATE 
         ///				[eddsdbo].[{0}]
         ///SET

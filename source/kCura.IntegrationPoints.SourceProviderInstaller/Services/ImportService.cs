@@ -102,6 +102,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			{
 				enumerated.ForEach(x => x.Name = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Name).First());
 				enumerated.ForEach(x => x.SourceConfigurationUrl = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Url).First());
+				enumerated.ForEach(x => x.ViewConfigurationUrl = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.ViewDataUrl).First());
 				_caseContext.RsapiService.SourceProviderLibrary.Update(enumerated);
 			}
 		}
@@ -117,7 +118,8 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 						Name = p.Name,
 						ApplicationIdentifier = p.ApplicationGUID.ToString(),
 						Identifier = p.GUID.ToString(),
-						SourceConfigurationUrl = p.Url
+						SourceConfigurationUrl = p.Url,
+						ViewConfigurationUrl = p.ViewDataUrl
 					};
 				AddNewProviders(newProviders);
 			}
