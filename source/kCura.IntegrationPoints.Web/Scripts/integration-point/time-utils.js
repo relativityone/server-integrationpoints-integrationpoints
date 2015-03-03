@@ -21,7 +21,6 @@ IP.timeUtil = (function () {
 		return inDateMod.toString(dateFormat);
 	}
 	function utcToTime(time) {
-		debugger;
 		var timeSplit = time.split(':');
 		
 		if (timeSplit[0] < 13) {

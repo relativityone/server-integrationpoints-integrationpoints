@@ -56,17 +56,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		}
 
 		[HttpPost]
-		public IHttpActionResult GetViewFields(object data)
+		public IHttpActionResult GetViewFields([FromBody] object data)
 		{
 			var provider = new LDAPProvider.LDAPProvider();
 			LDAPSettings settings = provider.GetSettings(data.ToString());
 			var result = new List<KeyValuePair<string, string>>();
 			result.Add(new KeyValuePair<string, string>("Connection Path", settings.ConnectionPath));
-			result.Add(new KeyValuePair<string, string>("Object Filter String", settings.Filter));
+			result.Add(new KeyValuePair<string, string>("Object Filter String", settings.ConnectionPath));
 			result.Add(new KeyValuePair<string, string>("Authentication", settings.ConnectionAuthenticationType.ToString()));
 			result.Add(new KeyValuePair<string, string>("Username", settings.UserName ?? string.Empty));
 			result.Add(new KeyValuePair<string, string>("Password", "******"));
-			result.Add(new KeyValuePair<string, string>("Import Nested Items", settings.ImportNested.ToString()));
+			result.Add(new KeyValuePair<string, string>("Import Nested Items", settings.ImportNested ? "Yes" : "No"));
 			return Ok(result);
 		}
 

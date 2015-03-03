@@ -6,7 +6,7 @@ IP.utils.getViewField = function (id) {
 };
 IP.utils.updateField = function ($el, text, value) {
 	$el.find('.dynamicViewFieldName').text(text + ':');
-	$el.find('.dynamicViewFieldValue').text(value);
+	$el.find('.dynamicViewFieldValue').html(value);
 	return $el;
 };
 
@@ -38,4 +38,4 @@ $(function () {
 		return '<span>' + $(this).text() + '</span';
 	});
 
-})();
+});
