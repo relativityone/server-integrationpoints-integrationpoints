@@ -66,13 +66,13 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		{
 			get
 			{
-				return _integrationPointQuery ?? (_integrationPointQuery = new IntegrationPointQuery(_service));
+				return _integrationPointQuery ?? (_integrationPointQuery = new IntegrationPointQuery(Service));
 			}
 		}
 
 		public DeleteHistoryService DeleteHistory
 		{
-			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(_service)); }
+			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(Service)); }
 		}
 
 		public IRSAPIService Service
