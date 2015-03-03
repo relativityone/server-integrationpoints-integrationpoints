@@ -42,12 +42,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		public void CommitErrors_FailsCommit_ThrowsException()
 		{
 			//ARRANGE
-
 			JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(null);
 			jobHistoryErrorService.JobHistory = new JobHistory() { ArtifactId = 111 };
 			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.");
 			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.");
-			List<JobHistoryError> errors = new List<JobHistoryError>();
 
 
 			//ACT
@@ -55,9 +53,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 
 			//ASSERT
-			Assert.That(returnedException.Message, Is.EqualTo("Could not commit Job History Errors. These are uncommited errors:" + Environment.NewLine
-					+ "3/3/2015 11:27:00 PM Type: Job    Error: Fake job error." + Environment.NewLine
-					+ "3/3/2015 11:27:00 PM Type: Item    Identifier: MyIdentifier    Error: Fake item error."));
+			Assert.IsTrue(returnedException.Message.Contains("Could not commit Job History Errors. These are uncommited errors:" + Environment.NewLine));
+			Assert.IsTrue(returnedException.Message.Contains("Type: Job    Error: Fake job error." + Environment.NewLine));
+			Assert.IsTrue(returnedException.Message.Contains("Type: Item    Identifier: MyIdentifier    Error: Fake item error."));
 		}
 
 		[Test]
