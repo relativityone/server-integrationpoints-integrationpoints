@@ -112,12 +112,12 @@ $(function () {
 		url: IP.utils.generateWebAPIURL('IntegrationPointsAPI', IP.artifactid),
 		type: 'Get'
 	}).then(function (result) {
-		var result = result.scheduler;
+		var result = result.scheduler || {};
 		var sendOn;
 		var obj = [
-			{ key: 'Frequency', value: result.selectedFrequency }
+			{ key: 'Frequency', value: result.selectedFrequency || '' }
 		];
-		
+
 		if (result.selectedFrequency === "Weekly") {
 			obj.push({ 'key': 'Reoccur', value: 'Every ' + result.reoccur + ' week(s).' });
 			sendOn = '<ul style="list-style-type: none; padding: 0; margin: 0;">';
@@ -137,9 +137,9 @@ $(function () {
 				obj.push({ key: 'Send On', value: 'Day ' + sendOn.selectedDay + ' of the Month.'});
 			}
 		}
-		obj.push({ key: 'Start Date', value: result.startDate });
-		obj.push({ key: 'End Date', value: result.endDate });
-		obj.push({ key: 'Scheduled Time (UTC)', value: IP.timeUtil.utcToAmPm(result.scheduledTime) });
+		obj.push({ key: 'Start Date', value: result.startDate || '' });
+		obj.push({ key: 'End Date', value: result.endDate || '' });
+		obj.push({ key: 'Scheduled Time (UTC)', value: IP.timeUtil.utcToAmPm(result.scheduledTime || '') });
 		IP.utils.createFields($field, obj);
 	}, function () {
 		$field.text('There was an error retreving the scheduling information.');
