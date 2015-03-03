@@ -21,12 +21,15 @@ IP.timeUtil = (function () {
 		return inDateMod.toString(dateFormat);
 	}
 	function utcToTime(time) {
+		
 		var timeSplit = time.split(':');
 		
 		if (timeSplit[0] < 13) {
+			timeSplit[0] = timeSplit[0].length == 1 ? "0" + timeSplit[0] : timeSplit[0];
 			return timeSplit.join(':') + " AM";
 		}
 		timeSplit[0] = parseInt(timeSplit[0]) - 12;
+		timeSplit[0] = timeSplit[0].length == 1 ? "0" + timeSplit[0] : timeSplit[0];
 		return timeSplit.join(':') + " PM";
 	}
 	function utcToLocalAmPm(time) {

@@ -46,7 +46,7 @@
 		}).then(function (result) {
 			vm = new viewModel();
 			if (result.scheduler && result.scheduler.scheduledTime) {
-				debugger;
+				
 				var time = helper.utcToLocal(result.scheduler.scheduledTime.split(':'), "HH:mm");
 				var timeSplit = time.split(':');
 				
