@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private IGuidService _guidService;
 		private JobHistoryService _jobHistoryService;
+		private JobHistoryErrorService _jobHistoryErrorService;
 
 		public SyncManager(ICaseServiceContext caseServiceContext,
 			IDataProviderFactory providerFactory,
@@ -36,6 +37,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 			IGuidService guidService,
 			JobHistoryService jobHistoryService,
+			JobHistoryErrorService jobHistoryErrorService,
 			IScheduleRuleFactory scheduleRuleFactory)
 		{
 			_caseServiceContext = caseServiceContext;
@@ -46,6 +48,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_serializer = serializer;
 			_guidService = guidService;
 			_jobHistoryService = jobHistoryService;
+			_jobHistoryErrorService = jobHistoryErrorService;
 			_scheduleRuleFactory = scheduleRuleFactory;
 			base.RaiseJobPreExecute += new JobPreExecuteEvent(JobPreExecute);
 			base.RaiseJobPostExecute += new JobPostExecuteEvent(JobPostExecute);
@@ -65,15 +68,27 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public override IEnumerable<string> GetUnbatchedIDs(Job job)
 		{
-			Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
-			Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
-			Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
-			IDataSourceProvider provider = _providerFactory.GetDataProvider(applicationGuid, providerGuid);
-			FieldEntry idField = _helper.GetIdentifierFieldEntry(this.IntegrationPoint.ArtifactId);
-			string options = _helper.GetSourceOptions(this.IntegrationPoint.ArtifactId);
-			IDataReader idReader = provider.GetBatchableIds(idField, options);
+			try
+			{
+				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
+				Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
+				Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
+				IDataSourceProvider provider = _providerFactory.GetDataProvider(applicationGuid, providerGuid);
+				FieldEntry idField = _helper.GetIdentifierFieldEntry(this.IntegrationPoint.ArtifactId);
+				string options = _helper.GetSourceOptions(this.IntegrationPoint.ArtifactId);
+				IDataReader idReader = provider.GetBatchableIds(idField, options);
 
-			return new ReaderEnumerable(idReader);
+				return new ReaderEnumerable(idReader);
+			}
+			catch (Exception ex)
+			{
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
+			}
+			finally
+			{
+				_jobHistoryErrorService.CommitErrors();
+			}
+			return new List<string>();
 		}
 
 		public override void CreateBatchJob(Job job, List<string> batchIDs)
@@ -111,23 +126,36 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void JobPreExecute(Job job)
 		{
-			this.BatchInstance = GetBatchInstance(job);
-			if (job.RelatedObjectArtifactID < 1)
+			try
 			{
-				throw new ArgumentNullException("Job must have a Related Object ArtifactID");
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("B50CD1DD-6FEC-439E-A730-B84B730C9D44");
+				
+				this.BatchInstance = GetBatchInstance(job);
+				if (job.RelatedObjectArtifactID < 1)
+				{
+					throw new ArgumentNullException("Job must have a Related Object ArtifactID");
+				}
+				var integrationPointID = job.RelatedObjectArtifactID;
+				this.IntegrationPoint = _helper.GetRDO(job.RelatedObjectArtifactID);
+				if (this.IntegrationPoint.SourceProvider == 0)
+				{
+					throw new Exception("Cannot import source provider with unknown id.");
+				}
+				this.JobHistory = _jobHistoryService.CreateRDO(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
+				if (!this.JobHistory.StartTimeUTC.HasValue)
+				{
+					this.JobHistory.StartTimeUTC = DateTime.UtcNow;
+					//TODO: jobHistory.JobStatus = "";
+					_jobHistoryService.UpdateRDO(this.JobHistory);
+				}
 			}
-			var integrationPointID = job.RelatedObjectArtifactID;
-			this.IntegrationPoint = _helper.GetRDO(job.RelatedObjectArtifactID);
-			if (this.IntegrationPoint.SourceProvider == 0)
+			catch (Exception ex)
 			{
-				throw new Exception("Cannot import source provider with unknown id.");
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 			}
-			this.JobHistory = _jobHistoryService.CreateRDO(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
-			if (!this.JobHistory.StartTimeUTC.HasValue)
+			finally
 			{
-				this.JobHistory.StartTimeUTC = DateTime.UtcNow;
-				//TODO: jobHistory.JobStatus = "";
-				_jobHistoryService.UpdateRDO(this.JobHistory);
+				_jobHistoryErrorService.CommitErrors();
 			}
 		}
 
@@ -152,7 +180,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("Failed to update job statistics.", ex);
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, new Exception("Failed to update job statistics.", ex));
+			}
+			finally
+			{
+				_jobHistoryErrorService.CommitErrors();
 			}
 		}
 

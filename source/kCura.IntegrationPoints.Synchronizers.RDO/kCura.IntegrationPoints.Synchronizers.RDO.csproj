@@ -32,7 +32,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -56,6 +56,13 @@
     </Reference>
     <Reference Include="kCura.Apps.Common.Utils">
       <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.66.4\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\kCura.Injection.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Method.Injection">
+      <HintPath>..\..\..\Method\Binaries\Injection\kCura.Method.Injection.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

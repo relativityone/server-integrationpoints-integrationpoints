@@ -53,7 +53,7 @@
 | The Category Headings are in the correct order
 | | [Documentation]	| Verify that the Category headings are sorted correctly on the Integration Point Details" Layout.
 | | ...				| [id] 1180fd11-a89f-11e4-b0e4-b8ca3a83048f
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Verify that the current Layout has the following Categories in Order	| 
 | | ... | General			| 
 | | ... | Status			| 
@@ -82,7 +82,7 @@
 | | ... | - Frequency			| 
 | | ... | - Start Date			| 
 | | ... | - End Date			| 
-| | ... | - Scheduled Time
+| | ... | - Scheduled Time (UTC)
 | | ... | 4. Verify that the "Source Connection" Category has the following fields in order:	| 
 | | ... | - Connection Path			| 
 | | ... | - Object Filter String	| 
@@ -114,7 +114,7 @@
 | | ... | - Frequency			| 
 | | ... | - Start Date			| 
 | | ... | - End Date			| 
-| | ... | - Scheduled Time
+| | ... | - Scheduled Time (UTC)
 | | ... | 4. Verify that the "Source Connection" Category has the following fields in order:	| 
 | | ... | - Connection Path			| 
 | | ... | - Object Filter String	| 
@@ -126,33 +126,41 @@
 
 | The Password Field shows six asterixes when not populated
 | | [Documentation]	| Verify that the Password field in the Source Connection Category is shown as "******" when no value was entered during creation.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | [Setup]			| View Integration Point	| ${IntegrationPoint2}
-| | Verify the current layout has fields with the following values	| Password	| ******
+| | Verify that the following Field has the Following Value	| Password:	| ******
 
 
 | The Password Field shows six asterixes when populated
 | | [Documentation]	| Verify that the Password field in the Source Connection Category is shown as "******" when a value was entered during creation.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | [Setup]			| View Integration Point	| ${IntegrationPoint1}
-| | Verify the current layout has fields with the following values	| Password	| ******
+| | Verify that the following Field has the Following Value	| Password:	| ******
 
 
 | The Object Filter String Field shows (objectClass=*) when not populated
 | | [Documentation]	| Verify that the Object Filter String field in the Source Connection Category is shown as "(objectClass=*)" when no value was entered during creation.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | [Setup]			| View Integration Point	| ${IntegrationPoint2}
-| | Verify the current layout has fields with the following values	| Object Filter String	| (objectClass=*)
+| | Verify that the following Field has the Following Value	| Object Filter String:	| (objectClass=*)
 
 
 | The Object Filter String Field shows the correct value when populated
 | | [Documentation]	| Verify that the Object Filter String field in the Source Connection Category is shown as the value that was entered during creation.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | [Setup]			| View Integration Point	| ${IntegrationPoint1}
-| | Verify the current layout has fields with the following values	| Object Filter String	| ${ObjectFilterString}
+| | Verify that the following Field has the Following Value	| Object Filter String:	| ${ObjectFilterString}
 
 
 *** Keywords ***
+
+| Verify that the following Field has the Following Value
+| | [Documentation]	| This keyword verifies that the given field has the given value.
+| | ...				| Written because "Verify the current layout has fields with the following values" does not work for some reason.
+| | [ARGUMENTS]		| ${FieldName}	| ${ExpectedValue}
+| | Element Should Be Visible	| xpath=//td[@class='dynamicViewFieldName' and text()="${FieldName}"]	| The field ${FieldName} was not visible.
+| | ${ActualValue}=	| Get Text	| xpath=//td[@class='dynamicViewFieldName' and text()="${FieldName}"]/following-sibling::td[@class='dynamicViewFieldValue']
+| | Should Be Equal As Strings	| ${ExpectedValue}	| ${ActualValue}
 
 | Verify that the current Layout has the following Categories in Order
 | | [Documentation]	| This keyword verifies that the given Categories are visible on the current Layout in the given order.
@@ -210,26 +218,26 @@
 
 # --------------------------------------------------------------------------------------------------------
 
-| | @{Step2Fields}=		| Create List	| 
-| | ... | ${ConnectionPath}		| 
-| | ... | ${EMPTY}				| 
-| | ... | ${Authentication}		| 
-| | ... | ${EMPTY}				| 
-| | ... | ${EMPTY}				| 
-| | ... | ${ImportNestedItems}
-
 | | @{Step1Fields}=	| Create List	| 
 | | ... | ${IntegrationPoint2}	| 
 | | ... | Append/Overlay		| 
 | | ... | LDAP					| 
 | | ... | Custodian				| 
 | | ... | Yes					| 
-| | ... | Daily					| 
-| | ... | NULL					| 
-| | ... | NULL					| 
+| | ... | Weekly				| 
+| | ... | 2						| 
+| | ... | Monday; Wednesday		| 
 | | ... | 2/15/2025				| 
 | | ... | 2/16/2025				| 
 | | ... | 12:30 PM
+
+| | @{Step2Fields}=	| Create List	| 
+| | ... | ${ConnectionPath}		| 
+| | ... | ${EMPTY}				| 
+| | ... | ${Authentication}		| 
+| | ... | ${EMPTY}				| 
+| | ... | ${EMPTY}				| 
+| | ... | ${ImportNestedItems}
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint2}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint2}
