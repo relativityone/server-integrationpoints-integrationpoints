@@ -79,7 +79,17 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		public IRSAPIService Service
 		{
-			get { return _service ?? (_service = new RSAPIService(base.Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))); }
+
+			get
+			{
+				if (_service == null)
+				{
+					var client = base.Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
+					client.APIOptions.WorkspaceID = base.Helper.GetActiveCaseID();
+					_service = new RSAPIService(client);
+				}
+				return _service;
+			}
 		}
 
 		private DeleteIntegrationPoints _deleteIntegrationPoints;
@@ -124,6 +134,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			{
 				OnRaisePreUninstallPreExecuteEvent();
 				UninstallSourceProvider();
+				
 				isSuccess = true;
 			}
 			catch (Exception e)
