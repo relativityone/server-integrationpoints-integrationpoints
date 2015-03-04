@@ -30,8 +30,8 @@
 | | Page Should Not Contain Element	| ${New Job History Button}	| The "New Job History" Button was present on the page.
 
 
-| The Default View on the Job History List View
-| | [Documentation] | Verifies that the default View on the Job History list view page.
+| The Default View on the Job History List View is All jobs
+| | [Documentation] | Verifies that the default View on the Job History list view page is All jobs
 | | [Tags]			| automated
 | | Go to the Tab	| Job History
 | | Verify that the view dropdown is set to the following value	| All Jobs

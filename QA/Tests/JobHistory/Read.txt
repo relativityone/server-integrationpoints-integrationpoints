@@ -51,7 +51,7 @@
 | | [Tags]			| automated
 | | Verify that the current Layout has the following Categories in Order	| 
 | | ... | Job Details		| 
-| | ... | Import Statistics
+| | ... | Import Statistics 
 
 
 | The correct Fields are present on the Job Details Layout
@@ -63,7 +63,6 @@
 | | ... | - Name
 | | ... | - Integration Point	| 
 | | ... | - Status				| 
-| | ... | - Job Error			| 
 | | ... | - Start Time (UTC)	| 
 | | ... | - End Time (UTC)		|
 | | ... | 2. Verify that the Import Statistics Category has the following fields in order:	| 
@@ -79,8 +78,8 @@
 | | ... | Verify that the table has the title "Job History Error"
 
 
-| The Columns on the Records With Errors table are correct
-| | [Documentation] | Verifies that the Records With Errors table on the Job History View page has the correct columns.
+| The Columns on the Job History Error table are correct
+| | [Documentation] | Verifies that the Job History Error table on the Job History View page has the correct columns.
 | | [Tags]			| manual	| automateable?
 | | Verify that the item list contains the following fields	| 
 | | ... | Source Unique ID	| 
@@ -89,8 +88,8 @@
 | | ... | Error Type
 
 
-| The Sorting on the Records With Errors table is correct
-| | [Documentation] | Verifies that the Records With Errors table on the Job History View page has the correct sorting.
+| The Sorting on the Job History Error table is correct
+| | [Documentation] | Verifies that the Job History Error table on the Job History View page has the correct sorting.
 | | [Tags]			| manual	| unimplemented
 | | Run the following manual steps:
 | | ... | Preconditions:

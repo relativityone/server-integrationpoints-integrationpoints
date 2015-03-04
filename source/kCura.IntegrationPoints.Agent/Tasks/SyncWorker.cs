@@ -60,11 +60,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
+
 				GetIntegrationPointRDO(job);
 
 				List<string> entryIDs = GetEntryIDs(job);
 
 				GetJobHistoryRDO();
+
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
 
 				if (this.IntegrationPoint.SourceProvider.GetValueOrDefault(0) == 0)
 				{

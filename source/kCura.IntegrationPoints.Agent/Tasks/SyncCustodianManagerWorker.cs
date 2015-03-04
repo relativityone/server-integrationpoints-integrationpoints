@@ -55,12 +55,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
+				
 				//get all job parameters
 				GetParameters(job);
 
 				base.GetIntegrationPointRDO(job);
 
 				base.GetJobHistoryRDO();
+
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
 
 				//update common queue for this job using passed Custodian/Manager links and get the next unprocessed links
 				_custodianManagerMap = _managerQueueService.GetCustodianManagerLinksToProcess(job, this.BatchInstance, _custodianManagerMap);

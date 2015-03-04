@@ -209,6 +209,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void ProcessExceptions(ImportSettings settings)
 		{
+			InjectErrors();
+
 			if (_jobError != null)
 			{
 				throw _jobError;
@@ -261,6 +263,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private void ItemError(string documentIdentifier, string errorMessage)
 		{
 			_rowErrors.Add(new KeyValuePair<string, string>(documentIdentifier, errorMessage));
+		}
+
+		private void InjectErrors()
+		{
+			try
+			{
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("DFE4D63C-3A6A-49C2-A80D-25CA60F2B31C");
+			}
+			catch (Exception ex)
+			{
+				JobError(ex);
+			}
+
+			try
+			{
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("40af620b-af2e-4b50-9f62-870654819df6");
+			}
+			catch (Exception ex)
+			{
+				ItemError("MyUniqueIdentifier", ex.Message);
+			}
 		}
 	}
 }

@@ -38,6 +38,8 @@ namespace kCura.IntegrationPoints.Core.Services
 				{
 					if (_jobHistoryErrorList.Any())
 					{
+						kCura.Method.Injection.InjectionManager.Instance.Evaluate("9B9265FB-F63D-44D3-90A2-87C1570F746D");
+
 						_context.RsapiService.JobHistoryErrorLibrary.Create(_jobHistoryErrorList);
 					}
 				}
@@ -80,17 +82,25 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			lock (_jobHistoryErrorList)
 			{
-				JobHistoryError jobHistoryError = new JobHistoryError();
-				//jobHistoryError.ParentArtifactId = this.JobHistory.ArtifactId;
-				jobHistoryError.ParentArtifactId = this.JobHistory.ArtifactId;
-				jobHistoryError.JobHistory = this.JobHistory.ArtifactId;
-				jobHistoryError.Name = Guid.NewGuid().ToString();
-				jobHistoryError.ErrorType = errorType;
-				jobHistoryError.SourceUniqueID = documentIdentifier;
-				jobHistoryError.Error = errorMessage;
-				jobHistoryError.TimestampUTC = DateTime.UtcNow;
+				if (this.JobHistory != null && this.JobHistory.ArtifactId > 0)
+				{
+					JobHistoryError jobHistoryError = new JobHistoryError();
+					jobHistoryError.ParentArtifactId = this.JobHistory.ArtifactId;
+					jobHistoryError.JobHistory = this.JobHistory.ArtifactId;
+					jobHistoryError.Name = Guid.NewGuid().ToString();
+					jobHistoryError.ErrorType = errorType;
+					jobHistoryError.SourceUniqueID = documentIdentifier;
+					jobHistoryError.Error = errorMessage;
+					jobHistoryError.TimestampUTC = DateTime.UtcNow;
 
-				_jobHistoryErrorList.Add(jobHistoryError);
+					_jobHistoryErrorList.Add(jobHistoryError);
+				}
+				else
+				{
+					//we can't create JobHistoryError without JobHistory, 
+					//in such case log error into Error Tab by throwing Exception.
+					throw new System.Exception(string.Format("Type:{0}  Id:{1}  Error:{2}", errorType.Name, documentIdentifier, errorMessage));
+				}
 			}
 		}
 
