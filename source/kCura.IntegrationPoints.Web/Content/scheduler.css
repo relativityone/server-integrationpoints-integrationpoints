@@ -40,13 +40,17 @@ textarea:focus {
   .card .field-label, .status-container .field-label, .card .dragon-panel .title, .dragon-panel .card .title, .status-container .dragon-panel .title, .dragon-panel .status-container .title {
     color: #404040;
     text-align: right;
+    padding-top: 5px;
     padding-right: 5px;
     min-width: 200px;
     display: table-cell;
     border-right: 3px solid transparent;
-    font-size: .85em; }
+    font-size: .85em;
+    vertical-align: top; }
     .card .field-label.required, .status-container .field-label.required, .card .dragon-panel .required.title, .dragon-panel .card .required.title, .status-container .dragon-panel .required.title, .dragon-panel .status-container .required.title {
       border-right: 3px solid #f59d1f; }
+    .card .field-label .sub-message, .status-container .field-label .sub-message, .card .dragon-panel .title .sub-message, .dragon-panel .card .title .sub-message, .status-container .dragon-panel .title .sub-message, .dragon-panel .status-container .title .sub-message {
+      font-size: .9em; }
   .card .field-value, .status-container .field-value, .card .dragon-panel .value, .dragon-panel .card .value, .status-container .dragon-panel .value, .dragon-panel .status-container .value {
     display: table-cell;
     padding-left: 5px;
@@ -54,6 +58,8 @@ textarea:focus {
     .card .field-value.details, .status-container .field-value.details, .card .dragon-panel .details.value, .dragon-panel .card .details.value, .status-container .dragon-panel .details.value, .dragon-panel .status-container .details.value {
       border-bottom: 1px solid #dadada;
       width: 75%; }
+    .card .field-value textarea, .status-container .field-value textarea, .card .dragon-panel .value textarea, .dragon-panel .card .value textarea, .status-container .dragon-panel .value textarea, .dragon-panel .status-container .value textarea {
+      max-width: 500px; }
   .card .field-row, .status-container .field-row, .card .dragon-panel .input-control, .dragon-panel .card .input-control, .status-container .dragon-panel .input-control, .dragon-panel .status-container .input-control {
     padding: 5px 0; }
 

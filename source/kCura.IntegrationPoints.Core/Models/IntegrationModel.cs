@@ -98,6 +98,7 @@ namespace kCura.IntegrationPoints.Core.Models
 		public string SourceConfiguration { get; set; }
 		public string Map { get; set; }
 		public bool LogErrors { get; set; }
+		public string NotificationEmails { get; set; }
 
 		public IntegrationModel()
 		{
@@ -124,6 +125,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			point.EnableScheduler = this.Scheduler.EnableScheduler;
 			point.DestinationProvider = this.DestinationProvider;
 			point.LogErrors = this.LogErrors;
+			point.EmailNotificationRecipients = this.NotificationEmails;
 			return point;
 		}
 		public IntegrationModel(IntegrationPoint ip)
@@ -147,6 +149,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			this.SourceConfiguration = ip.SourceConfiguration;
 			this.DestinationProvider = ip.DestinationProvider.GetValueOrDefault(0);
 			Scheduler = new Scheduler(ip);
+			this.NotificationEmails = ip.EmailNotificationRecipients ?? string.Empty;
 			this.LogErrors = ip.LogErrors.GetValueOrDefault(false);
 		}
 	}
