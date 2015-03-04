@@ -1,5 +1,5 @@
 *** Settings ***
-| Documentation | Verify that the correct job status is displayed for Integration Points that have been imported
+| Documentation | Verify that the correct job status is displayed on the RIP View page for Integration Points that have been imported
 | Metadata      | Authors	| Daniel Oliver	
 | Force Tags    | in-progress | team.method
 
