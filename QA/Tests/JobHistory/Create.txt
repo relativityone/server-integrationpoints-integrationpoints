@@ -29,7 +29,7 @@
 | Scheduled RIP imports generate a History record
 | | [Documentation] | Verify that when a Scheduled RIP import starts, that a History record is created.
 | | ...				| [id] ec04abf0-b932-11e4-93a4-90b11c6c5ae4
-| | [Tags]          | manual 
+| | [Tags]          | manual  | automatable
 | | View Integration Point | ${IntegrationName}  
 | | Run the following manual steps:
 | | ... | Steps:
