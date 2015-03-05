@@ -10,9 +10,11 @@ namespace kCura.IntegrationPoints.Core.Services
 	public class DeleteHistoryService
 	{
 		private readonly IRSAPIService _context;
-		public DeleteHistoryService(IRSAPIService context)
+		private readonly IDeleteHistoryErrorService _deleteError;
+		public DeleteHistoryService(IRSAPIService context,IDeleteHistoryErrorService deleteHistoryErrorService)
 		{
 			_context = context;
+			_deleteError = deleteHistoryErrorService;
 		}
 
 		public void DeleteHistoriesAssociatedWithIP(int integrationPointId)
@@ -36,6 +38,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				integrationPoint.JobHistory = null;
 			}
+			_deleteError.DeleteErrorAssociatedWithHistories(allJobHistory);
+			
+
 			_context.IntegrationPointLibrary.Update(result);
 			_context.JobHistoryLibrary.Delete(allJobHistory);
 		}

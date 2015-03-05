@@ -73,8 +73,8 @@ ko.validation.rules['emailList'] = {
 	validator: function (value, param) {
 		var emails = IP.emailUtils.parse(value);
 		for (var i = 0; i < emails.length; i++) {
-			if (!IP.emailUtils.validate(emails[i])) {
-				return false;
+			if (!IP.utils.stringNullOrEmpty(emails[i]) && !IP.emailUtils.validate(emails[i])){
+					return false;
 			}
 		}
 		return true;
@@ -442,7 +442,6 @@ var IP = IP || {};
 		this.selectedOverwrite = ko.observable(settings.selectedOverwrite);
 		this.scheduler = new Scheduler(settings.scheduler);
 		this.submit = function () {
-			debugger;
 			this.scheduler.submit();
 		};
 	};
