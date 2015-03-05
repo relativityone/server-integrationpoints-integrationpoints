@@ -115,6 +115,7 @@
     <Compile Include="Services\JobHistory\JobHistoryErrorService.cs" />
     <Compile Include="Services\JobHistory\JobHistoryService.cs" />
     <Compile Include="Services\JobStatusUpdater.cs" />
+    <Compile Include="Services\JobTracker.cs" />
     <Compile Include="Services\Provider\DefaultSourcePluginProvider.cs" />
     <Compile Include="Services\Domain\AppDomainFactory.cs" />
     <Compile Include="Services\Provider\ProviderManager.cs" />

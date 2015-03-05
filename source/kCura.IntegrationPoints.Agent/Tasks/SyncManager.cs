@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				BatchInstance = this.BatchInstance,
 				BatchParameters = batchIDs
 			};
-			_jobManager.CreateJob(job, taskParameters, TaskType.SyncWorker);
+			_jobManager.CreateJobWithTracker(job, taskParameters, TaskType.SyncWorker, this.BatchInstance.ToString());
 			BatchJobCount++;
 		}
 
@@ -129,7 +129,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				kCura.Method.Injection.InjectionManager.Instance.Evaluate("B50CD1DD-6FEC-439E-A730-B84B730C9D44");
-				
+
 				this.BatchInstance = GetBatchInstance(job);
 				if (job.RelatedObjectArtifactID < 1)
 				{

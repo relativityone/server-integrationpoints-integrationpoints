@@ -92,6 +92,11 @@ namespace kCura.IntegrationPoints.Core.Services
 				rule = null;
 			}
 
+			var jobDetails = new EmailMessage();
+			jobDetails.Emails = new List<string> { "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com" };
+			jobDetails.MessageBody = "Hello world Body";
+			jobDetails.Subject = "Hello world subject";
+			_jobService.CreateJob<object>( jobDetails, TaskType.SendEmailManager, _context.WorkspaceID, ip.ArtifactId);
 
 			//save RDO
 			if (ip.ArtifactId > 0)

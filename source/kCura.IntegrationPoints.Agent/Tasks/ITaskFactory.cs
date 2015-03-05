@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
@@ -51,6 +52,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				.DependsOn(Dependency.OnValue<int>(job.WorkspaceID)));
 			Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>());
 			Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>());
+			Container.Register(
+				Component.For<IWorkspaceDBContext>()
+					.UsingFactoryMethod(k => new WorkspaceContext(_helper.GetDBContext(job.WorkspaceID))));
+
 			Container.Register(Component.For<GetApplicationBinaries>().ImplementedBy<GetApplicationBinaries>().DynamicParameters((k, d) => d["eddsDBcontext"] = _helper.GetDBContext(-1)).LifeStyle.Transient);
 			Container.Install(FromAssembly.InThisApplication());
 			Container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod((k) =>

@@ -75,6 +75,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<IJobStatusUpdater>().ImplementedBy<JobStatusUpdater>().LifeStyle.Transient);
 
+			container.Register(Component.For<JobTracker>().ImplementedBy<JobTracker>().LifeStyle.Transient);
 		}
 	}
 }

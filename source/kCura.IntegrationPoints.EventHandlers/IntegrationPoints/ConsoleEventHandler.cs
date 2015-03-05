@@ -37,6 +37,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 			set { permissionService = value; }
 		}
+
 		public override Console GetConsole(PageEvent pageEvent)
 		{
 
