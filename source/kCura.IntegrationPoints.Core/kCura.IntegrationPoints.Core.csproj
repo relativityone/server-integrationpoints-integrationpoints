@@ -93,6 +93,7 @@
     <Compile Include="Services\CustodianManager\CustodianManagerJobParameters.cs" />
     <Compile Include="Services\CustodianManager\CustodianManagerMap.cs" />
     <Compile Include="Services\CustodianManager\ManagerQueueService.cs" />
+    <Compile Include="Services\DeleteHistoryErrorService.cs" />
     <Compile Include="Services\DeleteHistoryService.cs" />
     <Compile Include="Services\DeleteIntegrationPoints.cs" />
     <Compile Include="Services\Domain\AssemblyDomainLoader.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="Services\Domain\ProviderWrapper.cs" />
     <Compile Include="Services\Guid\GuidService.cs" />
     <Compile Include="Services\Guid\IGuidService.cs" />
+    <Compile Include="Services\IDeleteHistoryErrorService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />
     <Compile Include="Services\JobHistory\JobHistoryErrorService.cs" />
     <Compile Include="Services\JobHistory\JobHistoryService.cs" />

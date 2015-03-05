@@ -78,14 +78,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private bool _isJobComplete = false;
 		private Exception _jobError;
 		private List<KeyValuePair<string, string>> _rowErrors;
+		private ImportSettings ImportSettings { get; set; }
 
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{
-			var settings = GetSyncDataImportSettings(fieldMap, options);
+			this.ImportSettings = GetSyncDataImportSettings(fieldMap, options);
 
-			var importFieldMap = GetSyncDataImportFieldMap(fieldMap, settings);
+			var importFieldMap = GetSyncDataImportFieldMap(fieldMap, this.ImportSettings);
 
-			_importService = InitializeImportService(settings, importFieldMap);
+			_importService = InitializeImportService(this.ImportSettings, importFieldMap);
 
 			_isJobComplete = false;
 			_jobError = null;
@@ -93,7 +94,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			foreach (var row in data)
 			{
-				var importRow = GenerateImportRow(row, fieldMap, settings);
+				var importRow = GenerateImportRow(row, fieldMap, this.ImportSettings);
 				if (importRow != null) _importService.AddRow(importRow);
 			}
 			_importService.PushBatchIfFull(true);
@@ -108,9 +109,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				Thread.Sleep(1000);
 			} while (!isJobDone);
 
-			ProcessExceptions(settings);
-
-			FinalizeSyncData(data, fieldMap, settings);
+			FinalizeSyncData(data, fieldMap, this.ImportSettings);
 		}
 
 		private string _webAPIPath;
@@ -207,42 +206,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return settings;
 		}
 
-		private void ProcessExceptions(ImportSettings settings)
-		{
-			InjectErrors();
-
-			if (_jobError != null)
-			{
-				throw _jobError;
-			}
-			else
-			{
-				string errorMessage = string.Empty;
-				foreach (var rowError in _rowErrors)
-				{
-					if (settings.OverwriteMode == OverwriteModeEnum.Overlay
-						&& rowError.Value.Contains("no document to overwrite"))
-					{
-						//skip
-					}
-					else if (settings.OverwriteMode == OverwriteModeEnum.Append
-						&& rowError.Value.Contains("document with identifier")
-						&& rowError.Value.Contains("already exists in the workspace"))
-					{
-						//skip
-					}
-					else
-					{
-						errorMessage = string.Format("{0}{1}(Id: {2}){3}", errorMessage, Environment.NewLine, rowError.Key, rowError.Value);
-					}
-				}
-				if (!string.IsNullOrEmpty(errorMessage))
-				{
-					throw new Exception(errorMessage);
-				}
-			}
-		}
-
 		private void Finish(DateTime startTime, DateTime endTime, int totalRows, int errorRowCount)
 		{
 			lock (_importService)
@@ -262,27 +225,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void ItemError(string documentIdentifier, string errorMessage)
 		{
-			_rowErrors.Add(new KeyValuePair<string, string>(documentIdentifier, errorMessage));
-		}
-
-		private void InjectErrors()
-		{
-			try
+			if (this.ImportSettings.OverwriteMode == OverwriteModeEnum.Overlay
+				&& errorMessage.Contains("no document to overwrite"))
 			{
-				kCura.Method.Injection.InjectionManager.Instance.Evaluate("DFE4D63C-3A6A-49C2-A80D-25CA60F2B31C");
+				//skip
 			}
-			catch (Exception ex)
+			else if (this.ImportSettings.OverwriteMode == OverwriteModeEnum.Append
+				&& errorMessage.Contains("document with identifier")
+				&& errorMessage.Contains("already exists in the workspace"))
 			{
-				JobError(ex);
+				//skip
 			}
-
-			try
+			else
 			{
-				kCura.Method.Injection.InjectionManager.Instance.Evaluate("40af620b-af2e-4b50-9f62-870654819df6");
-			}
-			catch (Exception ex)
-			{
-				ItemError("MyUniqueIdentifier", ex.Message);
+				_rowErrors.Add(new KeyValuePair<string, string>(documentIdentifier, errorMessage));
 			}
 		}
 	}

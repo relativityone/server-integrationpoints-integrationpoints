@@ -9,13 +9,28 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client.Repositories;
+using kCura.ScheduleQueue.Core.Data.Queries;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
 	public class PreCascadeDeleteEventHandler : kCura.EventHandler.PreCascadeDeleteEventHandler
 	{
 		private DeleteHistoryService deleteHistoryService;
-
+		private DeleteHistoryErrorService deleteHistoryErrorService;
+		public DeleteHistoryErrorService DeleteHistoryErrorService
+		{
+			get
+			{
+				return deleteHistoryErrorService ??
+							 (deleteHistoryErrorService =
+								 new DeleteHistoryErrorService(
+									 ServiceContextFactory.CreateRSAPIService(
+										 new kCura.IntegrationPoints.Core.RsapiClientFactory(base.Helper).CreateClientForWorkspace(
+											 base.Application.ArtifactID))));
+			}
+			set { deleteHistoryErrorService = value; }
+		}
+		
 		public DeleteHistoryService DeleteHistoryService
 		{
 			get
@@ -25,7 +40,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					       new DeleteHistoryService(
 						       ServiceContextFactory.CreateRSAPIService(
 							       new kCura.IntegrationPoints.Core.RsapiClientFactory(base.Helper).CreateClientForWorkspace(
-								       base.Application.ArtifactID))));
+								       base.Application.ArtifactID)),DeleteHistoryErrorService));
 			}
 			set { deleteHistoryService = value; }
 		}
@@ -58,6 +73,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					{
 						//Retrieve the current artifactID from the reader's first (and only) column.
 						int artifactID = reader.GetInt32(0);
+						
 						DeleteHistoryService.DeleteHistoriesAssociatedWithIP(artifactID);
 					}
 				}
