@@ -13,6 +13,7 @@
 
 | ${WorkspaceName}					| LDAP Sync
 | ${Integration Name Field}			| name
+| ${Email Notification Recipients Field} | notificationEmails
 | ${Overwrite DropDown}				| s2id_overwrite
 | ${Source Provider Drop Down}		| s2id_sourceProvider
 | ${Destination RDO Drop Down}		| s2id_destinationRdo
@@ -39,12 +40,18 @@
 | The General fields are in the correct order
 | | [Documentation]	| Verify that the fields in the General section are sorted correctly.
 | | ...				| [id] 0f5e1d10-a89f-11e4-a35c-b8ca3a83048f
-| | [Tags]			| automated
+| | [Tags]			| automated | untested
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following Card contains the following fields | General | 
 | | ... | Integration Name: | 
 | | ... | Overwrite:		| 
+| | ... | Email Notification Recipients Field:  | 
 | | ... | Log Errors:
 
+| The Email Notification Recipients field has the subtext of Separate by semi-colon
+| | [Documentation]	| Verify that the fields in the General section are sorted correctly.
+| | ...				| [id] 7d51404f-c37e-11e4-a11c-90b11c6c5ae4
+| | [Tags]			| automated | untested
+| | Page Should Contain | xpath=//div[@class='sub-message' and text()='Separate by semi-colon']
 
 | The Integration fields are in the correct order
 | | [Documentation]	| Verify that the fields in the Integration section are sorted correctly.
