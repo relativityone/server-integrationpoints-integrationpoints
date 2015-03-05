@@ -37,5 +37,20 @@ namespace kCura.IntegrationPoints.Data
 	}
 	#>
 
+
+		public RSAPIService(){}
+
+		public RSAPIService(IRSAPIClient client)
+		{
+		<#
+		foreach  (ObjectTypeDTO objType in objTypes)
+		{
+		#>
+	this.<#=objType.Name.ToPascalCase()#>Library = new RsapiClientLibrary<<#=objType.Name.ToPascalCase()#>>(client);
+		<#
+		}
+		#>
+	
+		}
 	}
 }

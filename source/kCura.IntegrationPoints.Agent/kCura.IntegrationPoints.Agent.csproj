@@ -99,6 +99,7 @@
     </Compile>
     <Compile Include="Agent.cs" />
     <Compile Include="Installer\AgentInstallers.cs" />
+    <Compile Include="Tasks\SendEmailWorker.cs" />
     <Compile Include="Tasks\SyncCustodianManagerWorker.cs" />
     <Compile Include="Tasks\ITaskFactory.cs" />
     <Compile Include="Tasks\SyncManager.cs" />

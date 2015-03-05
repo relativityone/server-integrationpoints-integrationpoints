@@ -12,5 +12,8 @@ namespace kCura.IntegrationPoints.Data
 		IGenericLibrary<JobHistory> JobHistoryLibrary { get; set; }
 		IGenericLibrary<JobHistoryError> JobHistoryErrorLibrary { get; set; }
 		
+
+
+
 	}
 }

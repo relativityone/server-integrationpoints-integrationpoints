@@ -36,13 +36,17 @@ textarea:focus {
   .card .field-label, .status-container .field-label {
     color: #404040;
     text-align: right;
+    padding-top: 5px;
     padding-right: 5px;
     min-width: 200px;
     display: table-cell;
     border-right: 3px solid transparent;
-    font-size: .85em; }
+    font-size: .85em;
+    vertical-align: top; }
     .card .field-label.required, .status-container .field-label.required {
       border-right: 3px solid #f59d1f; }
+    .card .field-label .sub-message, .status-container .field-label .sub-message {
+      font-size: .9em; }
   .card .field-value, .status-container .field-value {
     display: table-cell;
     padding-left: 5px;
@@ -50,6 +54,8 @@ textarea:focus {
     .card .field-value.details, .status-container .field-value.details {
       border-bottom: 1px solid #dadada;
       width: 75%; }
+    .card .field-value textarea, .status-container .field-value textarea {
+      max-width: 500px; }
   .card .field-row, .status-container .field-row {
     padding: 5px 0; }
 
