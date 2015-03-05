@@ -109,8 +109,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				Thread.Sleep(1000);
 			} while (!isJobDone);
 
-			ProcessExceptions();
-
 			FinalizeSyncData(data, fieldMap, this.ImportSettings);
 		}
 
@@ -208,29 +206,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return settings;
 		}
 
-		private void ProcessExceptions()
-		{
-			InjectErrors();
-			return;
-
-			if (OnJobError == null && _jobError != null)
-			{
-				throw _jobError;
-			}
-			else if (OnDocumentError == null && _rowErrors != null)
-			{
-				string errorMessage = string.Empty;
-				foreach (var rowError in _rowErrors)
-				{
-					errorMessage = string.Format("{0}{1}(Id: {2}){3}", errorMessage, Environment.NewLine, rowError.Key, rowError.Value);
-				}
-				if (!string.IsNullOrEmpty(errorMessage))
-				{
-					throw new Exception(errorMessage);
-				}
-			}
-		}
-
 		private void Finish(DateTime startTime, DateTime endTime, int totalRows, int errorRowCount)
 		{
 			lock (_importService)
@@ -264,27 +239,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			else
 			{
 				_rowErrors.Add(new KeyValuePair<string, string>(documentIdentifier, errorMessage));
-			}
-		}
-
-		private void InjectErrors()
-		{
-			try
-			{
-				kCura.Method.Injection.InjectionManager.Instance.Evaluate("DFE4D63C-3A6A-49C2-A80D-25CA60F2B31C");
-			}
-			catch (Exception ex)
-			{
-				JobError(ex);
-			}
-
-			try
-			{
-				kCura.Method.Injection.InjectionManager.Instance.Evaluate("40af620b-af2e-4b50-9f62-870654819df6");
-			}
-			catch (Exception ex)
-			{
-				ItemError("MyUniqueIdentifier", ex.Message);
 			}
 		}
 	}
