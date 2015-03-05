@@ -136,5 +136,5 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
 # ViewKeywords
-| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
-| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

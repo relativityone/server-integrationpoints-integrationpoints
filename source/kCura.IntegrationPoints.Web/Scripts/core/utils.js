@@ -118,5 +118,26 @@
 				return decodeURIComponent(results[1].replace(/\+/g, " "));
 			}
 		};
+		utils.toCamelCase = function (sentenceCase) {
+			var out = "";
+			sentenceCase.split(" ").forEach(function (el, idx) {
+				var add = el.toLowerCase();
+				out += (idx === 0 ? add : add[0].toUpperCase() + add.slice(1));
+			});
+			return out;
+		};
+		utils.format = function (strTemp, obj) {
+			var urlFormat = strTemp;
+			if (urlFormat[0] === '/') {
+				urlFormat = urlFormat.slice(1, urlFormat.length);
+			}
+			for (var key in obj) {
+				if (obj.hasOwnProperty(key)) {
+					var regEx = new RegExp('%' + key + '%', "ig")
+					urlFormat = urlFormat.replace(regEx, obj[key]);
+				}
+			}
+			return urlFormat;
+		};
 	})(root.utils || (root.utils = {}));
 })(IP || (IP = {}));

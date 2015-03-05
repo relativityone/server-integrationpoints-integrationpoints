@@ -53,7 +53,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Agent">
+    <Reference Include="kCura.Agent, Version=9.1.87.2, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Agent.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Apps.Common.Config, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
@@ -67,6 +68,10 @@
     <Reference Include="kCura.Apps.Common.Utils, Version=1.0.106.2, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.106.2\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Method.Injection, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\Injection\kCura.Method.Injection.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -94,6 +99,8 @@
     </Compile>
     <Compile Include="Agent.cs" />
     <Compile Include="Installer\AgentInstallers.cs" />
+    <Compile Include="Tasks\SendEmailManager.cs" />
+    <Compile Include="Tasks\SendEmailWorker.cs" />
     <Compile Include="Tasks\SyncCustodianManagerWorker.cs" />
     <Compile Include="Tasks\ITaskFactory.cs" />
     <Compile Include="Tasks\SyncManager.cs" />

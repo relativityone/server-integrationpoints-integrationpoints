@@ -57,6 +57,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.106.2\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\Injection\kCura.Injection.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Method.Injection, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\Injection\kCura.Method.Injection.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
@@ -79,11 +87,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
+    <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Services\CustodianService.cs" />
     <Compile Include="Services\CustodianManager\CustodianManagerDataReaderEnumerable.cs" />
     <Compile Include="Services\CustodianManager\CustodianManagerJobParameters.cs" />
     <Compile Include="Services\CustodianManager\CustodianManagerMap.cs" />
     <Compile Include="Services\CustodianManager\ManagerQueueService.cs" />
+    <Compile Include="Services\DeleteHistoryService.cs" />
+    <Compile Include="Services\DeleteIntegrationPoints.cs" />
     <Compile Include="Services\Domain\AssemblyDomainLoader.cs" />
     <Compile Include="Services\Domain\DataReaderWrapper.cs" />
     <Compile Include="Services\Domain\DomainHelper.cs" />
@@ -98,6 +109,12 @@
     <Compile Include="Queries\GetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="Queries\GetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Services\Domain\ProviderWrapper.cs" />
+    <Compile Include="Services\Guid\GuidService.cs" />
+    <Compile Include="Services\Guid\IGuidService.cs" />
+    <Compile Include="Services\IJobStatusUpdater.cs" />
+    <Compile Include="Services\JobHistory\JobHistoryErrorService.cs" />
+    <Compile Include="Services\JobHistory\JobHistoryService.cs" />
+    <Compile Include="Services\JobStatusUpdater.cs" />
     <Compile Include="Services\Provider\DefaultSourcePluginProvider.cs" />
     <Compile Include="Services\Domain\AppDomainFactory.cs" />
     <Compile Include="Services\Provider\ProviderManager.cs" />

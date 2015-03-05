@@ -35,6 +35,7 @@ Thumbs.db
 *.idb
 *.ilk
 *.ipch
+*.pyc
 *.o
 *.lo
 *.pyo
@@ -60,6 +61,10 @@ Thumbs.db
 .lastbuildsucceeded
 .lastcodeanalysissucceeded
 *.dotCover
+selenium-screenshot-*.png
+log.html
+output.xml
+report.html
 relre:DevelopmentScripts/NAnt.*
 relre:DevelopmentScripts/lib/*
 relre:DevelopmentScripts/NDoc.*

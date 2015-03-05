@@ -71,6 +71,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					return Container.Resolve<SyncWorker>();
 				case TaskType.SyncCustodianManagerWorker:
 					return Container.Resolve<SyncCustodianManagerWorker>();
+				case TaskType.SendEmailManager:
+					return Container.Resolve<SendEmailManager>();
+				case TaskType.SendEmailWorker:
+					return Container.Resolve<SendEmailWorker>();
 				default:
 					return null;
 			}

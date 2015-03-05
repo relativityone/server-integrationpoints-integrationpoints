@@ -14,8 +14,10 @@
 | ${WorkspaceName}		| LDAP Sync
 | ${IntegrationPoint1}	| Integration Point 1	| # Enable Scheduler is set to No
 | ${IntegrationPoint2}	| Integration Point 2	| # Daily Schedule
+| ${IntegrationPoint2}	| Integration Point 3	| # Weekly Schedule
+| ${IntegrationPoint2}	| Integration Point 4	| # Monthly Schedule
 | ${ConnectionPath}		| testing.corp/CN=Users,DC=testing,DC=corp
-| ${ObjectFilterString}	| (objectClass=*)
+| ${ObjectFilterString}	| (department=*)
 | ${Authentication}		| FastBind
 | ${ConnectionUsername}	| testing\\administrator
 | ${ConnectionPassword}	| P@ssw0rd@1
@@ -34,14 +36,8 @@
 | The Integration Point Read page has the correct Layouts
 | | [Documentation]	| Verify that the Integration Point Read page has only the "Integration Point Details" Layout. 
 | | ...				| 
-| | [Tags]			| manual	| automateable?
-| | Run the following manual steps:
-| | ... | Steps: 
-| | ... | 1. View Integration Point | ${IntegrationPoint1}
-| | ... | 2. Click the Layout dropdown
-| | ... |
-| | ... | Expected Result:
-| | ... | Verify that the only Layout is "Integration Point Details"
+| | [Tags]			| automated
+| | Verify that the Layout Dropdown only has the following Layouts	| Integration Point Details
 
 
 | The correct Buttons appear in the Header
@@ -56,75 +52,156 @@
 | | ... | View Audit
 
 
-| The Section headings are in the correct order
-| | [Documentation]	| Verify that the Section headings are sorted correctly.
+| The Category Headings are in the correct order
+| | [Documentation]	| Verify that the Category headings are sorted correctly on the Integration Point Details" Layout.
 | | ...				| [id] 1180fd11-a89f-11e4-b0e4-b8ca3a83048f
-| | [Tags]			| manual	| automateable?
-| | Run the following manual steps:
-| | ... | Steps: 
-| | ... | 1. View Integration Point | ${IntegrationPoint1}
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the Sections headings are in the following Order:
-| | ... | - General
-| | ... | - Status
+| | [Tags]			| automated
+| | Verify that the current Layout has the following Categories in Order	| 
+| | ... | General			| 
+| | ... | Status			| 
+| | ... | Import Scheduling	| 
+| | ... | Source Connection
 
 
-| The General fields are in the correct order
-| | [Documentation]	| Verify that the fields in the General section are sorted correctly.
+| The correct Fields are present when Enable Scheduler is set to No
+| | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to No.
 | | ...				| [id] 1180fd12-a89f-11e4-a95c-b8ca3a83048f
-| | [Tags]			| manual
-| | Verify the current layout has the following fields for the category	| General	| # broken
-| | ... | Name:				| 
-| | ... | Source Provider:	| 
-| | ... | Overwrite:
+| | [Tags]			| manual	| partially_automated	| field_placement
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | 1. Verify that the "General" Category has the following fields in order:	| 
+| | ... | - Name			| 
+| | ... | - Overwrite		| 
+| | ... | - Source Provider	| 
+| | ... | - Destination RDO	| 
+| | ... | - Log Errors
+| | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
+| | ... | - Job Status						|
+| | ... | - Next Scheduled Runtime (UTC)	| 
+| | ... | - Last Runtime (UTC)
+| | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
+| | ... | - Enable Scheduler	|
+| | ... | - Frequency			| 
+| | ... | - Start Date			| 
+| | ... | - End Date			| 
+| | ... | - Scheduled Time (UTC)
+| | ... | 4. Verify that the "Source Connection" Category has the following fields in order:	| 
+| | ... | - Connection Path			| 
+| | ... | - Object Filter String	| 
+| | ... | - Authentication			| 
+| | ... | - Username				| 
+| | ... | - Password				| 
+| | ... | - Import Nested Items
 
 
-| The Status fields are in the correct order when Enable Scheduler is set to No
-| | [Documentation]	| Verify that the fields in the Status section are sorted correctly when Enable Scheduler is set to No.
-| | ...				| [id] 11817241-a89f-11e4-bd3b-b8ca3a83048f
-| | [Tags]			| manual
-| | Verify the current layout has the following fields for the category	| Status	| # broken
-| | ... | - Enable Scheduler:				| 
-| | ... | - Next Scheduled Runtime (UTC):	| 
-| | ... | - Last Runtime (UTC):
-
-
-| The Status fields are in the correct order when Enable Scheduler is set to Yes
-| | [Documentation]	| Verify that the fields in the Status section are sorted correctly when Enable Scheduler is set to Yes.
+| The correct Fields are present when Frequency is set to Daily
+| | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes and Frequency is set to Daily.
 | | ...				| [id] 11817242-a89f-11e4-82d7-b8ca3a83048f
-| | [Tags]			| manual
+| | [Tags]			| manual	| partially_automated	| field_placement
 | | [Setup]			| View Integration Point	| ${IntegrationPoint2}
-| | Verify the current layout has the following fields for the category	| Status	| # broken
-| | ... | - Enable Scheduler:				| 
-| | ... | - Next Scheduled Runtime (UTC):	| 
-| | ... | - Last Runtime (UTC):
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | 1. Verify that the "General" Category has the following fields in order:	| 
+| | ... | - Name			| 
+| | ... | - Overwrite		| 
+| | ... | - Source Provider	| 
+| | ... | - Destination RDO	| 
+| | ... | - Log Errors
+| | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
+| | ... | - Job Status						|
+| | ... | - Next Scheduled Runtime (UTC)	| 
+| | ... | - Last Runtime (UTC)
+| | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
+| | ... | - Enable Scheduler	|
+| | ... | - Frequency			| 
+| | ... | - Start Date			| 
+| | ... | - End Date			| 
+| | ... | - Scheduled Time (UTC)
+| | ... | 4. Verify that the "Source Connection" Category has the following fields in order:	| 
+| | ... | - Connection Path			| 
+| | ... | - Object Filter String	| 
+| | ... | - Authentication			| 
+| | ... | - Username				| 
+| | ... | - Password				| 
+| | ... | - Import Nested Items
 
 
-*** Keywords *** 
-
-| Suite Setup Keyword
-| | [Documentation]	| Create the Suite Preconditions
-| | Setup connection to the relativity database
-| | Open and Log in to Method
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
-
-| | @{DisabledStep1Fields}=	| Create List	| 
-| | ... | ${IntegrationPoint1}	| 
-| | ... | Append/Overlay		| 
-| | ... | LDAP					| 
-| | ... | Custodian				| 
-| | ... | No
-
-| | @{ActiveStep1Fields}=	| Create List	| 
-| | ... | ${IntegrationPoint2}	| 
+| All Fields are present when Frequency is set to Weekly
+| | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes and Frequency is set to Weekly.
+| | [Tags]			| manual	| partially_automated	| field_placement
+| | @{Step1Fields}=	| Create List	| 
+| | ... | ${IntegrationPoint3}	| 
 | | ... | Append/Overlay		| 
 | | ... | LDAP					| 
 | | ... | Custodian				| 
 | | ... | Yes					| 
-| | ... | Daily					| 
-| | ... | NULL					| 
-| | ... | NULL					| 
+| | ... | Weekly				| 
+| | ... | 3						| 
+| | ... | Monday; Friday		| 
+| | ... | 2/10/2025				| 
+| | ... | 2/18/2025				| 
+| | ... | 12:30 PM
+
+| | @{Step2Fields}=		| Create List	| 
+| | ... | ${ConnectionPath}		| 
+| | ... | ${ObjectFilterString}	| 
+| | ... | ${Authentication}		| 
+| | ... | ${ConnectionUsername}	| 
+| | ... | ${ConnectionPassword}	| 
+| | ... | ${ImportNestedItems}
+
+| | @{Step3Mapping}=	| Create List	| 
+| | ... | Email			| mail			| 
+| | ... | Department	| countrycode	| 
+| | ... | First Name	| givenname		| 
+| | ... | Last Name		| sn			| 
+| | ... | UniqueID		| objectguid
+
+| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+
+| | View Integration Point	| ${IntegrationPoint3}
+
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | 1. Verify that the "General" Category has the following fields in order:	| 
+| | ... | - Name			| 
+| | ... | - Overwrite		| 
+| | ... | - Source Provider	| 
+| | ... | - Destination RDO	| 
+| | ... | - Log Errors
+| | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
+| | ... | - Job Status						|
+| | ... | - Next Scheduled Runtime (UTC)	| 
+| | ... | - Last Runtime (UTC)
+| | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
+| | ... | - Enable Scheduler	|
+| | ... | - Frequency			| 
+| | ... | -	Reoccur				| 
+| | ... | -	Send On				| 
+| | ... | - Start Date			| 
+| | ... | - End Date			| 
+| | ... | - Scheduled Time (UTC)
+| | ... | 4. Verify that the "Source Connection" Category has the following fields in order:	| 
+| | ... | - Connection Path			| 
+| | ... | - Object Filter String	| 
+| | ... | - Authentication			| 
+| | ... | - Username				| 
+| | ... | - Password				| 
+| | ... | - Import Nested Items
+
+
+| All Fields are present when Frequency is set to Monthly
+| | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes and Frequency is set to Mothly.
+| | [Tags]			| manual	| partially_automated	| field_placement
+| | @{Step1Fields}=	| Create List	| 
+| | ... | ${IntegrationPoint4}	| 
+| | ... | Append/Overlay		| 
+| | ... | LDAP					| 
+| | ... | Custodian				| 
+| | ... | Yes					| 
+| | ... | Monthly				| 
+| | ... | 3						| 
+| | ... | Day 15 of the month	| 
 | | ... | 2/15/2025				| 
 | | ... | 2/16/2025				| 
 | | ... | 12:30 PM
@@ -144,13 +221,167 @@
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
 
+| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+
+| | View Integration Point	| ${IntegrationPoint4}
+
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | 1. Verify that the "General" Category has the following fields in order:	| 
+| | ... | - Name			| 
+| | ... | - Overwrite		| 
+| | ... | - Source Provider	| 
+| | ... | - Destination RDO	| 
+| | ... | - Log Errors
+| | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
+| | ... | - Job Status						|
+| | ... | - Next Scheduled Runtime (UTC)	| 
+| | ... | - Last Runtime (UTC)
+| | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
+| | ... | - Enable Scheduler	|
+| | ... | - Frequency			| 
+| | ... | -	Reoccur				| 
+| | ... | -	Send On				| 
+| | ... | - Start Date			| 
+| | ... | - End Date			| 
+| | ... | - Scheduled Time (UTC)
+| | ... | 4. Verify that the "Source Connection" Category has the following fields in order:	| 
+| | ... | - Connection Path			| 
+| | ... | - Object Filter String	| 
+| | ... | - Authentication			| 
+| | ... | - Username				| 
+| | ... | - Password				| 
+| | ... | - Import Nested Items
+
+
+| The Password Field shows six asterixes when not populated
+| | [Documentation]	| Verify that the Password field in the Source Connection Category is shown as "******" when no value was entered during creation.
+| | [Tags]			| automated
+| | [Setup]			| View Integration Point	| ${IntegrationPoint2}
+| | Verify that the following Field has the Following Value	| Password:	| ******
+
+
+| The Password Field shows six asterixes when populated
+| | [Documentation]	| Verify that the Password field in the Source Connection Category is shown as "******" when a value was entered during creation.
+| | [Tags]			| automated
+| | [Setup]			| View Integration Point	| ${IntegrationPoint1}
+| | Verify that the following Field has the Following Value	| Password:	| ******
+
+
+| The Object Filter String Field shows (objectClass=*) when not populated
+| | [Documentation]	| Verify that the Object Filter String field in the Source Connection Category is shown as "(objectClass=*)" when no value was entered during creation.
+| | [Tags]			| automated
+| | [Setup]			| View Integration Point	| ${IntegrationPoint2}
+| | Verify that the following Field has the Following Value	| Object Filter String:	| (objectClass=*)
+
+
+| The Object Filter String Field shows the correct value when populated
+| | [Documentation]	| Verify that the Object Filter String field in the Source Connection Category is shown as the value that was entered during creation.
+| | [Tags]			| automated
+| | [Setup]			| View Integration Point	| ${IntegrationPoint1}
+| | Verify that the following Field has the Following Value	| Object Filter String:	| ${ObjectFilterString}
+
+
+*** Keywords ***
+
+| Verify that the following Field has the Following Value
+| | [Documentation]	| This keyword verifies that the given field has the given value.
+| | ...				| Written because "Verify the current layout has fields with the following values" does not work for some reason.
+| | [ARGUMENTS]		| ${FieldName}	| ${ExpectedValue}
+| | Element Should Be Visible	| xpath=//td[@class='dynamicViewFieldName' and text()="${FieldName}"]	| The field ${FieldName} was not visible.
+| | ${ActualValue}=	| Get Text	| xpath=//td[@class='dynamicViewFieldName' and text()="${FieldName}"]/following-sibling::td[@class='dynamicViewFieldValue']
+| | Should Be Equal As Strings	| ${ExpectedValue}	| ${ActualValue}
+
+| Verify that the current Layout has the following Categories in Order
+| | [Documentation]	| This keyword verifies that the given Categories are visible on the current Layout in the given order.
+| | [ARGUMENTS]		| @{ExpectedCategories}
+| | Element Should Be Visible	| id=_dynamicTemplate__kCuraScrollingDiv__dynamicViewFieldRenderer_span	| No Categories were found on the current Layout.
+| | @{ActualCategories}=	| Get Element Text	| id=_dynamicTemplate__kCuraScrollingDiv__dynamicViewFieldRenderer_span	| False
+| | Log	| Expected Categories: ${ExpectedCategories}
+| | Log	| Actual Categories: ${ActualCategories}
+| | Lists Should Be Equal	| ${ExpectedCategories}	| ${ActualCategories}
+
+| Verify that the Layout Dropdown only has the following Layouts
+| | [Documentation]	| This keyword verifies that the Layout dropdown has only the given Layouts in any order.
+| | ...				| This keyword assumes that the Layout dropdown's name is "_dynamicTemplate$ctl03".
+| | [ARGUMENTS]		| @{ExpectedLayouts}
+| | Element Should Be Visible	| css=select[name='_dynamicTemplate$ctl03']	| The Layout dropdown was not found.
+| | @{ActualLayouts}=	| Get Element Text	| css=select[name='_dynamicTemplate$ctl03'] > option	| False
+| | Sort List	| ${ExpectedLayouts}
+| | Sort List	| ${ActualLayouts}
+| | Lists Should Be Equal	| ${ExpectedLayouts}	| ${ActualLayouts}
+
+| Suite Setup Keyword
+| | [Documentation]	| Create the Suite Preconditions
+| | Setup connection to the relativity database
+| | Open and Log in to Method
+| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Enable Strict Mode for Layouts	| # Makes 'Verify the current layout has the following fields' ensure that only the given fields are present
+
+# --------------------------------------------------------------------------------------------------------
+
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint1}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint1}
-| | Create Integration Point | ${DisabledStep1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint2}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint2}
-| | Create Integration Point | ${ActiveStep1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint3}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint3}
+
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint4}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint4}
+
+# --------------------------------------------------------------------------------------------------------
+
+| | @{Step1Fields}=		| Create List	| 
+| | ... | ${IntegrationPoint1}	| 
+| | ... | Append/Overlay		| 
+| | ... | LDAP					| 
+| | ... | Custodian				| 
+| | ... | No
+
+| | @{Step2Fields}=		| Create List	| 
+| | ... | ${ConnectionPath}		| 
+| | ... | ${ObjectFilterString}	| 
+| | ... | ${Authentication}		| 
+| | ... | ${ConnectionUsername}	| 
+| | ... | ${ConnectionPassword}	| 
+| | ... | ${ImportNestedItems}
+
+| | @{Step3Mapping}=	| Create List	| 
+| | ... | Email			| mail			| 
+| | ... | Department	| countrycode	| 
+| | ... | First Name	| givenname		| 
+| | ... | Last Name		| sn			| 
+| | ... | UniqueID		| objectguid
+
+| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+
+# --------------------------------------------------------------------------------------------------------
+
+| | @{Step1Fields}=	| Create List	| 
+| | ... | ${IntegrationPoint2}	| 
+| | ... | Append/Overlay		| 
+| | ... | LDAP					| 
+| | ... | Custodian				| 
+| | ... | Yes					| 
+| | ... | Daily					| 
+| | ... | NULL					| 
+| | ... | NULL					| 
+| | ... | 2/15/2025				| 
+| | ... | 2/16/2025				| 
+| | ... | 12:30 PM
+
+| | @{Step2Fields}=	| Create List	| 
+| | ... | ${ConnectionPath}		| 
+| | ... | ${EMPTY}				| 
+| | ... | ${Authentication}		| 
+| | ... | ${EMPTY}				| 
+| | ... | ${EMPTY}				| 
+| | ... | ${ImportNestedItems}
+
+| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 | | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
@@ -161,16 +392,22 @@
 | | Delete the following Integration Point using API	| ${IntegrationPoint1}
 | | Delete the following Integration Point using API	| ${IntegrationPoint2}
 
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint3}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint3}
+
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint4}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint4}
+
 | | Drop connection to the relativity services api
 | | Close All Browsers
 
 
 *** Settings ***
-| Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/Relativity/Processing/Processing/Relativity_Keywords_General.txt
+| Resource	| ${KEYWORD_DIR}/Relativity/Shared/Layouts/LayoutKeywords.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/RelativityKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/DatabaseKeywords.txt
-| Resource	| C:/SourceCode/LDAPSync/QA/Keywords/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

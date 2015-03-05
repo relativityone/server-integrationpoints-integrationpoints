@@ -1,9 +1,14 @@
-﻿<#@ template language="C#" hostspecific="true" debug="true" #>
-<#@ assembly name="$(ProjectDir)\..\Dependencies\Milyli.Relativity.CodeGen\GeneratorHelper.dll" #>
+﻿<#@ template language="C#" hostspecific="true" debug="true"#>
 <#@ assembly name="System.Core.dll" #>
+<#@ assembly name="System.Xml.dll" #>
+<#@ assembly name="System.Xml.Linq.dll" #>
+<#@ assembly name="C:\SourceCode\LDAPSync\source\Dependencies\Milyli.Relativity.CodeGen\GeneratorHelper.dll" #>
+<#@ import namespace="System" #>
 <#@ import namespace="System.IO" #>
+<#@ import namespace="System.Xml" #>
 <#@ import namespace="System.Linq" #>
-<#@ import namespace="Milyli.MRT4.GeneratorHelper" #>
+<#@ import namespace="GeneratorHelper" #>
+
 <#
 var templateFile = Path.GetDirectoryName(Host.TemplateFile); 
 var schemaFile = @"..\source\application\application.xml"; 
@@ -32,5 +37,20 @@ namespace kCura.IntegrationPoints.Data
 	}
 	#>
 
+
+		public RSAPIService(){}
+
+		public RSAPIService(IRSAPIClient client)
+		{
+		<#
+		foreach  (ObjectTypeDTO objType in objTypes)
+		{
+		#>
+	this.<#=objType.Name.ToPascalCase()#>Library = new RsapiClientLibrary<<#=objType.Name.ToPascalCase()#>>(client);
+		<#
+		}
+		#>
+	
+		}
 	}
 }

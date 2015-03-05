@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Data.Attributes;
+using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Artifact = kCura.Relativity.Client.DTOs.Artifact;
 using Choice = kCura.Relativity.Client.Choice;
 
 namespace kCura.IntegrationPoints.Data
@@ -33,18 +35,8 @@ namespace kCura.IntegrationPoints.Data
 		public virtual T GetField<T>(Guid fieldGuid)
 		{
 			var value = Rdo[fieldGuid].Value;
-			var choice = value as Relativity.Client.DTOs.Choice;
-			if (choice != null)
-			{
-				value = new Choice(choice.ArtifactID, choice.Name);
-			}
-			var artifact = value as Artifact;
-			if (artifact != null)
-			{
-				value = artifact.ArtifactID;
-			}
-
-			return (T)value;
+			object v = ConvertForGet(FieldMetadata[fieldGuid].Type, value);
+			return (T)v;
 		}
 
 		public string GetFieldName(Guid fieldGuid)
@@ -54,14 +46,7 @@ namespace kCura.IntegrationPoints.Data
 
 		public virtual void SetField<T>(Guid fieldName, T fieldValue, Boolean markAsUpdated = true)
 		{
-			object value = fieldValue;
-			var choice = fieldValue as Choice;
-			if (choice != null)
-			{
-				var choiceDto = new Relativity.Client.DTOs.Choice(choice.ArtifactID);
-				choiceDto.Name = choice.Name;
-				value = choiceDto;
-			}
+			object value = ConvertValue(FieldMetadata[fieldName].Type, fieldValue);
 			if (!Rdo.Fields.Any(x => x.Guids.Contains(fieldName)))
 			{
 				Rdo.Fields.Add(new FieldValue(fieldName, value));
@@ -70,7 +55,107 @@ namespace kCura.IntegrationPoints.Data
 			{
 				Rdo[fieldName].Value = value;
 			}
+		}
 
+		internal object ConvertForGet(string fieldType, object value)
+		{
+			switch (fieldType)
+			{
+				case FieldTypes.MultipleObject:
+					if (value is FieldValueList<Artifact>)
+					{
+						return ((FieldValueList<Artifact>)value).Select(x => x.ArtifactID).ToArray();
+					}
+					return new int[]{};
+				case FieldTypes.SingleObject:
+					var a = value as Artifact;
+					if (a != null)
+					{
+						return a.ArtifactID;
+					}
+					return value;
+				case FieldTypes.SingleChoice:
+					var choice = value as Relativity.Client.DTOs.Choice;
+					if (choice != null)
+					{
+						return new Choice(choice.ArtifactID, choice.Name);
+					}
+					return value;
+				default:
+					return value;
+			}
+
+		}
+
+		internal object ConvertValue(string fieldType, object value)
+		{
+			if (value == null) return value;
+			object newValue = null;
+
+			switch (fieldType)
+			{
+				case FieldTypes.MultipleChoice:
+					Choice[] choices = null;
+					if (value is List<Choice>) choices = ((List<Choice>)value).ToArray();
+					else if (value is object[]) choices = ((object[])value).Select(x => ((Choice)x)).ToArray();
+					else if (value is Choice[]) choices = (Choice[])value;
+					MultiChoiceFieldValueList multiChoices = new MultiChoiceFieldValueList();
+					multiChoices.UpdateBehavior = MultiChoiceUpdateBehavior.Replace;
+					if (choices != null)
+					{
+						foreach (var choice in choices)
+						{
+							var choiceDto = new Relativity.Client.DTOs.Choice(choice.ArtifactGuids.First()) { Name = choice.Name };
+							multiChoices.Add(choiceDto);
+						}
+						newValue = multiChoices;
+					}
+					break;
+				case FieldTypes.SingleChoice:
+					Choice singleChoice = null;
+					if (value is Choice)
+					{
+						singleChoice = (Choice)value;
+
+						if (!singleChoice.ArtifactGuids.Any() && singleChoice.ArtifactID > 0)
+						{
+							newValue = new Relativity.Client.DTOs.Choice(singleChoice.ArtifactID) {Name = singleChoice.Name};
+						}
+						else if (singleChoice.ArtifactGuids.Any())
+						{
+							newValue = new Relativity.Client.DTOs.Choice(singleChoice.ArtifactGuids.First()) {Name = singleChoice.Name};
+						}
+						else
+						{
+							throw new Exception("Can not determine choice with no artifact id or guid.");
+						}
+					}
+					break;
+				case FieldTypes.SingleObject:
+					if (value is int)
+					{
+						RDO obj = new RDO((int)value);
+						newValue = obj;
+					}
+					break;
+				case FieldTypes.MultipleObject:
+					int[] multipleObjectIDs = null;
+					if (value is int[])
+					{
+						multipleObjectIDs = ((int[])value);
+						FieldValueList<RDO> objects = new FieldValueList<RDO>();
+						foreach (var objectID in multipleObjectIDs)
+						{
+							objects.Add(new RDO(objectID));
+						}
+						newValue = objects;
+					}
+					break;
+				default:
+					newValue = value;
+					break;
+			}
+			return newValue;
 		}
 
 		public static Dictionary<Guid, DynamicFieldAttribute> GetFieldMetadata(Type t)
@@ -103,7 +188,24 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 
-		public int? ParentArtifactId { get; set; }
+		public int? ParentArtifactId
+		{
+			get
+			{
+				if (this.Rdo.ParentArtifact != null)
+				{
+					return this.Rdo.ParentArtifact.ArtifactID;
+				}
+				return null;
+			}
+			set
+			{
+				if (value.HasValue)
+				{
+					this.Rdo.ParentArtifact = new kCura.Relativity.Client.DTOs.Artifact(value.Value);
+				}
+			}
+		}
 		public abstract Dictionary<Guid, DynamicFieldAttribute> FieldMetadata { get; }
 		public abstract DynamicObjectAttribute ObjectMetadata { get; }
 	}

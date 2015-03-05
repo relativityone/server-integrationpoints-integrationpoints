@@ -23,7 +23,9 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 												string serializedScheduleRule,
 												string jobDetails,
 												int jobFlags,
-												int SubmittedBy)
+												int SubmittedBy,
+												long? rootJobID,
+												long? parentJobID = null)
 		{
 			string sql = string.Format(Resources.CreateScheduledJob, qDBContext.TableName);
 
@@ -44,6 +46,12 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 			sqlParams.Add(string.IsNullOrEmpty(serializedScheduleRule)
 											? new SqlParameter("@ScheduleRule", DBNull.Value)
 											: new SqlParameter("@ScheduleRule", serializedScheduleRule));
+			sqlParams.Add(!rootJobID.HasValue || rootJobID.Value == 0
+											? new SqlParameter("@RootJobID", DBNull.Value)
+											: new SqlParameter("@RootJobID", rootJobID.Value));
+			sqlParams.Add(!parentJobID.HasValue || parentJobID.Value == 0
+											? new SqlParameter("@ParentJobID", DBNull.Value)
+											: new SqlParameter("@ParentJobID", parentJobID.Value));
 
 			DataTable dataTable = qDBContext.EddsDBContext.ExecuteSqlStatementAsDataTable(sql, sqlParams);
 

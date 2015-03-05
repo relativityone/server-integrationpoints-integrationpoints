@@ -23,5 +23,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// Gets or sets the URL used to configure the data source provider.
 		/// </summary>
 		public string Url { get; set; }
+
+		public string ViewDataUrl { get; set; }
 	}
 }

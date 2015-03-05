@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Data;
-using kCura.Apps.Common.Utils.Serializers;
-using kCura.ScheduleQueue.Core.ScheduleRules;
 
 namespace kCura.ScheduleQueue.Core
 {
 	public class Job
 	{
 		public long JobId { get; private set; }
+		public long? RootJobId { get; private set; }
+		public long? ParentJobId { get; private set; }
 		public Int32 AgentTypeID { get; private set; }
 		public Int32? LockedByAgentID { get; private set; }
 		public Int32 WorkspaceID { get; private set; }
@@ -26,6 +26,8 @@ namespace kCura.ScheduleQueue.Core
 		{
 
 			JobId = row.Field<long>("JobID");
+			RootJobId = row.Field<long?>("RootJobId");
+			ParentJobId = row.Field<long?>("ParentJobId");
 			AgentTypeID = row.Field<int>("AgentTypeID");
 			LockedByAgentID = row.Field<int?>("LockedByAgentID");
 			WorkspaceID = row.Field<int>("WorkspaceID");

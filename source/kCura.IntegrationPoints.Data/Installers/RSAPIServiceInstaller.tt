@@ -3,7 +3,7 @@
 <#@ assembly name="System.Core.dll" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Linq" #>
-<#@ import namespace="Milyli.MRT4.GeneratorHelper" #>
+<#@ import namespace="GeneratorHelper" #>
 <#
 var templateFile = Path.GetDirectoryName(Host.TemplateFile); 
 var schemaFile = @"..\..\source\application\application.xml"; 

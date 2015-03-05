@@ -1,36 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using kCura.EventHandler;
 using System.Runtime.InteropServices;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Services.SourceTypes;
-using kCura.IntegrationPoints.SourceProviderInstaller;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Migrations;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
-	[kCura.EventHandler.CustomAttributes.Description("Update Integration Points Entities - On Every Install")]
+	[kCura.EventHandler.CustomAttributes.Description("Runs Post install Migration scripts for Integration Points.")]
 	[kCura.EventHandler.CustomAttributes.RunOnce(false)]
-	[Guid("02ec5d64-208a-44fb-a5e3-c3a1103e7da7")]
-	public class RunEveryTimeInstaller : SourceProviderInstaller.IntegrationPointSourceProviderInstaller
+	[Guid("fb52b882-22d3-481f-b000-b976c13baf49")]
+	public class RunEveryTimeInstaller : kCura.EventHandler.PostInstallEventHandler
 	{
-		public RunEveryTimeInstaller()
+		public override Response Execute()
 		{
-		}
-
-		public override System.Collections.Generic.IDictionary<System.Guid, SourceProviderInstaller.SourceProvider>
-			GetSourceProviders()
-		{
-			return new Dictionary<Guid, SourceProvider>()
-			{
-				{
-					new Guid("5bf1f2c2-9670-4d6e-a3e9-dbc83db6c232"),
-					new SourceProvider()
-					{
-						Name = "LDAP",
-						Url = "/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/IntegrationPoints/LDAPConfiguration/"
-					}
-				}
-			};
+			
+			new MigrationRunner(new EddsContext(Helper.GetDBContext(-1)), new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID()))).Run();
+			return new Response { Success = true };
 		}
 	}
 }

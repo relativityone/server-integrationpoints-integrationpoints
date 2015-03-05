@@ -3,15 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.DataReaderClient;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Syncronizer.IDataSyncronizer
+	public class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Synchronizer.IDataSynchronizer, IBatchReporter
 	{
+		public event BatchCompleted OnBatchComplete;
+		public event BatchSubmitted OnBatchSubmit;
+		public event BatchCreated OnBatchCreate;
+		public event JobError OnJobError;
+		public event RowError OnDocumentError;
+
 		protected readonly RelativityFieldQuery FieldQuery;
 
 		public RdoSynchronizer(RelativityFieldQuery fieldQuery)
@@ -114,7 +120,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				if (string.IsNullOrEmpty(_webAPIPath))
 				{
-					_webAPIPath = kCura.Apps.Common.Config.Sections.EddsDbmtConfig.WebAPIPath;
+					_webAPIPath = Config.WebAPIPath;
 				}
 				return _webAPIPath;
 			}
@@ -127,6 +133,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			importService.OnBatchComplete += new BatchCompleted(Finish);
 			importService.OnDocumentError += new RowError(ItemError);
 			importService.OnJobError += new JobError(JobError);
+
+			if (OnBatchComplete != null) importService.OnBatchComplete += OnBatchComplete;
+			if (OnBatchSubmit != null) importService.OnBatchSubmit += OnBatchSubmit;
+			if (OnBatchCreate != null) importService.OnBatchCreate += OnBatchCreate;
+			if (OnJobError != null) importService.OnJobError += OnJobError;
+			if (OnDocumentError != null) importService.OnDocumentError += OnDocumentError;
+
 			importService.Initialize();
 
 			return importService;
@@ -185,6 +198,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			if (string.IsNullOrEmpty(settings.WebServiceURL))
 			{
 				settings.WebServiceURL = this.WebAPIPath;
+				if (string.IsNullOrEmpty(settings.WebServiceURL))
+				{
+					throw new Exception("No WebAPI path set for integration points.");
+				}
 				//kCura.Apps.Common.Config.Sections.EddsDbmtConfig.WebAPIPath; //one day we will switch to this;
 			}
 			return settings;
@@ -192,6 +209,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void ProcessExceptions(ImportSettings settings)
 		{
+			InjectErrors();
+
 			if (_jobError != null)
 			{
 				throw _jobError;
@@ -244,6 +263,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private void ItemError(string documentIdentifier, string errorMessage)
 		{
 			_rowErrors.Add(new KeyValuePair<string, string>(documentIdentifier, errorMessage));
+		}
+
+		private void InjectErrors()
+		{
+			try
+			{
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("DFE4D63C-3A6A-49C2-A80D-25CA60F2B31C");
+			}
+			catch (Exception ex)
+			{
+				JobError(ex);
+			}
+
+			try
+			{
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("40af620b-af2e-4b50-9f62-870654819df6");
+			}
+			catch (Exception ex)
+			{
+				ItemError("MyUniqueIdentifier", ex.Message);
+			}
 		}
 	}
 }

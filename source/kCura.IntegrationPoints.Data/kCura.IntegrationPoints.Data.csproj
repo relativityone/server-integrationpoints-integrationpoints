@@ -50,12 +50,16 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.IntegrationPoints.Core">
+      <HintPath>..\kCura.IntegrationPoints.Web\Bin\kCura.IntegrationPoints.Core.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\..\Method\Binaries\kCura\Mono.Cecil.dll</HintPath>
+    <Reference Include="Mono.Cecil, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -82,27 +86,39 @@
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="EddsDbContext.cs" />
+    <Compile Include="Extensions\ChoiceExtensions.cs" />
+    <Compile Include="GetArtifactForMassAction.cs" />
+    <Compile Include="IEddsDBContext.cs" />
     <Compile Include="EddsResourceConnection.cs" />
     <Compile Include="Extensions\DBContextExtensions.cs" />
     <Compile Include="Extensions\GenericLibraryExtensions.cs" />
     <Compile Include="GetObjectBase.cs" />
+    <Compile Include="IntegrationPointQuery.cs" />
     <Compile Include="IWorkspaceDBContext.cs" />
     <Compile Include="Installers\RSAPIServiceInstaller.cs">
       <DependentUpon>RSAPIServiceInstaller.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="IPermissionService.cs" />
     <Compile Include="IObjectTypeQuery.cs" />
     <Compile Include="IRSAPIService.cs">
       <DependentUpon>IRSAPIService.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Migrations\AddWebApiConfigValueMigration.cs" />
+    <Compile Include="Migrations\IMigration.cs" />
+    <Compile Include="Migrations\MigrationRunner.cs" />
+    <Compile Include="Migrations\UpdateJobErrorsBlankToNo.cs" />
     <Compile Include="Models\ApplicationBinary.cs" />
+    <Compile Include="PermissionService.cs" />
     <Compile Include="Queries\GetJobCustodianManagerLinks.cs" />
     <Compile Include="Queries\CreateCustodianManagerResourceTable.cs" />
     <Compile Include="Queries\GetApplicationBinaries.cs" />
     <Compile Include="Queries\GetApplicationGuid.cs" />
+    <Compile Include="Queries\JobHistoryErrorQuery.cs" />
     <Compile Include="RdoGetter.cs" />
     <Compile Include="RDOHelper.cs" />
     <Compile Include="RelativityRdoQuery.cs" />
@@ -171,15 +187,19 @@
     <EmbeddedResource Include="Resources\Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\CheckImportPermission.sql" />
+    <Content Include="Resources\AddWebApiConfig.sql" />
     <Content Include="Resources\GetJobCustodianManagerLinks.sql" />
     <Content Include="Resources\CreateCustodianManagerResourceTable.sql" />
     <Content Include="Resources\GetApplicationBinaries.sql" />
     <Content Include="Resources\GetApplicationGuid.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
     <Content Include="Resources\GetObjectTypes.sql" />
+    <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

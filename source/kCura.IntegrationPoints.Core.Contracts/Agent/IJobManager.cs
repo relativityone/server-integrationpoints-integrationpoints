@@ -1,4 +1,5 @@
-﻿using kCura.ScheduleQueue.Core.ScheduleRules;
+﻿using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 
 namespace kCura.IntegrationPoints.Core.Contracts.Agent
 {
@@ -7,15 +8,15 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 		None,
 		SyncManager,
 		SyncWorker,
-		SyncCustodianManagerWorker
+		SyncCustodianManagerWorker,
+		SendEmailManager,
+		SendEmailWorker
 	}
 
 	public interface IJobManager
 	{
-		void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, IScheduleRule rule);
-		void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID);
-		void CreateJob(int workspaceID, int integrationPointID, TaskType task, string serializedDetails);
-
-		//void CreateJob<T>(T jobDetails, TaskType task); //schedule rules
+		void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null);
+		void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, long? rootJobID = null, long? parentJobID = null);
+		void CreateJob<T>(Job parentJob, T jobDetails, TaskType task);
 	}
 }

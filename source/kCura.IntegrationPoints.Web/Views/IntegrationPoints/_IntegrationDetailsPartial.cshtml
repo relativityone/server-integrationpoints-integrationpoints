@@ -23,6 +23,28 @@
 				<select id="overwrite" data-bind="options: overwrite, value: selectedOverwrite, select2: {}"></select>
 			</div>
 		</div>
+		
+		<div class="field-row">
+			<div class="field-label">
+				<div>Email Notification Recipients:</div>	
+				<div class="sub-message">Separate by semi-colon</div>
+			</div>
+			<div class="field-value">
+				<textarea id="notificationEmails" data-bind="value: notificationEmails" cols="75" rows="5"></textarea>
+			</div>
+		</div>
+
+		<div class="field-row">
+			<div class="field-label">
+				Log Errors:
+			</div>
+			<div class="field-value">
+				<ul id="logErrors">
+					<li><span><input value="true" name="logErrors" type="radio" data-bind="checked: logErrors"/>Yes</span></li>
+					<li><span><input value="false" name="logErrors" type="radio" data-bind="checked: logErrors"/>No</span></li>
+				</ul>
+			</div>
+		</div>
 	</div>
 
 	<div class="card">

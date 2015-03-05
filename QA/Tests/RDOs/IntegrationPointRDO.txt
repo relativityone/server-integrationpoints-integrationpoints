@@ -20,7 +20,7 @@
 | | [Documentation]	| This test verifies that the correct number of fields exist with an Object Type of Integration Point.
 | | ...				| [id] 11a240b0-a89f-11e4-9669-b8ca3a83048f
 | | ${Fields}=		| Get the Number of Items in the ItemList
-| | Run Keyword Unless	| '${Fields}' == '16'	| Fail	| There should have been 16 fields, but instead there were ${Fields}.
+| | Run Keyword Unless	| '${Fields}' == '18'	| Fail	| There should have been 18 fields, but instead there were ${Fields}.
 
 # The below tests each verify that a Field with the given data is present on the table.
 
@@ -69,12 +69,28 @@
 | | ... | Associative Object Type	| ${EMPTY}
 
 
+| Integration Point
+| | Find A Row With The Following Data	|
+| | ... | Name						| Integration Point	|
+| | ... | Field Type				| Multiple Object	|
+| | ... | Is Required				| No				|
+| | ... | Associative Object Type	| JobHistory
+
+
 | Last Runtime (UTC)
 | | [Documentation] | [id] 11a41575-a89f-11e4-a233-b8ca3a83048f
 | | Find A Row With The Following Data	|
 | | ... | Name						| Last Runtime (UTC)	|
 | | ... | Field Type				| Date					|
 | | ... | Is Required				| No					|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| LogErrors
+| | Find A Row With The Following Data	|
+| | ... | Name						| LogErrors	|
+| | ... | Field Type				| Yes/No	|
+| | ... | Is Required				| No		|
 | | ... | Associative Object Type	| ${EMPTY}
 
 

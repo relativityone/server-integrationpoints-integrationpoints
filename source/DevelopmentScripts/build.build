@@ -35,7 +35,9 @@
 	<property name="Injections" value="INJECTION" unless="${property::exists('Injections')}" />
 	<property name="TimeMachine" value="TIME_MACHINE" unless="${property::exists('TimeMachine')}" />
 	<property name="DevEnv" value="DEVENV" unless="${property::exists('DevEnv')}" />
-
+	<property name="ncover.install.directory" value="${environment::get-variable('ProgramW6432')}\NCover" />
+	<property name="ncover.output.directory" value="D:\NCover" unless="${property::exists('ncover.output.directory')}" />
+	
 	<!-- Microsoft .NET folders -->
 	<property name="microsoft.net.directory" value="${environment::get-variable('windir')}\Microsoft.NET\Framework\v4.0.30319" unless="${property::exists('microsoft.net.directory')}" />
 	<property name="microsoft.net64.directory" value="${environment::get-variable('windir')}\Microsoft.NET\Framework64\v4.0.30319" unless="${property::exists('microsoft.net64.directory')}" />
@@ -61,6 +63,8 @@
 	<include buildfile="Build Tests.include" />
 	<include buildfile="Build RAP Package.include" />
 	<include buildfile="Update Storyboard.include"/>
+	<include buildfile="Build Projects.Coverage.include"/>
+	<include buildfile="Build Projects.NuGet.include"/>
 
 	<!-- Build all LDAPSync projects- presence of a Build.log file indicates failure -->
 	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, merge_ldap, merge_source_provider_installer, embed_binaries_into_application">				
@@ -164,6 +168,7 @@
 			<arg line='"${source.reference.kCuraAppsCommonConfig.directory}\kCura.Apps.Common.Config.dll"' />
 			<arg line='"${source.reference.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />
 			<arg line='"${source.reference.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
+			<arg line='"${source.reference.Injection.directory}\kCura.Method.Injection.dll"' />
 			<arg line='"${source.reference.Injection.directory}\kCura.Injection.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
 			<arg line='"${target.code.directory}\kCura.ScheduleQueue.AgentBase.dll"' />
@@ -212,6 +217,7 @@
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
 			<arg line='/lib:"${source.reference.NewtonsoftJson.directory}"' />
+			<arg line='/lib:"${source.reference.Injection.directory}"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.SourceProviderInstaller.dll"' />
 			<arg line='"${source.reference.kCuraAppsCommonConfig.directory}\kCura.Apps.Common.Config.dll"' />
 			<arg line='"${source.reference.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />

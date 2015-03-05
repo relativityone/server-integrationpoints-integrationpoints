@@ -1,5 +1,7 @@
 ﻿SELECT 
 			[JobID]
+			,[RootJobID]
+			,[ParentJobID]
 			,[AgentTypeID]
 			,[LockedByAgentID]
 			,[WorkspaceID]

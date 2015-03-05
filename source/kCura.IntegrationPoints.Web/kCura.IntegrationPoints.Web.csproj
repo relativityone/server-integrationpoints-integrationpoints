@@ -299,6 +299,7 @@
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\core\messaging.js" />
     <Content Include="Scripts\dragon\dragon-dialogs.js" />
+    <Content Include="Scripts\EventHandlers\integration-points-view-destination.js" />
     <Content Include="Scripts\frame-messaging.js" />
     <Content Include="Scripts\HelpUtil.js" />
     <Content Include="Scripts\iframeResizer.min.js" />
@@ -492,6 +493,7 @@
     <Content Include="Scripts\postal\postal.min.js.map">
       <DependentUpon>postal.js</DependentUpon>
     </Content>
+    <Content Include="Views\IntegrationPoints\NotEnoughPermission.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -571,6 +573,11 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>mkdir  "$(SolutionDir)bin"
+mkdir  "$(SolutionDir)bin\$(Configuration)"
+$(SolutionDir)Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(SolutionDir)bin\$(Configuration)\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)bin\$(Configuration)\$(TargetName).pdb"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

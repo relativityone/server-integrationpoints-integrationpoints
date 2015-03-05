@@ -97,10 +97,13 @@ namespace kCura.IntegrationPoints.Core.Models
 		public DateTime? LastRun { get; set; }
 		public string SourceConfiguration { get; set; }
 		public string Map { get; set; }
+		public bool LogErrors { get; set; }
+		public string NotificationEmails { get; set; }
 
 		public IntegrationModel()
 		{
 			this.SourceConfiguration = string.Empty;
+			this.LogErrors = true;
 		}
 
 		public IntegrationPoint ToRdo(IEnumerable<Relativity.Client.DTOs.Choice> choices)
@@ -121,7 +124,8 @@ namespace kCura.IntegrationPoints.Core.Models
 			point.FieldMappings = this.Map;
 			point.EnableScheduler = this.Scheduler.EnableScheduler;
 			point.DestinationProvider = this.DestinationProvider;
-
+			point.LogErrors = this.LogErrors;
+			point.EmailNotificationRecipients = this.NotificationEmails;
 			return point;
 		}
 		public IntegrationModel(IntegrationPoint ip)
@@ -145,6 +149,8 @@ namespace kCura.IntegrationPoints.Core.Models
 			this.SourceConfiguration = ip.SourceConfiguration;
 			this.DestinationProvider = ip.DestinationProvider.GetValueOrDefault(0);
 			Scheduler = new Scheduler(ip);
+			this.NotificationEmails = ip.EmailNotificationRecipients ?? string.Empty;
+			this.LogErrors = ip.LogErrors.GetValueOrDefault(false);
 		}
 	}
 }

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Domain;
 using kCura.IntegrationPoints.Core.Queries;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 
 
@@ -16,10 +19,14 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 	{
 		private readonly ICaseServiceContext _caseContext;
 		private readonly IEddsServiceContext _eddsContext;
-		public ImportService(ICaseServiceContext caseContext, IEddsServiceContext eddsContext)
+		private readonly DeleteIntegrationPoints _DeleteintegrationPoint;
+
+		public ImportService(ICaseServiceContext caseContext, IEddsServiceContext eddsContext, DeleteIntegrationPoints deleteIntegrationPoints)
 		{
 			_caseContext = caseContext;
 			_eddsContext = eddsContext;
+			_DeleteintegrationPoint = deleteIntegrationPoints;
+		
 		}
 
 		public void InstallProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providers)
@@ -60,7 +67,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 				Guid applicationGuid = GetApplicationGuid(applicationID);
 				List<Data.SourceProvider> installedRdoProviders =
 					new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(applicationGuid);
-
+				_DeleteintegrationPoint.DeleteIPsWithSourceProvider(installedRdoProviders.Select(x => x.ArtifactId).ToList());
 				RemoveProviders(installedRdoProviders);
 			}
 			catch
@@ -95,6 +102,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			{
 				enumerated.ForEach(x => x.Name = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Name).First());
 				enumerated.ForEach(x => x.SourceConfigurationUrl = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.Url).First());
+				enumerated.ForEach(x => x.ViewConfigurationUrl = providers.Where(y => y.GUID.ToString().Equals(x.Identifier)).Select(y => y.ViewDataUrl).First());
 				_caseContext.RsapiService.SourceProviderLibrary.Update(enumerated);
 			}
 		}
@@ -110,7 +118,8 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 						Name = p.Name,
 						ApplicationIdentifier = p.ApplicationGUID.ToString(),
 						Identifier = p.GUID.ToString(),
-						SourceConfigurationUrl = p.Url
+						SourceConfigurationUrl = p.Url,
+						ViewConfigurationUrl = p.ViewDataUrl
 					};
 				AddNewProviders(newProviders);
 			}

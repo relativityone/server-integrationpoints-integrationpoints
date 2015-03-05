@@ -12,7 +12,7 @@ using kCura.IntegrationPoints.Data.Extensions;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class IntegrationPointService : IDisposable
+	public class IntegrationPointService 
 	{
 		private readonly ICaseServiceContext _context;
 		private Data.IntegrationPoint _rdo;
@@ -28,9 +28,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobService = jobService;
 		}
 
-		private Data.IntegrationPoint GetRDO(int rdoID)
+		public Data.IntegrationPoint GetRDO(int rdoID)
 		{
-			if (_rdo == null)
+			if (_rdo == null || _rdo.ArtifactId != rdoID)
 			{
 				_rdo = _context.RsapiService.IntegrationPointLibrary.Read(rdoID);
 			}
@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			return GetRDO(artifactID).SourceConfiguration;
 		}
-
+		
 		public virtual FieldEntry GetIdentifierFieldEntry(int artifactID)
 		{
 			var rdo = GetRDO(artifactID);
@@ -218,10 +218,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			return periodicScheduleRule;
 		}
 
-		void IDisposable.Dispose()
-		{
-			var x = 0;
-			Debug.WriteLine("");
-		}
+
 	}
 }

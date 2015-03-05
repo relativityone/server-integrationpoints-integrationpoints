@@ -9,7 +9,9 @@ namespace kCura.IntegrationPoints.Agent.Tests
 	public class JobHelper
 	{
 		public static Job GetJob(
-			int JobID,
+			long JobID,
+			long? RootJobID,
+			long? ParentJobID,
 			int AgentTypeID,
 			int LockedByAgentID,
 			int WorkspaceID,
@@ -29,6 +31,8 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			dt.Columns.AddRange(new DataColumn[]
 			{
 				new DataColumn( ){ColumnName = "JobID", DataType = typeof(long)},
+				new DataColumn( ){ColumnName = "RootJobID", DataType = typeof(long), AllowDBNull = true},
+				new DataColumn( ){ColumnName = "ParentJobID", DataType = typeof(long), AllowDBNull = true},
 				new DataColumn( ){ColumnName = "AgentTypeID", DataType = typeof(int)},
 				new DataColumn( ){ColumnName = "LockedByAgentID", DataType = typeof(int)},
 				new DataColumn( ){ColumnName = "WorkspaceID", DataType = typeof(int)},
@@ -45,6 +49,10 @@ namespace kCura.IntegrationPoints.Agent.Tests
 			});
 			DataRow row = dt.NewRow();
 			row["JobID"] = JobID;
+			if (RootJobID.HasValue) row["RootJobID"] = RootJobID;
+			else row["RootJobID"] = DBNull.Value;
+			if (ParentJobID.HasValue) row["ParentJobID"] = ParentJobID;
+			else row["ParentJobID"] = DBNull.Value;
 			row["AgentTypeID"] = AgentTypeID;
 			row["LockedByAgentID"] = LockedByAgentID;
 			row["WorkspaceID"] = WorkspaceID;

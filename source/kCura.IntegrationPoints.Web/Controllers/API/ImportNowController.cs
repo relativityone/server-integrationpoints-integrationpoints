@@ -1,7 +1,9 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Services;
 
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -9,19 +11,24 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class ImportNowController : ApiController
 	{
 		private readonly IJobManager _jobManager;
-		public ImportNowController(IJobManager jobManager)
+		private IntegrationPointService _integrationPointService;
+		private JobHistoryService _jobHistoryService;
+		public ImportNowController(IJobManager jobManager, IntegrationPointService integrationPointService, JobHistoryService jobHistoryService)
 		{
 			_jobManager = jobManager;
+			_integrationPointService = integrationPointService;
+			_jobHistoryService = jobHistoryService;
 		}
 
 		// POST api/importnow
 		public HttpResponseMessage Post(Payload payload)
 		{
-
 			int workspaceID = payload.AppId;
 			int relatedObjectArtifactID = payload.ArtifactId;
-
-			_jobManager.CreateJob<object>(null, TaskType.SyncManager, workspaceID, relatedObjectArtifactID);
+			Guid batchInstance = Guid.NewGuid();
+			Data.IntegrationPoint integrationPoint = _integrationPointService.GetRDO(relatedObjectArtifactID);
+			_jobHistoryService.CreateRDO(integrationPoint, batchInstance, null);
+			_jobManager.CreateJob<object>(batchInstance, TaskType.SyncManager, workspaceID, relatedObjectArtifactID);
 			return Request.CreateResponse(HttpStatusCode.OK);
 		}
 
