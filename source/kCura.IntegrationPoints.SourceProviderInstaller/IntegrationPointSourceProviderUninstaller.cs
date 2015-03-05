@@ -63,7 +63,18 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		private IntegrationPointQuery _integrationPointQuery;
 		private DeleteHistoryService _deleteHistoryService;
 		private IRSAPIService _service;
-
+		private DeleteHistoryErrorService deleteHistoryErrorService;
+		public DeleteHistoryErrorService DeleteHistoryErrorService
+		{
+			get
+			{
+				return deleteHistoryErrorService ??
+							 (deleteHistoryErrorService =
+								 new DeleteHistoryErrorService(Service));
+			}
+			set { deleteHistoryErrorService = value; }
+		}
+		
 		public IntegrationPointQuery IntegrationPoint
 		{
 			get
@@ -74,7 +85,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 
 		public DeleteHistoryService DeleteHistory
 		{
-			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(Service)); }
+			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(Service,DeleteHistoryErrorService)); }
 		}
 
 		public IRSAPIService Service
