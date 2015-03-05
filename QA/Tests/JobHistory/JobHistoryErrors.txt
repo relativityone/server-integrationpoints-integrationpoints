@@ -1,0 +1,87 @@
+*** Settings ***
+| Documentation  | Verify that Integration Points that fail generate errors in the Job History Error table of the Job History view page
+| Metadata       | Authors	| Daniel Oliver
+| Force Tags     | in-progress | team.method
+| Suite Setup    | Create Suite Setup Data
+| Test Teardown  | Capture screenshot if test fails
+| Suite Teardown | Delete the Objects created in the Suite then Close All Browsers
+
+*** Variables ***
+
+| ${WorkspaceName} | LDAP Sync
+| ${IntegrationName} | Duplicate Errors
+| ${Department}      | Errors
+
+*** Test Cases ***
+
+| Item level errors can be populated
+| | [Documentation] | Verify that an import that has an Item level error shows the error on the Job History view page
+| | ... | [id] 9caeb59e-c346-11e4-b4e0-90b11c6c5ae4
+| | [tags] | automated
+| | View Job History | ${IntegrationName}
+| | Set Filter | Source Unique ID | Job, Errors1  | Job History Error
+| | Set Filter | Error | Document '(CN=ErrorsManager Job,CN=Users,DC=gameofholds,DC=testing,DC=corp)' has been previously processed in this file on line	 | Job History Error
+| | Set Filter | Error Type | Item | Job History Error
+| | @{Headers}= | Create List | Error Type
+| | @{Rows}= | Create List  | Item
+| | ${table} | get table | _dynamicTemplate__kCuraScrollingDiv_VR1038167_0_ctl02__kCuraScrollingDiv | numberOfHeaderRowsToRemove=3
+
+| | Verify that the following table has the following headers and rows | ${table} | ${Headers} | ${Rows}
+
+| Job level errors can be populated
+| | [Documentation] | Verify that an import that has a Job level error shows the error on the Job History view page
+| | ... | [id] af20639e-c346-11e4-9dc9-90b11c6c5ae4
+| | [tags] | automated
+| | View Job History | ${IntegrationName}
+| | Set Filter | Source Unique ID | ${EMPTY} | Job History Error
+| | Set Filter | Error | Document '(CN=ErrorsManager Job,CN=Users,DC=gameofholds,DC=testing,DC=corp)	 | Job History Error
+| | Set Filter | Error Type | Job | Job History Error
+
+| | @{Headers}= | Create List | Error Type
+| | @{Rows}= | Create List  | Job
+| | ${table} | get table | _dynamicTemplate__kCuraScrollingDiv_VR1038167_0_ctl02__kCuraScrollingDiv | numberOfHeaderRowsToRemove=3
+
+| | Verify that the following table has the following headers and rows | ${table}  | ${Headers} | ${Rows}
+
+
+*** Keywords *** 
+
+| Create Suite Setup Data
+| | [Documentation]	| Create the Suite Preconditions
+| | Setup connection to the relativity database
+| | Open and Log in to Method
+| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+
+| | @{Step1Fields}  | Create list | ${IntegrationName} | Append/Overlay | LDAP | Custodian | no
+| | @{Step2Fields}  | Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
+| | ... | (department=${Department}) | FastBind | testing\\rellockdown | P@ssw0rd@1
+| | @{Step3Mapping}=	| Create List	|
+| | ... | Email			| mail			| 
+| | ... | Department	| department	| 
+| | ... | First Name	| givenname		| 
+| | ... | Last Name		| sn			| 
+| | ... | UniqueID		| manager
+| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+
+| | Run Import Now on the Following Integration Point | ${IntegrationName}  
+
+| | [Teardown] | Drop connection to the relativity services api
+
+| Delete the Objects created in the Suite then Close All Browsers
+| | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
+| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+
+| | Delete the Following Integration Point | ${IntegrationName}
+
+| | Drop connection to the relativity services api
+| | Close All Browsers
+
+*** Settings ***
+| Library	| Collections
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/GridKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+

@@ -34,6 +34,11 @@
 		@InjectionPointID = '0F8D9778-5228-4D7A-A911-F731292F9CF0',
 		@Description = 'Inserting job error level injection point in the beginning of manager sync job. Generates Job History Error entry.',
 		@Feature = 'RIP:Errors'
+	
+EXEC AddInjectionPoint
+		@InjectionPointID = '9B9265FB-F63D-44D3-90A2-87C1570F746D',
+		@Description = 'Injecting exception right before committing all existing JobHistoryErrors. This will generate Error tab entry, listing all errors failed to commit.',
+		@Feature = 'RIP:Errors'
 		
 		]]></action>
 </script>

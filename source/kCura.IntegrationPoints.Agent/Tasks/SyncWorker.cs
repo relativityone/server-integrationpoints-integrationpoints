@@ -85,6 +85,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				ExecuteImport(fieldMap, sourceConfiguration, this.IntegrationPoint.DestinationConfiguration, entryIDs,
 					sourceProviderRdo, destinationProvider, job);
+
+				InjectErrors();
 			}
 			catch (Exception ex)
 			{
@@ -196,6 +198,27 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Contracts.PluginBuilder.Current.SetSynchronizerFactory(_appDomainRdoSynchronizerFactoryFactory);
 			IDataSynchronizer sourceProvider = _dataSyncronizerFactory.GetSyncronizer(providerGuid, configuration);
 			return sourceProvider;
+		}
+
+		private void InjectErrors()
+		{
+			try
+			{
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("DFE4D63C-3A6A-49C2-A80D-25CA60F2B31C");
+			}
+			catch (Exception ex)
+			{
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
+			}
+
+			try
+			{
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("40af620b-af2e-4b50-9f62-870654819df6");
+			}
+			catch (Exception ex)
+			{
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyUniqueIdentifier", ex.Message);
+			}
 		}
 	}
 }

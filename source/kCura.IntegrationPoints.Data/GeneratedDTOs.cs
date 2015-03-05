@@ -154,6 +154,18 @@ namespace kCura.IntegrationPoints.Data
 				SetField<bool?>(new System.Guid(IntegrationPointFieldGuids.LogErrors), value);
 			}
 		}
+		[DynamicField(IntegrationPointFields.EmailNotificationRecipients, IntegrationPointFieldGuids.EmailNotificationRecipients, FieldTypes.LongText)]
+		public string EmailNotificationRecipients
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(IntegrationPointFieldGuids.EmailNotificationRecipients));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(IntegrationPointFieldGuids.EmailNotificationRecipients), value);
+			}
+		}
 		public const int NameFieldLength = 255;
 		[DynamicField(IntegrationPointFields.Name, IntegrationPointFieldGuids.Name, FieldTypes.FixedLengthText, 255)]
 		public string Name

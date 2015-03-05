@@ -12,7 +12,7 @@
 | Integration Points with Errors can be Deleted
 | | [Documentation] | Verify that Integration Points with Job History Errors can be Deleted
 | | ...				| [id] 24c0654f-b948-11e4-b20e-90b11c6c5ae4
-| | [Tags]          | manual |  required
+| | [Tags]          | manual |  required | automateable
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. An Integration Point has been run with Job History errors
@@ -28,7 +28,7 @@
 | Deleting an Integration Point with Errors also deletes the Job History
 | | [Documentation] | Verify that deleting the Integration Points with Errors deletes the associated Job History
 | | ...				| [id] 8b0b9221-b949-11e4-a4f2-90b11c6c5ae4
-| | [Tags]          | manual
+| | [Tags]          | manual | automateable
 | | Require Test Case | Integration Points with Errors can be Deleted
 | | Run the following manual steps:
 | | ... | Preconditions:
@@ -46,7 +46,7 @@
 | Deleting an Integration Point with a Scheduled Job deletes the Job
 | | [Documentation] | Verify that once an Integration Point is deleted, that is scheduled jobs are also deleted
 | | ...				| [id] 5c440d1e-bb7c-11e4-b18f-90b11c6c5ae4
-| | [Tags]          | manual
+| | [Tags]          | manual | automateable
 | | Require Test Case | Integration Points with Errors can be Deleted
 | | Run the following manual steps:
 | | ... | Steps:

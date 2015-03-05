@@ -22,6 +22,21 @@ ko.validation.insertValidationMessage = function (element) {
 	return iconSpan;
 };
 
+IP.emailUtils = (function () {
+	var _emailParse = function (emails) {
+		return (emails || '').split(';');
+	};
+
+	var _validate = function (value) {
+		return /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i.test(value.trim());
+	};
+
+	return {
+		parse: _emailParse,
+		validate: _validate
+	};
+})();
+
 ko.validation.rules["time"] = {
 	validator: function (value) {
 		if (value !== undefined) {
@@ -35,6 +50,7 @@ ko.validation.rules["time"] = {
 	},
 	message: 'Please enter a valid time (12-hour format).'
 };
+
 ko.validation.rules["minArray"] = {
 		validator: function (value, params) {
 			if (value.length > params) {
@@ -44,12 +60,26 @@ ko.validation.rules["minArray"] = {
 		},
 	message: 'This field is required.'
 };
+
 ko.validation.rules['arrayRange'] = {
     validator: function(value, params) {
         var num = parseInt(value, 10);
         return !isNaN(num) && num >= params.min && num <= params.max
     },
     message: 'Please enter a value between 1 and 999.'
+};
+
+ko.validation.rules['emailList'] = {
+	validator: function (value, param) {
+		var emails = IP.emailUtils.parse(value);
+		for (var i = 0; i < emails.length; i++) {
+			if (!IP.emailUtils.validate(emails[i])) {
+				return false;
+			}
+		}
+		return true;
+	},
+	message: 'Invalid Email'
 };
 
 ko.validation.registerExtenders();
@@ -406,11 +436,13 @@ var IP = IP || {};
 		this.source = new Source(settings.source);
 		this.destination = new Destination(settings.destination);
 		this.destinationProvider = settings.destinationProvider;
-		
+		this.notificationEmails = ko.observable(settings.notificationEmails).extend({	emailList:true});
+
 		this.CustodianManagerFieldContainsLink = JSON.parse(settings.destination ||"{}").CustodianManagerFieldContainsLink; 
 		this.selectedOverwrite = ko.observable(settings.selectedOverwrite);
 		this.scheduler = new Scheduler(settings.scheduler);
 		this.submit = function () {
+			debugger;
 			this.scheduler.submit();
 		};
 	};

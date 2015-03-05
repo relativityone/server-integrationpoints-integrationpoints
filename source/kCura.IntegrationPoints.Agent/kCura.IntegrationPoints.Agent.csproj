@@ -69,8 +69,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.106.2\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Method.Injection">
-      <HintPath>..\..\..\Method\Binaries\Injection\kCura.Method.Injection.dll</HintPath>
+    <Reference Include="kCura.Method.Injection, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\Injection\kCura.Method.Injection.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -98,6 +99,7 @@
     </Compile>
     <Compile Include="Agent.cs" />
     <Compile Include="Installer\AgentInstallers.cs" />
+    <Compile Include="Tasks\SendEmailWorker.cs" />
     <Compile Include="Tasks\SyncCustodianManagerWorker.cs" />
     <Compile Include="Tasks\ITaskFactory.cs" />
     <Compile Include="Tasks\SyncManager.cs" />
