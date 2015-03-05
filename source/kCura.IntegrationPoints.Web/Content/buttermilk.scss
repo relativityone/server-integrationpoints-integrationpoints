@@ -42,13 +42,18 @@ textarea:focus{
 	.field-label {
 		color: #404040;
 		text-align: right;
+		padding-top: 5px;
 		padding-right: 5px;
 		min-width: 200px;
 		display: table-cell;
 		border-right: 3px solid transparent;
 		font-size: .85em;
+		vertical-align: top;
 		&.required {
 			border-right: 3px solid $color-orange;
+		}
+		.sub-message{
+			font-size: .9em;
 		}
 	}
 	.field-value {
@@ -58,6 +63,9 @@ textarea:focus{
 		&.details{
 			border-bottom: 1px solid #dadada;
 			width:75%;
+		}
+		textarea{
+			max-width: 500px;
 		}
 	}
 	.field-row {

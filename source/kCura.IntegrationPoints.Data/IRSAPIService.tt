@@ -33,5 +33,8 @@ IGenericLibrary<<#=objType.Name.ToPascalCase()#>> <#=objType.Name.ToPascalCase()
 		}
 		#>
 
+
+
+
 	}
 }
