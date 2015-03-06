@@ -11,6 +11,7 @@
 | ${WorkspaceName} | LDAP Sync
 | ${IntegrationName} | Duplicate Errors
 | ${Department}      | Errors
+| ${Job History Error Table} | _dynamicTemplate__kCuraScrollingDiv_VR1038167_0_ctl02__kCuraScrollingDiv
 
 *** Test Cases ***
 
@@ -24,24 +25,45 @@
 | | Set Filter | Error Type | Item | Job History Error
 | | @{Headers}= | Create List | Error Type
 | | @{Rows}= | Create List  | Item
-| | ${table} | get table | _dynamicTemplate__kCuraScrollingDiv_VR1038167_0_ctl02__kCuraScrollingDiv | numberOfHeaderRowsToRemove=3
+| | ${table} | get table | ${Job History Error Table} | numberOfHeaderRowsToRemove=3
 
 | | Verify that the following table has the following headers and rows | ${table} | ${Headers} | ${Rows}
 
 | Job level errors can be populated
 | | [Documentation] | Verify that an import that has a Job level error shows the error on the Job History view page
 | | ... | [id] af20639e-c346-11e4-9dc9-90b11c6c5ae4
-| | [tags] | automated
-| | View Job History | ${IntegrationName}
-| | Set Filter | Source Unique ID | ${EMPTY} | Job History Error
-| | Set Filter | Error | Document '(CN=ErrorsManager Job,CN=Users,DC=gameofholds,DC=testing,DC=corp)	 | Job History Error
-| | Set Filter | Error Type | Job | Job History Error
+| | [tags] | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Either enable a Job Level Injection Point for RIP, or Stop the RelatibityWebAPI
+| | ... | 2. Run the import for ${IntegrationName}
+| | ... | 3. View the Job History
+| | ... |
+| | ... | Expected Results
+| | ... | 1. Verify Job error is listed
 
-| | @{Headers}= | Create List | Error Type
-| | @{Rows}= | Create List  | Job
-| | ${table} | get table | _dynamicTemplate__kCuraScrollingDiv_VR1038167_0_ctl02__kCuraScrollingDiv | numberOfHeaderRowsToRemove=3
+| | ... | [teardown] | Revert your change from step 1
 
-| | Verify that the following table has the following headers and rows | ${table}  | ${Headers} | ${Rows}
+| Verify Login Failed Error Message
+| | [Documentation] | Verify that the Job History error for Login Failed has the correct text
+| | ... | [id] 603809ae-c43a-11e4-8296-90b11c6c5ae4
+| | [tags] | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Stop the RelatibityWebAPI or perform some other task that will generate a Login Failed message
+| | ... | 2. Run the import for ${IntegrationName}
+| | ... | 3. View the Job History
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Error message is:
+| | ... | The IAPI has failed to login. Please confirm the following:
+| | ... | The configuration WebAPI value is correct for Integration Points
+| | ... | Windows authentication is setup on the WebAPI
+| | ... | The Relativity Service Account has correct authentication data
+| | ... | The WebAPI version is correct
+
+| | ... | [teardown] | Revert your change from step 1
+
 
 
 *** Keywords *** 

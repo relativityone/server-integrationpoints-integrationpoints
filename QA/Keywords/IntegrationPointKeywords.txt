@@ -396,6 +396,12 @@
 | | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
 | | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@type="text" and @id="${FieldID}"]	| The "${FieldID}" field does not have an input type of Text.
 
+| Verify that the following field ID has a textarea input
+| | [Documentation]	| A keyword that verifies the specified field has an input type of textarea.
+| | [ARGUMENTS] 	| ${FieldID}
+| | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::textarea[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
+| | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@type="text" and @id="${FieldID}"]	| The "${FieldID}" field does not have an input type of Text.
+
 | Verify that the following field ID has a password input
 | | [Documentation]	| A keyword that verifies the specified field has an input type of Password.
 | | [ARGUMENTS] 	| ${FieldID}
