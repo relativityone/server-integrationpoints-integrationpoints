@@ -201,7 +201,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				{
 					throw new Exception("No WebAPI path set for integration points.");
 				}
-				//kCura.Apps.Common.Config.Sections.EddsDbmtConfig.WebAPIPath; //one day we will switch to this;
 			}
 			return settings;
 		}

@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using kCura.ScheduleQueue.Core;
 using Choice = kCura.Relativity.Client.Choice;
 using kCura.IntegrationPoints.Data.Queries;
 
@@ -15,9 +16,20 @@ namespace kCura.IntegrationPoints.Core.Services
 	public class JobStatusUpdater : IJobStatusUpdater
 	{
 		private readonly JobHistoryErrorQuery _service;
-		public JobStatusUpdater(JobHistoryErrorQuery service)
+		private readonly IRSAPIService _rsapiService;
+		public JobStatusUpdater(JobHistoryErrorQuery service, IRSAPIService rsapiService)
 		{
 			_service = service;
+			_rsapiService = rsapiService;
+		}
+
+		public Choice GenerateStatus(Guid batchId)
+		{
+			var query = new Query<RDO>();
+			query.Fields = new List<FieldValue>();
+			query.Condition = new TextCondition(Guid.Parse(JobHistoryFieldGuids.BatchInstance), TextConditionEnum.EqualTo, batchId.ToString());
+			var result = _rsapiService.JobHistoryLibrary.Query(query).First();
+			return GenerateStatus(result);
 		}
 
 		public Choice GenerateStatus(JobHistory jobHistory)
@@ -26,11 +38,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				throw new ArgumentNullException("jobHistory");
 			}
-
-			//TODO: check to see if this is the last job
-			//if(lastJob){
-			// return JobStatusChoices.JobHistoryProcessing
-			//}
 			var recent = _service.GetJobErrorFailedStatus(jobHistory.ArtifactId);
 			if (recent != null)
 			{

@@ -10,7 +10,7 @@ DECLARE tableCursor CURSOR FOR
 		FROM [EDDSResource].[sys].[tables] AS t 
 		INNER JOIN [EDDSResource].[sys].[schemas] AS s 
 		ON t.[schema_id] = s.[schema_id] 
-		WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())>24 
+		WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())>72
 		AND t.name LIKE 'RIP_CustodianManager_%'
 
 OPEN tableCursor 

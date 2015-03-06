@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// Runs when the event handler is called during the removal of the data source provider.
 		/// </summary>
 		/// <returns>An object of type Response, which frequently contains a message.</returns>
-		public override sealed Response Execute()
+        public override sealed Response Execute()
 		{
 			bool isSuccess = false;
 			Exception ex = null;

@@ -21,15 +21,12 @@ namespace kCura.IntegrationPoints.Data.Queries
 			var query = new Query<RDO>();
 			query.Fields = new List<FieldValue>
 			{
-				new FieldValue(Guid.Parse(Data.JobHistoryErrorFieldGuids.ErrorType))
+				new FieldValue(Guid.Parse(Data.JobHistoryErrorFieldGuids.ErrorType)),
+				new FieldValue(Guid.Parse(Data.JobHistoryErrorFieldGuids.Error))
 			};
 
 			var historyCondition = new ObjectCondition(Guid.Parse(JobHistoryErrorFieldGuids.JobHistory), ObjectConditionEnum.EqualTo, jobHistoryId);
-
-			var choiceJobErrorCondition = new SingleChoiceCondition(Guid.Parse(JobHistoryErrorFieldGuids.ErrorType), SingleChoiceConditionEnum.AnyOfThese,
-				ErrorTypeChoices.JobHistoryErrorJob.ArtifactGuids);
-			query.Condition = new CompositeCondition(choiceJobErrorCondition, CompositeConditionEnum.And, historyCondition);
-			JobHistoryError historyError = _service.JobHistoryErrorLibrary.Query(query, 1).FirstOrDefault();
+			JobHistoryError historyError = this.GetJobLevelError(jobHistoryId);
 
 			if (historyError == null)
 			{
@@ -42,7 +39,32 @@ namespace kCura.IntegrationPoints.Data.Queries
 			return historyError;
 		}
 
+		public virtual JobHistoryError GetJobLevelError(int jobHistoryId)
+		{
 
+			var query = new Query<RDO>();
+			query.Fields = new List<FieldValue>
+			{
+				new FieldValue(Guid.Parse(Data.JobHistoryErrorFieldGuids.ErrorType)),
+				new FieldValue(Guid.Parse(Data.JobHistoryErrorFieldGuids.Error))
+			};
+			query.Sorts = new List<Sort>
+			{ 
+				new Sort
+				{
+					Field = "Artifact ID",
+					Direction = SortEnum.Descending
+				}
+			};
+
+			var historyCondition = new ObjectCondition(Guid.Parse(JobHistoryErrorFieldGuids.JobHistory), ObjectConditionEnum.EqualTo, jobHistoryId);
+			var choiceJobErrorCondition = new SingleChoiceCondition(Guid.Parse(JobHistoryErrorFieldGuids.ErrorType), SingleChoiceConditionEnum.AnyOfThese,
+				ErrorTypeChoices.JobHistoryErrorJob.ArtifactGuids);
+			query.Condition = new CompositeCondition(choiceJobErrorCondition, CompositeConditionEnum.And, historyCondition);
+			JobHistoryError historyError = _service.JobHistoryErrorLibrary.Query(query, 1).FirstOrDefault();
+			return historyError;
+
+		}
 
 	}
 }

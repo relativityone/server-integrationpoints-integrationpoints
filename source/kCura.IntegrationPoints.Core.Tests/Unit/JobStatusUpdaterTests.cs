@@ -20,10 +20,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			//ARRANGE
 			var rsapi = NSubstitute.Substitute.For<IRSAPIService>();
 			var service = NSubstitute.Substitute.For<JobHistoryErrorQuery>(rsapi);
-			service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(null, new JobHistoryError[]{});
+			service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(null, new JobHistoryError[] { });
 
 			//ACT
-			var serviceInTest = new JobStatusUpdater(service);
+			var serviceInTest = new JobStatusUpdater(service, null);
 			var choice = serviceInTest.GenerateStatus(new JobHistory());
 			//ASSERT
 			Assert.IsTrue(choice.Name.Equals(Data.JobStatusChoices.JobHistoryCompleted.Name));
@@ -36,12 +36,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			//ARRANGE
 			var rsapi = NSubstitute.Substitute.For<IRSAPIService>();
 			var service = NSubstitute.Substitute.For<JobHistoryErrorQuery>(rsapi);
-			service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(new JobHistoryError{ ErrorType = Data.ErrorTypeChoices.JobHistoryErrorItem});
+			service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(new JobHistoryError { ErrorType = Data.ErrorTypeChoices.JobHistoryErrorItem });
 
 			//ACT
-			var serviceInTest = new JobStatusUpdater(service);
+			var serviceInTest = new JobStatusUpdater(service, null);
 			var choice = serviceInTest.GenerateStatus(new JobHistory());
-			
+
 			//ASSERT
 			Assert.IsTrue(choice.Name.Equals(Data.JobStatusChoices.JobHistoryCompletedWithErrors.Name));
 
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			service.GetJobErrorFailedStatus(Arg.Any<int>()).Returns(new JobHistoryError { ErrorType = Data.ErrorTypeChoices.JobHistoryErrorJob });
 
 			//ACT
-			var serviceInTest = new JobStatusUpdater(service);
+			var serviceInTest = new JobStatusUpdater(service, null);
 			var choice = serviceInTest.GenerateStatus(new JobHistory());
 
 			//ASSERT
