@@ -12,7 +12,7 @@ using kCura.IntegrationPoints.Data.Extensions;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class IntegrationPointService 
+	public class IntegrationPointService
 	{
 		private readonly ICaseServiceContext _context;
 		private Data.IntegrationPoint _rdo;
@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			return GetRDO(artifactID).SourceConfiguration;
 		}
-		
+
 		public virtual FieldEntry GetIdentifierFieldEntry(int artifactID)
 		{
 			var rdo = GetRDO(artifactID);
@@ -92,12 +92,6 @@ namespace kCura.IntegrationPoints.Core.Services
 				rule = null;
 			}
 
-			var jobDetails = new EmailMessage();
-			jobDetails.Emails = new List<string> { "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com", "dvbarnes89@gmail.com" };
-			jobDetails.MessageBody = "Hello world Body";
-			jobDetails.Subject = "Hello world subject";
-			_jobService.CreateJob<object>( jobDetails, TaskType.SendEmailManager, _context.WorkspaceID, ip.ArtifactId);
-
 			//save RDO
 			if (ip.ArtifactId > 0)
 			{
@@ -114,7 +108,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			return ip.ArtifactId;
 		}
 
-
+		public IEnumerable<string> GetRecipientEmails(int integrationPoint)
+		{
+			return this.GetRDO(integrationPoint).EmailNotificationRecipients.Split(';').Select(x => x.Trim());
+		}
 		#region Please refactor
 		public class Weekly
 		{

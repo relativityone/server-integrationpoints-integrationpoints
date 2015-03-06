@@ -116,6 +116,23 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IF (NOT EXISTS (SELECT * FROM [EDDSResource].[INFORMATION_SCHEMA].[TABLES] WHERE TABLE_SCHEMA = &apos;eddsdbo&apos; AND  TABLE_NAME = @tableName))
+        ///BEGIN
+        ///	declare @table nvarchar(1000) = N&apos;create table [EDDSRESOURCE].[EDDSDBO].[&apos; + @tableName +&apos;] ([JobID] bigint
+        ///	CONSTRAINT [PK_&apos; + @tableName + &apos; ] PRIMARY KEY CLUSTERED 
+        ///	(
+        ///	[JobID] ASC
+        ///	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+        ///	) ON [PRIMARY]&apos;;
+        ///	execute sp_executesql  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string CreateJobTrackingEntry {
+            get {
+                return ResourceManager.GetString("CreateJobTrackingEntry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SELECT 
         ///					RF.[ArtifactID]
         ///					,RF.[Name]
@@ -208,6 +225,30 @@ namespace kCura.IntegrationPoints.Data.Resources {
         internal static string GetObjectTypes {
             get {
                 return ResourceManager.GetString("GetObjectTypes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IF (EXISTS (SELECT * FROM [EDDSResource].[INFORMATION_SCHEMA].[TABLES] WHERE TABLE_SCHEMA = &apos;eddsdbo&apos; AND  TABLE_NAME = @tableName))
+        ///BEGIN
+        ///	declare @sql nvarchar(1000) = N&apos;delete from [EDDSResource].[eddsdbo].[&apos; + @tableName +&apos;] Where [JobID] = @id&apos;
+        ///	declare @params nvarchar(50) = N&apos;@id bigint&apos;;
+        ///	Execute sp_executesql @sql, @params, @id = @jobID
+        ///
+        ///
+        ///	SET @sql = &apos;IF EXISTS(select [JobID] FROM [EDDSResource].[eddsdbo].[&apos;+ @tableName+&apos;])
+        ///	BEGIN
+        ///		select 1
+        ///	END
+        ///	ELSE
+        ///	BEGIN
+        ///		select 0
+        ///	END&apos;
+        ///	EXECUT [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string RemoveEntryAndCheckBatchStatus {
+            get {
+                return ResourceManager.GetString("RemoveEntryAndCheckBatchStatus", resourceCulture);
             }
         }
         

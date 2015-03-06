@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			_context = context;
 			_jobService = jobService;
 			_serializer = serializer;
+			_tracker = tracker;
 		}
 
 		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null)
@@ -49,6 +50,11 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			var job = this.CreateJobInternal(jobDetails, type, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
 			_tracker.CreateTrackingEntry(job, batchId);
+		}
+
+		public bool CheckBatchJobComplete(Job job, string batchId)
+		{
+			return _tracker.CheckEntries(job, batchId);
 		}
 
 		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, long? rootJobID = null, long? parentJobID = null)

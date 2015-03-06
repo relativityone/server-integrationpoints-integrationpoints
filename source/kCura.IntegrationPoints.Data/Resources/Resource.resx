@@ -127,6 +127,9 @@
   <data name="CreateCustodianManagerResourceTable" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>createcustodianmanagerresourcetable.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="CreateJobTrackingEntry" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>createjobtrackingentry.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="GetApplicationBinaries" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>getapplicationbinaries.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
@@ -141,6 +144,9 @@
   </data>
   <data name="GetObjectTypes" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>getobjecttypes.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="RemoveEntryAndCheckBatchStatus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>removeentryandcheckbatchstatus.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="SetBlankLogErrorsToNo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>setblanklogerrorstono.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

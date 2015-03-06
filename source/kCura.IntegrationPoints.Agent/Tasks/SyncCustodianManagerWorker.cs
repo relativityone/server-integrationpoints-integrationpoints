@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 										IRSAPIClient workspaceRsapiClient,
 										ManagerQueueService managerQueueService)
 			: base(caseServiceContext, dataSyncronizerFactory, dataProviderFactory, serializer,
-			appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager)
+			appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager, null)
 		{
 			_workspaceRsapiClient = workspaceRsapiClient;
 			_managerQueueService = managerQueueService;
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				kCura.Method.Injection.InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
-				
+
 				//get all job parameters
 				GetParameters(job);
 
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						string.Join("; ", missingManagers.ToArray())));
 				}
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				base._jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 			}

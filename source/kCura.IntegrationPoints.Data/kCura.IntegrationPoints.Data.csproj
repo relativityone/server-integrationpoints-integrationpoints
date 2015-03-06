@@ -114,6 +114,7 @@
     <Compile Include="Migrations\UpdateJobErrorsBlankToNo.cs" />
     <Compile Include="Models\ApplicationBinary.cs" />
     <Compile Include="PermissionService.cs" />
+    <Compile Include="Queries\JobResoureTracker.cs" />
     <Compile Include="Queries\GetJobCustodianManagerLinks.cs" />
     <Compile Include="Queries\CreateCustodianManagerResourceTable.cs" />
     <Compile Include="Queries\GetApplicationBinaries.cs" />
@@ -193,12 +194,14 @@
   <ItemGroup>
     <Content Include="Resources\CheckImportPermission.sql" />
     <Content Include="Resources\AddWebApiConfig.sql" />
+    <Content Include="Resources\CreateJobTrackingEntry.sql" />
     <Content Include="Resources\GetJobCustodianManagerLinks.sql" />
     <Content Include="Resources\CreateCustodianManagerResourceTable.sql" />
     <Content Include="Resources\GetApplicationBinaries.sql" />
     <Content Include="Resources\GetApplicationGuid.sql" />
     <Content Include="Resources\GetArtifactIDByGuid.sql" />
     <Content Include="Resources\GetObjectTypes.sql" />
+    <Content Include="Resources\RemoveEntryAndCheckBatchStatus.sql" />
     <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
   </ItemGroup>
   <ItemGroup />

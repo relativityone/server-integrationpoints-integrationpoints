@@ -1,4 +1,5 @@
 ﻿using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.Agent;
@@ -45,6 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void Install(Job job, ScheduleQueueAgentBase agentBase)
 		{
+			Container.Kernel.Resolver.AddSubResolver(new CollectionResolver(Container.Kernel));
 			Container.Register(Component.For<IScheduleRuleFactory>().UsingFactoryMethod((k) => agentBase.ScheduleRuleFactory, managedExternally: true));
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => _helper, managedExternally: true));
 			Container.Register(Component.For<IAgentHelper>().UsingFactoryMethod((k) => _helper, managedExternally: true));

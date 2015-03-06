@@ -20,5 +20,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 		void CreateJob<T>(Job parentJob, T jobDetails, TaskType task);
 
 		void CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId);
+		bool CheckBatchJobComplete(Job job, string batchId);
+
 	}
 }

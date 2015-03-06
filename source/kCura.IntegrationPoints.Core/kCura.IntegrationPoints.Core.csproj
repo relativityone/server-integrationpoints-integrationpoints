@@ -87,6 +87,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
+    <Compile Include="BatchEmail.cs" />
+    <Compile Include="JobHistoryStatus.cs" />
+    <Compile Include="IBatchStatus.cs" />
     <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Services\CustodianService.cs" />
     <Compile Include="Services\CustodianManager\CustodianManagerDataReaderEnumerable.cs" />
