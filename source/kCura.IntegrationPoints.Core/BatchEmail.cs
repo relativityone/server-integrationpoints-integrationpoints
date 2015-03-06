@@ -29,13 +29,12 @@ namespace kCura.IntegrationPoints.Core
 			_manager = manager;
 		}
 
-		public void JobStarted(Job job){}
+		public void JobStarted(Job job) { }
 
 		public void JobComplete(Job job)
 		{
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			var choice = _updater.GenerateStatus(taskParameters.BatchInstance);
-			var emails = _pointService.GetRecipientEmails(job.RelatedObjectArtifactID);
 			EmailMessage message = null;
 			if (!choice.EqualsToChoice(Data.JobStatusChoices.JobHistoryCompleted))
 			{
@@ -51,18 +50,27 @@ namespace kCura.IntegrationPoints.Core
 		private EmailMessage GetSuccessEmail()
 		{
 			var message = string.Empty;
-			return null;
+			return new EmailMessage();
 		}
 
 		private EmailMessage GetFailEmail()
 		{
-			return null;
+			return new EmailMessage();
 		}
 
 
 		private void SendEmail(Job parentJob, EmailMessage message)
 		{
-			_manager.CreateJob(parentJob, message, TaskType.SendEmailManager);
+			if (message == null)
+			{
+				return;
+			}
+			var emails = _pointService.GetRecipientEmails(parentJob.RelatedObjectArtifactID).ToList();
+			if (emails.Any())
+			{
+				message.Emails = emails;
+				_manager.CreateJob(parentJob, message, TaskType.SendEmailManager);
+			}
 		}
 
 	}

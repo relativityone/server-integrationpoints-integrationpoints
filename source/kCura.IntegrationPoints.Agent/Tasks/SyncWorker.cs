@@ -128,7 +128,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					foreach (var completedItem in BatchStatus)
 					{
-						completedItem.JobComplete(job);
+						try
+						{
+							completedItem.JobComplete(job);
+						}
+						catch (Exception e)
+						{
+							_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+						}
 					}
 				}
 			}

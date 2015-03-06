@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public IEnumerable<string> GetRecipientEmails(int integrationPoint)
 		{
-			return this.GetRDO(integrationPoint).EmailNotificationRecipients.Split(';').Select(x => x.Trim());
+			return (this.GetRDO(integrationPoint).EmailNotificationRecipients ?? string.Empty).Split(';').Select(x => x.Trim());
 		}
 		#region Please refactor
 		public class Weekly

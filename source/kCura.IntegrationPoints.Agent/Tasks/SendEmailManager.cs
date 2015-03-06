@@ -23,7 +23,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public override IEnumerable<string> GetUnbatchedIDs(Job job)
 		{
-			return _serializer.Deserialize<Core.Models.EmailMessage>(job.JobDetails).Emails;
+			if (!string.IsNullOrEmpty(job.JobDetails))
+			{
+				return _serializer.Deserialize<Core.Models.EmailMessage>(job.JobDetails).Emails;
+			}
+			return new List<string>();
 		}
 
 		public override void CreateBatchJob(Job job, List<string> batchIDs)
