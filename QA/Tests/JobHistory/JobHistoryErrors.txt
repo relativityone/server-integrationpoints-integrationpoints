@@ -44,6 +44,28 @@
 
 | | ... | [teardown] | Revert your change from step 1
 
+| Verify Login Failed Error Message
+| | [Documentation] | Verify that the Job History error for Login Failed has the correct text
+| | ... | [id] 603809ae-c43a-11e4-8296-90b11c6c5ae4
+| | [tags] | manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Stop the RelatibityWebAPI or perform some other task that will generate a Login Failed message
+| | ... | 2. Run the import for ${IntegrationName}
+| | ... | 3. View the Job History
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Error message is:
+| | ... | The IAPI has failed to login. Please confirm the following:
+| | ... | The configuration WebAPI value is correct for Integration Points
+| | ... | Windows authentication is setup on the WebAPI
+| | ... | The Relativity Service Account has correct authentication data
+| | ... | The WebAPI version is correct
+
+| | ... | [teardown] | Revert your change from step 1
+
+
+
 *** Keywords *** 
 
 | Create Suite Setup Data
