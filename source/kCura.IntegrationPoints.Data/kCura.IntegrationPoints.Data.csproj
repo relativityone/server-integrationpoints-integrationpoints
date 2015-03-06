@@ -142,6 +142,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="SqlObjectTypeQuery.cs" />
+    <Compile Include="Queries\WorkspaceQuery.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeneratedStringConstants.cs">

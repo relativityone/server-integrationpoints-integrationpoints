@@ -124,6 +124,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				//rdo last run and next scheduled time will be updated in Manager job
 				base._jobHistoryErrorService.CommitErrors();
+				base.PostExecute(job);
 			}
 		}
 

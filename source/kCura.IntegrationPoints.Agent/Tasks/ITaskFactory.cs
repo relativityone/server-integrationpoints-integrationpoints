@@ -54,9 +54,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				.DependsOn(Dependency.OnValue<int>(job.WorkspaceID)));
 			Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>());
 			Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>());
-			Container.Register(
-				Component.For<IWorkspaceDBContext>()
-					.UsingFactoryMethod(k => new WorkspaceContext(_helper.GetDBContext(job.WorkspaceID))));
+			Container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k => new WorkspaceContext(_helper.GetDBContext(job.WorkspaceID))));
+			Container.Register(Component.For<Job>().UsingFactoryMethod(k => job));
 
 			Container.Register(Component.For<GetApplicationBinaries>().ImplementedBy<GetApplicationBinaries>().DynamicParameters((k, d) => d["eddsDBcontext"] = _helper.GetDBContext(-1)).LifeStyle.Transient);
 			Container.Install(FromAssembly.InThisApplication());
