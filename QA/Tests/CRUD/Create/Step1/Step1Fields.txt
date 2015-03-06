@@ -175,9 +175,10 @@
 | The Set Integration Details Fields are of the correct type
 | | [Documentation]	| Verify that the Set Integration Details Fields are the correct type.
 | | ...				| [id] 0f5ee066-a89f-11e4-bdce-b8ca3a83048f
-| | [Tags]			| automated
+| | [Tags]			| automated | untested
 | | Run keyword and continue on failure	| Wait Until Keyword Succeeds	| 10s	| 2s	| 
-| | ... | Verify that the following field ID has a text input		| ${Integration Name Field}
+| | ... | Verify that the following field ID has a text input		| ${Integration Name Field}  | 
+| | ... | Verify that the following field ID has a textarea input	| ${Email Notification Recipients Field}
 | | Run keyword and continue on failure	| Verify that the following field ID has a droplist input	| ${Overwrite DropDown}
 | | Run keyword and continue on failure	| Verify that the following field ID has a droplist input	| ${Source Provider Drop Down}
 | | Run keyword and continue on failure	| Verify that the following field ID has a droplist input	| ${Destination RDO Drop Down}
