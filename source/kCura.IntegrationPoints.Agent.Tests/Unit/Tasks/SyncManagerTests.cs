@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			var guidService = NSubstitute.Substitute.For<IGuidService>();
 			guidService.NewGuid().Returns(defaultGuidValue);
 			SyncManager manager = new SyncManager(null, null, null, null, null, serializer, guidService, null, null, null, null);
-			Job job = GetJob(serializer.Serialize(jobGuidValue));
+			Job job = GetJob(serializer.Serialize(new TaskParameters() { BatchInstance = jobGuidValue }));
 
 			//ACT
 			MethodInfo dynMethod = manager.GetType().GetMethod("GetBatchInstance", BindingFlags.NonPublic | BindingFlags.Instance);
