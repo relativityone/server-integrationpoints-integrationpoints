@@ -66,6 +66,14 @@
 | | @{ParentAttributes}=	| Get the Unassigned Source Attributes
 | | Verify that the currently opened select2 Dropdown has the following choices in order	| Select...	| @{ParentAttributes}
 
+| Error is displayed when No selection has been made from the Native File Path list
+
+| Error is displayed when the selected Native File Path field is not mapped
+
+| Saving Post No Selection message
+
+| Saving Post Native File Path is not mapped
+
 *** Keywords *** 
 
 | Go to Step 3 of the Integration Point wizard using the following Destination RDO
