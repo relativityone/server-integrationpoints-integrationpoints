@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -28,6 +29,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IGuidService _guidService;
 		private JobHistoryService _jobHistoryService;
 		private JobHistoryErrorService _jobHistoryErrorService;
+		private IEnumerable<Core.IBatchStatus> _batchStatus;
+
+		public IEnumerable<Core.IBatchStatus> BatchStatus
+		{
+			get { return _batchStatus ?? (_batchStatus = new List<IBatchStatus>()); }
+			set { _batchStatus = value; }
+		}
+
 
 		public SyncManager(ICaseServiceContext caseServiceContext,
 			IDataProviderFactory providerFactory,
@@ -38,7 +47,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IGuidService guidService,
 			JobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
-			IScheduleRuleFactory scheduleRuleFactory)
+			IScheduleRuleFactory scheduleRuleFactory,
+			 IEnumerable<IBatchStatus> batchStatuses)
 		{
 			_caseServiceContext = caseServiceContext;
 			_providerFactory = providerFactory;
@@ -54,6 +64,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			base.RaiseJobPostExecute += new JobPostExecuteEvent(JobPostExecute);
 			BatchJobCount = 0;
 			BatchInstance = Guid.NewGuid();
+			_batchStatus = batchStatuses;
 		}
 
 		public Data.IntegrationPoint IntegrationPoint { get; set; }
@@ -70,6 +81,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			try
 			{
+				if (string.IsNullOrEmpty(job.JobDetails))
+				{
+					//job is scheduled so give it the same look as import now
+					var details = new TaskParameters()
+					{
+						BatchInstance = this.BatchInstance
+					};
+					var str = _serializer.Serialize(details);
+					job.JobDetails = _serializer.Serialize(details);
+				}
+				foreach (var batchStatuse in BatchStatus)
+				{
+					batchStatuse.JobStarted(job);
+				}
 				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
 				Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
 				Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
@@ -98,7 +123,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				BatchInstance = this.BatchInstance,
 				BatchParameters = batchIDs
 			};
-			_jobManager.CreateJob(job, taskParameters, TaskType.SyncWorker);
+			_jobManager.CreateJobWithTracker(job, taskParameters, TaskType.SyncWorker, this.BatchInstance.ToString());
 			BatchJobCount++;
 		}
 
@@ -129,7 +154,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				kCura.Method.Injection.InjectionManager.Instance.Evaluate("B50CD1DD-6FEC-439E-A730-B84B730C9D44");
-				
+
 				this.BatchInstance = GetBatchInstance(job);
 				if (job.RelatedObjectArtifactID < 1)
 				{
@@ -199,7 +224,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				try
 				{
-					newBatchInstance = _serializer.Deserialize<Guid>(job.JobDetails);
+					newBatchInstance = _serializer.Deserialize<TaskParameters>(job.JobDetails).BatchInstance;
 				}
 				catch (Exception ex)
 				{

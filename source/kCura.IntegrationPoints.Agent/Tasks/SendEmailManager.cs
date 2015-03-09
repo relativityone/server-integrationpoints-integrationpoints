@@ -11,7 +11,7 @@ using kCura.ScheduleQueue.Core.BatchProcess;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	public class SendEmailManager : BatchManagerBase<Core.Models.EmailMessage>
+	public class SendEmailManager : BatchManagerBase<string>
 	{
 		private readonly ISerializer _serializer;
 		private readonly IJobManager _jobManager;
@@ -21,14 +21,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobManager = jobManager;
 		}
 
-		public override IEnumerable<EmailMessage> GetUnbatchedIDs(Job job)
+		public override IEnumerable<string> GetUnbatchedIDs(Job job)
 		{
-			return _serializer.Deserialize<List<Core.Models.EmailMessage>>(job.JobDetails);
+			if (!string.IsNullOrEmpty(job.JobDetails))
+			{
+				return _serializer.Deserialize<Core.Models.EmailMessage>(job.JobDetails).Emails;
+			}
+			return new List<string>();
 		}
 
-		public override void CreateBatchJob(Job job, List<EmailMessage> batchIDs)
+		public override void CreateBatchJob(Job job, List<string> batchIDs)
 		{
-			_jobManager.CreateJob(job, batchIDs, TaskType.SendEmailWorker);
+			EmailMessage message = _serializer.Deserialize<EmailMessage>(job.JobDetails);
+			message.Emails = batchIDs;
+			_jobManager.CreateJob(job, message, TaskType.SendEmailWorker);
 		}
 	}
 }

@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 				BatchInstance = _batchInstance,
 				BatchParameters = jobDetailsObject
 			};
-			_jobManager.CreateJob(_parentJob, taskParameters, _taskToSubmit);
+			_jobManager.CreateJobWithTracker(_parentJob, taskParameters, _taskToSubmit, _batchInstance.ToString());
 		}
 	}
 }

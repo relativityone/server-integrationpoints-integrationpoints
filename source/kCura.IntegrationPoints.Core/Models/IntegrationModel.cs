@@ -125,7 +125,8 @@ namespace kCura.IntegrationPoints.Core.Models
 			point.EnableScheduler = this.Scheduler.EnableScheduler;
 			point.DestinationProvider = this.DestinationProvider;
 			point.LogErrors = this.LogErrors;
-			point.EmailNotificationRecipients = this.NotificationEmails;
+			point.EmailNotificationRecipients = string.Join("; ", (this.NotificationEmails ?? string.Empty).Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList());
+
 			return point;
 		}
 		public IntegrationModel(IntegrationPoint ip)

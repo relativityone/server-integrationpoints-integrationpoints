@@ -26,9 +26,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			int workspaceID = payload.AppId;
 			int relatedObjectArtifactID = payload.ArtifactId;
 			Guid batchInstance = Guid.NewGuid();
+			var jobDetails = new TaskParameters()
+			{
+				BatchInstance = batchInstance
+			};
 			Data.IntegrationPoint integrationPoint = _integrationPointService.GetRDO(relatedObjectArtifactID);
 			_jobHistoryService.CreateRDO(integrationPoint, batchInstance, null);
-			_jobManager.CreateJob<object>(batchInstance, TaskType.SyncManager, workspaceID, relatedObjectArtifactID);
+			_jobManager.CreateJob(jobDetails, TaskType.SyncManager, workspaceID, relatedObjectArtifactID);
 			return Request.CreateResponse(HttpStatusCode.OK);
 		}
 

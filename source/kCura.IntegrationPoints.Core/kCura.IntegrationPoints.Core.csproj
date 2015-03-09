@@ -87,7 +87,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Application.cs" />
+    <Compile Include="BatchEmail.cs" />
+    <Compile Include="Installers\KeywordInstaller.cs" />
+    <Compile Include="JobHistoryStatus.cs" />
+    <Compile Include="IBatchStatus.cs" />
     <Compile Include="Models\EmailMessage.cs" />
+    <Compile Include="Properties\JobStatusMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>JobStatusMessages.resx</DependentUpon>
+    </Compile>
     <Compile Include="Services\CustodianService.cs" />
     <Compile Include="Services\CustodianManager\CustodianManagerDataReaderEnumerable.cs" />
     <Compile Include="Services\CustodianManager\CustodianManagerJobParameters.cs" />
@@ -117,6 +126,13 @@
     <Compile Include="Services\JobHistory\JobHistoryErrorService.cs" />
     <Compile Include="Services\JobHistory\JobHistoryService.cs" />
     <Compile Include="Services\JobStatusUpdater.cs" />
+    <Compile Include="Services\JobTracker.cs" />
+    <Compile Include="Services\Keywords\ErrorKeyword.cs" />
+    <Compile Include="Services\Keywords\IKeyword.cs" />
+    <Compile Include="Services\Keywords\KeywordConverter.cs" />
+    <Compile Include="Services\Keywords\KeywordFactory.cs" />
+    <Compile Include="Services\Keywords\RipNameKeyword.cs" />
+    <Compile Include="Services\Keywords\WorkspaceNameKeyword.cs" />
     <Compile Include="Services\Provider\DefaultSourcePluginProvider.cs" />
     <Compile Include="Services\Domain\AppDomainFactory.cs" />
     <Compile Include="Services\Provider\ProviderManager.cs" />
@@ -192,6 +208,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ErrorMessages.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\JobStatusMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>JobStatusMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

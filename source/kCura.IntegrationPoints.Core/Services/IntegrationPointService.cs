@@ -12,7 +12,7 @@ using kCura.IntegrationPoints.Data.Extensions;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class IntegrationPointService 
+	public class IntegrationPointService
 	{
 		private readonly ICaseServiceContext _context;
 		private Data.IntegrationPoint _rdo;
@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			return GetRDO(artifactID).SourceConfiguration;
 		}
-		
+
 		public virtual FieldEntry GetIdentifierFieldEntry(int artifactID)
 		{
 			var rdo = GetRDO(artifactID);
@@ -92,7 +92,6 @@ namespace kCura.IntegrationPoints.Core.Services
 				rule = null;
 			}
 
-
 			//save RDO
 			if (ip.ArtifactId > 0)
 			{
@@ -109,7 +108,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			return ip.ArtifactId;
 		}
 
-
+		public IEnumerable<string> GetRecipientEmails(int integrationPoint)
+		{
+			return (this.GetRDO(integrationPoint).EmailNotificationRecipients ?? string.Empty).Split(';').Select(x => x.Trim());
+		}
 		#region Please refactor
 		public class Weekly
 		{
