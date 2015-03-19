@@ -67,7 +67,7 @@
 	<include buildfile="Build Projects.NuGet.include"/>
 
 	<!-- Build all LDAPSync projects- presence of a Build.log file indicates failure -->
-	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, merge_ldap, merge_source_provider_installer, embed_binaries_into_application">				
+	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, merge_ldap, merge_source_provider_installer">				
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
@@ -230,8 +230,8 @@
 		</exec>
 	</target>
 	
-	<target name="embed_binaries_into_application" description="Embed binary files into LDAPSync application">
-		<exec program="${ldap.scripts.directory}\EmbedLDAPSyncBinariesIntoApplication.bat" >
+	<target name="upload_binaries_into_relativity" description="Upload binary files into Relativity">
+		<exec program="${ldap.scripts.directory}\UploadLDAPSyncBinariesIntoLocalRelativity.bat" >
 			<arg line='${buildconfig}' />
 			<environment>
 				<variable name="root" value="${root}" />
