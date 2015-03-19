@@ -6,6 +6,7 @@ using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Conversion;
 using kCura.IntegrationPoints.Core.Services;
@@ -18,6 +19,7 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
+
 	public class SyncWorker : ITask
 	{
 		internal ICaseServiceContext _caseServiceContext;
@@ -28,6 +30,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		internal JobHistoryErrorService _jobHistoryErrorService;
 		internal GeneralWithCustodianRdoSynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
 		internal IJobManager _jobManager;
+
+		private IEnumerable<Core.IBatchStatus> _batchStatus;
+
+		public IEnumerable<Core.IBatchStatus> BatchStatus
+		{
+			get { return _batchStatus ?? (_batchStatus = new List<IBatchStatus>()); }
+			set { _batchStatus = value; }
+		}
+
 		public SyncWorker(ICaseServiceContext caseServiceContext,
 											IDataSyncronizerFactory dataSyncronizerFactory,
 											IDataProviderFactory dataProviderFactory,
@@ -35,7 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 											GeneralWithCustodianRdoSynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 											JobHistoryService jobHistoryService,
 											JobHistoryErrorService jobHistoryErrorService,
-											IJobManager jobManager)
+											IJobManager jobManager, IEnumerable<IBatchStatus> statuses)
 		{
 			_caseServiceContext = caseServiceContext;
 			_dataSyncronizerFactory = dataSyncronizerFactory;
@@ -45,6 +56,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryService = jobHistoryService;
 			_jobHistoryErrorService = jobHistoryErrorService;
 			_jobManager = jobManager;
+			BatchStatus = statuses;
 		}
 
 		internal Data.IntegrationPoint IntegrationPoint { get; set; }
@@ -53,6 +65,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public void Execute(Job job)
 		{
+			foreach (var batchComplete in BatchStatus)
+			{
+				batchComplete.JobStarted(job);
+			}
 			ExecuteTask(job);
 		}
 
@@ -96,8 +112,43 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				//rdo last run and next scheduled time will be updated in Manager job
 				_jobHistoryErrorService.CommitErrors();
+				PostExecute(job);
+			}
+
+		}
+
+		internal void PostExecute(Job job)
+		{
+			try
+			{
+				TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+				var batchInstance = taskParameters.BatchInstance;
+				bool isJobComplete = _jobManager.CheckBatchJobComplete(job, batchInstance.ToString());
+				if (isJobComplete)
+				{
+					foreach (var completedItem in BatchStatus)
+					{
+						try
+						{
+							completedItem.JobComplete(job);
+						}
+						catch (Exception e)
+						{
+							_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+						}
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+			}
+			finally
+			{
+				_jobHistoryErrorService.CommitErrors();
 			}
 		}
+
 
 		internal void GetIntegrationPointRDO(Job job)
 		{

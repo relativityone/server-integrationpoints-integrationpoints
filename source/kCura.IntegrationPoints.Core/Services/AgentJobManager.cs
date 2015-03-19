@@ -11,11 +11,13 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly IEddsServiceContext _context;
 		private readonly IJobService _jobService;
 		private readonly kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
-		public AgentJobManager(IEddsServiceContext context, IJobService jobService, kCura.Apps.Common.Utils.Serializers.ISerializer serializer)
+		private readonly JobTracker _tracker;
+		public AgentJobManager(IEddsServiceContext context, IJobService jobService, kCura.Apps.Common.Utils.Serializers.ISerializer serializer, JobTracker tracker)
 		{
 			_context = context;
 			_jobService = jobService;
 			_serializer = serializer;
+			_tracker = tracker;
 		}
 
 		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null)
@@ -44,13 +46,30 @@ namespace kCura.IntegrationPoints.Core.Services
 			this.CreateJob(jobDetails, task, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
 		}
 
+		public void CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId)
+		{
+			var job = this.CreateJobInternal(jobDetails, type, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
+			_tracker.CreateTrackingEntry(job, batchId);
+		}
+
+		public bool CheckBatchJobComplete(Job job, string batchId)
+		{
+			return _tracker.CheckEntries(job, batchId);
+		}
+
 		public void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, long? rootJobID = null, long? parentJobID = null)
+		{
+			CreateJobInternal(jobDetails, task, workspaceID, integrationPointID, rootJobID, parentJobID);
+		}
+
+		private Job CreateJobInternal<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, long? rootJobID = null,
+			long? parentJobID = null)
 		{
 			try
 			{
 				string serializedDetails = null;
 				if (jobDetails != null) serializedDetails = _serializer.Serialize(jobDetails);
-				_jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID, rootJobID, parentJobID);
+				return _jobService.CreateJob(workspaceID, integrationPointID, task.ToString(), DateTime.UtcNow, serializedDetails, _context.UserID, rootJobID, parentJobID);
 			}
 			catch (AgentNotFoundException anfe)
 			{

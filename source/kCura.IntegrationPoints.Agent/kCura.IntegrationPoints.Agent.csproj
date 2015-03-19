@@ -57,9 +57,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Agent.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Apps.Common.Config, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="kCura.Apps.Common.Config, Version=1.0.199.2, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\kCura.Apps.Common.Config.1.0.77.1\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
+      <HintPath>..\packages\kCura.Apps.Common.Config.1.0.199.2\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Apps.Common.Data, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -99,6 +99,8 @@
     </Compile>
     <Compile Include="Agent.cs" />
     <Compile Include="Installer\AgentInstallers.cs" />
+    <Compile Include="RelativityConfigurationFactory.cs" />
+    <Compile Include="Tasks\SendEmailManager.cs" />
     <Compile Include="Tasks\SendEmailWorker.cs" />
     <Compile Include="Tasks\SyncCustodianManagerWorker.cs" />
     <Compile Include="Tasks\ITaskFactory.cs" />
@@ -132,6 +134,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Email\kCura.IntegrationPoints.Email.csproj">
+      <Project>{07ec646a-d785-421e-b0f5-70d256a1e1ca}</Project>
+      <Name>kCura.IntegrationPoints.Email</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>

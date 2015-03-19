@@ -21,19 +21,19 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 	/// <param name="isInstalled">Indicates whether the source providers were installed.</param>
 	/// <param name="ex">An exception thrown when errors occur during the installation of a data source provider.</param>
 	public delegate void PostInstallPostExecuteEvent(bool isInstalled, Exception ex);
-	
+
 	/// <summary>
 	/// Registers the new data source providers with Relativity Integration Points.
 	/// </summary>
 	public abstract class IntegrationPointSourceProviderInstaller : kCura.EventHandler.PostInstallEventHandler
 	{
 		/// <summary>
-        /// Raised immediately before the execution of a Post Install event handler.
+		/// Raised immediately before the execution of a Post Install event handler.
 		/// </summary>
-        public event PostInstallPreExecuteEvent RaisePostInstallPreExecuteEvent;
-        /// <summary>
-        /// Raised after all source providers are registered.
-        /// </summary>
+		public event PostInstallPreExecuteEvent RaisePostInstallPreExecuteEvent;
+		/// <summary>
+		/// Raised after all source providers are registered.
+		/// </summary>
 		public event PostInstallPostExecuteEvent RaisePostInstallPostExecuteEvent;
 
 		/// <summary>
@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		public abstract IDictionary<Guid, SourceProvider> GetSourceProviders();
 
 		protected IntegrationPointSourceProviderInstaller()
-		{}
+		{ }
 
 		private ICaseServiceContext _caseContext;
 		internal ICaseServiceContext CaseServiceContext
@@ -75,10 +75,20 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 				return _integrationPointQuery ?? (_integrationPointQuery = new IntegrationPointQuery(Service));
 			}
 		}
-
+		private DeleteHistoryErrorService deleteHistoryErrorService;
+		public DeleteHistoryErrorService DeleteHistoryErrorService
+		{
+			get
+			{
+				return deleteHistoryErrorService ??
+							 (deleteHistoryErrorService =
+								 new DeleteHistoryErrorService(Service));
+			}
+			set { deleteHistoryErrorService = value; }
+		}
 		public DeleteHistoryService DeleteHistory
 		{
-			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(Service)); }
+			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(Service,DeleteHistoryErrorService)); }
 		}
 
 		public IRSAPIService Service
@@ -100,14 +110,14 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		{
 			get
 			{
-				return _importService ?? (_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext,DeleteIntegrationPoints));
+				return _importService ?? (_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext, DeleteIntegrationPoints));
 			}
 			set { _importService = value; }
 		}
-        /// <summary>
-        /// Runs when the event handler is called during the installation of the data source provider.
-        /// </summary>
-        /// <returns>An object of type Response, which frequently contains a message.</returns>
+		/// <summary>
+		/// Runs when the event handler is called during the installation of the data source provider.
+		/// </summary>
+		/// <returns>An object of type Response, which frequently contains a message.</returns>
 		public override sealed Response Execute()
 		{
 			bool isSuccess = false;

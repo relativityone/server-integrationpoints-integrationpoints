@@ -52,34 +52,34 @@ ko.validation.rules["time"] = {
 };
 
 ko.validation.rules["minArray"] = {
-		validator: function (value, params) {
-			if (value.length > params) {
-					return true;
-			}
+	validator: function (value, params) {
+		if (value.length > params) {
+			return true;
+		}
 		return false;
-		},
+	},
 	message: 'This field is required.'
 };
 
 ko.validation.rules['arrayRange'] = {
-    validator: function(value, params) {
-        var num = parseInt(value, 10);
-        return !isNaN(num) && num >= params.min && num <= params.max
-    },
-    message: 'Please enter a value between 1 and 999.'
+	validator: function (value, params) {
+		var num = parseInt(value, 10);
+		return !isNaN(num) && num >= params.min && num <= params.max
+	},
+	message: 'Please enter a value between 1 and 999.'
 };
 
 ko.validation.rules['emailList'] = {
 	validator: function (value, param) {
 		var emails = IP.emailUtils.parse(value);
 		for (var i = 0; i < emails.length; i++) {
-			if (!IP.emailUtils.validate(emails[i])) {
+			if (!IP.utils.stringNullOrEmpty(emails[i]) && !IP.emailUtils.validate(emails[i])) {
 				return false;
 			}
 		}
 		return true;
 	},
-	message: 'Invalid Email'
+	message: 'Email(s) are improperly formatted.'
 };
 
 ko.validation.registerExtenders();
@@ -88,27 +88,27 @@ var IP = IP || {};
 	root.services = root.services || {};
 
 	root.services.getChoice = function (fieldGuid) {
-		return root.data.ajax({type: 'Get', url: root.utils.generateWebAPIURL('Choice', fieldGuid)});
+		return root.data.ajax({ type: 'Get', url: root.utils.generateWebAPIURL('Choice', fieldGuid) });
 	};
 
 })(IP);
 
 (function (root, ko) {
-    var initDatePicker = function($els) {
-        $els.datepicker({
-            beforeShow: function(el, inst) {
-                if ($(el).attr('readonly')) {
-                    return false;
-                }
-                inst.dpDiv.css({ marginTop: -el.offsetHeight + 'px', marginLeft: el.offsetWidth + 5 + 'px' });
-                return true;
-            },
-            onSelect: function() {
-                //get the shim to work properly
-                $(this).blur();
-            }
-        });
-    };
+	var initDatePicker = function ($els) {
+		$els.datepicker({
+			beforeShow: function (el, inst) {
+				if ($(el).attr('readonly')) {
+					return false;
+				}
+				inst.dpDiv.css({ marginTop: -el.offsetHeight + 'px', marginLeft: el.offsetWidth + 5 + 'px' });
+				return true;
+			},
+			onSelect: function () {
+				//get the shim to work properly
+				$(this).blur();
+			}
+		});
+	};
 
 	root.messaging.subscribe('details-loaded', function () {
 		initDatePicker($('#scheduleRulesStartDate, #scheduleRulesEndDate'))
@@ -126,7 +126,7 @@ var IP = IP || {};
 		var self = this;
 
 		this.sourceTypes = ko.observableArray();
-		
+
 		this.selectedType = ko.observable().extend({ required: true });
 		this.sourceProvider = settings.sourceProvider || 0;
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
@@ -143,7 +143,7 @@ var IP = IP || {};
 				}
 			});
 		});
-		
+
 		this.selectedType.subscribe(function (selectedValue) {
 			$.each(self.sourceTypes(), function () {
 				if (this.value === selectedValue) {
@@ -176,7 +176,7 @@ var IP = IP || {};
 		this.rdoTypes = ko.observableArray();
 
 		self.artifactTypeID = ko.observable().extend({ required: true });
-	    //CaseArtifactId
+		//CaseArtifactId
 		//ParentObjectIdSourceFieldName
 	};
 
@@ -288,7 +288,7 @@ var IP = IP || {};
 			this.selectedDayOfTheMonth = ko.observable(currentState.selectedDayOfTheMonth);
 
 			this.monthChoice = ko.observable(currentState.monthChoice);
-		
+
 		};
 
 		var self = this;
@@ -296,7 +296,7 @@ var IP = IP || {};
 		this.enableScheduler = ko.observable((options.enableScheduler == 'true' || options.enableScheduler == true).toString());
 		this.templateID = 'schedulingConfig';
 		var sendOn = {};
-		try{
+		try {
 			sendOn = JSON.parse(options.sendOn);
 		} catch (e) {
 			sendOn = {};
@@ -316,7 +316,7 @@ var IP = IP || {};
 				this.sendOn().submit();
 			}
 		};
-				
+
 		this.frequency = ko.observableArray(["Daily", "Weekly", "Monthly"]);
 		this.isEnabled = ko.computed(function () {
 			return self.enableScheduler() === "true";
@@ -431,18 +431,25 @@ var IP = IP || {};
 		if (typeof settings.logErrors === "undefined") {
 			settings.logErrors = "true";
 		}
-		this.logErrors = ko.observable(settings.logErrors.toString());
 
+		this.logErrors = ko.observable(settings.logErrors.toString());
+		this.showErrors = ko.observable(false);
 		this.source = new Source(settings.source);
 		this.destination = new Destination(settings.destination);
 		this.destinationProvider = settings.destinationProvider;
-		this.notificationEmails = ko.observable(settings.notificationEmails).extend({	emailList:true});
+		this.notificationEmails = ko.observable(settings.notificationEmails).extend({
+			emailList: {
+				onlyIf: function () {
+					return self.showErrors();
+				}
+			}
+		});
 
-		this.CustodianManagerFieldContainsLink = JSON.parse(settings.destination ||"{}").CustodianManagerFieldContainsLink; 
+		this.CustodianManagerFieldContainsLink = JSON.parse(settings.destination || "{}").CustodianManagerFieldContainsLink;
 		this.selectedOverwrite = ko.observable(settings.selectedOverwrite);
 		this.scheduler = new Scheduler(settings.scheduler);
 		this.submit = function () {
-			debugger;
+			this.showErrors(true);
 			this.scheduler.submit();
 		};
 	};
@@ -456,8 +463,8 @@ var IP = IP || {};
 		this.loadModel = function (ip) {
 			ip.source = $.extend({}, { sourceProvider: ip.sourceProvider }, ip.source);
 			this.model = new Model(ip);
-			
-			
+
+
 			this.model.sourceConfiguration = ip.sourceConfiguration;
 		};
 
@@ -480,8 +487,8 @@ var IP = IP || {};
 					ImportOverwriteMode: ko.toJS(this.model.selectedOverwrite).replace('/', '').replace(' ', ''),
 					CaseArtifactId: IP.data.params['appID'],
 					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
-			});
-				
+				});
+
 				this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
 				this.model.sourceProvider = this.model.source.sourceProvider;
 				d.resolve(ko.toJS(this.model));

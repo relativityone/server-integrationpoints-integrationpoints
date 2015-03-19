@@ -17,17 +17,20 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 	{
 		[Test]
 		[Explicit]
-		public void CheckIfItWorksDeleteLater()
+		public void DeleteHistory_IntegrationPoint_success()
 		{
 			var client = new RSAPIClient(new Uri("http://localhost/Relativity.Services"), new IntegratedAuthCredentials(), new RSAPIClientSettings())
 			{
-				APIOptions = { WorkspaceID = 1387214 }
+				APIOptions = { WorkspaceID = 1391094 }
 			};
-			IRSAPIService rsapiService = new RSAPIService();
-			rsapiService.JobHistoryLibrary = new RsapiClientLibrary<JobHistory>(client);
-			rsapiService.IntegrationPointLibrary = new RsapiClientLibrary<Data.IntegrationPoint>(client);
-			DeleteHistoryService dhs = new DeleteHistoryService(rsapiService);
-			dhs.DeleteHistoriesAssociatedWithIP(1039602);
+
+			IRSAPIService rsapiService = new RSAPIService(client);
+			//rsapiService.JobHistoryLibrary = new RsapiClientLibrary<JobHistory>(client);
+
+			//rsapiService.IntegrationPointLibrary = new RsapiClientLibrary<Data.IntegrationPoint>(client);
+			var deleteHistoryError = new DeleteHistoryErrorService(rsapiService);
+			var dhs = new DeleteHistoryService(rsapiService,deleteHistoryError);
+			dhs.DeleteHistoriesAssociatedWithIP(1041683);
 
 		}
 	}

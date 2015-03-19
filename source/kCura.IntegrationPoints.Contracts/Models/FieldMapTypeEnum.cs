@@ -16,6 +16,10 @@
         /// <summary>
         /// The parent of a specific field.
         /// </summary>
-		Parent
+		Parent,
+		/// <summary>
+		/// Native File Path 
+		/// </summary>
+		NativeFilePath
 	}
 }

@@ -8,7 +8,9 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 		None,
 		SyncManager,
 		SyncWorker,
-		SyncCustodianManagerWorker
+		SyncCustodianManagerWorker,
+		SendEmailManager,
+		SendEmailWorker
 	}
 
 	public interface IJobManager
@@ -16,5 +18,9 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 		void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null);
 		void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, long? rootJobID = null, long? parentJobID = null);
 		void CreateJob<T>(Job parentJob, T jobDetails, TaskType task);
+
+		void CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId);
+		bool CheckBatchJobComplete(Job job, string batchId);
+
 	}
 }

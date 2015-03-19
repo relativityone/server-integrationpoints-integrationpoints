@@ -40,8 +40,8 @@ namespace kCura.IntegrationPoints.Core.Services
 				jobHistory.Name = integrationPoint.Name;
 				jobHistory.IntegrationPoint = new[] { integrationPoint.ArtifactId };
 				jobHistory.BatchInstance = batchInstance.ToString();
+				jobHistory.JobStatus = JobStatusChoices.JobHistoryPending;
 				if (startTimeUTC.HasValue) jobHistory.StartTimeUTC = startTimeUTC.Value;
-				jobHistory.JobStatus = GetJobStatus();
 
 				int artifactId = _context.RsapiService.JobHistoryLibrary.Create(jobHistory);
 				jobHistory.ArtifactId = artifactId;

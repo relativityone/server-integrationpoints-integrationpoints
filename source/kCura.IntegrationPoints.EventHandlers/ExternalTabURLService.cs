@@ -5,13 +5,7 @@ namespace kCura.IntegrationPoints.EventHandlers
 {
 	public class ExternalTabURLService
 	{
-		private static System.Guid ReportGuid = Guid.Parse("6C36149D-DFA9-4EB3-872B-D14FEFCBF3A1");
-
-		private readonly ICaseServiceContext _context;
-		public ExternalTabURLService()
-		{
-			//_context = context;
-		}
+		public ExternalTabURLService(){}
 		
 		//public virtual string GenerateNoneEncryptedURL(Guid tabGuid, string externalLink, bool useStandards = false)
 		//{

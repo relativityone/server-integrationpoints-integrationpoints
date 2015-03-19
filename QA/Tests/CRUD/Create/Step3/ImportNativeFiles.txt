@@ -1,0 +1,99 @@
+
+*** Settings ***
+| Documentation 	| Verify that the Native File Path list is shown at the correct times with the correct values.
+| Metadata			| Authors	| Daniel Oliver
+| Force Tags		| in-progress	| team.method
+| Suite Setup		| Open and Log in to Method
+| Test Teardown 	| Capture screenshot if test fails
+| Suite Teardown	| Close all browsers
+
+*** Variables ***
+
+| ${WorkspaceName}		| LDAP Sync
+| ${Import Native Files List}	| s2id_import-nativefile
+| ${Import Native Files Radio}	| 
+
+*** Test Cases ***
+
+| The Import Native File Radio Buttons are not present when the RDO is not Document
+| | [Documentation] | Verify that RDO's that are not Document, do not show the Import Native File list on the Map Fields screen.
+| | ...				| [id] 727f8bae-c440-11e4-9e47-90b11c6c5ae4
+| | [Tags]			| untested
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Destination RDO	| Project
+| | Verify that the following Card contains the following Fields in Order	| Import Settings	| 
+| | ... | Unique Identifier: 
+
+| The Import Native File Radio BUttons are present when the RDO is Document
+| | [Documentation] | Verify that the Document RDO shows the Import Native File list on the Map Fields screen.
+| | ...				| [id] 8c93440f-c440-11e4-8336-90b11c6c5ae4
+| | [Tags]			| untested	| required
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Destination RDO	| Document
+| | Verify that the following Card contains the following Fields in Order	| Import Settings	| 
+| | ... | Unique Identifier:	| 
+| | ... | Import Native Files:
+
+| The Import Native File is a field of Yes/No Radio Buttons 
+| | [Documentation] | Verify that the Import Native File field is a Yes/No radio button field.
+| | [Tags]			| untested
+| | Verify that the following radio buttons are grouped together	| ${Import Native Files Radio}	| Yes	| No
+
+| Import Native File defaults to No
+| | [Documentation] | Verify that the Import Native File defaults to No
+| | ...				| [id] ae2ca28f-b605-11e4-a642-90b11c6c5ae4
+| | [Tags]			| automated
+| | Radio Button Should Be Set To	| ${Import Native Files Radio}	| false	| # false = No
+
+| The Native File Path field is a drop list
+| | [Documentation] | Verify that the Native File Path is a select2 drop list.
+| | ...				| [id] 911bb25e-c440-11e4-9c6d-90b11c6c5ae4
+| | [Tags]			| untested
+| | [Setup]			| Require Test Case	| The Import Native File list is present when the RDO is Document
+| | Verify that the following field ID has a droplist input	| ${Import Native File List}
+
+| Import Native File Path's Default value is Select...
+| | [Documentation] | Verify that the Import Native File's Default value is "Select..."
+| | ...				| [id] 94753da1-c440-11e4-8e93-90b11c6c5ae4
+| | [Tags]			| untested
+| | [Setup]			| Require Test Case	| The Import Native File list is present when the RDO is Document
+| | Verify that the following select2 Dropdown currently has the following value selected	| ${Import Native File List}	| Select...
+
+| Import Native Path list has the correct values
+| | [Documentation] | Verify that the Import Native File list values match the Source Attributes list values.
+| | ...				| [id] 99168b1e-c440-11e4-8b5a-90b11c6c5ae4
+| | [Tags]			| untested
+| | [Setup]			| Require Test Case	| The Import Native File list is present when the RDO is Document
+| | Click	| ${Import Native File List}
+| | @{ParentAttributes}=	| Get the Unassigned Source Attributes
+| | Verify that the currently opened select2 Dropdown has the following choices in order	| Select...	| @{ParentAttributes}
+
+| Error is displayed when No selection has been made from the Native File Path list
+
+| Error is displayed when the selected Native File Path field is not mapped
+
+| Saving Post No Selection message
+
+| Saving Post Native File Path is not mapped
+
+*** Keywords *** 
+
+| Go to Step 3 of the Integration Point wizard using the following Destination RDO
+| | [Documentation]	| 
+| | [ARGUMENTS] 	| ${DestinationRDO}
+| | Open Create Integration Point
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${DestinationRDO} Import Native File Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${DestinationRDO}	| EnableScheduler=No
+| | Proceed to the Next Step of the Integration Point wizard
+| | Fill out the Following Fields of the Integration Point Step 2 form	| 
+| | ... | ConnectionPath=testing.corp/CN=Users,DC=testing,DC=corp	| 
+| | ... | ObjectFilterString=(objectClass=*)		| 
+| | ... | Authentication=FastBind					| 
+| | ... | ConnectionUsername=testing\\administrator	| 
+| | ... | ConnectionPassword=P@ssw0rd@1				| 
+| | ... | ImportNestedItems=Yes
+| | Proceed to the Next Step of the Integration Point wizard
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt

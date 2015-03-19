@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
+using System.Security.Authentication;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
@@ -140,6 +141,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			}
 			catch (Exception ex)
 			{
+				if (ex.Message.Equals("Login failed."))
+				{
+					throw new AuthenticationException(Properties.ErrorMessages.Login_Failed, ex);
+				}
 				//LoggedException.PreserveStack(ex);
 				throw;
 			}
