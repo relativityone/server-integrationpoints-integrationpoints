@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+
+<project name="BuildTools.Test">
+
+	<property name="testlog.directory" value="${path::combine(root, 'TestLogs')}" />
+
+
+	<target name="start_tests" description="Execute NUnit and Integrations tests." depends="test_initialize">
+		<call target="test_nunit" />
+	</target>
+		
+	<target name="test_initialize">
+	
+		<mkdir dir="${testlog.directory}" failonerror="false" />
+		
+		<if test="${directory::exists(testlog.directory)}">
+			<delete dir="${testlog.directory}" failonerror="true" />
+	    </if>		
+		<mkdir dir="${testlog.directory}" failonerror="false" />		
+	</target>
+	
+	<target name="get_testrunner">
+		<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
+			<arg line="install kCura.TestRunner" />
+		</exec>	
+		
+		<copy todir="${development.scripts}" flatten="true" overwrite="true">
+			<fileset basedir="${nuspec.directory}">
+				<include name="**\kCura.TestRunner.exe" />
+			</fileset>
+		</copy>	
+    </target>
+
+	<target name="test_nunit" depends="get_testrunner">
+		<exec program="${development.scripts}\kCura.TestRunner.exe">
+			<arg line="/source:${root}" />
+			<arg line="/tests:${development.scripts}\Tests.xml" />
+			<arg line='/out:"${testlog.directory}"' />
+			<arg line='/nunitx64:"${NUnit}"' />
+			<arg line='/nunitx86:"${NUnit-x86}"' />
+			<arg line='/timeout:5.0' />
+		</exec>		
+	</target>
+</project>

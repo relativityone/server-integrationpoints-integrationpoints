@@ -1,0 +1,79 @@
+<?xml version="1.0" ?>
+
+<project name="BuildTools.Build">
+
+	<include buildfile="common.include" />
+	<include buildfile="nuget.include" />
+	<include buildfile="assembly.include" />
+	<include buildfile="package.include" />
+	<include buildfile="test.include" />
+	
+	<property name="buildType" value="DEV" unless="${property::exists('buildType')}" />
+	<property name="buildconfig" value="Debug" unless="${property::exists('buildconfig')}" />
+	<property name="verbosity" value="normal" unless="${property::exists('verbosity')}" />
+	<property name="inputfile" value="${development.scripts}\Projects.xml" readonly="true" />
+	<property name="targetsfile" value="${development.scripts}\msbuild.targets" readonly="true" />
+	<property name="dependencygraph" value="${development.scripts}\DependencyGraph.xml" readonly="true" />
+	<property name="dllout" value="${development.scripts}\dlls.txt" readonly="true" />
+	<property name="logfile" value="${root}\build.log" readonly="true" />
+	
+	<target name="build" description="Build the entire BuildTools Code base" depends="build_initialize,build_projects">
+		<if test="${file::exists(logfile)}">
+			<delete file="${logfile}" failonerror="true"/>
+		</if>
+
+		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} complete." />
+	</target>
+	
+	<target name="get_buildhelper">
+		<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
+			<arg line="install kCura.BuildHelper" />
+		</exec>	
+		
+		<copy todir="${development.scripts}" flatten="true" overwrite="true">
+			<fileset basedir="${nuspec.directory}">
+				<include name="**\kCura.BuildHelper.exe" />
+			</fileset>
+		</copy>
+    </target>
+	
+	<target name="create_build_script" description="creates dynamic build script" depends="get_buildhelper">
+		<exec program="${development.scripts}\kCura.BuildHelper.exe">
+			<arg line="/source:${root}" />
+			<arg line="/input:${inputfile}" />
+			<arg line="/output:${targetsfile}" />
+			<arg line="/graph:${dependencygraph}" />
+			<arg line="/dllout:${dllout}" />
+			<arg line="/vs:11.0" />
+		</exec>
+	</target>
+	
+	<target name="build_projects" description="build all of build tools" depends="create_build_script">
+		<exec program="${microsoft.net64.directory}\MSBuild.exe">
+			<arg line='"${targetsfile}"' />
+			<arg line='/property:SourceRoot="${root}"' />
+			<arg line="/property:Configuration=${buildconfig}" />	
+			<arg line="/property:BuildProjectReferences=false" />		
+			<arg value="/target:BuildTiers" />
+			<arg value="/verbosity:${verbosity}" />
+			<arg value="/nologo" />
+			<arg value="/maxcpucount" /> 
+			<arg value='/flp1:LogFile="${logfile}";Verbosity=${verbosity}' /> 	
+		</exec>
+	</target>
+	
+	<target name="build_initialize">
+	
+		<echo message="Initializing a ${buildconfig} build..." />
+
+		<tstamp>
+			<formatter property="DSTAMP" pattern="yyyy-MM-dd"/>
+			<formatter property="TSTAMP" pattern="HH:mm:ss"/>
+		</tstamp>
+		
+		
+		<echo message="${DSTAMP} ${TSTAMP} ${buildType} buildType value was passed." />
+	</target>
+	
+	
+</project>

@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+
+<project name="BuildTools.Package">
+	<!-- Package properties -->
+	<property name="packageFolder" value="C:\Packages\BuildTools" unless="${property::exists('packageFolder')}" />
+	<property name="packageBranch" value="${path::combine(packageFolder, branchDir)}" />
+	<property name="packageDirectory" value="${path::combine(packageBranch, version)}" />
+	
+	<target name="package" depends="package_initalize" description="Copies executables to packages folder">
+	<!-- Use following as template
+		<call target="package_sample" />
+	-->
+	</target>
+	
+	<!-- Use following as template
+	
+	<target name="package_sample">
+		<copy todir="${packageDirectory}\kCura.Sample\bin">
+			<fileset basedir="${source.directory}\kCura.Sample\bin">
+				<include name="kCura.Sample.exe" />
+				<include name="kCura.Sample.pdb" />				
+			</fileset>
+		</copy>
+		
+		<copy todir="${packageDirectory}\kCura.Sample\NuGet">			
+			<fileset basedir="${nuspec.directory}">
+				<include name="kCura.Sample.${version}.nupkg" />
+			</fileset>
+		</copy>
+	</target>
+	-->
+	<target name="package_initalize" description="creates initial directories" >
+		<mkdir dir="${packageDirectory}" />
+	</target>
+</project>

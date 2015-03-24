@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<BuildHelper>
+	<Projects>
+		<Build>
+		<!-- Use following as template
+			 		
+			<Project path="Source\Project1\Project1.vbproj">
+				<Platforms>
+					<Platform>x64</Platform>
+				</Platforms>
+				<Publish>Local.pubxml</Publish>
+			</Project>		
+		-->	
+		</Build>
+		<Ignore>
+		<!-- Use following as template
+			
+			<Project path="Vendor\SomeVendorProject\SomeVendorProject.vbproj" />
+		-->
+			
+		</Ignore>
+	</Projects>
+	<References>
+		<Maps>
+		<!-- Use following as template
+		
+			<Map from="kCura.Project1.Project2.ILMerged.dll">
+				<MapTos>
+					<MapTo>kCura.Project1.dll</MapTo>
+					<MapTo>kCura.Project2.dll</MapTo>
+				</MapTos>				
+			</Map>
+		-->
+		</Maps>
+		<Adds>
+		<!-- Use following as template
+		
+			<Add path="Source\Project1\Project1.vbproj">
+				<References>
+					<Reference>kCura.Project2.dll</Reference>
+				</References>				
+			</Add>
+		-->
+		</Adds>		
+	</References>	
+</BuildHelper>

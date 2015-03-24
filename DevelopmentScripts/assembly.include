@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+
+<project name="BuildTools.Assembly">
+	<property name="ProductLink" value="kCura Corporation" readonly="true"/>
+	<property name="ProductDescription" value="Tools to help build source code for kCura repositories." readonly="true"/>
+	<property name="Product" value="BuildTools" readonly="true"/>
+	
+	<tstamp property="current.year" pattern="yyyy" />
+	
+	<target name="update_assembly_info" depends="update_buildtools">
+		<echo message="Successfully updated AssemblyInfo files in ${root}." />
+	</target>
+
+	
+	<!-- Update AssemblyInfo files that belong to BuildTools -->
+	<target name="update_buildtools" description="Update BuildTools AssemblyInfo files">
+		<echo message="Updating ${version.directory}\AssemblyInfo.vb" />
+		<asminfo output="${version.directory}\AssemblyInfo.vb" language="VB">
+		<imports>
+			<import namespace="System" />
+			<import namespace="System.Reflection" />
+			<import namespace="System.Runtime.InteropServices" />
+		  </imports>
+		  <attributes>
+			<attribute type="ComVisibleAttribute" value="false" />
+			<attribute type="CLSCompliantAttribute" value="false" />
+			<attribute type="AssemblyVersionAttribute" value="${version}" />
+			<attribute type="AssemblyFileVersionAttribute" value="${version}" />
+			<attribute type="AssemblyCopyrightAttribute" value="Copyright (c) ${current.year}, kCura Corporation." />
+			<attribute type="AssemblyTitleAttribute" value="${Product}" />
+			<attribute type="AssemblyDescriptionAttribute" value="${ProductDescription}" />
+			<attribute type="AssemblyCompanyAttribute" value="${ProductLink}" />
+			<attribute type="AssemblyProductAttribute" value="${Product}" />
+			</attributes>
+		</asminfo>
+				
+		<echo message="Updating ${version.directory}\AssemblyInfo.cs" />
+		<asminfo output="${version.directory}\AssemblyInfo.cs" language="CSharp">
+			<imports>
+				<import namespace="System" />
+				<import namespace="System.Reflection" />
+				<import namespace="System.Runtime.InteropServices" />
+			</imports>
+			<attributes>
+				<attribute type="ComVisibleAttribute" value="false" />
+				<attribute type="CLSCompliantAttribute" value="false" />
+				<attribute type="AssemblyVersionAttribute" value="${version}" />
+				<attribute type="AssemblyFileVersionAttribute" value="${version}" />
+				<attribute type="AssemblyCopyrightAttribute" value="Copyright (c) ${current.year}, kCura Corporation." />
+				<attribute type="AssemblyTitleAttribute" value="${Product}" />
+				<attribute type="AssemblyDescriptionAttribute" value="${ProductDescription}" />
+				<attribute type="AssemblyCompanyAttribute" value="${ProductLink}" />
+				<attribute type="AssemblyProductAttribute" value="${Product}" />
+			</attributes>
+		</asminfo>	
+		
+	</target>	
+			
+	<target name="revert_assembly_info" description="Revert AssemblyInfo files">
+
+    <!-- Revert the AssemblyInfo files that belong to Relativity -->
+    <exec program="hg" failonerror="false" append="false">
+      <arg value='revert "${version.directory}\AssemblyInfo.vb"' />
+      <arg value='--no-backup' />
+    </exec> 
+
+    <exec program="hg" failonerror="false" append="false">
+      <arg value='revert "${version.directory}\AssemblyInfo.cs"' />
+      <arg value='--no-backup' />
+    </exec> 
+    <echo message="AssemblyInfo revert completed successfully." />
+	</target>
+
+</project>
