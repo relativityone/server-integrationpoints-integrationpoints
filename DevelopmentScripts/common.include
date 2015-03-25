@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project name="EDDS.Common">
+<project name="BuildTools.Common">
   <!-- The "root" property is case sensitive (including the drive letter) -->
 	<property name="root" value="C:\SourceCode\BuildTools" unless="${property::exists('root')}" />
   
