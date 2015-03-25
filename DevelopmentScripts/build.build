@@ -7,6 +7,7 @@
 	<include buildfile="assembly.include" />
 	<include buildfile="package.include" />
 	<include buildfile="test.include" />
+	<include buildfile="applications.include" />
 	
 	<property name="buildType" value="DEV" unless="${property::exists('buildType')}" />
 	<property name="buildconfig" value="Debug" unless="${property::exists('buildconfig')}" />
@@ -17,7 +18,7 @@
 	<property name="dllout" value="${development.scripts}\dlls.txt" readonly="true" />
 	<property name="logfile" value="${root}\build.log" readonly="true" />
 	
-	<target name="build" description="Build the entire BuildTools Code base" depends="build_initialize,build_projects">
+	<target name="build" description="Build the entire BuildTools Code base" depends="build_initialize,build_projects,build_applications">
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
