@@ -36,8 +36,21 @@ ko.validation.rules['uniqueIdIsMapped'] = {
 			return true;
 		}
 		if (!rdoIdentifierMapped || !containsIdentifier) {
-			var missingField = !rdoIdentifierMapped ? params[2]() : params[1]();
-			IP.message.error.raise('<span id="uniquIdMissing">Error: The unique identifier field, ' + missingField + ', must be mapped.<span>');
+			var missingField = "";
+			if (!rdoIdentifierMapped && !containsIdentifier) {
+				if (params[2]() !== params[1]()) {
+					missingField = "The object identifier, " + params[2]() + ", and the unique identifier, " + params[1]();
+				} else {
+					missingField = "The object identifier, " + params[2]();
+				}
+			}
+			if (!rdoIdentifierMapped && containsIdentifier) {
+				missingField = "The object identifier, " + params[2]();
+			}
+			if (rdoIdentifierMapped && !containsIdentifier) {
+				missingField = "The unique identifier, " + params[1]();
+			}
+			IP.message.error.raise('<span id="uniquIdMissing"> ' + missingField + ', must be mapped.<span>');
 			return false;
 		}
 		return true;
@@ -57,22 +70,7 @@ ko.validation.rules['nativeFilePathMustBeMapped'] = {
 	},
 	message: 'The Native file path field must be mapped.'
 };
-ko.validation.rules['mustContainIdentifer'] = {
-	validator: function (value, params) {
-		var contains = false;
-		for (var i = 0; i < value.length; i++) {
-			var current = value[i];
-			if (current.isIdentifier) {
-				return true;
-			}
-			else if (params[1]() == current.name) {
-				return true;
-			}
-		}
-		IP.message.error.raise('The object identifier field must be mapped.');
-	},
-	message: 'The object identifier field must be mapped.'
-};
+
 
 ko.validation.rules['fieldsMustBeMapped'] = {
 	validator: function (value, params) {
@@ -148,12 +146,6 @@ ko.validation.insertValidationMessage = function (element) {
 		this.isAppendOverlay = ko.observable(true);
 
 		this.mappedWorkspace = ko.observableArray([]).extend({
-			mustContainIdentifer: {
-				onlyIf: function () {
-					return self.showErrors() && self.mappedWorkspace().length >= 0;
-				},
-				params: [model.selectedOverwrite, self.selectedUniqueId, self.rdoIdentifier]
-			},
 			uniqueIdIsMapped: {
 				onlyIf: function () {
 					return self.showErrors() && self.mappedWorkspace().length >= 0;
