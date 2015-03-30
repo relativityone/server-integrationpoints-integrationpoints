@@ -18,9 +18,11 @@ if not "%2" == "" (
 SET LDAPSyncRoot=%LDAPSync%
 pushd %LDAPSync%\developmentscripts
 nant build -buildfile:"%BUILDPROJECT%" "-D:root=%LDAPSyncRoot%" "-D:buildconfig=%BUILDCONFIG%" "-D:action=%BUILDACTION%" "-D:DevEnv=DEVENV"
-popd
 
-::DropDLL
+::UploadDLL
+pushd %LDAPSync%\developmentscripts
+nant upload_binaries_into_relativity -buildfile:"%BUILDPROJECT%" "-D:root=%LDAPSyncRoot%" "-D:buildconfig=%BUILDCONFIG%" "-D:action=upload_binaries_into_relativity"
+popd
 goto end
 
 
