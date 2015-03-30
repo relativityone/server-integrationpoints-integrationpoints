@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using kCura.EDDS.WebAPI.DocumentManagerBase;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
@@ -159,6 +160,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier)
 						.Select(x => int.Parse(x.DestinationField.FieldIdentifier))
 						.First();
+			}
+			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath))
+			{
+				settings.NativeFilePathSourceFieldName =
+					fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath).DestinationField.DisplayName;
 			}
 			return settings;
 		}
