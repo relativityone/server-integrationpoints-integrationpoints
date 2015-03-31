@@ -13,6 +13,7 @@
 	<!-- Adjust the version number for Relativity while holding the other static to a static version -->	
 	<property name="version" value="1.0.0.0" unless="${property::exists('version')}" /> 
 	<property name="serverType" value="teambranch" unless="${property::exists('serverType')}" />
+	<property name="buildType" value="DEV" unless="${property::exists('buildType')}" />
 	<property name="branchDir" value="default" unless="${property::exists('branchDir')}" />
 		
 	

@@ -34,8 +34,10 @@
 			<arg line='/custompage:11111111-1111-1111-1111-111111111111=${source.directory}\CustomPages\kCura.Project1' />
 			<arg line='/applicationversion:${version}' />
 			<arg line='/servertype:${serverType}' />
-			<arg line='/internaldlls:${dllout}' />
 			<arg line='/debug:${diagnostic}' />
+			<arg line='/internaldlls:${dllout}' />
+			<arg line='/sign:${sign}' />
+			<arg line='/signscript:${signScript}' />
 		</exec>
 	</target>
 	-->

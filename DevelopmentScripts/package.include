@@ -5,11 +5,15 @@
 	<property name="packageFolder" value="C:\Packages\BuildTools" unless="${property::exists('packageFolder')}" />
 	<property name="packageBranch" value="${path::combine(packageFolder, branchDir)}" />
 	<property name="packageDirectory" value="${path::combine(packageBranch, version)}" />
+	<property name="signtool" value="${path::combine(windows.sdk.directory, 'Bin\signtool.exe')}" />
+	
 	
 	<target name="package" depends="package_initalize" description="Copies executables to packages folder">
 	<!-- Use following as template
 		<call target="package_sample" />
 	-->
+
+		<call target="sign" unless="${string::contains(buildType,'DEV') or string::contains(serverType,'local')}" />		
 	</target>
 	
 	<!-- Use following as template
@@ -17,8 +21,8 @@
 	<target name="package_sample">
 		<copy todir="${packageDirectory}\kCura.Sample\bin">
 			<fileset basedir="${source.directory}\kCura.Sample\bin">
-				<include name="kCura.Sample.exe" />
-				<include name="kCura.Sample.pdb" />				
+				<include name="*.exe" />				
+				<include name="*.dll" />
 			</fileset>
 		</copy>
 		
@@ -27,9 +31,31 @@
 				<include name="kCura.Sample.${version}.nupkg" />
 			</fileset>
 		</copy>
+		
+		<copy todir="${packageDirectory}\PDBs - INTERNAL USE ONLY">
+			<fileset basedir="${source.directory}\kCura.Sample\bin">
+				<include name="*.pdb" />				
+			</fileset>
+		</copy>
 	</target>
 	-->
 	<target name="package_initalize" description="creates initial directories" >
 		<mkdir dir="${packageDirectory}" />
 	</target>
+	
+	<target name="sign" description="signs all dlls and exes" >
+		<foreach item="File" property="filename">
+			<in>
+				<items>
+					<include name="${packageDirectory}\**\*.exe" />
+					<include name="${packageDirectory}\**\*.dll" />
+					<include name="${packageDirectory}\**\*.msi" />
+				</items>
+			</in>
+			<do>
+				<exec program="${development.scripts}\sign.bat" commandline='"${filename}" "${signtool}"' />
+			</do>
+		</foreach>		
+	</target>
+	
 </project>
