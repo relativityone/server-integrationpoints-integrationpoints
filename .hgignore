@@ -5,6 +5,7 @@ bin
 Bin
 obj
 Obj
+CustomPages
 DependencyGraph.xml
 build.log
 Output
@@ -47,6 +48,7 @@ Thumbs.db
 *.wxsreg
 *.msm
 *.exe
+*.rap
 *.intermediate.manifest
 *ReSharper*
 .lastbuildstate
