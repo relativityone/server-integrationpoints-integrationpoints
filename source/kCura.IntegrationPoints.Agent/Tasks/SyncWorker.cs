@@ -168,6 +168,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			this.JobHistory = _jobHistoryService.CreateRDO(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
 			_jobHistoryErrorService.JobHistory = this.JobHistory;
+			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPoint;
 		}
 
 		internal virtual string GetSourceConfiguration(string originalSourceConfiguration)
