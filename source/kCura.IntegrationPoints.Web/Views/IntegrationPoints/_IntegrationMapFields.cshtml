@@ -9,10 +9,9 @@
 
 			</div>
 			<div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error"></div>
-			<div data-bind="validationMessage: mappedWorkspace" class="icon-error legal-hold field-validation-error"></div>
 			<div class="table" id="mapFields">
 				<div class="cell">
-					<select id="workspace-fields" class="list-box" name="workspace-field" data-bind="options: workspaceFields, selectedOptions: selectedWorkspaceField, optionsText: 'name', doubleClick: addSelectFields" multiple="multiple"></select>
+					<select id="workspace-fields" class="list-box" name="workspace-field" data-bind="options: workspaceFields, selectedOptions: workspaceFieldSelected, optionsText: 'name', doubleClick: addSelectFields" multiple="multiple"></select>
 				</div>
 				<div class="cell selection map-move">
 					<div>
@@ -34,7 +33,6 @@
 						<a href="#" id="workspaceFieldBottom" class="icon-move-to-bottom" data-bind="click: moveMappedWorkspaceBottom"></a>
 					</div>
 				</div>
-
 				<div class="cell selection map-move">
 					<div>
 						<a href="#" id="attributeFieldTop" class="icon-move-to-top" data-bind="click: moveMappedSourceTop"></a>
@@ -55,16 +53,13 @@
 						<a href="#" id="remove-all-source-fields" class="icon-move-first" data-bind="click: addSourceToMapped"></a>
 					</div>
 				</div>
-
 				<div class="cell">
 					<div>
 						<select class="list-box" id="source-fields" multiple="multiple" data-bind="options: sourceField, selectedOptions: selectedSourceField, optionsText: 'name', doubleClick: addToMappedSource">
 						</select>
 					</div>
 				</div>
-
-			</div>
-		
+			</div>		
 		</div>
 	</div>
 	<div class="card">
@@ -81,11 +76,30 @@
 			<div class="field-row" data-bind="visible: hasParent">
 				<div class="field-label required ">Parent Attribute:</div>
 				<div class="field-value ">					
-					<select id="parent-identifier" data-bind="options: parentField, value: selectedIdentifier, optionsValue: 'name', optionsText: 'name', optionsCaption: 'Select...', select2: {}">
+					<select id="parent-identifier" data-bind="options: parentField, value: selectedIdentifier, optionsValue: 'name', optionsText: 'name', optionsCaption: 'Select...' ,select2: {}">
 					</select>
 				</div>
 			</div>
-			
+			<div class="field-row" data-bind="visible: isDocument() == 'true'">
+				<div class="field-label required ">Import Native File</div>
+				<div class="field-value ">					
+					<ul>
+						<li>
+							<input type="radio" name="import" value="true" data-bind="checked: importNativeFile">Yes</li>
+						<li>
+							<input type="radio" name="import" value="false" data-bind="checked: importNativeFile">No</li>
+					</ul>
+					
+				</div>
+			</div>
+			<div class="field-row" data-bind="visible: importNativeFile() == 'true'">
+				
+				<div class="field-label required ">Native File Path:</div>
+				<div class="field-value ">					
+					<select id="native-filePath" data-bind="options: nativeFilePathOption, value: nativeFilePathValue, optionsValue: 'displayName', optionsText: 'displayName', optionsCaption: 'Select...', select2: {}">
+					</select>	
+				</div>
+			</div>
 				<div class="field-row" data-bind="visible: showManager">
 				<div class="field-label required ">Custodian Manager<br/>
 							Contains Link:</div>

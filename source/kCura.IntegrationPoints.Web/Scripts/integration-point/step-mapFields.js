@@ -36,31 +36,41 @@ ko.validation.rules['uniqueIdIsMapped'] = {
 			return true;
 		}
 		if (!rdoIdentifierMapped || !containsIdentifier) {
-			var missingField = !rdoIdentifierMapped ? params[2]() : params[1]();
-			IP.message.error.raise('<span id="uniquIdMissing">Error: The unique identifier field, ' + missingField + ', must be mapped.<span>');
+			var missingField = "";
+			if (!rdoIdentifierMapped && !containsIdentifier) {
+				if (params[2]() !== params[1]()) {
+					missingField = "The object identifier, " + params[2]() + ", and the unique identifier, " + params[1]();
+				} else {
+					missingField = "The object identifier, " + params[2]();
+				}
+			}
+			if (!rdoIdentifierMapped && containsIdentifier) {
+				missingField = "The object identifier, " + params[2]();
+			}
+			if (rdoIdentifierMapped && !containsIdentifier) {
+				missingField = "The unique identifier, " + params[1]();
+			}
+			IP.message.error.raise('<span id="uniquIdMissing"> ' + missingField + ', must be mapped.<span>');
 			return false;
 		}
 		return true;
 	},
 	message: "The unique identifier field must be mapped."
 };
-
-ko.validation.rules['mustContainIdentifer'] = {
+ko.validation.rules['nativeFilePathMustBeMapped'] = {
 	validator: function (value, params) {
-		var contains = false;
-		for (var i = 0; i < value.length; i++) {
-			var current = value[i];
-			if (current.isIdentifier) {
-				return true;
-			}
-			else if (params[1]() == current.name) {
-				return true;
-			}
+		if (typeof (value) !== "undefined") {
+			$.each(params[0](), function () {
+				if (value === this.name) {
+					return false;
+				}
+			});
 		}
-		IP.message.error.raise('The object identifier field must be mapped.');
+		return true;
 	},
-	message: 'The object identifier field must be mapped.'
+	message: 'The Native file path field must be mapped.'
 };
+
 
 ko.validation.rules['fieldsMustBeMapped'] = {
 	validator: function (value, params) {
@@ -130,19 +140,12 @@ ko.validation.insertValidationMessage = function (element) {
 					return self.showErrors();
 				}
 			}
-
 		});
 		this.selectedUniqueId = ko.observable().extend({ required: true });
 		this.rdoIdentifier = ko.observable();
 		this.isAppendOverlay = ko.observable(true);
 
 		this.mappedWorkspace = ko.observableArray([]).extend({
-			mustContainIdentifer: {
-				onlyIf: function () {
-					return self.showErrors() && self.mappedWorkspace().length >= 0;
-				},
-				params: [model.selectedOverwrite, self.selectedUniqueId, self.rdoIdentifier]
-			},
 			uniqueIdIsMapped: {
 				onlyIf: function () {
 					return self.showErrors() && self.mappedWorkspace().length >= 0;
@@ -165,13 +168,26 @@ ko.validation.insertValidationMessage = function (element) {
 		}
 		this.CustodianManagerFieldContainsLink = ko.observable(model.CustodianManagerFieldContainsLink || "false");
 		this.sourceField = ko.observableArray([]);
-		this.selectedWorkspaceField = ko.observableArray([]);
+		this.workspaceFieldSelected = ko.observableArray([]);
 		this.selectedMappedWorkspace = ko.observableArray([]);
 		this.selectedSourceField = ko.observableArray([]);
 		this.selectedMappedSource = ko.observableArray([]);
 		this.overlay = ko.observableArray([]);
+		this.nativeFilePathOption = ko.observableArray([]);
+		this.nativeFilePathValue = ko.observableArray([]).extend({
+			nativeFilePathMustBeMapped: {
+			 	onlyIf: function() { return self.importNativeFile && self.showErrors(); },
+			 	params: [this.mappedWorkspace]
+			 }
+		});
 		this.hasParent = ko.observable(false);
 		this.parentField = ko.observableArray([]);
+
+		this.importNativeFile = ko.observable(model.importNativeFile || "false");
+		this.isDocument = ko.observable("false");
+		if (artifactTypeId == 10) {
+			self.isDocument("true");
+		}
 		this.selectedIdentifier = ko.observable().extend({
 			required: {
 				onlyIf: function () {
@@ -221,16 +237,15 @@ ko.validation.insertValidationMessage = function (element) {
 
 		var mapTypes = {
 			identifier: 1,
-			parent: 2
+			parent: 2,
+			native: 3
 		};
-
-
 		var mapHelper = (function () {
 			function find(fields, fieldMapping, key, func) {
 				return $.grep(fields, function (item) {
 					var remove = false;
 					$.each(fieldMapping, function () {
-						if (this[key].fieldIdentifier === item.fieldIdentifier && this["fieldMapType"] !== mapTypes.parent) {
+						if (this[key].fieldIdentifier === item.fieldIdentifier && this["fieldMapType"] !== mapTypes.parent && this["fieldMapType"] !== mapTypes.native) {
 							remove = true;
 							return false;
 						}
@@ -281,18 +296,20 @@ ko.validation.insertValidationMessage = function (element) {
 
 				var types = mapFields(sourceFields);
 				self.overlay(destinationFields);
-
+				self.nativeFilePathOption(destinationFields);
 				$.each(self.overlay(), function () {
 					if (this.isIdentifier) {
 						self.rdoIdentifier(this.displayName);
 						self.selectedUniqueId(this.displayName);
 					}
 				});
+
 				$.each(self.overlay(), function () {
 					if (model.identifer == this.displayName) {
 						self.selectedUniqueId(this.displayName);
 					}
 				});
+
 				self.parentField(types);
 				if (typeof (model.parentIdentifier) !== "undefined") {
 					$.each(self.parentField(), function () {
@@ -308,13 +325,27 @@ ko.validation.insertValidationMessage = function (element) {
 						}
 					}
 				}
+
+				$.each(mapping, function () {
+					if (this.fieldMapType == 3 && artifactTypeId == 10) {
+						self.importNativeFile("true");
+						self.nativeFilePathValue(this.destinationField.displayName);
+					}
+				});
+
+				if (typeof (model.nativeFilePathValue) !== "undefined") {
+					$.each(destinationFields, function () {
+						if (this.displayName === model.nativeFilePathValue)
+							self.nativeFilePathValue(this.displayName);
+					});
+				}
 				for (var i = 0; i < mapping.length; i++) {
 					if (mapping[i].fieldMapType == mapTypes.identifier) {
 						self.selectedUniqueId(mapping[i].destinationField.displayName);
 					}
 				}
 				mapping = $.map(mapping, function (value) {
-					return value.fieldMapType !== mapTypes.parent ? value : null;
+					return (value.fieldMapType !== mapTypes.parent && value.fieldMapType !== mapTypes.native) ? value : null;
 				});
 
 
@@ -340,9 +371,9 @@ ko.validation.insertValidationMessage = function (element) {
 		/********** WorkspaceFields control  **********/
 
 
-		this.addSelectFields = function () { IP.workspaceFieldsControls.add(this.workspaceFields, this.selectedWorkspaceField, this.mappedWorkspace); }
+		this.addSelectFields = function () { IP.workspaceFieldsControls.add(this.workspaceFields, this.workspaceFieldSelected, this.mappedWorkspace); }
 		this.addToWorkspaceField = function () { IP.workspaceFieldsControls.add(this.mappedWorkspace, this.selectedMappedWorkspace, this.workspaceFields); }
-		this.addAllWorkspaceFields = function () { IP.workspaceFieldsControls.addAll(this.workspaceFields, this.selectedWorkspaceField, this.mappedWorkspace); }
+		this.addAllWorkspaceFields = function () { IP.workspaceFieldsControls.addAll(this.workspaceFields, this.workspaceFieldSelected, this.mappedWorkspace); }
 		this.addAlltoWorkspaceField = function () { IP.workspaceFieldsControls.addAll(this.mappedWorkspace, this.selectedMappedWorkspace, this.workspaceFields); }
 
 		/********** Source Attribute control  **********/
@@ -378,7 +409,10 @@ ko.validation.insertValidationMessage = function (element) {
 				map: model.map,
 				parentIdentifier: model.parentIdentifier,
 				identifer: model.identifer,
-				CustodianManagerFieldContainsLink: model.CustodianManagerFieldContainsLink
+				CustodianManagerFieldContainsLink: model.CustodianManagerFieldContainsLink,
+				importNativeFile: model.importNativeFile,
+				nativeFilePathValue: model.nativeFilePathValue
+
 			} || '';
 		}
 
@@ -398,6 +432,7 @@ ko.validation.insertValidationMessage = function (element) {
 				setCache(model, this.key);
 			}
 			this.returnModel = $.extend(true, {}, model);
+
 			var c = stepCache[this.key];
 			for (var k in c) {
 				if (c.hasOwnProperty(k)) {
@@ -431,6 +466,8 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.back = function () {
 			var d = root.data.deferred().defer();
+			this.returnModel.importNativeFile = this.model.importNativeFile();
+			this.returnModel.nativeFilePathValue = this.model.nativeFilePathValue();
 			this.returnModel.identifer = this.model.selectedUniqueId();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 			var map = [];
@@ -446,11 +483,10 @@ ko.validation.insertValidationMessage = function (element) {
 				});
 			}
 
-
 			this.returnModel.map = JSON.stringify(map);
 			this.returnModel.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
 			setCache(this.returnModel, self.key);
-
+			;
 			d.resolve(this.returnModel);
 			return d.promise;
 		};
@@ -461,7 +497,7 @@ ko.validation.insertValidationMessage = function (element) {
 			if (this.model.errors().length === 0) {
 				var mapping = ko.toJS(self.model);
 				var map = [];
-
+				var allWorkspaceFields = mapping.workspaceFields.concat(mapping.workspaceFieldSelected);
 				for (var i = 0; i < mapping.sourceMapped.length; i++) {
 					var source = mapping.sourceMapped[i];
 					var destination = mapping.mappedWorkspace[i];
@@ -491,11 +527,26 @@ ko.validation.insertValidationMessage = function (element) {
 						}
 					}
 				}
+				if (this.model.isDocument && this.model.importNativeFile() == "true") {
+					var nativePathField = "";
+					for (var i = 0; i < allWorkspaceFields.length; i++) {
+						if (allWorkspaceFields[i].name === this.model.nativeFilePathValue()) {
+							nativePathField = allWorkspaceFields[i];
+						}
+					}
+					map.push({
+						sourceField: {},
+						destinationField: _createEntry(nativePathField),
+						fieldMapType: "NativeFilePath"
+					});
+				}
+
 				this.bus.subscribe('saveComplete', function (data) {
 				});
 				this.bus.subscribe('saveError', function (error) {
 					d.reject(error);
 				});
+
 				this.returnModel.map = JSON.stringify(map);
 				this.returnModel.identifer = this.model.selectedUniqueId();
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
