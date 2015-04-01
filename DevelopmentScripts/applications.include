@@ -26,7 +26,7 @@
 	<!-- Use following as template
 	
 	<target name="build_app1">
-		<exec program="${development.scripts}\BuildRAPcmd.exe">
+		<exec program="${development.scripts}\kCura.RAPBuilder.exe">
 			<arg line='/destinationpath:${source.directory}\Applications\kCura.Project1.rap' />
 			<arg line='/applicationschema:${source.directory}\ApplicationsXML\kCura.Project1.xml' />
 			<arg line='/assembly:${source.directory}\kCura.Project1\bin\kCura.Project1.dll' />	

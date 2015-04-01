@@ -50,7 +50,7 @@
 			<arg line="/graph:${dependencygraph}" />
 			<arg line="/dllout:${dllout}" />
 			<arg line="/vs:11.0" />
-			<arg line="/sign:true" />
+			<arg line="/sign:${sign}" />
 			<arg line="/signscript:${signScript}" />
 		</exec>
 	</target>

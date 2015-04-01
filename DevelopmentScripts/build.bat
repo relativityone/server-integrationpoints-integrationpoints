@@ -62,7 +62,7 @@ if NOT %errorlevel%==0 goto end
 
 :build
 if %BUILD%==False goto test
-nant build -buildfile:"%BUILDPROJECT%" "-D:root=%SourceRoot%" "-D:buildconfig=%BUILDCONFIG%" "-D:buildType=%BUILDTYPE%" "-D:serverType=local"
+nant build -buildfile:"%BUILDPROJECT%" "-D:root=%SourceRoot%" "-D:buildconfig=%BUILDCONFIG%" "-D:buildType=%BUILDTYPE%" "-D:serverType=local" "-D:version=%VERSION%"
 if NOT %errorlevel%==0 goto end
 
 :test
