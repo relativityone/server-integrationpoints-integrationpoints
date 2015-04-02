@@ -136,7 +136,7 @@
 | | ... | An error has occurred for the below Relativity Integration Point.
 | | ... | Name: ${IntegrationName2}
 | | ... | Workspace: [Workspace Name]
-| | ... | Error: [Full stack trace error]
+| | ... | Error: [Full stack trace error for the most recent error]
 
 | Verify Item Error Notification Subject line
 | | [Documentation]	| Verify that the email's subject line is correct for item level errored RIP jobs
