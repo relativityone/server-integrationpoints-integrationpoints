@@ -81,6 +81,8 @@ namespace kCura.IntegrationPoints.Core.Services
 			AddError(errorType, string.Empty, GenerateErrorMessage(ex));
 		}
 
+		
+
 		public void AddError(Relativity.Client.Choice errorType, string documentIdentifier, string errorMessage)
 		{
 			lock (_jobHistoryErrorList)

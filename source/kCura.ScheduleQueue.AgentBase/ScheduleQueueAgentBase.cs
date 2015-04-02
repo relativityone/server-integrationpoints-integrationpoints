@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Authentication;
 using System.Xml.Serialization;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
