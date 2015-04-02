@@ -5,7 +5,7 @@
 	
 	<target name="get_rapbuilder">
 		<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-			<arg line="install kCura.RAPBuilder" />
+			<arg line="install kCura.RAPBuilder -ExcludeVersion" />
 		</exec>	
 		
 		<copy todir="${development.scripts}" flatten="true" overwrite="true">

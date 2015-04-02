@@ -32,7 +32,7 @@
 	
 	<target name="get_buildhelper">
 		<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-			<arg line="install kCura.BuildHelper" />
+			<arg line="install kCura.BuildHelper -ExcludeVersion" />
 		</exec>	
 		
 		<copy todir="${development.scripts}" flatten="true" overwrite="true">

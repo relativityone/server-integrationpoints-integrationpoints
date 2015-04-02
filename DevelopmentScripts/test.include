@@ -21,7 +21,7 @@
 	
 	<target name="get_testrunner">
 		<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-			<arg line="install kCura.TestRunner" />
+			<arg line="install kCura.TestRunner -ExcludeVersion" />
 		</exec>	
 		
 		<copy todir="${development.scripts}" flatten="true" overwrite="true">
