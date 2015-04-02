@@ -1,16 +1,15 @@
 *** Settings ***
-| Documentation | Suite documentation goes here
+| Documentation | Running an RIP Native File Import
 | Force Tags    | in-progress
 
 *** Test Cases ***
+
 | Files from multiple Valid locations
 
 | Files from Invalid locations
 
 | Files from both Valid and Invalid locations
 
-| No Permission to files?
+| No Permission to file location?
 
-| Invalid File types
-
-
+| Invalid Relativity File types
