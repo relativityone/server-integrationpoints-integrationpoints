@@ -118,10 +118,6 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Login_Failed" xml:space="preserve">
-    <value>The IAPI has failed to login. Please confirm the following: 
--The configuration WebAPI value is correct for Integration Points
--Windows authentication is setup on the WebAPI
--The Relativity Service Account has correct authentication data
--The WebAPI version is correct.</value>
+    <value>The IAPI has failed to login. Please confirm the following: The configuration WebAPI value is correct for Integration Points; Windows authentication is setup on the WebAPI; the Relativity Service Account has correct authentication data; the WebAPI version is correct.</value>
   </data>
 </root>

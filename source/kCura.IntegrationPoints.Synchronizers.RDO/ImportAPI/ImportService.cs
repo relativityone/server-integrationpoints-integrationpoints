@@ -143,7 +143,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			{
 				if (ex.Message.Equals("Login failed."))
 				{
-					throw new AuthenticationException(Properties.ErrorMessages.Login_Failed, ex);
+					throw new AuthenticationException(Properties.ErrorMessages.Login_Failed);
 				}
 				//LoggedException.PreserveStack(ex);
 				throw;
