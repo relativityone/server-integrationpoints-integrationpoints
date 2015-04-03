@@ -57,9 +57,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Agent.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Apps.Common.Config, Version=1.0.199.2, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\kCura.Apps.Common.Config.1.0.199.2\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
+    <Reference Include="kCura.Apps.Common.Config, Version=1.0.227.4, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.Apps.Common.Config.1.0.227.4\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Apps.Common.Data, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
