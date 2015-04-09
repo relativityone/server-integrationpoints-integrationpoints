@@ -164,7 +164,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath))
 			{
 				settings.NativeFilePathSourceFieldName =
-					fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath).DestinationField.DisplayName;
+					fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath).SourceField.DisplayName;
+				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles;
+				//settings.DestinationFolderArtifactID = ???;
 			}
 			return settings;
 		}
