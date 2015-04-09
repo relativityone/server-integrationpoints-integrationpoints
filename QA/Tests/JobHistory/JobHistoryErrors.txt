@@ -50,17 +50,13 @@
 | | [tags] | manual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Stop the RelatibityWebAPI or perform some other task that will generate a Login Failed message
+| | ... | 1. Disabled Windows Authentication for the RelativityWebAPI in IIS Manager
 | | ... | 2. Run the import for ${IntegrationName}
 | | ... | 3. View the Job History
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Error message is:
-| | ... | The IAPI has failed to login. Please confirm the following:
-| | ... | The configuration WebAPI value is correct for Integration Points
-| | ... | Windows authentication is setup on the WebAPI
-| | ... | The Relativity Service Account has correct authentication data
-| | ... | The WebAPI version is correct
+| | ... | The IAPI has failed to login. Please confirm the following: The configuration WebAPI value is correct for Integration Points; Windows authentication is setup on the WebAPI; the Relativity Service Account has correct authentication data; the WebAPI version is correct. 
 
 | | ... | [teardown] | Revert your change from step 1
 
