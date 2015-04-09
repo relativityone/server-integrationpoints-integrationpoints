@@ -323,13 +323,14 @@ ko.validation.insertValidationMessage = function (element) {
 					$.each(self.parentField(), function () {
 						if (this.name === model.parentIdentifier) {
 							self.selectedIdentifier(this.name);
+							return false;
 						}
 					});
 				} else {
 					for (var i = 0; i < mapping.length; i++) {
 						var a = mapping[i];
 						if (a.fieldMapType === mapTypes.parent && self.hasParent) {
-							self.selectedIdentifier(a.sourceField.displayName);
+							self.selectedIdentifier(a.sourceField.displayName);break;
 						}
 					}
 				}
@@ -337,12 +338,13 @@ ko.validation.insertValidationMessage = function (element) {
 				$.each(mapping, function () {
 					if (this.fieldMapType == 3 && artifactTypeId == 10) {
 						self.importNativeFile("true");
-						self.nativeFilePathValue(this.destinationField.displayName);
+						self.nativeFilePathValue(this.sourceField.displayName);
+						return false;
 					}
 				});
 
 				if (typeof (model.nativeFilePathValue) !== "undefined") {
-					$.each(destinationFields, function () {
+					$.each(sourceFields, function () {
 						if (this.displayName === model.nativeFilePathValue)
 							self.nativeFilePathValue(this.displayName);
 					});

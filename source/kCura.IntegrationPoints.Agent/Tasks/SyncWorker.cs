@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Authentication;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
@@ -94,8 +95,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					throw new ArgumentException("Cannot import destination provider with unknown id.");
 				}
-				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
-				Data.DestinationProvider destinationProvider = _caseServiceContext.RsapiService.DestinationProviderLibrary.Read(this.IntegrationPoint.DestinationProvider.Value);
+				Data.SourceProvider sourceProviderRdo =
+					_caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
+				Data.DestinationProvider destinationProvider =
+					_caseServiceContext.RsapiService.DestinationProviderLibrary.Read(this.IntegrationPoint.DestinationProvider.Value);
 				IEnumerable<FieldMap> fieldMap = GetFieldMap(this.IntegrationPoint.FieldMappings);
 				string sourceConfiguration = GetSourceConfiguration(this.IntegrationPoint.SourceConfiguration);
 
@@ -103,6 +106,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					sourceProviderRdo, destinationProvider, job);
 
 				InjectErrors();
+			}
+			catch (AuthenticationException e)
+			{
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, string.Empty, e.Message);
 			}
 			catch (Exception ex)
 			{
@@ -168,6 +175,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			this.JobHistory = _jobHistoryService.CreateRDO(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
 			_jobHistoryErrorService.JobHistory = this.JobHistory;
+			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPoint;
 		}
 
 		internal virtual string GetSourceConfiguration(string originalSourceConfiguration)

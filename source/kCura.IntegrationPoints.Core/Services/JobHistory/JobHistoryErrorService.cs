@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		}
 
 		public Data.JobHistory JobHistory { get; set; }
-
+		public IntegrationPoint IntegrationPoint { get; set; }
 		//private IBatchReporter _batchReporter;
 		public void SubscribeToBatchReporterEvents(object batchReporter)
 		{
@@ -65,7 +65,10 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private void OnRowError(string documentIdentifier, string errorMessage)
 		{
-			AddError(ErrorTypeChoices.JobHistoryErrorItem, documentIdentifier, errorMessage);
+			if (IntegrationPoint.LogErrors.GetValueOrDefault(false))
+			{
+				AddError(ErrorTypeChoices.JobHistoryErrorItem, documentIdentifier, errorMessage);
+			}
 		}
 
 		private void OnJobError(Exception ex)
@@ -77,6 +80,8 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			AddError(errorType, string.Empty, GenerateErrorMessage(ex));
 		}
+
+		
 
 		public void AddError(Relativity.Client.Choice errorType, string documentIdentifier, string errorMessage)
 		{
