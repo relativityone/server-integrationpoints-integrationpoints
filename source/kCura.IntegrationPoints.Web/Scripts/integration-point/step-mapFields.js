@@ -178,20 +178,21 @@ ko.validation.insertValidationMessage = function (element) {
 		this.parentField = ko.observableArray([]);
 
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
-		this.nativeFilePathValue = ko.observableArray([]).extend({
-			//nativeFilePathMustBeMapped: {
-			// 	onlyIf: function() {
-			//		 debugger; return self.importNativeFile && self.showErrors(); },
-			// 	params: [this]
-			// }
-			required: {
-				onlyIf: function () {
-					return self.importNativeFile() && self.showErrors();
-				},
-				message: 'The Native file path field must be mapped.',
-			}
+		//this.nativeFilePathValue = ko.observableArray([]).extend({
+		//	//nativeFilePathMustBeMapped: {
+		//	// 	onlyIf: function() {
+		//	//		 debugger; return self.importNativeFile && self.showErrors(); },
+		//	// 	params: [this]
+		//	// }
+		//	//required: {
+		//	//	onlyIf: function () {
+		//	//		return self.importNativeFile() && self.showErrors();
+		//	//	},
+		//	//	message: 'The Native file path field must be mapped.',
+		//	//}
 
-		});
+		//});
+		this.nativeFilePathValue = ko.observableArray([]);
 		this.isDocument = ko.observable("false");
 		if (artifactTypeId == 10) {
 			self.isDocument("true");
