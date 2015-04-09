@@ -12,6 +12,7 @@
 *** Variables ***
 
 | ${WorkspaceName}	| LDAP Sync
+| ${FieldCount}		| 10
 
 
 *** Test Cases ***
@@ -20,7 +21,7 @@
 | | [Documentation]	| This test verifies that the correct number of fields exist with an Object Type of Source Provider.
 | | ...				| [id] 11c7f11e-a89f-11e4-90d9-b8ca3a83048f
 | | ${Fields}=		| Get the Number of Items in the ItemList
-| | Run Keyword Unless	| '${Fields}' == '9'	| Fail	| There should have been 9 fields, but instead there were ${Fields}.
+| | Run Keyword Unless	| '${Fields}' == '${FieldCount}'	| Fail	| There should have been ${FieldCount} fields, but instead there were ${Fields}.
 
 # The below tests each verify that a Field with the given data is present on the table.
 
@@ -68,7 +69,6 @@
 | | ... | Associative Object Type	| ${EMPTY}
 
 
-
 | System Created By
 | | [Documentation] | [id] 11cd4854-a89f-11e4-aacc-b8ca3a83048f
 | | Find A Row With The Following Data	|
@@ -101,6 +101,14 @@
 | | Find A Row With The Following Data	|
 | | ... | Name						| System Last Modified On	|
 | | ... | Field Type				| Date						|
+| | ... | Is Required				| No						|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| View Configuration Url
+| | Find A Row With The Following Data	|
+| | ... | Name						| View Configuration Url	|
+| | ... | Field Type				| Long Text					|
 | | ... | Is Required				| No						|
 | | ... | Associative Object Type	| ${EMPTY}
 
