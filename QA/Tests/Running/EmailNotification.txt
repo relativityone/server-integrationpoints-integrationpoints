@@ -51,6 +51,34 @@
 | | ... | Expected Results:
 | | ... | Verify that an error is logged in Relativity
 
+| Notifications can be sent with Encrypted SMTP
+| | [Documentation]	| 
+| | ...				| [id] 15ab4261-def0-11e4-9434-90b11c6c5ae4
+| | [tags] | manual 
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the tab Relativity Script Library
+| | ... | 2. View | Relativity SMTP Configuration
+| | ... | 3. Run Script with Encrypt Password set to Yes
+| | ... | 4. Run an RIP Import
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the import email is sent
+
+| Notifications can be sent with Unencrypted SMTP
+| | [Documentation]	| 
+| | ...				| [id] 199b1a30-def0-11e4-9bd5-90b11c6c5ae4
+| | [tags] | manual 
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Go to the tab Relativity Script Library
+| | ... | 2. View | Relativity SMTP Configuration
+| | ... | 3. Run Script with Encrypt Password set to No
+| | ... | 4. Run an RIP Import
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the import email is sent
+
 | Notifications are sent as the EmailFrom address in the configuration table
 | | [Documentation] | Verify that the sent Email's From address uses the value of kCura.Notification EmailFrom
 | | ... | [id] 015200ee-c41b-11e4-9458-90b11c6c5ae4
@@ -109,7 +137,7 @@
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 1. The ${IntegrationName2} RIP has Email Notifications with your address
-| | ... | 2. It will run with Job level errors
+| | ... | 2. It will run with Job level errors (disable RelativityWebAPI Authentication )
 | | ... |
 | | ... | Steps:
 | | ... | 1. Run the ${IntegrationName2} Integration Point
@@ -145,7 +173,7 @@
 | | Run the following manual steps:
 | | ... | Pre-conditions:
 | | ... | 1. The ${IntegrationName3} RIP has Email Notifications with your address
-| | ... | 2. It will run with errors
+| | ... | 2. It will run with errors (Duplicate Uniqiue Identifier)
 | | ... |
 | | ... | Steps:
 | | ... | 1. Run the ${IntegrationName3} Integration Point
@@ -172,8 +200,4 @@
 | | ... | An import for the below Relativity Integration Point has completed with errors.
 | | ... | Name: ${IntegrationName3}
 | | ... | Workspace: [Workspace Name]
-
-
-
-
 
