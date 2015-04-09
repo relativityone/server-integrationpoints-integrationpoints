@@ -174,16 +174,24 @@ ko.validation.insertValidationMessage = function (element) {
 		this.selectedMappedSource = ko.observableArray([]);
 		this.overlay = ko.observableArray([]);
 		this.nativeFilePathOption = ko.observableArray([]);
-		this.nativeFilePathValue = ko.observableArray([]).extend({
-			nativeFilePathMustBeMapped: {
-			 	onlyIf: function() { return self.importNativeFile && self.showErrors(); },
-			 	params: [this.mappedWorkspace]
-			 }
-		});
 		this.hasParent = ko.observable(false);
 		this.parentField = ko.observableArray([]);
 
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
+		this.nativeFilePathValue = ko.observableArray([]).extend({
+			//nativeFilePathMustBeMapped: {
+			// 	onlyIf: function() {
+			//		 debugger; return self.importNativeFile && self.showErrors(); },
+			// 	params: [this]
+			// }
+			required: {
+				onlyIf: function () {
+					return self.importNativeFile() && self.showErrors();
+				},
+				message: 'The Native file path field must be mapped.',
+			}
+
+		});
 		this.isDocument = ko.observable("false");
 		if (artifactTypeId == 10) {
 			self.isDocument("true");
@@ -296,7 +304,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 				var types = mapFields(sourceFields);
 				self.overlay(destinationFields);
-				self.nativeFilePathOption(destinationFields);
+				self.nativeFilePathOption(sourceFields);
 				$.each(self.overlay(), function () {
 					if (this.isIdentifier) {
 						self.rdoIdentifier(this.displayName);
@@ -315,13 +323,14 @@ ko.validation.insertValidationMessage = function (element) {
 					$.each(self.parentField(), function () {
 						if (this.name === model.parentIdentifier) {
 							self.selectedIdentifier(this.name);
+							return false;
 						}
 					});
 				} else {
 					for (var i = 0; i < mapping.length; i++) {
 						var a = mapping[i];
 						if (a.fieldMapType === mapTypes.parent && self.hasParent) {
-							self.selectedIdentifier(a.sourceField.displayName);
+							self.selectedIdentifier(a.sourceField.displayName);break;
 						}
 					}
 				}
@@ -329,12 +338,13 @@ ko.validation.insertValidationMessage = function (element) {
 				$.each(mapping, function () {
 					if (this.fieldMapType == 3 && artifactTypeId == 10) {
 						self.importNativeFile("true");
-						self.nativeFilePathValue(this.destinationField.displayName);
+						self.nativeFilePathValue(this.sourceField.displayName);
+						return false;
 					}
 				});
 
 				if (typeof (model.nativeFilePathValue) !== "undefined") {
-					$.each(destinationFields, function () {
+					$.each(sourceFields, function () {
 						if (this.displayName === model.nativeFilePathValue)
 							self.nativeFilePathValue(this.displayName);
 					});
@@ -497,7 +507,7 @@ ko.validation.insertValidationMessage = function (element) {
 			if (this.model.errors().length === 0) {
 				var mapping = ko.toJS(self.model);
 				var map = [];
-				var allWorkspaceFields = mapping.workspaceFields.concat(mapping.workspaceFieldSelected);
+				var allSourceField = mapping.sourceField.concat(mapping.selectedSourceField);
 				for (var i = 0; i < mapping.sourceMapped.length; i++) {
 					var source = mapping.sourceMapped[i];
 					var destination = mapping.mappedWorkspace[i];
@@ -529,14 +539,14 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 				if (this.model.isDocument && this.model.importNativeFile() == "true") {
 					var nativePathField = "";
-					for (var i = 0; i < allWorkspaceFields.length; i++) {
-						if (allWorkspaceFields[i].name === this.model.nativeFilePathValue()) {
-							nativePathField = allWorkspaceFields[i];
+					for (var i = 0; i < allSourceField.length; i++) {
+						if (allSourceField[i].name === this.model.nativeFilePathValue()) {
+							nativePathField = allSourceField[i];
 						}
 					}
 					map.push({
-						sourceField: {},
-						destinationField: _createEntry(nativePathField),
+						sourceField:_createEntry(nativePathField),  
+						destinationField: {},
 						fieldMapType: "NativeFilePath"
 					});
 				}
