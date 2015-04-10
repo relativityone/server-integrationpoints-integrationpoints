@@ -29,20 +29,55 @@
 
 | | Verify that the following table has the following headers and rows | ${table} | ${Headers} | ${Rows}
 
+| Item level errors are not populated when Log Errors is set to No
+| | [Documentation] | Verify that Item level errors are not populated when Log Errors is set to No
+| | ... | [id] 931a7d80-def8-11e4-8607-90b11c6c5ae4
+| | [tags] | manual
+| | View Integration Point | ${IntegrationName}
+
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Edit the IP.
+| | ... | 2. Change Log Errors to No
+| | ... | 3. Save the IP
+| | ... | 4. Run the Import for this Integration Point.
+| | ... | 5. Open the associated Job History View screen.
+| | ... |
+| | Expected Results:
+| | ... | 1. Verify that the Job Status is Completed
+
+| Job level errors are populated when Log Errors is set to No
+| | [Documentation] | Verify that Job level errors are populated when Log Errors is set to No
+| | ... | [id] 44d525c0-def9-11e4-9e85-90b11c6c5ae4
+| | [tags] | manual
+| | View Integration Point | ${IntegrationName}
+
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Edit the IP.
+| | ... | 2. Ensure Log Errors to No
+| | ... | 3. Save the IP
+| | ... | 4. Either enable a Job Level Injection Point for RIP, or Stop the RelatibityWebAPI
+| | ... | 5. Run the Import for this Integration Point.
+| | ... | 6. Open the associated Job History View screen.
+| | ... |
+| | Expected Results:
+| | ... | 1. Verify that the Job Status is Error - Job Failed
+
 | Job level errors can be populated
 | | [Documentation] | Verify that an import that has a Job level error shows the error on the Job History view page
 | | ... | [id] af20639e-c346-11e4-9dc9-90b11c6c5ae4
 | | [tags] | manual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Either enable a Job Level Injection Point for RIP, or Stop the RelatibityWebAPI
-| | ... | 2. Run the import for ${IntegrationName}
-| | ... | 3. View the Job History
+| | ... | 1. Edit the IP.
+| | ... | 2. Ensure Log Errors to Yes
+| | ... | 3. Either enable a Job Level Injection Point for RIP, or Stop the RelatibityWebAPI
+| | ... | 4. Run the import for ${IntegrationName}
+| | ... | 5. View the Job History
 | | ... |
 | | ... | Expected Results
 | | ... | 1. Verify Job error is listed
-
-| | ... | [teardown] | Revert your change from step 1
 
 | Verify Login Failed Error Message
 | | [Documentation] | Verify that the Job History error for Login Failed has the correct text
@@ -50,21 +85,15 @@
 | | [tags] | manual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Stop the RelatibityWebAPI or perform some other task that will generate a Login Failed message
+| | ... | 1. Disabled Windows Authentication for the RelativityWebAPI in IIS Manager
 | | ... | 2. Run the import for ${IntegrationName}
 | | ... | 3. View the Job History
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Error message is:
-| | ... | The IAPI has failed to login. Please confirm the following:
-| | ... | The configuration WebAPI value is correct for Integration Points
-| | ... | Windows authentication is setup on the WebAPI
-| | ... | The Relativity Service Account has correct authentication data
-| | ... | The WebAPI version is correct
+| | ... | The IAPI has failed to login. Please confirm the following: The configuration WebAPI value is correct for Integration Points; Windows authentication is setup on the WebAPI; the Relativity Service Account has correct authentication data; the WebAPI version is correct. 
 
 | | ... | [teardown] | Revert your change from step 1
-
-
 
 *** Keywords *** 
 
