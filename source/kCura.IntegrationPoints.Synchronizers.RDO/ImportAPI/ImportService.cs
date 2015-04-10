@@ -24,8 +24,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public event JobError OnJobError;
 		public event RowError OnDocumentError;
 
-
-		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, IImportAPI importAPI = null)
+		private readonly ImportApiFactory _factory;
+		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, ImportApiFactory factory)
 		{
 			EmbeddedAssembly.Load("kCura.IntegrationPoints.Synchronizers.RDO.Relativity.ImportAPI.Wrapper.dll", "Relativity.ImportAPI.Wrapper.dll");
 			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			this.Settings = settings;
 			this._batchManager = batchManager;
 			this._inputMappings = fieldMappings;
-			this._importAPI = importAPI;
+			_factory = factory;
 			if (_batchManager != null) _batchManager.OnBatchCreate += ImportService_OnBatchCreate;
 		}
 
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			if (_importAPI == null)
 			{
-				Connect(Settings.WebServiceURL);
+				Connect(Settings);
 				SetupFieldDictionary(_importAPI);
 				Dictionary<string, int> fieldMapping = _inputMappings;
 				_mappings = ValidateAllMappedFieldsAreInWorkspace(fieldMapping, _idToFieldDictionary);
@@ -133,21 +133,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			get { return _mappings; }
 		}
 
-		internal void Connect(string url)
+		internal void Connect(ImportSettings settings)
 		{
-			try
-			{
-				_importAPI = new ExtendedImportAPI(url);
-			}
-			catch (Exception ex)
-			{
-				if (ex.Message.Equals("Login failed."))
-				{
-					throw new AuthenticationException(Properties.ErrorMessages.Login_Failed);
-				}
-				//LoggedException.PreserveStack(ex);
-				throw;
-			}
+			_importAPI = _factory.GetImportAPI(settings);
 		}
 
 		internal void SetupFieldDictionary(IImportAPI api)

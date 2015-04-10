@@ -29,12 +29,11 @@ DEALLOCATE tableCursor
 
 IF (EXISTS (SELECT * FROM [EDDSResource].[INFORMATION_SCHEMA].[TABLES] WHERE TABLE_SCHEMA = 'eddsdbo' AND  TABLE_NAME = @tableName))
 BEGIN
-	declare @sql nvarchar(1000) = N'delete from [EDDSResource].[eddsdbo].[' + @tableName +'] Where [JobID] = @id'
+	declare @sql nvarchar(1000) = N'UPDATE [EDDSResource].[eddsdbo].[' + @tableName +'] SET [Completed] = 1 WHERE [JobID] = @id'
 	declare @params nvarchar(50) = N'@id bigint';
 	Execute sp_executesql @sql, @params, @id = @jobID
-
-
-	SET @sql = 'IF EXISTS(select [JobID] FROM [EDDSResource].[eddsdbo].['+ @tableName+'])
+	
+	SET @sql = 'IF EXISTS(select [JobID] FROM [EDDSResource].[eddsdbo].['+ @tableName+'] WHERE [Completed] = 0)
 	BEGIN
 		select 1
 	END

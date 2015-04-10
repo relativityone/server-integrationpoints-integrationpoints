@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core.Domain;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
@@ -79,6 +80,10 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<JobTracker>().ImplementedBy<JobTracker>().LifeStyle.Transient);
 			container.Register(Component.For<JobHistoryErrorQuery>().ImplementedBy<JobHistoryErrorQuery>().LifestyleTransient());
+			container.Register(Component.For<TaskParameterHelper>().ImplementedBy<TaskParameterHelper>().LifestyleTransient());
+			
+			container.Register(Component.For<ImportApiFactory>().ImplementedBy<ImportApiFactory>().LifeStyle.Transient);
+
 		}
 	}
 }

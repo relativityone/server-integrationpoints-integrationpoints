@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.DataReaderClient;
+using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
@@ -20,10 +21,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public event RowError OnDocumentError;
 
 		protected readonly RelativityFieldQuery FieldQuery;
+		private Relativity.ImportAPI.IImportAPI _api;
+		private readonly ImportApiFactory _factory;
+		protected Relativity.ImportAPI.IImportAPI GetImportApi(ImportSettings settings)
+		{
+			return _api ?? (_api = _factory.GetImportAPI(settings));
+		}
 
-		public RdoSynchronizer(RelativityFieldQuery fieldQuery)
+		public RdoSynchronizer(RelativityFieldQuery fieldQuery, ImportApiFactory factory)
 		{
 			FieldQuery = fieldQuery;
+			_factory = factory;
 		}
 
 		private List<string> IgnoredList
@@ -44,12 +52,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-
+		protected List<Relativity.Client.Artifact> GetRelativityFields(ImportSettings settings)
+		{
+			var fields = FieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
+			var mappableFields = GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId);
+			return fields.Where(x => mappableFields.Any(y => y.ArtifactID == x.ArtifactID)).ToList();
+		}
 
 		public virtual IEnumerable<FieldEntry> GetFields(string options)
 		{
 			ImportSettings settings = GetSettings(options);
-			var fields = FieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
+			var fields = GetRelativityFields(settings);
 			return ParseFields(fields);
 		}
 
@@ -129,7 +142,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		protected virtual ImportService InitializeImportService(ImportSettings settings, Dictionary<string, int> importFieldMap)
 		{
-			ImportService importService = new ImportService(settings, importFieldMap, new BatchManager());
+			ImportService importService = new ImportService(settings, importFieldMap, new BatchManager(), new ImportApiFactory());
 			importService.OnBatchComplete += new BatchCompleted(Finish);
 			importService.OnDocumentError += new RowError(ItemError);
 			importService.OnJobError += new JobError(JobError);

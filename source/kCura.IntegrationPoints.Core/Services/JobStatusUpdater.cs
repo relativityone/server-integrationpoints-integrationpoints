@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			return GenerateStatus(result);
 		}
 
-		public Choice GenerateStatus(JobHistory jobHistory)
+		public Choice GenerateStatus(Data.JobHistory jobHistory)
 		{
 			if (jobHistory == null)
 			{

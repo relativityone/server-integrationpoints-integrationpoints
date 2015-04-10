@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				{"sourceField7",GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null);
+			ImportService importService = new ImportService(null, null, null, null);
 
 
 			//ACT
@@ -80,8 +80,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				{6,GetFieldObject(6,"F6")},
 				{7,GetFieldObject(7,"F7")},
 			};
-	
-			ImportService importService = new ImportService(null, null, null);
+
+			ImportService importService = new ImportService(null, null, null, null);
 
 
 			//ACT
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				{7,GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null);
+			ImportService importService = new ImportService(null, null, null, null);
 
 
 			//ACT
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				{7,GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null);
+			ImportService importService = new ImportService(null, null, null, null);
 
 
 			//ACT

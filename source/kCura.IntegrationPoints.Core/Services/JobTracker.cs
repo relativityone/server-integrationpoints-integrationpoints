@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			_tracker = tracker;
 		}
 
-		public string GenerateTableTempTableName(Job job, string batchID)
+		public static string GenerateTableTempTableName(Job job, string batchID)
 		{
 			return string.Format("RIP_JobTracker_{0}_{1}_{2}", job.WorkspaceID, job.RootJobId, batchID);
 		}

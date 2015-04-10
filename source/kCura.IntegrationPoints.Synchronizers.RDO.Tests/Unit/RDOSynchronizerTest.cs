@@ -39,7 +39,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				Name = "Document"
 			});
 			//
-			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock));
 			var options = new ImportSettings();
 			options.ArtifactTypeId = 1268820;
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
@@ -52,6 +51,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			});
 
 			//ACT
+			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
 			var str = JsonConvert.SerializeObject(options);
 			var numberOfFields = rdoSyncronizer.GetFields(str).Count();
 			//ASSERT
@@ -73,7 +73,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				DescriptorArtifactTypeID = 1,
 				Name = "Document"
 			});
-			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock));
 			var options = new ImportSettings { ArtifactTypeId = 1268820 };
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
@@ -90,8 +89,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				new FieldEntry {DisplayName = "User", FieldIdentifier = "4"},
 			};
 
+			
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
+			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
 			var listOfFieldEntry = rdoSyncronizer.GetFields(str).ToList();
 
 
@@ -118,7 +119,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 					 DescriptorArtifactTypeID = 1,
 					 Name = "Document"
 				 });
-			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock));
 			var options = new ImportSettings();
 			options.ArtifactTypeId = 1268820;
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
@@ -129,13 +129,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				new Artifact {Name = "User", ArtifactID = 4},
 				new Artifact {Name = "FirstName", ArtifactID = 5}
 			});
-
-
+			
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
+			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
 			var numberOfFields = rdoSyncronizer.GetFields(str).Count();
+			
 			//ASSERT
-
 			Assert.AreEqual(5, numberOfFields);
 		}
 
@@ -153,7 +153,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				DescriptorArtifactTypeID = 1,
 				Name = "Document"
 			});
-			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock));
 			var options = new ImportSettings { ArtifactTypeId = 1268820 };
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
@@ -174,9 +173,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
+			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
 			var listOfFieldEntry = rdoSyncronizer.GetFields(str).ToList();
-
-
+			
 			//ASSERT
 			Assert.AreEqual(expectedFieldEntry.Count, listOfFieldEntry.Count);
 			for (var i = 0; i < listOfFieldEntry.Count; i++)

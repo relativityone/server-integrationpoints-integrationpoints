@@ -85,6 +85,7 @@
     </Compile>
     <Compile Include="Config.cs" />
     <Compile Include="EmbeddedAssembly.cs" />
+    <Compile Include="ImportApiFactory.cs" />
     <Compile Include="ImportOverlayBehaviorEnum.cs" />
     <Compile Include="ImportAuditLevelEnum.cs" />
     <Compile Include="ImportNativeFileCopyModeEnum.cs" />
