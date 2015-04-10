@@ -70,7 +70,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				try
 				{
 					IDataReader sourceData = _batchManager.GetBatchData();
-					this.KickOffImport(sourceData);
+					if (sourceData != null)
+					{
+						this.KickOffImport(sourceData);
+					}
 				}
 				finally
 				{
