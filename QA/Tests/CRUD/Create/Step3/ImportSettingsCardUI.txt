@@ -81,7 +81,7 @@
 | | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Append/Overlay	| Document
 | | Verify that the following Card contains the following Fields in Order | Import Settings | 
 | | ... | Unique Identifier:	| 
-| | ... | Import Native File
+| | ... | Import Native File:
 
 
 | The Import Native File field defaults to No
@@ -98,7 +98,7 @@
 | | Select Radio Button	| ${Import Native Files Radio Buttons}	| true	| #true = Yes
 | | Verify that the following Card contains the following Fields in Order | Import Settings | 
 | | ... | Unique Identifier:	| 
-| | ... | Import Native File	| 
+| | ... | Import Native File:	| 
 | | ... | Native File Path:
 
 
