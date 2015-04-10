@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		public Choice GenerateStatus(Guid batchId)
 		{
 			var query = new Query<RDO>();
-			query.Fields = new List<FieldValue>();
+			query.Fields = new List<FieldValue> { new FieldValue(Guid.Parse(JobHistoryFieldGuids.RecordsWithErrors)) };
 			query.Condition = new TextCondition(Guid.Parse(JobHistoryFieldGuids.BatchInstance), TextConditionEnum.EqualTo, batchId.ToString());
 			var result = _rsapiService.JobHistoryLibrary.Query(query).First();
 			return GenerateStatus(result);
@@ -48,6 +48,13 @@ namespace kCura.IntegrationPoints.Core.Services
 				if (recent.ErrorType.EqualsToChoice(Data.ErrorTypeChoices.JobHistoryErrorJob))
 				{
 					return Data.JobStatusChoices.JobHistoryErrorJobFailed;
+				}
+			}
+			else
+			{
+				if (jobHistory.RecordsWithErrors.GetValueOrDefault(0) > 0)
+				{
+					return Data.JobStatusChoices.JobHistoryCompletedWithErrors;
 				}
 			}
 			return Data.JobStatusChoices.JobHistoryCompleted;

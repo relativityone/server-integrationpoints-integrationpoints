@@ -39,7 +39,6 @@ BEGIN
 	END
 	ELSE
 	BEGIN
-		drop table [EddsResource].[eddsdbo].[' + @tableName +']
 		select 0
 	END'
 	EXECUTE sp_executesql @sql
