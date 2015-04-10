@@ -106,8 +106,8 @@ namespace kCura.IntegrationPoints.Data.Resources {
         ///		FROM [EDDSResource].[sys].[tables] AS t 
         ///		INNER JOIN [EDDSResource].[sys].[schemas] AS s 
         ///		ON t.[schema_id] = s.[schema_id] 
-        ///		WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())&gt;24 
-        ///		AND t.name LIKE &apos;RIP_CustodianMana [rest of string was truncated]&quot;;.
+        ///		WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())&gt;72
+        ///		AND t.name LIKE &apos;RIP_CustodianManag [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CreateCustodianManagerResourceTable {
             get {
@@ -118,13 +118,15 @@ namespace kCura.IntegrationPoints.Data.Resources {
         /// <summary>
         ///   Looks up a localized string similar to IF (NOT EXISTS (SELECT * FROM [EDDSResource].[INFORMATION_SCHEMA].[TABLES] WHERE TABLE_SCHEMA = &apos;eddsdbo&apos; AND  TABLE_NAME = @tableName))
         ///BEGIN
-        ///	declare @table nvarchar(1000) = N&apos;create table [EDDSRESOURCE].[EDDSDBO].[&apos; + @tableName +&apos;] ([JobID] bigint
+        ///	declare @table nvarchar(1000) = N&apos;create table [EDDSRESOURCE].[EDDSDBO].[&apos; + @tableName +&apos;] 
+        ///	([JobID] bigint,
+        ///	[TotalRecords] bigint,
+        ///	[ErrorRecords] bigint,
+        ///	[Completed] bit,
         ///	CONSTRAINT [PK_&apos; + @tableName + &apos; ] PRIMARY KEY CLUSTERED 
         ///	(
         ///	[JobID] ASC
-        ///	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-        ///	) ON [PRIMARY]&apos;;
-        ///	execute sp_executesql  [rest of string was truncated]&quot;;.
+        ///	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CreateJobTrackingEntry {
             get {
@@ -229,22 +231,20 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to IF (EXISTS (SELECT * FROM [EDDSResource].[INFORMATION_SCHEMA].[TABLES] WHERE TABLE_SCHEMA = &apos;eddsdbo&apos; AND  TABLE_NAME = @tableName))
-        ///BEGIN
-        ///	declare @sql nvarchar(1000) = N&apos;delete from [EDDSResource].[eddsdbo].[&apos; + @tableName +&apos;] Where [JobID] = @id&apos;
-        ///	declare @params nvarchar(50) = N&apos;@id bigint&apos;;
-        ///	Execute sp_executesql @sql, @params, @id = @jobID
+        ///   Looks up a localized string similar to SET ANSI_NULLS ON
+        ///SET QUOTED_IDENTIFIER ON
         ///
-        ///
-        ///	SET @sql = &apos;IF EXISTS(select [JobID] FROM [EDDSResource].[eddsdbo].[&apos;+ @tableName+&apos;])
-        ///	BEGIN
-        ///		select 1
-        ///	END
-        ///	ELSE
-        ///	BEGIN
-        ///		select 0
-        ///	END&apos;
-        ///	EXECUT [rest of string was truncated]&quot;;.
+        ///--Do cleanup first - delete old tables (over 24 hours old)
+        ///DECLARE @table varchar(255) 
+        ///DECLARE @dropCommand varchar(300) 
+        ///DECLARE tableCursor CURSOR FOR 
+        ///		SELECT QUOTENAME(&apos;EDDSResource&apos;)+&apos;.&apos;+QUOTENAME(s.name)+&apos;.&apos;+QUOTENAME(t.name) 
+        ///		FROM [EDDSResource].[sys].[tables] AS t 
+        ///		INNER JOIN [EDDSResource].[sys].[schemas] AS s 
+        ///		ON t.[schema_id] = s.[schema_id] 
+        ///		WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())&gt;72 
+        ///		AND t.name LIKE &apos;RIP_JobTracker_%&apos;
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string RemoveEntryAndCheckBatchStatus {
             get {
@@ -260,6 +260,25 @@ namespace kCura.IntegrationPoints.Data.Resources {
         internal static string SetBlankLogErrorsToNo {
             get {
                 return ResourceManager.GetString("SetBlankLogErrorsToNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IF (NOT EXISTS (SELECT * FROM [EDDSResource].[INFORMATION_SCHEMA].[TABLES] WHERE TABLE_SCHEMA = &apos;eddsdbo&apos; AND  TABLE_NAME = @tableName))
+        ///BEGIN
+        ///	declare @table nvarchar(1000) = N&apos;create table [EDDSRESOURCE].[EDDSDBO].[&apos; + @tableName +&apos;] 
+        ///	([JobID] bigint,
+        ///	[TotalRecords] bigint,
+        ///	[ErrorRecords] bigint,
+        ///	[Completed] bit,
+        ///	CONSTRAINT [PK_&apos; + @tableName + &apos; ] PRIMARY KEY CLUSTERED 
+        ///	(
+        ///	[JobID] ASC
+        ///	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_ [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string UpdateJobStatistics {
+            get {
+                return ResourceManager.GetString("UpdateJobStatistics", resourceCulture);
             }
         }
     }

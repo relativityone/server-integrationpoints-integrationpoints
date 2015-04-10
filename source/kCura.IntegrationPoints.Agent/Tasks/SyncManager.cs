@@ -88,7 +88,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					{
 						BatchInstance = this.BatchInstance
 					};
-					var str = _serializer.Serialize(details);
 					job.JobDetails = _serializer.Serialize(details);
 				}
 				foreach (var batchStatus in BatchStatus)
@@ -217,21 +216,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		private Guid GetBatchInstance(Job job)
+		public Guid GetBatchInstance(Job job)
 		{
-			Guid newBatchInstance = _guidService.NewGuid();
-			if (!string.IsNullOrWhiteSpace(job.JobDetails))
-			{
-				try
-				{
-					newBatchInstance = _serializer.Deserialize<TaskParameters>(job.JobDetails).BatchInstance;
-				}
-				catch (Exception ex)
-				{
-					throw new Exception("Failed to get Batch Instance.", ex);
-				}
-			}
-			return newBatchInstance;
+			return new TaskParameterHelper(_serializer, _guidService).GetBatchInstance(job);
 		}
 
 		public void Dispose()

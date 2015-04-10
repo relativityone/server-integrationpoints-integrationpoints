@@ -1,6 +1,11 @@
 ﻿IF (NOT EXISTS (SELECT * FROM [EDDSResource].[INFORMATION_SCHEMA].[TABLES] WHERE TABLE_SCHEMA = 'eddsdbo' AND  TABLE_NAME = @tableName))
 BEGIN
-	declare @table nvarchar(1000) = N'create table [EDDSRESOURCE].[EDDSDBO].[' + @tableName +'] ([JobID] bigint
+	declare @table nvarchar(max) = N'
+CREATE TABLE [EDDSRESOURCE].[EDDSDBO].[' + @tableName +'] 
+	([JobID] bigint,
+	[TotalRecords] int,
+	[ErrorRecords] int,
+	[Completed] bit,
 	CONSTRAINT [PK_' + @tableName + ' ] PRIMARY KEY CLUSTERED 
 	(
 	[JobID] ASC
@@ -9,6 +14,6 @@ BEGIN
 	execute sp_executesql @table
 END
 
-declare @insert nvarchar(150) = 'insert into [EDDSRESOURCE].[EDDSDBO].[' + @tableName + '] values ' + '(@id)';
-declare @params nvarchar(50) = N'@id bigint';
+DECLARE @insert nvarchar(max) = 'insert into [EDDSRESOURCE].[EDDSDBO].[' + @tableName + '] ([JobID],[Completed]) values (@id, 0)';
+DECLARE @params nvarchar(max) = N'@id bigint';
 EXECUTE sp_executesql @insert, @params, @id = @jobID

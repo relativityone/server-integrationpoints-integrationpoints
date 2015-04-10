@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.Data.Installers
 			container.Register(Component.For<ChoiceQuery>().ImplementedBy<ChoiceQuery>().LifeStyle.Transient);
 			container.Register(Component.For<JobHistoryError>().ImplementedBy<JobHistoryError>().LifeStyle.Transient);
 			container.Register(Component.For<JobResoureTracker>().ImplementedBy<JobResoureTracker>().LifeStyle.Transient);
+			container.Register(Component.For<JobStatisticsQuery>().ImplementedBy<JobStatisticsQuery>().LifeStyle.Transient);
 
 			container.Register(Component.For<WorkspaceQuery>().ImplementedBy<WorkspaceQuery>().LifeStyle.Transient);
 		}

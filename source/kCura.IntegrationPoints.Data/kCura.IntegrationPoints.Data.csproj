@@ -120,6 +120,7 @@
     <Compile Include="Queries\GetApplicationBinaries.cs" />
     <Compile Include="Queries\GetApplicationGuid.cs" />
     <Compile Include="Queries\JobHistoryErrorQuery.cs" />
+    <Compile Include="Queries\JobStatisticsQuery.cs" />
     <Compile Include="RdoGetter.cs" />
     <Compile Include="RDOHelper.cs" />
     <Compile Include="RelativityRdoQuery.cs" />
@@ -204,6 +205,7 @@
     <Content Include="Resources\GetObjectTypes.sql" />
     <Content Include="Resources\RemoveEntryAndCheckBatchStatus.sql" />
     <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
+    <Content Include="Resources\UpdateJobStatistics.sql" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

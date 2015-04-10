@@ -12,6 +12,7 @@
 *** Variables ***
 
 | ${WorkspaceName}	| LDAP Sync
+| ${FieldCount}		| 13
 
 
 *** Test Cases ***
@@ -19,7 +20,7 @@
 | The Correct Number of Fields have an Object Type of Job History
 | | [Documentation]	| This test verifies that the correct number of fields exist with an Object Type of Job History.
 | | ${Fields}=		| Get the Number of Items in the ItemList
-| | Run Keyword Unless	| '${Fields}' == '12'	| Fail	| There should have been 12 fields, but instead there were ${Fields}.
+| | Run Keyword Unless	| '${Fields}' == '${FieldCount}'	| Fail	| There should have been ${FieldCount} fields, but instead there were ${Fields}.
 
 # The below tests each verify that a Field with the given data is present on the table.
 
@@ -28,6 +29,14 @@
 | | ... | Name						| Artifact ID 	|
 | | ... | Field Type				| Whole Number	|
 | | ... | Is Required				| No			|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Batch Instance
+| | Find A Row With The Following Data	|
+| | ... | Name						| Batch Instance 	|
+| | ... | Field Type				| Fixed-Length Text	|
+| | ... | Is Required				| No				|
 | | ... | Associative Object Type	| ${EMPTY}
 
 

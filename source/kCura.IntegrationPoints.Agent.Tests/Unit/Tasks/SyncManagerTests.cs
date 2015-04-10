@@ -29,8 +29,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			Job job = GetJob(null);
 
 			//ACT
-			MethodInfo dynMethod = manager.GetType().GetMethod("GetBatchInstance", BindingFlags.NonPublic | BindingFlags.Instance);
-			Guid returnValue = (Guid)dynMethod.Invoke(manager, new object[] { job });
+			Guid returnValue = manager.GetBatchInstance(job);
 
 
 			//ASSERT
@@ -48,8 +47,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			Job job = GetJob(serializer.Serialize(new TaskParameters() { BatchInstance = jobGuidValue }));
 
 			//ACT
-			MethodInfo dynMethod = manager.GetType().GetMethod("GetBatchInstance", BindingFlags.NonPublic | BindingFlags.Instance);
-			Guid returnValue = (Guid)dynMethod.Invoke(manager, new object[] { job });
+			Guid returnValue = manager.GetBatchInstance(job);
 
 
 			//ASSERT
@@ -67,15 +65,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Unit.Tasks
 			Job job = GetJob("BAD_GUID");
 
 			//ACT
-			MethodInfo dynMethod = manager.GetType().GetMethod("GetBatchInstance", BindingFlags.NonPublic | BindingFlags.Instance);
+			
 			Exception innerException = null;
 			try
 			{
-				dynMethod.Invoke(manager, new object[] { job });
+				manager.GetBatchInstance(job);
 			}
 			catch (Exception ex)
 			{
-				innerException = ex.InnerException;
+				innerException = ex;
 			}
 
 

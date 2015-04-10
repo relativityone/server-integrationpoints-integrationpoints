@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
@@ -33,9 +34,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 										JobHistoryErrorService jobHistoryErrorService,
 										IJobManager jobManager,
 										IRSAPIClient workspaceRsapiClient,
-										ManagerQueueService managerQueueService)
+										ManagerQueueService managerQueueService,
+			JobStatisticsService statisticsService)
 			: base(caseServiceContext, dataSyncronizerFactory, dataProviderFactory, serializer,
-			appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager, null)
+			appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager, null, statisticsService)
 		{
 			_workspaceRsapiClient = workspaceRsapiClient;
 			_managerQueueService = managerQueueService;
@@ -81,33 +83,29 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				List<string> missingManagers = _custodianManagerMap.Where(x => !_convertDataService.ManagerOldNewKeyMap.ContainsKey(x.OldManagerID)).Select(x => x.OldManagerID).ToList();
 				_custodianManagerMap.ForEach(x => x.NewManagerID = _convertDataService.ManagerOldNewKeyMap.ContainsKey(x.OldManagerID) ? _convertDataService.ManagerOldNewKeyMap[x.OldManagerID] : null);
 				string[] managerUniqueIDs = _custodianManagerMap.Where(x => x.NewManagerID != null).Select(x => x.NewManagerID).Distinct().ToArray();
-				int destinationManagerUniqueIDFieldID =
-					int.Parse(_managerFieldMap.Where(
-						x => x.SourceField.FieldIdentifier.Equals(_newKeyManagerFieldID, StringComparison.InvariantCultureIgnoreCase))
-						.Select(x => x.DestinationField.FieldIdentifier).First());
+				int destinationManagerUniqueIDFieldID = int.Parse(_managerFieldMap.First(x => x.SourceField.FieldIdentifier.Equals(_newKeyManagerFieldID, StringComparison.InvariantCultureIgnoreCase)).DestinationField.FieldIdentifier);
+
 				IDictionary<string, int> managerArtifactIDs = GetManagerArtifactIDs(destinationManagerUniqueIDFieldID, managerUniqueIDs);
-				_custodianManagerMap.ForEach(x => x.ManagerArtifactID =
-					(x.NewManagerID != null && managerArtifactIDs.ContainsKey(x.NewManagerID)) ? managerArtifactIDs[x.NewManagerID] : 0);
+				_custodianManagerMap.ForEach(x => x.ManagerArtifactID = (x.NewManagerID != null && managerArtifactIDs.ContainsKey(x.NewManagerID)) ? managerArtifactIDs[x.NewManagerID] : 0);
 
 				//change import api settings to be able to overlay and set Custodian/Manager links
 				var newDestinationConfiguration = ReconfigureImportAPISettings(custodianManagerFieldArtifactID);
 
 				//run import api to link corresponding Managers to Custodians
-				FieldEntry fieldEntryCustodianIdentifier =
-					_managerFieldMap.Where(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).Select(x => x.SourceField).First();
-				FieldEntry fieldEntryManagerIdentifier =
-					_managerFieldMap.Where(x => x.DestinationField.FieldIdentifier.Equals(custodianManagerFieldArtifactID.ToString())).Select(x => x.SourceField).First();
+				FieldEntry fieldEntryCustodianIdentifier = _managerFieldMap.First(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).SourceField;
+				FieldEntry fieldEntryManagerIdentifier = _managerFieldMap.First(x => x.DestinationField.FieldIdentifier.Equals(custodianManagerFieldArtifactID.ToString())).SourceField;
 				IEnumerable<IDictionary<FieldEntry, object>> sourceData = _custodianManagerMap.Where(x => x.ManagerArtifactID != 0)
 					.Select(x => new Dictionary<FieldEntry, object>()
 				{
 					{ fieldEntryCustodianIdentifier, x.CustodianID }, 
 					{ fieldEntryManagerIdentifier, x.ManagerArtifactID }
 				});
+
 				var managerLinkMap = _managerFieldMap.Where(x =>
 					(x.SourceField.FieldIdentifier.Equals(fieldEntryCustodianIdentifier.FieldIdentifier) ||
 					 x.SourceField.FieldIdentifier.Equals(fieldEntryManagerIdentifier.FieldIdentifier)));
 				IDataSynchronizer dataSyncronizer = base.GetDestinationProvider(_destinationProviderRdo, newDestinationConfiguration, job);
-				base._jobHistoryErrorService.SubscribeToBatchReporterEvents(dataSyncronizer);
+				base.SetupSubscriptions(dataSyncronizer, job);
 				dataSyncronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration);
 
 				if (missingManagers.Any())

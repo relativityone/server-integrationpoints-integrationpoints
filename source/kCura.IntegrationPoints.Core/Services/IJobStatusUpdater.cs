@@ -12,6 +12,6 @@ namespace kCura.IntegrationPoints.Core.Services
 	public interface IJobStatusUpdater
 	{
 		Choice GenerateStatus(Guid batchId);
-		Choice GenerateStatus(JobHistory jobHistory);
+		Choice GenerateStatus(Data.JobHistory jobHistory);
 	}
 }

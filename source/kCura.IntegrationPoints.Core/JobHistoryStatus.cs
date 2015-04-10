@@ -36,6 +36,7 @@ namespace kCura.IntegrationPoints.Core
 		{
 			var result = GetHistory(job);
 			result.JobStatus = _updater.GenerateStatus(result);
+			result.EndTimeUTC = DateTime.UtcNow;
 			_service.JobHistoryLibrary.Update(result);
 		}
 
@@ -43,7 +44,7 @@ namespace kCura.IntegrationPoints.Core
 		{
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			var query = new Query<RDO>();
-			query.Fields = new List<FieldValue>();
+			query.Fields = new List<FieldValue> { new FieldValue(Guid.Parse(JobHistoryFieldGuids.RecordsWithErrors)) };
 			query.Condition = new TextCondition(Guid.Parse(JobHistoryFieldGuids.BatchInstance), TextConditionEnum.EqualTo, taskParameters.BatchInstance.ToString());
 			var result = _service.JobHistoryLibrary.Query(query).First();
 			return result;

@@ -12,6 +12,7 @@
 *** Variables ***
 
 | ${WorkspaceName}	| LDAP Sync
+| ${FieldCount}		| 19
 
 
 *** Test Cases ***
@@ -20,7 +21,7 @@
 | | [Documentation]	| This test verifies that the correct number of fields exist with an Object Type of Integration Point.
 | | ...				| [id] 11a240b0-a89f-11e4-9669-b8ca3a83048f
 | | ${Fields}=		| Get the Number of Items in the ItemList
-| | Run Keyword Unless	| '${Fields}' == '18'	| Fail	| There should have been 18 fields, but instead there were ${Fields}.
+| | Run Keyword Unless	| '${Fields}' == '${FieldCount}'	| Fail	| There should have been ${FieldCount} fields, but instead there were ${Fields}.
 
 # The below tests each verify that a Field with the given data is present on the table.
 
@@ -51,6 +52,14 @@
 | | ... | Associative Object Type	| DestinationProvider
 
 
+| EmailNotificationRecipients
+| | Find A Row With The Following Data	|
+| | ... | Name						| EmailNotificationRecipients	|
+| | ... | Field Type				| Long Text						|
+| | ... | Is Required				| No							|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
 | Enable Scheduler
 | | [Documentation] | [id] 11a41573-a89f-11e4-9997-b8ca3a83048f
 | | Find A Row With The Following Data	|
@@ -69,9 +78,9 @@
 | | ... | Associative Object Type	| ${EMPTY}
 
 
-| Integration Point
+| Job History
 | | Find A Row With The Following Data	|
-| | ... | Name						| Integration Point	|
+| | ... | Name						| Job History		|
 | | ... | Field Type				| Multiple Object	|
 | | ... | Is Required				| No				|
 | | ... | Associative Object Type	| JobHistory

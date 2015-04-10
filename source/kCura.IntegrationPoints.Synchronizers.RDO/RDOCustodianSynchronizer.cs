@@ -16,8 +16,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public ITaskJobSubmitter TaskJobSubmitter { get; set; }
 
-		public RDOCustodianSynchronizer(RelativityFieldQuery fieldQuery)
-			: base(fieldQuery)
+		public RDOCustodianSynchronizer(RelativityFieldQuery fieldQuery, ImportApiFactory factory)
+			: base(fieldQuery, factory)
 		{ }
 
 		public string FirstNameSourceFieldId { get; set; }
@@ -30,20 +30,20 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private int _artifactTypeId = 0;
 		private List<Artifact> _allRdoFields;
-		private List<Artifact> GetAllRdoFields(int artifactTypeId)
+		private List<Artifact> GetAllRdoFields(ImportSettings settings)
 		{
-			if (_artifactTypeId != artifactTypeId || _allRdoFields == null)
+			if (_artifactTypeId != settings.ArtifactTypeId || _allRdoFields == null)
 			{
-				_allRdoFields = FieldQuery.GetFieldsForRDO(artifactTypeId);
-				_artifactTypeId = artifactTypeId;
+				_allRdoFields = base.GetRelativityFields(settings);
+				_artifactTypeId = settings.ArtifactTypeId;
 			}
 			return _allRdoFields;
 		}
 
 		public override IEnumerable<FieldEntry> GetFields(string options)
 		{
-			var relativityFields = GetAllRdoFields(GetSettings(options).ArtifactTypeId);
-			var fields = ParseFields(relativityFields);
+			var relativityFields = GetAllRdoFields(GetSettings(options));
+			var fields = base.GetFields(options);
 			var fieldLookup = relativityFields.ToDictionary(x => x.ArtifactID.ToString(), x => x);
 
 			foreach (var fieldEntry in fields)
@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		protected override Dictionary<string, int> GetSyncDataImportFieldMap(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
 		{
-			var allRDOFields = GetAllRdoFields(settings.ArtifactTypeId);
+			var allRDOFields = GetAllRdoFields(settings);
 
 			FieldEntry fullNameField = allRDOFields.Where(x => x.ArtifactGuids.Contains(new Guid(CustodianFieldGuids.FullName))).Select(x => new FieldEntry() { DisplayName = x.Name, FieldIdentifier = x.ArtifactID.ToString(), IsIdentifier = false }).FirstOrDefault();
 

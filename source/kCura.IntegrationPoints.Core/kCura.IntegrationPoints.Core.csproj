@@ -125,6 +125,7 @@
     <Compile Include="Services\IJobStatusUpdater.cs" />
     <Compile Include="Services\JobHistory\JobHistoryErrorService.cs" />
     <Compile Include="Services\JobHistory\JobHistoryService.cs" />
+    <Compile Include="Services\JobHistory\JobStatisticsService.cs" />
     <Compile Include="Services\JobStatusUpdater.cs" />
     <Compile Include="Services\JobTracker.cs" />
     <Compile Include="Services\Keywords\ErrorKeyword.cs" />
@@ -171,6 +172,7 @@
     <Compile Include="Services\Syncronizer\RDOSyncronizerProvider.cs" />
     <Compile Include="Services\Tabs\ITabService.cs" />
     <Compile Include="Services\Tabs\RSAPITabService.cs" />
+    <Compile Include="Services\TaskParameterHelper.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\Domain\SynchronizerWrapper.cs" />
     <Compile Include="Utils.cs" />

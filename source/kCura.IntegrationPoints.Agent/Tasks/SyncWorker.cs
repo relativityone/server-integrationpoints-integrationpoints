@@ -9,9 +9,11 @@ using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Conversion;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
@@ -31,9 +33,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		internal JobHistoryErrorService _jobHistoryErrorService;
 		internal GeneralWithCustodianRdoSynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
 		internal IJobManager _jobManager;
-
+		private JobStatisticsService _statisticsService;
 		private IEnumerable<Core.IBatchStatus> _batchStatus;
-
 		public IEnumerable<Core.IBatchStatus> BatchStatus
 		{
 			get { return _batchStatus ?? (_batchStatus = new List<IBatchStatus>()); }
@@ -47,7 +48,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 											GeneralWithCustodianRdoSynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 											JobHistoryService jobHistoryService,
 											JobHistoryErrorService jobHistoryErrorService,
-											IJobManager jobManager, IEnumerable<IBatchStatus> statuses)
+											IJobManager jobManager, IEnumerable<IBatchStatus> statuses, JobStatisticsService statisticsService)
 		{
 			_caseServiceContext = caseServiceContext;
 			_dataSyncronizerFactory = dataSyncronizerFactory;
@@ -58,6 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryErrorService = jobHistoryErrorService;
 			_jobManager = jobManager;
 			BatchStatus = statuses;
+			_statisticsService = statisticsService;
 		}
 
 		internal Data.IntegrationPoint IntegrationPoint { get; set; }
@@ -87,23 +89,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				kCura.Method.Injection.InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
 
-				if (this.IntegrationPoint.SourceProvider.GetValueOrDefault(0) == 0)
+				if (!this.IntegrationPoint.SourceProvider.HasValue)
 				{
 					throw new ArgumentException("Cannot import source provider with unknown id.");
 				}
-				if (this.IntegrationPoint.DestinationProvider.GetValueOrDefault(0) == 0)
+				if (!this.IntegrationPoint.DestinationProvider.HasValue)
 				{
 					throw new ArgumentException("Cannot import destination provider with unknown id.");
 				}
-				Data.SourceProvider sourceProviderRdo =
-					_caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
-				Data.DestinationProvider destinationProvider =
-					_caseServiceContext.RsapiService.DestinationProviderLibrary.Read(this.IntegrationPoint.DestinationProvider.Value);
+				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
+				Data.DestinationProvider destinationProvider = _caseServiceContext.RsapiService.DestinationProviderLibrary.Read(this.IntegrationPoint.DestinationProvider.Value);
 				IEnumerable<FieldMap> fieldMap = GetFieldMap(this.IntegrationPoint.FieldMappings);
 				string sourceConfiguration = GetSourceConfiguration(this.IntegrationPoint.SourceConfiguration);
 
-				ExecuteImport(fieldMap, sourceConfiguration, this.IntegrationPoint.DestinationConfiguration, entryIDs,
-					sourceProviderRdo, destinationProvider, job);
+				ExecuteImport(fieldMap, sourceConfiguration, this.IntegrationPoint.DestinationConfiguration, entryIDs, sourceProviderRdo, destinationProvider, job);
 
 				InjectErrors();
 			}
@@ -156,7 +155,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-
 		internal void GetIntegrationPointRDO(Job job)
 		{
 			if (this.IntegrationPoint != null) return;
@@ -208,6 +206,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return fieldMap;
 		}
 
+		protected void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
+		{
+			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
+			_jobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
+		}
+
 		internal virtual void ExecuteImport(IEnumerable<FieldMap> fieldMap,
 			string sourceConfiguration, string destinationConfiguration, List<string> entryIDs,
 			Data.SourceProvider sourceProviderRdo, Data.DestinationProvider destinationProvider, Job job)
@@ -222,7 +226,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			IDataSynchronizer dataSyncronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
 
-			_jobHistoryErrorService.SubscribeToBatchReporterEvents(dataSyncronizer);
+			SetupSubscriptions(dataSyncronizer, job);
 
 			dataSyncronizer.SyncData(sourceData, fieldMap, destinationConfiguration);
 		}
@@ -249,10 +253,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		internal virtual IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
 		{
 			Guid providerGuid = new Guid(destinationProviderRdo.Identifier);
-			if (_appDomainRdoSynchronizerFactoryFactory is GeneralWithCustodianRdoSynchronizerFactory)
+			var factory = _appDomainRdoSynchronizerFactoryFactory as GeneralWithCustodianRdoSynchronizerFactory;
+			if (factory != null)
 			{
-				((GeneralWithCustodianRdoSynchronizerFactory)_appDomainRdoSynchronizerFactoryFactory).TaskJobSubmitter =
-					new TaskJobSubmitter(_jobManager, job, TaskType.SyncCustodianManagerWorker, this.BatchInstance);
+				factory.TaskJobSubmitter = new TaskJobSubmitter(_jobManager, job, TaskType.SyncCustodianManagerWorker, this.BatchInstance);
 			}
 			Contracts.PluginBuilder.Current.SetSynchronizerFactory(_appDomainRdoSynchronizerFactoryFactory);
 			IDataSynchronizer sourceProvider = _dataSyncronizerFactory.GetSyncronizer(providerGuid, configuration);
