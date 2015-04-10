@@ -45,10 +45,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			IDataReader importDataReader = null;
 			DataTable dt = ConfigureTable(_columnNames, _dataSource);
-			if (dt.Rows.Count > 0)
-			{
-				importDataReader = new DataTableReader(dt);
-			}
+			importDataReader = new DataTableReader(dt);
 			return importDataReader;
 		}
 

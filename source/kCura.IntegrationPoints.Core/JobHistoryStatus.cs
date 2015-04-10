@@ -36,6 +36,7 @@ namespace kCura.IntegrationPoints.Core
 		{
 			var result = GetHistory(job);
 			result.JobStatus = _updater.GenerateStatus(result);
+			result.EndTimeUTC = DateTime.UtcNow;
 			_service.JobHistoryLibrary.Update(result);
 		}
 
