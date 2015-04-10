@@ -12,8 +12,10 @@
 *** Variables ***
 
 | ${WorkspaceName}	| LDAP Sync
-| ${Overlay Identifier}	| s2id_overlay-identifier
-| ${Parent Attribute}	| s2id_parent-identifier
+| ${Overlay Identifier}					| s2id_overlay-identifier
+| ${Parent Attribute}					| s2id_parent-identifier
+| ${Import Native Files Radio Buttons}	| import
+| ${Native File Path List}				| s2id_native-filePath
 
 
 *** Test Cases ***
@@ -21,7 +23,7 @@
 | The Map Fields screen has a card with the Title Import Settings
 | | [Documentation]	| Verify that the Map Fields screen has a card with the title text "Import Settings".
 | | [Tags]			| automated
-| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Append/Overlay
+| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Append/Overlay	| Questionnaire Question
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that a Card with the following Title Text is Visible	| Import Settings
 | | [Teardown]		| Run Keyword If Test Failed	| Fatal Error	| The Import Settings card was not found. Cancelling the remainder of the Suite.
 
@@ -57,7 +59,7 @@
 | | [Documentation]	| Verify that the fields on the Import Settings card are sorted correctly 
 | | ...				| when an Overwrite value of "Append" was selected on Step 1.
 | | [Tags]			| automated	| dan641
-| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Append
+| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Append	| Questionnaire Question
 | | Verify that the following Card contains the following Fields in Order | Import Settings | 
 | | ... | Unique Identifier:	| 
 | | ... | Parent Attribute:
@@ -67,22 +69,66 @@
 | | [Documentation]	| Verify that the fields on the Import Settings card are sorted correctly 
 | | ...				| when an Overwrite value of "Overlay Only" was selected on Step 1.
 | | [Tags]			| automated	| dan641
-| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Overlay Only
+| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Overlay Only	| Questionnaire Question
 | | Verify that the following Card contains the following Fields in Order | Import Settings | 
 | | ... | Unique Identifier:	| 
 | | ... | Parent Attribute:
 
 
+| The Import Native File field is present when the Destination RDO is Document
+| | [Documentation]	| 
+| | [Tags]			| required	| automated
+| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Append/Overlay	| Document
+| | Verify that the following Card contains the following Fields in Order | Import Settings | 
+| | ... | Unique Identifier:	| 
+| | ... | Import Native File
+
+
+| The Import Native File field defaults to No
+| | [Documentation]	| Verifies that the Import Native File field on the Import Settings card defaults to "No".
+| | [Tags]			| automated
+| | [Setup]			| Require Test Case	| The Import Native File field is present when the Destination RDO is Document
+| | Radio Button Should Be Set To	| ${Import Native Files Radio Buttons}	| false	| # false = No
+
+
+| The Native File Path field is present when Import Native File is set to Yes
+| | [Documentation]	| Verifies that the Native File Path field on the Import Settings card is present when the Import Native File field is set to "Yes".
+| | [Tags]			| required	| automated
+| | [Setup]			| Require Test Case	| The Import Native File field is present when the Destination RDO is Document
+| | Select Radio Button	| ${Import Native Files Radio Buttons}	| true	| #true = Yes
+| | Verify that the following Card contains the following Fields in Order | Import Settings | 
+| | ... | Unique Identifier:	| 
+| | ... | Import Native File	| 
+| | ... | Native File Path:
+
+
+| The Native File Path field defaults to Select...
+| | [Documentation]	| Verifies that the Native File Path field on the Import Settings card defaults to "Select...".
+| | [Tags]			| automated
+| | [Setup]			| Require Test Case	| The Native File Path field is present when Import Native File is set to Yes
+| | Verify that the following select2 Dropdown currently has the following value selected	| ${Native File Path List}	| Select...
+
+
+| The Import Native Path list has the correct values
+| | [Documentation] | Verify that the Import Native File list values match the Source Attributes list values.
+| | ...				| [id] 99168b1e-c440-11e4-8b5a-90b11c6c5ae4
+| | [Tags]			| automated
+| | [Setup]			| Require Test Case	| The Native File Path field is present when Import Native File is set to Yes
+| | @{ParentAttributes}=	| Get the Unassigned Source Attributes
+| | Click	| ${Native File Path List}
+| | Verify that the currently opened select2 Dropdown has the following choices in order	| Select...	| @{ParentAttributes}
+
+
 *** Keywords *** 
 
 | Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value
-| | [ARGUMENTS]		| ${OverwriteValue}
+| | [ARGUMENTS]		| ${OverwriteValue}	| ${DestinationRDOValue}
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| 
 | | ... | IntegrationName=Import Settings Card Testing	| 
-| | ... | Overwrite=${OverwriteValue}						| 
+| | ... | Overwrite=${OverwriteValue}					| 
 | | ... | SourceProvider=LDAP							| 
-| | ... | DestinationRDO=Questionnaire Question			| 
+| | ... | DestinationRDO=${DestinationRDOValue}			| 
 | | ... | EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the Integration Point Step 2 form	| 
