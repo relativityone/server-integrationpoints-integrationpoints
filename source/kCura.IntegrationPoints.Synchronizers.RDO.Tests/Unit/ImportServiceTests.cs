@@ -40,11 +40,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				{"sourceField7",GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null);
+			ImportService importService = new ImportService(null, null, null, null);
 
 
 			//ACT
-			Dictionary<string, object> data = importService.GenerateImportFields(sourceFields, mapping);
+			Dictionary<string, object> data = importService.GenerateImportFields(sourceFields, mapping, null);
 
 
 			//ASSERT
@@ -80,8 +80,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				{6,GetFieldObject(6,"F6")},
 				{7,GetFieldObject(7,"F7")},
 			};
-	
-			ImportService importService = new ImportService(null, null, null);
+
+			ImportService importService = new ImportService(null, null, null, null);
 
 
 			//ACT
@@ -120,11 +120,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				{7,GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null);
+			ImportService importService = new ImportService(null, null, null, null);
 
 
 			//ACT
-			Exception ex = Assert.Throws<Exception>(()=> importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields));
+			Exception ex = Assert.Throws<Exception>(() => importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields));
 
 			Assert.That(ex.Message, Is.EqualTo("Missing mapped field IDs: 12, 13, 14, 15"));
 		}
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				{7,GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null);
+			ImportService importService = new ImportService(null, null, null, null);
 
 
 			//ACT

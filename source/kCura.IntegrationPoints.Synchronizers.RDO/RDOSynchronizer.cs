@@ -80,14 +80,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private Exception _jobError;
 		private List<KeyValuePair<string, string>> _rowErrors;
 		private ImportSettings ImportSettings { get; set; }
+		private NativeFileImportService NativeFileImportService { get; set; }
 
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{
-			this.ImportSettings = GetSyncDataImportSettings(fieldMap, options);
+			this.NativeFileImportService = new NativeFileImportService();
+
+			this.ImportSettings = GetSyncDataImportSettings(fieldMap, options, this.NativeFileImportService);
 
 			var importFieldMap = GetSyncDataImportFieldMap(fieldMap, this.ImportSettings);
 
-			_importService = InitializeImportService(this.ImportSettings, importFieldMap);
+			_importService = InitializeImportService(this.ImportSettings, importFieldMap, this.NativeFileImportService);
 
 			_isJobComplete = false;
 			_jobError = null;
@@ -127,9 +130,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			protected set { _webAPIPath = value; }
 		}
 
-		protected virtual ImportService InitializeImportService(ImportSettings settings, Dictionary<string, int> importFieldMap)
+		protected virtual ImportService InitializeImportService(ImportSettings settings, Dictionary<string, int> importFieldMap, NativeFileImportService nativeFileImportService)
 		{
-			ImportService importService = new ImportService(settings, importFieldMap, new BatchManager());
+			ImportService importService = new ImportService(settings, importFieldMap, new BatchManager(), nativeFileImportService);
 			importService.OnBatchComplete += new BatchCompleted(Finish);
 			importService.OnDocumentError += new RowError(ItemError);
 			importService.OnJobError += new JobError(JobError);
@@ -145,7 +148,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return importService;
 		}
 
-		protected virtual ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, string options)
+		protected virtual ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, string options, NativeFileImportService nativeFileImportService)
 		{
 			ImportSettings settings = GetSettings(options);
 			if (string.IsNullOrWhiteSpace(settings.ParentObjectIdSourceFieldName) &&
@@ -163,10 +166,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath))
 			{
-				settings.NativeFilePathSourceFieldName =
-					fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath).SourceField.DisplayName;
+				nativeFileImportService.ImportNativeFiles = true;
+				nativeFileImportService.SourceFieldName = fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath).SourceField.FieldIdentifier;
+				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
 				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles;
-				//settings.DestinationFolderArtifactID = ???;
 			}
 			return settings;
 		}
@@ -177,7 +180,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			try
 			{
-				importFieldMap = fieldMap.Where(x => x.FieldMapType != FieldMapTypeEnum.Parent)
+				importFieldMap = fieldMap.Where(x => IncludeFieldInImport(x))
 					.ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
 			}
 			catch (Exception ex)
@@ -211,6 +214,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				}
 			}
 			return settings;
+		}
+
+		private bool IncludeFieldInImport(FieldMap fieldMap)
+		{
+			return (
+				fieldMap.FieldMapType != FieldMapTypeEnum.Parent
+				&&
+				fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath
+				);
 		}
 
 		private void Finish(DateTime startTime, DateTime endTime, int totalRows, int errorRowCount)
