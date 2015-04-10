@@ -12,16 +12,21 @@
 *** Variables ***
 
 | ${WorkspaceName}		| LDAP Sync
-| ${IntegrationPoint1}	| Unique Identifier Test 1		| # Project
-| ${IntegrationPoint2}	| Unique Identifier Test 2		| # Project
-| ${IntegrationPoint3}	| Object Identifier Test		| # Communication
-| ${IntegrationPoint4}	| Extra Attributes Test			| # Questionnaire
-| ${IntegrationPoint5}	| Extra Workspace Fields Test	| # Questionnaire
-| ${IntegrationPoint6}	| No Fields Test				| # Question
-| ${IntegrationPoint7}	| No Parent Attribute Test		| # Custodian Role
-| ${IntegrationPoint8}	| Hidden Parent Attribute Test	| # JobSchedule (Scheduled Report)
+| ${IntegrationPoint1}	| Unique Identifier Test 1			| # Project
+| ${IntegrationPoint2}	| Unique Identifier Test 2			| # Project
+| ${IntegrationPoint3}	| Object Identifier Test			| # Communication
+| ${IntegrationPoint4}	| Extra Attributes Test				| # Questionnaire
+| ${IntegrationPoint5}	| Extra Workspace Fields Test		| # Questionnaire
+| ${IntegrationPoint6}	| No Fields Test					| # Question
+| ${IntegrationPoint7}	| No Parent Attribute Test			| # Custodian Role
+| ${IntegrationPoint8}	| Hidden Parent Attribute Test		| # JobSchedule (Scheduled Report)
+| ${IntegrationPoint9}	| Hidden Native File Path Test		| # Document
+| ${IntegrationPoint10}	| Unset Native File Path Test		| # Document
+| ${IntegrationPoint11}	| Unmapped Native File Path Test	| # Document
 | ${Unique Identifier Dropdown}	| s2id_overlay-identifier
 | ${Parent Role Dropdown}		| s2id_parent-identifier
+| ${Import Native Files Radio Buttons}	| import
+| ${Native File Path List}				| s2id_native-filePath
 
 
 *** Test Cases ***
@@ -237,7 +242,7 @@
 
 
 | Integration Points can be created when Parent Attribute is hidden
-| | [Documentation] | Verify that when the Parent Attribute list hidden, that the Create Integration Point Process can be completed.
+| | [Documentation] | Verify that when the Parent Attribute list is hidden, that the Create Integration Point Process can be completed.
 | | ...				| [id] 10e61ca1-a89f-11e4-8dcb-b8ca3a83048f
 | | [Tags]			| automated
 | | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint8}	| JobSchedule
@@ -246,6 +251,59 @@
 | | ... | Job Type					| cn
 | | Click	| Save
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint8}
+
+
+| Integration Points can be created when Import Native Path is hidden
+| | [Documentation] | Verify that when the Import Native Path list is hidden, that the Create Integration Point Process can be completed.
+| | [Tags]			| untested
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint9}	| Document
+| | Map the Following Fields on the Integration Point Step 3 form	| 
+| | ... | Control Number [Object Identifier]	| objectguid
+| | Click	| Save
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint9}
+
+
+| Integration Points cannot be created when Import Native Path is set to Select...
+| | [Documentation] | Verify that when the Import Native Path list is set to "Select...", that the Create Integration Point Process cannot be completed.
+| | [Tags]			| untested	| required
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint10}	| Document
+| | Map the Following Fields on the Integration Point Step 3 form	| 
+| | ... | Control Number [Object Identifier]	| objectguid	| 
+| | ... | Imaging Set							| name
+| | Select Radio Button	| ${Import Native Files Radio Buttons}	| true	| # true = Yes
+| | Click	| Save
+################################################################
+
+
+| Integration Points can be created after the Import Native Path Dropdown validation
+| | [Documentation] | Verify that after an Import Native Path list validation message is triggered, that the Import Native Path value can be set and the Integration Point saved.
+| | [Tags]			| untested
+| | [Setup]			| Require Test Case	| Integration Points cannot be created when Import Native Path is set to Select...
+| | Select from Select2 Dropdown	| ${Native File Path List}	| name
+| | Click	| Save
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint10}
+
+
+| Integration Points cannot be created when the Import Native Path is not Mapped
+| | [Documentation] | Verify that when the Import Native Path value is not mapped, that the Create Integration Point Process cannot be completed.
+| | [Tags]			| untested	| required
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint11}	| Document
+| | Map the Following Fields on the Integration Point Step 3 form	| 
+| | ... | Control Number [Object Identifier]	| objectguid
+| | Select Radio Button	| ${Import Native Files Radio Buttons}	| true	| # true = Yes
+| | Select from Select2 Dropdown	| ${Native File Path List}	| name
+| | Click	| Save
+################################################################
+
+
+| Integration Points can be created after the Import Native Path Mapping validation
+| | [Documentation] | Verify that after an Import Native Path mapping validation message is triggered, that the Import Native Path value can be mapped and the Integration Point saved.
+| | [Tags]			| untested
+| | [Setup]			| Require Test Case	| Integration Points cannot be created when the Import Native Path is not Mapped
+| | Map the Following Fields on the Integration Point Step 3 form	| 
+| | ... | Imaging Set							| name
+| | Click	| Save
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint11}
 
 
 *** Keywords ***
@@ -286,7 +344,7 @@
 
 #------------------------------------------------------------------------------------------------------------------------
 
-| | :FOR	| ${i}	| IN RANGE	| 1	| 9	| # For 1-8
+| | :FOR	| ${i}	| IN RANGE	| 1	| 12	| # For 1-11
 | | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint${i}}
 | | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationPoint${i}}
 | | [Teardown] | Drop connection to the relativity services api
@@ -296,7 +354,7 @@
 | | ...				| Run as the Suite Teardown.
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
 
-| | :FOR	| ${i}	| IN RANGE	| 1	| 9	| # For 1-8
+| | :FOR	| ${i}	| IN RANGE	| 1	| 12	| # For 1-11
 | | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint${i}}
 | | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationPoint${i}}
 
