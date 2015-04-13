@@ -18,6 +18,7 @@
 *** Test Cases ***
 
 | Files from multiple Valid locations
+| | [Documentation]	| Verify that when multiple documents are imported, each with a valid native file path, it works correctly.
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. The Test Files have been moved to the Testing Environment (if not, then instructions are in the keywords)
@@ -45,6 +46,7 @@
 
 
 | Files from Invalid locations
+| | [Documentation]	| Verify that when multiple documents are imported, each with an invalid native file path, it fails correctly.
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. The Test Files have been moved to the Testing Environment (if not, then instructions are in the keywords)
@@ -70,6 +72,8 @@
 
 
 | Files from both Valid and Invalid locations
+| | [Documentation]	| Verify that when multiple documents are imported, some with an invalid native file path 
+| | ...				| and some with a valid file path, it fails correctly.
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. The Test Files have been moved to the Testing Environment (if not, then instructions are in the keywords)
@@ -102,6 +106,8 @@
 
 
 | Commonly Invalid Relativity File Types
+| | [Documentation]	| Verify that when multiple documents are imported, each with a valid native file path pointing
+| | ...				| to a file that is not allowed in other places in RLH, it works correctly.
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. The Test Files have been moved to the Testing Environment (if not, then instructions are in the keywords)
@@ -151,6 +157,7 @@
 
 
 | Off-site location with Permission
+| | [Documentation]	| Verify that when a document is imported that has a native file path pointing to a different environment, it imports correctly.
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. The Test Files have been moved to a second Environment (if not, then instructions are in the keywords)
