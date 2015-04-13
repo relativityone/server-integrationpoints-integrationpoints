@@ -69,34 +69,33 @@
 | | ... | SELECT Name
 | | ... | FROM [EDDSDBO].[ObjectType]
 | | ... | ORDER BY Name
-| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
-| | @{ObjectFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
+| | @{ObjectFields}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D List
 | | @{SystemFields}=	| Create List	| 
-| | ... | Agent Type			|
-| | ... | Batch					|
-| | ... | Batch Set				|
-| | ... | Code					|
-| | ... | Event Handler			|
-| | ... | Field					|
-| | ... | Folder				|
-| | ... | Group					|
-| | ... | History				|
-| | ... | Install Event Handler	|
+| | ... | Agent Type			| 
+| | ... | Batch					| 
+| | ... | Batch Set				| 
+| | ... | Code					| 
+| | ... | Event Handler			| 
+| | ... | Field					| 
+| | ... | Folder				| 
+| | ... | Group					| 
+| | ... | History				| 
+| | ... | Install Event Handler	| 
 | | ... | Integration Point		| 
-| | ... | Layout				|
-| | ... | Markup Set			|
-| | ... | Mass Operation		|
-| | ... | Object Rule			|
-| | ... | Object Type			|
-| | ... | Production			|
-| | ... | Relativity Script		|
-| | ... | Report				|
-| | ... | Search				|
-| | ... | Search Container		|
-| | ... | Search Index			|
+| | ... | Layout				| 
+| | ... | Markup Set			| 
+| | ... | Mass Operation		| 
+| | ... | Object Rule			| 
+| | ... | Object Type			| 
+| | ... | Production			| 
+| | ... | Relativity Script		| 
+| | ... | Report				| 
+| | ... | Search				| 
+| | ... | Search Container		| 
+| | ... | Search Index			| 
 | | ... | Source Provider		| 
-| | ... | Tab					|
-| | ... | View					|
+| | ... | Tab					| 
+| | ... | View					| 
 | | ... | Workspace
 | | Remove Values From List	| ${ObjectFields}	| @{SystemFields}
 | | [Return]		| @{ObjectFields}
@@ -124,24 +123,23 @@
 | | ... |			FieldLength = ISNULL(MaxLength, 
 | | ... |			(SELECT TOP 1 MaxLength FROM Field F WHERE F.FieldCategoryID = 2 AND F.FieldArtifactTypeID = Field.AssociativeArtifactTypeID)),
 | | ... |			ArtifactGuids = STUFF((SELECT DISTINCT ';' + CAST(ArtifactGuid AS NVARCHAR(MAX)) COLLATE database_default FROM ArtifactGuid WHERE Field.ArtifactID = ArtifactGuid.ArtifactID FOR XML PATH('')),1,1,'')
-| | ... |       FROM 
-| | ... |			Field
-| | ... |       WHERE 
-| | ... |			IsArtifactBaseField = 0 AND 
-| | ... |			Field.FieldCategoryID != 6 AND 
-| | ... |			Field.FieldCategoryID != 3 AND 
-| | ... |			Field.FieldArtifactTypeID = ${artifactTypeID[0][0]} AND 
-| | ... |			( Field.IsVisible = 1 OR 
-| | ... |				Field.FieldCategoryID = 1 OR 
-| | ... |				Field.FieldCategoryID = 8 ) AND
-| | ... |			Field.ArtifactID != ${DocumentQCStatusFieldArtifactID[0][0]}
+| | ... |       FROM Field
+| | ... |       WHERE IsArtifactBaseField = 0
+| | ... |		AND Field.FieldCategoryID != 6
+| | ... |		AND Field.FieldCategoryID != 3
+| | ... |		AND Field.FieldArtifactTypeID = ${artifactTypeID[0][0]}
+| | ... |		AND ( Field.IsVisible = 1 
+| | ... |				OR Field.FieldCategoryID = 1 
+| | ... |				OR Field.FieldCategoryID = 8 )
+| | ... |		AND Field.ArtifactID != ${DocumentQCStatusFieldArtifactID[0][0]} 
+| | ... |		AND NOT (Field.FieldCategoryID = 1 
+| | ... |		AND Field.AssociativeArtifactTypeID = 10)
 | | ... |       ) t
 | | ... | WHERE ((t.isSpecial=0) OR (t.isSpecial=1 AND t.IsDynamic = 1)) AND (NOT t.FieldCategoryID IN(15,14,10,7,8,6,12))
 | | ... | ORDER BY DisplayName
 
 | | Should Not Be Empty	| ${2DGrid}	| No Workspace Fields were found for the Object Type "${ObjectType}".
-| | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
-| | @{NonSystemFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
+| | @{NonSystemFields}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D List
 | | [Return]		| @{NonSystemFields}
 
 | Wait Until Integration Point Job Runs

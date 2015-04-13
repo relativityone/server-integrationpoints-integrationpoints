@@ -270,7 +270,7 @@
 | | ... | Imaging Set							| name
 | | Select Radio Button	| ${Import Native Files Radio Buttons}	| true	| # true = Yes
 | | Click	| Save
-################################################################
+| | Verify the following Integration Point Field has the following Error	| ${Native File Path List}	| The Native file path field is required.
 
 
 | Integration Points can be created after the Import Native Path Dropdown validation
