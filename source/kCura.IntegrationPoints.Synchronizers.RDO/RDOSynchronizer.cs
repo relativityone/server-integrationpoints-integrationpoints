@@ -229,7 +229,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return settings;
 		}
 
-		private bool IncludeFieldInImport(FieldMap fieldMap)
+		protected bool IncludeFieldInImport(FieldMap fieldMap)
 		{
 			return (
 				fieldMap.FieldMapType != FieldMapTypeEnum.Parent

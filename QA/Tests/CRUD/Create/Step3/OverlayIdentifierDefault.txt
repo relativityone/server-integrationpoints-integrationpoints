@@ -31,7 +31,7 @@
 | Verify that the default Overlay Identifier populates correctly for the Object Type "${ObjectType}"
 | | [Documentation]	| Goes through the Integration Point wizard to get to step 3, choosing the given Object Type as the Destination RDO on Step 1, 
 | | ...				| then verifies that the default Overlay Identifier on Step 3 is correct for that Object Type.
-| | Open Create Integration Point
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${ObjectType} Overlay Options Test	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${ObjectType}	| EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the Integration Point Step 2 form	| 
