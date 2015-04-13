@@ -104,19 +104,44 @@
 | Get the Non-System Fields for the following Object Type
 | | [Documentation]	| Gets a list of all of the fields on the given object, removes the five system fields, and then returns the remaining fields.
 | | [ARGUMENTS]		| ${ObjectType}
+| | ${DocumentQCStatusFieldArtifactID}=	| Query Workspace Database	| 
+| | ... | SELECT TOP 1 [ArtifactID]
+| | ... | FROM [EDDSDBO].[SystemArtifact]
+| | ... | WHERE [SystemArtifactIdentifier] = 'DocumentQCStatusField'
+
+| | ${artifactTypeID}=	| Query Workspace Database	| 
+| | ... | SELECT TOP 1 DescriptorArtifactTypeID
+| | ... | FROM [EDDSDBO].[ObjectType]
+| | ... | WHERE [Name] = '${ObjectType}'
+
 | | ${2DGrid}=	| Query Workspace Database	| 
-| | ... | SELECT DisplayName
-| | ... | FROM [EDDSDBO].[Field] f
-| | ... | JOIN [ObjectType] ot on ot.DescriptorArtifactTypeID = f.FieldArtifactTypeID
-| | ... | WHERE ot.Name = '${ObjectType}'
-| | ... | AND f.isVisible != 0	| # Field is not hidden
-| | ... | ORDER BY DisplayName	| # Sort list
-| | Should Not Be Empty	| ${2DGrid}	| No fields were found for the Object Type "${ObjectType}".
+| | ... | SELECT t.DisplayName
+| | ... | FROM 
+| | ... | (
+| | ... |		SELECT Field.*, 
+| | ... |			CASE WHEN Field.FieldTypeID IN (10,13) OR Field.FieldCategoryID IN (3,14) THEN 1 ELSE 0 END AS isSpecial,
+| | ... |			CASE WHEN (NOT Field.AssociativeArtifactTypeID IS NULL) AND (Field.AssociativeArtifactTypeID IN (10,40,41) OR Field.AssociativeArtifactTypeID > 1000003 ) THEN 1 ELSE 0 END AS IsDynamic,
+| | ... |			FieldLength = ISNULL(MaxLength, 
+| | ... |			(SELECT TOP 1 MaxLength FROM Field F WHERE F.FieldCategoryID = 2 AND F.FieldArtifactTypeID = Field.AssociativeArtifactTypeID)),
+| | ... |			ArtifactGuids = STUFF((SELECT DISTINCT ';' + CAST(ArtifactGuid AS NVARCHAR(MAX)) COLLATE database_default FROM ArtifactGuid WHERE Field.ArtifactID = ArtifactGuid.ArtifactID FOR XML PATH('')),1,1,'')
+| | ... |       FROM 
+| | ... |			Field
+| | ... |       WHERE 
+| | ... |			IsArtifactBaseField = 0 AND 
+| | ... |			Field.FieldCategoryID != 6 AND 
+| | ... |			Field.FieldCategoryID != 3 AND 
+| | ... |			Field.FieldArtifactTypeID = ${artifactTypeID[0][0]} AND 
+| | ... |			( Field.IsVisible = 1 OR 
+| | ... |				Field.FieldCategoryID = 1 OR 
+| | ... |				Field.FieldCategoryID = 8 ) AND
+| | ... |			Field.ArtifactID != ${DocumentQCStatusFieldArtifactID[0][0]}
+| | ... |       ) t
+| | ... | WHERE ((t.isSpecial=0) OR (t.isSpecial=1 AND t.IsDynamic = 1)) AND (NOT t.FieldCategoryID IN(15,14,10,7,8,6,12))
+| | ... | ORDER BY DisplayName
+
+| | Should Not Be Empty	| ${2DGrid}	| No Workspace Fields were found for the Object Type "${ObjectType}".
 | | @{1DGrid}=	| Flatten	| ${2DGrid}		| # Converts from 2D grid to 1D grid
 | | @{NonSystemFields}=	| Set Variable	| @{1DGrid}	| # Converts from 1D grid to List
-| | @{SystemFields}=	| Create List	| System Created By	| System Created On	| System Last Modified By	| System Last Modified On	| Artifact ID
-| | Remove Values From List	| ${NonSystemFields}	| @{SystemFields}
-| | Should Not Be Empty	| ${NonSystemFields}	| No non-object and non-system fields were found for the Object Type "${ObjectType}".
 | | [Return]		| @{NonSystemFields}
 
 | Wait Until Integration Point Job Runs

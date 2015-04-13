@@ -41,7 +41,7 @@
 | | ... | 3. Open the associated Job History View screen.
 | | ... |
 | | Expected Results:
-| | ... | 1. Verify that the History Status has the Following value | Pending
+| | ... | 1. Verify that the History Status has the Following value | Processing
 
 | Status is Complete when the Integration Point has run without error
 | | [Documentation] | Verify that Integration Points that have successfully completed without error have a Job History Status of Complete
@@ -71,8 +71,8 @@
 | | Expected Results
 | | ... | 1. Verify that the History Status has the Following value  | Complete with errors
 
-| Status is Error - job failed when the Integration Point has failed
-| | [Documentation] | Verify that Integration Points that have failed have a Job History Status of Error - job failed 
+| Status is "Error - job failed" when the Integration Point has failed
+| | [Documentation] | Verify that Integration Points that have failed to run have a Job History Status of "Error - job failed". 
 | | [Tags] | manual
 | | Run the following manual steps:
 | | ... | Steps:
