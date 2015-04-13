@@ -1,15 +1,248 @@
+
 *** Settings ***
-| Documentation | Running an RIP Native File Import
-| Force Tags    | in-progress
+| Documentation 	| Running an RIP using Native File Importing.
+| Metadata			| Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| manual	| in-progress	| team.game_of_holds
+
+
+*** Variables ***
+
+| ${WorkspaceName}		| NOT LDAP Sync
+| ${ConnectionPath}		| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp
+| ${Authentication}		| FastBind
+| ${IPUsername}			| testing\\administrator
+| ${IPPassword}			| P@ssw0rd@1
+| ${ImportNestedItems}	| Yes
+
 
 *** Test Cases ***
 
 | Files from multiple Valid locations
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Test Files have been moved to the Testing Environment (if not, then instructions are in the keywords)
+| | ... | 2. The Users have been modified to pont to the current Testing Environment (if not, then instructions are in the keywords)
+| | ... | 
+| | ... | Steps: 
+| | ... | 1. Create an Integration Point with the following values:
+| | ... | - Destination RDO: Document
+| | ... | - Connection Path: ${ConnectionPath}
+| | ... | - Object Filter String: (department=Good Native File)
+| | ... | - Authentication: ${Authentication}
+| | ... | - Mapping: Control Number	| cn
+| | ... | - Import Native File: Yes
+| | ... | - Native File Path: description
+| | ... | 2. Import the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the Job completed without errors
+| | ... | 2. Verify that the following Documents were imported:
+| | ... | - Native U. Two
+| | ... | - Test W. User
+| | ... | 3. Verify that the following files are attached to the Documents:
+| | ... | - Native U. Two: "Tumbleweed..."
+| | ... | - Test W. User: A picture with the heading "Contacts"
+
 
 | Files from Invalid locations
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Test Files have been moved to the Testing Environment (if not, then instructions are in the keywords)
+| | ... | 2. The Users have been modified to pont to the current Testing Environment (if not, then instructions are in the keywords)
+| | ... | 
+| | ... | Steps: 
+| | ... | 1. Create an Integration Point with the following values:
+| | ... | - Destination RDO: Document
+| | ... | - Connection Path: ${ConnectionPath}
+| | ... | - Object Filter String: (department=Bad Native File)
+| | ... | - Authentication: ${Authentication}
+| | ... | - Mapping: Control Number	| cn
+| | ... | - Import Native File: Yes
+| | ... | - Native File Path: description
+| | ... | 2. Import the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. The job triggers two Row Level Errors with the text "One of the files specified for this document does not exist"
+| | ... | 2. Verify that the following Documents were imported:
+| | ... | - Nonnative U. One
+| | ... | - Nonnative U. Two
+| | ... | 3. Verify that neither Document has a Native (Add "Has Native" column to the current Document View)
+
 
 | Files from both Valid and Invalid locations
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Test Files have been moved to the Testing Environment (if not, then instructions are in the keywords)
+| | ... | 2. The Users have been modified to pont to the current Testing Environment (if not, then instructions are in the keywords)
+| | ... | 
+| | ... | Steps: 
+| | ... | 1. Create an Integration Point with the following values:
+| | ... | - Destination RDO: Document
+| | ... | - Connection Path: ${ConnectionPath}
+| | ... | - Object Filter String: (department=* Native File)
+| | ... | - Authentication: ${Authentication}
+| | ... | - Mapping: Control Number	| cn
+| | ... | - Import Native File: Yes
+| | ... | - Native File Path: description
+| | ... | 2. Import the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. The job triggers two Row Level Errors with the text "One of the files specified for this document does not exist"
+| | ... | 2. Verify that the following Documents were imported:
+| | ... | - Native U. Two
+| | ... | - Nonnative U. One
+| | ... | - Nonnative U. Two
+| | ... | - Test W. User
+| | ... | 3. Verify that neither of the following Documents has a Native (Add "Has Native" column to the current Document View)
+| | ... | - Nonnative U. One
+| | ... | - Nonnative U. Two
+| | ... | 4. Verify that the following files are attached to the Documents:
+| | ... | - Native U. Two: "Tumbleweed..."
+| | ... | - Test W. User: A picture with the heading "Contacts"
 
-| No Permission to file location?
 
-| Invalid Relativity File types
+| Commonly Invalid Relativity File Types
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Test Files have been moved to the Testing Environment (if not, then instructions are in the keywords)
+| | ... | 2. The Users have been modified to pont to the current Testing Environment (if not, then instructions are in the keywords)
+| | ... | 
+| | ... | Steps: 
+| | ... | 1. Create an Integration Point with the following values:
+| | ... | - Destination RDO: Document
+| | ... | - Connection Path: ${ConnectionPath}
+| | ... | - Object Filter String: (department=Invalid Native Type)
+| | ... | - Authentication: ${Authentication}
+| | ... | - Mapping: Control Number	| cn
+| | ... | - Import Native File: Yes
+| | ... | - Native File Path: description
+| | ... | 2. Import the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the job completed without errors
+| | ... | 2. Verify that the following Documents were imported:
+| | ... | - DLL Native File
+| | ... | - EXE Native File
+| | ... | 3. Verify that they both have Natives (Add "Has Native" column to the current Document View)
+
+
+| With Empty Native File Path Value
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Test Files have been moved to the Testing Environment (if not, then instructions are in the keywords)
+| | ... | 2. The Users have been modified to pont to the current Testing Environment (if not, then instructions are in the keywords)
+| | ... | 
+| | ... | Steps: 
+| | ... | 1. Create an Integration Point with the following values:
+| | ... | - Destination RDO: Document
+| | ... | - Connection Path: ${ConnectionPath}
+| | ... | - Object Filter String: (department=No Native File Attached)
+| | ... | - Authentication: ${Authentication}
+| | ... | - Mapping: Control Number	| cn
+| | ... | - Import Native File: Yes
+| | ... | - Native File Path: description
+| | ... | 2. Import the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the job completed without errors		| # ???????????????????????????
+| | ... | 2. Verify that the following Documents were imported:	| # ???????????????????????????
+| | ... | - No Native
+| | ... | 3. Verify that they both have Natives (Add "Has Native" column to the current Document View)	| # ???????????????????????????
+
+
+| Off-site location with Permission
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Test Files have been moved to a second Environment (if not, then instructions are in the keywords)
+| | ... | 2. The User have been modified to pont to the current Testing Environment (if not, then instructions are in the keywords)
+| | ... | 
+| | ... | Steps: 
+| | ... | 1. Create an Integration Point with the following values:
+| | ... | - Destination RDO: Document
+| | ... | - Connection Path: ${ConnectionPath}
+| | ... | - Object Filter String: (department=No Native File Attached)
+| | ... | - Authentication: ${Authentication}
+| | ... | - Mapping: Control Number	| cn
+| | ... | - Import Native File: Yes
+| | ... | - Native File Path: description
+| | ... | 2. Import the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the job completed without errors
+| | ... | 2. Verify that the following Documents were imported:
+| | ... | - Offsite Native Tester
+| | ... | 4. Verify that the following file is attached to the Document:
+| | ... | - A text file beginning with "1. Pillage, then burn." 
+
+
+| Off-site location without Permission
+# No idea how to test this
+
+
+*** Keywords ***
+
+| Move the Test Files to the Testing Environment
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Remote in to the current Testing Environment (ML11, UAT, etc...)
+| | ... | - Probable Credentials:
+| | ... | - Computer: (The environment's URL after "http://" and before ".testing.corp")
+| | ... | - Username: TESTING\administrator
+| | ... | - Password: P@ssw0rd@1
+| | ... | 2. Paste the folder "\\chiprodfs01\Testing\Testing Documents\Relativity\Method Functional Testing\Various Testing Files" into the environment's C: drive
+| | ... | 3. Delete "Off Site File.txt" FROM THE TESTING ENVIRONMENT
+| | ... | 4. Right-click on the folder and select Properties
+| | ... | 5. Go to the Sharing Tab and click Share
+| | ... | 6. Add "Everyone" and click Share
+
+| Modify the Users to Point to the Current Testing Environment
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Remote in to gameofholds.testing.corp
+| | ... | - Probable Credentials:
+| | ... | - Computer: gameofholds.testing.corp
+| | ... | - Username: kdisterheft
+| | ... | - Password: ChangeThisPassword3*
+| | ... | 2. Open Active Directory Users and Computers
+| | ... | 3. Go to the Users folder
+| | ... | 4. Find the following Users and modify their Description fields to match the given path, 
+| | ... |		replacing [Server Name] with the Testing Environment's name (uat/ml11/ml27/etc...):
+| | ... | - Native U. Two		| \\[Server Name]\Various Testing Files\Tumbleweed.txt
+| | ... | - Test W. User		| \\[Server Name]\Various Testing Files\Contacts.jpg
+| | ... | - DLL Native File		| \\[Server Name]\Various Testing Files\kCura.Method.Agent.dll
+| | ... | - EXE Native File		| \\[Server Name]\Various Testing Files\Test.exe
+| | ... | - Nonnative U. One	| \\[Server Name]\Various Testing Files\File.txt
+| | ... | - Nonnative U. Two	| \\[Server Name]\Various Testing Files\Fake File.txt
+
+| Move the Test Files to an Environment beside the Testing Environment
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Remote in to the ML11, unless that is your Testing Environment in which case use UAT
+| | ... | - Probable Credentials:
+| | ... | - Computer: ml11 (or uat)
+| | ... | - Username: TESTING\administrator
+| | ... | - Password: P@ssw0rd@1
+| | ... | 2. Paste the folder "\\chiprodfs01\Testing\Testing Documents\Relativity\Method Functional Testing\Various Testing Files" into the environment's C: drive
+| | ... | 3. Delete everything except "Off Site File.txt" FROM THE CURRENT ENVIRONMENT
+| | ... | 4. Right-click on the folder and select Properties
+| | ... | 5. Go to the Sharing Tab and click Share
+| | ... | 6. Add "Everyone" and click Share
+
+| Modify a User to Point to an Environment beside the Testing Environment
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Remote in to gameofholds.testing.corp
+| | ... | - Probable Credentials:
+| | ... | - Computer: gameofholds.testing.corp
+| | ... | - Username: kdisterheft
+| | ... | - Password: ChangeThisPassword3*
+| | ... | 2. Open Active Directory Users and Computers
+| | ... | 3. Go to the Users folder
+| | ... | 4. Find the following Users and modify their Description fields to match the given path, 
+| | ... |		replacing [Server Name] with the Environment's name (uat/ml11/ml27/etc...):
+| | ... | - Offsite Native Tester		| \\[Server Name]\Various Testing Files\Off Site File.txt
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
