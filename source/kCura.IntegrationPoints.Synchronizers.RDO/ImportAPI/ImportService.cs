@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Reflection;
 using System.Security.Authentication;
 using kCura.Relativity.DataReaderClient;
@@ -25,7 +26,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public event RowError OnDocumentError;
 
 		private readonly ImportApiFactory _factory;
-		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, ImportApiFactory factory)
+		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, NativeFileImportService nativeFileImportService, ImportApiFactory factory)
 		{
 			EmbeddedAssembly.Load("kCura.IntegrationPoints.Synchronizers.RDO.Relativity.ImportAPI.Wrapper.dll", "Relativity.ImportAPI.Wrapper.dll");
 			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
@@ -33,6 +34,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			this.Settings = settings;
 			this._batchManager = batchManager;
 			this._inputMappings = fieldMappings;
+			this.NativeFileImportService = nativeFileImportService;
 			_factory = factory;
 			if (_batchManager != null) _batchManager.OnBatchCreate += ImportService_OnBatchCreate;
 		}
@@ -43,6 +45,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		}
 
 		public ImportSettings Settings { get; private set; }
+		public NativeFileImportService NativeFileImportService { get; private set; }
 
 		public virtual void Initialize()
 		{
@@ -57,7 +60,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		public void AddRow(Dictionary<string, object> sourceFields)
 		{
-			Dictionary<string, object> importFields = GenerateImportFields(sourceFields, FieldMappings);
+			Dictionary<string, object> importFields = GenerateImportFields(sourceFields, FieldMappings, NativeFileImportService);
 			_batchManager.Add(importFields);
 			PushBatchIfFull(false);
 		}
@@ -86,6 +89,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		public virtual void KickOffImport(IDataReader dataReader)
 		{
+			ImportBulkArtifactJob importJob1 = _importAPI.NewNativeDocumentImportJob();
 			ImportBulkArtifactJob importJob = _importAPI.NewObjectImportJob(Settings.ArtifactTypeId);
 			importJob.SourceData.SourceData = dataReader;
 
@@ -123,6 +127,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.Settings.SelectedIdentifierFieldName = _idToFieldDictionary[Settings.IdentityFieldId].Name;
 
 			importJob.OnComplete += new IImportNotifier.OnCompleteEventHandler(ImportJob_OnComplete);
+			importJob.OnFatalException += new IImportNotifier.OnFatalExceptionEventHandler(ImportJob_OnComplete);
 			ImportService_OnBatchSubmit(_batchManager.CurrentSize, _batchManager.MinimumBatchSize);
 
 			importJob.Execute();
@@ -173,7 +178,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				else
 				{
 					if (!mapping.ContainsKey(mapSourceFieldName))
-						mapping.Add(mapSourceFieldName, rdoAllFields[mapRDOFieldID]);
+					{
+						Field destinationField = rdoAllFields[mapRDOFieldID];
+						mapping.Add(mapSourceFieldName, destinationField);
+					}
 				}
 			}
 			if (missingFields.Count > 0)
@@ -184,7 +192,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			return mapping;
 		}
 
-		public Dictionary<string, object> GenerateImportFields(Dictionary<string, object> sourceFields, Dictionary<string, Field> mapping)
+		public Dictionary<string, object> GenerateImportFields(Dictionary<string, object> sourceFields, Dictionary<string, Field> mapping, NativeFileImportService nativeFileImportService)
 		{
 			Dictionary<string, object> importFields = new Dictionary<string, object>();
 
@@ -197,6 +205,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 					if (!importFields.ContainsKey(rdoField.Name))
 						importFields.Add(rdoField.Name, sourceFields[sourceFieldID]);
 				}
+			}
+			if (nativeFileImportService != null && nativeFileImportService.ImportNativeFiles)
+			{
+				importFields.Add(nativeFileImportService.DestinationFieldName, sourceFields[nativeFileImportService.SourceFieldName]);
 			}
 			return importFields;
 		}
@@ -224,6 +236,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			if (jobReport.FatalException != null)
 			{
 				ImportJob_OnError(jobReport.FatalException);
+				CompleteBatch(jobReport.StartTime, jobReport.EndTime, 0, 0);
 			}
 			else
 			{
@@ -257,6 +270,5 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				OnBatchComplete(start, end, totalRows, errorRows);
 			}
 		}
-
 	}
 }

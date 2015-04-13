@@ -8,7 +8,7 @@ var IP  = IP || {};
 	var self = this;
 	message.subscribe('submit', function () {
 		
-		var localModel = ko.toJS(pageModel);
+		var localModel = JSON.stringify(ko.toJS(pageModel));
 		this.publish("saveState", localModel); //save the model incase of error
 		this.publish('saveComplete', localModel);
 

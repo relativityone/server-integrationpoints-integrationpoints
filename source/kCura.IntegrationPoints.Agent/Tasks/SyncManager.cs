@@ -90,9 +90,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					};
 					job.JobDetails = _serializer.Serialize(details);
 				}
-				foreach (var batchStatuse in BatchStatus)
+				foreach (var batchStatus in BatchStatus)
 				{
-					batchStatuse.JobStarted(job);
+					batchStatus.JobStarted(job);
 				}
 				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
 				Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);

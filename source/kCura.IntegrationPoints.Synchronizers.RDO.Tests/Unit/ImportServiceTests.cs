@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 
 			//ACT
-			Dictionary<string, object> data = importService.GenerateImportFields(sourceFields, mapping);
+			Dictionary<string, object> data = importService.GenerateImportFields(sourceFields, mapping, null);
 
 
 			//ASSERT
@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 
 			//ACT
-			Exception ex = Assert.Throws<Exception>(()=> importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields));
+			Exception ex = Assert.Throws<Exception>(() => importService.ValidateAllMappedFieldsAreInWorkspace(fieldMapping, rdoAllFields));
 
 			Assert.That(ex.Message, Is.EqualTo("Missing mapped field IDs: 12, 13, 14, 15"));
 		}
