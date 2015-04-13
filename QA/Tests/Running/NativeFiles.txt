@@ -40,9 +40,11 @@
 | | ... | 2. Verify that the following Documents were imported:
 | | ... | - Native U. Two
 | | ... | - Test W. User
-| | ... | 3. Verify that the following files are attached to the Documents:
+| | ... | 3. Verify that the following Native files are attached to the Documents:
 | | ... | - Native U. Two: "Tumbleweed..."
 | | ... | - Test W. User: A picture with the heading "Contacts"
+| | [Teardown]		| Run the following manual steps:
+| | ...				| Delete All of the Documents in the Workspace
 
 
 | Files from Invalid locations
@@ -56,7 +58,7 @@
 | | ... | 1. Create an Integration Point with the following values:
 | | ... | - Destination RDO: Document
 | | ... | - Connection Path: ${ConnectionPath}
-| | ... | - Object Filter String: (department=Bad Native File)
+| | ... | - Object Filter String: (department=Wrong Native File)
 | | ... | - Authentication: ${Authentication}
 | | ... | - Mapping: Control Number	| cn
 | | ... | - Import Native File: Yes
@@ -64,11 +66,13 @@
 | | ... | 2. Import the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. The job triggers two Row Level Errors with the text "One of the files specified for this document does not exist"
+| | ... | 1. The job triggers two Row Level Errors with the text "- One of the files specified for this document does not exist"
 | | ... | 2. Verify that the following Documents were imported:
 | | ... | - Nonnative U. One
 | | ... | - Nonnative U. Two
 | | ... | 3. Verify that neither Document has a Native (Add "Has Native" column to the current Document View)
+| | [Teardown]		| Run the following manual steps:
+| | ...				| Delete All of the Documents in the Workspace
 
 
 | Files from both Valid and Invalid locations
@@ -91,7 +95,7 @@
 | | ... | 2. Import the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. The job triggers two Row Level Errors with the text "One of the files specified for this document does not exist"
+| | ... | 1. The job triggers two Row Level Errors with the text "- One of the files specified for this document does not exist"
 | | ... | 2. Verify that the following Documents were imported:
 | | ... | - Native U. Two
 | | ... | - Nonnative U. One
@@ -100,9 +104,11 @@
 | | ... | 3. Verify that neither of the following Documents has a Native (Add "Has Native" column to the current Document View)
 | | ... | - Nonnative U. One
 | | ... | - Nonnative U. Two
-| | ... | 4. Verify that the following files are attached to the Documents:
+| | ... | 4. Verify that the following Native files are attached to the Documents:
 | | ... | - Native U. Two: "Tumbleweed..."
 | | ... | - Test W. User: A picture with the heading "Contacts"
+| | [Teardown]		| Run the following manual steps:
+| | ...				| Delete All of the Documents in the Workspace
 
 
 | Commonly Invalid Relativity File Types
@@ -130,6 +136,8 @@
 | | ... | - DLL Native File
 | | ... | - EXE Native File
 | | ... | 3. Verify that they both have Natives (Add "Has Native" column to the current Document View)
+| | [Teardown]		| Run the following manual steps:
+| | ...				| Delete All of the Documents in the Workspace
 
 
 | With Empty Native File Path Value
@@ -154,6 +162,8 @@
 | | ... | 2. Verify that the following Documents were imported:	| # ???????????????????????????
 | | ... | - No Native
 | | ... | 3. Verify that they both have Natives (Add "Has Native" column to the current Document View)	| # ???????????????????????????
+| | [Teardown]		| Run the following manual steps:
+| | ...				| Delete All of the Documents in the Workspace
 
 
 | Off-site location with Permission
@@ -180,6 +190,8 @@
 | | ... | - Offsite Native Tester
 | | ... | 4. Verify that the following file is attached to the Document:
 | | ... | - A text file beginning with "1. Pillage, then burn." 
+| | [Teardown]		| Run the following manual steps:
+| | ...				| Delete All of the Documents in the Workspace
 
 
 | Off-site location without Permission
