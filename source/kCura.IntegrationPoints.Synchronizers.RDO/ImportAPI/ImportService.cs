@@ -89,7 +89,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		public virtual void KickOffImport(IDataReader dataReader)
 		{
-			ImportBulkArtifactJob importJob1 = _importAPI.NewNativeDocumentImportJob();
 			ImportBulkArtifactJob importJob = _importAPI.NewObjectImportJob(Settings.ArtifactTypeId);
 			importJob.SourceData.SourceData = dataReader;
 
