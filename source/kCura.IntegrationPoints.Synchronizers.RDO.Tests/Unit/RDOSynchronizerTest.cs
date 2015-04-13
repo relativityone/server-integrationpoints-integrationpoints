@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using kCura.Apps.Common.Config;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
@@ -16,7 +14,7 @@ using Assert = NUnit.Framework.Assert;
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 {
 	[TestFixture]
-	public class RdoSynchronizerTest
+	public class RDOSynchronizerTest
 	{
 		public static RdoSynchronizer ChangeWebAPIPath(RdoSynchronizer synchronizer)
 		{
@@ -24,7 +22,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			prop.SetValue(synchronizer, "Mock value");
 			return synchronizer;
 		}
-
+		
 		[Test]
 		public void GetRightCountOfFieldsWithSystemAndArtifactFeildsRemoved()
 		{
@@ -43,7 +41,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			options.ArtifactTypeId = 1268820;
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
-				 new Artifact {Name = "Name", ArtifactID = 1},
+				new Artifact {Name = "Name", ArtifactID = 1},
 				new Artifact {Name = "System Created On", ArtifactID = 2},
 				new Artifact {Name = "Date Modified On", ArtifactID = 3},
 				new Artifact {Name = "User", ArtifactID = 4},
@@ -58,7 +56,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			Assert.AreEqual(3, numberOfFields);
 		}
-
 
 		[Test]
 		public void GetRightDataInFieldsWithSystemAndArtifactFeildsRemoved()
@@ -89,7 +86,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				new FieldEntry {DisplayName = "User", FieldIdentifier = "4"},
 			};
 
-			
+
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
 			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
@@ -114,31 +111,30 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			//
 			var rdoQuery = NSubstitute.Substitute.For<RSAPIRdoQuery>(client);
 			rdoQuery.GetObjectType(Arg.Any<int>()).Returns(new ObjectType
-				 {
-					 ArtifactTypeID = 1,
-					 DescriptorArtifactTypeID = 1,
-					 Name = "Document"
-				 });
+			{
+				ArtifactTypeID = 1,
+				DescriptorArtifactTypeID = 1,
+				Name = "Document"
+			});
 			var options = new ImportSettings();
 			options.ArtifactTypeId = 1268820;
 			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
 			{
-				 new Artifact {Name = "Name", ArtifactID = 1},
+				new Artifact {Name = "Name", ArtifactID = 1},
 				new Artifact {Name = "Value", ArtifactID = 2},
 				new Artifact {Name = "Date Modified On", ArtifactID = 3},
 				new Artifact {Name = "User", ArtifactID = 4},
 				new Artifact {Name = "FirstName", ArtifactID = 5}
 			});
-			
+
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
 			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
 			var numberOfFields = rdoSyncronizer.GetFields(str).Count();
-			
+
 			//ASSERT
 			Assert.AreEqual(5, numberOfFields);
 		}
-
 
 		[Test]
 		public void GetRightDataInFields()
@@ -175,7 +171,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			var str = JsonConvert.SerializeObject(options);
 			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
 			var listOfFieldEntry = rdoSyncronizer.GetFields(str).ToList();
-			
+
 			//ASSERT
 			Assert.AreEqual(expectedFieldEntry.Count, listOfFieldEntry.Count);
 			for (var i = 0; i < listOfFieldEntry.Count; i++)
@@ -185,6 +181,174 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			}
 		}
 
+		[Test]
+		public void GetSyncDataImportSettings_NoNativeFileImport_CorrectResult()
+		{
+			//ARRANGE
+			IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
+			{
+				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
+				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
+				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
+			};
 
+			NativeFileImportService nativeFileImportService = new NativeFileImportService();
+			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222 });
+			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
+
+
+			//ACT
+			ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
+
+
+			//ASSERT
+			Assert.AreEqual(1111111, result.ArtifactTypeId);
+			Assert.AreEqual(2222222, result.CaseArtifactId);
+			Assert.AreEqual(4000001, result.IdentityFieldId);
+			Assert.AreEqual("SourceFld2", result.ParentObjectIdSourceFieldName);
+			Assert.AreEqual(ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, result.ImportNativeFileCopyMode);
+			Assert.IsNull(result.NativeFilePathSourceFieldName);
+			Assert.AreEqual("NATIVE_FILE_PATH_001", nativeFileImportService.DestinationFieldName);
+			Assert.IsNull(nativeFileImportService.SourceFieldName);
+			Assert.IsFalse(nativeFileImportService.ImportNativeFiles);
+		}
+
+		[Test]
+		public void GetSyncDataImportSettings_NativeFileImport_CorrectResult()
+		{
+			//ARRANGE
+			IEnumerable<FieldMap> fieldMap = new List<FieldMap>()
+			{
+				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000001"}, FieldMapType = FieldMapTypeEnum.Identifier, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}},
+				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000002"}, FieldMapType = FieldMapTypeEnum.Parent, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld2"}},
+				new FieldMap() {DestinationField = new FieldEntry(){FieldIdentifier = "4000003"}, FieldMapType = FieldMapTypeEnum.None, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld3"}},
+				new FieldMap() {DestinationField = null, FieldMapType = FieldMapTypeEnum.NativeFilePath, SourceField = new FieldEntry() {FieldIdentifier = "SourceFld4"}},
+			};
+
+			NativeFileImportService nativeFileImportService = new NativeFileImportService();
+			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222 });
+			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
+
+
+			//ACT
+			ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
+
+
+			//ASSERT
+			Assert.AreEqual(1111111, result.ArtifactTypeId);
+			Assert.AreEqual(2222222, result.CaseArtifactId);
+			Assert.AreEqual(4000001, result.IdentityFieldId);
+			Assert.AreEqual("SourceFld2", result.ParentObjectIdSourceFieldName);
+			Assert.AreEqual(ImportNativeFileCopyModeEnum.CopyFiles, result.ImportNativeFileCopyMode);
+			Assert.AreEqual("NATIVE_FILE_PATH_001", result.NativeFilePathSourceFieldName);
+			Assert.AreEqual("NATIVE_FILE_PATH_001", nativeFileImportService.DestinationFieldName);
+			Assert.AreEqual("SourceFld4", nativeFileImportService.SourceFieldName);
+			Assert.IsTrue(nativeFileImportService.ImportNativeFiles);
+		}
+
+		[Test]
+		public void IncludeFieldInImport_FieldMapTypeIsNone_True()
+		{
+			//ARRANGE
+			FieldMap fieldMap = new FieldMap()
+			{
+				DestinationField = new FieldEntry() { FieldIdentifier = "4000001" },
+				FieldMapType = FieldMapTypeEnum.None,
+				SourceField = new FieldEntry() { FieldIdentifier = "SourceFld1" }
+			};
+			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
+
+
+			//ACT
+			bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
+
+
+			//ASSERT
+			Assert.IsTrue(result);
+		}
+
+		[Test]
+		public void IncludeFieldInImport_FieldMapTypeIsParent_False()
+		{
+			//ARRANGE
+			FieldMap fieldMap = new FieldMap()
+			{
+				DestinationField = new FieldEntry() { FieldIdentifier = "4000001" },
+				FieldMapType = FieldMapTypeEnum.Parent,
+				SourceField = new FieldEntry() { FieldIdentifier = "SourceFld1" }
+			};
+			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
+
+
+			//ACT
+			bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
+
+
+			//ASSERT
+			Assert.IsFalse(result);
+		}
+
+		[Test]
+		public void IncludeFieldInImport_FieldMapTypeIsNativeFilePath_False()
+		{
+			//ARRANGE
+			FieldMap fieldMap = new FieldMap()
+			{
+				DestinationField = new FieldEntry(){FieldIdentifier = "4000001"},
+				FieldMapType = FieldMapTypeEnum.NativeFilePath, 
+				SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}
+			};
+			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
+
+
+			//ACT
+			bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
+
+
+			//ASSERT
+			Assert.IsFalse(result);
+		}
+
+		[Test]
+		public void IncludeFieldInImport_FieldMapTypeIsIdentifier_True()
+		{
+			//ARRANGE
+			FieldMap fieldMap = new FieldMap()
+			{
+				DestinationField = new FieldEntry() { FieldIdentifier = "4000001" },
+				FieldMapType = FieldMapTypeEnum.Identifier,
+				SourceField = new FieldEntry() { FieldIdentifier = "SourceFld1" }
+			};
+			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
+
+
+			//ACT
+			bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
+
+
+			//ASSERT
+			Assert.IsTrue(result);
+		}
+	
+	
+	}
+
+	public class TestRdoSynchronizer : kCura.IntegrationPoints.Synchronizers.RDO.RdoSynchronizer
+	{
+		public TestRdoSynchronizer()
+			: base(null, null)
+		{
+			WebAPIPath = "WebAPIPath";
+		}
+
+		public ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, string options, NativeFileImportService nativeFileImportService)
+		{
+			return base.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
+		}
+
+		public bool IncludeFieldInImport(FieldMap fieldMap)
+		{
+			return base.IncludeFieldInImport(fieldMap);
+		}
 	}
 }
