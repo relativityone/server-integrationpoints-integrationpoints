@@ -181,10 +181,10 @@ ko.validation.insertValidationMessage = function (element) {
 		this.nativeFilePathValue = ko.observableArray([]).extend({
 			required: {
 				onlyIf: function () {
-				
-					return self.importNativeFile() == 'true' || self.importNativeFile == true && self.showErrors();
+					debugger;
+					return (self.importNativeFile() == 'true' || self.importNativeFile == true) && self.showErrors();
 				},
-				message: 'The Native file path field must be mapped.',
+				message: 'The Native file path field is required.',
 			}
 
 		});
