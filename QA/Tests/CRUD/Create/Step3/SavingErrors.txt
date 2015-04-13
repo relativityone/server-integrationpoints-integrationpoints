@@ -48,9 +48,9 @@
 | When the Unique Identifier is not mapped the correct errors are triggered
 | | [Documentation]	| Verify that when the selected Unique Identifier is not in the Selected Workspace Field list and Save is clicked, 
 | | ...				| that the correct Card error and Page error are displayed.
-| | [Tags]			| automated
+| | [Tags]			| dap789	| automated
 | | [Setup]			| Require Test Case	| When the Unique Identifier is not mapped an Integration Point Cannot be Created
-| | Run Keyword and Continue on Failure	| Verify the current Method Page Error has the following Text	| Error: The unique identifier field, Owner Email, must be mapped.
+| | Run Keyword and Continue on Failure	| Verify the current Method Page Error has the following Text	| The unique identifier, Owner Email, must be mapped.
 | | Run Keyword and Continue on Failure	| Verify that the Field Mappings Card has the following Errors	| The unique identifier field must be mapped.
 
 
@@ -98,10 +98,10 @@
 | When the Object Identifier is not mapped the correct errors are triggered
 | | [Documentation]	| Verify that when the Object Identifier is not in the Selected Workspace Field list and Save is clicked, 
 | | ...				| that the correct Card error and Page error are displayed.
-| | [Tags]			| automated	| dao074	| dao221
+| | [Tags]			| dao074	| dao221	| dap789	| automated
 | | [Setup]			| Require Test Case	| When the Object Identifier is not mapped an Integration Point Cannot be Created
-| | Run Keyword and Continue on Failure	| Verify the current Method Page Error has the following Text	| Error: The unique identifier field, Name [Object Identifier], must be mapped.
-| | Run Keyword and Continue on Failure	| Verify that the Field Mappings Card has the following Errors	| The unique identifier field must be mapped.
+| | Run Keyword and Continue on Failure	| Verify the current Method Page Error has the following Text	| The object identifier, Name [Object Identifier], must be mapped.
+| | Run Keyword and Continue on Failure	| Verify that the Field Mappings Card has the following Errors	| The object identifier field must be mapped.
 
 
 | Saving Post Object Identifier validation works after adding the Object Identifier to the Selected Workspace List
@@ -244,7 +244,7 @@
 | Integration Points can be created when Parent Attribute is hidden
 | | [Documentation] | Verify that when the Parent Attribute list is hidden, that the Create Integration Point Process can be completed.
 | | ...				| [id] 10e61ca1-a89f-11e4-8dcb-b8ca3a83048f
-| | [Tags]			| automated
+| | [Tags]			| untested
 | | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint8}	| JobSchedule
 | | Map the Following Fields on the Integration Point Step 3 form	| 
 | | ... | Name [Object Identifier]	| name		| 
