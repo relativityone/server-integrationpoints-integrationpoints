@@ -75,9 +75,11 @@ IP.utils.createFields = function ($root, fields) {
 	var $tr = $root.parent('tr');
 	$.each(fields || [], function () {
 		var $newTr = $tr.clone();
-		var v = IP.utils.stringNullOrEmpty(this.value) ? '' : this.value;
-		IP.utils.updateField($newTr, this.key, v);
-		$newTr.find('input').attr('id', IP.utils.toCamelCase(this.key)).removeAttr('faartifactid').removeAttr('fafriendlyname');
+		var value = this.value || this.Value;
+		var key = this.key || this.Key;
+		var v = IP.utils.stringNullOrEmpty(value) ? '' : value;
+		IP.utils.updateField($newTr, key, v);
+		$newTr.find('input').attr('id', IP.utils.toCamelCase(key)).removeAttr('faartifactid').removeAttr('fafriendlyname');
 		$tr.after($newTr);
 		$tr = $newTr;
 	});
