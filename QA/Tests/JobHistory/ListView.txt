@@ -144,6 +144,57 @@
 | | ... | 2. Verify that you are on the correct Job
 
 
+| Error - Job Failed Counts are correct
+| | [Documentation] | Verifies that the Records Imported and Records with Errors fields are blank when a Job Fails.
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. Setup an RIP job to fail 
+| | ... | 2. Attempt to run the job
+| | ... |
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Job History
+| | ... | 2. Search for the failed RIP job
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the Records Imported value is blank.
+| | ... | 2. Verify that the Records with Errors value is blank.
+
+
+| Completed with errors Counts are correct
+| | [Documentation] | Verifies that the Records Imported and Records with Errors fields are correct when a Job runs with error.
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. Setup a RIP job to run with errors (e.g. Unique Identifier is set to Department and all Custodians have the same department)
+| | ... | 2. Run the job
+| | ... |
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Job History
+| | ... | 2. Search for the errored RIP job
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the Records Imported value is 1.
+| | ... | 2. Verify that the Records with Errors value is X-1, where X is the number of Custodians in the job.
+
+
+| Completed Counts are Correct
+| | [Documentation] | Verifies that 
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. Setup a RIP job to run without errors
+| | ... | 2. Run the job
+| | ... |
+| | ... | Steps:
+| | ... | 1. Go to the Tab	| Job History
+| | ... | 2. Search for the completed RIP job
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the Records Imported value is X, where X is the number of Custodians in the Job.
+| | ... | 2. Verify that the Records with Errors value is 0.
+
+
 *** Keywords ***
 
 | Verify that the View Dropdown only has the following Views
