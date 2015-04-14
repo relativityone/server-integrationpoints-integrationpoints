@@ -1,3 +1,4 @@
+
 *** Settings ***
 | Documentation 	| Verify that when Managers are imported and Custodian Manager Contains Link is set to Yes, that the Custodian records are created and linked to the Manager Custodians.
 | Metadata		    | Authors	| Daniel Oliver
@@ -5,6 +6,7 @@
 | Suite Setup		| Create Suite Setup Data
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
+
 
 *** Variables ***
 
@@ -26,79 +28,101 @@
 | ${Department}        | Managers
 | ${CustodianGrid}     | gbox_custodianGrid
 
+
 *** Test Cases ***
 
 | Manager names are shown on their Report's Custodian Detail View
-| | [Documentation] | Verify that an imported Custodian who has a manager is linked to the Manager on the Custodian Detail View
-| | ... | [id] b8e6c261-b605-11e4-aaf4-90b11c6c5ae4
-| | [Tags] | automated
+| | [Documentation] | Verify that an imported Custodian who has a manager is linked to the Manager on the Custodian Detail View.
+| | ...				| [id] b8e6c261-b605-11e4-aaf4-90b11c6c5ae4
+| | [Tags]			| automated
 | | Go to the Method Tab | Custodian
 | | View Custodian | ${Custodian1} 
 
-| | Verify the Custodian has the Following Manager | ${Manager1}
+| | Click Section Tab	| Detail
+| | Verify that the following Fields have the Following Values	| Manager:	| ${Manager1}
+
 
 | Managers that did not previously exist are Created
-| | [Documentation] | Verify that new Managers have their own Custodian record created
-| | ... | [id] bb77584f-b605-11e4-8ae0-90b11c6c5ae4
-| | [Tags] | automated
+| | [Documentation] | Verify that new Managers have their own Custodian record created.
+| | ...				| [id] bb77584f-b605-11e4-8ae0-90b11c6c5ae4
+| | [Tags]			| automated
 | | Go to the Method Tab | Custodian
 | | Filter the following Grid on the following Column by the following Value | ${CustodianGrid}  | Email | alphamanager@gameofholds.testing.corp
 
+| | Click Section Tab	| Detail
 | | Verify that the following Grid contains the following number of Rows | ${CustodianGrid}  | 1
 
+
 | Imported Managers have the correct name format on their own Custodian record
-| | [Documentation] | Verify that newly imported Managers have the correct name format on their own Custodian record
-| | ... | [id] bf3068b0-b605-11e4-8b69-90b11c6c5ae4
-| | [Tags] | automated 
+| | [Documentation] | Verify that newly imported Managers have the correct name format on their own Custodian record.
+| | ...				| [id] bf3068b0-b605-11e4-8b69-90b11c6c5ae4
+| | [Tags]			| automated 
 | | Go to the Method Tab | Custodian
 | | View Custodian | ${Manager1} 
 
-| | Verify the current Custodian's Details have the following values | Alpha	| Manager	| alphamanager@gameofholds.testing.corp	| ${Department}	| ${EMPTY}
+| | Click Section Tab	| Detail
+| | Verify that the following Fields have the Following Values	| 
+| | ... | First Name:	| Alpha			| 
+| | ... | Last Name:	| Manager		| 
+| | ... | Email:		| alphamanager@gameofholds.testing.corp	| 
+| | ... | Department:	| ${Department}	| 
+| | ... | Manager:		| ${EMPTY}
+
 
 | Existing Managers names are shown on their Report's Custodian Detail View
-| | [Documentation] | Verify that a Manager who already existed is linked to their Reports on the Custodian Detail View
-| | ... | [id] c28279de-b605-11e4-b74f-90b11c6c5ae4
-| | [Tags] | automated
+| | [Documentation] | Verify that a Manager who already existed is linked to their Reports on the Custodian Detail View.
+| | ...				| [id] c28279de-b605-11e4-b74f-90b11c6c5ae4
+| | [Tags]			| automated
 | | Go to the Method Tab | Custodian
 | | View Custodian | ${Custodian2} 
 
-| | Verify the Custodian has the Following Manager | ${Manager2}
+| | Click Section Tab	| Detail
+| | Verify that the following Fields have the Following Values	| Manager:	| ${Manager2}
+
 
 | Existing Custodians can become Managers to New Custodians
-| | [Documentation] | Verify that Existing Custodians can become Managers to New Custodians
-| | ... | [id] c7a41aee-b605-11e4-91e0-90b11c6c5ae4
-| | [Tags] | automated
+| | [Documentation] | Verify that Existing Custodians can become Managers to New Custodians.
+| | ...				| [id] c7a41aee-b605-11e4-91e0-90b11c6c5ae4
+| | [Tags]			| automated
 | | Go to the Method Tab | Custodian
 | | View Custodian | ${Custodian3} 
 
-| | Verify the Custodian has the Following Manager | ${Manager3}
+| | Click Section Tab	| Detail
+| | Verify that the following Fields have the Following Values	| Manager:	| ${Manager3}
+
 
 | Existing Custodians can become Managers of Existing Custodians
-| | [Documentation] | Verify that Existing Custodians can become Managers of Existing Custodians
-| | ... | [id] cab886de-b605-11e4-bdd1-90b11c6c5ae4
-| | [Tags] | automated
+| | [Documentation] | Verify that Existing Custodians can become Managers of Existing Custodians.
+| | ...				| [id] cab886de-b605-11e4-bdd1-90b11c6c5ae4
+| | [Tags]			| automated
 | | Go to the Method Tab | Custodian
 | | View Custodian | ${Custodian4} 
 
-| | Verify the Custodian has the Following Manager | ${Manager4}
+| | Click Section Tab	| Detail
+| | Verify that the following Fields have the Following Values	| Manager:	| ${Manager4}
+
 
 | Existing Custodians can be linked to Newly created Managers
-| | [Documentation] | Verify that Existing Custodians can be linked to Newly created Managers
-| | ... | [id] cf715400-b605-11e4-a0ec-90b11c6c5ae4
-| | [Tags] | automated
+| | [Documentation] | Verify that Existing Custodians can be linked to Newly created Managers.
+| | ...				| [id] cf715400-b605-11e4-a0ec-90b11c6c5ae4
+| | [Tags]			| automated
 | | Go to the Method Tab | Custodian
 | | View Custodian | ${Custodian5} 
 
-| | Verify the Custodian has the Following Manager | ${Manager1}
+| | Click Section Tab	| Detail
+| | Verify that the following Fields have the Following Values	| Manager:	| ${Manager1}
+
 
 | Existing Custodians can be given new existing Managers
-| | [Documentation] | Verify that Existing Custodians can be given new existing Managers
-| | ... | [id]  d20656c0-b605-11e4-8c82-90b11c6c5ae4
-| | [Tags] | automated
+| | [Documentation] | Verify that Existing Custodians can be given new existing Managers.
+| | ...				| [id]  d20656c0-b605-11e4-8c82-90b11c6c5ae4
+| | [Tags]			| automated
 | | Go to the Method Tab | Custodian
 | | View Custodian | ${Custodian6} 
 
-| | Verify the Custodian has the Following Manager | ${Manager7}
+| | Click Section Tab	| Detail
+| | Verify that the following Fields have the Following Values	| Manager:	| ${Manager7}
+
 
 *** Keywords *** 
 
@@ -177,10 +201,10 @@
 
 #-----------------------------------------------------------
 
-| | @{Step1Fields}  | Create list | ${IntegrationName} | Append/Overlay |
-| | ... | LDAP | Custodian | no
+| | @{Step1Fields}=	| Create list | ${IntegrationName} | Append/Overlay |
+| | ... | LDAP | Custodian | No
 
-| | @{Step2Fields}  | Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
+| | @{Step2Fields}=	| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
 | | ... | (department=${Department}) | FastBind | testing\\rellockdown | P@ssw0rd@1
 
 | | @{Step3Mapping}=	| Create List	|
@@ -195,9 +219,8 @@
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}  
 
-| | Go to the Method tab | Custodian
-
-| | [Teardown] | Drop connection to the relativity services api
+| | Go to the Method Tab | Custodian
+| | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
@@ -209,10 +232,12 @@
 | | Drop connection to the relativity services api
 | | Close All Browsers
 
+
 *** Settings ***
 | Library	| Collections
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
+| Resource	| ${METHOD_KEYWORD_DIR}/FormKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/GridKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
