@@ -133,7 +133,7 @@
 | | ... |				OR Field.FieldCategoryID = 8 )
 | | ... |		AND Field.ArtifactID != ${DocumentQCStatusFieldArtifactID[0][0]} 
 | | ... |		AND NOT (Field.FieldCategoryID = 1 AND Field.AssociativeArtifactTypeID = 10)
-| | ... |		OR Field.DisplayName = 'Extracted Text'
+| | ... |		OR (Field.DisplayName = 'Extracted Text' AND ${artifactTypeID[0][0]} = 10)
 | | ... |       ) t
 | | ... | WHERE ((t.isSpecial=0) OR (t.isSpecial=1 AND t.IsDynamic = 1)) AND (NOT t.FieldCategoryID IN(15,14,10,7,8,6,12))
 | | ... | ORDER BY DisplayName
