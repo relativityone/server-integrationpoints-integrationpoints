@@ -208,6 +208,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			Assert.AreEqual("SourceFld2", result.ParentObjectIdSourceFieldName);
 			Assert.AreEqual(ImportNativeFileCopyModeEnum.DoNotImportNativeFiles, result.ImportNativeFileCopyMode);
 			Assert.IsNull(result.NativeFilePathSourceFieldName);
+			Assert.IsFalse(result.DisableNativeLocationValidation.HasValue);
+			Assert.IsFalse(result.DisableNativeValidation.HasValue);
 			Assert.AreEqual("NATIVE_FILE_PATH_001", nativeFileImportService.DestinationFieldName);
 			Assert.IsNull(nativeFileImportService.SourceFieldName);
 			Assert.IsFalse(nativeFileImportService.ImportNativeFiles);
@@ -240,6 +242,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			Assert.AreEqual(4000001, result.IdentityFieldId);
 			Assert.AreEqual("SourceFld2", result.ParentObjectIdSourceFieldName);
 			Assert.AreEqual(ImportNativeFileCopyModeEnum.CopyFiles, result.ImportNativeFileCopyMode);
+			Assert.IsFalse(result.DisableNativeLocationValidation.Value);
+			Assert.IsFalse(result.DisableNativeValidation.Value);
 			Assert.AreEqual("NATIVE_FILE_PATH_001", result.NativeFilePathSourceFieldName);
 			Assert.AreEqual("NATIVE_FILE_PATH_001", nativeFileImportService.DestinationFieldName);
 			Assert.AreEqual("SourceFld4", nativeFileImportService.SourceFieldName);
@@ -339,6 +343,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			: base(null, null)
 		{
 			WebAPIPath = "WebAPIPath";
+			DisableNativeLocationValidation = false;
+			DisableNativeValidation = false;
 		}
 
 		public ImportSettings GetSyncDataImportSettings(IEnumerable<FieldMap> fieldMap, string options, NativeFileImportService nativeFileImportService)

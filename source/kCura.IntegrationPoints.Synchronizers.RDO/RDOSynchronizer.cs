@@ -143,6 +143,33 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			protected set { _webAPIPath = value; }
 		}
 
+		private bool? _disableNativeLocationValidation;
+		public bool? DisableNativeLocationValidation
+		{
+			get
+			{
+				if (!_disableNativeLocationValidation.HasValue)
+				{
+					_disableNativeLocationValidation = Config.DisableNativeLocationValidation;
+				}
+				return _disableNativeLocationValidation;
+			}
+			protected set { _disableNativeLocationValidation = value; }
+		}
+
+		private bool? _disableNativeValidation;
+		public bool? DisableNativeValidation
+		{
+			get
+			{
+				if (!_disableNativeValidation.HasValue)
+				{
+					_disableNativeValidation = Config.DisableNativeValidation;
+				}
+				return _disableNativeValidation;
+			}
+			protected set { _disableNativeValidation = value; }
+		}
 		protected virtual ImportService InitializeImportService(ImportSettings settings, Dictionary<string, int> importFieldMap, NativeFileImportService nativeFileImportService)
 		{
 			ImportService importService = new ImportService(settings, importFieldMap, new BatchManager(), nativeFileImportService, new ImportApiFactory());
@@ -183,6 +210,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				nativeFileImportService.SourceFieldName = fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath).SourceField.FieldIdentifier;
 				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
 				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles;
+				settings.DisableNativeLocationValidation = this.DisableNativeLocationValidation;
+				settings.DisableNativeValidation = this.DisableNativeValidation;
 			}
 			return settings;
 		}

@@ -15,5 +15,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			get { return ConfigHelper.GetValue(ConfigSettings["WebAPIPath"], string.Empty); }
 		}
+
+		public static bool DisableNativeLocationValidation
+		{
+			get { return ConfigHelper.GetValue<bool>(ConfigSettings["DisableNativeLocationValidation"], false); }
+		}
+
+		public static bool DisableNativeValidation
+		{
+			get { return ConfigHelper.GetValue<bool>(ConfigSettings["DisableNativeValidation"], false); }
+		}
 	}
 }
