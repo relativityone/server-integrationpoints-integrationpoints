@@ -42,7 +42,7 @@
 | Nested Managers are Imported
 | | [Documentation] | Verify that Managers in a nested folder are imported.
 | | ...				| [id] d9bdbdde-b605-11e4-b062-90b11c6c5ae4
-| | [Tags]			| manual1 
+| | [Tags]			| automated
 | | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name	| ${NestedManager} 
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
@@ -50,8 +50,8 @@
 
 | Managers are Imported when they do not reside in the current Folder Branch
 | | [Documentation] | Verify that Managers are Imported when they reside outside of the connection path folder or sub-folders.
-| | ... | [id] dc2b898f-b605-11e4-bfb4-90b11c6c5ae4
-| | [Tags] | manual1 
+| | ...				| [id] dc2b898f-b605-11e4-bfb4-90b11c6c5ae4
+| | [Tags]			| manual
 | | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name	| ${AnotherFolderManager} 
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
@@ -60,7 +60,7 @@
 | Managers are Imported when they do not met the Object Filter String
 | | [Documentation] | Verify that Managers are Imported when they would normally be excluded due to a non-matching Object Filter String.
 | | ...				| [id] df7a8d80-b605-11e4-9c30-90b11c6c5ae4
-| | [Tags]			| manual1
+| | [Tags]			| manual
 | | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name	| ${RootManager} 
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
