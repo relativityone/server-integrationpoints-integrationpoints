@@ -14,8 +14,8 @@
 | ${WorkspaceName}		| LDAP Sync
 | ${IntegrationPoint1}	| Integration Point 1	| # Enable Scheduler is set to No
 | ${IntegrationPoint2}	| Integration Point 2	| # Daily Schedule
-| ${IntegrationPoint2}	| Integration Point 3	| # Weekly Schedule
-| ${IntegrationPoint2}	| Integration Point 4	| # Monthly Schedule
+| ${IntegrationPoint3}	| Integration Point 3	| # Weekly Schedule
+| ${IntegrationPoint4}	| Integration Point 4	| # Monthly Schedule
 | ${ConnectionPath}		| testing.corp/CN=Users,DC=testing,DC=corp
 | ${ObjectFilterString}	| (department=*)
 | ${Authentication}		| FastBind
@@ -35,7 +35,7 @@
 
 | The Integration Point Read page has the correct Layouts
 | | [Documentation]	| Verify that the Integration Point Read page has only the "Integration Point Details" Layout. 
-| | ...				| 
+
 | | [Tags]			| automated
 | | Verify that the Layout Dropdown only has the following Layouts	| Integration Point Details
 
@@ -74,9 +74,9 @@
 | | ... | - Overwrite		| 
 | | ... | - Source Provider	| 
 | | ... | - Destination RDO	| 
-| | ... | - Log Errors
+| | ... | - Log Errors      | 
+| | ... | - Email Notification Recipients
 | | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
-| | ... | - Job Status						|
 | | ... | - Next Scheduled Runtime (UTC)	| 
 | | ... | - Last Runtime (UTC)
 | | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
@@ -106,9 +106,9 @@
 | | ... | - Overwrite		| 
 | | ... | - Source Provider	| 
 | | ... | - Destination RDO	| 
-| | ... | - Log Errors
+| | ... | - Log Errors      | 
+| | ... | - Email Notification Recipients
 | | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
-| | ... | - Job Status						|
 | | ... | - Next Scheduled Runtime (UTC)	| 
 | | ... | - Last Runtime (UTC)
 | | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
@@ -124,6 +124,34 @@
 | | ... | - Username				| 
 | | ... | - Password				| 
 | | ... | - Import Nested Items
+
+
+| The Password Field shows six asterixes when not populated
+| | [Documentation]	| Verify that the Password field in the Source Connection Category is shown as "******" when no value was entered during creation.
+| | [Tags]			| automated
+| | [Setup]			| View Integration Point	| ${IntegrationPoint2}
+| | Verify that the following Field has the Following Value	| Password:	| ******
+
+
+| The Password Field shows six asterixes when populated
+| | [Documentation]	| Verify that the Password field in the Source Connection Category is shown as "******" when a value was entered during creation.
+| | [Tags]			| automated
+| | [Setup]			| View Integration Point	| ${IntegrationPoint1}
+| | Verify that the following Field has the Following Value	| Password:	| ******
+
+
+| The Object Filter String Field shows (objectClass=*) when not populated
+| | [Documentation]	| Verify that the Object Filter String field in the Source Connection Category is shown as "(objectClass=*)" when no value was entered during creation.
+| | [Tags]			| automated
+| | [Setup]			| View Integration Point	| ${IntegrationPoint2}
+| | Verify that the following Field has the Following Value	| Object Filter String:	| (objectClass=*)
+
+
+| The Object Filter String Field shows the correct value when populated
+| | [Documentation]	| Verify that the Object Filter String field in the Source Connection Category is shown as the value that was entered during creation.
+| | [Tags]			| automated
+| | [Setup]			| View Integration Point	| ${IntegrationPoint1}
+| | Verify that the following Field has the Following Value	| Object Filter String:	| ${ObjectFilterString}
 
 
 | All Fields are present when Frequency is set to Weekly
@@ -252,35 +280,6 @@
 | | ... | - Username				| 
 | | ... | - Password				| 
 | | ... | - Import Nested Items
-
-
-| The Password Field shows six asterixes when not populated
-| | [Documentation]	| Verify that the Password field in the Source Connection Category is shown as "******" when no value was entered during creation.
-| | [Tags]			| automated
-| | [Setup]			| View Integration Point	| ${IntegrationPoint2}
-| | Verify that the following Field has the Following Value	| Password:	| ******
-
-
-| The Password Field shows six asterixes when populated
-| | [Documentation]	| Verify that the Password field in the Source Connection Category is shown as "******" when a value was entered during creation.
-| | [Tags]			| automated
-| | [Setup]			| View Integration Point	| ${IntegrationPoint1}
-| | Verify that the following Field has the Following Value	| Password:	| ******
-
-
-| The Object Filter String Field shows (objectClass=*) when not populated
-| | [Documentation]	| Verify that the Object Filter String field in the Source Connection Category is shown as "(objectClass=*)" when no value was entered during creation.
-| | [Tags]			| automated
-| | [Setup]			| View Integration Point	| ${IntegrationPoint2}
-| | Verify that the following Field has the Following Value	| Object Filter String:	| (objectClass=*)
-
-
-| The Object Filter String Field shows the correct value when populated
-| | [Documentation]	| Verify that the Object Filter String field in the Source Connection Category is shown as the value that was entered during creation.
-| | [Tags]			| automated
-| | [Setup]			| View Integration Point	| ${IntegrationPoint1}
-| | Verify that the following Field has the Following Value	| Object Filter String:	| ${ObjectFilterString}
-
 
 *** Keywords ***
 

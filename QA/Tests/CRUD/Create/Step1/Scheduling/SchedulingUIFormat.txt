@@ -23,7 +23,7 @@
 | The Import Scheduling Section's Fields are ordered correctly when no Frequency is selected
 | | [Documentation] | Verify that the Import Scheduling fields are correctly order when no Frequency has been selected.
 | | ...				| [id] 0fd6cf80-a89f-11e4-9059-b8ca3a83048f
-| | [Tags]			| golden	| automated
+| | [Tags]			| golden	| automated1
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
 | | Verify that the following Card contains the following fields	| Import Scheduling	| 
@@ -31,7 +31,7 @@
 | | ... | Frequency:		| 
 | | ... | Start Date:		| 
 | | ... | End Date:			| 
-| | ... | Scheduled Time:	
+| | ... | Scheduled Time:\n (local)
 
 
 | The Import Scheduling Section's Fields are ordered correctly when Frequency is set to Daily
@@ -45,7 +45,7 @@
 | | ... | Frequency:		| 
 | | ... | Start Date:		| 
 | | ... | End Date:			| 
-| | ... | Scheduled Time:
+| | ... | Scheduled Time:\n (local)
 
 
 | The Import Scheduling Section's Fields are ordered correctly when Frequency is set to Weekly
@@ -61,7 +61,7 @@
 | | ... | Send On:			| 
 | | ... | Start Date:		| 
 | | ... | End Date:			| 
-| | ... | Scheduled Time:
+| | ... | Scheduled Time:\n (local)
 
 
 | The Import Scheduling Section's Fields are ordered correctly when when Frequency is set to Monthly
@@ -77,7 +77,7 @@
 | | ... | Send On:			| 
 | | ... | Start Date:		| 
 | | ... | End Date:			| 
-| | ... | Scheduled Time:
+| | ... | Scheduled Time:\n (local)
 
 
 | The Start Date field's Placeholder text is correct
