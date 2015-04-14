@@ -37,6 +37,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
     <OutputPath>bin\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <PlatformTarget>x64</PlatformTarget>
@@ -88,8 +90,11 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Unit\BatchManagerTests.cs" />
+    <Compile Include="Unit\ImportServiceTests.cs" />
     <Compile Include="Unit\ImportSettingsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\RDOCustodianSynchronizerTests.cs" />
+    <Compile Include="Unit\RDOSynchronizerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
@@ -116,9 +121,6 @@
   <ItemGroup>
     <None Include="Integration\RDOSynchronizerTest.cs" />
     <None Include="packages.config" />
-    <None Include="Unit\ImportServiceTests.cs" />
-    <None Include="Unit\RDOCustodianSynchronizerTests.cs" />
-    <None Include="Unit\RDOSynchronizerTest.cs" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

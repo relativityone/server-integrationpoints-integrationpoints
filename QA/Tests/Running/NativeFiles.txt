@@ -18,6 +18,7 @@
 *** Test Cases ***
 
 | Files from multiple Valid locations
+| | [Documentation]	| Verify that when multiple documents are imported, each with a valid native file path, it works correctly.
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. The Test Files have been moved to the Testing Environment (if not, then instructions are in the keywords)
@@ -39,12 +40,15 @@
 | | ... | 2. Verify that the following Documents were imported:
 | | ... | - Native U. Two
 | | ... | - Test W. User
-| | ... | 3. Verify that the following files are attached to the Documents:
+| | ... | 3. Verify that the following Native files are attached to the Documents:
 | | ... | - Native U. Two: "Tumbleweed..."
 | | ... | - Test W. User: A picture with the heading "Contacts"
+| | [Teardown]		| Run the following manual steps:
+| | ...				| Delete All of the Documents in the Workspace
 
 
 | Files from Invalid locations
+| | [Documentation]	| Verify that when multiple documents are imported, each with an invalid native file path, it fails correctly.
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. The Test Files have been moved to the Testing Environment (if not, then instructions are in the keywords)
@@ -54,7 +58,7 @@
 | | ... | 1. Create an Integration Point with the following values:
 | | ... | - Destination RDO: Document
 | | ... | - Connection Path: ${ConnectionPath}
-| | ... | - Object Filter String: (department=Bad Native File)
+| | ... | - Object Filter String: (department=Wrong Native File)
 | | ... | - Authentication: ${Authentication}
 | | ... | - Mapping: Control Number	| cn
 | | ... | - Import Native File: Yes
@@ -62,14 +66,17 @@
 | | ... | 2. Import the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. The job triggers two Row Level Errors with the text "One of the files specified for this document does not exist"
-| | ... | 2. Verify that the following Documents were imported:
+| | ... | 1. The job triggers two Row Level Errors with the text "- One of the files specified for this document does not exist"
+| | ... | 2. Verify that the following Documents were NOT imported:
 | | ... | - Nonnative U. One
 | | ... | - Nonnative U. Two
-| | ... | 3. Verify that neither Document has a Native (Add "Has Native" column to the current Document View)
+| | [Teardown]		| Run the following manual steps:
+| | ...				| Delete All of the Documents in the Workspace
 
 
 | Files from both Valid and Invalid locations
+| | [Documentation]	| Verify that when multiple documents are imported, some with an invalid native file path 
+| | ...				| and some with a valid file path, it fails correctly.
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. The Test Files have been moved to the Testing Environment (if not, then instructions are in the keywords)
@@ -87,21 +94,24 @@
 | | ... | 2. Import the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. The job triggers two Row Level Errors with the text "One of the files specified for this document does not exist"
-| | ... | 2. Verify that the following Documents were imported:
+| | ... | 1. The job triggers two Row Level Errors with the text "- One of the files specified for this document does not exist"
+| | ... | 2. Verify that the following Documents were NOT imported:
+| | ... | - Nonnative U. One
+| | ... | - Nonnative U. Two
+| | ... | 3. Verify that the following Documents were imported:
 | | ... | - Native U. Two
-| | ... | - Nonnative U. One
-| | ... | - Nonnative U. Two
 | | ... | - Test W. User
-| | ... | 3. Verify that neither of the following Documents has a Native (Add "Has Native" column to the current Document View)
-| | ... | - Nonnative U. One
-| | ... | - Nonnative U. Two
-| | ... | 4. Verify that the following files are attached to the Documents:
+| | ... | 4. Verify that the following Native files are attached to the Documents:
 | | ... | - Native U. Two: "Tumbleweed..."
 | | ... | - Test W. User: A picture with the heading "Contacts"
+| | [Teardown]		| Run the following manual steps:
+| | ...				| Delete All of the Documents in the Workspace
 
 
 | Commonly Invalid Relativity File Types
+| | [Documentation]	| Verify that when multiple documents are imported, each with a valid native file path pointing
+| | ...				| to a file that is not allowed in other places in RLH, it works correctly.
+| | [Tags]			| dap801
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. The Test Files have been moved to the Testing Environment (if not, then instructions are in the keywords)
@@ -124,6 +134,8 @@
 | | ... | - DLL Native File
 | | ... | - EXE Native File
 | | ... | 3. Verify that they both have Natives (Add "Has Native" column to the current Document View)
+| | [Teardown]		| Run the following manual steps:
+| | ...				| Delete All of the Documents in the Workspace
 
 
 | With Empty Native File Path Value
@@ -144,13 +156,19 @@
 | | ... | 2. Import the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the job completed without errors		| # ???????????????????????????
-| | ... | 2. Verify that the following Documents were imported:	| # ???????????????????????????
+| | ... | 1. Verify that the job completed without errors
+| | ... | 2. Verify that the following Documents were imported:
 | | ... | - No Native
-| | ... | 3. Verify that they both have Natives (Add "Has Native" column to the current Document View)	| # ???????????????????????????
+| | ... | - Has Native
+| | ... | 3. Verify that they only "Has Native" has a Natives (Add "Has Native" column to the current Document View)
+| | ... | 4. Verify that the following Native files are attached to the Documents:
+| | ... | - Has Native: "THE LAWS OF TABLE TENNIS"
+| | [Teardown]		| Run the following manual steps:
+| | ...				| Delete All of the Documents in the Workspace
 
 
 | Off-site location with Permission
+| | [Documentation]	| Verify that when a document is imported that has a native file path pointing to a different environment, it imports correctly.
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. The Test Files have been moved to a second Environment (if not, then instructions are in the keywords)
@@ -160,7 +178,7 @@
 | | ... | 1. Create an Integration Point with the following values:
 | | ... | - Destination RDO: Document
 | | ... | - Connection Path: ${ConnectionPath}
-| | ... | - Object Filter String: (department=No Native File Attached)
+| | ... | - Object Filter String: (department=Off Site Native)
 | | ... | - Authentication: ${Authentication}
 | | ... | - Mapping: Control Number	| cn
 | | ... | - Import Native File: Yes
@@ -173,6 +191,8 @@
 | | ... | - Offsite Native Tester
 | | ... | 4. Verify that the following file is attached to the Document:
 | | ... | - A text file beginning with "1. Pillage, then burn." 
+| | [Teardown]		| Run the following manual steps:
+| | ...				| Delete All of the Documents in the Workspace
 
 
 | Off-site location without Permission
@@ -213,6 +233,8 @@
 | | ... | - EXE Native File		| \\[Server Name]\Various Testing Files\Test.exe
 | | ... | - Nonnative U. One	| \\[Server Name]\Various Testing Files\File.txt
 | | ... | - Nonnative U. Two	| \\[Server Name]\Various Testing Files\Fake File.txt
+| | ... | - Has Native			| \\[Server Name]\Various Testing Files\THE LAWS OF TABLE TENNIS.docx
+| | ... | - No Native			| EMPTY
 
 | Move the Test Files to an Environment beside the Testing Environment
 | | Run the following manual steps:

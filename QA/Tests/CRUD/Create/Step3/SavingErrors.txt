@@ -50,8 +50,7 @@
 | | ...				| that the correct Card error and Page error are displayed.
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| When the Unique Identifier is not mapped an Integration Point Cannot be Created
-| | Run Keyword and Continue on Failure	| Verify the current Method Page Error has the following Text	| Error: The unique identifier field, Owner Email, must be mapped.
-| | Run Keyword and Continue on Failure	| Verify that the Field Mappings Card has the following Errors	| The unique identifier field must be mapped.
+| | Verify the current Method Page Error has the following Text	| The unique identifier, Owner Email, must be mapped.
 
 
 | Saving Post Unique Identifier validation works after adding the Unique Identifier to the Selected Workspace List
@@ -98,10 +97,9 @@
 | When the Object Identifier is not mapped the correct errors are triggered
 | | [Documentation]	| Verify that when the Object Identifier is not in the Selected Workspace Field list and Save is clicked, 
 | | ...				| that the correct Card error and Page error are displayed.
-| | [Tags]			| automated	| dao074	| dao221
+| | [Tags]			| dao074	| dao221	| automated
 | | [Setup]			| Require Test Case	| When the Object Identifier is not mapped an Integration Point Cannot be Created
-| | Run Keyword and Continue on Failure	| Verify the current Method Page Error has the following Text	| Error: The unique identifier field, Name [Object Identifier], must be mapped.
-| | Run Keyword and Continue on Failure	| Verify that the Field Mappings Card has the following Errors	| The unique identifier field must be mapped.
+| | Verify the current Method Page Error has the following Text	| The object identifier, Name [Object Identifier], must be mapped.
 
 
 | Saving Post Object Identifier validation works after adding the Object Identifier to the Selected Workspace List
@@ -255,7 +253,7 @@
 
 | Integration Points can be created when Import Native Path is hidden
 | | [Documentation] | Verify that when the Import Native Path list is hidden, that the Create Integration Point Process can be completed.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint9}	| Document
 | | Map the Following Fields on the Integration Point Step 3 form	| 
 | | ... | Control Number [Object Identifier]	| objectguid
@@ -265,43 +263,33 @@
 
 | Integration Points cannot be created when Import Native Path is set to Select...
 | | [Documentation] | Verify that when the Import Native Path list is set to "Select...", that the Create Integration Point Process cannot be completed.
-| | [Tags]			| untested	| required
+| | [Tags]			| automated	| required
 | | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint10}	| Document
 | | Map the Following Fields on the Integration Point Step 3 form	| 
 | | ... | Control Number [Object Identifier]	| objectguid	| 
 | | ... | Imaging Set							| name
 | | Select Radio Button	| ${Import Native Files Radio Buttons}	| true	| # true = Yes
 | | Click	| Save
-################################################################
+| | Verify the following Integration Point Field has the following Error	| ${Native File Path List}	| The Native file path field is required.
 
 
 | Integration Points can be created after the Import Native Path Dropdown validation
 | | [Documentation] | Verify that after an Import Native Path list validation message is triggered, that the Import Native Path value can be set and the Integration Point saved.
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | [Setup]			| Require Test Case	| Integration Points cannot be created when Import Native Path is set to Select...
 | | Select from Select2 Dropdown	| ${Native File Path List}	| name
 | | Click	| Save
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint10}
 
 
-| Integration Points cannot be created when the Import Native Path is not Mapped
-| | [Documentation] | Verify that when the Import Native Path value is not mapped, that the Create Integration Point Process cannot be completed.
-| | [Tags]			| untested	| required
+| Integration Points can be created when the Import Native Path is not Mapped
+| | [Documentation] | Verify that when the Import Native Path value is not mapped, that the Create Integration Point Process can still be completed.
+| | [Tags]			| automated
 | | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint11}	| Document
 | | Map the Following Fields on the Integration Point Step 3 form	| 
 | | ... | Control Number [Object Identifier]	| objectguid
 | | Select Radio Button	| ${Import Native Files Radio Buttons}	| true	| # true = Yes
 | | Select from Select2 Dropdown	| ${Native File Path List}	| name
-| | Click	| Save
-################################################################
-
-
-| Integration Points can be created after the Import Native Path Mapping validation
-| | [Documentation] | Verify that after an Import Native Path mapping validation message is triggered, that the Import Native Path value can be mapped and the Integration Point saved.
-| | [Tags]			| untested
-| | [Setup]			| Require Test Case	| Integration Points cannot be created when the Import Native Path is not Mapped
-| | Map the Following Fields on the Integration Point Step 3 form	| 
-| | ... | Imaging Set							| name
 | | Click	| Save
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint11}
 

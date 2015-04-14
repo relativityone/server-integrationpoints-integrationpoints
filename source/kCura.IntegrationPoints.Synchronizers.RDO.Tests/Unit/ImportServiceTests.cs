@@ -4,7 +4,6 @@ using System.Linq;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using NUnit.Framework;
-using Relativity;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 {
@@ -40,7 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				{"sourceField7",GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null, null);
+			ImportService importService = new ImportService(null, null, null, null, null);
 
 
 			//ACT
@@ -61,6 +60,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			Assert.AreEqual(fieldValue5, data["F5"]);
 		}
 
+		#region ValidateAllMappedFieldsAreInWorkspace
 		[Test]
 		public void ValidateAllMappedFieldsAreInWorkspace_AllFieldsMatch()
 		{
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				{7,GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null, null);
+			ImportService importService = new ImportService(null, null, null, null, null);
 
 
 			//ACT
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				{7,GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null, null);
+			ImportService importService = new ImportService(null, null, null, null, null);
 
 
 			//ACT
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				{7,GetFieldObject(7,"F7")},
 			};
 
-			ImportService importService = new ImportService(null, null, null, null);
+			ImportService importService = new ImportService(null, null, null, null, null);
 
 
 			//ACT
@@ -157,6 +157,114 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			Assert.That(ex.Message, Is.EqualTo("Missing mapped field IDs: 13, 14, 15"));
 		}
+		#endregion
+
+
+
+		#region GenerateImportFields
+		[Test]
+		public void GenerateImportFields_NativeFileImportServiceIsNull_CorrectResult()
+		{
+			//ARRANGE
+			Dictionary<string, object> fieldMapping = new Dictionary<string, object>(){
+				{"sourceField1", "ABC"},
+				{"sourceField2", 123},
+				{"sourceField3", DateTime.MaxValue},
+				{"sourceField4", true},
+				{"MyPath", "\\\\Server1\\path1\\file1"}
+			};
+			Dictionary<string, Field> mapping = new Dictionary<string, Field>()			{
+				{"sourceField1",GetFieldObject(111,"F1")},
+				{"sourceField2",GetFieldObject(222,"F2")},
+				{"sourceField4",GetFieldObject(444,"F4")}
+			};
+			NativeFileImportService nativeFileImportService = null;
+
+			ImportService importService = new ImportService(null, null, null, null, null);
+
+
+			//ACT
+			Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping, nativeFileImportService);
+
+
+			Assert.AreEqual(3, result.Count);
+			Assert.AreEqual("ABC", result["F1"]);
+			Assert.AreEqual(123, result["F2"]);
+			Assert.AreEqual(true, result["F4"]);
+		}
+
+		[Test]
+		public void GenerateImportFields_NativeFileImportServiceIsFalse_CorrectResult()
+		{
+			//ARRANGE
+			Dictionary<string, object> fieldMapping = new Dictionary<string, object>(){
+				{"sourceField1", "ABC"},
+				{"sourceField2", 123},
+				{"sourceField3", DateTime.MaxValue},
+				{"sourceField4", true},
+				{"MyPath", "\\\\Server1\\path1\\file1"}
+			};
+			Dictionary<string, Field> mapping = new Dictionary<string, Field>()			{
+				{"sourceField1",GetFieldObject(111,"F1")},
+				{"sourceField2",GetFieldObject(222,"F2")},
+				{"sourceField4",GetFieldObject(444,"F4")}
+			};
+			NativeFileImportService nativeFileImportService = new NativeFileImportService()
+			{
+				ImportNativeFiles = false
+			};
+
+			ImportService importService = new ImportService(null, null, null, null, null);
+
+
+			//ACT
+			Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping, nativeFileImportService);
+
+
+			Assert.AreEqual(3, result.Count);
+			Assert.AreEqual("ABC", result["F1"]);
+			Assert.AreEqual(123, result["F2"]);
+			Assert.AreEqual(true, result["F4"]);
+		}
+
+		[Test]
+		public void GenerateImportFields_NativeFileImportServiceIsTrue_CorrectResult()
+		{
+			//ARRANGE
+			Dictionary<string, object> fieldMapping = new Dictionary<string, object>(){
+				{"sourceField1", "ABC"},
+				{"sourceField2", 123},
+				{"sourceField3", DateTime.MaxValue},
+				{"sourceField4", true},
+				{"MyPath", "\\\\Server1\\path1\\file1"}
+			};
+			Dictionary<string, Field> mapping = new Dictionary<string, Field>()			{
+				{"sourceField1",GetFieldObject(111,"F1")},
+				{"sourceField2",GetFieldObject(222,"F2")},
+				{"sourceField4",GetFieldObject(444,"F4")}
+			};
+			NativeFileImportService nativeFileImportService = new NativeFileImportService()
+			{
+				ImportNativeFiles = true,
+				SourceFieldName = "MyPath"
+			};
+
+			ImportService importService = new ImportService(null, null, null, null, null);
+
+
+			//ACT
+			Dictionary<string, object> result = importService.GenerateImportFields(fieldMapping, mapping, nativeFileImportService);
+
+
+			Assert.AreEqual(4, result.Count);
+			Assert.AreEqual("ABC", result["F1"]);
+			Assert.AreEqual(123, result["F2"]);
+			Assert.AreEqual(true, result["F4"]);
+			Assert.AreEqual("\\\\Server1\\path1\\file1", result[nativeFileImportService.DestinationFieldName]);
+		}
+		#endregion
+
+
 
 		private Field GetFieldObject(int artifactID, string name, Guid? guid = null)
 		{
