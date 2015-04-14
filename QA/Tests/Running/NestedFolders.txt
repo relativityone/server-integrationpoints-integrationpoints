@@ -12,10 +12,11 @@
 
 | ${WorkspaceName}			| LDAP Sync
 | ${IntegrationName}		| Nested Folders
-| ${RootCustodian}			| Nest, Rat
-| ${NestedCustodian}		| Nest, Bird
+| ${RootCustodian}			| Nest, Rat		| # Manager is ${NestedManager}
+| ${RootCustodian2}			| Nest, Cat		| # Manager is ${AnotherFolderManager}
+| ${NestedCustodian}		| Nest, Bird	| # Manager is ${RootManager}
 | ${NestedManager}			| Manager, Middle
-| ${AnotherFolderManager}	| Manager, AnotherFolder
+| ${AnotherFolderManager}	| Manager, Another Folder
 | ${RootManager}			| Manager, Top
 | ${Custodians Grid}	| gbox_custodianGrid
 
@@ -28,7 +29,6 @@
 | | [Tags]			| automated
 | | Go to the Method Tab	| Custodian
 | | Filter the following Grid on the following Column by the following Value	| ${Custodians Grid}	| Name	| ${RootCustodian} 
-
 | | Verify that the following Grid contains the following number of Rows	| ${Custodians Grid}	| 1
 
 
@@ -52,22 +52,22 @@
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
 
-| Managers are Imported when they do not reside in the current Folder Branch
-| | [Documentation] | Verify that Managers are Imported when they reside outside of the connection path folder or sub-folders.
-| | ...				| [id] dc2b898f-b605-11e4-bfb4-90b11c6c5ae4
-| | [Tags]			| automated
+| Managers are Imported when they do not meet the Object Filter String
+| | [Documentation] | Verify that Managers are Imported when they would normally be excluded due to a non-matching Object Filter String.
+| | ...				| [id] df7a8d80-b605-11e4-9c30-90b11c6c5ae4
+| | [Tags]			| dap827	| automated
 | | Go to the Method Tab	| Custodian
-| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name	| ${AnotherFolderManager} 
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name	| ${RootManager} 
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
 
-| Managers are Imported when they do not meet the Object Filter String
-| | [Documentation] | Verify that Managers are Imported when they would normally be excluded due to a non-matching Object Filter String.
-| | ...				| [id] df7a8d80-b605-11e4-9c30-90b11c6c5ae4
-| | [Tags]			| automated
+| Managers are Imported when they do not reside in the current Folder Branch
+| | [Documentation] | Verify that Managers are Imported when they reside outside of the connection path folder or sub-folders.
+| | ...				| [id] dc2b898f-b605-11e4-bfb4-90b11c6c5ae4
+| | [Tags]			| dap827	| automated
 | | Go to the Method Tab	| Custodian
-| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name	| ${RootManager} 
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name	| ${AnotherFolderManager} 
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
