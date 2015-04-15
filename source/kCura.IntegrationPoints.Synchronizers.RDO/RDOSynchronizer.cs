@@ -286,21 +286,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private void ItemError(string documentIdentifier, string errorMessage)
 		{
-			if (this.ImportSettings.OverwriteMode == OverwriteModeEnum.Overlay
-				&& errorMessage.Contains("no document to overwrite"))
-			{
-				//skip
-			}
-			else if (this.ImportSettings.OverwriteMode == OverwriteModeEnum.Append
-				&& errorMessage.Contains("document with identifier")
-				&& errorMessage.Contains("already exists in the workspace"))
-			{
-				//skip
-			}
-			else
-			{
-				_rowErrors.Add(new KeyValuePair<string, string>(documentIdentifier, errorMessage));
-			}
+			_rowErrors.Add(new KeyValuePair<string, string>(documentIdentifier, errorMessage));
 		}
 	}
 }
