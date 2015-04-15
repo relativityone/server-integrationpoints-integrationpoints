@@ -1,7 +1,6 @@
 @echo off
 
 SET BUILDCONFIG=Debug
-SET BUILDPROJECT=build.build
 SET BUILDTYPE=DEV
 SET VERSION=1.0.0.0
 SET BUILD=True
@@ -52,6 +51,8 @@ echo package step is set to %PACKAGE%
 for /f "delims=" %%A in ('hg root') do @set SourceRoot=%%A
 pushd %SourceRoot%\DevelopmentScripts
 echo root is %SourceRoot%
+
+SET BUILDPROJECT=%SourceRoot%\DevelopmentScripts\build.build
 
 if NOT %VERSION%==1.0.0.0 goto version
 goto build

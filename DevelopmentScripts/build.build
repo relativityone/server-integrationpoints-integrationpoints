@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project name="BuildTools.Build">
+<project name="Build">
 
 	<include buildfile="common.include" />
 	<include buildfile="nuget.include" />

@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project name="BuildTools.Test">
+<project name="Test">
 
 	<property name="testlog.directory" value="${path::combine(root, 'TestLogs')}" />
 
@@ -38,7 +38,6 @@
 			<arg line='/out:"${testlog.directory}"' />
 			<arg line='/nunitx64:"${NUnit}"' />
 			<arg line='/nunitx86:"${NUnit-x86}"' />
-			<arg line='/timeout:5.0' />
 		</exec>		
 	</target>
 </project>

@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project name="BuildTools.NuGet">
+<project name="NuGet">
 	<property name="nuspec.directory" value="${path::combine(development.scripts, 'NuGet')}" />
 	<property name="NuGet.exe.directory" value="${path::combine(vendor.directory, 'NuGet')}" />
 	<property name="NuGet_exe" value="${path::combine(NuGet.exe.directory, 'NuGet.exe')}" unless="${property::exists('NuGet_exe')}" />

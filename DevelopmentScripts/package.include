@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<project name="BuildTools.Package">
+<project name="Package">
 	<!-- Package properties -->
 	<property name="packageFolder" value="C:\Packages\BuildTools" unless="${property::exists('packageFolder')}" />
 	<property name="packageBranch" value="${path::combine(packageFolder, branchDir)}" />

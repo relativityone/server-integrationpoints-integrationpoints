@@ -5,11 +5,5 @@
 	
 		<DLL type="x64">Source\Project1\bin\Project1.NUnit.dll</DLL>
 	-->		
-	</DLLs>
-	<WhiteList>
-	<!-- Use following as template
-	
-		<allow>Project1.NUnit.Project1Tests.TestSomethingVeryLongRunning</allow>
-	-->
-	</WhiteList>
+	</DLLs>	
 </TestRunner>

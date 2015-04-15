@@ -2,7 +2,7 @@
 
 <project name="BuildTools.Common">
   <!-- The "root" property is case sensitive (including the drive letter) -->
-	<property name="root" value="C:\SourceCode\BuildTools" unless="${property::exists('root')}" />
+	<property name="root" value="..\" unless="${property::exists('root')}" />
   
    <!-- BuildTools folders -->
 	<property name="source.directory" value="${path::combine(root, 'Source')}" />
