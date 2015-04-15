@@ -1,6 +1,7 @@
 
 *** Settings ***
-| Documentation 	| Verify that the Map Fields step of Integration Points shows the correct error messages, and that the record can be saved after correcting the errors.
+| Documentation 	| Verify that the Map Fields step of Integration Points shows the correct error messages, 
+| ...				| and that the record can be saved after correcting the errors.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.method
 | Suite Setup		| Open the Browser and Ensure that the Integration Points created in this Suite do not already exist
@@ -12,19 +13,20 @@
 *** Variables ***
 
 | ${WorkspaceName}		| LDAP Sync
-| ${IntegrationPoint1}	| Unique Identifier Test 1			| # Project
-| ${IntegrationPoint2}	| Unique Identifier Test 2			| # Project
-| ${IntegrationPoint3}	| Object Identifier Test			| # Communication
-| ${IntegrationPoint4}	| Extra Attributes Test				| # Questionnaire
-| ${IntegrationPoint5}	| Extra Workspace Fields Test		| # Questionnaire
-| ${IntegrationPoint6}	| No Fields Test					| # Question
-| ${IntegrationPoint7}	| No Parent Attribute Test			| # Custodian Role
-| ${IntegrationPoint8}	| Hidden Parent Attribute Test		| # JobSchedule (Scheduled Report)
-| ${IntegrationPoint9}	| Hidden Native File Path Test		| # Document
-| ${IntegrationPoint10}	| Unset Native File Path Test		| # Document
-| ${IntegrationPoint11}	| Unmapped Native File Path Test	| # Document
-| ${Unique Identifier Dropdown}	| s2id_overlay-identifier
-| ${Parent Role Dropdown}		| s2id_parent-identifier
+| @{IntegrationPoints}	| Unique Identifier Test 1			| # 0	| # Project
+| ...					| Unique Identifier Test 2			| # 1	| # Project
+| ...					| Object Identifier Test			| # 2	| # Communication
+| ...					| Extra Attributes Test				| # 3	| # Questionnaire
+| ...					| Extra Workspace Fields Test		| # 4	| # Questionnaire
+| ...					| No Fields Test					| # 5	| # Question
+| ...					| No Parent Attribute Test			| # 6	| # Custodian Role
+| ...					| Hidden Parent Attribute Test		| # 7	| # JobSchedule (Scheduled Report)
+| ...					| Hidden Native File Path Test		| # 8	| # Document
+| ...					| Unset Native File Path Test		| # 9	| # Document
+| ...					| Unmapped Native File Path Test	| # 10	| # Document
+| ...					| Multiple Error Test				| # 11	| # Question
+| ${Unique Identifier Dropdown}			| s2id_overlay-identifier
+| ${Parent Role Dropdown}				| s2id_parent-identifier
 | ${Import Native Files Radio Buttons}	| import
 | ${Native File Path List}				| s2id_native-filePath
 
@@ -37,12 +39,12 @@
 | | ...				| Notes: An equal number of Workspace and Source Attribute fields (at least one each) must be selected, and the Object Identifier must be mapped.
 | | ...				| [id] 111dce70-a89f-11e4-9581-b8ca3a83048f
 | | [Tags]			| automated	| required
-| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint1}	| Project
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoints[0]}	| Project
 | | Map the Following Fields on the Integration Point Step 3 form	| Name [Object Identifier]	| cn
 | | Select from select2 Dropdown	| ${Unique Identifier Dropdown} | Owner Email
 | | Click	| Save
 | | Sleep	| 10s	| # talos_approved
-| | Verify that the Following Integration Point does not Exist in the current Workspace	| ${IntegrationPoint1}
+| | Verify that the Following Integration Point does not Exist in the current Workspace	| ${IntegrationPoints[0]}
 
 
 | When the Unique Identifier is not mapped the correct errors are triggered
@@ -61,7 +63,7 @@
 | | [Setup]			| Require Test Case	| When the Unique Identifier is not mapped an Integration Point Cannot be Created
 | | Map the Following Fields on the Integration Point Step 3 form	| Owner Email	| mail
 | | Click	| Save
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint1}
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoints[0]}
 
 
 | Saving Post Unique Identifier validation works after changing the Unique Identifier value
@@ -69,16 +71,16 @@
 | | ...				| [id] 11208d92-a89f-11e4-8a6c-b8ca3a83048f
 | | [Tags]			| dao049	| automated
 | | [Setup]			| Require Test Case	| When the Unique Identifier is not mapped an Integration Point Cannot be Created
-| | Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint2}	| Project
+| | Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoints[1]}	| Project
 | | Map the Following Fields on the Integration Point Step 3 form	| Name [Object Identifier]	| cn
 | | Select from select2 Dropdown	| ${Unique Identifier Dropdown} | Owner Email
 | | Click	| Save
 | | Sleep	| 10s
-| | Verify that the Following Integration Point does not Exist in the current Workspace	| ${IntegrationPoint2}
+| | Verify that the Following Integration Point does not Exist in the current Workspace	| ${IntegrationPoints[1]}
 
 | | Select from select2 Dropdown	| ${Unique Identifier Dropdown} | Name [Object Identifier]
 | | Click	| Save
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint2}
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoints[1]}
 
 
 | When the Object Identifier is not mapped an Integration Point Cannot be Created
@@ -86,12 +88,12 @@
 | | ...				| that the Integration Point is not created.
 | | ...				| Notes: An equal number of Workspace and Source Attribute fields (at least one each) must be selected, and the Unique Identifier must be mapped.
 | | [Tags]			| automated	| required
-| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint3}	| Communication
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoints[2]}	| Communication
 | | Map the Following Fields on the Integration Point Step 3 form	| Email Body	| mail
 | | Select from select2 Dropdown	| ${Unique Identifier Dropdown} | Email Body
 | | Click	| Save
 | | Sleep	| 10s	| # talos_approved
-| | Verify that the Following Integration Point does not Exist in the current Workspace	| ${IntegrationPoint3}
+| | Verify that the Following Integration Point does not Exist in the current Workspace	| ${IntegrationPoints[2]}
 
 
 | When the Object Identifier is not mapped the correct errors are triggered
@@ -109,21 +111,21 @@
 | | [Setup]			| Require Test Case	| When the Object Identifier is not mapped an Integration Point Cannot be Created
 | | Map the Following Fields on the Integration Point Step 3 form	| Name [Object Identifier]	| name
 | | Click	| Save
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint3}
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoints[2]}
  
 
 | When too few Workspace Fields are mapped an Integration Point Cannot be Created
 | | [Documentation]	| Verify that when the selected Workspace fields count is less than the selected Attributes count, that the Integration Point cannot be created.
 | | ...				| [id] 11208d93-a89f-11e4-8ca7-b8ca3a83048f
 | | [Tags]			| automated	| required
-| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint4}	| Questionnaire
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoints[3]}	| Questionnaire
 | | Map the Following Fields on the Integration Point Step 3 form	| 
 | | ... | Name [Object Identifier]	| name		| 
 | | ... | IsLocked					| codepage
 | | Move the Following Source Attribute Fields to the Selected List	| countrycode
 | | Click	| Save
 | | Sleep	| 10s	| # talos_approved
-| | Verify that the Following Integration Point does not Exist in the current Workspace	| ${IntegrationPoint4}
+| | Verify that the Following Integration Point does not Exist in the current Workspace	| ${IntegrationPoints[3]}
 
 
 | When too few Workspace Fields are mapped the correct errors are triggered
@@ -142,20 +144,20 @@
 | | [Setup]			| Require Test Case	| When too few Workspace Fields are mapped an Integration Point Cannot be Created
 | | Move the Following Workspace Fields to the Selected List	| Questionnaire Link
 | | Click	| Save
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint4}
- 
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoints[3]}
+
 
 | When too few Source Attribute Fields are mapped an Integration Point Cannot be Created
 | | [Documentation]	| Verify that when the selected Source Attribute field count is less than the selected Workspace field count, that the Integration Point cannot be created.
 | | [Tags]			| automated	| required
-| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint5}	| Questionnaire
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoints[4]}	| Questionnaire
 | | Map the Following Fields on the Integration Point Step 3 form	| 
 | | ... | Name [Object Identifier]	| name		| 
 | | ... | IsLocked					| codepage
 | | Move the Following Workspace Fields to the Selected List	| Questionnaire Link
 | | Click	| Save
 | | Sleep	| 10s	| # talos_approved
-| | Verify that the Following Integration Point does not Exist in the current Workspace	| ${IntegrationPoint5}
+| | Verify that the Following Integration Point does not Exist in the current Workspace	| ${IntegrationPoints[4]}
 
 
 | When too few Source Attribute Fields are mapped the correct errors are triggered
@@ -174,55 +176,35 @@
 | | [Setup]			| Require Test Case	| When too few Source Attribute Fields are mapped an Integration Point Cannot be Created
 | | Move the Following Source Attribute Fields to the Selected List	| countrycode
 | | Click	| Save
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint5}
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoints[4]}
 
 
 | Clicking Save with no fields mapped shows the "The object identifier field must be mapped." Card Error
-| | [Documentation]	| Verify that clicking Save with no fields mapped shows the "The overlay identifier must be mapped." error message on the Field Mappings card.
+| | [Documentation]	| Verify that clicking Save with no fields mapped shows the "The object identifier field must be mapped." error message on the Field Mappings card.
 | | ...				| [id] 11208d98-a89f-11e4-a8d3-b8ca3a83048f
-| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint6}	| Question
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoints[5]}	| Question
 | | [Tags]			| automated
 | | Click	| Save
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Field Mappings Card has the following Errors	| The object identifier field must be mapped.
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify the current Method Page Error has the following Text	| The object identifier, Name [Object Identifier], must be mapped.
 
 
 | When the conditions for both invalid messages are met, both messages are displayed
-| | [Documentation]	| Verify that the conditions are met for both messages (Overlay not mapped, and Uneven field count), that both messages are displayed.
+| | [Documentation]	| Verify that the conditions are met for both messages (Unique Identifier not mapped, and Uneven field count), that both messages are displayed.
 | | ...				| [id] 11208d96-a89f-11e4-826e-b8ca3a83048f
-| | [Tags]			| manual	| waiting_on_dao074
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Move one field to the Selected Workspace Fields list
-| | ... | 2. Have a different field selected in the Overlay Identifer than the field in the Selected Workspace Fields list
-| | ... | 3. Click Save
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the message "All selected items have not been mapped." is displayed
-| | ... | 2. Verify that the message "The object identifier field must be mapped." is displayed
-
-
-| When the conditions for both invalid messages are met and then the initial message is cleared, the second message can be displayed
-| | [Documentation]	| Verify that the conditions are met for both messages (Overlay not mapped, and Uneven field count), 
-| | ...				| and then the the user makes adjustments to remove the "All selected items have not been mapped" message and clicks Save, 
-| | ...				| that the "The overlay identifier must be mapped." message is displayed.
-| | ...				| [id] 11208d97-a89f-11e4-932f-b8ca3a83048f
-| | [Tags]			| manual	| waiting_on_dao074
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Move one field to the Selected Workspace Fields list
-| | ... | 2. Have a different field selected in the Overlay Identifer than the field in the Selected Workspace Fields list
-| | ... | 3. Click Save
-| | ... | 4. Move one field to the Selected Source Attributes list
-| | ... | 5. Click Save
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the message "The overlay identifier must be mapped." is displayed
+| | [Tags]			| automated
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoints[11]}	| Question
+| | Move the Following Workspace Fields to the Selected List	| Question Text
+| | Click	| Save
+| | Run Keyword and Continue on Failure	| Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the Field Mappings Card has the following Errors	| All selected items have not been mapped.
+| | Run Keyword and Continue on Failure	| Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify the current Method Page Error has the following Text	| The object identifier, Name [Object Identifier], must be mapped.
 
 
 | A Mapping cannot be Saved while Parent Attribute's value is Select...
 | | [Documentation] | Verify that Mappings cannot be Saved while Parent Attribute's value is "Select...".
 | | [Tags]			| dan650	| required	| automated
-| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint7}	| Custodian Role
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoints[6]}	| Custodian Role
 | | Map the Following Fields on the Integration Point Step 3 form	| 
 | | ... | Name [Object Identifier]	| name		| 
 | | ... | Custodian					| cn
@@ -236,35 +218,35 @@
 | | [Setup]			| Require Test Case	| A Mapping cannot be Saved while Parent Attribute's value is Select...
 | | Select from select2 Dropdown	| ${Parent Role Dropdown} | cn
 | | Click	| Save
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint7}
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoints[6]}
 
 
 | Integration Points can be created when Parent Attribute is hidden
 | | [Documentation] | Verify that when the Parent Attribute list is hidden, that the Create Integration Point Process can be completed.
 | | ...				| [id] 10e61ca1-a89f-11e4-8dcb-b8ca3a83048f
 | | [Tags]			| automated
-| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint8}	| JobSchedule
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoints[7]}	| JobSchedule
 | | Map the Following Fields on the Integration Point Step 3 form	| 
 | | ... | Name [Object Identifier]	| name		| 
 | | ... | Job Type					| cn
 | | Click	| Save
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint8}
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoints[7]}
 
 
 | Integration Points can be created when Import Native Path is hidden
 | | [Documentation] | Verify that when the Import Native Path list is hidden, that the Create Integration Point Process can be completed.
 | | [Tags]			| automated
-| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint9}	| Document
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoints[8]}	| Document
 | | Map the Following Fields on the Integration Point Step 3 form	| 
 | | ... | Control Number [Object Identifier]	| objectguid
 | | Click	| Save
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint9}
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoints[8]}
 
 
 | Integration Points cannot be created when Import Native Path is set to Select...
 | | [Documentation] | Verify that when the Import Native Path list is set to "Select...", that the Create Integration Point Process cannot be completed.
 | | [Tags]			| automated	| required
-| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint10}	| Document
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoints[9]}	| Document
 | | Map the Following Fields on the Integration Point Step 3 form	| 
 | | ... | Control Number [Object Identifier]	| objectguid	| 
 | | ... | Imaging Set							| name
@@ -279,24 +261,25 @@
 | | [Setup]			| Require Test Case	| Integration Points cannot be created when Import Native Path is set to Select...
 | | Select from Select2 Dropdown	| ${Native File Path List}	| name
 | | Click	| Save
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint10}
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoints[9]}
 
 
 | Integration Points can be created when the Import Native Path is not Mapped
 | | [Documentation] | Verify that when the Import Native Path value is not mapped, that the Create Integration Point Process can still be completed.
 | | [Tags]			| automated
-| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint11}	| Document
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoints[10]}	| Document
 | | Map the Following Fields on the Integration Point Step 3 form	| 
 | | ... | Control Number [Object Identifier]	| objectguid
 | | Select Radio Button	| ${Import Native Files Radio Buttons}	| true	| # true = Yes
 | | Select from Select2 Dropdown	| ${Native File Path List}	| name
 | | Click	| Save
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint11}
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoints[10]}
 
 
 *** Keywords ***
 
 | Verify that the Field Mappings Card has the following Errors
+| | [Documentation]	| Verifies that the Field Mappings card on Step 3 of the Integration Point wizard has the given errors.
 | | [ARGUMENTS] 	| @{ExpectedErrors}
 | | Page Should Contain Element	| css=div.icon-error.legal-hold.field-validation-error	| No errors were seen on the page.
 | | Page Should Contain Element	| css=div.card[id=fieldMappings] div.icon-error.legal-hold.field-validation-error	| No errors were seen on the Field Mappings card.
@@ -332,19 +315,19 @@
 
 #------------------------------------------------------------------------------------------------------------------------
 
-| | :FOR	| ${i}	| IN RANGE	| 1	| 12	| # For 1-11
-| | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint${i}}
-| | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationPoint${i}}
-| | [Teardown] | Drop connection to the relativity services api
+| | :FOR	| ${IntegrationPoint}	| IN	| @{IntegrationPoints}
+| | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint}
+| | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationPoint}
+| | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Integration Points created in this Suite then Close All Browsers
 | | [Documentation]	| Delete the Integration Points that were created in the Suite and then closes any open browsers.
 | | ...				| Run as the Suite Teardown.
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
 
-| | :FOR	| ${i}	| IN RANGE	| 1	| 12	| # For 1-11
-| | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint${i}}
-| | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationPoint${i}}
+| | :FOR	| ${IntegrationPoint}	| IN	| @{IntegrationPoints}
+| | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint}
+| | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationPoint}
 
 | | Close All Browsers
 | | Drop connection to the relativity services api

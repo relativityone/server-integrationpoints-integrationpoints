@@ -19,7 +19,8 @@ namespace JsonLoader.Installer
 					new SourceProvider()
 					{
 						Name = "JSON",
-						Url = "/%applicationpath%/CustomPages/f0fd184d-d2ca-4be9-83ec-884955eea8ff/Home/"
+						Url = "/%applicationpath%/CustomPages/f0fd184d-d2ca-4be9-83ec-884955eea8ff/Home/",
+						ViewDataUrl = "/%applicationpath%/CustomPages/f0fd184d-d2ca-4be9-83ec-884955eea8ff/api/view/"
 					}
 				}
 			};

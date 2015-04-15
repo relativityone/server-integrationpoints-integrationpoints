@@ -43,7 +43,7 @@
 | | ... | 4. Run the Import for this Integration Point.
 | | ... | 5. Open the associated Job History View screen.
 | | ... |
-| | Expected Results:
+| | ... | Expected Results:
 | | ... | 1. Verify the Job History Error table has no rows
 
 | Job level errors are populated when Log Errors is set to No
@@ -61,7 +61,7 @@
 | | ... | 5. Run the Import for this Integration Point.
 | | ... | 6. Open the associated Job History View screen.
 | | ... |
-| | Expected Results:
+| | ... | Expected Results:
 | | ... | 1. Verify the Job History Error table shows the correct Job error
 
 | Job level errors are Populated when Log Errors is set to Yes
@@ -112,7 +112,7 @@
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| manager
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Department
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}  
 
