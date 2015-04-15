@@ -23,4 +23,5 @@ WHERE
 			[RelatedObjectArtifactID] = @RelatedObjectArtifactID
 	AND 
 			[TaskType] = @TaskType
-
+	AND
+			NOT [ScheduleRule] IS NULL	

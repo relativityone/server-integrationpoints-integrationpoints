@@ -35,11 +35,11 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			IAgentService agentService = new AgentService(agentHelper, agentGuid); //RLH agent
 			var jobService = new JobService(agentService, agentHelper);
 
-			Job jobOld = jobService.GetJob(workspaceID, relatedObjectArtifactID, taskType);
+			Job jobOld = jobService.GetScheduledJob(workspaceID, relatedObjectArtifactID, taskType);
 			if (jobOld != null) jobService.DeleteJob(jobOld.JobId);
 			Job job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121, null, null);
 			Job job1 = jobService.GetJob(job.JobId);
-			Job job2 = jobService.GetJob(workspaceID, job.RelatedObjectArtifactID, taskType);
+			Job job2 = jobService.GetScheduledJob(workspaceID, job.RelatedObjectArtifactID, taskType);
 			Job job3 = jobService.GetNextQueueJob(new int[] { 1015040 }, 1111111);
 			jobService.UnlockJobs(1111111);
 			jobService.DeleteJob(job3.JobId);
@@ -63,7 +63,7 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			IAgentService agentService = new AgentService(agentHelper, agentGuid);
 			var jobService = new JobService(agentService, agentHelper);
 
-			Job jobOld = jobService.GetJob(workspaceID, relatedObjectArtifactID, taskType);
+			Job jobOld = jobService.GetScheduledJob(workspaceID, relatedObjectArtifactID, taskType);
 			if (jobOld != null) jobService.DeleteJob(jobOld.JobId);
 			Job job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, sr, "My Test Job Detail", 1212121, null, null);
 			Job job2 = null;
@@ -175,11 +175,11 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Services
 			IAgentService agentService = new AgentService(agentHelper, agentGuid); //RLH agent
 			var jobService = new JobService(agentService, agentHelper);
 
-			Job jobOld = jobService.GetJob(workspaceID, relatedObjectArtifactID, taskType);
+			Job jobOld = jobService.GetScheduledJob(workspaceID, relatedObjectArtifactID, taskType);
 			while (jobOld != null)
 			{
 				jobService.DeleteJob(jobOld.JobId);
-				jobOld = jobService.GetJob(workspaceID, relatedObjectArtifactID, taskType);
+				jobOld = jobService.GetScheduledJob(workspaceID, relatedObjectArtifactID, taskType);
 			}
 			Job job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121, null, null);
 			job = jobService.CreateJob(workspaceID, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121, null, null);

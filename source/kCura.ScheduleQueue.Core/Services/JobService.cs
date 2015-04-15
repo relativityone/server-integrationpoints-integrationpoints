@@ -85,7 +85,7 @@ namespace kCura.ScheduleQueue.Core.Services
 			new UnlockScheduledJob(QDBContext).Execute(agentID);
 		}
 
-		public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType, 
+		public Job CreateJob(int workspaceID, int relatedObjectArtifactID, string taskType,
 			IScheduleRule scheduleRule, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID)
 		{
 			AgentService.CreateQueueTableOnce();
@@ -113,6 +113,11 @@ namespace kCura.ScheduleQueue.Core.Services
 					parentJobID);
 
 				if (row != null) job = new Job(row);
+			}
+			else
+			{
+				job = GetScheduledJob(workspaceID, relatedObjectArtifactID, taskType);
+				DeleteJob(job.JobId);
 			}
 			return job;
 		}
@@ -158,7 +163,7 @@ namespace kCura.ScheduleQueue.Core.Services
 			return job;
 		}
 
-		public Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName)
+		public Job GetScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskName)
 		{
 			AgentService.CreateQueueTableOnce();
 

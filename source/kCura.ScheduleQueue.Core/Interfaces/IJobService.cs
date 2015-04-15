@@ -17,7 +17,7 @@ namespace kCura.ScheduleQueue.Core
 			DateTime nextRunTime, string jobDetails, int SubmittedBy, long? rootJobID, long? parentJobID);
 		void DeleteJob(long jobID);
 		Job GetJob(long jobID);
-		Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName);
+		Job GetScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskName);
 
 		//TODO: Implement
 		//bool IsWorkspaceActive(int workspaceID);
