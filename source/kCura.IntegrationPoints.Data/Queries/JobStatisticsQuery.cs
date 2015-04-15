@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 		}
 		public JobStatistics UpdateAndRetreiveStats(string tableName, long jobId, JobStatistics stats)
 		{
-			var sql = Resources.Resource.CreateJobTrackingEntry + Resources.Resource.UpdateJobStatistics;
+			var sql = Resources.Resource.UpdateJobStatistics;
 			var p1 = new SqlParameter("@tableName", tableName);
 			var p2 = new SqlParameter("@total", stats.Completed);
 			var p3 = new SqlParameter("@errored", stats.Errored);
