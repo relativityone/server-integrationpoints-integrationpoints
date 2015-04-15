@@ -14,6 +14,11 @@ CREATE TABLE [EDDSRESOURCE].[EDDSDBO].[' + @tableName +']
 	execute sp_executesql @table
 END
 
-DECLARE @insert nvarchar(max) = 'insert into [EDDSRESOURCE].[EDDSDBO].[' + @tableName + '] ([JobID],[Completed]) values (@id, 0)';
+
+DECLARE @insert nvarchar(max) = '
+IF (NOT EXISTS (SELECT * FROM [EDDSRESOURCE].[EDDSDBO].[' + @tableName + '] WHERE JobID = @id))
+BEGIN
+	insert into [EDDSRESOURCE].[EDDSDBO].[' + @tableName + '] ([JobID],[Completed]) values (@id, 0)
+END'
 DECLARE @params nvarchar(max) = N'@id bigint';
 EXECUTE sp_executesql @insert, @params, @id = @jobID
