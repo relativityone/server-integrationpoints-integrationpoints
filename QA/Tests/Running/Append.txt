@@ -1,62 +1,82 @@
+
 *** Settings ***
 | Documentation 	| Verify that running an Append RIP creates new objects, but does not update existing objects.
-| Metadata		    | Authors	| Daniel Oliver
-| Force Tags		| in-progress | team.method
+| Metadata			| Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| in-progress	| team.method
 | Suite Setup		| Create Suite Setup Data
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
 
+
 *** Variables ***
 
-| ${WorkspaceName}	          | LDAP Sync
-| ${IntegrationName}          | Append
-| ${NewObject}                | Man, Cat
-| ${ExistingAndUpdatedObject} | Man, Dog
-| ${ExistingNoChangeObject}   | Man, Bird 
-| ${Custodians Grid}		  | gbox_custodianGrid
+| ${WorkspaceName}				| LDAP Sync
+| ${IntegrationName}			| Append
+| ${NewObject}					| Man, Cat
+| ${ExistingAndUpdatedObject}	| Man, Dog
+| ${ExistingNoChangeObject}		| Man, Bird 
+| ${Custodians Grid}	| gbox_custodianGrid
+
 
 *** Test Cases ***
 
 | An Append import Creates new objects
 | | [Documentation] | Verify that when an Append RIP is run which has new Source objects, that it creates new objects in the Target RDO.
 | | ...				| [id] 9632b8ae-b203-11e4-8099-90b11c6c5ae4
-| | [Tags] | automated
+| | [Tags]			| automated
+| | Go to the Method Tab | Custodian
 | | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Email | catman@gameofholdstesting.corp
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
+
 | An Append import Creates new History objects
-| | [Documentation] | Verify that when an Append RIP is run which has new source recods, that there are history entries for the newly created objects in the target RDO.
+| | [Documentation] | Verify that when an Append RIP is run which has new source recods, 
+| | ...				| that there are history entries for the newly created objects in the target RDO.
 | | ...				| [id] 12e9dbe1-a89f-11e4-b55e-b8ca3a83048f
-| | [Tags] | manual
+| | [Tags]			| manual
+| | Go to the Tab	| History
+
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. View the History objects for ${NewObject} 
+| | ... | 1. Change to the All History View
+| | ... | 2. View the History objects for "${NewObject}"
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify that there is an entry for ${NewObject} with the Action of Import
+| | ... | Verify that there is an entry for the Custodian "${NewObject}" with the Action of "Update - Import"
+
 
 | An Append import does not update existing objects
-| | [Documentation] | Verify that when an Append RIP is run which has updated Source objects that match to existing objects, that it does not update the existing objects in the target RDO.
+| | [Documentation] | Verify that when an Append RIP is run which has updated Source objects that match to existing objects, 
+| | ...				| that it does not update the existing objects in the target RDO.
 | | ...				| [id] 12ea02f0-a89f-11e4-b98c-b8ca3a83048f
-| | [Tags] | manual
+| | [Tags]			| manual
+| | Go to the Tab	| History
+
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. View the History objects for ${ExistingAndUpdatedObject}
+| | ... | 1. Change to the All History View
+| | ... | 2. View the History objects for "${ExistingAndUpdatedObject}"
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that there is no entry for ${ExistingAndUpdatedObject} with the Action of Import
+| | ... | Verify that there is no entry for "${ExistingAndUpdatedObject}" with the Action of "Update - Import"
+
 
 | An Append import does not update existing unmodified objects
-| | [Documentation] | Verify that when an Append RIP is run which has Source objects that match to existing objects with no changes, that it does not update the existing objects in the target RDO.
+| | [Documentation] | Verify that when an Append RIP is run which has Source objects that match to existing objects with no changes, 
+| | ...				| that it does not update the existing objects in the target RDO.
 | | ...				| [id] 12ea02f1-a89f-11e4-a719-b8ca3a83048f
-| | [Tags] | manual
+| | [Tags]			| manual
+| | Go to the Tab	| History
+
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. View the History objects for ${ExistingNoChangeObject}
+| | ... | 1. Change to the All History View
+| | ... | 2. View the History objects for "${ExistingNoChangeObject}"
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that there is no entry for ${ExistingNoChangeObject} with the Action of Import
+| | ... | Verify that there is no entry for "${ExistingNoChangeObject}" with the Action of "Update - Import"
+
 
 *** Keywords *** 
 
@@ -69,20 +89,20 @@
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${ExistingNoChangeObject}	|
-| | ... | Email			| birdman@gameofholdstesting.corp |
+| | ... | Full Name		| ${ExistingNoChangeObject}			|
+| | ... | Email			| birdman@gameofholdstesting.corp	|
 | | ... | Department	| Append
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingAndUpdatedObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${ExistingAndUpdatedObject}	|
-| | ... | Email			| dogman@gameofholdstesting.corp |
+| | ... | Full Name		| ${ExistingAndUpdatedObject}		|
+| | ... | Email			| dogman@gameofholdstesting.corp	|
 | | ... | Department	| Append
 
-| | @{Step1Fields}  | Create list | ${IntegrationName} | Append |
+| | @{Step1Fields}=		| Create list | ${IntegrationName} | Append |
 | | ... | LDAP | Custodian | no
-| | @{Step2Fields}  | Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
+| | @{Step2Fields}=		| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
 | | ... | (department=Append) | FastBind | testing\\rellockdown | P@ssw0rd@1
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Email			| mail			| 
@@ -92,11 +112,8 @@
 | | ... | UniqueID		| objectguid
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
 
-| | Run Import Now on the Following Integration Point | ${IntegrationName}  
-
-| | Go to the Method tab | Custodian
-
-| | [Teardown] | Drop connection to the relativity services api
+| | Run Import Now on the Following Integration Point	| ${IntegrationName}
+| | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
@@ -108,6 +125,7 @@
 | | Drop connection to the relativity services api
 | | Close All Browsers
 
+
 *** Settings ***
 | Library	| Collections
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
@@ -116,4 +134,3 @@
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
-

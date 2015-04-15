@@ -40,18 +40,20 @@
 | The General fields are in the correct order
 | | [Documentation]	| Verify that the fields in the General section are sorted correctly.
 | | ...				| [id] 0f5e1d10-a89f-11e4-a35c-b8ca3a83048f
-| | [Tags]			| automated | untested
+| | [Tags]			| automated | broken
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following Card contains the following fields | General | 
 | | ... | Integration Name: | 
 | | ... | Overwrite:		| 
 | | ... | Email Notification Recipients Field:  | 
 | | ... | Log Errors:
 
+
 | The Email Notification Recipients field has the subtext of Separate by semi-colon
 | | [Documentation]	| Verify that the fields in the General section are sorted correctly.
 | | ...				| [id] 7d51404f-c37e-11e4-a11c-90b11c6c5ae4
-| | [Tags]			| automated | untested
+| | [Tags]			| automated | broken
 | | Page Should Contain | xpath=//div[@class='sub-message' and text()='Separate by semi-colon']
+
 
 | The Integration fields are in the correct order
 | | [Documentation]	| Verify that the fields in the Integration section are sorted correctly.
@@ -72,7 +74,7 @@
 | The Overwrite list has the correct values
 | | [Documentation]	| Verify that the Overwrite List has the correct options
 | | ...				| [id] 0f5e6b31-a89f-11e4-98af-b8ca3a83048f
-| | [Tags]			| automated	
+| | [Tags]			| automated	 | broken
 | | Click  | ${Overwrite DropDown}
 | | Verify that the currently opened select2 Dropdown has the following choices in order | Append/Overlay | Append	| Overlay Only
 
@@ -90,7 +92,7 @@
 | The Overwrite Field's default value is Append/Overlay
 | | [Documentation]	| Verify that the Overwrite Field's default value is Append/Overlay.
 | | ...				| [id] 0f5e6b33-a89f-11e4-b10b-b8ca3a83048f
-| | [Tags]			| automated
+| | [Tags]			| automated | broken
 | | Verify that the following select2 Dropdown currently has the following value selected	| ${Overwrite DropDown}	| Append/Overlay
 
 
@@ -175,7 +177,7 @@
 | The Set Integration Details Fields are of the correct type
 | | [Documentation]	| Verify that the Set Integration Details Fields are the correct type.
 | | ...				| [id] 0f5ee066-a89f-11e4-bdce-b8ca3a83048f
-| | [Tags]			| automated | untested
+| | [Tags]			| automated | broken
 | | Run keyword and continue on failure	| Wait Until Keyword Succeeds	| 10s	| 2s	| 
 | | ... | Verify that the following field ID has a text input		| ${Integration Name Field}  | 
 | | ... | Verify that the following field ID has a textarea input	| ${Email Notification Recipients Field}

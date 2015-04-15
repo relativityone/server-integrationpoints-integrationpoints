@@ -130,7 +130,7 @@
 | | ... | Verify that the Item List is sorted by the following Date Column in Ascending Order	| Start Time (UTC)
 
 
-| The Integration Point link goes to the Job Details Layout for that Job
+| The Name link goes to the Job Details Layout for that Job
 | | [Documentation] | Verifies that clicking a Job's Integration Point link goes to the Job Details Layout for that Job.
 | | [Tags]			| manual	| partially_automated	| automateable?
 | | Go to the Tab	| Job History
@@ -149,7 +149,7 @@
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Preconditions:
-| | ... | 1. Setup an RIP job to fail 
+| | ... | 1. Setup a RIP job to fail (make Email the Unique Identifier)
 | | ... | 2. Attempt to run the job
 | | ... |
 | | ... | Steps:
@@ -157,8 +157,8 @@
 | | ... | 2. Search for the failed RIP job
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the Records Imported value is blank.
-| | ... | 2. Verify that the Records with Errors value is blank.
+| | ... | 1. Verify that the Records Imported value is 0.
+| | ... | 2. Verify that the Records with Errors value is 0.
 
 
 | Completed with errors Counts are correct

@@ -1,64 +1,76 @@
 
 *** Settings ***
-| Documentation 	| Verify that Custodians and Managers from a nested folder/outside of the proivded filter, are imported when Import Nested Items is set to Yes
-| Metadata		    | Authors	| William Sehy | Daniel Oliver
-| Force Tags		| in-progress | team.method
+| Documentation 	| Verify that Custodians and Managers from a nested folder/outside of the proivded filter, are imported when Import Nested Items is set to Yes.
+| Metadata			| Authors	| William Sehy	| Daniel Oliver
+| Force Tags		| in-progress	| team.method
 | Suite Setup		| Create Suite Setup Data
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
 
+
 *** Variables ***
 
-| ${WorkspaceName}	    | LDAP Sync
-| ${IntegrationName}    | Nested Folders
-| ${NestedCustodian}    | Nest, Bird
-| ${NestedManager}      | Manager, Middle
-| ${RootManager}        | Manager, Top
-| ${AnotherFolderManager} | Manager, AnotherFolder
-| ${RootCustodian}      | Nest, Rat
+| ${WorkspaceName}			| LDAP Sync
+| ${IntegrationName}		| Nested Folders
+| ${RootCustodian}			| Nest, Rat		| # Manager is ${NestedManager}
+| ${RootCustodian2}			| Nest, Cat		| # Manager is ${AnotherFolderManager}
+| ${NestedCustodian}		| Nest, Bird	| # Manager is ${RootManager}
+| ${NestedManager}			| Manager, Middle
+| ${AnotherFolderManager}	| Manager, Another Folder
+| ${RootManager}			| Manager, Top
 | ${Custodians Grid}	| gbox_custodianGrid
+
 
 *** Test Cases ***
 
-| Root Custodians are imported 
-| | [Documentation] |  Verify that Custodians in the rorr folder are imported
+| Root Custodians are imported
+| | [Documentation] | Verify that Custodians in the rorr folder are imported.
 | | ...				| [id] 653348c0-b2fc-11e4-bc4d-90b11c6c5ae4
-| | [Tags] | automated
-| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name  | ${RootCustodian} 
+| | [Tags]			| automated
+| | Go to the Method Tab	| Custodian
+| | Filter the following Grid on the following Column by the following Value	| ${Custodians Grid}	| Name	| ${RootCustodian} 
+| | Verify that the following Grid contains the following number of Rows	| ${Custodians Grid}	| 1
 
-| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
-| Nested Custodians are imported 
-| | [Documentation] | Verify that Custodians in a nested folder are imported
+| Nested Custodians are imported
+| | [Documentation] | Verify that Custodians in a nested folder are imported.
 | | ...				| [id] 78e9da30-b2f9-11e4-b2bb-90b11c6c5ae4
-| | [Tags] | automated
-| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name  | ${NestedCustodian} 
+| | [Tags]			| automated
+| | Go to the Method Tab	| Custodian
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name	| ${NestedCustodian} 
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
+
 
 | Nested Managers are Imported
-| | [Documentation] | Verify that Managers in a nested folder are imported
-| | ... | [id] d9bdbdde-b605-11e4-b062-90b11c6c5ae4
-| | [Tags] | manual1 
-| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name  | ${NestedManager} 
+| | [Documentation] | Verify that Managers in a nested folder are imported.
+| | ...				| [id] d9bdbdde-b605-11e4-b062-90b11c6c5ae4
+| | [Tags]			| automated
+| | Go to the Method Tab	| Custodian
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name	| ${NestedManager} 
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
+
+
+| Managers are Imported when they do not meet the Object Filter String
+| | [Documentation] | Verify that Managers are Imported when they would normally be excluded due to a non-matching Object Filter String.
+| | ...				| [id] df7a8d80-b605-11e4-9c30-90b11c6c5ae4
+| | [Tags]			| dap827	| automated
+| | Go to the Method Tab	| Custodian
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name	| ${RootManager} 
+
+| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
+
 
 | Managers are Imported when they do not reside in the current Folder Branch
-| | [Documentation] | Verify that Managers are Imported when they reside outside of the connection path folder or sub-folders
-| | ... | [id] dc2b898f-b605-11e4-bfb4-90b11c6c5ae4
-| | [Tags] | manual1 
-| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name  | ${AnotherFolderManager} 
+| | [Documentation] | Verify that Managers are Imported when they reside outside of the connection path folder or sub-folders.
+| | ...				| [id] dc2b898f-b605-11e4-bfb4-90b11c6c5ae4
+| | [Tags]			| dap827	| automated
+| | Go to the Method Tab	| Custodian
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name	| ${AnotherFolderManager} 
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
-| Managers are Imported when they do not met the Object Filter String
-| | [Documentation] | Verify that Managers are Imported when they would normally be excluded due to a non-matching Object Filter String
-| | ... | [id] df7a8d80-b605-11e4-9c30-90b11c6c5ae4
-| | [Tags] | manual1
-| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name  | ${RootManager} 
-
-| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
 *** Keywords *** 
 
@@ -77,24 +89,21 @@
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
 
-| | @{Step1Fields}  | Create list | ${IntegrationName} | Append/Overlay |
-| | ... | LDAP | Custodian | no
-| | @{Step2Fields}  | Create list | testing.corp/OU=Testing - Users,DC=testing,DC=corp |
+| | @{Step1Fields}=		| Create List | ${IntegrationName} | Append/Overlay |
+| | ... | LDAP | Custodian | No
+| | @{Step2Fields}=		| Create List | testing.corp/OU=Testing - Users,DC=testing,DC=corp |
 | | ... | (department=Nested) | FastBind | rellockdown | P@ssw0rd@1 | Yes
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Email			| mail			| 
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
-| | ... | Department    | department    | 
+| | ... | Department	| department	| 
 | | ... | UniqueID		| objectguid
 
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
 
-| | Run Import Now on the Following Integration Point | ${IntegrationName}  
-
-| | Go to the Method tab | Custodian
-
-| | [Teardown] | Drop connection to the relativity services api
+| | Run Import Now on the Following Integration Point	| ${IntegrationName}
+| | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
@@ -102,11 +111,12 @@
 
 | | Delete the following Integration Point using API | ${IntegrationName}
 
-| | Delete the Custodians in the Following Department using API  | Nested
-| | Delete the Custodians in the Following Department using API  | RootNested
+| | Delete the Custodians in the Following Department using API	| Nested
+| | Delete the Custodians in the Following Department using API	| RootNested
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
+
 
 *** Settings ***
 | Library	| Collections
@@ -118,4 +128,3 @@
 | Resource	| ${METHOD_KEYWORD_DIR}/QuestionnaireKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-
