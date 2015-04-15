@@ -1,6 +1,7 @@
 
 *** Settings ***
-| Documentation 	| Verify that the Map Fields step of Integration Points shows the correct error messages, and that the record can be saved after correcting the errors.
+| Documentation 	| Verify that the Map Fields step of Integration Points shows the correct error messages, 
+| ...				| and that the record can be saved after correcting the errors.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.method
 | Suite Setup		| Open the Browser and Ensure that the Integration Points created in this Suite do not already exist
@@ -23,8 +24,9 @@
 | ${IntegrationPoint9}	| Hidden Native File Path Test		| # Document
 | ${IntegrationPoint10}	| Unset Native File Path Test		| # Document
 | ${IntegrationPoint11}	| Unmapped Native File Path Test	| # Document
-| ${Unique Identifier Dropdown}	| s2id_overlay-identifier
-| ${Parent Role Dropdown}		| s2id_parent-identifier
+| ${IntegrationPoint12}	| Multiple Error Test				| # Question
+| ${Unique Identifier Dropdown}			| s2id_overlay-identifier
+| ${Parent Role Dropdown}				| s2id_parent-identifier
 | ${Import Native Files Radio Buttons}	| import
 | ${Native File Path List}				| s2id_native-filePath
 
@@ -143,7 +145,7 @@
 | | Move the Following Workspace Fields to the Selected List	| Questionnaire Link
 | | Click	| Save
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint4}
- 
+
 
 | When too few Source Attribute Fields are mapped an Integration Point Cannot be Created
 | | [Documentation]	| Verify that when the selected Source Attribute field count is less than the selected Workspace field count, that the Integration Point cannot be created.
@@ -178,45 +180,25 @@
 
 
 | Clicking Save with no fields mapped shows the "The object identifier field must be mapped." Card Error
-| | [Documentation]	| Verify that clicking Save with no fields mapped shows the "The overlay identifier must be mapped." error message on the Field Mappings card.
+| | [Documentation]	| Verify that clicking Save with no fields mapped shows the "The object identifier field must be mapped." error message on the Field Mappings card.
 | | ...				| [id] 11208d98-a89f-11e4-a8d3-b8ca3a83048f
 | | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint6}	| Question
 | | [Tags]			| automated
 | | Click	| Save
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Field Mappings Card has the following Errors	| The object identifier field must be mapped.
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify the current Method Page Error has the following Text	| The object identifier, Name [Object Identifier], must be mapped.
 
 
 | When the conditions for both invalid messages are met, both messages are displayed
-| | [Documentation]	| Verify that the conditions are met for both messages (Overlay not mapped, and Uneven field count), that both messages are displayed.
+| | [Documentation]	| Verify that the conditions are met for both messages (Unique Identifier not mapped, and Uneven field count), that both messages are displayed.
 | | ...				| [id] 11208d96-a89f-11e4-826e-b8ca3a83048f
-| | [Tags]			| manual	| waiting_on_dao074
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Move one field to the Selected Workspace Fields list
-| | ... | 2. Have a different field selected in the Overlay Identifer than the field in the Selected Workspace Fields list
-| | ... | 3. Click Save
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that the message "All selected items have not been mapped." is displayed
-| | ... | 2. Verify that the message "The object identifier field must be mapped." is displayed
-
-
-| When the conditions for both invalid messages are met and then the initial message is cleared, the second message can be displayed
-| | [Documentation]	| Verify that the conditions are met for both messages (Overlay not mapped, and Uneven field count), 
-| | ...				| and then the the user makes adjustments to remove the "All selected items have not been mapped" message and clicks Save, 
-| | ...				| that the "The overlay identifier must be mapped." message is displayed.
-| | ...				| [id] 11208d97-a89f-11e4-932f-b8ca3a83048f
-| | [Tags]			| manual	| waiting_on_dao074
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Move one field to the Selected Workspace Fields list
-| | ... | 2. Have a different field selected in the Overlay Identifer than the field in the Selected Workspace Fields list
-| | ... | 3. Click Save
-| | ... | 4. Move one field to the Selected Source Attributes list
-| | ... | 5. Click Save
-| | ... |
-| | ... | Expected Results:
-| | ... | Verify that the message "The overlay identifier must be mapped." is displayed
+| | [Tags]			| automated
+| | [Setup]			| Go to Step 3 of the Integration Point wizard using the following Integration Point Name and Destination RDO	| ${IntegrationPoint12}	| Question
+| | Move the Following Workspace Fields to the Selected List	| Question Text
+| | Click	| Save
+| | Run Keyword and Continue on Failure	| Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify that the Field Mappings Card has the following Errors	| All selected items have not been mapped.
+| | Run Keyword and Continue on Failure	| Wait Until Keyword Succeeds	| 10s	| 2s	| 
+| | ... | Verify the current Method Page Error has the following Text	| The object identifier, Name [Object Identifier], must be mapped.
 
 
 | A Mapping cannot be Saved while Parent Attribute's value is Select...
@@ -297,6 +279,7 @@
 *** Keywords ***
 
 | Verify that the Field Mappings Card has the following Errors
+| | [Documentation]	| Verifies that the Field Mappings card on Step 3 of the Integration Point wizard has the given errors.
 | | [ARGUMENTS] 	| @{ExpectedErrors}
 | | Page Should Contain Element	| css=div.icon-error.legal-hold.field-validation-error	| No errors were seen on the page.
 | | Page Should Contain Element	| css=div.card[id=fieldMappings] div.icon-error.legal-hold.field-validation-error	| No errors were seen on the Field Mappings card.
@@ -332,7 +315,7 @@
 
 #------------------------------------------------------------------------------------------------------------------------
 
-| | :FOR	| ${i}	| IN RANGE	| 1	| 12	| # For 1-11
+| | :FOR	| ${i}	| IN RANGE	| 1	| 13	| # For 1-12
 | | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint${i}}
 | | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationPoint${i}}
 | | [Teardown] | Drop connection to the relativity services api
@@ -342,7 +325,7 @@
 | | ...				| Run as the Suite Teardown.
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
 
-| | :FOR	| ${i}	| IN RANGE	| 1	| 12	| # For 1-11
+| | :FOR	| ${i}	| IN RANGE	| 1	| 13	| # For 1-12
 | | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint${i}}
 | | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationPoint${i}}
 
