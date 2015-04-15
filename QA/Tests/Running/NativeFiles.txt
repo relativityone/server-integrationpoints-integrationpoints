@@ -221,7 +221,7 @@
 | | ... | 1. Remote in to gameofholds.testing.corp
 | | ... | - Probable Credentials:
 | | ... | - Computer: gameofholds.testing.corp
-| | ... | - Username: kdisterheft
+| | ... | - Username: \kdisterheft
 | | ... | - Password: ChangeThisPassword3*
 | | ... | 2. Open Active Directory Users and Computers
 | | ... | 3. Go to the Users folder
@@ -256,7 +256,7 @@
 | | ... | 1. Remote in to gameofholds.testing.corp
 | | ... | - Probable Credentials:
 | | ... | - Computer: gameofholds.testing.corp
-| | ... | - Username: kdisterheft
+| | ... | - Username: \kdisterheft
 | | ... | - Password: ChangeThisPassword3*
 | | ... | 2. Open Active Directory Users and Computers
 | | ... | 3. Go to the Users folder
