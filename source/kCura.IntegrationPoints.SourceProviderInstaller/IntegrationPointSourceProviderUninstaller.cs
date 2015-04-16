@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		{
 		}
 		private IWorkspaceDBContext _workspaceDbContext;
-		public IWorkspaceDBContext GetWorkspaceDbContext()
+		internal IWorkspaceDBContext GetWorkspaceDbContext()
 		{
 			return _workspaceDbContext ??
 						 (_workspaceDbContext = new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID())));
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		private DeleteHistoryService _deleteHistoryService;
 		private IRSAPIService _service;
 		private DeleteHistoryErrorService deleteHistoryErrorService;
-		public DeleteHistoryErrorService DeleteHistoryErrorService
+		internal DeleteHistoryErrorService DeleteHistoryErrorService
 		{
 			get
 			{
@@ -74,8 +74,8 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			}
 			set { deleteHistoryErrorService = value; }
 		}
-		
-		public IntegrationPointQuery IntegrationPoint
+
+		internal IntegrationPointQuery IntegrationPoint
 		{
 			get
 			{
@@ -83,12 +83,12 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			}
 		}
 
-		public DeleteHistoryService DeleteHistory
+		internal DeleteHistoryService DeleteHistory
 		{
-			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(Service,DeleteHistoryErrorService)); }
+			get { return _deleteHistoryService ?? (_deleteHistoryService = new DeleteHistoryService(Service, DeleteHistoryErrorService)); }
 		}
 
-		public IRSAPIService Service
+		internal IRSAPIService Service
 		{
 
 			get
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// Runs when the event handler is called during the removal of the data source provider.
 		/// </summary>
 		/// <returns>An object of type Response, which frequently contains a message.</returns>
-        public override sealed Response Execute()
+		public override sealed Response Execute()
 		{
 			bool isSuccess = false;
 			Exception ex = null;
@@ -145,7 +145,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			{
 				OnRaisePreUninstallPreExecuteEvent();
 				UninstallSourceProvider();
-				
+
 				isSuccess = true;
 			}
 			catch (Exception e)
