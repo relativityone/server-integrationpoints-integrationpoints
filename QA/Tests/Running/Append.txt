@@ -78,6 +78,18 @@
 | | ... | Verify that there is no entry for "${ExistingNoChangeObject}" with the Action of "Update - Import"
 
 
+| An Append Import's Job History does not fail when there are Existing Objects
+| | [Documentation] | Verify that when an Append RIP is run which has Source objects that match to existing objects, 
+| | ...				| that the Import's Job History has not errors.
+| | ...				| 
+| | [Tags]			| manual
+| | Go to the Method Tab	| Job History
+
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | Verify that the newest entry for "${IntegrationName}" has no Errors
+
+
 *** Keywords *** 
 
 | Create Suite Setup Data
