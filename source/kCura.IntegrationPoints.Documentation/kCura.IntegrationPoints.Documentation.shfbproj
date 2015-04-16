@@ -59,7 +59,7 @@
     <CopyrightHref>http://www.kcura.com</CopyrightHref>
     <ProjectSummary>The kCura.IntegrationPoints.Contracts namespace contains all base functionality used for creating source providers for integrating data into a Relativity object.</ProjectSummary>
     <VisibleItems>InheritedMembers, InheritedFrameworkMembers, ProtectedInternalAsProtected</VisibleItems>
-    <MissingTags>None</MissingTags>
+    <MissingTags>AutoDocumentCtors</MissingTags>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="kCura.IntegrationPoints.Contracts" isExposed="True">
         <Filter entryType="Interface" fullName="kCura.IntegrationPoints.Contracts.ISynchronizerFactory" filterName="ISynchronizerFactory" isExposed="False" />
