@@ -68,11 +68,11 @@
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Change to the All History View
-| | ... | 2. View the History records for the Custodian "${ExistingNoChangeObject}" import "Update - Import"
+| | ... | 2. View the latest History records for the Custodian "${ExistingNoChangeObject}" import "Update - Import"
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the "Update - Import" entry for the Custodian "${ExistingNoChangeObject}" did not change the existing values to new values, 
-| | ... | they just changed from the existing values to the same existing values.
+| | ... | they just changed from the existing values to the same existing values (except for UniqueID which may or may not have updated).
 
 
 *** Keywords *** 
