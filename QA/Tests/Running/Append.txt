@@ -83,7 +83,7 @@
 | | ...				| that the Import's Job History has not errors.
 | | ...				| 
 | | [Tags]			| manual
-| | Go to the Method Tab	| Job History
+| | Go to the Tab	| Job History
 
 | | Run the following manual steps:
 | | ... | Expected Results:

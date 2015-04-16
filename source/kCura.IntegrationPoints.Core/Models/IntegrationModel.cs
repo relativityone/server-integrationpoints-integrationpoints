@@ -67,7 +67,11 @@ namespace kCura.IntegrationPoints.Core.Models
 				SelectedFrequency = rule.Interval.ToString();
 				if (rule.LocalTimeOfDay.HasValue)
 				{
-					var time = new DateTime(rule.LocalTimeOfDay.Value.Ticks).ToUniversalTime();
+					var date = DateTime.Today;
+					var ticks = new DateTime(rule.LocalTimeOfDay.Value.Ticks);
+					date = date.AddHours(ticks.Hour);
+					date = date.AddMinutes(ticks.Minute);
+					var time = date.ToUniversalTime();
 					this.ScheduledTime = time.Hour + ":" + time.Minute;
 				}
 			}
