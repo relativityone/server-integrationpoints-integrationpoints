@@ -85,9 +85,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			return isFull;
 		}
 
-		public void CleanUp()
-		{
-		}
+		public void CleanUp(){}
 
 		public virtual void KickOffImport(IDataReader dataReader)
 		{
@@ -259,9 +257,30 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			{
 				foreach (JobReport.RowError error in errors)
 				{
-					OnDocumentError(error.Identifier, error.Message);
+					if (ShouldProcessError(error))
+					{
+						OnDocumentError(error.Identifier, error.Message);
+					}
 				}
 			}
+		}
+
+		private bool ShouldProcessError(JobReport.RowError error)
+		{
+			if (this.Settings.OverwriteMode == OverwriteModeEnum.Overlay
+	&& error.Message.Contains("no document to overwrite"))
+			{
+				//skip
+				return false;
+			}
+			else if (this.Settings.OverwriteMode == OverwriteModeEnum.Append
+							 && error.Message.Contains("document with identifier")
+							 && error.Message.Contains("already exists in the workspace"))
+			{
+				//skip
+				return false;
+			}
+			return true;
 		}
 
 		private void CompleteBatch(DateTime start, DateTime end, int totalRows, int errorRows)
