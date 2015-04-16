@@ -31,9 +31,9 @@ namespace kCura.ScheduleQueue.Core.Tests.Integration.Service
 			AgentTypeInformation ai = agentService.AgentTypeInformation;
 			var jobService = new JobService(agentService, agentHelper);
 
-			Job jobOld = jobService.GetJob(caseID1, relatedObjectArtifactID, taskType);
+			Job jobOld = jobService.GetScheduledJob(caseID1, relatedObjectArtifactID, taskType);
 			if (jobOld != null) jobService.DeleteJob(jobOld.JobId);
-			jobOld = jobService.GetJob(caseID2, relatedObjectArtifactID, taskType);
+			jobOld = jobService.GetScheduledJob(caseID2, relatedObjectArtifactID, taskType);
 			if (jobOld != null) jobService.DeleteJob(jobOld.JobId);
 			Job job1 = jobService.CreateJob(caseID1, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121, null, null);
 			Job job2 = jobService.CreateJob(caseID2, relatedObjectArtifactID, taskType, DateTime.UtcNow, "My Test Job Detail", 1212121, null, null);

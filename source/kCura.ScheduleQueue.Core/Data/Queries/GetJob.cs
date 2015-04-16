@@ -26,6 +26,7 @@ namespace kCura.ScheduleQueue.Core.Data.Queries
 
 		public DataRow Execute(int workspaceID, int relatedObjectArtifactID, string taskType)
 		{
+			//Gets only scheduled job
 			string sql = string.Format(Resources.GetJobByRelatedObjectID, qDBContext.TableName);
 			List<SqlParameter> sqlParams = new List<SqlParameter>();
 			sqlParams.Add(new SqlParameter("@WorkspaceID", workspaceID));

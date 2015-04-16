@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Web;
 using kCura.IntegrationPoints.Contracts.Models;
+using Relativity.CustomPages;
 
 namespace kCura.IntegrationPoints.Web
 {
 	public class SessionService : ISessionService
 	{
 		public const string SESSION_KEY = "__WEB_SESSION_KEY__";
-		
+
 		public static ISessionService Session
 		{
 			get
@@ -29,17 +30,26 @@ namespace kCura.IntegrationPoints.Web
 
 		public int WorkspaceID
 		{
-			get { return (int) HttpContext.Current.Session["workspaceID"]; }
+			get { return (int)HttpContext.Current.Session["workspaceID"]; }
 		}
 
-		public int UserID {
+		public int UserID
+		{
 			get
 			{
-				return (int) HttpContext.Current.Session["UserID"];
+				return ConnectionHelper.Helper().GetAuthenticationManager().UserInfo.ArtifactID;
+			}
+		}
+
+		public int WorkspaceUserID
+		{
+			get
+			{
+				return ConnectionHelper.Helper().GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID;
 			}
 		}
 
 
-		public Dictionary<string, IEnumerable<FieldMap>> Fields{ get; set; }
+		public Dictionary<string, IEnumerable<FieldMap>> Fields { get; set; }
 	}
 }

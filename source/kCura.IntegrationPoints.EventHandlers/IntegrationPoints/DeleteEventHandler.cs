@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				int workspaceID = this.Helper.GetActiveCaseID();
 				int integrationPointID = this.ActiveArtifact.ArtifactID;
-				Job job = JobService.GetJob(workspaceID, integrationPointID, TaskType.SyncManager.ToString());
+				Job job = JobService.GetScheduledJob(workspaceID, integrationPointID, TaskType.SyncManager.ToString());
 				
 				if (job != null)
 				{
