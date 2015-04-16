@@ -81,7 +81,9 @@
 | The Columns on the Job History Error table are correct
 | | [Documentation] | Verifies that the Job History Error table on the Job History View page has the correct columns.
 | | [Tags]			| manual	| automateable?
-| | Verify that the item list contains the following fields	| 
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | Verify that the item list contains the following fields	| 
 | | ... | Source Unique ID	| 
 | | ... | Error				| 
 | | ... | Timestamp (UTC)	| 
@@ -90,13 +92,21 @@
 
 | The Sorting on the Job History Error table is correct
 | | [Documentation] | Verifies that the Job History Error table on the Job History View page has the correct sorting.
-| | [Tags]			| manual	| unimplemented
+| | [Tags]			| manual	| 
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. At least three records appear in the ItemList
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the Item List is sorted by the following Date Column in Ascending Order	| Timestamp (UTC)
+
+
+| The Start and End Time Fields display in UTC
+| | [Documentation] | Verifies that the Start and End Time Fields are calculated using UTC.
+| | [Tags]			| manual	| time
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | Verify that the Start and End Time fields are displayed in UTC time.
 
 
 *** Keywords ***

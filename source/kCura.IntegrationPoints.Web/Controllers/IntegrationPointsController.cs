@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		private readonly RSAPIRdoQuery _rdoQuery;
 		private readonly ITabService _tabService;
 		private readonly IPermissionService _permissionService;
-		public IntegrationPointsController(IntegrationPointService reader, RSAPIRdoQuery relativityRdoQuery, ITabService tabService,IPermissionService permissionService)
+		public IntegrationPointsController(IntegrationPointService reader, RSAPIRdoQuery relativityRdoQuery, ITabService tabService, IPermissionService permissionService)
 		{
 			_reader = reader;
 			_rdoQuery = relativityRdoQuery;
@@ -34,17 +34,18 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			var tabID = _tabService.GetTabId(objectTypeId);
 			var objectID = _rdoQuery.GetObjectType(objectTypeId).ParentArtifact.ArtifactID;
 			var previousURL = "List.aspx?AppID=" + SessionService.WorkspaceID + "&ArtifactID=" + objectID + "&ArtifactTypeID=" + objectTypeId + "&SelectedTab=" + tabID;
-			if (_permissionService.userCanImport(SessionService.UserID))
+			if (_permissionService.userCanImport(SessionService.WorkspaceUserID))
 			{
 				return View(new EditPoint
 				{
 					AppID = SessionService.WorkspaceID,
 					ArtifactID = id.GetValueOrDefault(0),
 					UserID = base.SessionService.UserID,
+					CaseUserID = base.SessionService.WorkspaceUserID,
 					URL = previousURL
 				});
 			}
-			return View("NotEnoughPermission", new EditPoint {URL = previousURL});
+			return View("NotEnoughPermission", new EditPoint { URL = previousURL });
 
 		}
 
@@ -68,7 +69,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return View("LDAPConfiguration", "_StepLayout");
 		}
 
-	
+
 		public ActionResult Details(int id)
 		{
 			var integrationViewModel = _reader.ReadIntegrationPoint(id);

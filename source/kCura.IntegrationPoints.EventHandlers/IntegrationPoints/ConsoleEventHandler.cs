@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			var console = new Console();
 			console.Title = "IMPORT";
 			console.ButtonList = new List<ConsoleButton>();
-			bool isEnabled = PermissionService.userCanImport(base.Helper.GetAuthenticationManager().UserInfo.ArtifactID);
+			bool isEnabled = PermissionService.userCanImport(base.Helper.GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID);
 			
 			console.ButtonList.Add(new ConsoleButton
 				{

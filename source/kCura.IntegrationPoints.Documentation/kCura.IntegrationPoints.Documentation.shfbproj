@@ -59,7 +59,7 @@
     <CopyrightHref>http://www.kcura.com</CopyrightHref>
     <ProjectSummary>The kCura.IntegrationPoints.Contracts namespace contains all base functionality used for creating source providers for integrating data into a Relativity object.</ProjectSummary>
     <VisibleItems>InheritedMembers, InheritedFrameworkMembers, ProtectedInternalAsProtected</VisibleItems>
-    <MissingTags>None</MissingTags>
+    <MissingTags>AutoDocumentCtors</MissingTags>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="kCura.IntegrationPoints.Contracts" isExposed="True">
         <Filter entryType="Interface" fullName="kCura.IntegrationPoints.Contracts.ISynchronizerFactory" filterName="ISynchronizerFactory" isExposed="False" />
@@ -67,11 +67,10 @@
     </ApiFilter>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="kCura.IntegrationPoints.Contracts" isDocumented="True">The kCura.IntegrationPoints.Contracts includes classes and interfaces for building a data source provider and deploying the provider in its own application domain.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="kCura.IntegrationPoints.Contracts.Models" isDocumented="True">The kCura.IntegrationPoints.Contracts.Models namespace provides classes and enumerations used to map data from the source fields to workspace fields.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="kCura.IntegrationPoints.Contracts.Provider" isDocumented="True">The kCura.IntegrationPoints.Contracts.Provider namespace includes interfaces for the batching and importing of unique identifiers on data fields, and the data stored in these fields.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="kCura.IntegrationPoints.Contracts.Syncronizer" isDocumented="True">The kCura.IntegrationPoints.Contracts.Synchronizer namespace provides interfaces that define how data is handled during import.</NamespaceSummaryItem>
-      <NamespaceSummaryItem name="kCura.IntegrationPoints.SourceProviderInstaller" isDocumented="True">The kCura.IntegrationPoints.SourceProviderInstaller namespace includes the classes and delegates used to register the provider with Relativity and uninstall the provider from a workspace.</NamespaceSummaryItem>
-    </NamespaceSummaries>
+<NamespaceSummaryItem name="kCura.IntegrationPoints.Contracts.Models" isDocumented="True">The kCura.IntegrationPoints.Contracts.Models namespace provides classes and enumerations used to map data from the source fields to workspace fields.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="kCura.IntegrationPoints.Contracts.Provider" isDocumented="True">The kCura.IntegrationPoints.Contracts.Provider namespace includes interfaces for the batching and importing of unique identifiers on data fields, and the data stored in these fields.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="kCura.IntegrationPoints.SourceProviderInstaller" isDocumented="True">The kCura.IntegrationPoints.SourceProviderInstaller namespace includes the classes and delegates used to register the provider with Relativity and uninstall the provider from a workspace.</NamespaceSummaryItem>
+<NamespaceSummaryItem name="kCura.IntegrationPoints.Contracts.Synchronizer" isDocumented="True">The kCura.IntegrationPoints.Contracts.Synchronizer namespace provides interfaces that define how data is handled during import.</NamespaceSummaryItem></NamespaceSummaries>
     <WebsiteSdkLinkType>Msdn</WebsiteSdkLinkType>
     <HtmlSdkLinkType>Msdn</HtmlSdkLinkType>
     <IncludeFavorites>False</IncludeFavorites>

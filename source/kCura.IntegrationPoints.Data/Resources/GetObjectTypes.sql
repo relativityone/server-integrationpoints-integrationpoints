@@ -1,14 +1,22 @@
-﻿SELECT
-ot.DescriptorArtifactTypeID
-,ot.Name
-FROM [EDDSDBO].ObjectType ot
+﻿SELECT ot.DescriptorArtifactTypeID, ot.Name
+FROM [EDDSDBO].ObjectType ot WITH(NOLOCK)
 WHERE DescriptorArtifactTypeID in
-(select atg.ArtifactTypeID
-From [EDDSDBO].[GroupUser] gu
-join [EDDSDBO].[AccessControlListPermission]  acl on gu.GroupArtifactID = acl.GroupID
-join [EDDSDBO].[Permission] p on p.PermissionID = acl.PermissionID
-join [EDDSDBO].[ArtifactTypeGrouping] atg on atg.ArtifactGroupingID = p.ArtifactGrouping
-where UserArtifactID = @userID AND p.[Type] = 6
+(
+	SELECT atg.ArtifactTypeID
+	FROM [EDDSDBO].[GroupUser] gu WITH(NOLOCK)
+	JOIN [EDDSDBO].[AccessControlListPermission]  acl WITH(NOLOCK) on gu.GroupArtifactID = acl.GroupID
+	JOIN [EDDSDBO].[Permission] p WITH(NOLOCK) on p.PermissionID = acl.PermissionID
+	JOIN [EDDSDBO].[ArtifactTypeGrouping] atg WITH(NOLOCK) on atg.ArtifactGroupingID = p.ArtifactGrouping
+	WHERE p.[Type] = 6
+	AND 
+	UserArtifactID in 
+	(
+		SELECT [CaseUserID] FROM [EDDSDBO].[UserIdGenerator] WITH(NOLOCK) WHERE [CaseUserID] = @userID OR [UserArtifactID] = @userID
+		UNION
+		SELECT [UserArtifactID] FROM [EDDSDBO].[UserIdGenerator] WITH(NOLOCK) WHERE [CaseUserID] = @userID OR [UserArtifactID] = @userID
+		UNION
+		SELECT @userID
+	)
 )
 AND (DescriptorArtifactTypeID > 1000000 OR DescriptorArtifactTypeID = 10)
-order by ot.Name
+ORDER BY ot.Name

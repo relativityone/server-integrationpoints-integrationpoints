@@ -1,6 +1,6 @@
 
 *** Settings ***
-| Documentation		| Testing the Runtime fields on the of the Status Card's of the Integration Point's View Mode.
+| Documentation		| Testing the Runtime and Scheduled Time fields on the of the Status Card's of the Integration Point's View Mode.
 | Metadata	     	| Authors	| William Sehy
 | Force Tags		| manual	| in-progress	| team.method
 #| Suite Setup		| Log	| This is the suite setup keyword.
@@ -34,7 +34,8 @@
 | | ... | 1. View the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Next Scheduled Runtime is set to "<Today's Date> 10:11 PM"
+| | ... | 1. Verify that the Scheduled Time is set to "10:11 PM"
+| | ... | 2. Verify that the Next Scheduled Runtime is set to "<Today's Date> 10:11 PM"
 
 
 | The Next Scheduled Runtime calculates correctly for Weekly Jobs
@@ -56,7 +57,8 @@
 | | ... | 1. View the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Next Scheduled Runtime is set to "<Next Saturday's Date> 10:11 PM"
+| | ... | 1. Verify that the Scheduled Time is set to "10:11 PM"
+| | ... | 2. Verify that the Next Scheduled Runtime is set to "<Next Saturday's Date> 10:11 PM"
 
 
 | The Next Scheduled Runtime calculates correctly for Monthly Jobs on X day
@@ -78,7 +80,8 @@
 | | ... | 1. View the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Next Scheduled Runtime is set to "<The date of the next day 28 of the month> 10:11 PM"
+| | ... | 1. Verify that the Scheduled Time is set to "10:11 PM"
+| | ... | 2. Verify that the Next Scheduled Runtime is set to "<The date of the next day 28 of the month> 10:11 PM"
 
 
 | The Next Scheduled Runtime calculates correctly for Monthly Jobs on the X Y of the Month
@@ -100,7 +103,8 @@
 | | ... | 1. View the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Next Scheduled Runtime is set to "<The date of the next second Tuesday the month> 10:11 PM"
+| | ... | 1. Verify that the Scheduled Time is set to "10:11 PM"
+| | ... | 2. Verify that the Next Scheduled Runtime is set to "<The date of the next second Tuesday the month> 10:11 PM"
 
 
 | The Next Scheduled Runtime calculates correctly when the scheduled time uses single digit values
@@ -120,7 +124,8 @@
 | | ... | 1. View the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Next Scheduled Runtime is set to "<Tomorrow's Date> 7:02 AM"
+| | ... | 1. Verify that the Scheduled Time is set to "7:02 AM"
+| | ... | 2. Verify that the Next Scheduled Runtime is set to "<Tomorrow's Date> 7:02 AM"
 
 
 | The Next Scheduled Runtime updates correctly when the scheduled job runs
@@ -141,7 +146,9 @@
 | | ... | 2. View the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Next Scheduled Runtime is set to (<Tomorrow's Date> <The Scheduled Time> + ${UTC}) 
+| | ... | 
+| | ... | 1. Verify that the Scheduled Time is set to "<The Scheduled Time> + ${UTC}"
+| | ... | 2. Verify that the Next Scheduled Runtime is set to (<Tomorrow's Date> <The Scheduled Time> + ${UTC}) 
 
 
 | The Next Scheduled Runtime is blank when the End Date has passed
@@ -155,14 +162,15 @@
 | | ... | - Frequency: Daily
 | | ... | - Start Date: <Two days ago's Date>
 | | ... | - End Date: <Yesterday's Date>
-| | ... | - Scheduled Time (local): <Any valid value>
+| | ... | - Scheduled Time (local): <Solve for X. X + ${UTC} = 07:02>
 | | ... | 2. The rest of the Integration Points' data is valid
 | | ... | 
 | | ... | Steps:
 | | ... | 1. View the Integration Point
 | | ... | 
 | | ... | Expected Results:
-| | ... | Verify that the Next Scheduled Runtime is blank
+| | ... | 1. Verify that the Scheduled Time is set to "7:02 AM"
+| | ... | 2. Verify that the Next Scheduled Runtime is blank
 
 
 | The Last Runtime field is empty when the Integration Point has never been Imported
