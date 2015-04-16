@@ -55,7 +55,7 @@
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Change to the All History View
-| | ... | 2. View the History records for the ${ExistingNoChangeObject} Custodian (you may need to use [FirstName LastName]
+| | ... | 2. View the History records for the "${ExistingNoChangeObject}" Custodian
 | | ... |
 | | ... | Expected Results:
 | | ... | Verify that the "Update - Import" entry for the Custodian "${ExistingNoChangeObject}" does not modify the data to different values (it just updates to the existing values)
@@ -72,22 +72,22 @@
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${ExistingNoChangeObject}	|
-| | ... | Email			| rsun@gameofholdstesting.corp |
+| | ... | Full Name		| ${ExistingNoChangeObject}		|
+| | ... | Email			| rsun@gameofholdstesting.corp	|
 | | ... | Department	| AppendAndOverlay
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingAndUpdatedObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
 | | Create a Custodian using API	| 
 | | ... | Full Name		| ${ExistingAndUpdatedObject}	|
-| | ... | Email			| msun@gameofholdstesting.corp |
+| | ... | Email			| msun@gameofholdstesting.corp	|
 | | ... | Department	| AppendAndOverla
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
 
-| | @{Step1Fields}=		| Create list | ${IntegrationName} | Append/Overlay |
-| | ... | LDAP | Custodian | No
+| | @{Step1Fields}=		| Create list | 
+| | ... | ${IntegrationName} | Append/Overlay | LDAP | Custodian | No
 | | @{Step2Fields}=		| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
 | | ... | (department=AppendAndOverlay) | FastBind | testing\\rellockdown | P@ssw0rd@1
 | | @{Step3Mapping}=	| Create List	|
@@ -110,6 +110,7 @@
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
+
 
 *** Settings ***
 | Library	| Collections
