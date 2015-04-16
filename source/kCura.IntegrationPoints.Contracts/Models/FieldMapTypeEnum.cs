@@ -18,7 +18,7 @@
         /// </summary>
 		Parent,
 		/// <summary>
-		/// Native File Path 
+		/// The path for the native file.
 		/// </summary>
 		NativeFilePath
 	}
