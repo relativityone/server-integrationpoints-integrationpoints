@@ -16,7 +16,7 @@
 | ${RootCustodian2}			| Nest, Cat		| # Manager is ${AnotherFolderManager}
 | ${NestedCustodian}		| Nest, Bird	| # Manager is ${RootManager}
 | ${NestedManager}			| Manager, Middle
-| ${AnotherFolderManager}	| Manager, Another Folder
+| ${AnotherFolderManager}	| Manager, AnotherFolder
 | ${RootManager}			| Manager, Top
 | ${Custodians Grid}	| gbox_custodianGrid
 
@@ -67,7 +67,7 @@
 | | ...				| [id] dc2b898f-b605-11e4-bfb4-90b11c6c5ae4
 | | [Tags]			| dap827	| automated
 | | Go to the Method Tab	| Custodian
-| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name	| ${AnotherFolderManager} 
+| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name	| ${AnotherFolderManager}
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
@@ -93,12 +93,13 @@
 | | ... | LDAP | Custodian | No
 | | @{Step2Fields}=		| Create List | testing.corp/OU=Testing - Users,DC=testing,DC=corp |
 | | ... | (department=Nested) | FastBind | rellockdown | P@ssw0rd@1 | Yes
-| | @{Step3Mapping}=	| Create List	|
+| | @{Step3Mapping}=	| Create List	| 
 | | ... | Email			| mail			| 
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
 | | ... | Department	| department	| 
-| | ... | UniqueID		| objectguid
+| | ... | UniqueID		| objectguid	| 
+| | ... | Manager		| manager
 
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
 
