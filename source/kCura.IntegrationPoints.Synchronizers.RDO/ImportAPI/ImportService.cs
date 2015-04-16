@@ -85,9 +85,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			return isFull;
 		}
 
-		public void CleanUp()
-		{
-		}
+		public void CleanUp(){}
 
 		public virtual void KickOffImport(IDataReader dataReader)
 		{

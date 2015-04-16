@@ -40,11 +40,20 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			}
 			_job = job;
 			reporter.OnBatchComplete += this.JobComplete;
+			reporter.OnDocumentError += RowError;
+		}
+
+		private int rowErrors = 0;
+		public void RowError(string documentIdentifier, string errorMessage)
+		{
+			rowErrors++;
 		}
 		private void JobComplete(DateTime start, DateTime end, int total, int errorCount)
 		{
+			//skip errorCount because we do supress some errors so RowError is a more reliable mechanism 
 			var tableName = JobTracker.GenerateTableTempTableName(_job, _helper.GetBatchInstance(_job).ToString());
-			var stats = _query.UpdateAndRetreiveStats(tableName, _job.JobId, new JobStatistics { Completed = total, Errored = errorCount });
+			var stats = _query.UpdateAndRetreiveStats(tableName, _job.JobId, new JobStatistics { Completed = total, Errored = rowErrors });
+			rowErrors = 0;
 			var historyRdo = _service.GetRDO(_helper.GetBatchInstance(_job));
 			historyRdo.RecordsImported = stats.Imported;
 			historyRdo.RecordsWithErrors = stats.Errored;
