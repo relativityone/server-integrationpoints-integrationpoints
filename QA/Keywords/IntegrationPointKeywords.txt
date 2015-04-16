@@ -285,7 +285,7 @@
 | | ... | Outdated Keyword call. Please update step names as "${NextStep}" was not found.	| # Else
 | | Click	| id=next
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${NextStep}
-| | Wait for the Loading Indicator to disappear
+| | Wait for the Loading Indicator to disappear | 20s
 
 | Proceed to the Previous Step of the Integration Point wizard
 | | [Documentation]	| This keyword goes to the previous Step of the Integration Point wizard.
@@ -400,7 +400,7 @@
 | | [Documentation]	| A keyword that verifies the specified field has an input type of textarea.
 | | [ARGUMENTS] 	| ${FieldID}
 | | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::textarea[@id="${FieldID}"]	| The field ID of "${FieldID}" was not present on the page.
-| | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::input[@type="text" and @id="${FieldID}"]	| The "${FieldID}" field does not have an input type of Text.
+| | Page Should Contain Element	| xpath=//div[@class="field-value"]/child::textarea[@id="${FieldID}"] | The "${FieldID}" field does not have an input type of Text Area.
 
 | Verify that the following field ID has a password input
 | | [Documentation]	| A keyword that verifies the specified field has an input type of Password.
