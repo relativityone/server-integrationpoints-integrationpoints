@@ -7,6 +7,7 @@ namespace kCura.IntegrationPoints.Web
 	{
 		int WorkspaceID { get; }
 		int UserID { get; }
+		int WorkspaceUserID { get; }
 		Dictionary<string, IEnumerable<FieldMap>> Fields { get; } 
 	}
 }
