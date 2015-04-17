@@ -14,6 +14,8 @@ WHERE DescriptorArtifactTypeID in
 		SELECT [CaseUserID] FROM [EDDSDBO].[UserIdGenerator] WITH(NOLOCK) WHERE [CaseUserID] = @userID OR [UserArtifactID] = @userID
 		UNION
 		SELECT [UserArtifactID] FROM [EDDSDBO].[UserIdGenerator] WITH(NOLOCK) WHERE [CaseUserID] = @userID OR [UserArtifactID] = @userID
+		UNION
+		SELECT @userID
 	)
 )
 AND (DescriptorArtifactTypeID > 1000000 OR DescriptorArtifactTypeID = 10)

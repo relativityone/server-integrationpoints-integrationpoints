@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.IntegrationPoints.Data.Extensions;
 
@@ -104,6 +106,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			if (rule != null)
 			{
 				_jobService.CreateJob<object>(null, TaskType.SyncManager, _context.WorkspaceID, ip.ArtifactId, rule);
+			}
+			else
+			{
+			var job = 	_jobService.GetJob(_context.WorkspaceID, ip.ArtifactId, TaskType.SyncManager.ToString());
+				_jobService.DeleteJob(job.JobId);
 			}
 			return ip.ArtifactId;
 		}

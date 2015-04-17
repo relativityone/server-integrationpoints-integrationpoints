@@ -41,6 +41,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 					AppID = SessionService.WorkspaceID,
 					ArtifactID = id.GetValueOrDefault(0),
 					UserID = base.SessionService.UserID,
+					CaseUserID = base.SessionService.WorkspaceUserID,
 					URL = previousURL
 				});
 			}

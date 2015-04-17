@@ -5,6 +5,8 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using Relativity.API;
+using Relativity.CustomPages;
+using IDBContext = Relativity.API.IDBContext;
 
 namespace kCura.IntegrationPoints.Web
 {
@@ -12,6 +14,7 @@ namespace kCura.IntegrationPoints.Web
 	{
 		private readonly WebClientFactory _factory;
 		private const string USER_HEADER_VALUE = "X-IP-USERID";
+		private const string CASEUSER_HEADER_VALUE = "X-IP-CASEUSERID";
 		public ServiceContextHelperForWeb(ICPHelper helper, IEnumerable<IWorkspaceService> services, WebClientFactory factory)
 		{
 			this.helper = helper;
@@ -35,14 +38,11 @@ namespace kCura.IntegrationPoints.Web
 		}
 		public int GetEddsUserID()
 		{
-			//TODO: get actual edds user id
 			return GetRequestNumericValueByKey(USER_HEADER_VALUE);
-			//return helper.GetAuthenticationManager().UserInfo.ArtifactID;
 		}
 		public int GetWorkspaceUserID()
 		{
-			return GetEddsUserID();
-			//return helper.GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID;
+			return GetRequestNumericValueByKey(CASEUSER_HEADER_VALUE);
 		}
 		public IRSAPIService GetRsapiService()
 		{

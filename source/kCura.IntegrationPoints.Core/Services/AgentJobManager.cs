@@ -46,6 +46,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			this.CreateJob(jobDetails, task, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
 		}
 
+	
+
+
 		public void CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId)
 		{
 			var job = this.CreateJobInternal(jobDetails, type, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, GetRootJobId(parentJob), parentJob.JobId);
@@ -88,7 +91,22 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
 			}
 		}
-
+		
+		public Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName)
+		{
+			return _jobService.GetScheduledJob(workspaceID, relatedObjectArtifactID, taskName);
+		}
+		public void DeleteJob(long jobID)
+		{
+			try
+			{
+				_jobService.DeleteJob(jobID);
+			}
+			catch (AgentNotFoundException anfe)
+			{
+				throw new Exception(Properties.ErrorMessages.NoAgentInstalled, anfe);
+			}
+		}
 		public static long? GetRootJobId(Job parentJob)
 		{
 			long? rootJobId = parentJob.RootJobId;

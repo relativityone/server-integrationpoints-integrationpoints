@@ -47,7 +47,8 @@
 			settings.beforeSend = function (request) {
 				var args = $.makeArray(arguments);
 				if(data.params){
-					request.setRequestHeader('X-IP-USERID', data.params['userID']);
+				    request.setRequestHeader('X-IP-USERID', data.params['userID']);
+				    request.setRequestHeader('X-IP-CASEUSERID', data.params['caseUserID']);
 				}
 				if($.isFunction(beforeSend)){
 					return beforeSend.apply(this, args);
