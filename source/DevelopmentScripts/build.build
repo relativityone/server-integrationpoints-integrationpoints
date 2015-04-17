@@ -65,9 +65,10 @@
 	<include buildfile="Update Storyboard.include"/>
 	<include buildfile="Build Projects.Coverage.include"/>
 	<include buildfile="Build Projects.NuGet.include"/>
+	<include buildfile="Build SDK.include"/>
 
 	<!-- Build all LDAPSync projects- presence of a Build.log file indicates failure -->
-	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, merge_ldap, merge_source_provider_installer">				
+	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, merge_ldap, merge_source_provider_installer, build_ip_sdk">				
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
