@@ -8,6 +8,7 @@
 	<target name="copy_sdk_files">
 		<exec program="${ldap.scripts.directory}\copy.sdk.files.bat">
 			<environment>
+				<variable name="LDAPSync" value="${root}" />
 				<variable name="SDK_TARGET" value="${target.code.directory}" />
 				<variable name="IPSdkOutput" value="${Package.SDK.Output}" />
 			</environment>
