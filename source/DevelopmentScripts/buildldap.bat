@@ -14,6 +14,9 @@ if not "%1" == "" (
 if not "%2" == "" (
 	SET "BUILDACTION=%2"
 )
+if not "%3" == "" (
+	SET "buildType=%3"
+)
 
 SET LDAPSyncRoot=%LDAPSync%
 pushd %LDAPSync%\developmentscripts
