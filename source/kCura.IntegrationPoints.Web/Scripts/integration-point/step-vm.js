@@ -54,7 +54,7 @@
 					result.scheduler.scheduledTime = timeSplit[0] - 11 + ":" + timeSplit[1];
 					result.scheduler.selectedTimeFormat='PM';
 				} else {
-					if (parseInt(timeSplit[0],10) === 0) {
+					if (parseInt(timeSplit[0], 10) === 0) {
 						timeSplit[0] = '12';
 					}
 					result.scheduler.scheduledTime = timeSplit[0] + ":" + timeSplit[1];
