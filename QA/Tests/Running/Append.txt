@@ -15,7 +15,7 @@
 | ${NewObject}					| Man, Cat
 | ${ExistingAndUpdatedObject}	| Man, Dog
 | ${ExistingNoChangeObject}		| Man, Bird 
-| ${Manager}                 | Man, Biddog
+| ${Manager}                 | Man, Bigdog
 | ${Custodians Grid}	| gbox_custodianGrid
 
 
