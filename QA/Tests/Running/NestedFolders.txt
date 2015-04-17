@@ -92,7 +92,7 @@
 | | @{Step1Fields}=		| Create List | ${IntegrationName} | Append/Overlay |
 | | ... | LDAP | Custodian | No
 | | @{Step2Fields}=		| Create List | testing.corp/OU=Testing - Users,DC=testing,DC=corp |
-| | ... | (department=Nested) | FastBind | rellockdown | P@ssw0rd@1 | Yes
+| | ... | (department=Nested) | FastBind | testing\\rellockdown | P@ssw0rd@1 | Yes
 | | @{Step3Mapping}=	| Create List	| 
 | | ... | Email			| mail			| 
 | | ... | First Name	| givenname		| 
@@ -104,7 +104,7 @@
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}
-| | [Teardown]		| Drop connection to the relativity services api
+| | [Teardown]		| Run Keywords | Drop connection to the relativity services api | Capture Page Screenshot
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.

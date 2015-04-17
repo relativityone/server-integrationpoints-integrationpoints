@@ -26,7 +26,9 @@
 | | ...				| [id] 130ad15e-a89f-11e4-9aa5-b8ca3a83048f
 | | [Tags]			| automated
 | | Go to the Method Tab | Custodian
-| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Name	| ${NewObject} 
+| | Filter the following Grid on the following Columns by the following Values | ${Custodians Grid} | 
+| | ... | Name			| ${NewObject}	| 
+| | ... | Department	| AppendAndOverlay
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
@@ -58,7 +60,7 @@
 | | ... | 2. View the History records for the "${ExistingNoChangeObject}" Custodian
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify that the "Update - Import" entry for the Custodian "${ExistingNoChangeObject}" does not modify the data to different values (it just updates to the existing values)
+| | ... | Verify that the "Update - Import" entry for the Custodian "${ExistingNoChangeObject}" does not modify the data to different values (it just updates to the existing values), except for uniquid which is changed from blank to a value.
 
 
 *** Keywords *** 

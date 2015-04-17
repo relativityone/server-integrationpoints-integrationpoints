@@ -99,6 +99,7 @@ h1
 .loading-dialog *
 {
 	margin: 0 auto;
+	min-height: 90px;
 }
 
 .loading-dialog p
@@ -111,11 +112,14 @@ h1
 	background: url("./Images/loading.gif") no-repeat center;
 	height: 80px;
 	width: 80px;
-	left: 0;
-	right: 200px;
+	  left: 11px;
+  right: 208px;
+  top: 19px;
 }
 
-
+.ui-dialog.ui-widget.ui-widget-content.ui-corner-all {
+	width: 100px;
+}
 .console
 {
 	height: 100%;

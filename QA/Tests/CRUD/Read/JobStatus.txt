@@ -6,6 +6,9 @@
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
 
+
+#------------------- this functionality has not been implemented ------------------------
+
 *** Variables ***
 
 | ${WorkspaceName}	          | LDAP Sync

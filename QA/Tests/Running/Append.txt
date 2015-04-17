@@ -15,6 +15,7 @@
 | ${NewObject}					| Man, Cat
 | ${ExistingAndUpdatedObject}	| Man, Dog
 | ${ExistingNoChangeObject}		| Man, Bird 
+| ${Manager}                 | Man, Bigdog
 | ${Custodians Grid}	| gbox_custodianGrid
 
 
@@ -29,6 +30,14 @@
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
+| An Append imports will Overlay Managers
+| | [Documentation] | Verify that Append imports will Overlay Manager information by linking an Existing Custodians to a new Manager.
+| | ... | [id] 65ef890f-e46e-11e4-8722-90b11c6c5ae4
+| | [Tags]			| automated
+| | Go to the Method Tab	| Custodian
+| | View Custodian	| ${ExistingAndUpdatedObject} 
+
+| | Verify that the current Custodian has the Following Manager	| ${Manager}
 
 | An Append import Creates new History objects
 | | [Documentation] | Verify that when an Append RIP is run which has new source recods, 
@@ -78,14 +87,14 @@
 | | ... | Verify that there is no entry for "${ExistingNoChangeObject}" with the Action of "Update - Import"
 
 
-| An Append Import's Job History does not fail when there are Existing Objects
-| | [Documentation] | Verify that when an Append RIP is run which has Source objects that match to existing objects, 
+| An Append import's Job History does not fail when there are Existing Objects
+| | [Documentation] | Verify that when an Append RIP is run which has Source objects that match to existing objects,
 | | ...				| that the Import's Job History has not errors.
 | | ...				| 
 | | [Tags]			| manual
-| | Go to the Tab	| Job History
-
 | | Run the following manual steps:
+| | ... | Steps:
+| | ... | Go to the Method Tab	| Job History
 | | ... | Expected Results:
 | | ... | Verify that the newest entry for "${IntegrationName}" has no Errors
 
@@ -121,11 +130,12 @@
 | | ... | Department	| department	| 
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
+| | ... | Manager       | manager       | 
 | | ... | UniqueID		| objectguid
 | | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}
-| | [Teardown]		| Drop connection to the relativity services api
+| | [Teardown]		| Run Keywords | Drop connection to the relativity services api | Capture Page Screenshot
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
