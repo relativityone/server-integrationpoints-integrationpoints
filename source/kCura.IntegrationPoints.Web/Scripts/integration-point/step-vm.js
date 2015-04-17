@@ -98,7 +98,11 @@
 					if (result.scheduler.selectedTimeFormat == "AM") {
 						result.scheduler.scheduledTime = timeSplit[0] == 12 ? helper.timeLocalToUtc(0+':'+timeSplit[1]) : helper.timeLocalToUtc(time);
 					} else {
-						var hour = parseInt(timeSplit[0]) + 12;
+						var hour = 12;
+						if (parseInt(timeSplit[0], 10) < 12) {
+							hour = parseInt(timeSplit[0], 10) + 12;
+						}
+
 						result.scheduler.scheduledTime = helper.timeLocalToUtc(hour+':'+timeSplit[1]);
 					}
 					
