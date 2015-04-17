@@ -47,6 +47,8 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public DateTime? GetJobNextUtcRunDateTime(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
 		{
+			if (job == null)
+				return null;
 			FinalizeJobResult result = new FinalizeJobResult();
 
 			IScheduleRule scheduleRule = scheduleRuleFactory.Deserialize(job);
@@ -63,6 +65,8 @@ namespace kCura.ScheduleQueue.Core.Services
 
 		public FinalizeJobResult FinalizeJob(Job job, IScheduleRuleFactory scheduleRuleFactory, TaskResult taskResult)
 		{
+			if (job == null)
+				return new FinalizeJobResult() { JobState = JobLogState.Finished};
 			FinalizeJobResult result = new FinalizeJobResult();
 
 			DateTime? nextUtcRunDateTime = GetJobNextUtcRunDateTime(job, scheduleRuleFactory, taskResult);
@@ -117,7 +121,10 @@ namespace kCura.ScheduleQueue.Core.Services
 			else
 			{
 				job = GetScheduledJob(workspaceID, relatedObjectArtifactID, taskType);
-				DeleteJob(job.JobId);
+				if (job != null)
+				{
+					DeleteJob(job.JobId);
+				}
 			}
 			return job;
 		}
