@@ -405,6 +405,7 @@ var IP = IP || {};
 			}
 		});
 
+
 		this.scheduledTime = ko.observable(options.scheduledTime).extend({
 			required: {
 				onlyIf: function () {

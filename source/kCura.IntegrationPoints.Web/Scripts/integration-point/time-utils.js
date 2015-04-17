@@ -8,7 +8,8 @@ IP.timeUtil = (function () {
 	}
 
 	function utcToLocal(dateText, dateFormat) {
-		var inDateMod = new Date(0,0,0,dateText[0],dateText[1]);
+		var temp = new Date();
+		var inDateMod = new Date(temp.getFullYear(), temp.getMonth(), temp.getDate(), dateText[0], dateText[1]);
 		if (!isValidDate(inDateMod)) {
 			return dateText;
 		}

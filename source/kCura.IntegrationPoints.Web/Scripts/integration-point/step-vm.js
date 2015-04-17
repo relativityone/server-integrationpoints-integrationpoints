@@ -54,6 +54,9 @@
 					result.scheduler.scheduledTime = timeSplit[0] - 11 + ":" + timeSplit[1];
 					result.scheduler.selectedTimeFormat='PM';
 				} else {
+					if (parseInt(timeSplit[0],10) === 0) {
+						timeSplit[0] = '12';
+					}
 					result.scheduler.scheduledTime = timeSplit[0] + ":" + timeSplit[1];
 					result.scheduler.selectedTimeFormat = 'AM';
 				}
@@ -95,7 +98,6 @@
 					if (result.scheduler.selectedTimeFormat == "AM") {
 						result.scheduler.scheduledTime = timeSplit[0] == 12 ? helper.timeLocalToUtc(0+':'+timeSplit[1]) : helper.timeLocalToUtc(time);
 					} else {
-						
 						var hour = parseInt(timeSplit[0]) + 12;
 						result.scheduler.scheduledTime = helper.timeLocalToUtc(hour+':'+timeSplit[1]);
 					}
