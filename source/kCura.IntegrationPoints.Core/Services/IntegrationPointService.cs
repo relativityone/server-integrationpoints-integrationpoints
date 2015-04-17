@@ -109,8 +109,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			else
 			{
-			var job = 	_jobService.GetJob(_context.WorkspaceID, ip.ArtifactId, TaskType.SyncManager.ToString());
-				_jobService.DeleteJob(job.JobId);
+				Job job = _jobService.GetJob(_context.WorkspaceID, ip.ArtifactId, TaskType.SyncManager.ToString());
+				if (job != null)
+				{
+					_jobService.DeleteJob(job.JobId);
+				}
 			}
 			return ip.ArtifactId;
 		}
