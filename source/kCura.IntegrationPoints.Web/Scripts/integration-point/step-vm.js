@@ -49,15 +49,18 @@
 				
 				var time = helper.utcToLocal(result.scheduler.scheduledTime.split(':'), "HH:mm");
 				var timeSplit = time.split(':');
-				
-				if ((timeSplit[0] - 12) >= 1) {
-					result.scheduler.scheduledTime = timeSplit[0] - 11 + ":" + timeSplit[1];
-					result.scheduler.selectedTimeFormat='PM';
+				var hour = parseInt(timeSplit[0], 10);
+				if (hour > 12) {
+					result.scheduler.scheduledTime = hour - 12 + ":" + timeSplit[1];
+					result.scheduler.selectedTimeFormat = 'PM';
+				} else if (hour === 12) {
+					result.scheduler.scheduledTime = 12 + ":" + timeSplit[1];
+					result.scheduler.selectedTimeFormat = 'PM';
 				} else {
-					if (parseInt(timeSplit[0], 10) === 0) {
-						timeSplit[0] = '12';
+					if (hour === 0) {
+						hour = 12;
 					}
-					result.scheduler.scheduledTime = timeSplit[0] + ":" + timeSplit[1];
+					result.scheduler.scheduledTime = hour + ":" + timeSplit[1];
 					result.scheduler.selectedTimeFormat = 'AM';
 				}
 				

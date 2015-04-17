@@ -27,12 +27,18 @@ IP.timeUtil = (function () {
 		}
 		var timeSplit = time.split(':');
 		
-		if (timeSplit[0] < 13) {
+		if (timeSplit[0] < 12) {
+			if (parseInt(timeSplit[0], 10) === 0) {
+				timeSplit[0] = 12;
+			}
 			timeSplit[0] = timeSplit[0] < 10 ? "0" + timeSplit[0] : timeSplit[0];
 			timeSplit[1] = timeSplit[1] < 10 ? "0" + timeSplit[1]  : timeSplit[1];
 			return timeSplit.join(':') + " AM";
 		}
 		timeSplit[0] = parseInt(timeSplit[0]) - 12;
+		if (parseInt(timeSplit[0], 10) === 0) {
+			timeSplit[0] = 12;
+		}
 		timeSplit[0] = timeSplit[0] < 10 ? "0" + timeSplit[0] : timeSplit[0];
 		timeSplit[1] = timeSplit[1] < 10 ? "0" + timeSplit[1]  : timeSplit[1];
 		return timeSplit.join(':') + " PM";
