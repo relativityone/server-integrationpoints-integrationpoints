@@ -168,10 +168,27 @@
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Click one field in a Source Attribute list
-| | ... | 2. Click out of the list
+| | ... | 2. Click any whitespace outside of the Source Attribute list
 | | ... | 
 | | ... | Expected Results:
 | | ... | Verify that the row color for the selected field is grey
+
+
+| Selected field rows on inactive lists can still be moved
+| | [Documentation] | Verify that a grey row can still be moved.
+| | ...				| 
+| | [Tags]			| manual	| visual
+| | Run the following manual steps:
+| | ... | Precondions:
+| | ... | 1. The Test Case "Selected field rows on inactive Source Attribute lists are grey" passed
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Click one field in a Source Attribute list
+| | ... | 2. Click any whitespace outside of the Source Attribute list
+| | ... | 3. Click the icon to move that field to the other Source Attribute list
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the row is moved to the other Source Attribute list
 
 
 | Hovering over a Selected field with no mapped field
