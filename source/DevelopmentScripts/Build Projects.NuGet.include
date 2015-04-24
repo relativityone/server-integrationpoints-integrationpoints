@@ -28,19 +28,12 @@
 	</target>
 	
 	<target name="NuGet_pack" description="Packages and creates a new NuGet package.">	
-		<choose>
-			<when test="${string::contains(branchDir,'default')}">
-				<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-					<arg line="pack ${nuspec.directory}\IntegrationPoints.Contracts\IntegrationPoints.Contracts.nuspec" />
-				</exec>
-				<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-					<arg line="pack ${nuspec.directory}\IntegrationPoints.Web\IntegrationPoints.Web.nuspec" />
-				</exec>
-			</when>
-			<otherwise>
-				<echo message="Based on ${branchDir} BranchDir and it not being default, NuGet package will NOT be created." />
-			</otherwise>
-		</choose>
+		<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
+			<arg line="pack ${nuspec.directory}\IntegrationPoints.Contracts\IntegrationPoints.Contracts.nuspec" />
+		</exec>
+		<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
+			<arg line="pack ${nuspec.directory}\IntegrationPoints.Web\IntegrationPoints.Web.nuspec" />
+		</exec>
 	</target>
 	
 	<target name="NuGet_publish" description="Publishes NuGet package to server">
