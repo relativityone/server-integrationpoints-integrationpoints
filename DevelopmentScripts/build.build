@@ -65,7 +65,7 @@
 			<arg value="/verbosity:${verbosity}" />
 			<arg value="/nologo" />
 			<arg value="/maxcpucount" /> 
-			<arg value='/flp1:LogFile="${logfile}";Verbosity=${verbosity}' /> 	
+			<arg value='/flp1:LogFile="${logfile}"' /> 	
 		</exec>
 	</target>
 	
