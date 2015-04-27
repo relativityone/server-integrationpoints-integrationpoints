@@ -58,12 +58,12 @@ if NOT %VERSION%==1.0.0.0 goto version
 goto build
 
 :version
-nant update_assembly_info -buildfile:"%BUILDPROJECT%" "-D:root=%SourceRoot%" "-D:version=%VERSION%"
+powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\build.ps1 -properties @{'STEP'='version';version=%VERSION%"}}"
 if NOT %errorlevel%==0 goto end
 
 :build
 if %BUILD%==False goto test
-powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\build.ps1 -properties @{'version'='%VERSION%';'server_type'='local';'build_config'='%BUILDCONFIG%';'build_type'='%BUILDTYPE%';}}"
+powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\build.ps1 -properties @{'STEP'='build';'version'='%VERSION%';'server_type'='local';'build_config'='%BUILDCONFIG%';'build_type'='%BUILDTYPE%';}}"
 if NOT %errorlevel%==0 goto end
 
 :test

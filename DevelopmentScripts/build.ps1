@@ -1,4 +1,7 @@
 properties {
+    #step variable
+    $STEP = 'build'
+
     #directories
     $root = hg root
 
@@ -42,11 +45,29 @@ properties {
     $nuget_version = $version
 }
 
-task default -depends build
+task default -depends version, build, test, nuget, package
 
-task build -depends build_initalize, build_projects, build_applications {
+task version -precondition { $STEP -eq 'version' } {
  
 }
+
+task build -precondition { $STEP -eq 'build' } -depends build_initalize, build_projects, build_applications {
+ 
+}
+
+task test -precondition { $STEP -eq 'test' } {
+ 
+}
+
+task nuget -precondition { $STEP -eq 'nuget' } {
+ 
+}
+
+task package -precondition { $STEP -eq 'package' } {
+ 
+}
+
+
 
 task build_initalize {   
     ''
