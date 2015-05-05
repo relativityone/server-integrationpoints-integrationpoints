@@ -15,7 +15,7 @@ properties {
     $version = '1.0.0.0'
     $server_type = 'teambranch'
     $build_type = 'DEV'
-    $branch = 'default'
+    $branch = hg branch
     $build_config = "Debug"
        
 
