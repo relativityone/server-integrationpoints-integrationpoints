@@ -24,14 +24,6 @@ properties {
     $Product = 'Template'
     $ProductDescription = 'Template repo for kCura'
 
-    $NewVersion = 'AssemblyVersion("' + $version + '")'
-    $NewFileVersion = 'AssemblyFileVersion("' + $version + '")'
-    $NewCopyright = 'AssemblyCopyrightAttribute("Copyright (c) ' + [System.DateTime]::Now.Year + ', ' + $Company + '")'
-    $NewTitle = 'AssemblyTitleAttribute("' + $Product + '")'
-    $NewDescription = 'AssemblyDescriptionAttribute("' + $ProductDescription + '")'
-    $NewCompany = 'AssemblyCompanyAttribute("' + $Company + '")'
-    $NewProduct = 'AssemblyProductAttribute("' + $Product + '")'
-
     #microsoft directories
     $microsoft_net_directory = [System.IO.Path]::Combine($env:windir,'Microsoft.NET','Framework','v4.0.30319')
     $microsoft_net64_directory = [System.IO.Path]::Combine($env:windir,'Microsoft.NET','Framework64','v4.0.30319')
