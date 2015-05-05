@@ -9,6 +9,7 @@ properties {
     $version_directory = [System.IO.Path]::Combine($root, 'Version')
     $vendor_directory = [System.IO.Path]::Combine($root, 'Vendor')
     $robot_directory = [System.IO.Path]::Combine($root, 'Robot')
+    $testlog_directory = [System.IO.Path]::Combine($root, 'TestLogs')
 
     #build variables
     $version = '1.0.0.0'
@@ -38,6 +39,11 @@ properties {
     $microsoft_vs_directory = [System.IO.Path]::Combine($env:VS110COMNTOOLS,'Common7','Tools')
     $msbuild_exe = [System.IO.Path]::Combine( $microsoft_net64_directory,'MSBuild.exe')
 
+    #nunit variables
+    $NUnit = [System.IO.Path]::Combine(${env:ProgramFiles(x86)},'NUnit 2.5.10','bin','net-2.0', 'nunit-console.exe')
+    $NUnit_x86 = [System.IO.Path]::Combine(${env:ProgramFiles(x86)},'NUnit 2.5.10','bin','net-2.0', 'nunit-console-x86.exe')
+    $testinputfile = [System.IO.Path]::Combine($development_scripts_directory, 'Tests.xml')
+
     #build variables
     $verbosity ="normal" 
     $inputfile = [System.IO.Path]::Combine($development_scripts_directory, 'Projects.xml')
@@ -62,27 +68,4 @@ properties {
     $buildhelper_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildHelper.exe')
     $rapbuilder_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.RAPBuilder.exe')
     $testrunner_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.TestRunner.exe')
-}
-
-task display_properties { 
-  ('='*25) + ' Build Folders ' + ('='*25)
-  'root                          = ' + $root
-  'source directory              = ' + $source_directory
-  'development scripts directory = ' + $development_scripts_directory
-  'version directory             = ' + $version_directory
-  'vendor directory              = ' + $vendor_directory
-  'robot directory               = ' + $robot_directory
-  ''
-  ('='*25) + ' Build Parameters ' + ('='*25)
-  'version      = ' + $version 
-  'server type  = ' + $server_type 
-  'build type   = ' + $build_type 
-  'branch       = ' + $branch 
-  'build config = ' + $build_config
-  ''
-  ('='*25) + ' Microsoft .NET Folders ' + ('='*25)
-  'microsoft.net directory     = ' + $microsoft_net_directory
-  'microsoft.net 64 directory  = ' + $microsoft_net64_directory 
-  'microsoft interop directory = ' + $microsoft_interop_directory
-  'microsoft vs directory      = ' + $microsoft_vs_directory
 }
