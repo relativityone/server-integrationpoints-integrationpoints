@@ -33,30 +33,30 @@ task get_buildhelper {
 }
 
 task create_build_script -depends get_buildhelper {   
-    
-    & $buildhelper_exe @(('/source:' + $root), 
-                         ('/input:' + $inputfile), 
-                         ('/output:' + $targetsfile), 
-                         ('/graph:' + $dependencygraph), 
-                         ('/dllout:' + $internaldlls), 
-                         ('/vs:11.0'), 
-                         ('/sign:' + $sign), 
-                         ('/signscript:' + $signScript ))
-                                                                                
+    exec {
+        & $buildhelper_exe @(('/source:' + $root), 
+                             ('/input:' + $inputfile), 
+                             ('/output:' + $targetsfile), 
+                             ('/graph:' + $dependencygraph), 
+                             ('/dllout:' + $internaldlls), 
+                             ('/vs:11.0'), 
+                             ('/sign:' + $sign), 
+                             ('/signscript:' + $signScript ))
+    }                                                                        
 }                                                                               
                                                                                 
 task build_projects -depends create_build_script {  
-                                                                                
-    &  $msbuild_exe @(($targetsfile),   
-                     ('/property:SourceRoot=' + $root),
-                     ('/property:Configuration=' + $buildconfig),	
-                     ('/property:BuildProjectReferences=false'),		
-                     ('/target:BuildTiers'),
-                     ('/verbosity:' + $verbosity),
-                     ('/nologo'),
-                     ('/maxcpucount'), 
-                     ('/flp1:LogFile=' + $logfile))                                                                          
-
+    exec {                                                                                
+        &  $msbuild_exe @(($targetsfile),   
+                         ('/property:SourceRoot=' + $root),
+                         ('/property:Configuration=' + $buildconfig),	
+                         ('/property:BuildProjectReferences=false'),		
+                         ('/target:BuildTiers'),
+                         ('/verbosity:' + $verbosity),
+                         ('/nologo'),
+                         ('/maxcpucount'), 
+                         ('/flp1:LogFile=' + $logfile))       
+    } 
 }
 
 
