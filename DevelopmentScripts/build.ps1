@@ -27,8 +27,10 @@ task build_initalize {
 }
 
 
-task get_buildhelper {    
-    & $nuget_exe @('install', 'kCura.BuildHelper', '-ExcludeVersion')
+task get_buildhelper {
+    exec {
+        & $nuget_exe @('install', 'kCura.BuildHelper', '-ExcludeVersion')
+    }      
     Copy-Item ([System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildHelper', 'lib', 'kCura.BuildHelper.exe')) $development_scripts_directory
 }
 

@@ -14,7 +14,9 @@ task test_initalize {
 }
 
 task get_testrunner {
-    & $nuget_exe @('install', 'kCura.TestRunner', '-ExcludeVersion')
+    exec {
+        & $nuget_exe @('install', 'kCura.TestRunner', '-ExcludeVersion')
+    }    
     Copy-Item ([System.IO.Path]::Combine($development_scripts_directory, 'kCura.TestRunner', 'lib', 'kCura.TestRunner.exe')) $development_scripts_directory
 }
 
