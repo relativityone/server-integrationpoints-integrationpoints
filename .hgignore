@@ -57,6 +57,7 @@ Thumbs.db
 *.dotCover
 *.DotSettings
 TestLogs/*
+Packages/*
 *.pubxml.user
 *.nupkg
 msbuild.targets

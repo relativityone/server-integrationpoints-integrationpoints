@@ -29,7 +29,10 @@ properties {
     $microsoft_net64_directory = [System.IO.Path]::Combine($env:windir,'Microsoft.NET','Framework64','v4.0.30319')
     $microsoft_interop_directory = [System.IO.Path]::Combine(${env:ProgramFiles(x86)},'Microsoft.NET')
     $microsoft_vs_directory = [System.IO.Path]::Combine($env:VS110COMNTOOLS,'Common7','Tools')
+    $windows_sdk_directory = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, 'Microsoft SDKs', 'Windows', 'v7.0A')
+    
     $msbuild_exe = [System.IO.Path]::Combine( $microsoft_net64_directory,'MSBuild.exe')
+    $signtool_exe = [System.IO.Path]::Combine( $windows_sdk_directory,'signtool.exe')
 
     #nunit variables
     $NUnit = [System.IO.Path]::Combine(${env:ProgramFiles(x86)},'NUnit 2.5.10','bin','net-2.0', 'nunit-console.exe')
@@ -60,4 +63,7 @@ properties {
     $buildhelper_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildHelper.exe')
     $rapbuilder_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.RAPBuilder.exe')
     $testrunner_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.TestRunner.exe')
+
+    #package variable
+    $package_root_directory = [System.IO.Path]::Combine($root, 'Packages')
 }
