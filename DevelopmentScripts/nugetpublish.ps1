@@ -3,7 +3,7 @@
 
 task default -depends nuget_publish
 
-task nuget_pack -precondition { ($build_type -eq 'GOLD') -and ($branch -eq 'default' -or $branch.startsWith('release')) } {
+task nuget_publish -precondition { ($build_type -eq 'GOLD') -and ($branch -eq 'default' -or $branch.startsWith('release')) } {
      foreach($o in Get-ChildItem $nuspec_directory){
         
         if($o.Extension -ne '.nupkg') {continue}
