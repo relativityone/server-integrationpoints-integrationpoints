@@ -2,7 +2,7 @@
 
 <project name="Package">
 	<!-- Package properties -->
-	<property name="packageFolder" value="C:\Packages\BuildTools" unless="${property::exists('packageFolder')}" />
+	<property name="packageFolder" value="${path::combine(root, Packages)}" unless="${property::exists('packageFolder')}" />
 	<property name="packageBranch" value="${path::combine(packageFolder, branchDir)}" />
 	<property name="packageDirectory" value="${path::combine(packageBranch, version)}" />
 	<property name="signtool" value="${path::combine(windows.sdk.directory, 'Bin\signtool.exe')}" />

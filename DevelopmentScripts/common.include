@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 
-<project name="BuildTools.Common">
+<project name="Common">
   <!-- The "root" property is case sensitive (including the drive letter) -->
 	<property name="root" value="..\" unless="${property::exists('root')}" />
   
-   <!-- BuildTools folders -->
+   <!-- Repo folders -->
 	<property name="source.directory" value="${path::combine(root, 'Source')}" />
 	<property name="development.scripts" value="${path::combine(root, 'DevelopmentScripts')}" />
 	<property name="version.directory" value="${path::combine(root, 'Version')}" />

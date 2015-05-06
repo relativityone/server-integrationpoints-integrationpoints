@@ -3,17 +3,17 @@
 <project name="Assembly">
 	<property name="ProductLink" value="kCura LLC" readonly="true"/>
 	<property name="ProductDescription" value="Tools to help build source code for kCura repositories." readonly="true"/>
-	<property name="Product" value="BuildTools" readonly="true"/>
+	<property name="Product" value="Template" readonly="true"/>
 	
 	<tstamp property="current.year" pattern="yyyy" />
 	
-	<target name="update_assembly_info" depends="update_buildtools">
+	<target name="update_assembly_info" depends="update_version_files">
 		<echo message="Successfully updated AssemblyInfo files in ${root}." />
 	</target>
 
 	
-	<!-- Update AssemblyInfo files that belong to BuildTools -->
-	<target name="update_buildtools" description="Update BuildTools AssemblyInfo files">
+	<!-- Update AssemblyInfo files -->
+	<target name="update_version_files" description="Update AssemblyInfo files">
 		<echo message="Updating ${version.directory}\AssemblyInfo.vb" />
 		<asminfo output="${version.directory}\AssemblyInfo.vb" language="VB">
 		<imports>

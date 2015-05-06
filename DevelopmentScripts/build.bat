@@ -84,7 +84,7 @@ goto end
 
 :help
 echo.
-echo Use this batch file to peform a full build of all BuildTools projects.
+echo Use this batch file to peform a full build of all projects.
 echo This build is the same as the build that happens on the TeamCity server. 
 echo. 
 echo usage: %0 [debug^|release] [/v VERSION] [/b BUIDLTYPE] [/nobuild] [/test] [/nuget] [/package]
