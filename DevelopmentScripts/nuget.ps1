@@ -16,15 +16,15 @@ task update_nuspec {
        $x.Node.OwnerDocument.Save($x.Path)   
        
        $x = Select-Xml -Path $o.FullName -XPath '/package/metadata/copyright'
-       $x.Node.InnerText = "Copyright (c) " + [System.DateTime]::Now.Year + ", " + $Company  
+       $x.Node.InnerText = "Copyright (c) " + [System.DateTime]::Now.Year + ", " + $company  
        $x.Node.OwnerDocument.Save($x.Path)  
        
        $x = Select-Xml -Path $o.FullName -XPath '/package/metadata/authors'
-       $x.Node.InnerText = $Company  
+       $x.Node.InnerText = $company  
        $x.Node.OwnerDocument.Save($x.Path)   
        
        $x = Select-Xml -Path $o.FullName -XPath '/package/metadata/owners'
-       $x.Node.InnerText = $Company  
+       $x.Node.InnerText = $company  
        $x.Node.OwnerDocument.Save($x.Path)       
     }   
 }

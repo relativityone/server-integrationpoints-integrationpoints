@@ -20,9 +20,9 @@ properties {
        
 
     #assembly info variables
-    $Company = 'kCura LLC'
-    $Product = 'Template'
-    $ProductDescription = 'Template repo for kCura'
+    $company = 'kCura LLC'
+    $product = 'Template'
+    $product_description = 'Template repo for kCura'
 
     #microsoft directories
     $microsoft_net_directory = [System.IO.Path]::Combine($env:windir,'Microsoft.NET','Framework','v4.0.30319')

@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
 
 <project name="Assembly">
-	<property name="ProductLink" value="kCura LLC" readonly="true"/>
-	<property name="ProductDescription" value="Tools to help build source code for kCura repositories." readonly="true"/>
-	<property name="Product" value="Template" readonly="true"/>
+	<property name="CompanyName" value="kCura LLC" unless="${property::exists('CompanyName')}" /> 
+	<property name="ProductDescription" value="Tools to help build source code for kCura repositories." unless="${property::exists('ProductDescription')}"/>
+	<property name="Product" value="Template" unless="${property::exists('Product')}"/>
 	
 	<tstamp property="current.year" pattern="yyyy" />
 	
@@ -26,10 +26,10 @@
 			<attribute type="CLSCompliantAttribute" value="false" />
 			<attribute type="AssemblyVersionAttribute" value="${version}" />
 			<attribute type="AssemblyFileVersionAttribute" value="${version}" />
-			<attribute type="AssemblyCopyrightAttribute" value="Copyright (c) ${current.year}, kCura LLC" />
+			<attribute type="AssemblyCopyrightAttribute" value="Copyright (c) ${current.year}, ${CompanyName}" />
 			<attribute type="AssemblyTitleAttribute" value="${Product}" />
 			<attribute type="AssemblyDescriptionAttribute" value="${ProductDescription}" />
-			<attribute type="AssemblyCompanyAttribute" value="${ProductLink}" />
+			<attribute type="AssemblyCompanyAttribute" value="${CompanyName}" />
 			<attribute type="AssemblyProductAttribute" value="${Product}" />
 			</attributes>
 		</asminfo>
@@ -46,10 +46,10 @@
 				<attribute type="CLSCompliantAttribute" value="false" />
 				<attribute type="AssemblyVersionAttribute" value="${version}" />
 				<attribute type="AssemblyFileVersionAttribute" value="${version}" />
-				<attribute type="AssemblyCopyrightAttribute" value="Copyright (c) ${current.year}, kCura LLC" />
+				<attribute type="AssemblyCopyrightAttribute" value="Copyright (c) ${current.year}, ${CompanyName}" />
 				<attribute type="AssemblyTitleAttribute" value="${Product}" />
 				<attribute type="AssemblyDescriptionAttribute" value="${ProductDescription}" />
-				<attribute type="AssemblyCompanyAttribute" value="${ProductLink}" />
+				<attribute type="AssemblyCompanyAttribute" value="${CompanyName}" />
 				<attribute type="AssemblyProductAttribute" value="${Product}" />
 			</attributes>
 		</asminfo>	

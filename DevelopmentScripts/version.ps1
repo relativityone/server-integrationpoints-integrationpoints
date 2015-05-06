@@ -4,15 +4,15 @@
 task default -depends version
 
 
-task version {
+task version -precondition {
 
     $NewVersion = 'AssemblyVersionAttribute("' + $version + '")'
     $NewFileVersion = 'AssemblyFileVersionAttribute("' + $version + '")'
-    $NewCopyright = 'AssemblyCopyrightAttribute("Copyright (c) ' + [System.DateTime]::Now.Year + ', ' + $Company + '")'
-    $NewTitle = 'AssemblyTitleAttribute("' + $Product + '")'
-    $NewDescription = 'AssemblyDescriptionAttribute("' + $ProductDescription + '")'
-    $NewCompany = 'AssemblyCompanyAttribute("' + $Company + '")'
-    $NewProduct = 'AssemblyProductAttribute("' + $Product + '")'
+    $NewCopyright = 'AssemblyCopyrightAttribute("Copyright (c) ' + [System.DateTime]::Now.Year + ', ' + $company + '")'
+    $NewTitle = 'AssemblyTitleAttribute("' + $product + '")'
+    $NewDescription = 'AssemblyDescriptionAttribute("' + $product_description + '")'
+    $NewCompany = 'AssemblyCompanyAttribute("' + $company + '")'
+    $NewProduct = 'AssemblyProductAttribute("' + $product + '")'
 
     foreach($o in Get-ChildItem $version_directory){
 

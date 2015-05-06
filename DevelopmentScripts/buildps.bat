@@ -3,6 +3,9 @@
 SET BUILDCONFIG=Debug
 SET BUILDTYPE=DEV
 SET VERSION=1.0.0.0
+SET COMPANY = 'kCura LLC'
+SET PRODUCT = 'Template'
+SET PRODUCTDESCRIPTION = 'Template repo for kCura'
 SET BUILD=True
 SET APPS=True
 SET TEST=False
@@ -58,7 +61,7 @@ if NOT %VERSION%==1.0.0.0 goto version
 goto build
 
 :version
-powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\version.ps1 -properties @{'version'='%VERSION%';}; exit !$psake.build_success;}"
+powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\version.ps1 -properties @{'version'='%VERSION%';'company'='%COMPANY%';'product'='%PRODUCT%';'product_description'='%PRODUCTDESCRIPTION%';}; exit !$psake.build_success;}"
 if NOT %errorlevel%==0 goto end
 
 :build
