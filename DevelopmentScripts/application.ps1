@@ -29,7 +29,7 @@ task build_app1 {
                             ('/servertype:' + $serverType), 
                             ('/debug:' + $diagnostic),  
                             ('/internaldlls:' + $dllout),
-                            ('/sign:' + $sign),
+                            ('/sign:' + ($build_type -ne 'DEV' -and $server_type -ne 'local')),
                             ('/signscript:' + $signScript))
     }
 }

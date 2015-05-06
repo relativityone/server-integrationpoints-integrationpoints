@@ -21,7 +21,7 @@ task build_initalize {
 
     'Time: ' + (Get-Date -Format 'yyy-MM-dd HH:mm:ss')
     
-    'Build Type and Server Type result in sign set to ' + $sign   
+    'Build Type and Server Type result in sign set to ' + ($build_type -ne 'DEV' -and $server_type -ne 'local')  
 
     if([System.IO.File]::Exists($logfile)) {Remove-Item $logfile}
 }
@@ -42,7 +42,7 @@ task create_build_script -depends get_buildhelper {
                              ('/graph:' + $dependencygraph), 
                              ('/dllout:' + $internaldlls), 
                              ('/vs:11.0'), 
-                             ('/sign:' + $sign), 
+                             ('/sign:' + ($build_type -ne 'DEV' -and $server_type -ne 'local')), 
                              ('/signscript:' + $signScript ))
     }                                                                        
 }                                                                               

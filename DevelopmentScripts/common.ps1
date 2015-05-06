@@ -32,7 +32,7 @@ properties {
     $windows_sdk_directory = [System.IO.Path]::Combine(${env:ProgramFiles(x86)}, 'Microsoft SDKs', 'Windows', 'v7.0A')
     
     $msbuild_exe = [System.IO.Path]::Combine( $microsoft_net64_directory,'MSBuild.exe')
-    $signtool_exe = [System.IO.Path]::Combine( $windows_sdk_directory,'signtool.exe')
+    $signtool_exe = [System.IO.Path]::Combine( $windows_sdk_directory, 'Bin','signtool.exe')
 
     #nunit variables
     $NUnit = [System.IO.Path]::Combine(${env:ProgramFiles(x86)},'NUnit 2.5.10','bin','net-2.0', 'nunit-console.exe')
@@ -50,7 +50,6 @@ properties {
 
     #signing variables
     $signscript = [System.IO.Path]::Combine($development_scripts_directory, 'sign.bat')
-    $sign = ($build_type -ne 'DEV' -and $server_type -ne 'local')
 
     #nuget variables
     $nuspec_directory = [System.IO.Path]::Combine($development_scripts_directory,'NuGet')
