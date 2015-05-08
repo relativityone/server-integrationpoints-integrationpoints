@@ -49,7 +49,6 @@
 | | Go to the Method Tab | Custodian
 | | Filter the following Grid on the following Column by the following Value | ${CustodianGrid}  | Email | alphamanager@gameofholds.testing.corp
 
-| | Click Section Tab	| Detail
 | | Verify that the following Grid contains the following number of Rows | ${CustodianGrid}  | 1
 
 
