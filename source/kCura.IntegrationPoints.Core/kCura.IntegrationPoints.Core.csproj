@@ -119,6 +119,7 @@
     <Compile Include="Queries\GetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="Queries\GetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Services\Domain\ProviderWrapper.cs" />
+    <Compile Include="Services\Domain\RelativityFeaturePathService.cs" />
     <Compile Include="Services\Guid\GuidService.cs" />
     <Compile Include="Services\Guid\IGuidService.cs" />
     <Compile Include="Services\IDeleteHistoryErrorService.cs" />

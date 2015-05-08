@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Data.Models;
-using Microsoft.Win32;
 
 namespace kCura.IntegrationPoints.Core.Domain
 {
@@ -108,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 			}
 		}
 
-		public virtual AppDomain CreateNewDomain()
+		public virtual AppDomain CreateNewDomain(RelativityFeaturePathService relativityFeaturePathService)
 		{
 			AppDomainSetup domaininfo = new AppDomainSetup();
 			var domainPath = Path.Combine(Path.GetTempPath(), "RelativityIntegrationPoints");
@@ -119,7 +118,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 			domaininfo.PrivateBinPath = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
 			string domainName = Guid.NewGuid().ToString();
 			var newDomain = AppDomain.CreateDomain(domainName, null, domaininfo);
-			DeployLibraryFiles(newDomain);
+			DeployLibraryFiles(newDomain, relativityFeaturePathService);
 			return newDomain;
 		}
 
@@ -132,21 +131,21 @@ namespace kCura.IntegrationPoints.Core.Domain
 			return manager;
 		}
 
-		private void DeployLibraryFiles(AppDomain domain)
+		private void DeployLibraryFiles(AppDomain domain, RelativityFeaturePathService relativityFeaturePathService)
 		{
 			string finalDllPath = domain.BaseDirectory;
 			string libDllPath = null;
 
-			libDllPath = GetRelativityLibraryPath();
+			libDllPath = relativityFeaturePathService.LibraryPath;
 			CopyDirectoryFiles(libDllPath, finalDllPath, true, true);
 
 			//kCura.Agent
-			libDllPath = GetRelativityWebProcessingPath();
+			libDllPath = relativityFeaturePathService.WebProcessingPath;
 			//if (!string.IsNullOrWhiteSpace(libDllPath)) CopyDirectoryFiles(libDllPath, finalDllPath, true, false);
 			if (!string.IsNullOrWhiteSpace(libDllPath)) CopyFileWithWildcard(libDllPath, finalDllPath, "kCura.Agent*");
 
 			//FSharp.Core
-			libDllPath = GetRelativityEddsPath();
+			libDllPath = relativityFeaturePathService.EddsPath;
 			if (!string.IsNullOrWhiteSpace(libDllPath)) CopyFileWithWildcard(Path.Combine(libDllPath, "bin"), finalDllPath, "FSharp.Core*");
 
 			//PrepAssemblies(domain);
@@ -200,89 +199,8 @@ namespace kCura.IntegrationPoints.Core.Domain
 			return false;
 		}
 
-		private RegistryKey GetFeaturePathsKey()
-		{
-			RegistryKey rk = Registry.LocalMachine;
-			RegistryKey relativityKey = rk.OpenSubKey("SOFTWARE\\kCura\\Relativity");
-			return relativityKey.OpenSubKey("FeaturePaths");
-		}
 
-		private string GetFeaturePathsValue(string keyName)
-		{
-			RegistryKey rk = GetFeaturePathsKey();
-			object rkval = rk.GetValue(keyName);
-			string keyValue = string.Empty;
-			if (rkval != null)
-			{
-				keyValue = rkval.ToString();
-			}
-			rk.Close();
-			return keyValue;
-		}
 
-		private string GetRelativityWebProcessingPath()
-		{
-			string eddsPath = string.Empty;
 
-			try
-			{
-				eddsPath = GetFeaturePathsValue("WebProcessingPath");
-			}
-			catch
-			{
-			}
-			return eddsPath;
-		}
-
-		private string GetRelativityEddsPath()
-		{
-			string eddsPath = string.Empty;
-
-			try
-			{
-				eddsPath = GetFeaturePathsValue("WebPath");
-			}
-			catch
-			{
-			}
-			return eddsPath;
-		}
-
-		private string GetRelativityAgentPath()
-		{
-			string agentPath = string.Empty;
-
-			try
-			{
-				agentPath = GetFeaturePathsValue("AgentPath");
-			}
-			catch
-			{
-			}
-			return agentPath;
-		}
-
-		private string GetRelativityLibraryPath()
-		{
-			string libraryPath = string.Empty;
-
-			try
-			{
-				libraryPath = GetFeaturePathsValue("LibraryPath");
-			}
-			catch
-			{ }
-
-			if (string.IsNullOrEmpty(libraryPath))
-			{
-				libraryPath = @"C:\SourceCode\Mainline\lib"; //HACK: copied from Relativity Core
-				if (!Directory.Exists(libraryPath))
-				{
-					throw new Exception("Could not retrieve LibraryPath.");
-				}
-			}
-
-			return libraryPath;
-		}
 	}
 }
