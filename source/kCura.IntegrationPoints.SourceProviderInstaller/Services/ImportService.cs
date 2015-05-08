@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			_caseContext = caseContext;
 			_eddsContext = eddsContext;
 			_DeleteintegrationPoint = deleteIntegrationPoints;
-		
+
 		}
 
 		public void InstallProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providers)
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 		{
 			ISourcePluginProvider pluginProvider =
 				new DefaultSourcePluginProvider(new GetApplicationBinaries(_eddsContext.SqlContext));
-			using (AppDomainFactory factory = new AppDomainFactory(new DomainHelper(), pluginProvider))
+			using (AppDomainFactory factory = new AppDomainFactory(new DomainHelper(), pluginProvider, new RelativityFeaturePathService()))
 			{
 				foreach (SourceProviderInstaller.SourceProvider provider in providers)
 				{

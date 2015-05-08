@@ -9,16 +9,18 @@ namespace kCura.IntegrationPoints.Core.Domain
 		private readonly DomainHelper _helper;
 		private readonly ISourcePluginProvider _provider;
 		private AppDomain _newDomain;
+		private RelativityFeaturePathService _relativityFeaturePathService;
 
-		public AppDomainFactory(DomainHelper helper, ISourcePluginProvider provider)
+		public AppDomainFactory(DomainHelper helper, ISourcePluginProvider provider, RelativityFeaturePathService relativityFeaturePathService)
 		{
 			_helper = helper;
 			_provider = provider;
+			_relativityFeaturePathService = relativityFeaturePathService;
 		}
 
 		public IDataSourceProvider GetDataProvider(Guid applicationGuid, Guid providerGuid)
 		{
-			_newDomain = _helper.CreateNewDomain();
+			_newDomain = _helper.CreateNewDomain(_relativityFeaturePathService);
 			var manager = _helper.SetupDomainAndCreateManager(_newDomain, _provider, applicationGuid);
 			return manager.GetProvider(providerGuid);
 		}

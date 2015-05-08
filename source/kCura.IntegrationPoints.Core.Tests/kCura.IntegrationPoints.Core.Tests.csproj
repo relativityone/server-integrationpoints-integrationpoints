@@ -106,6 +106,7 @@
     <Compile Include="Unit\DeleteHistoryServiceTest.cs" />
     <Compile Include="Unit\JobStatusUpdaterTests.cs" />
     <Compile Include="Unit\RdoFilterTest.cs" />
+    <Compile Include="Unit\Services\Domain\RelativityFeaturePathServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">

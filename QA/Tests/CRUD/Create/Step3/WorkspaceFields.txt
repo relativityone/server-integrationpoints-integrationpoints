@@ -158,11 +158,28 @@
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Click one field in the Workspace Fields list.
-| | ... | 2. Click any whitespace
+| | ... | 1. Click one field in a Workspace Fields list
+| | ... | 2. Click any whitespace outside of the Workspace Fields list
 | | ... | 
 | | ... | Expected Results:
 | | ... | Verify that the row color for the selected field is grey
+
+
+| Selected field rows on inactive lists can still be moved
+| | [Documentation] | Verify that a grey row can still be moved.
+| | ...				| 
+| | [Tags]			| manual	| visual
+| | Run the following manual steps:
+| | ... | Precondions:
+| | ... | 1. The Test Case "Selected field rows on inactive lists are grey" passed
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Click one field in a Workspace Fields list
+| | ... | 2. Click any whitespace outside of the Workspace Fields list
+| | ... | 3. Click the icon to move that field to the other Workspace Fields list
+| | ... | 
+| | ... | Expected Results:
+| | ... | Verify that the row is moved to the other Workspace Fields list
 
 
 | Hovering over a Selected field with no mapped field

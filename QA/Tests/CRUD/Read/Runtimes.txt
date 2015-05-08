@@ -128,6 +128,90 @@
 | | ... | 2. Verify that the Next Scheduled Runtime is set to "<Tomorrow's Date> 7:02 AM"
 
 
+| The Next Scheduled Runtime calculates correctly when the Scheduled Time is 12:30 AM
+| | [Documentation]	| Verify that 
+| | [Tags]			| manual	| dates
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Import Scheduling settings are as follows:
+| | ... | - Enable Scheduler: Yes
+| | ... | - Frequency: Daily
+| | ... | - Start Date: <Tomorrow's Date>
+| | ... | - Scheduled Time (local): 12:30 AM
+| | ... | 2. The rest of the Integration Points' data is valid
+| | ... | 
+| | ... | Steps:
+| | ... | 1. View the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the Scheduled Time is set to (12:30 AM + ${UTC})
+| | ... | 2. Verify that the Next Scheduled Runtime is set to (12:30 AM + ${UTC})
+
+
+| The Next Scheduled Runtime calculates correctly when the Scheduled Time is 12:30 AM
+| | [Documentation]	| Verify that 
+| | [Tags]			| manual	| dates
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The Import Scheduling settings are as follows:
+| | ... | - Enable Scheduler: Yes
+| | ... | - Frequency: Daily
+| | ... | - Start Date: <Tomorrow's Date>
+| | ... | - Scheduled Time (local): 12:30 PM
+| | ... | 2. The rest of the Integration Points' data is valid
+| | ... | 
+| | ... | Steps:
+| | ... | 1. View the Integration Point
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the Scheduled Time is set to (12:30 PM + ${UTC})
+| | ... | 2. Verify that the Next Scheduled Runtime is set to (12:30 PM + ${UTC})
+
+
+| The Next Scheduled Runtime calculates correctly when the User is in Daylight Savings Time
+| | [Documentation]	| Verify that 
+| | [Tags]			| manual	| dates
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The User's computer is set to the date 4/21/2015 (Daylight Savings Time active)
+| | ... | 2. The User's computer is set to use Daylight Savings Time
+| | ... | 3. The User has closed and re-opened their browser since the last time they changed their Date/Time settings
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Create an Integration Point
+| | ... | - Enable Scheduler: Yes
+| | ... | - Frequency: Daily
+| | ... | - Start Date: <Tomorrow's Date>
+| | ... | - Scheduled Time (local): 3:00 PM
+| | ... | 2. The rest of the Integration Points' data is valid
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the Scheduled Time is set to (3:00 PM + ${UTC})
+| | ... | 2. Verify that the Next Scheduled Runtime is set to (3:00 PM + ${UTC})
+
+
+| The Next Scheduled Runtime calculates correctly when the User is out of Daylight Savings Time
+| | [Documentation]	| Verify that 
+| | [Tags]			| manual	| dates
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. The User's computer is set to the date 10/02/2015 (Daylight Savings Time inactive)
+| | ... | 2. The User's computer is set to use Daylight Savings Time
+| | ... | 3. The User has closed and re-opened their browser since the last time they changed their Date/Time settings
+| | ... | 
+| | ... | Steps:
+| | ... | 1. Create an Integration Point
+| | ... | - Enable Scheduler: Yes
+| | ... | - Frequency: Daily
+| | ... | - Start Date: <Tomorrow's Date>
+| | ... | - Scheduled Time (local): 3:00 PM
+| | ... | 2. The rest of the Integration Points' data is valid
+| | ... | 
+| | ... | Expected Results:
+| | ... | 1. Verify that the Scheduled Time is set to (3:00 PM + ${UTC})
+| | ... | 2. Verify that the Next Scheduled Runtime is set to (3:00 PM + ${UTC})
+
+
 | The Next Scheduled Runtime updates correctly when the scheduled job runs
 | | [Documentation]	| Verify that the Next Scheduled Runtime field on an Integration Point is updated correctly when its Scheduled Job runs.
 | | ...				| [id] 1192fe74-a89f-11e4-8b2a-b8ca3a83048f
