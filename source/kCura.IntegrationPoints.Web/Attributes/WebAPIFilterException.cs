@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Security.Authentication;
 using System.Web;
 using System.Web.Http.Filters;
 using kCura.IntegrationPoints.Core.Models;
@@ -26,6 +28,12 @@ namespace kCura.IntegrationPoints.Web.Attributes
 				var creator = _factory.GetErrorService();
 				creator.Log(new ErrorModel(workspsace, exp.Message, exp));
 				_factory.Release(creator);
+				if (exp.GetType() == typeof(AuthenticationException))
+				{
+					actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+					actionExecutedContext.Response.Content = new StringContent(exp.Message);
+				}
+				
 			}
 			catch
 			{}

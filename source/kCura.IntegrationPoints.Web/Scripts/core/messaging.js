@@ -11,6 +11,15 @@
 			return $el;
 		}
 
+		function _isJson(obj) {
+			try {
+				JSON.parse(obj);
+				return true;
+			} catch (e) {
+				return false;
+			}
+		}
+
 		function getMessage(error) {
 			var DEFAULT_ERROR = 'There was an error processing your request. Please see the errors tab for details.';
 			var result;
@@ -18,14 +27,18 @@
 				if (error.hasOwnProperty('responseText')) {
 					//webAPI
 					try {
-						result = JSON.parse(error.responseText);
-						var props = ['ExceptionMessage', 'exceptionMessage', "Message", "message"];
-						$.each(props, function () {
-							if (result.hasOwnProperty(this)) {
-								result = result[this];
-								return false;
-							}
-						});
+						if (_isJson(error.responseText)) {
+							result = JSON.parse(error.responseText);
+							var props = ['ExceptionMessage', 'exceptionMessage', "Message", "message"];
+							$.each(props, function () {
+								if (result.hasOwnProperty(this)) {
+									result = result[this];
+									return false;
+								}
+							});
+						} else {
+							result = error.responseText;
+						}
 					} catch (e) {
 						if (error.getResponseHeader('Content-Type').indexOf('html') > -1) {
 							result = $(error.responseText).eq(2).text();
@@ -103,7 +116,7 @@
 				var $el = getElement($container, $main);
 				$el.find('div.page-info').remove();
 			};
-			
+
 			return {
 				raise: raiseInfo,
 				clear: clearInfo
