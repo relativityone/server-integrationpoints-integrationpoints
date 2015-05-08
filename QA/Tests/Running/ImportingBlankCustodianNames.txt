@@ -47,6 +47,8 @@
 | | Setup connection to the relativity database
 | | Open and Log in to Method
 
+| | Update a User's Show Filter Value	| ${USERNAME}	| Visible
+
 | | @{Step1Fields}=		| Create List | ${IntegrationName} | Append/Overlay |
 | | ... | LDAP | Custodian | No
 
@@ -69,6 +71,7 @@
 
 | | Go to the Method tab | Custodian
 | | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Department | BlankNames
+| | [Teardown]		| Run Keyword If Keyword Failed	| Capture Page Screenshot
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
@@ -89,4 +92,3 @@
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
-
