@@ -174,7 +174,7 @@
 			<i data-bind="text: overflowMessage, visible: selectedDay() > 28"></i>
 		</li>
 		<li class="field-row">
-			<input type="radio" name="monthly" value="1" data-bind="checked: monthChoice" />The 
+			<input id="days" type="radio" name="monthly" value="1" data-bind="checked: monthChoice" />The 
 			<select id="dayType" data-bind="options: dayTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedType, select2: {}"></select>
 			<select id="dayOfMonth" data-bind="options: daysOfMonthComputed, optionsText: 'displayName', optionsValue: 'value', value: selectedDayOfTheMonth, select2: {}"></select>
 			of the month.
