@@ -41,20 +41,40 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Domain
 		}
 
 		[Test]
-		public void GetFeaturePathsValue_Relativity92AndUp_CorrectValues()
+		public void GetFeaturePathsValue_Relativity92AndUpRunningOnWebServer_CorrectValues()
 		{
 			//ARRANGE
 			//ACT
-			RelativityFeaturePathService mockService = new RelativityFeaturePathService();
+			MockService2 mockService =  new MockService2();
 			mockService.NewRegistryStructure = true;
-			BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;//| BindingFlags.GetProperty | BindingFlags.SetProperty;
-			mockService.GetType().GetField("_baseInstallDir", bindFlags).SetValue(mockService, "XXX");
+			mockService.BaseInstallDirOverride = "XXX";
+			mockService.DirectoryExistOverride = true;
 
 			//ASSERT
 			Assert.AreEqual("XXX\\Agents", mockService.AgentPath);
 			Assert.AreEqual("XXX\\EDDS", mockService.EddsPath);
 			Assert.AreEqual("XXX\\Library", mockService.LibraryPath);
 			Assert.AreEqual("XXX\\WebProcessing", mockService.WebProcessingPath);
+		}
+
+		[Test]
+		public void GetFeaturePathsValue_Relativity92AndUpRunningOnAgent_CorrectValues()
+		{
+			//ARRANGE
+			//ACT
+			MockService2 mockService = new MockService2();
+			mockService.NewRegistryStructure = true;
+			mockService.BaseInstallDirOverride = "XXX";
+
+			//ASSERT
+			mockService.DirectoryExistOverride = true;
+			Assert.AreEqual("XXX\\Agents", mockService.AgentPath);
+			mockService.DirectoryExistOverride = false;
+			Assert.AreEqual("", mockService.EddsPath);
+			mockService.DirectoryExistOverride = true;
+			Assert.AreEqual("XXX\\Library", mockService.LibraryPath);
+			mockService.DirectoryExistOverride = false;
+			Assert.AreEqual("", mockService.WebProcessingPath);
 		}
 
 		[Test]
@@ -97,11 +117,27 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Domain
 		{
 
 		}
+
+		public string BaseInstallDirOverride
+		{
+			set { base._baseInstallDir = value; }
+		}
+
 		public string DevEnvironmentLibPath { get; set; }
+
+		public virtual bool DirectoryExistOverride(string path)
+		{
+			return base.DirectoryExists(path);
+		}
 
 		public virtual string GetFeaturePathsValueOverride(string keyName)
 		{
 			return keyName;
+		}
+
+		protected override bool DirectoryExists(string path)
+		{
+			return this.DirectoryExistOverride(path);
 		}
 
 		protected override string GetFeaturePathsValue(string keyName)
@@ -112,6 +148,38 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Domain
 		protected override string GetDevEnvironmentLibPath()
 		{
 			return DevEnvironmentLibPath;
+		}
+	}
+
+	public class MockService2 : RelativityFeaturePathService
+	{
+		public MockService2()
+		{
+
+		}
+
+		public string BaseInstallDirOverride
+		{
+			set { base._baseInstallDir = value; }
+		}
+
+		public string DevEnvironmentLibPath { get; set; }
+
+		public bool DirectoryExistOverride { get; set; }
+
+		protected override bool DirectoryExists(string path)
+		{
+			return this.DirectoryExistOverride;
+		}
+
+		protected override string GetDevEnvironmentLibPath()
+		{
+			return DevEnvironmentLibPath;
+		}
+
+		protected override string GetFeaturePathsValue(string keyName)
+		{
+			return base.GetFeaturePathsValue(keyName);
 		}
 	}
 }
