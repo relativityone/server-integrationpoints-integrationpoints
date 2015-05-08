@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 		public RelativityFeaturePathService()
 		{ }
 
-		private string _baseInstallDir = null;
+		protected string _baseInstallDir = null;
 		private bool _newRegistryStructure = false;
 		public bool NewRegistryStructure
 		{
@@ -179,7 +179,13 @@ namespace kCura.IntegrationPoints.Core.Domain
 			{
 				path = GetRelativityFeaturePathsRegistryValue(keyName);
 			}
+			if (!DirectoryExists(path)) path = string.Empty;
 			return path;
+		}
+
+		protected virtual bool DirectoryExists(string path)
+		{
+			return Directory.Exists(path);
 		}
 
 		protected virtual string GetDevEnvironmentLibPath()

@@ -41,6 +41,8 @@ namespace kCura.IntegrationPoints.Core.Services
 				jobHistory.IntegrationPoint = new[] { integrationPoint.ArtifactId };
 				jobHistory.BatchInstance = batchInstance.ToString();
 				jobHistory.JobStatus = JobStatusChoices.JobHistoryPending;
+				jobHistory.RecordsImported = 0;
+				jobHistory.RecordsWithErrors = 0;
 				if (startTimeUTC.HasValue) jobHistory.StartTimeUTC = startTimeUTC.Value;
 
 				int artifactId = _context.RsapiService.JobHistoryLibrary.Create(jobHistory);
