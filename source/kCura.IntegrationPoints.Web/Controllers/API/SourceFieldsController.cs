@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			Data.SourceProvider providerRdo = _sourceProviderIdentifier.Execute(data.Type);
 			Guid applicationGuid = new Guid(providerRdo.ApplicationIdentifier);
 			var provider = _factory.GetDataProvider(applicationGuid, data.Type);
-			var fields = provider.GetFields(data.Options.ToString());
+			var fields = provider.GetFields(data.Options.ToString()).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
 		}
 
