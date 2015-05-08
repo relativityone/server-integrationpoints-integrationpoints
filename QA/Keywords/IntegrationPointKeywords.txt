@@ -99,7 +99,7 @@
 | | ${DayValue}=	| Fetch from Left	| ${SendOn}	| ${Space}of the month
 | | ${DayValue}=	| Fetch from Right	| ${DayValue}	| Day${Space}
 | | Select from select2 Dropdown	| id=s2id_day-select	| ${DayValue}	| # The Send On dropdown
-| | Select Radio Button	| monthly	| days
+| | Select Radio Button	| monthly	| 2
 
 | Fill Out the Scheduled Time field
 | | [Documentation]	| Enters the Hour:Minute value and selects the AM/PM value.
@@ -120,7 +120,7 @@
 | | ${Occurance}	| ${Day}=	| Split String	| ${BothValues}	| ${Space}
 | | Select from select2 Dropdown	| id=s2id_dayType		| ${Occurance}
 | | Select from select2 Dropdown	| id=s2id_dayOfMonth	| ${Day}
-| | Select Radio Button	| monthly	| month
+| | Select Radio Button	| monthly	| 1
 
 #------------------------------------------------------------------------------------------------------------------------
 # Step 2 Section

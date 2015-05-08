@@ -4,7 +4,7 @@
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.method
 | Suite Setup		| Suite Setup Keyword
-| Test Setup		| View Integration Point	| ${IntegrationPoint1}
+#| Test Setup		| NONE | # All cases have Test Setups 
 | Test Teardown 	| Capture Screenshot if Test Fails
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
 
@@ -30,6 +30,7 @@
 | | [Documentation]	| Verify that the default Layout on an Integration Point Read page is "Integration Point Details". 
 | | ...				| 
 | | [Tags]			| automated
+| | [Setup]			| View Integration Point	| ${IntegrationPoint1}
 | | Verify that the layout dropdown is set to "Integration Point Details"
 
 
@@ -37,6 +38,7 @@
 | | [Documentation]	| Verify that the Integration Point Read page has only the "Integration Point Details" Layout. 
 
 | | [Tags]			| automated
+| | [Setup]			| View Integration Point	| ${IntegrationPoint1}
 | | Verify that the Layout Dropdown only has the following Layouts	| Integration Point Details
 
 
@@ -44,6 +46,7 @@
 | | [Documentation]	| Verify that the correct buttons appear at the top of the page.
 | | ...				| [id] 117f284f-a89f-11e4-ab56-b8ca3a83048f
 | | [Tags]			| automated
+| | [Setup]			| View Integration Point	| ${IntegrationPoint1}
 | | Verify the buttons are available on the layout	| 
 | | ... | Edit				| 
 | | ... | Delete			| 
@@ -56,6 +59,7 @@
 | | [Documentation]	| Verify that the Category headings are sorted correctly on the Integration Point Details" Layout.
 | | ...				| [id] 1180fd11-a89f-11e4-b0e4-b8ca3a83048f
 | | [Tags]			| automated
+| | [Setup]			| View Integration Point	| ${IntegrationPoint1}
 | | Verify that the current Layout has the following Categories in Order	| 
 | | ... | General			| 
 | | ... | Status			| 
@@ -67,6 +71,7 @@
 | | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to No.
 | | ...				| [id] 1180fd12-a89f-11e4-a95c-b8ca3a83048f
 | | [Tags]			| manual	| partially_automated	| field_placement
+| | [Setup]			| View Integration Point	| ${IntegrationPoint1}
 | | Run the following manual steps:
 | | ... | Expected Results:
 | | ... | 1. Verify that the "General" Category has the following fields in order:	| 
@@ -130,33 +135,34 @@
 | | [Documentation]	| Verify that the Password field in the Source Connection Category is shown as "******" when no value was entered during creation.
 | | [Tags]			| automated
 | | [Setup]			| View Integration Point	| ${IntegrationPoint2}
-| | Verify that the following Field has the Following Value	| Password:	| ******
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following Field has the Following Value	| Password:	| ******
 
 
 | The Password Field shows six asterixes when populated
 | | [Documentation]	| Verify that the Password field in the Source Connection Category is shown as "******" when a value was entered during creation.
 | | [Tags]			| automated
 | | [Setup]			| View Integration Point	| ${IntegrationPoint1}
-| | Verify that the following Field has the Following Value	| Password:	| ******
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following Field has the Following Value	| Password:	| ******
 
 
 | The Object Filter String Field shows (objectClass=*) when not populated
 | | [Documentation]	| Verify that the Object Filter String field in the Source Connection Category is shown as "(objectClass=*)" when no value was entered during creation.
 | | [Tags]			| automated
 | | [Setup]			| View Integration Point	| ${IntegrationPoint2}
-| | Verify that the following Field has the Following Value	| Object Filter String:	| (objectClass=*)
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following Field has the Following Value	| Object Filter String:	| (objectClass=*)
 
 
 | The Object Filter String Field shows the correct value when populated
 | | [Documentation]	| Verify that the Object Filter String field in the Source Connection Category is shown as the value that was entered during creation.
 | | [Tags]			| automated
 | | [Setup]			| View Integration Point	| ${IntegrationPoint1}
-| | Verify that the following Field has the Following Value	| Object Filter String:	| ${ObjectFilterString}
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the following Field has the Following Value	| Object Filter String:	| ${ObjectFilterString}
 
 
 | All Fields are present when Frequency is set to Weekly
 | | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes and Frequency is set to Weekly.
 | | [Tags]			| manual	| partially_automated	| field_placement
+| | [Setup]			| NONE
 | | @{Step1Fields}=	| Create List	| 
 | | ... | ${IntegrationPoint3}	| 
 | | ... | Append/Overlay		| 
@@ -196,9 +202,9 @@
 | | ... | - Overwrite		| 
 | | ... | - Source Provider	| 
 | | ... | - Destination RDO	| 
-| | ... | - Log Errors
+| | ... | - Log Errors      | 
+| | ... | - Email Notification Recipients
 | | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
-| | ... | - Job Status						|
 | | ... | - Next Scheduled Runtime (UTC)	| 
 | | ... | - Last Runtime (UTC)
 | | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
@@ -221,6 +227,7 @@
 | All Fields are present when Frequency is set to Monthly
 | | [Documentation]	| Verify that the correct Fields are present on the "Integration Point Details" Layout when Enable Scheduler is set to Yes and Frequency is set to Mothly.
 | | [Tags]			| manual	| partially_automated	| field_placement
+| | [Setup]			| NONE
 | | @{Step1Fields}=	| Create List	| 
 | | ... | ${IntegrationPoint4}	| 
 | | ... | Append/Overlay		| 
@@ -260,9 +267,9 @@
 | | ... | - Overwrite		| 
 | | ... | - Source Provider	| 
 | | ... | - Destination RDO	| 
-| | ... | - Log Errors
+| | ... | - Log Errors      | 
+| | ... | - Email Notification Recipients
 | | ... | 2. Verify that the "Status" Category has the following fields in order:	| 
-| | ... | - Job Status						|
 | | ... | - Next Scheduled Runtime (UTC)	| 
 | | ... | - Last Runtime (UTC)
 | | ... | 3. Verify that the "Import Scheduling" Category has the following fields in order:	| 
@@ -280,6 +287,7 @@
 | | ... | - Username				| 
 | | ... | - Password				| 
 | | ... | - Import Nested Items
+
 
 *** Keywords ***
 
