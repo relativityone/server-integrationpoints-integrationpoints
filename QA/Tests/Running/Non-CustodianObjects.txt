@@ -1,8 +1,8 @@
 
 *** Settings ***
 | Documentation 	| Verify that the Relativity Integration Points application can import into objects besides Custodians.
-| Metadata		    | Authors	| William Sehy
-| Force Tags		| in-progress | team.method  | manual
+| Metadata			| Authors	| William Sehy
+| Force Tags		| in-progress	| team.method
 | Suite Setup		| Create Suite Setup Data
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
@@ -10,17 +10,19 @@
 
 *** Variables ***
 
-| ${WorkspaceName}	    | LDAP Sync
-| ${IntegrationName}    | Questionnaires
+| ${WorkspaceName}		| LDAP Sync
+| ${IntegrationName}	| Questionnaires
+
 
 *** Test Cases ***
 
 | Questionnaire Objects can be created
 | | [Documentation]	| Verify that Relativity Integration Points can be used to create Questionnaire objects.
 | | ...				| [id] 13804f80-a89f-11e4-b5d4-b8ca3a83048f
-| | Filter the following Grid on the following Column by the following Value | gbox_questionnairesGrid  | Name | Imported Questionnaire
+| | Filter the following Grid on the following Column by the following Value	| gbox_questionnairesGrid	| Name	| Imported Questionnaire
 
-| | Verify that the following Grid contains the following number of Rows | gbox_questionnairesGrid  | 1
+| | Verify that the following Grid contains the following number of Rows	| gbox_questionnairesGrid	| 1
+
 
 *** Keywords *** 
 
@@ -36,31 +38,29 @@
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
 
-| | @{Step1Fields}  | Create list | ${IntegrationName} | Append | LDAP | Questionnaire | no
-| | @{Step2Fields}  | Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
-| | ... | (department=Questionnaire) | FastBind | testing\\rellockdown | P@ssw0rd@1
-| | @{Step3Mapping}=	| Create List	|
-| | ... | Name [Object Identifier]  	| givenname
+| | @{Step1Fields}=	| Create List	| ${IntegrationName}	| Append	| LDAP	| Questionnaire	| No
+| | @{Step2Fields}=	| Create List	| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp	| 
+| | ... | (department=Questionnaire)	| FastBind	| testing\\rellockdown	| P@ssw0rd@1
+| | @{Step3Mapping}=	| Create List	| Name [Object Identifier]	| givenname
 
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Name [Object Identifier]
+| | Create Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Name [Object Identifier]
 
-| | Run Import Now on the Following Integration Point | ${IntegrationName}  
+| | Run Import Now on the Following Integration Point	| ${IntegrationName}
 
-| | Go to the Method tab | Questionnaires
-
-| | [Teardown] | Drop connection to the relativity services api
-
+| | Go to the Method Tab	| Questionnaires
+| | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
 
-| | Delete the following Integration Point using API | ${IntegrationName}
+| | Delete the following Integration Point using API	| ${IntegrationName}
 
-| | Delete the Following Questionnaire using API  | Imported Questionnaire
+| | Delete the Following Questionnaire using API	| Imported Questionnaire
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
+
 
 *** Settings ***
 | Library	| Collections
@@ -70,6 +70,5 @@
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/QuestionnaireKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-
+| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
