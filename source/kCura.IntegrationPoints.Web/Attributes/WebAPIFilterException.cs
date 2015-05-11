@@ -23,12 +23,12 @@ namespace kCura.IntegrationPoints.Web.Attributes
 
 		public override void Log(ExceptionLoggerContext context)
 		{
-			var worksspaceID = context.Request.GetRouteData().Values["workspaceID"] as string;
-			var workspsace = 0;
-			int.TryParse(worksspaceID, out workspsace);
+			var workspaceID = context.Request.GetRouteData().Values["workspaceID"] as string;
+			var workspace = 0;
+			int.TryParse(workspaceID, out workspace);
 			var exp = context.Exception;
 			var creator = _factory.GetErrorService();
-			creator.Log(new ErrorModel(workspsace, exp.Message, exp));
+			creator.Log(new ErrorModel(workspace, exp.Message, exp));
 			_factory.Release(creator);
 
 		}
