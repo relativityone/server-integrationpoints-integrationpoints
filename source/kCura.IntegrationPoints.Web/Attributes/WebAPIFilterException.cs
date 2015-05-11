@@ -13,6 +13,22 @@ using kCura.IntegrationPoints.Core.Models;
 
 namespace kCura.IntegrationPoints.Web.Attributes
 {
+
+	public class WebAPILoginException : ExceptionFilterAttribute
+
+	{
+		public override void OnException(HttpActionExecutedContext actionExecutedContext)
+		{
+			Exception exp = actionExecutedContext.Exception;
+
+			if (exp.GetType() == typeof(AuthenticationException))
+			{
+				actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+				actionExecutedContext.Response.Content = new StringContent(exp.Message);
+			}
+		}
+	}
+
 	//we don't use Raygun but the article is good
 	//http://www.strathweb.com/2014/03/asp-net-web-api-exception-logging-raygun-io/
 	public class WebAPIFilterException : ExceptionLogger
@@ -39,6 +55,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
 			{
 				EventLog.WriteEntry("Integration Points", Utils.GetPrintableException(e), EventLogEntryType.Error);
 			}
+
 		}
 	}
 }

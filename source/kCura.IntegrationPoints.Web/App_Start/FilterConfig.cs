@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.Web
 
 		public static void RegisterWebAPIFilters(HttpConfiguration config, IWindsorContainer container)
 		{
+			config.Filters.Add(container.Resolve<WebAPILoginException>());
 			config.Services.Add(typeof(IExceptionLogger), container.Resolve<WebAPIFilterException>());
 		}
 
