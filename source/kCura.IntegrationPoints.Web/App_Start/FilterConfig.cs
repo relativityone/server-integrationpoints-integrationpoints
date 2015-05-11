@@ -1,5 +1,6 @@
 ﻿using System.Web;
 using System.Web.Http;
+using System.Web.Http.ExceptionHandling;
 using System.Web.Mvc;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Web.Attributes;
@@ -15,7 +16,7 @@ namespace kCura.IntegrationPoints.Web
 
 		public static void RegisterWebAPIFilters(HttpConfiguration config, IWindsorContainer container)
 		{
-			config.Services.Add(typeof(IExceptionFilter), container.Resolve<WebAPIFilterException>());
+			config.Services.Add(typeof(IExceptionLogger), container.Resolve<WebAPIFilterException>());
 		}
 
 	}

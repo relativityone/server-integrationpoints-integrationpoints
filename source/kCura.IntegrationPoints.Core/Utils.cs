@@ -38,6 +38,7 @@ namespace kCura.IntegrationPoints.Core
 				strBuilder.AppendLine(ex.InnerException.ToString());
 			}
 			return strBuilder.ToString();
+
 		}
 	}
 }
