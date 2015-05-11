@@ -12,7 +12,9 @@
 *** Variables ***
 
 | ${WorkspaceName}	| Relativity Legal Hold
-| ${Source1}		| LDAP Source
+| ${Source1}		| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp
+| ${LDAPUserName}	| testing/rellockdown
+| ${LDAPPassword}	| P@ssw0rd@1
 
 
 *** Test Cases ***
