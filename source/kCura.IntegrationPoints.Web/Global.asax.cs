@@ -53,8 +53,7 @@ namespace kCura.IntegrationPoints.Web
 		public void Application_Error(object sender, EventArgs e)
 		{
 			var error = Server.GetLastError();
-			var s = error.Message;
-			new CreateErrorRdo(ConnectionHelper.Helper().GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System)).Execute(0, string.Empty, string.Empty, string.Empty);
+			new CreateErrorRdo(ConnectionHelper.Helper().GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System)).Execute(0,"Application", error);
 		}
 
 		private void CreateWindsorContainer()
