@@ -15,11 +15,17 @@ namespace kCura.IntegrationPoints.Core
 		/// <returns>A generic exception that can be passed to the host process.</returns>
 		public static Exception GetNonCustomException(System.Exception ex)
 		{
+			return new Exception(GetPrintableException(ex));
+		}
+
+
+		public static string GetPrintableException(Exception ex)
+		{
 			var strBuilder = new StringBuilder();
 
 			if (!String.IsNullOrWhiteSpace(ex.Message))
 			{
-				strBuilder.Append(ex.Message);
+				strBuilder.AppendLine(ex.Message);
 			}
 
 			if (!String.IsNullOrEmpty(ex.StackTrace))
@@ -31,8 +37,7 @@ namespace kCura.IntegrationPoints.Core
 			{
 				strBuilder.AppendLine(ex.InnerException.ToString());
 			}
-
-			return new Exception(strBuilder.ToString());
+			return strBuilder.ToString();
 		}
 	}
 }

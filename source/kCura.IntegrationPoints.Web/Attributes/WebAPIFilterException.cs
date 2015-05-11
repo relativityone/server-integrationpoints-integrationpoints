@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -7,6 +8,7 @@ using System.Security.Authentication;
 using System.Web;
 using System.Web.Http.ExceptionHandling;
 using System.Web.Http.Filters;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Models;
 
 namespace kCura.IntegrationPoints.Web.Attributes
@@ -23,14 +25,20 @@ namespace kCura.IntegrationPoints.Web.Attributes
 
 		public override void Log(ExceptionLoggerContext context)
 		{
-			var workspaceID = context.Request.GetRouteData().Values["workspaceID"] as string;
-			var workspace = 0;
-			int.TryParse(workspaceID, out workspace);
-			var exp = context.Exception;
-			var creator = _factory.GetErrorService();
-			creator.Log(new ErrorModel(workspace, exp.Message, exp));
-			_factory.Release(creator);
-
+			try
+			{
+				var workspaceID = context.Request.GetRouteData().Values["workspaceID"] as string;
+				var workspace = 0;
+				int.TryParse(workspaceID, out workspace);
+				var exp = context.Exception;
+				var creator = _factory.GetErrorService();
+				creator.Log(new ErrorModel(workspace, exp.Message, exp));
+				_factory.Release(creator);
+			}
+			catch (Exception e)
+			{
+				EventLog.WriteEntry("Integration Points", Utils.GetPrintableException(e), EventLogEntryType.Error);
+			}
 		}
 	}
 }
