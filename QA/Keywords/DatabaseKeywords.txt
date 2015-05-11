@@ -145,7 +145,7 @@
 | Wait Until Integration Point Job Runs
 | | [Documentation]	| This keyword waits until the given Integration Point's Job finishes running.
 | | [ARGUMENTS]		| ${IntegrationPointName}	| ${RunTime}=60s
-| | Wait Until Keyword Succeeds	| 20s			| 2s	| Verify that the following Integration Point has a Running Job				| ${IntegrationPointName}
+| | Wait Until Keyword Succeeds	| 20s			| .5s	| Verify that the following Integration Point has a Running Job				| ${IntegrationPointName}
 | | Wait Until Keyword Succeeds	| ${RunTime}	| 2s	| Verify that the following Integration Point does not have a Running Job	| ${IntegrationPointName}
 
 | Determine if the following Integration Point has a Currently Running Job

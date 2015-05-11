@@ -28,7 +28,8 @@
 | | ... | 1. Go to Step 3 of the Create Integration Point Process, using the Source ${Source1}
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the Source Attributes list contains all of the attributes that contain data from ${Source1}
+| | ... | Verify that the Source Attributes list contains all of the attributes that contain data from ${Source1}
+
 
 | Newly Populated Attributes appear in the Source Attributes List
 | | [Documentation] | [id] 113770f0-a89f-11e4-83bc-b8ca3a83048f
@@ -58,6 +59,25 @@
 | | ... | 
 | | ... | Expected Results:
 | | ... | Verify that the deleted attribute is not present on the Source Attributes list
+
+
+*** Keywords ***
+
+| Remoting in to the LDAP Server
+| | [Documentation]	| Teaches you how to remote in to the "gameofholds.testing.corp" server.
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Open a Remote Desktop Connection to the following computer: gameofholds.testing.corp
+| | ... | 2. Use the following credentials to log in:
+| | ... | - Username: kdisterheft
+| | ... | - Password: ChangeThisPassword3*
+
+| Open the User Directory
+| | [Documentation]	| Teaches you how to open the User information when on the "gameofholds.testing.corp" server.
+| | Run the following manual steps:
+| | ... | Steps: 
+| | ... | 1. Run "Active Directory Users and Computers"
+| | ... | 2. Browse to the "Users" folder
 
 
 *** Settings ***

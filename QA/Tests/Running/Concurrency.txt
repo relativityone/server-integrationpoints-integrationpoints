@@ -16,8 +16,8 @@
 | ${IntegrationPoint2}	| 
 | ${IntegrationPoint3}	| 
 | ${IntegrationPoint4}	| 
-| ${Source1}			| 
-| ${Source2}			| 
+| ${Source1}			| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp
+| ${Source2}			| testing.corp/OU=Testing - Users,DC=testing,DC=corp
 | ${ObjectType1}		| 
 | ${ObjectType2}		| 
 
