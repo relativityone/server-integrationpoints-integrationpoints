@@ -52,7 +52,8 @@ namespace kCura.IntegrationPoints.Web.Attributes
 			}
 			catch (Exception e)
 			{
-				EventLog.WriteEntry("Integration Points", Utils.GetPrintableException(context.Exception) + Utils.GetPrintableException(e), EventLogEntryType.Error);
+				EventLog.WriteEntry("Integration Points", Utils.GetPrintableException(context.Exception) +
+					Environment.NewLine + Utils.GetPrintableException(e), EventLogEntryType.Error);
 			}
 
 		}

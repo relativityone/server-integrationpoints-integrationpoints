@@ -79,13 +79,13 @@
 		};
 		//move to RLH.async
 		data.deferred = (function (q) {
-			return function (obj) {
-				if (typeof obj === "object") {
-					return q(obj);
-				} else {
-					return q;
-				}
-			}
+		    return function(obj) {
+		        if (typeof obj === "object") {
+		            return q(obj);
+		        } else {
+		            return q;
+		        }
+		    };
 		})(Q);
 
 	})(root.data || (root.data = {}));
