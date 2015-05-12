@@ -80,13 +80,14 @@
 | | ... | Verify that the Records Imported field's value matches the number of custodians from the RIP
 
 
-| Records Imported with nested Managers includes the Managers in the count
+| Records Imported with nested Managers (Excluded) includes the Managers in the count
 | | [Documentation] | Verify that the Records Imported with nested Managers includes the Managers in the count.
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. ${IntegrationName3} is a Custodian Import with Append/Overlay that will not cause any errors, and has about 5 records who have Managers in other folders/different departments.
-| | ... | 2. The import is restricted to the Custodians (i.e. the filter excludes the Managers), but Import Nested and Managers are enabled
+| | ... | 2. The import is restricted to the Custodians (i.e. the filter excludes the Managers)
+| | ... | 3. Import Nested is set to Yes
 | | ... |
 | | ... | Steps:
 | | ... | 1. View Integration Point | ${IntegrationName3}
@@ -97,18 +98,55 @@
 | | ... | Verify that the Records Imported value equals the sum of the non-managers and managers
 
 
-| Records Imported with non-nested Managers includes the Managers in the count and one additional count per linked Manager
-| | [Documentation] | Verify that the Records Imported with nested Managers includes the Managers in the count
+| Records Imported with nested Managers (Included) includes the Managers in the count and one additional count per linked Manager
+| | [Documentation] | Verify that the Records Imported with nested Managers includes the Managers in the count.
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. ${IntegrationName7} is a Custodian Import with Append/Overlay that will not cause any errors, and has about 5 records who have Managers in other folders/different departments.
+| | ... | 2. The import is restricted to the Custodians and Managers (i.e. the filter includes the Managers)
+| | ... | 3. Import Nested is set to Yes
+| | ... |
+| | ... | Steps:
+| | ... | 1. View Integration Point | ${IntegrationName7}
+| | ... | 2. Click | Import Now
+| | ... | 3. View the Job History for ${IntegrationName7} after the import is complete
+| | ... | 
+| | ... | Expected Results
+| | ... | Verify that the Records Imported value equals the sum of the non-managers and managers, plus one for each manager-custodian link
+
+
+| Records Imported with non-nested Managers (Excluded) includes the Managers in the count
+| | [Documentation] | Verify that the Records Imported with nested Managers includes the Managers in the count when the filter string excludes the Managers.
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Preconditions:
 | | ... | 1. ${IntegrationName5} is a Custodian Import with Append/Overlay that will not cause any errors, and has about 5 records who have Managers in the same connection path.
-| | ... | 2. The import is restricted to the Custodians (i.e. the filter excludes the Managers), but Import Nested and Managers are enabled
+| | ... | 2. The import is restricted to the Custodians (i.e. the filter excludes the Managers)
+| | ... | 3. Import Nested is enabled
 | | ... |
 | | ... | Steps:
 | | ... | 1. View Integration Point | ${IntegrationName5}
 | | ... | 2. Click | Import Now
 | | ... | 3. View the Job History for ${IntegrationName5} after the import is complete
+| | ... | 
+| | ... | Expected Results
+| | ... | Verify that the Records Imported value equals the sum of the non-managers and managers
+
+
+| Records Imported with non-nested Managers (Included) includes the Managers in the count and one additional count per linked Manager
+| | [Documentation] | Verify that the Records Imported with nested Managers includes the Managers in the count when the filter string includes the Managers.
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Preconditions:
+| | ... | 1. ${IntegrationName6} is a Custodian Import with Append/Overlay that will not cause any errors, and has about 5 records who have Managers in the same connection path
+| | ... | 2. The filter restriction allows for the import of both the Custodians AND the Managers,
+| | ... | 3. Import Nested is enabled
+| | ... |
+| | ... | Steps:
+| | ... | 1. View Integration Point | ${IntegrationName6}
+| | ... | 2. Click | Import Now
+| | ... | 3. View the Job History for ${IntegrationName6} after the import is complete
 | | ... | 
 | | ... | Expected Results
 | | ... | Verify that the Records Imported value equals the sum of the non-managers and managers, plus one for each manager that was linked
@@ -129,3 +167,8 @@
 | | ... | Expected Results
 | | ... | 1. Verify that the Records Imported count is correct: 1
 | | ... | 2. Verify that the Records with Errors is correct: One for each other Custodian that has the same department
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
