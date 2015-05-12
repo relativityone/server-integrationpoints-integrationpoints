@@ -18,9 +18,9 @@ Imports System.Runtime.InteropServices
  Assembly: CLSCompliantAttribute(false),  _
  Assembly: AssemblyVersionAttribute("1.3.3.7"),  _
  Assembly: AssemblyFileVersionAttribute("1.3.3.7"),  _
- Assembly: AssemblyCopyrightAttribute("Copyright (c) 2015, kCura Corporation."),  _
- Assembly: AssemblyTitleAttribute("BuildTools"),  _
+ Assembly: AssemblyCopyrightAttribute("Copyright (c) 2015, kCura LLC"),  _
+ Assembly: AssemblyTitleAttribute("Template"),  _
  Assembly: AssemblyDescriptionAttribute("Tools to help build source code for kCura repositories."),  _
- Assembly: AssemblyCompanyAttribute("kCura Corporation"),  _
- Assembly: AssemblyProductAttribute("BuildTools")> 
+ Assembly: AssemblyCompanyAttribute("kCura LLC"),  _
+ Assembly: AssemblyProductAttribute("Template")> 
 

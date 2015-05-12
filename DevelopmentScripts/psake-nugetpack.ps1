@@ -1,4 +1,4 @@
-. .\common.ps1
+. .\psake-common.ps1
 
 
 task default -depends update_nuspec, nuget_pack

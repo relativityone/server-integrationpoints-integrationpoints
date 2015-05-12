@@ -61,32 +61,32 @@ if NOT %VERSION%==1.0.0.0 goto version
 goto build
 
 :version
-powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\version.ps1 -properties @{'version'='%VERSION%';'company'='%COMPANY%';'product'='%PRODUCT%';'product_description'='%PRODUCTDESCRIPTION%';}; exit !$psake.build_success;}"
+powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\psake-version.ps1 -properties @{'version'='%VERSION%';'company'='%COMPANY%';'product'='%PRODUCT%';'product_description'='%PRODUCTDESCRIPTION%';}; exit !$psake.build_success;}"
 if NOT %errorlevel%==0 goto end
 
 :build
 if %BUILD%==False goto apps
-powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\build.ps1 -properties @{'version'='%VERSION%';'server_type'='local';'build_config'='%BUILDCONFIG%';'build_type'='%BUILDTYPE%';}; exit !$psake.build_success;}"
+powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\psake-build.ps1 -properties @{'version'='%VERSION%';'server_type'='local';'build_config'='%BUILDCONFIG%';'build_type'='%BUILDTYPE%';}; exit !$psake.build_success;}"
 if NOT %errorlevel%==0 goto end
 
 :apps
 if %APPS%==False goto test
-powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\application.ps1 -properties @{'version'='%VERSION%';'server_type'='local';'build_config'='%BUILDCONFIG%';'build_type'='%BUILDTYPE%';}; exit !$psake.build_success;}"
+powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\psake-application.ps1 -properties @{'version'='%VERSION%';'server_type'='local';'build_config'='%BUILDCONFIG%';'build_type'='%BUILDTYPE%';}; exit !$psake.build_success;}"
 if NOT %errorlevel%==0 goto end
 
 :test
 if %TEST%==False goto nuget
-powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\test.ps1; exit !$psake.build_success;}"
+powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\psake-test.ps1; exit !$psake.build_success;}"
 if NOT %errorlevel%==0 goto end
 
 :nuget
 if %NUGET%==False goto package
-powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\nuget.ps1 -properties @{'version'='%VERSION%';'server_type'='local';'build_config'='%BUILDCONFIG%';'build_type'='%BUILDTYPE%';}; exit !$psake.build_success;}"
+powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\psake-nuget.ps1 -properties @{'version'='%VERSION%';'server_type'='local';'build_config'='%BUILDCONFIG%';'build_type'='%BUILDTYPE%';}; exit !$psake.build_success;}"
 if NOT %errorlevel%==0 goto end
 
 :package
 if %PACKAGE%==False goto end
-powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\package.ps1 -properties @{'version'='%VERSION%';'server_type'='local';'build_config'='%BUILDCONFIG%';'build_type'='%BUILDTYPE%';}; exit !$psake.build_success;}"
+powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\psake-package.ps1 -properties @{'version'='%VERSION%';'server_type'='local';'build_config'='%BUILDCONFIG%';'build_type'='%BUILDTYPE%';}; exit !$psake.build_success;}"
 
 goto end
 

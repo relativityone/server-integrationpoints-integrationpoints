@@ -1,4 +1,4 @@
-. .\common.ps1
+. .\psake-common.ps1
 
 
 task default -depends package, sign

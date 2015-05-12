@@ -16,9 +16,9 @@ using System.Runtime.InteropServices;
 [assembly: CLSCompliantAttribute(false)]
 [assembly: AssemblyVersionAttribute("1.3.3.7")]
 [assembly: AssemblyFileVersionAttribute("1.3.3.7")]
-[assembly: AssemblyCopyrightAttribute("Copyright (c) 2015, kCura Corporation.")]
-[assembly: AssemblyTitleAttribute("BuildTools")]
+[assembly: AssemblyCopyrightAttribute("Copyright (c) 2015, kCura LLC")]
+[assembly: AssemblyTitleAttribute("Template")]
 [assembly: AssemblyDescriptionAttribute("Tools to help build source code for kCura repositories.")]
-[assembly: AssemblyCompanyAttribute("kCura Corporation")]
-[assembly: AssemblyProductAttribute("BuildTools")]
+[assembly: AssemblyCompanyAttribute("kCura LLC")]
+[assembly: AssemblyProductAttribute("Template")]
 
