@@ -81,7 +81,7 @@ if NOT %errorlevel%==0 goto end
 
 :nuget
 if %NUGET%==False goto package
-powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\psake-nuget.ps1 -properties @{'version'='%VERSION%';'server_type'='local';'build_config'='%BUILDCONFIG%';'build_type'='%BUILDTYPE%';}; exit !$psake.build_success;}"
+powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\psake-nugetpack.ps1 -properties @{'version'='%VERSION%';'server_type'='local';'build_config'='%BUILDCONFIG%';'build_type'='%BUILDTYPE%';}; exit !$psake.build_success;}"
 if NOT %errorlevel%==0 goto end
 
 :package
