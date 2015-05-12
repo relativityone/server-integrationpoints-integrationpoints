@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.Web.Attributes
 {
 
 	public class WebAPILoginException : ExceptionFilterAttribute
-
 	{
 		public override void OnException(HttpActionExecutedContext actionExecutedContext)
 		{
@@ -53,7 +52,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
 			}
 			catch (Exception e)
 			{
-				EventLog.WriteEntry("Integration Points", Utils.GetPrintableException(e), EventLogEntryType.Error);
+				EventLog.WriteEntry("Integration Points", Utils.GetPrintableException(context.Exception) + Utils.GetPrintableException(e), EventLogEntryType.Error);
 			}
 
 		}
