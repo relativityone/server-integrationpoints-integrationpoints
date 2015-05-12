@@ -52,7 +52,7 @@ for /f "delims=" %%A in ('hg root') do @set SourceRoot=%%A
 pushd %SourceRoot%\DevelopmentScripts
 echo root is %SourceRoot%
 
-SET BUILDPROJECT=%SourceRoot%\DevelopmentScripts\build.build
+SET BUILDPROJECT=%SourceRoot%\DevelopmentScripts\nant-build.build
 
 if NOT %VERSION%==1.0.0.0 goto version
 goto build

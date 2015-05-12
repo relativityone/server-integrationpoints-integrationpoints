@@ -2,12 +2,12 @@
 
 <project name="Build">
 
-	<include buildfile="common.include" />
-	<include buildfile="nuget.include" />
-	<include buildfile="assembly.include" />
-	<include buildfile="package.include" />
-	<include buildfile="test.include" />
-	<include buildfile="applications.include" />
+	<include buildfile="nant-common.include" />
+	<include buildfile="nant-nuget.include" />
+	<include buildfile="nant-assembly.include" />
+	<include buildfile="nant-package.include" />
+	<include buildfile="nant-test.include" />
+	<include buildfile="nant-applications.include" />
 	
 	<property name="buildType" value="DEV" unless="${property::exists('buildType')}" />
 	<property name="buildconfig" value="Debug" unless="${property::exists('buildconfig')}" />
