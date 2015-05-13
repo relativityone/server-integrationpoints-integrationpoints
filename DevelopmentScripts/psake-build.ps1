@@ -51,7 +51,7 @@ task build_projects -depends create_build_script {
     exec {                                                                                
         &  $msbuild_exe @(($targetsfile),   
                          ('/property:SourceRoot=' + $root),
-                         ('/property:Configuration=' + $buildconfig),	
+                         ('/property:Configuration=' + $build_config),	
                          ('/property:BuildProjectReferences=false'),		
                          ('/target:BuildTiers'),
                          ('/verbosity:' + $verbosity),
