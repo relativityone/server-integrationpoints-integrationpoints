@@ -5,9 +5,15 @@ task default -depends update_nuspec, nuget_pack
 
 
 task update_nuspec {
+    
+    $IDs = @()
+
     foreach($o in Get-ChildItem $nuspec_directory){
        
        if($o.Extension -ne '.nuspec') {continue}
+
+       $x = Select-Xml -Path $o.FullName -XPath '/package/metadata/id'
+       $IDs += $x.Node.InnerText
 
        Write-Host "Updating" $o.FullName "to version" $version "..."
        
@@ -26,6 +32,21 @@ task update_nuspec {
        $x = Select-Xml -Path $o.FullName -XPath '/package/metadata/owners'
        $x.Node.InnerText = $company  
        $x.Node.OwnerDocument.Save($x.Path)       
+    }   
+
+    foreach($o in Get-ChildItem $nuspec_directory){
+       
+       if($o.Extension -ne '.nuspec') {continue}
+
+       foreach($d in $IDs) {
+          $x = Select-Xml -Path $o.FullName -XPath "/package/metadata/dependencies/dependency[@id='$d']"
+          if ($x) {
+              Write-Host "Updating depencies in " $o.FullName "to version" $version "..."
+
+              $x.Node.Attributes['version'].InnerText = $version   
+              $x.Node.OwnerDocument.Save($x.Path)
+          }
+       }   
     }   
 }
 
