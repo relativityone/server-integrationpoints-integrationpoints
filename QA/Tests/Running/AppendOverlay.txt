@@ -3,7 +3,7 @@
 | Documentation 	| Verify that running an Append/Overlay RIP creates new objects, updates existing modified objects and ignores existing unmodified objects. 
 | ...				| These are generic tests that can be run against any RDO, as such, the navigation and search steps are not as details as usual.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
-| Force Tags		| in-progress	| team.method
+| Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
 | Suite Setup		| Create Suite Setup Data
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers

@@ -2,7 +2,7 @@
 *** Settings ***
 | Documentation 	| Verify that the Read pages for Job History objects have the fields and sections for given situations.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
-| Force Tags		| in-progress	| team.method
+| Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
 | Suite Setup		| Suite Setup Keyword
 | Test Setup		| View Job History	| ${IntegrationPoint1}
 | Test Teardown 	| Capture Screenshot if Test Fails

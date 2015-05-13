@@ -1,7 +1,7 @@
 *** Settings ***
 | Documentation | Verify that the correct job status is displayed on the RIP Job History View page
 | Metadata      | Authors	| Daniel Oliver	
-| Force Tags		| in-progress | team.method
+| Force Tags		| in-progress | team.game_of_holds	| feature.integration_points
 | Suite Setup		| Create Suite Setup Data
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers

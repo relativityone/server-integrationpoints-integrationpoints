@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Map Fields step of Integration Points shows the correct error messages, 
 | ...				| and that the record can be saved after correcting the errors.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
-| Force Tags		| in-progress	| team.method
+| Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
 | Suite Setup		| Open the Browser and Ensure that the Integration Points created in this Suite do not already exist
 #| Test Setup		| NONE
 | Test Teardown 	| Capture screenshot if test fails

@@ -2,7 +2,7 @@
 *** Settings ***
 | Documentation 	| Verify that installing RIP and RLH in the same Workspace retains the correct Tabs and Subtabs. 
 | Metadata			| Authors	| Daniel Oliver	| David Barnes	| William Sehy
-| Force Tags		| in-progress	| sprint-2.2.3	| team.method	| relativity-8.1	| manual
+| Force Tags		| in-progress	| sprint-2.2.3	| team.game_of_holds	| feature.integration_points	| relativity-8.1	| manual
 | Suite Setup		| Create a new Workspace and Import the Applications into it
 #| Test Setup		| Open Browser	| ${ROOT}
 #| Test Teardown	| Close All Browsers

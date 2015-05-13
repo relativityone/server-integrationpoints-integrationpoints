@@ -1,7 +1,7 @@
 *** Settings ***
 | Documentation | Email Notifications when running Integration Points
 | Metadata		| Authors	| Daniel Oliver
-| Force Tags	| in-progress | team.method
+| Force Tags	| in-progress | team.game_of_holds	| feature.integration_points
 
 
 *** Variables ***

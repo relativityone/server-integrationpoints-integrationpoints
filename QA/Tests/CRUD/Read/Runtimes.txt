@@ -2,7 +2,7 @@
 *** Settings ***
 | Documentation		| Testing the Runtime and Scheduled Time fields on the of the Status Card's of the Integration Point's View Mode.
 | Metadata	     	| Authors	| William Sehy
-| Force Tags		| manual	| in-progress	| team.method
+| Force Tags		| manual	| in-progress	| team.game_of_holds	| feature.integration_points
 #| Suite Setup		| Log	| This is the suite setup keyword.
 #| Test Setup		| Open Browser	| ${ROOT}
 #| Test Teardown	| Close All Browsers

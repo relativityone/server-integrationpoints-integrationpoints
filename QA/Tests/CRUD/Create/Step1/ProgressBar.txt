@@ -2,7 +2,7 @@
 *** Settings ***
 | Documentation 	| Testing the Progress Bar's format during the Create Integration process.
 | Metadata		    | Authors	| Daniel Oliver
-| Force Tags		| manual	| in-progress	| team.method
+| Force Tags		| manual	| in-progress	| team.game_of_holds	| feature.integration_points
 #| Suite Setup		| Log	| This is the suite setup keyword.
 #| Test Setup		| Open and Log in to Method
 #| Test Teardown 	| Close All Browsers

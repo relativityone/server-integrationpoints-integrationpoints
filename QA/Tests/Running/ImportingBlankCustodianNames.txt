@@ -3,7 +3,7 @@
 | Documentation		| Verify that Custodians that have both a blank first name and blank last name will not be imported, 
 | ...				| but Custodians with only one blank value are imported.
 | Metadata			| Authors	| Daniel Oliver
-| Force Tags		| in-progress	| team.method
+| Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
 | Suite Setup		| Create Suite Setup Data
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers

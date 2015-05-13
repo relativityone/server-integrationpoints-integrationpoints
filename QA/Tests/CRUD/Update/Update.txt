@@ -2,7 +2,7 @@
 *** Settings ***
 | Documentation		| Verify that changes to an Integration Point are done correctly.
 | Metadata		    | Authors	| Daniel Oliver	| William Sehy
-| Force Tags		| manual	| in-progress	| team.method
+| Force Tags		| manual	| in-progress	| team.game_of_holds	| feature.integration_points
 
 
 *** Test Cases ***

@@ -1,7 +1,7 @@
 *** Settings ***
 | Documentation     | Verify that Job History records are created when a Job is started via both Scheduled and Import Now jobs
 | Metadata		    | Authors	| Daniel Oliver
-| Force Tags		| in-progress | team.method
+| Force Tags		| in-progress | team.game_of_holds	| feature.integration_points
 | Suite Setup		| Create Suite Setup Data
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers

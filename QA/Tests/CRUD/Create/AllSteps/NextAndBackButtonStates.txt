@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Next and Back buttons on the Integration Point Wizard 
 | ...				| have the correct states (enabled/disabled) under various conditions.
 | Metadata		    | Authors	| William Sehy
-| Force Tags		| in-progress	| team.method
+| Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
 | Suite Setup		| Open and Log in to Method
 #| Test Setup		| NONE
 | Test Teardown 	| Capture Screenshot If Test Fails

@@ -2,7 +2,7 @@
 *** Settings ***
 | Documentation 	| Verify that the Integration Points work correctly when multiple Jobs are run together.
 | Metadata		    | Authors	| William Sehy
-| Force Tags		| in-progress	| team.method	| manual
+| Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points	| manual
 #| Suite Setup		| Log	| This is the suite setup keyword.
 #| Test Setup		| Open and Log in to Method
 #| Test Teardown 	| Close All Browsers

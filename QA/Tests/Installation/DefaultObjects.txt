@@ -3,7 +3,7 @@
 | Documentation 	| This suite of tests verifies the Objects created upon the installation of the LDAP Sync application.
 | ...				| This should be run immediately after installing the LDAP Sync application on the LDAP Sync workspace.
 | Metadata			| Authors	| William Sehy
-| Force Tags		| team.method	| in-progress
+| Force Tags		| team.game_of_holds	| feature.integration_points	| in-progress
 | Suite Setup		| Create a new Workspace and Import the Applications into it
 #| Test Setup 		| NONE
 | Test Teardown 	| Run Keyword If Test Failed	| Capture Page Screenshot

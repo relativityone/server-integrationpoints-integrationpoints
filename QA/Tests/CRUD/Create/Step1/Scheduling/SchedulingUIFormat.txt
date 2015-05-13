@@ -2,7 +2,7 @@
 *** Settings ***
 | Documentation 	| Verify that the Import Scheduling section of the Create Integration Points is correct with different Frequency options selected.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
-| Force Tags		| in-progress	| sprint-3.1.2	| team.method
+| Force Tags		| in-progress	| sprint-3.1.2	| team.game_of_holds	| feature.integration_points
 | Suite Setup		| Open and Log in to Method
 | Test Setup		| Open Create Integration Point
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
