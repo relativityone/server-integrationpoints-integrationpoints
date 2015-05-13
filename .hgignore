@@ -62,4 +62,5 @@ Packages/*
 *.nupkg
 msbuild.targets
 dlls.txt
+version.txt
 

@@ -3,9 +3,9 @@
 SET BUILDCONFIG=Debug
 SET BUILDTYPE=DEV
 SET VERSION=1.0.0.0
-SET COMPANY = 'kCura LLC'
-SET PRODUCT = 'Template'
-SET PRODUCTDESCRIPTION = 'Template repo for kCura'
+SET COMPANY=kCura LLC
+SET PRODUCT=Template
+SET PRODUCTDESCRIPTION=Template repo for kCura
 SET BUILD=True
 SET APPS=True
 SET TEST=False
@@ -53,7 +53,6 @@ echo nuget   step is set to %NUGET%
 echo package step is set to %PACKAGE%
 
 
-
 for /f "delims=" %%A in ('hg root') do @set SourceRoot=%%A
 pushd %SourceRoot%\DevelopmentScripts
 
@@ -61,6 +60,14 @@ if NOT %VERSION%==1.0.0.0 goto version
 goto build
 
 :version
+if /i %VERSION%==latest (
+powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\psake-get-version.ps1 -properties @{'server_type'='local';'product'='%PRODUCT%';}; exit !$psake.build_success;}"
+
+for /f "delims=" %%A in (%SourceRoot%\DevelopmentScripts\version.txt) do (set VERSION=%%A)
+
+echo version is updated to %VERSION%
+)
+
 powershell -Command "& { Import-Module ..\Vendor\psake\tools\psake.psm1; Invoke-psake .\psake-version.ps1 -properties @{'version'='%VERSION%';'company'='%COMPANY%';'product'='%PRODUCT%';'product_description'='%PRODUCTDESCRIPTION%';}; exit !$psake.build_success;}"
 if NOT %errorlevel%==0 goto end
 

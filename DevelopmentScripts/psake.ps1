@@ -17,3 +17,4 @@ $PRODUCTDESCRIPTION = 'Template repo for kCura'
 #Invoke-psake .\test.ps1
 #Invoke-psake .\nuget.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
 #Invoke-psake .\package.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+

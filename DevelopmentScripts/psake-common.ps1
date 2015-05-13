@@ -24,6 +24,14 @@ properties {
     $product = 'Template'
     $product_description = 'Template repo for kCura'
 
+    #versioning database info
+    $server = 'bld-mstr-01.kcura.corp'
+    $database ='TCBuildVersion'
+    $project = 'Development'
+    $majorminorversion = '1.0'
+    $devstartdate = '01/01/01'
+    
+
     #microsoft directories
     $microsoft_net_directory = [System.IO.Path]::Combine($env:windir,'Microsoft.NET','Framework','v4.0.30319')
     $microsoft_net64_directory = [System.IO.Path]::Combine($env:windir,'Microsoft.NET','Framework64','v4.0.30319')

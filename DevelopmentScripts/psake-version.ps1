@@ -4,8 +4,7 @@
 task default -depends version
 
 
-task version -precondition {
-
+task version {
     $NewVersion = 'AssemblyVersionAttribute("' + $version + '")'
     $NewFileVersion = 'AssemblyFileVersionAttribute("' + $version + '")'
     $NewCopyright = 'AssemblyCopyrightAttribute("Copyright (c) ' + [System.DateTime]::Now.Year + ', ' + $company + '")'
@@ -32,6 +31,3 @@ task version -precondition {
        [System.IO.File]::WriteAllLines($o.FullName, $tmp)
     }   
 }
-
-
-
