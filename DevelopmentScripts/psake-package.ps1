@@ -24,7 +24,7 @@ task package -depends package_initalize <# package_sample #> {
 <# use as template
 
 task package_sample {
-    Copy-Item -Path ([System.IO.Path]::Combine($source_directory, 'kCura.Sample', 'bin', '*')) -Destination $package_bin_directory -Include '*.exe' '*.dll'
+    Copy-Item -Path ([System.IO.Path]::Combine($source_directory, 'kCura.Sample', 'bin', '*')) -Destination $package_bin_directory -Include '*.exe', '*.dll'
     Copy-Item -Path ([System.IO.Path]::Combine($source_directory, 'kCura.Sample', 'bin', '*')) -Destination $package_pdb_directory -Include '*.pdb'
 }
 

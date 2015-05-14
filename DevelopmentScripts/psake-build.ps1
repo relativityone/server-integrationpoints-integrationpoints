@@ -19,7 +19,7 @@ task build_initalize {
     'build config = ' + $build_config
     ''
 
-    'Time: ' + (Get-Date -Format 'yyy-MM-dd HH:mm:ss')
+    'Time: ' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
     
     'Build Type and Server Type result in sign set to ' + ($build_type -ne 'DEV' -and $server_type -ne 'local')  
 
