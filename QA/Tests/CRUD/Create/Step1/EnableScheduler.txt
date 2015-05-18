@@ -60,8 +60,8 @@
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
 
-| Create with the Scheduler set to Yes and only partly filled out, then set to No
-| | [Documentation]	| Verify that Step 2 can be shown after filling out some of the Scheduler's required fields and then disabling the Scheduler.
+| Step 2 can be shown after changing Enabled from Yes to No without populating all of the Scheduler's Required fields
+| | [Documentation]	| Verify that Step 2 can be shown after filling out some, but not all, of the Scheduler's required fields, and then disabling the Scheduler.
 | | ...				| [id] 0eefcae1-a89f-11e4-a60b-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| 
