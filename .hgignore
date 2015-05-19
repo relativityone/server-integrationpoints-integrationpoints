@@ -108,3 +108,5 @@ source/TestResults/
 Keyword Testing.txt
 Regression Automation */
 kCura.IntegrationPoints.Documentation\Help\*
+source\Dependencies\kCura.RAPBuilder\*
+source\DevelopmentScripts\kCura.RAPBuilder.exe

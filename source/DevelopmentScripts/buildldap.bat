@@ -21,6 +21,7 @@ if not "%3" == "" (
 SET LDAPSyncRoot=%LDAPSync%
 pushd %LDAPSync%\developmentscripts
 nant build -buildfile:"%BUILDPROJECT%" "-D:root=%LDAPSyncRoot%" "-D:buildconfig=%BUILDCONFIG%" "-D:action=%BUILDACTION%" "-D:DevEnv=DEVENV"
+nant build_RAP_Package -buildfile:"%BUILDPROJECT%" "-D:root=%LDAPSyncRoot%" "-D:buildconfig=%BUILDCONFIG%" "-D:action=build_RAP_Package "-D:DevEnv=DEVENV"
 
 ::UploadDLL
 pushd %LDAPSync%\developmentscripts

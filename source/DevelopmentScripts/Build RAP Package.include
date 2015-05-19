@@ -20,7 +20,8 @@
 	<property name="ldapRelativityBuildServer" value="" unless="${property::exists('ldapRelativityBuildServer')}" />
 	<property name="ldapRelativityBuildCaseID" value="" unless="${property::exists('ldapRelativityBuildCaseID')}" />
 
-	<target name="build_RAP_Package" depends="deploy_web_project,sign_files,build_custom_pages_zip, generate_RAP_package" />
+	<!--<target name="build_RAP_Package" depends="deploy_web_project,sign_files,build_custom_pages_zip, generate_RAP_package" />-->
+	<target name="build_RAP_Package" depends="deploy_web_project,sign_files,build_applications" />
 	
 	<target name="deploy_web_project" description="deployes custom pages to a directory">
 		<exec program="${microsoft.net64.directory}\MSBuild.exe">

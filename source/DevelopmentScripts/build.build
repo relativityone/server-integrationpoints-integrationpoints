@@ -18,6 +18,7 @@
 	<property name="ldapRelativityBuildCaseID" value="" unless="${property::exists('ldapRelativityBuildCaseID')}" />
 	<property name="logger" value="${ldap.scripts.directory}\Loggers\Wintellect.Build.Logging.dll" unless="${property::exists('MSBuildLogger')}" />
 	<property name="buildLogger" value="${ldap.scripts.directory}\Loggers\Rodemeyer.MsBuildToCCnet.dll" />
+	<property name="source.reference.application" value="${source.code.directory}\application" />
 	<property name="source.reference.directory" value="${source.code.directory}\Dependencies" />
 	<property name="source.packages.directory" value="${source.code.directory}\packages" />
 	<property name="source.reference.kCura.directory" value="${source.reference.directory}\kCura" />
@@ -66,6 +67,7 @@
 	<include buildfile="Build Projects.Coverage.include"/>
 	<include buildfile="Build Projects.NuGet.include"/>
 	<include buildfile="Build SDK.include"/>
+	<include buildfile="Build Application.include"/>
 
 	<!-- Build all LDAPSync projects- presence of a Build.log file indicates failure -->
 	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, merge_ldap, merge_source_provider_installer, build_ip_sdk">				

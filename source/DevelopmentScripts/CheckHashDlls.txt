@@ -1,0 +1,3 @@
+kCura.IntegrationPoints.dll
+kCura.IntegrationPoints.Contracts.dll
+kCura.LDAPProvider.dll

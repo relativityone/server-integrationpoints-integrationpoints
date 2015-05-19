@@ -1,0 +1,58 @@
+<?xml version="1.0" ?>
+<project name="BuildApplication">
+
+	<property name="diagnostic" value="false" unless="${property::exists('diagnostic')}" />
+	<property name="dllout" value="${source.code.directory}\Dependencies\CheckHashDlls.txt" unless="${property::exists('dllout')}" />
+	<property name="NuGet_Local_exe" value="${source.code.directory}\Dependencies\nuget.exe" unless="${property::exists('NuGet_Local_exe')}" />
+	
+	<target name="get_rapbuilder">
+		<exec program="${NuGet_Local_exe}" verbose="true" failonerror="true" workingdir="${source.code.directory}\Dependencies">
+			<arg line="install kCura.RAPBuilder -ExcludeVersion" />
+		</exec>	
+		
+		<copy todir="${ldap.scripts.directory}" flatten="true" overwrite="true">
+			<fileset basedir="${source.code.directory}\Dependencies">
+				<include name="**\kCura.RAPBuilder.exe" />
+			</fileset>
+		</copy>
+    </target>
+	
+	<target name="build_applications" depends="get_rapbuilder">	
+		<call target="build_LDAP"/>
+    </target>
+	
+	<target name="build_LDAP">
+		<exec program="${ldap.scripts.directory}\kCura.RAPBuilder.exe">
+			<arg line='/destinationpath:${target.code.directory}\Application\RelativityIntegrationPoints.Auto.rap' />
+			<arg line='/applicationschema:${source.reference.application}\application.xml' />
+			<arg line='/assembly:${target.code.directory}\kCura.IntegrationPoints.Contracts.dll' />	
+			<arg line='/assembly:${target.code.directory}\kCura.IntegrationPoints.dll' />	
+			<arg line='/assembly:${target.code.directory}\kCura.LDAPProvider.dll' />	
+			<arg line='/custompage:c2c93191-7b15-4a9b-aa56-6a8c2dac5494=${target.web.publish}' />
+			<arg line='/applicationversion:${Product.Version}' />
+			<arg line='/servertype:local' />
+			<arg line='/debug:${diagnostic}' />
+			<arg line='/internaldlls:${dllout}' />
+		</exec>
+	</target>
+
+		<!-- Use following as template
+	
+	<target name="build_app1">
+		<exec program="${development.scripts}\kCura.RAPBuilder.exe">
+			<arg line='/destinationpath:${source.directory}\Applications\kCura.Project1.rap' />
+			<arg line='/applicationschema:${source.directory}\ApplicationsXML\kCura.Project1.xml' />
+			<arg line='/assembly:${source.directory}\kCura.Project1\bin\kCura.Project1.dll' />	
+			<arg line='/resourcefile:${source.directory}\kCura.Project1\bin\Image1.png' />					
+			<arg line='/custompage:11111111-1111-1111-1111-111111111111=${source.directory}\CustomPages\kCura.Project1' />
+			<arg line='/applicationversion:${version}' />
+			<arg line='/servertype:${serverType}' />
+			<arg line='/debug:${diagnostic}' />
+			<arg line='/internaldlls:${dllout}' />
+			<arg line='/sign:${sign}' />
+			<arg line='/signscript:${signScript}' />
+		</exec>
+	</target>
+	-->
+	
+</project>
