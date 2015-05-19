@@ -1,4 +1,11 @@
-﻿Add-Type -TypeDefinition @"
+﻿. .\psake-common.ps1
+
+task default -depends sendemail
+
+
+task sendemail {
+
+Add-Type -TypeDefinition @"
 public struct Change 
 {
 public string id;
@@ -46,9 +53,6 @@ $buildserver = 'bld-mstr-01.kcura.corp'
 $database = 'TCBuildVersion'
 
 $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $username,$password)))
-
-$buildid = 47574
-$hgroot = 'C:\SourceCode\Mainline'
 
 $statusraw = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "http://$buildserver/app/rest/builds/id:$buildid"
 
@@ -123,7 +127,7 @@ $changes = @()
 $changesLimit = 5
 $changesCount = 0
 
-Set-Location $hgroot
+Set-Location $root
 foreach ($node in $x.SelectNodes('/changes/change')){
 
     $changesCount++
@@ -425,7 +429,7 @@ while($rdr.Read()) {
 
 Send-MailMessage -From 'TeamCity@kcura.com' -To $emails -Subject "Build $status - $product [$branch] - $buildversion" -BodyAsHtml $body -SmtpServer "smtp.kcura.corp"
 
-
+}
 
 
 

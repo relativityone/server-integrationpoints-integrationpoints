@@ -31,6 +31,7 @@ properties {
     $majorminorversion = '1.0'
     $devstartdate = '01/01/01'
     
+    $buildid = 0
 
     #microsoft directories
     $microsoft_net_directory = [System.IO.Path]::Combine($env:windir,'Microsoft.NET','Framework','v4.0.30319')
