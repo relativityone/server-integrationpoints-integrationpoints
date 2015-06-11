@@ -7,18 +7,21 @@ task default -depends package, sign
 task package_initalize {
     $script:package_directory = [System.IO.Path]::Combine($package_root_directory, $Product, $branch, $version)
     $script:package_bin_directory = [System.IO.Path]::Combine($package_directory, 'bin')
+    $script:package_rap_directory = [System.IO.Path]::Combine($package_directory, 'RAP')
     $script:package_nuget_directory = [System.IO.Path]::Combine($package_directory, 'NuGet')
     $script:package_pdb_directory = [System.IO.Path]::Combine($package_directory, 'PDBs - INTERNAL USE ONLY')
 
     [System.IO.Directory]::CreateDirectory($package_directory)
     [System.IO.Directory]::CreateDirectory($package_bin_directory)
+    [System.IO.Directory]::CreateDirectory($package_rap_directory)
     [System.IO.Directory]::CreateDirectory($package_nuget_directory)
     [System.IO.Directory]::CreateDirectory($package_pdb_directory)
 }
 
 task package -depends package_initalize <# package_sample #> { 
 
-    Copy-Item -Path ([System.IO.Path]::Combine($nuspec_directory, '*')) -Destination $package_nuget_directory -Include '*.nupkg'
+    Copy-Item -Path ([System.IO.Path]::Combine($nuspec_directory, '*')) -Destination $package_nuget_directory -Include '*.nupkg'	
+    Copy-Item -Path ([System.IO.Path]::Combine($application_directory, '*')) -Destination $package_rap_directory -Include '*.rap'
 }
 
 <# use as template

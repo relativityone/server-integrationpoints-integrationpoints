@@ -27,7 +27,7 @@ task build_app1 {
                             ('/applicationversion:' + $version),
                             ('/servertype:' + $server_type), 
                             ('/debug:' + $diagnostic),  
-                            ('/internaldlls:' + $interaldlls),
+                            ('/internaldlls:' + $internaldlls),
                             ('/sign:' + ($build_type -ne 'DEV' -and $server_type -ne 'local')),
                             ('/signscript:' + $signScript))
     }
