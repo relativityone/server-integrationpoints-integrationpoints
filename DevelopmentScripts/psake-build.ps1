@@ -45,9 +45,21 @@ task create_build_script -depends get_buildhelper {
                              ('/sign:' + ($build_type -ne 'DEV' -and $server_type -ne 'local')), 
                              ('/signscript:' + $signScript ))
     }                                                                        
-}                                                                               
+}  
+
+task restore_nuget {
+
+    foreach($o in Get-ChildItem $source_directory){
+       
+       if($o.Extension -ne '.sln') {continue}
+
+        exec {
+            & $nuget_exe @('restore', $o.FullName)
+        } 
+    }   
+}                                                                             
                                                                                 
-task build_projects -depends create_build_script {  
+task build_projects -depends create_build_script, restore_nuget {  
     exec {                                                                                
         &  $msbuild_exe @(($targetsfile),   
                          ('/property:SourceRoot=' + $root),
