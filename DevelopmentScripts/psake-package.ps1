@@ -20,8 +20,12 @@ task package_initalize {
 
 task package -depends package_initalize <# package_sample #> { 
 
-    Copy-Item -Path ([System.IO.Path]::Combine($nuspec_directory, '*')) -Destination $package_nuget_directory -Include '*.nupkg'	
-    Copy-Item -Path ([System.IO.Path]::Combine($application_directory, '*')) -Destination $package_rap_directory -Include '*.rap'
+    Copy-Item -Path ([System.IO.Path]::Combine($nuspec_directory, '*')) -Destination $package_nuget_directory -Include '*.nupkg'
+    
+    if ([System.IO.Directory]::Exists($application_directory)) {
+        Copy-Item -Path ([System.IO.Path]::Combine($application_directory, '*')) -Destination $package_rap_directory -Include '*.rap'
+    }
+    
 }
 
 <# use as template
