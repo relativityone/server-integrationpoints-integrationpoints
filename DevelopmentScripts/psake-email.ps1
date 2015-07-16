@@ -166,6 +166,10 @@ foreach ($chng in $changes) {
     }
 }
 
+if($changers -eq ''){
+    $changers = "''"
+}
+
 $changesText= ''
 
 $urlFiles = "http://$buildserver/viewModification.html?modId=####&tab=vcsModificationFiles"
@@ -234,6 +238,9 @@ if ($changesCount -gt $changesLimit) {
     }
 
     $changesText += " others</a>"
+}
+elseif ($changesCount -eq 0) {
+    $changesText = "No changes in current build"
 }
 
 
@@ -317,7 +324,15 @@ else {
 $body += '<tr>
 					<td>Links</td>
 					<td>:</td>
-					<td><a href="http://' + $buildserver + '/viewLog.html?buildId=' + $buildid + '">[Overview]</a>  <a href="http://' + $buildserver + '/viewLog.html?buildId=' + $buildid + '&tab=buildLog&filter=debug">[Build Log]</a></td>
+					<td><a href="http://' + $buildserver + '/viewLog.html?buildId=' + $buildid + '">[Overview]</a>  <a href="http://' + $buildserver + '/viewLog.html?buildId=' + $buildid + '&tab=buildLog&filter=debug">[Build Log]</a> ' 
+
+if([System.IO.File]::Exists('\\BLD-PKGS.kcura.corp\Packages\' + $product + '\' + $branch + '\' + $buildversion + '\Reports\fullcoveragereport.html')){
+
+$body += ' <a href="file://BLD-PKGS.kcura.corp/Packages/' + $product + '/' + $branch + '/' + $buildversion + '/Reports/fullcoveragereport.html">[Code Coverage Report]</a>'
+
+}
+
+$body += '</td>
 				</tr>
 				<tr>
 					<td style="vertical-align: top">Changes</td>
