@@ -441,7 +441,7 @@ while($rdr.Read()) {
     $emails += $rdr.GetValue($1)
 }
 
-if($emails.length > 0){
+if($emails.length -gt 0){
     Send-MailMessage -From 'TeamCity@kcura.com' -To $emails -Subject "Build $status - $product [$branch] - $buildversion" -BodyAsHtml $body -SmtpServer "smtp.kcura.corp"
 }
 
