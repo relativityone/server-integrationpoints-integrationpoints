@@ -43,4 +43,67 @@
 		-->
 		</Adds>		
 	</References>	
+	<Rules>
+		<!-- Use following as template
+		
+			<Rule name="RuleName">
+				<Extensions>
+					<Extension>.vbproj</Extension>
+				</Extensions>
+				<XPath>OptionStrict<XPath>	
+				<Value>On</Value>
+				<ErrorMessage>Error message to user.</ErrorMessage>
+			</Add>
+		-->
+		
+		<Rule name="CommonAssemblyInfo">
+			<Extensions>
+				<Extension>.vbproj</Extension>
+				<Extension>.csproj</Extension>
+			</Extensions>
+			<XPath>Compile[contains(@Include, '..\Version\AssemblyInfo.')]</XPath>
+			<ErrorMessage>Not using the Common AssemblyInfo file. Please include it in the project.</ErrorMessage>
+		</Rule>
+		<Rule name="OptionExplicitOn">
+			<Extensions>
+				<Extension>.vbproj</Extension>
+			</Extensions>
+			<XPath>OptionExplicit</XPath>
+			<Value>On</Value>
+			<ErrorMessage>Project has Option explicit turned off. Please turn this option on.</ErrorMessage>
+		</Rule>
+		<Rule name="OptionStrictOn">
+			<Extensions>
+				<Extension>.vbproj</Extension>
+			</Extensions>
+			<XPath>OptionStrict</XPath>
+			<Value>On</Value>
+			<ErrorMessage>Project has Option strict turned off. Please turn this option on.</ErrorMessage>
+		</Rule>
+		<Rule name="OptionInfertOff">
+			<Extensions>
+				<Extension>.vbproj</Extension>
+			</Extensions>
+			<XPath>OptionInfer</XPath>
+			<Value>Off</Value>
+			<ErrorMessage>Project has Option infer turned on. Please turn this option off.</ErrorMessage>
+		</Rule>
+		<Rule name="WarningLevel4">
+			<Extensions>
+				<Extension>.csproj</Extension>
+			</Extensions>
+			<XPath>WarningLevel</XPath>
+			<Value>4</Value>
+			<ErrorMessage>Project warning level is not set to 4. Please set warning level to 4.</ErrorMessage>
+		</Rule>
+		<Rule name="TreatWarningsAsErrors">
+			<Extensions>
+				<Extension>.vbproj</Extension>
+				<Extension>.csproj</Extension>
+			</Extensions>
+			<XPath>TreatWarningsAsErrors</XPath>
+			<Value>true</Value>
+			<ErrorMessage>Project does not treat all warnings as errors. Please turn this option on.</ErrorMessage>
+		</Rule>
+	</Rules>
 </BuildHelper>
