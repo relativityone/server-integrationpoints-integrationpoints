@@ -43,7 +43,7 @@ task update_nuspec {
           if ($x) {
               Write-Host "Updating dependencies in " $o.FullName "to version" $version "..."
 
-              $x.Node.Attributes['version'].InnerText = $version   
+              $x.Node.version = $version   
               $x.Node.OwnerDocument.Save($x.Path)
           }
        }   
