@@ -1,4 +1,5 @@
-Import-Module ..\Vendor\psake\tools\psake.psm1
+$root = hg root
+Import-Module $root\Vendor\psake\tools\psake.psm1
 
 $BUILDCONFIG = "Debug"
 $BUILDTYPE = "DEV"
@@ -72,16 +73,30 @@ exit
 
 if($VERSION -ne "1.0.0.0") {
 
-    if($VERSION -eq "latest") {Invoke-psake .\psake-get-version.ps1 -properties @{'server_type'='local';'product'='%PRODUCT%';};}
+    if($VERSION -eq "latest") {
+        Invoke-psake  $root\DevelopmentScripts\psake-get-version.ps1 -properties @{'server_type'='local';'product'='%PRODUCT%';};
+        $VERSION = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($root, 'DevelopmentScripts', 'version.txt'))
+    }
 
-    Invoke-psake .\psake-version.ps1 -properties @{'version'=$VERSION;'company'=$COMPANY;'product'=$PRODUCT;'product_description'=$PRODUCTDESCRIPTION;}
-
-    
+    Invoke-psake $root\DevelopmentScripts\psake-version.ps1 -properties @{'version'=$VERSION;'company'=$COMPANY;'product'=$PRODUCT;'product_description'=$PRODUCTDESCRIPTION;}    
 }
 
-#Invoke-psake .\psake-build.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
-#Invoke-psake .\psake-application.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
-#Invoke-psake .\psake-test.ps1
-#Invoke-psake .\psake-nuget.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
-#Invoke-psake .\psake-package.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
-#Invoke-psake .\psake-email.ps1 -properties @{'buildid'='74271';'root'='C:\SourceCode\Mainline';}
+if($BUILD){
+    Invoke-psake $root\DevelopmentScripts\psake-build.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+}
+
+if($APPS){
+    Invoke-psake $root\DevelopmentScripts\psake-application.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+}
+
+if($TEST){
+    Invoke-psake $root\DevelopmentScripts\psake-test.ps1
+}
+
+if($NUGET){
+    Invoke-psake $root\DevelopmentScripts\psake-nuget.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+}
+
+if($PACKAGE){
+    Invoke-psake $root\DevelopmentScripts\psake-package.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+}
