@@ -6,7 +6,7 @@ task default -depends getversion
 
 task getversion {
    $Conn = New-Object System.Data.SqlClient.SqlConnection
-   $Conn.ConnectionString = "server='$server';Database='$database';trusted_connection=true;"
+   $Conn.ConnectionString = "server='$server';Database='$database';user=StoryboardUser;password=Test1234!;"
 
    $Conn.Open()
 
