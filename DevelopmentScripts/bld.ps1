@@ -75,28 +75,36 @@ if($VERSION -ne "1.0.0.0") {
 
     if($VERSION -eq "latest") {
         Invoke-psake  $root\DevelopmentScripts\psake-get-version.ps1 -properties @{'server_type'='local';'product'='%PRODUCT%';};
+	if ($psake.build_success -eq $false) { exit 1 }  
+	
         $VERSION = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($root, 'DevelopmentScripts', 'version.txt'))
     }
 
-    Invoke-psake $root\DevelopmentScripts\psake-version.ps1 -properties @{'version'=$VERSION;'company'=$COMPANY;'product'=$PRODUCT;'product_description'=$PRODUCTDESCRIPTION;}    
+    Invoke-psake $root\DevelopmentScripts\psake-version.ps1 -properties @{'version'=$VERSION;'company'=$COMPANY;'product'=$PRODUCT;'product_description'=$PRODUCTDESCRIPTION;} 
+    if ($psake.build_success -eq $false) { exit 1 }   
 }
 
 if($BUILD){
     Invoke-psake $root\DevelopmentScripts\psake-build.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+    if ($psake.build_success -eq $false) { exit 1 }
 }
 
 if($APPS){
     Invoke-psake $root\DevelopmentScripts\psake-application.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+    if ($psake.build_success -eq $false) { exit 1 }
 }
 
 if($TEST){
     Invoke-psake $root\DevelopmentScripts\psake-test.ps1
+    if ($psake.build_success -eq $false) { exit 1 }
 }
 
 if($NUGET){
     Invoke-psake $root\DevelopmentScripts\psake-nuget.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+    if ($psake.build_success -eq $false) { exit 1 }
 }
 
 if($PACKAGE){
     Invoke-psake $root\DevelopmentScripts\psake-package.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+    if ($psake.build_success -eq $false) { exit 1 }
 }
