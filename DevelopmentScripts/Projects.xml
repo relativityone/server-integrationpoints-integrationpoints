@@ -1,109 +1,67 @@
-<?xml version="1.0" ?>
-<BuildHelper>
-	<Projects>
-		<Build>
-		<!-- Use following as template
-			 		
-			<Project path="Source\Project1\Project1.vbproj">
-				<Platforms>
-					<Platform>x64</Platform>
-				</Platforms>
-				<Publish>Local.pubxml</Publish>
-			</Project>		
-		-->	
-		</Build>
-		<Ignore>
-		<!-- Use following as template
-			
-			<Project path="Vendor\SomeVendorProject\SomeVendorProject.vbproj" />
-		-->
-			
-		</Ignore>
-	</Projects>
-	<References>
-		<Maps>
-		<!-- Use following as template
-		
-			<Map from="kCura.Project1.Project2.ILMerged.dll">
-				<MapTos>
-					<MapTo>kCura.Project1.dll</MapTo>
-					<MapTo>kCura.Project2.dll</MapTo>
-				</MapTos>				
-			</Map>
-		-->
-		</Maps>
-		<Adds>
-		<!-- Use following as template
-		
-			<Add path="Source\Project1\Project1.vbproj">
-				<References>
-					<Reference>kCura.Project2.dll</Reference>
-				</References>				
-			</Add>
-		-->
-		</Adds>		
-	</References>	
-	<Rules>
-		<!-- Use following as template
-		
-			<Rule name="RuleName">
-				<Extensions>
-					<Extension>.vbproj</Extension>
-				</Extensions>
-				<XPath>OptionStrict<XPath>	
-				<Value>On</Value>
-				<ErrorMessage>Error message to user.</ErrorMessage>
-			</Add>
-		-->
-		
-		<Rule name="CommonAssemblyInfo">
-			<Extensions>
-				<Extension>.vbproj</Extension>
-				<Extension>.csproj</Extension>
-			</Extensions>
-			<XPath>Compile[contains(@Include, '..\Version\AssemblyInfo.')]</XPath>
-			<ErrorMessage>Not using the Common AssemblyInfo file. Please include it in the project.</ErrorMessage>
-		</Rule>
-		<Rule name="OptionExplicitOn">
-			<Extensions>
-				<Extension>.vbproj</Extension>
-			</Extensions>
-			<XPath>OptionExplicit</XPath>
-			<Value>On</Value>
-			<ErrorMessage>Project has Option explicit turned off. Please turn this option on.</ErrorMessage>
-		</Rule>
-		<Rule name="OptionStrictOn">
-			<Extensions>
-				<Extension>.vbproj</Extension>
-			</Extensions>
-			<XPath>OptionStrict</XPath>
-			<Value>On</Value>
-			<ErrorMessage>Project has Option strict turned off. Please turn this option on.</ErrorMessage>
-		</Rule>
-		<Rule name="OptionInfertOff">
-			<Extensions>
-				<Extension>.vbproj</Extension>
-			</Extensions>
-			<XPath>OptionInfer</XPath>
-			<Value>Off</Value>
-			<ErrorMessage>Project has Option infer turned on. Please turn this option off.</ErrorMessage>
-		</Rule>
-		<Rule name="WarningLevel4">
-			<Extensions>
-				<Extension>.csproj</Extension>
-			</Extensions>
-			<XPath>WarningLevel</XPath>
-			<Value>4</Value>
-			<ErrorMessage>Project warning level is not set to 4. Please set warning level to 4.</ErrorMessage>
-		</Rule>
-		<Rule name="TreatWarningsAsErrors">
-			<Extensions>
-				<Extension>.vbproj</Extension>
-				<Extension>.csproj</Extension>
-			</Extensions>
-			<XPath>TreatWarningsAsErrors</XPath>
-			<Value>true</Value>
-			<ErrorMessage>Project does not treat all warnings as errors. Please turn this option on.</ErrorMessage>
-		</Rule>
-	</Rules>
+﻿<BuildHelper>
+  <Projects>
+    <Build />
+    <Ignore />
+  </Projects>
+  <References>
+    <Maps />
+    <Adds />
+  </References>
+  <Rules>
+    <Rule name="CommonAssemblyInfo">
+      <Extensions>
+        <Extension>.vbproj</Extension>
+        <Extension>.csproj</Extension>
+      </Extensions>
+      <XPath>Compile[contains(@Include, '..\Version\AssemblyInfo.')]</XPath>
+      <RuleType>Exists</RuleType>
+      <ErrorMessage>Not using the Common AssemblyInfo file. Please include it in the project.</ErrorMessage>
+    </Rule>
+    <Rule name="OptionExplicitOn">
+      <Extensions>
+        <Extension>.vbproj</Extension>
+      </Extensions>
+      <XPath>OptionExplicit</XPath>
+      <RuleType>Equals</RuleType>
+      <Value>On</Value>
+      <ErrorMessage>Project has Option explicit turned off. Please turn this option on.</ErrorMessage>
+    </Rule>
+    <Rule name="OptionStrictOn">
+      <Extensions>
+        <Extension>.vbproj</Extension>
+      </Extensions>
+      <XPath>OptionStrict</XPath>
+      <RuleType>Equals</RuleType>
+      <Value>On</Value>
+      <ErrorMessage>Project has Option strict turned off. Please turn this option on.</ErrorMessage>
+    </Rule>
+    <Rule name="OptionInfertOff">
+      <Extensions>
+        <Extension>.vbproj</Extension>
+      </Extensions>
+      <XPath>OptionInfer</XPath>
+      <RuleType>Equals</RuleType>
+      <Value>Off</Value>
+      <ErrorMessage>Project has Option infer turned on. Please turn this option off.</ErrorMessage>
+    </Rule>
+    <Rule name="WarningLevel4">
+      <Extensions>
+        <Extension>.csproj</Extension>
+      </Extensions>
+      <XPath>WarningLevel</XPath>
+      <RuleType>Equals</RuleType>
+      <Value>4</Value>
+      <ErrorMessage>Project warning level is not set to 4. Please set warning level to 4.</ErrorMessage>
+    </Rule>
+    <Rule name="TreatWarningsAsErrors">
+      <Extensions>
+        <Extension>.vbproj</Extension>
+        <Extension>.csproj</Extension>
+      </Extensions>
+      <XPath>TreatWarningsAsErrors</XPath>
+      <RuleType>Equals</RuleType>
+      <Value>true</Value>
+      <ErrorMessage>Project does not treat all warnings as errors. Please turn this option on.</ErrorMessage>
+    </Rule>
+  </Rules>
 </BuildHelper>
