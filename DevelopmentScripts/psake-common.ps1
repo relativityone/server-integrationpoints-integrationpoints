@@ -17,6 +17,8 @@ properties {
     $build_type = 'DEV'
     $branch = hg branch
     $build_config = "Debug"
+
+    $build_showgui = $false
        
 
     #assembly info variables

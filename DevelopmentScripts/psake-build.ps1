@@ -43,7 +43,12 @@ task create_build_script -depends get_buildhelper {
                              ('/dllout:' + $internaldlls), 
                              ('/vs:11.0'), 
                              ('/sign:' + ($build_type -ne 'DEV' -and $server_type -ne 'local')), 
-                             ('/signscript:' + $signScript ))
+                             ('/signscript:' + $signScript),
+                             ('/showgui:' + $build_showgui))
+    } 
+    
+    if($build_showgui) {
+        exit
     }                                                                        
 }  
 
