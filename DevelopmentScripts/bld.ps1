@@ -113,7 +113,7 @@ if($TEST){
 }
 
 if($NUGET){
-    Invoke-psake $root\DevelopmentScripts\psake-nuget.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+    Invoke-psake $root\DevelopmentScripts\psake-nugetpack.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
     if ($psake.build_success -eq $false) { exit 1 }
 }
 
