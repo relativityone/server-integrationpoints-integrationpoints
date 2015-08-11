@@ -7,7 +7,7 @@ obj
 Obj
 CustomPages
 DependencyGraph.xml
-build.log
+build*.log
 Output
 Debug
 Release
