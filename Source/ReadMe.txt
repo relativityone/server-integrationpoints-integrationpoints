@@ -8,5 +8,7 @@ Make sure all project outputs go to bin[\x64|\x86] rather than bin\debug, makes 
 
 Make sure all projects reference the Version\AssemblyInfo.[cs|vb] rather than its own
 
+All Solutions in this directory will have NuGet restore automatically
+
 
 
