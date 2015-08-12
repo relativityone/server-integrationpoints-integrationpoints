@@ -75,7 +75,9 @@ task build_projects -depends create_build_script, restore_nuget {
                          ('/nologo'),
                          ('/maxcpucount'), 
                          ('/dfl'),
-                         ('/flp:LogFile=' + $logfile))       
+                         ('/flp:LogFile=' + $logfile),
+                         ('/flp2:warningsonly;LogFile=' + $logfilewarn),
+                         ('/flp3:errorsonly;LogFile=' + $logfileerror))       
     } 
 }
 

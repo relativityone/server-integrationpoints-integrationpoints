@@ -57,6 +57,8 @@ properties {
     $dependencygraph = [System.IO.Path]::Combine($development_scripts_directory, 'DependencyGraph.xml')
     $internaldlls = [System.IO.Path]::Combine($development_scripts_directory, 'dlls.txt')
     $logfile = [System.IO.Path]::Combine($root, 'build.log')
+    $logfilewarn = [System.IO.Path]::Combine($root, 'buildwarnings.log')
+    $logfileerror = [System.IO.Path]::Combine($root, 'builderrors.log')
     $diagnostic ="false"
 
     #signing variables
