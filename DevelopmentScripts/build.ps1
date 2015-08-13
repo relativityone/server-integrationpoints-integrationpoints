@@ -63,7 +63,7 @@ write-host "usage: build [debug|release] [dev|alpha|beta|rc|gold] [-version VERS
 write-host ""
 write-host "options:"
 write-host ""
-write-host "-e[ditor]        opens Build Helper Project Editor to edit the project.xml file" 
+write-host "-e[ditor]        opens Build Helper Project Editor to edit the build.xml file" 
 write-host "" 
 write-host "-v[ersion]       sets the version # for the build, default is 1.0.0.0 (example: 1.3.3.7)"  
 write-host "-a[pps]          skips the build step, continues to only build apps"
@@ -79,7 +79,7 @@ exit
 
 if($EDITOR) {
 
-    Invoke-psake $root\DevelopmentScripts\psake-build.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;'build_showgui'='true';}  
+    Invoke-psake $root\DevelopmentScripts\psake-editor.ps1 
 
     exit
 }

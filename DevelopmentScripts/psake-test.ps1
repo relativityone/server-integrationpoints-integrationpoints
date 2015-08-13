@@ -23,7 +23,7 @@ task get_testrunner {
 task test -depends get_testrunner, test_initalize {
     exec {
         & $testrunner_exe @(('/source:' + $root), 
-                            ('/tests:' + $testinputfile), 
+                            ('/tests:' + $inputfile), 
                             ('/out:' + $testlog_directory), 
                             ('/nunitx64:' + $NUnit), 
                             ('/nunitx86:' + $NUnit_x86))

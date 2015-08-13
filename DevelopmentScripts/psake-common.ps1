@@ -18,9 +18,6 @@ properties {
     $branch = hg branch
     $build_config = "Debug"
 
-    $build_showgui = $false
-       
-
     #assembly info variables
     $company = 'kCura LLC'
     $product = 'Template'
@@ -48,11 +45,10 @@ properties {
     #nunit variables
     $NUnit = [System.IO.Path]::Combine($vendor_directory, 'NUnit', '2.5.10.11092','bin','net-2.0', 'nunit-console.exe')
     $NUnit_x86 = [System.IO.Path]::Combine($vendor_directory, 'NUnit', '2.5.10.11092','bin','net-2.0', 'nunit-console-x86.exe')
-    $testinputfile = [System.IO.Path]::Combine($development_scripts_directory, 'Tests.xml')
 
     #build variables
     $verbosity ="normal" 
-    $inputfile = [System.IO.Path]::Combine($development_scripts_directory, 'Projects.xml')
+    $inputfile = [System.IO.Path]::Combine($development_scripts_directory, 'build.xml')
     $targetsfile = [System.IO.Path]::Combine($development_scripts_directory, 'msbuild.targets')
     $dependencygraph = [System.IO.Path]::Combine($development_scripts_directory, 'DependencyGraph.xml')
     $internaldlls = [System.IO.Path]::Combine($development_scripts_directory, 'dlls.txt')
@@ -75,6 +71,7 @@ properties {
     $buildhelper_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildHelper.exe')
     $rapbuilder_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.RAPBuilder.exe')
     $testrunner_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.TestRunner.exe')
+    $buildeditor_exe = [System.IO.Path]::Combine($development_scripts_directory, 'kCura.BuildToolsEditor.exe')
 
     #package variable
     $package_root_directory = [System.IO.Path]::Combine($root, 'Packages')
