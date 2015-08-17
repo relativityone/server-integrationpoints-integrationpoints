@@ -4,9 +4,6 @@ Import-Module $root\Vendor\psake\tools\psake.psm1
 $BUILDCONFIG = "Debug"
 $BUILDTYPE = "DEV"
 $VERSION = "1.0.0.0"
-$COMPANY = "kCura LLC"
-$PRODUCT = "Template"
-$PRODUCTDESCRIPTION = "Template repo for kCura"
 $EDITOR = $false
 $BUILD = $true
 $APPS = $true
@@ -87,13 +84,13 @@ if($EDITOR) {
 if($VERSION -ne "1.0.0.0") {
 
     if($VERSION -eq "latest") {
-        Invoke-psake  $root\DevelopmentScripts\psake-get-version.ps1 -properties @{'server_type'='local';'product'='%PRODUCT%';};
+        Invoke-psake  $root\DevelopmentScripts\psake-get-version.ps1 -properties @{'server_type'='local';};
 	if ($psake.build_success -eq $false) { exit 1 }  
 	
         $VERSION = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($root, 'DevelopmentScripts', 'version.txt'))
     }
 
-    Invoke-psake $root\DevelopmentScripts\psake-version.ps1 -properties @{'version'=$VERSION;'company'=$COMPANY;'product'=$PRODUCT;'product_description'=$PRODUCTDESCRIPTION;} 
+    Invoke-psake $root\DevelopmentScripts\psake-version.ps1 -properties @{'version'=$VERSION;} 
     if ($psake.build_success -eq $false) { exit 1 }   
 }
 

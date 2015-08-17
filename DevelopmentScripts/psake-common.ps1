@@ -20,8 +20,8 @@ properties {
 
     #assembly info variables
     $company = 'kCura LLC'
-    $product = 'Template'
-    $product_description = 'Template repo for kCura'
+    $product = [System.IO.Path]::GetFileName($root)
+    $product_description =  [System.IO.Path]::GetFileName($root) + ' Description'
 
     #versioning database info
     $server = 'bld-mstr-01.kcura.corp'
