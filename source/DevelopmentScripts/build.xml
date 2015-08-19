@@ -72,12 +72,12 @@
   <RAPBuilder>
     <Applications>
       <Application name="kCura.ListPage">			
-        <Destination>bin\Release\Application\RelativityIntegrationPoints.Auto.rap</Destination>
+        <Destination>source\bin\Release\Application\RelativityIntegrationPoints.Auto.rap</Destination>
         <ApplicationSchema>source\application\application.xml</ApplicationSchema>
         <Assemblies>
-			<Assembly>bin\Release\kCura.IntegrationPoints.Contracts.dll</Assembly>
-			<Assembly>bin\Release\kCura.IntegrationPoints.dll</Assembly>
-			<Assembly>bin\Release\kCura.LDAPProvider.dll</Assembly>
+			<Assembly>source\bin\Release\kCura.IntegrationPoints.Contracts.dll</Assembly>
+			<Assembly>source\bin\Release\kCura.IntegrationPoints.dll</Assembly>
+			<Assembly>source\bin\Release\kCura.LDAPProvider.dll</Assembly>
 		</Assemblies>
         <ResourceFiles />
         <CustomPages>
