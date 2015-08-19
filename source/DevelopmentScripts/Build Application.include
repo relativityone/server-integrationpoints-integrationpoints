@@ -25,7 +25,7 @@
 		<exec program="${ldap.scripts.directory}\kCura.RAPBuilder.exe">
 			<arg line='/source:${root}' />
 			<arg line='/input:${ldap.scripts.directory}\build.xml' />
-			<arg line='/applicationversion:${Product.Version}' />
+			<arg line='/version:${Product.Version}' />
 			<arg line='/servertype:local' />
 			<arg line='/debug:${diagnostic}' />
 			<arg line='/internaldlls:${dllout}' />
