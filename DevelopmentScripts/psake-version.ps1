@@ -7,6 +7,14 @@ task default -depends version
 task version {
     $NewVersion = 'AssemblyVersionAttribute("' + $version + '")'
     $NewFileVersion = 'AssemblyFileVersionAttribute("' + $version + '")'
+
+    $buildtypeversioninfo = $build_type
+
+    if($server_type -eq 'local') {
+        $buildtypeversioninfo = 'local'
+    }
+
+    $NewInfoVersion = 'AssemblyInformationalVersionAttribute("' + $version + '-' + $branch + '-' + $buildtypeversioninfo + '")'
     $NewCopyright = 'AssemblyCopyrightAttribute("Copyright (c) ' + [System.DateTime]::Now.Year + ', ' + $company + '")'
     $NewTitle = 'AssemblyTitleAttribute("' + $product + '")'
     $NewDescription = 'AssemblyDescriptionAttribute("' + $product_description + '")'
@@ -22,6 +30,7 @@ task version {
        $tmp = Get-Content $o.FullName | 
        %{$_ -replace 'AssemblyVersionAttribute\(".*"\)', $NewVersion} |
        %{$_ -replace 'AssemblyFileVersionAttribute\(".*"\)', $NewFileVersion} |
+       %{$_ -replace 'AssemblyInformationalVersionAttribute\(".*"\)', $NewInfoVersion} |
        %{$_ -replace 'AssemblyCopyrightAttribute\(".*"\)', $NewCopyright} |
        %{$_ -replace 'AssemblyTitleAttribute\(".*"\)', $NewTitle} |
        %{$_ -replace 'AssemblyDescriptionAttribute\(".*"\)', $NewDescription} |
