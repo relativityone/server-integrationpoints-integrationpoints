@@ -47,8 +47,8 @@ Function GetTime([DateTime] $date) {
     return $return
 }
 
-$username = 'kcura\bigboss'
-$password = 'GobuildorgohomeG@dgets'
+$username = 'littleboss'
+$password = 'Idontcareifyouknowthispassword'
 $buildserver = 'bld-mstr-01.kcura.corp'
 $database = 'TCBuildVersion'
 
