@@ -83,6 +83,11 @@ if($status -eq 'SUCCESS') {
     $statusColor = 'green'
 } 
 else {
+    $status = 'FAILURE'
+
+    $canceled = $x.build.canceledInfo.user.username
+    $canceledReason = $x.build.canceledInfo.text
+
     $statusColor = 'red'
 
     $importantMessage = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "http://$buildserver/viewLog.html?buildId=$buildid&tab=buildLog&filter=important&hideBlocks=true&state=&expand=all#_"
@@ -138,7 +143,7 @@ foreach ($node in $x.SelectNodes('/changes/change')){
         $chng = New-Object Change
         $chng.id = $node.id
         $chng.user = $hg.split('|')[0]
-        $chng.email = $hg.split('|')[1]
+        $chng.email = $hg.split('|')[1].replace(" + '@kcura.com'", "@kcura.com")
         $chng.date = $hg.split('|')[2]
         $chng.node = $hg.split('|')[3]
         $chng.mods = $hg.split('|')[4].split(';', [StringSplitOptions]::RemoveEmptyEntries).count
@@ -150,7 +155,7 @@ foreach ($node in $x.SelectNodes('/changes/change')){
         $hg = (hg log -r $node.version --template "{author|email}")
 
         $chng = New-Object Change
-        $chng.email = $hg.split('|')[0]       
+        $chng.email = $hg.split('|')[0].replace(" + '@kcura.com'", "@kcura.com")       
     }    
 
     $changes += $chng
@@ -248,7 +253,15 @@ $body = '<div>
 			<table style="width: 100%; font-family: Tahoma;">
 				<tr>
 					<td>
-						<b>BUILD</b>&nbsp;<b style="color:' + $statusColor + '">' + $status + '</b>
+						<b>BUILD</b>&nbsp;<b style="color:' + $statusColor + '">' + $status + '</b>'
+
+
+
+if($canceled -ne $null){
+    $body += ' (Canceled by ' + $canceled + ' "<i>' + $canceledReason + '</i>")'
+}
+
+$body += '</b>
 					</td>
 					<td style="text-align: right">
 						<a href="http://bld-mstr-01.kcura.corp" style="text-decoration:none;"><b style="color:2AA4FC">Team</b><font color="FBBD30">City</font></a>
@@ -326,9 +339,9 @@ $body += '<tr>
 					<td>:</td>
 					<td><a href="http://' + $buildserver + '/viewLog.html?buildId=' + $buildid + '">[Overview]</a>  <a href="http://' + $buildserver + '/viewLog.html?buildId=' + $buildid + '&tab=buildLog&filter=debug">[Build Log]</a> ' 
 
-if([System.IO.File]::Exists('\\BLD-PKGS.kcura.corp\Packages\' + $product + '\' + $branch + '\' + $buildversion + '\Reports\fullcoveragereport.html')){
+if([System.IO.File]::Exists('\\BLD-PKGS.kcura.corp\Packages\' + $product + '\' + $branch + '\' + $buildversion + '\CoverageReports\fullcoveragereport.html')){
 
-$body += ' <a href="file://BLD-PKGS.kcura.corp/Packages/' + $product + '/' + $branch + '/' + $buildversion + '/Reports/fullcoveragereport.html">[Code Coverage Report]</a>'
+$body += ' <a href="file://BLD-PKGS.kcura.corp/Packages/' + $product + '/' + $branch + '/' + $buildversion + '/CoverageReports/fullcoveragereport.html">[Code Coverage Report]</a>'
 
 }
 
