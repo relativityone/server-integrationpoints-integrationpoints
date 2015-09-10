@@ -20,7 +20,13 @@ task get_testrunner {
     Copy-Item ([System.IO.Path]::Combine($development_scripts_directory, 'kCura.TestRunner', 'lib', 'kCura.TestRunner.exe')) $development_scripts_directory
 }
 
-task test -depends get_testrunner, test_initalize {
+task get_nunit {
+    exec {
+        & $nuget_exe @('install', 'NUnit.Runners', '-ExcludeVersion')
+    } 
+}
+
+task test -depends get_testrunner, get_nunit, test_initalize {
     exec {
         & $testrunner_exe @(('/source:' + $root), 
                             ('/tests:' + $inputfile), 

@@ -63,4 +63,4 @@ Packages/*
 msbuild.targets
 dlls.txt
 version.txt
-
+DevelopmentScripts/NUnit*

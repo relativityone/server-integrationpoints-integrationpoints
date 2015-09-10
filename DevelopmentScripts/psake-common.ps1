@@ -43,8 +43,8 @@ properties {
     $signtool_exe = [System.IO.Path]::Combine( $windows_sdk_directory, 'Bin','signtool.exe')
 
     #nunit variables
-    $NUnit = [System.IO.Path]::Combine($vendor_directory, 'NUnit', '2.5.10.11092','bin','net-2.0', 'nunit-console.exe')
-    $NUnit_x86 = [System.IO.Path]::Combine($vendor_directory, 'NUnit', '2.5.10.11092','bin','net-2.0', 'nunit-console-x86.exe')
+    $NUnit = [System.IO.Path]::Combine($development_scripts_directory, 'NUnit.Runners', 'tools', 'nunit-console.exe')
+    $NUnit_x86 = [System.IO.Path]::Combine($development_scripts_directory, 'NUnit.Runners', 'tools', 'nunit-console-x86.exe')
 
     #build variables
     $verbosity ="normal" 
