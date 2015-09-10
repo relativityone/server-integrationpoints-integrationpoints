@@ -25,10 +25,10 @@ properties {
 
     #versioning database info
     $server = 'bld-mstr-01.kcura.corp'
-    $database ='TCBuildVersion'
+    $database ='TCBuildSemanticVersion'
     $project = 'Development'
-    $majorminorversion = '1.0'
-    $devstartdate = '01/01/01'
+    $major_version = 1
+    $minor_version = 0
     
     $buildid = 0
 
