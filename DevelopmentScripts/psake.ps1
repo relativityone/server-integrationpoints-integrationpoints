@@ -29,7 +29,10 @@ if ($psake.build_success -eq $false) { exit 1 }
 Invoke-psake .\psake-test.ps1
 if ($psake.build_success -eq $false) { exit 1 }  
 
-Invoke-psake .\psake-nuget.ps1 -properties @{'version'=$VERSION;'server_type'=$SERVERTYPE;'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+Invoke-psake .\psake-nugetpack.ps1 -properties @{'version'=$VERSION;'server_type'=$SERVERTYPE;'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;'company'=$COMPANY;}
+if ($psake.build_success -eq $false) { exit 1 }  
+
+Invoke-psake .\psake-nugetpublish.ps1 -properties @{'version'=$VERSION;'server_type'=$SERVERTYPE;'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
 if ($psake.build_success -eq $false) { exit 1 }  
 
 Invoke-psake .\psake-package.ps1 -properties @{'version'=$VERSION;'product'=$PRODUCT;'package_root_directory'=$PACKAGEROOT;'server_type'=$SERVERTYPE;'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
