@@ -61,14 +61,15 @@ IF('$server_type' <> 'local' AND '$build_type' = 'GOLD')
         WHERE [ID] = @branchID
     END
 ELSE
---Increment Build so next build will be a later version
-IF('$server_type' <> 'local')
     BEGIN
-        UPDATE TCBuildSemanticVersion 
-        SET Build = Build + 1 
-        WHERE [ID] = @branchID
+    --Increment Build so next build will be a later version
+    IF('$server_type' <> 'local')
+        BEGIN
+            UPDATE TCBuildSemanticVersion 
+            SET Build = Build + 1 
+            WHERE [ID] = @branchID
+        END
     END
-END
 
 "
 
