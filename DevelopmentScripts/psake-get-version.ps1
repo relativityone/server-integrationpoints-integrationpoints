@@ -26,7 +26,7 @@ DECLARE @branchID AS INT
 --Insert the product/project into the table if it doesn't already exist
 IF ('$server_type' <> 'local' AND NOT EXISTS(SELECT 1 FROM TCBuildSemanticVersion WHERE ProductName = @productName AND ProjectName = @projectName)) 
 BEGIN
-	INSERT INTO $database (ProductName, ProjectName, Major, Minor, Patch, Build)
+	INSERT INTO TCBuildSemanticVersion (ProductName, ProjectName, Major, Minor, Patch, Build)
 	VALUES (@productName, @projectName, @majorversion, @majorversion, 0, 0)
 END
 
@@ -39,7 +39,7 @@ SET @branchID = (SELECT TOP 1 [ID]
 --Update majorminor version if changed
 IF('$server_type' <> 'local' AND EXISTS(SELECT 1 FROM TCBuildSemanticVersion WHERE [ID] = @branchID AND (Major <> @majorversion OR Minor <> @minorversion)))
     BEGIN
-	    UPDATE TCBuildVersion 
+	    UPDATE TCBuildSemanticVersion 
 	    SET Major = @majorversion,
 	        Minor = @minorversion,
 		    Patch = 0,
