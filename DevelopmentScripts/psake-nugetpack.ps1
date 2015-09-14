@@ -8,6 +8,23 @@ task update_nuspec {
     
     $IDs = @()
 
+    $versionString = $version.substring(0, $version.LastIndexOf('.'))
+
+    
+    if($build_type -ne 'GOLD') {
+        $versionString += '-' + $build_type
+        $versionString += '-' + $version.substring($version.LastIndexOf('.') + 1)
+    }  
+    
+    if($build_config -eq 'Debug') {
+        $versionString += '-Debug'
+    }
+
+    if($server_type -eq 'local') {
+        $versionString += '-local'
+    }
+
+
     foreach($o in Get-ChildItem $nuspec_directory){
        
        if($o.Extension -ne '.nuspec') {continue}
@@ -15,10 +32,10 @@ task update_nuspec {
        $x = Select-Xml -Path $o.FullName -XPath '/package/metadata/id'
        $IDs += $x.Node.InnerText
 
-       Write-Host "Updating" $o.FullName "to version" $version "..."
+       Write-Host "Updating" $o.FullName "to version" $versionString "..."
        
        $x = Select-Xml -Path $o.FullName -XPath '/package/metadata/version'
-       $x.Node.InnerText = $version   
+       $x.Node.InnerText = $versionString  
        $x.Node.OwnerDocument.Save($x.Path)   
        
        $x = Select-Xml -Path $o.FullName -XPath '/package/metadata/copyright'

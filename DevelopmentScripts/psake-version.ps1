@@ -10,13 +10,15 @@ task version {
 
     $buildtypeversioninfo = $build_type
 
+    
+    if($build_config -eq 'Debug') {
+        $buildtypeversioninfo += '-Debug'
+    }
+
     if($server_type -eq 'local') {
         $buildtypeversioninfo += '-local'
     }
 
-    if($build_config -eq 'Debug') {
-        $buildtypeversioninfo += '-Debug'
-    }
 
     $NewInfoVersion = 'AssemblyInformationalVersionAttribute("' + $version + '-' + $branch + '-' + $buildtypeversioninfo + '")'
     $NewCopyright = 'AssemblyCopyrightAttribute("Copyright (c) ' + [System.DateTime]::Now.Year + ', ' + $company + '")'
