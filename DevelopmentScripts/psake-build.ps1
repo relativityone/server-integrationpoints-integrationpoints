@@ -23,7 +23,8 @@ task build_initalize {
     
     'Build Type and Server Type result in sign set to ' + ($build_type -ne 'DEV' -and $server_type -ne 'local')  
 
-    if([System.IO.File]::Exists($logfile)) {Remove-Item $logfile}
+    if([System.IO.Directory]::Exists($buildlogs_directory)) {Remove-Item $buildlogs_directory -Recurse}
+    [System.IO.Directory]::CreateDirectory($buildlogs_directory)
 }
 
 

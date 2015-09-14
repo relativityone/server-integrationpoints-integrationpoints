@@ -10,6 +10,7 @@ properties {
     $vendor_directory = [System.IO.Path]::Combine($root, 'Vendor')
     $robot_directory = [System.IO.Path]::Combine($root, 'Robot')
     $testlog_directory = [System.IO.Path]::Combine($root, 'TestLogs')
+    $buildlogs_directory = [System.IO.Path]::Combine($root, 'BuildLogs')
 
     #build variables
     $version = '1.0.0.0'
@@ -25,7 +26,7 @@ properties {
 
     #versioning database info
     $server = 'bld-mstr-01.kcura.corp'
-    $database ='TCBuildSemanticVersion'
+    $database ='TCBuildVersion'
     $project = 'Development'
     $major_version = 1
     $minor_version = 0
@@ -52,9 +53,9 @@ properties {
     $targetsfile = [System.IO.Path]::Combine($development_scripts_directory, 'msbuild.targets')
     $dependencygraph = [System.IO.Path]::Combine($development_scripts_directory, 'DependencyGraph.xml')
     $internaldlls = [System.IO.Path]::Combine($development_scripts_directory, 'dlls.txt')
-    $logfile = [System.IO.Path]::Combine($root, 'build.log')
-    $logfilewarn = [System.IO.Path]::Combine($root, 'buildwarnings.log')
-    $logfileerror = [System.IO.Path]::Combine($root, 'builderrors.log')
+    $logfile = [System.IO.Path]::Combine($buildlogs_directory, 'build.log')
+    $logfilewarn = [System.IO.Path]::Combine($buildlogs_directory, 'buildwarnings.log')
+    $logfileerror = [System.IO.Path]::Combine($buildlogs_directory, 'builderrors.log')
     $diagnostic ="false"
 
     #signing variables
