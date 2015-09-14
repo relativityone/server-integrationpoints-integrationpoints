@@ -11,7 +11,11 @@ task version {
     $buildtypeversioninfo = $build_type
 
     if($server_type -eq 'local') {
-        $buildtypeversioninfo = 'local'
+        $buildtypeversioninfo += '-local'
+    }
+
+    if($build_config -eq 'Debug') {
+        $buildtypeversioninfo += '-Debug'
     }
 
     $NewInfoVersion = 'AssemblyInformationalVersionAttribute("' + $version + '-' + $branch + '-' + $buildtypeversioninfo + '")'

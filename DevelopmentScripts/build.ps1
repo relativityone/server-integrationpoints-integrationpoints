@@ -90,7 +90,7 @@ if($VERSION -ne "1.0.0.0") {
         $VERSION = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($root, 'DevelopmentScripts', 'version.txt'))
     }
 
-    Invoke-psake $root\DevelopmentScripts\psake-version.ps1 -properties @{'version'=$VERSION;'server_type'='local'} 
+    Invoke-psake $root\DevelopmentScripts\psake-version.ps1 -properties @{'version'=$VERSION;'server_type'='local';'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;} 
     if ($psake.build_success -eq $false) { exit 1 }   
 }
 
