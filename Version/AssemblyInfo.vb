@@ -16,11 +16,12 @@ Imports System.Reflection
 Imports System.Runtime.InteropServices
 <Assembly: ComVisibleAttribute(false),  _
  Assembly: CLSCompliantAttribute(false),  _
- Assembly: AssemblyVersionAttribute("1.3.3.7"),  _
- Assembly: AssemblyFileVersionAttribute("1.3.3.7"),  _
+ Assembly: AssemblyVersionAttribute("1.0.0.0"),  _
+ Assembly: AssemblyFileVersionAttribute("1.0.0.0"),  _
+ Assembly: AssemblyInformationalVersionAttribute("1.0.0.0-default-dev-local"),  _
  Assembly: AssemblyCopyrightAttribute("Copyright (c) 2015, kCura LLC"),  _
  Assembly: AssemblyTitleAttribute("Template"),  _
- Assembly: AssemblyDescriptionAttribute("Tools to help build source code for kCura repositories."),  _
+ Assembly: AssemblyDescriptionAttribute("Template Description"),  _
  Assembly: AssemblyCompanyAttribute("kCura LLC"),  _
  Assembly: AssemblyProductAttribute("Template")> 
 

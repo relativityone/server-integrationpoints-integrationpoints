@@ -14,11 +14,12 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisibleAttribute(false)]
 [assembly: CLSCompliantAttribute(false)]
-[assembly: AssemblyVersionAttribute("1.3.3.7")]
-[assembly: AssemblyFileVersionAttribute("1.3.3.7")]
+[assembly: AssemblyVersionAttribute("1.0.0.0")]
+[assembly: AssemblyFileVersionAttribute("1.0.0.0")]
+[assembly: AssemblyInformationalVersionAttribute("1.0.0.0-default-dev-local")]
 [assembly: AssemblyCopyrightAttribute("Copyright (c) 2015, kCura LLC")]
 [assembly: AssemblyTitleAttribute("Template")]
-[assembly: AssemblyDescriptionAttribute("Tools to help build source code for kCura repositories.")]
+[assembly: AssemblyDescriptionAttribute("Template Description")]
 [assembly: AssemblyCompanyAttribute("kCura LLC")]
 [assembly: AssemblyProductAttribute("Template")]
 
