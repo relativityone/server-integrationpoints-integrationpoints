@@ -62,6 +62,7 @@ $status = $x.build.status
 $statusText = $x.build.statusText
 $product = $x.build.buildType.projectName.split(':', [StringSplitOptions]::RemoveEmptyEntries)[0].trim()
 $project = $x.build.buildType.projectName.split(':', [StringSplitOptions]::RemoveEmptyEntries)[1].trim()
+$config = $x.build.buildType.name
 $branch = $x.build.branchName
 $buildtype =  ($x.build.properties.property | ? {$_.name -eq 'buildType'} | select Value).value
 $agent = $x.build.agent.name
@@ -74,6 +75,9 @@ $starttime = GetDate($x.build.startDate)
 
 if($triggeredby -eq 'user') {
     $triggeredby = $x.build.triggered.user.username
+}
+elseif($triggeredby -eq 'buildType') {
+    $triggeredby = $x.build.triggered.buildType.name
 }
 else {
     $triggeredby = $x.build.triggered.details
@@ -261,7 +265,7 @@ if($canceled -ne $null){
     $body += ' (Canceled by ' + $canceled + ' "<i>' + $canceledReason + '</i>")'
 }
 
-$body += '</b>
+$body += '
 					</td>
 					<td style="text-align: right">
 						<a href="http://bld-mstr-01.kcura.corp" style="text-decoration:none;"><b style="color:2AA4FC">Team</b><font color="FBBD30">City</font></a>
@@ -278,14 +282,9 @@ $body += '</b>
 					<td>' + $triggeredby + ' @ ' + $starttime.ToShortDateString() + ' ' + $starttime.ToShortTimeString() + '</td>
 				</tr>
 				<tr>
-					<td>Product</td>
-					<td>:</td>
-					<td>' + $product + '</td>
-				</tr>
-				<tr>
 					<td>Project</td>
 					<td>:</td>
-					<td>' + $project + '</td>
+					<td>' + $product + ' :: '+ $project + ' :: ' + $config + '</td>
 				</tr>
 				<tr>
 					<td>Branch</td>
@@ -296,6 +295,11 @@ $body += '</b>
 					<td>Build&nbsp;Type</td>
 					<td>:</td>
 					<td>'+ $buildtype +'</td>
+				</tr>
+                <tr>
+					<td>Version</td>
+					<td>:</td>
+					<td>'+ $buildversion +'</td>
 				</tr>
 				<tr>
 					<td>Agent</td>
@@ -355,7 +359,7 @@ $body += '</td>
 			</table>
 		</div>
 		<br /><br />
-		<div><a href="https://storyboard.kcura.com/Relativity/External.aspx?AppID=1015532&amp;ArtifactID=1015532&amp;DirectTo=%25applicationPath%25%2fCustomPages%2f433751B7-9A72-4166-A0BC-C0AF0133A780%2fTeamCityEmailSubscription.aspx%3fStandardsCompliance%3dtrue&#43;&amp;SelectedTab=1070366">Manage TeamCity Email</a></div>
+		<div><a href="https://storyboard.kcura.com/Relativity/External.aspx?AppID=1015532&ArtifactID=1015532&DirectTo=%25applicationPath%25%2fCustomPages%2f433751b7-9a72-4166-a0bc-c0af0133a780%2fkCura.TeamCityEmail.aspx%3fStandardsCompliance%3dtrue+&SelectedTab=1070366">Manage TeamCity Email</a></div>
 		<br /><br />
 		<div style="position: relative; bottom: 0px; text-align: center; width: 100%; font-family: Tahoma; font-size: small; color: #C0C0C0;">Powered by Gadgets&trade; Team</div> '
 

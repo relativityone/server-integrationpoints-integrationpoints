@@ -17,25 +17,49 @@ task default -depends runsteps
 
 task runsteps {
 
-Invoke-psake .\psake-version.ps1 -properties @{'version'=$VERSION;'server_type'=$SERVERTYPE;'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;'company'=$COMPANY;'product'=$PRODUCT;'product_description'=$PRODUCTDESCRIPTION;}
+Invoke-psake .\psake-version.ps1 -properties @{'version'=$VERSION;
+                                               'server_type'=$SERVERTYPE;
+                                               'build_config'=$BUILDCONFIG;
+                                               'build_type'=$BUILDTYPE;
+                                               'company'=$COMPANY;
+                                               'product'=$PRODUCT;
+                                               'product_description'=$PRODUCTDESCRIPTION;}
 if ($psake.build_success -eq $false) { exit 1 }  
 
-Invoke-psake .\psake-build.ps1 -properties @{'version'=$VERSION;'server_type'=$SERVERTYPE;'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+Invoke-psake .\psake-build.ps1 -properties @{'version'=$VERSION;
+                                             'server_type'=$SERVERTYPE;
+                                             'build_config'=$BUILDCONFIG;
+                                             'build_type'=$BUILDTYPE;}
 if ($psake.build_success -eq $false) { exit 1 }  
 
-Invoke-psake .\psake-application.ps1 -properties @{'version'=$VERSION;'server_type'=$SERVERTYPE;'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+Invoke-psake .\psake-application.ps1 -properties @{'version'=$VERSION;
+                                                   'server_type'=$SERVERTYPE;
+                                                   'build_config'=$BUILDCONFIG;
+                                                   'build_type'=$BUILDTYPE;}
 if ($psake.build_success -eq $false) { exit 1 }  
 
 Invoke-psake .\psake-test.ps1
 if ($psake.build_success -eq $false) { exit 1 }  
 
-Invoke-psake .\psake-nugetpack.ps1 -properties @{'version'=$VERSION;'server_type'=$SERVERTYPE;'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;'company'=$COMPANY;}
+Invoke-psake .\psake-nugetpack.ps1 -properties @{'version'=$VERSION;
+                                                 'server_type'=$SERVERTYPE;
+                                                 'build_config'=$BUILDCONFIG;
+                                                 'build_type'=$BUILDTYPE;
+                                                 'company'=$COMPANY;}
 if ($psake.build_success -eq $false) { exit 1 }  
 
-Invoke-psake .\psake-nugetpublish.ps1 -properties @{'version'=$VERSION;'server_type'=$SERVERTYPE;'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+Invoke-psake .\psake-nugetpublish.ps1 -properties @{'version'=$VERSION;
+                                                    'server_type'=$SERVERTYPE;
+                                                    'build_config'=$BUILDCONFIG;
+                                                    'build_type'=$BUILDTYPE;}
 if ($psake.build_success -eq $false) { exit 1 }  
 
-Invoke-psake .\psake-package.ps1 -properties @{'version'=$VERSION;'product'=$PRODUCT;'package_root_directory'=$PACKAGEROOT;'server_type'=$SERVERTYPE;'build_config'=$BUILDCONFIG;'build_type'=$BUILDTYPE;}
+Invoke-psake .\psake-package.ps1 -properties @{'version'=$VERSION;
+                                               'product'=$PRODUCT;
+                                               'package_root_directory'=$PACKAGEROOT;
+                                               'server_type'=$SERVERTYPE;
+                                               'build_config'=$BUILDCONFIG;
+                                               'build_type'=$BUILDTYPE;}
 if ($psake.build_success -eq $false) { exit 1 }  
 
 }
