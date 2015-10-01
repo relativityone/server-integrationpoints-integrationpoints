@@ -1,4 +1,10 @@
-﻿. .\psake-common.ps1
+﻿properties {
+    $root = ""       
+    $buildid = 0
+
+    $buildserver = 'bld-mstr-01.kcura.corp'
+    $database = 'TCBuildVersion'
+}
 
 task default -depends sendemail
 
@@ -8,28 +14,62 @@ task sendemail {
 Add-Type -TypeDefinition @"
 public struct Change 
 {
-public string id;
-public string user;
-public string email;
-public string date;
-public string node;
-public string desc;
-public int mods;
-public int adds;
-public int dels;
+    public string id;
+    public string user;
+    public string email;
+    public string date;
+    public string node;
+    public string desc;
+    public int mods;
+    public int adds;
+    public int dels;
+}
+"@
+
+Add-Type -TypeDefinition @"
+public struct Build 
+{
+    public int id;
+    public string status;
+    public string statusColor;
+    public string statusText;
+    public string canceledBy;
+    public string canceledReason;
+    public string product;
+    public string project;
+    public string config;
+    public string branch;
+    public string buildType;
+    public string agent;
+    public string version;
+    public string triggeredBy;
+    public System.DateTime triggeredTime;
+    public System.DateTime startTime;  
+    public System.DateTime endTime;
+    public string changes;
+    public string changers;
+    public int changesCount;
+    public string messages;
+    public int dependencyID;
+    public string dependencies;
+    public string coverage;
 }
 "@
 
 Function GetDate([String] $datestring) {
+
+    if ($datestring -eq $null -or $datestring -eq '') {
+        return Get-Date
+    }
 
     $date = Get-Date -Year $datestring.Substring(0,4) -Month $datestring.Substring(4,2) -Day $datestring.Substring(6,2) -Hour $datestring.Substring(9,2) -Minute $datestring.Substring(11,2) -Second $datestring.Substring(13,2)
     
     return $date
 }
 
-Function GetTime([DateTime] $date) {
+Function GetTime([DateTime] $startdate, [DateTime] $enddate) {
 
-    $ts = New-TimeSpan -Start $date -End (Get-Date)
+    $ts = New-TimeSpan -Start $startdate -End $enddate
 
     $return = ''
 
@@ -47,54 +87,199 @@ Function GetTime([DateTime] $date) {
     return $return
 }
 
-$username = 'littleboss'
-$password = 'Idontcareifyouknowthispassword'
-$buildserver = 'bld-mstr-01.kcura.corp'
-$database = 'TCBuildVersion'
+Function GetAuth() {
+    $username = 'littleboss'
+    $password = 'Idontcareifyouknowthispassword'
 
-$base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $username,$password)))
-
-$statusraw = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "http://$buildserver/app/rest/builds/id:$buildid"
-
-$x = [xml]$statusraw.InnerXml
-
-$status = $x.build.status
-$statusText = $x.build.statusText
-$product = $x.build.buildType.projectName.split(':', [StringSplitOptions]::RemoveEmptyEntries)[0].trim()
-$project = $x.build.buildType.projectName.split(':', [StringSplitOptions]::RemoveEmptyEntries)[1].trim()
-$config = $x.build.buildType.name
-$branch = $x.build.branchName
-$buildtype =  ($x.build.properties.property | ? {$_.name -eq 'buildType'} | select Value).value
-$agent = $x.build.agent.name
-$buildversion = $x.build.number
-
-$triggeredby = $x.build.triggered.type
-$triggeredtime = GetDate($x.build.triggered.date)
-$starttime = GetDate($x.build.startDate)
-
-
-if($triggeredby -eq 'user') {
-    $triggeredby = $x.build.triggered.user.username
-}
-elseif($triggeredby -eq 'buildType') {
-    $triggeredby = $x.build.triggered.buildType.name
-}
-else {
-    $triggeredby = $x.build.triggered.details
+    return [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $username,$password)))
 }
 
-if($status -eq 'SUCCESS') {
-    $statusColor = 'green'
-} 
-else {
-    $status = 'FAILURE'
+Function GetBuildInfo($id) {
 
-    $canceled = $x.build.canceledInfo.user.username
-    $canceledReason = $x.build.canceledInfo.text
+    $base64AuthInfo = GetAuth
+    $statusraw = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "http://$buildserver/app/rest/builds/id:$id"
 
-    $statusColor = 'red'
+    $bld = New-Object Build
+    $bld.id = $id
+        
+    $x = [xml]$statusraw.InnerXml
 
-    $importantMessage = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "http://$buildserver/viewLog.html?buildId=$buildid&tab=buildLog&filter=important&hideBlocks=true&state=&expand=all#_"
+    $bld.status = $x.build.status
+    $bld.statusText = $x.build.statusText
+    $bld.product = $x.build.buildType.projectName.split(':', [StringSplitOptions]::RemoveEmptyEntries)[0].trim()
+    $bld.project = $x.build.buildType.projectName.split(':', [StringSplitOptions]::RemoveEmptyEntries)[1].trim()
+    $bld.config = $x.build.buildType.name
+    $bld.branch = $x.build.branchName
+    $bld.buildtype =  ($x.build.properties.property | ? {$_.name -eq 'buildType'} | select Value).value
+    $bld.agent = $x.build.agent.name
+    $bld.version = $x.build.number
+    
+    $bld.triggeredBy = $x.build.triggered.type
+    $bld.triggeredtime = GetDate($x.build.triggered.date)
+    $bld.startTime = GetDate($x.build.startDate)
+    $bld.endTime = GetDate($x.build.finishDate)
+
+    if($bld.triggeredBy -eq 'user') {
+        $bld.triggeredBy = $x.build.triggered.user.username
+    }
+    elseif($bld.triggeredBy -eq 'buildType') {
+        $bld.triggeredBy = $x.build.triggered.buildType.name
+    }
+    else {
+        $bld.triggeredBy = $x.build.triggered.details
+    }
+
+    if($bld.status -eq 'SUCCESS') {
+        $bld.statusColor = 'green'
+    } 
+    else {
+        $bld.status = 'FAILURE'
+
+        $bld.canceledBy = $x.build.canceledInfo.user.username
+        $bld.canceledReason = $x.build.canceledInfo.text
+
+        $bld.statusColor = 'red'  
+    }
+
+    $bld.dependencyID = $x.build.'snapshot-dependencies'.build.id
+
+    return $bld
+}
+
+Function GetBuildChanges([Build] $bld) {
+    $base64AuthInfo = GetAuth
+    $id = $bld.id
+    $changesraw = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "http://$buildserver/app/rest/changes?locator=build:$id"
+
+    $x = [xml]$changesraw.InnerXml
+
+    $changes = @()
+    $changesLimit = 5
+    $bld.changesCount = 0
+
+    Set-Location $root
+    foreach ($node in $x.SelectNodes('/changes/change')){
+
+        $bld.changesCount++
+
+        if ($bld.changesCount -le $changesLimit) {
+            $hg = (hg log -r $node.version --template "{author|user}|{author|email}|{date(date, '%m/%d/%Y %H:%M:%S %z')}|{node}|{join(file_mods, ';')}|{join(file_adds, ';')}|{join(file_dels, ';')}|{firstline(desc)}")
+
+            $chng = New-Object Change
+            $chng.id = $node.id
+            $chng.user = $hg.split('|')[0]
+            $chng.email = $hg.split('|')[1].replace(" + '@kcura.com'", "@kcura.com")
+            $chng.date = $hg.split('|')[2]
+            $chng.node = $hg.split('|')[3]
+            $chng.mods = $hg.split('|')[4].split(';', [StringSplitOptions]::RemoveEmptyEntries).count
+            $chng.adds = $hg.split('|')[5].split(';', [StringSplitOptions]::RemoveEmptyEntries).count
+            $chng.dels = $hg.split('|')[6].split(';', [StringSplitOptions]::RemoveEmptyEntries).count
+            $chng.desc = $hg.split('|')[7]
+        }
+        else {
+            $hg = (hg log -r $node.version --template "{author|email}")
+
+            $chng = New-Object Change
+            $chng.email = $hg.split('|')[0].replace(" + '@kcura.com'", "@kcura.com")       
+        }    
+
+        $changes += $chng
+    }
+
+    $bld.changers = ''
+    foreach ($chng in $changes) {
+        if ($bld.changers -eq '') {
+            $bld.changers = "'" + $chng.email + "'"
+        }
+        else {
+            $bld.changers += ", '" + $chng.email + "'"
+        }
+    }
+
+    if($bld.changers -eq ''){
+        $bld.changers = "''"
+    }
+
+    $bld.changes = ''
+
+    $urlFiles = "http://$buildserver/viewModification.html?modId=####&tab=vcsModificationFiles"
+    $urlExtra = "http://$buildserver/viewLog.html?buildId=$buildid&tab=buildChangesDiv"
+
+    $bld.changesCount = 0
+
+    foreach ($chng in $changes) {
+        $bld.changesCount++
+
+        if ($bld.changesCount -gt $changesLimit) {
+            continue
+        }
+
+        $bld.changes += '<table style="width: 100%; font-family: Tahoma; font-size: 10pt; border-bottom-style: dashed; border-width: 1px; border-color: #C0C0C0">
+                            <tr>
+                                <td style="padding-bottom: 0px;">
+                                <table style="padding: 0px;">
+                            <tr>
+                         <td style="padding-bottom: 0px;">
+                            <b>[' + $chng.user + ']</b>
+                         </td>
+                         <td style="font-size: 10pt; padding: 0px;">
+                            (' + $chng.date + ')
+                         </td>
+                         <td rowspan="2" style="padding: 0px;">
+                            <a href="' + $urlFiles.Replace('####', $chng.id) + '">'
+
+        if($chng.mods -gt 0) {
+            $bld.changes += '<span style="color: Orange;"> [Modified (' + $chng.mods + ')] </span>'
+        }
+
+        if($chng.adds -gt 0) {
+            $bld.changes += '<span style="color: Green;"> [Added (' + $chng.adds + ')] </span>'
+        }
+
+        if($chng.dels -gt 0) {
+            $bld.changes += '<span style="color: Red;"> [Deleted (' + $chng.dels + ')] </span>'
+        }
+
+        $bld.changes += '</a>
+                         </td>
+                         </tr>
+                         <tr>
+                            <td colspan="2" style="color: #0099FF; font-size: 10pt; padding: 0px;">' + $chng.node + '</td>
+                         </tr>
+                         </table>
+                         </td>
+                         </tr>
+                         <tr>
+                            <td style="padding-left: 23px; padding-top: 0px;">
+                                <u>' + $chng.desc + '</u>
+                            </td>
+                         </tr>
+                         </table>'
+    }
+
+    if ($bld.changesCount -gt $changesLimit) {
+        $bld.changes += "<a href='$urlExtra'>And "
+
+        if ($bld.changesCount -eq 100) {
+            $bld.changes += "100+"
+        }
+        else {
+            $bld.changes += ($bld.changesCount - $changesLimit)
+        }
+
+        $bld.changes += " others</a>"
+    }
+    elseif ($bld.changesCount -eq 0) {
+        $bld.changes = "No changes in current build"
+    }
+
+    return $bld
+}
+
+Function GetBuildMessages([Build] $bld) {
+    $base64AuthInfo = GetAuth
+    $id = $bld.id
+    $importantMessage = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "http://$buildserver/viewLog.html?buildId=$id&tab=buildLog&filter=important&hideBlocks=true&state=&expand=all#_"
 
     $importantMessage = $importantMessage.Substring($importantMessage.IndexOf('<div class="log rTree" id="buildLog">'), $importantMessage.IndexOf('<!-- END EXTENSION CONTENT jetbrains.buildServer.controllers.viewLog.BuildLogTab -->', $importantMessage.IndexOf('<div class="log rTree" id="buildLog">')) - $importantMessage.IndexOf('<div class="log rTree" id="buildLog">'));
 
@@ -126,253 +311,114 @@ else {
         $IMs.RemoveRange(50, $IMs.Count - 100)
         $IMs.Insert(50, "<br/>...<br/>")
     }
+
+    foreach ($m in $IMs) {
+        $bld.messages += $m
+    }
+
+    return $bld
 }
 
-$changesraw = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "http://$buildserver/app/rest/changes?locator=build:$buildid"
+Function GetBuildDependencies([Build] $bld, [int] $id) {
 
-$x = [xml]$changesraw.InnerXml
+    if($bld.id -eq $id) {
+        if($bld.dependencyID -ne 0) {
+            $bld.dependencies += '<div align="center" style="border: 2px solid Red;">
+                                    <a href="http://' + $buildserver + '/viewLog.html?buildId=' + $bld.id + '">
+                                        ' + $bld.product + ' :: ' + $bld.project + ' :: ' + $bld.config + '<br/>
+                                        ' + $bld.version + '
+                                
+                                    </a>
+                                </div>'
 
-$changes = @()
-$changesLimit = 5
-$changesCount = 0
-
-Set-Location $root
-foreach ($node in $x.SelectNodes('/changes/change')){
-
-    $changesCount++
-
-    if ($changesCount -le $changesLimit) {
-        $hg = (hg log -r $node.version --template "{author|user}|{author|email}|{date(date, '%m/%d/%Y %H:%M:%S %z')}|{node}|{join(file_mods, ';')}|{join(file_adds, ';')}|{join(file_dels, ';')}|{firstline(desc)}")
-
-        $chng = New-Object Change
-        $chng.id = $node.id
-        $chng.user = $hg.split('|')[0]
-        $chng.email = $hg.split('|')[1].replace(" + '@kcura.com'", "@kcura.com")
-        $chng.date = $hg.split('|')[2]
-        $chng.node = $hg.split('|')[3]
-        $chng.mods = $hg.split('|')[4].split(';', [StringSplitOptions]::RemoveEmptyEntries).count
-        $chng.adds = $hg.split('|')[5].split(';', [StringSplitOptions]::RemoveEmptyEntries).count
-        $chng.dels = $hg.split('|')[6].split(';', [StringSplitOptions]::RemoveEmptyEntries).count
-        $chng.desc = $hg.split('|')[7]
+           $bld = GetBuildDependencies $bld $bld.dependencyID
+        }        
     }
     else {
-        $hg = (hg log -r $node.version --template "{author|email}")
+        $bldTmp = GetBuildInfo $id
 
-        $chng = New-Object Change
-        $chng.email = $hg.split('|')[0].replace(" + '@kcura.com'", "@kcura.com")       
-    }    
+        $bld.dependencies += '<div align="center" style="font-size: large;">
+                                &uarr;
+                            </div>
+                            <div align="center" style="border: 2px solid Black;">
+                                <a href="http://' + $buildserver + '/viewLog.html?buildId=' + $bldTmp.id + '">
+                                    ' + $bldTmp.product + ' :: ' + $bldTmp.project + ' :: ' + $bldTmp.config + '<br/>
+                                    [' + $bldTmp.branch + '] ' + $bldTmp.agent + ' (' + $bldTmp.buildType + ') ' + $bldTmp.version + '
+                                </a>
+                            </div>'
 
-    $changes += $chng
+        if($bldTmp.dependencyID -ne 0) {
+            $bld = GetBuildDependencies $bld $bldTmp.dependencyID
+        }
+        else {
+            $bld.branch = $bldTmp.branch
+        }
+    }      
+
+    return $bld
 }
 
-$changers = ''
-foreach ($chng in $changes) {
-    if ($changers -eq '') {
-        $changers = "'" + $chng.email + "'"
-    }
-    else {
-        $changers += ", '" + $chng.email + "'"
-    }
-}
+Function GetStatistics([Build] $bld, [int] $id) {
+    $base64AuthInfo = GetAuth
+    $statusraw = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "http://$buildserver/app/rest/builds/id:$id/statistics"
+    
+    $x = [xml]$statusraw.InnerXml
 
-if($changers -eq ''){
-    $changers = "''"
-}
+    $ccc =  ($x.properties.property | ? {$_.name -eq 'CodeCoverageAbsCCovered'} | select Value).value
+    $ccct = ($x.properties.property | ? {$_.name -eq 'CodeCoverageAbsCTotal'} | select Value).value
+    $ccm =  ($x.properties.property | ? {$_.name -eq 'CodeCoverageAbsMCovered'} | select Value).value
+    $ccmt = ($x.properties.property | ? {$_.name -eq 'CodeCoverageAbsMTotal'} | select Value).value
+    $ccb =  ($x.properties.property | ? {$_.name -eq 'CodeCoverageAbsBCovered'} | select Value).value
+    $ccbt = ($x.properties.property | ? {$_.name -eq 'CodeCoverageAbsBTotal'} | select Value).value
+    $ccl =  ($x.properties.property | ? {$_.name -eq 'CodeCoverageAbsLCovered'} | select Value).value
+    $cclt = ($x.properties.property | ? {$_.name -eq 'CodeCoverageAbsLTotal'} | select Value).value
+    
+    $bld.coverage = '<table>
+							<tr>
+								<td>Classes</td>
+								<td>:</td>
+								<td>'+ "{0:N2}" -f (($ccc / $ccct) * 100) +'%</td>	
+                                <td>('+ [int]$ccc + '/' + [int]$ccct + ')</td>								
+							</tr>
+							<tr>
+								<td colspan="4" style="padding: 0px; border: 1px solid #00CC00;"><table style="width: '+ (($ccc / $ccct) * 100) +'%; border-collapse:collapse;"><tr style="line-height: 10px; border-collapse:collapse;"><td style="background-color:#00CC00; border-collapse:collapse;"></td></tr></table> </td>
+							</tr>
+							<tr>
+								<td>Methods</td>
+								<td>:</td>
+								<td>'+ "{0:N2}" -f (($ccm / $ccmt) * 100) +'%</td>
+                                <td>('+ [int]$ccm + '/' + [int]$ccmt + ')</td>
+							</tr>
+							<tr>
+								<td colspan="4" style="padding: 0px; border: 1px solid #00CC00;"><table style="width: '+ (($ccm / $ccmt) * 100) +'%; border-collapse:collapse;"><tr style="line-height: 10px; border-collapse:collapse;"><td style="background-color:#00CC00; border-collapse:collapse;"></td></tr></table> </td>
+							</tr>
+							<tr>
+								<td>Blocks</td>
+								<td>:</td>
+								<td>'+ "{0:N2}" -f (($ccb / $ccbt) * 100) +'%</td>
+                                <td>('+ [int]$ccb + '/' + [int]$ccbt + ')</td>
+							</tr>
+							<tr>
+								<td colspan="4" style="padding: 0px; border: 1px solid #00CC00;"><table style="width: '+ (($ccb / $ccbt) * 100) +'%; border-collapse:collapse;"><tr style="line-height: 10px; border-collapse:collapse;"><td style="background-color:#00CC00; border-collapse:collapse;"></td></tr></table> </td>
+							</tr>
+							<tr>
+								<td>Lines</td>
+								<td>:</td>
+								<td>'+ "{0:N2}" -f (($ccl / $cclt) * 100) +'%</td>
+                                <td>('+ [int]$ccl + '/' + [int]$cclt + ')</td>
+							</tr>
+							<tr>
+								<td colspan="4" style="padding: 0px; border: 1px solid #00CC00;"><table style="width: '+ (($ccl / $cclt) * 100) +'%; border-collapse:collapse;"><tr style="line-height: 10px; border-collapse:collapse;"><td style="background-color:#00CC00; border-collapse:collapse;"></td></tr></table> </td>
+							</tr>
+						</table>'
 
-$changesText= ''
 
-$urlFiles = "http://$buildserver/viewModification.html?modId=####&tab=vcsModificationFiles"
-$urlExtra = "http://$buildserver/viewLog.html?buildId=$buildid&tab=buildChangesDiv"
-
-$changesCount = 0
-
-foreach ($chng in $changes) {
-    $changesCount++
-
-    if ($changesCount -gt $changesLimit) {
-        continue
-    }
-
-    $changesText += '<table style="width: 100%; font-family: Tahoma; font-size: 10pt; border-bottom-style: dashed; border-width: 1px; border-color: #C0C0C0">
-                        <tr>
-                            <td style="padding-bottom: 0px;">
-                            <table style="padding: 0px;">
-                        <tr>
-                     <td style="padding-bottom: 0px;">
-                        <b>[' + $chng.user + ']</b>
-                     </td>
-                     <td style="font-size: 10pt; padding: 0px;">
-                        (' + $chng.date + ')
-                     </td>
-                     <td rowspan="2" style="padding: 0px;">
-                        <a href="' + $urlFiles.Replace('####', $chng.id) + '">'
-
-    if($chng.mods -gt 0) {
-        $changesText += '<span style="color: Orange;"> [Modified (' + $chng.mods + ')] </span>'
-    }
-
-    if($chng.adds -gt 0) {
-        $changesText += '<span style="color: Green;"> [Added (' + $chng.adds + ')] </span>'
-    }
-
-    if($chng.dels -gt 0) {
-        $changesText += '<span style="color: Red;"> [Deleted (' + $chng.dels + ')] </span>'
-    }
-
-    $changesText += '</a>
-                     </td>
-                     </tr>
-                     <tr>
-                        <td colspan="2" style="color: #0099FF; font-size: 10pt; padding: 0px;">' + $chng.node + '</td>
-                     </tr>
-                     </table>
-                     </td>
-                     </tr>
-                     <tr>
-                        <td style="padding-left: 23px; padding-top: 0px;">
-                            <u>' + $chng.desc + '</u>
-                        </td>
-                     </tr>
-                     </table>'
-}
-
-if ($changesCount -gt $changesLimit) {
-    $changesText += "<a href='$urlExtra'>And "
-
-    if ($changesCount -eq 100) {
-        $changesText += "100+"
-    }
-    else {
-        $changesText += ($changesCount - $changesLimit)
-    }
-
-    $changesText += " others</a>"
-}
-elseif ($changesCount -eq 0) {
-    $changesText = "No changes in current build"
+    return $bld
 }
 
 
-$body = '<div>
-			<table style="width: 100%; font-family: Tahoma;">
-				<tr>
-					<td>
-						<b>BUILD</b>&nbsp;<b style="color:' + $statusColor + '">' + $status + '</b>'
-
-
-
-if($canceled -ne $null){
-    $body += ' (Canceled by ' + $canceled + ' "<i>' + $canceledReason + '</i>")'
-}
-
-$body += '
-					</td>
-					<td style="text-align: right">
-						<a href="http://bld-mstr-01.kcura.corp" style="text-decoration:none;"><b style="color:2AA4FC">Team</b><font color="FBBD30">City</font></a>
-					</td>
-				</tr>		
-			</table>		
-		</div>
-		<div>
-			<table style="font-family: Tahoma;">	
-
-				<tr>
-					<td>Triggered&nbsp;By</td>
-					<td>:</td>
-					<td>' + $triggeredby + ' @ ' + $starttime.ToShortDateString() + ' ' + $starttime.ToShortTimeString() + '</td>
-				</tr>
-				<tr>
-					<td>Project</td>
-					<td>:</td>
-					<td>' + $product + ' :: '+ $project + ' :: ' + $config + '</td>
-				</tr>
-				<tr>
-					<td>Branch</td>
-					<td>:</td>
-					<td>'+ $branch + '</td>
-				</tr>
-				<tr>
-					<td>Build&nbsp;Type</td>
-					<td>:</td>
-					<td>'+ $buildtype +'</td>
-				</tr>
-                <tr>
-					<td>Version</td>
-					<td>:</td>
-					<td>'+ $buildversion +'</td>
-				</tr>
-				<tr>
-					<td>Agent</td>
-					<td>:</td>
-					<td>' +$agent + '</td>
-				</tr>	
-				<tr>
-					<td>Build&nbsp;Time</td>
-					<td>:</td>
-					<td>' + $starttime.ToShortDateString() + ' ' + $starttime.ToShortTimeString() + ' - ' + (Get-Date).ToShortTimeString()  + ' (<i>~' + (GetTime($starttime)) + '</i>)</td>
-				</tr>'
-
-
-if($status -eq 'SUCCESS') {
-    $body += '<tr>
-				<td>Package</td>
-				<td>:</td>
-				<td><a href="file:\\BLD-PKGS.kcura.corp\Packages\' + $product + '\' + $branch + '\' + $buildversion + '">\\BLD-PKGS.kcura.corp\Packages\' + $product + '\' + $branch + '\' + $buildversion + '</a></td>
-			</tr>'
-}
-else {
-    $body += '<tr>
-				<td style="vertical-align: top"><font color="red">Errors</font></td>
-				<td style="vertical-align: top"><font color="red">:</font></td>
-				<td><font color="red">' + $statusText + '</font>
-					<div style="font-family:Courier New, Courier, monospace; font-size: x-small; font-weight: normal; font-style: normal;">
-					' + $IMs + '
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td></td>
-				<td></td>
-				<td><font color="red">To claim ownership of this issue, follow instructions <a href="https://einstein.kcura.com/display/DV/Team+City+build+failure+responsibility">here</a></font></td>
-			</tr>'
-}
-
-
-$body += '<tr>
-					<td>Links</td>
-					<td>:</td>
-					<td><a href="http://' + $buildserver + '/viewLog.html?buildId=' + $buildid + '">[Overview]</a>  <a href="http://' + $buildserver + '/viewLog.html?buildId=' + $buildid + '&tab=buildLog&filter=debug">[Build Log]</a> ' 
-
-if([System.IO.File]::Exists('\\BLD-PKGS.kcura.corp\Packages\' + $product + '\' + $branch + '\' + $buildversion + '\CoverageReports\fullcoveragereport.html')){
-
-$body += ' <a href="file://BLD-PKGS.kcura.corp/Packages/' + $product + '/' + $branch + '/' + $buildversion + '/CoverageReports/fullcoveragereport.html">[Code Coverage Report]</a>'
-
-}
-
-$body += '</td>
-				</tr>
-				<tr>
-					<td style="vertical-align: top">Changes</td>
-					<td style="vertical-align: top">:</td>
-					<td style="font-size: 10pt">' + $changesText + '</td>
-				</tr>
-			</table>
-		</div>
-		<br /><br />
-		<div><a href="https://storyboard.kcura.com/Relativity/External.aspx?AppID=1015532&ArtifactID=1015532&DirectTo=%25applicationPath%25%2fCustomPages%2f433751b7-9a72-4166-a0bc-c0af0133a780%2fkCura.TeamCityEmail.aspx%3fStandardsCompliance%3dtrue+&SelectedTab=1070366">Manage TeamCity Email</a></div>
-		<br /><br />
-		<div style="position: relative; bottom: 0px; text-align: center; width: 100%; font-family: Tahoma; font-size: small; color: #C0C0C0;">Powered by Gadgets&trade; Team</div> '
-
-
-$Conn = New-Object System.Data.SqlClient.SqlConnection
-$Conn.ConnectionString = "server='$buildserver';Database='$database';trusted_connection=true;"
-
-$Conn.Open()
-
-$Comm = New-Object System.Data.SqlClient.SqlCommand
-$Comm.Connection = $Conn
-$Comm.CommandText = "
-
+Function GetSQL($product, $project, $branch, $status, $triggeredBy, $changesCount, $changers) {
+    return "
 SET NOCOUNT ON
 	--Declare variables used by SQL passed in from NANT script
 	DECLARE @projectName AS VARCHAR(255) = '$project'
@@ -417,7 +463,7 @@ SET NOCOUNT ON
 	INNER JOIN TCBranches tcb ON tcus.ProjectBranchID = tcb.[ID]
 	WHERE tcb.[ID] = @branchID
       AND tcus.SendTrigger = 1 
-	  AND tcue.UserEmail like '${triggeredby}%'
+	  AND tcue.UserEmail like '${triggeredBy}%'
 		
 	--If there are any changes, get email addresses of people who subscribed to builds that contain their changes
 	IF($changesCount > 0)
@@ -450,6 +496,170 @@ SET NOCOUNT ON
 	SELECT DISTINCT Email FROM #tmpEmails
 	DROP TABLE #tmpEmails
 "
+}
+
+$build = GetBuildInfo $buildid
+
+$build = GetBuildChanges $build
+
+if($build.status -ne 'SUCCESS') {
+    $build = GetBuildMessages $build
+}
+
+$build = GetBuildDependencies $build $build.id
+
+if($build.config -eq 'CodeCoverage') {
+    $build = GetStatistics $build $build.id
+}
+
+
+
+$body = '<div>
+			<table style="width: 100%; font-family: Tahoma;">
+				<tr>
+					<td>
+						<b>BUILD</b>&nbsp;<b style="color:' + $build.statusColor + '">' + $build.status + '</b>'
+
+
+
+if($build.canceledBy -ne $null -and $build.canceledBy -ne ''){
+    $body += ' (Canceled by ' + $build.canceledBy + ' | Reason: "<i>' + $build.canceledReason + '</i>")'
+}
+
+$body += '
+					</td>
+					<td style="text-align: right">
+						<a href="http://bld-mstr-01.kcura.corp" style="text-decoration:none;"><b style="color:2AA4FC">Team</b><font color="FBBD30">City</font></a>
+					</td>
+				</tr>		
+			</table>		
+		</div>
+		<div>
+			<table style="font-family: Tahoma;">	
+
+				<tr>
+					<td>Triggered&nbsp;By</td>
+					<td>:</td>
+					<td>' + $build.triggeredby + ' @ ' + $build.startTime.ToShortDateString() + ' ' + $build.startTime.ToShortTimeString() + '</td>
+				</tr>
+				<tr>
+					<td>Project</td>
+					<td>:</td>
+					<td>' + $build.product + ' :: '+ $build.project + ' :: ' + $build.config + '</td>
+				</tr>
+                <tr>
+					<td>Branch</td>
+					<td>:</td>
+					<td>'+ $build.branch + '</td>
+				</tr>'
+
+if($build.buildType -ne $null -and $build.buildType -ne ''){
+	$body += '			<tr>
+					<td>Build&nbsp;Type</td>
+					<td>:</td>
+					<td>'+ $build.buildType +'</td>
+				</tr>'
+
+}
+
+$body += '
+                <tr>
+					<td>Version</td>
+					<td>:</td>
+					<td>'+ $build.version +'</td>
+				</tr>
+				<tr>
+					<td>Agent</td>
+					<td>:</td>
+					<td>' + $build.agent + '</td>
+				</tr>	
+				<tr>
+					<td>Build&nbsp;Time</td>
+					<td>:</td>
+					<td>' + $build.startTime.ToShortDateString() + ' ' + $build.startTime.ToShortTimeString() + ' - ' + $build.endTime.ToShortTimeString()  + ' (<i>' + (GetTime $build.startTime $build.endTime) + '</i>)</td>
+				</tr>'
+
+
+if($build.status -eq 'SUCCESS') {
+
+    if($build.config.startsWith('Build')) {
+        $body += '<tr>
+				    <td>Package</td>
+				    <td>:</td>
+				    <td><a href="file:\\BLD-PKGS.kcura.corp\Packages\' + $build.product + '\' + $build.branch + '\' + $build.buildversion + '">\\BLD-PKGS.kcura.corp\Packages\' + $build.product + '\' + $build.branch + '\' + $build.version + '</a></td>
+			    </tr>'
+    }
+    elseif($build.config -eq 'CodeCoverage') {
+        $body += '<tr>
+				    <td>Code&nbsp;Coverage</td>
+				    <td>:</td>
+				    <td>' + $build.coverage + '</td>
+			    </tr>'
+    }
+    
+}
+else {
+    $body += '<tr>
+				<td style="vertical-align: top"><font color="red">Errors</font></td>
+				<td style="vertical-align: top"><font color="red">:</font></td>
+				<td><font color="red">' + $build.statusText + '</font>
+					<div style="font-family:Courier New, Courier, monospace; font-size: x-small; font-weight: normal; font-style: normal;">
+					' + $build.messages + '
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td></td>
+				<td><font color="red">To claim ownership of this issue, follow instructions <a href="https://einstein.kcura.com/display/DV/Team+City+build+failure+responsibility">here</a></font></td>
+			</tr>'
+}
+
+
+$body += '<tr>
+					<td>Links</td>
+					<td>:</td>
+					<td><a href="http://' + $buildserver + '/viewLog.html?buildId=' + $build.id + '">[Overview]</a>  <a href="http://' + $buildserver + '/viewLog.html?buildId=' + $build.id + '&tab=buildLog&filter=debug">[Build Log]</a> ' 
+
+if([System.IO.File]::Exists('\\BLD-PKGS.kcura.corp\Packages\' + $build.product + '\' + $build.branch + '\' + $build.version + '\CoverageReports\fullcoveragereport.html')){
+
+$body += ' <a href="file://BLD-PKGS.kcura.corp/Packages/' + $build.product + '/' + $build.branch + '/' + $build.version + '/CoverageReports/fullcoveragereport.html">[Code Coverage Report]</a>'
+
+}
+
+$body += '</td>
+				</tr>'
+
+if($build.dependencies -ne $null) {
+$body += '  <tr>
+			    <td style="vertical-align: top">Dependencies</td>
+			    <td style="vertical-align: top">:</td>
+			    <td style="font-size: 10pt">' + $build.dependencies + '</td>
+		    </tr>'
+}
+
+
+$body += '  <tr>
+			    <td style="vertical-align: top">Changes</td>
+			    <td style="vertical-align: top">:</td>
+			    <td style="font-size: 10pt">' + $build.changes + '</td>
+		    </tr>
+		</table>
+		</div>
+		<br /><br />
+		<div><a href="https://storyboard.kcura.com/Relativity/External.aspx?AppID=1015532&ArtifactID=1015532&DirectTo=%25applicationPath%25%2fCustomPages%2f433751b7-9a72-4166-a0bc-c0af0133a780%2fkCura.TeamCityEmail.aspx%3fStandardsCompliance%3dtrue+&SelectedTab=1070366">Manage TeamCity Email</a></div>
+		<br /><br />
+		<div style="position: relative; bottom: 0px; text-align: center; width: 100%; font-family: Tahoma; font-size: small; color: #C0C0C0;">Powered by Gadgets&trade; Team</div> '
+
+
+$Conn = New-Object System.Data.SqlClient.SqlConnection
+$Conn.ConnectionString = "server='$buildserver';Database='$database';trusted_connection=true;"
+
+$Conn.Open()
+
+$Comm = New-Object System.Data.SqlClient.SqlCommand
+$Comm.Connection = $Conn
+$Comm.CommandText = GetSQL $build.product $build.project $build.branch $build.status $build.triggeredBy $build.changesCount $build.changers
 
 $rdr = $Comm.ExecuteReader()
 $emails = @()
@@ -459,7 +669,13 @@ while($rdr.Read()) {
 }
 
 if($emails.length -gt 0){
-    Send-MailMessage -From 'TeamCity@kcura.com' -To $emails -Subject "Build $status - $product [$branch] - $buildversion" -BodyAsHtml $body -SmtpServer "smtp.kcura.corp"
+    $buildConfig = $build.config
+    $status = $build.status
+    $product = $build.product
+    $branch = $build.branch
+    $version = $build.version
+
+    Send-MailMessage -From 'TeamCity@kcura.com' -To $emails -Subject "$buildConfig $status - $product [$branch] - $version" -BodyAsHtml $body -SmtpServer "smtp.kcura.corp"
 }
 
 }
