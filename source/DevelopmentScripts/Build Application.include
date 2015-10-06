@@ -23,13 +23,9 @@
 	
 	<target name="build_LDAP">
 		<exec program="${ldap.scripts.directory}\kCura.RAPBuilder.exe">
-			<arg line='/destinationpath:${target.code.directory}\Application\RelativityIntegrationPoints.Auto.rap' />
-			<arg line='/applicationschema:${source.reference.application}\application.xml' />
-			<arg line='/assembly:${target.code.directory}\kCura.IntegrationPoints.Contracts.dll' />	
-			<arg line='/assembly:${target.code.directory}\kCura.IntegrationPoints.dll' />	
-			<arg line='/assembly:${target.code.directory}\kCura.LDAPProvider.dll' />	
-			<arg line='/custompage:c2c93191-7b15-4a9b-aa56-6a8c2dac5494=${target.web.publish}' />
-			<arg line='/applicationversion:${Product.Version}' />
+			<arg line='/source:${root}' />
+			<arg line='/input:${ldap.scripts.directory}\build.xml' />
+			<arg line='/version:${Product.Version}' />
 			<arg line='/servertype:local' />
 			<arg line='/debug:${diagnostic}' />
 			<arg line='/internaldlls:${dllout}' />
