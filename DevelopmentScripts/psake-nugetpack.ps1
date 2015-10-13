@@ -58,9 +58,9 @@ task update_nuspec {
        foreach($d in $IDs) {
           $x = Select-Xml -Path $o.FullName -XPath "/package/metadata/dependencies/dependency[@id='$d']"
           if ($x) {
-              Write-Host "Updating dependencies in " $o.FullName "to version" $version "..."
+              Write-Host "Updating dependencies in " $o.FullName "to version" $versionString "..."
 
-              $x.Node.version = $version   
+              $x.Node.version = $versionString   
               $x.Node.OwnerDocument.Save($x.Path)
           }
        }   
