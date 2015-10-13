@@ -33,9 +33,9 @@ task package -depends package_initalize {
     }
 
     foreach($o in Get-ChildItem $source_directory) {
-        if($o.PSIsContainer) {
-            Copy-Item -Path ([System.IO.Path]::Combine($o, 'bin', '*')) -Destination $package_bin_directory -Include '*.exe', '*.dll'
-            Copy-Item -Path ([System.IO.Path]::Combine($o, 'bin', '*')) -Destination $package_pdb_directory -Include '*.pdb'
+        if($o.PSIsContainer -and !$o.FullName.Contains('NUnit') -and ([System.IO.Directory]::Exists([System.IO.Path]::Combine($o.FullName, 'bin')))) {
+            Copy-Item -Path ([System.IO.Path]::Combine($o.FullName, 'bin', '*')) -Destination $package_bin_directory -Include '*.exe', '*.dll'
+            Copy-Item -Path ([System.IO.Path]::Combine($o.FullName, 'bin', '*')) -Destination $package_pdb_directory -Include '*.pdb'
         }    
     }
     
