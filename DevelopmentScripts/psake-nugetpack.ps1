@@ -25,7 +25,7 @@ task update_nuspec {
     }
 
 
-    foreach($o in Get-ChildItem $nuspec_directory){
+    foreach($o in Get-ChildItem $nuspec_directory, $application_directory){
        
        if($o.Extension -ne '.nuspec') {continue}
 
@@ -51,7 +51,7 @@ task update_nuspec {
        $x.Node.OwnerDocument.Save($x.Path)       
     }   
 
-    foreach($o in Get-ChildItem $nuspec_directory){
+    foreach($o in Get-ChildItem $nuspec_directory, $application_directory){
        
        if($o.Extension -ne '.nuspec') {continue}
 
@@ -68,7 +68,7 @@ task update_nuspec {
 }
 
 task nuget_pack {
-     foreach($o in Get-ChildItem $nuspec_directory){
+     foreach($o in Get-ChildItem $nuspec_directory, $application_directory){
         
         if($o.Extension -ne '.nuspec') {continue}
 

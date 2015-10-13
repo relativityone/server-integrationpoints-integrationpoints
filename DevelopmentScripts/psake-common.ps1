@@ -3,8 +3,8 @@ properties {
     $root = hg root
 
     $source_directory = [System.IO.Path]::Combine($root, 'Source')
-    $application_directory = [System.IO.Path]::Combine($source_directory, 'Applications')
-    $application_xml_directory = [System.IO.Path]::Combine($source_directory, 'ApplicationsXML')
+    $application_directory = [System.IO.Path]::Combine($root, 'Applications')
+    $application_xml_directory = [System.IO.Path]::Combine($root, 'ApplicationsXML')
     $development_scripts_directory = [System.IO.Path]::Combine($root, 'DevelopmentScripts')
     $version_directory = [System.IO.Path]::Combine($root, 'Version')
     $vendor_directory = [System.IO.Path]::Combine($root, 'Vendor')
