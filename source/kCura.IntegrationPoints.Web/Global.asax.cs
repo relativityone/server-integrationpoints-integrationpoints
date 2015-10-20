@@ -27,7 +27,8 @@ namespace kCura.IntegrationPoints.Web
 
 	public class MvcApplication : System.Web.HttpApplication
 	{
-		private static IWindsorContainer _container;
+		//private static IWindsorContainer _container;
+		public static IWindsorContainer _container;
 
 		protected void Application_Start()
 		{
@@ -61,7 +62,7 @@ namespace kCura.IntegrationPoints.Web
 			_container = new WindsorContainer();
 			var kernel = _container.Kernel;
 			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
-			_container.Install(FromAssembly.InDirectory(new AssemblyFilter("bin"))); //<--- DO NOT CHANGE THIS LINE
+			_container.Install(FromAssembly.InDirectory(new AssemblyFilter(HttpRuntime.BinDirectory, "kCura.IntegrationPoints*.dll"))); //<--- DO NOT CHANGE THIS LINE
 			ControllerBuilder.Current.SetControllerFactory(new WindsorControllerFactory(_container.Kernel));
 			GlobalConfiguration.Configuration.Services.Replace(typeof(IHttpControllerActivator), new WindsorCompositionRoot(_container));
 		}

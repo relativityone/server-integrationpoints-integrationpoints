@@ -296,6 +296,8 @@
     <Content Include="Content\scheduler.scss" />
     <Content Include="Content\controls-grid-pager.scss" />
     <Content Include="Content\buttermilk-variables.scss" />
+    <None Include="Properties\PublishProfiles\default.pubxml" />
+    <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\core\messaging.js" />
     <Content Include="Scripts\dragon\dragon-dialogs.js" />
@@ -497,7 +499,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

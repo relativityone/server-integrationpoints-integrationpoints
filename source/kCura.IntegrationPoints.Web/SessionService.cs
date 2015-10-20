@@ -30,7 +30,10 @@ namespace kCura.IntegrationPoints.Web
 
 		public int WorkspaceID
 		{
-			get { return (int)HttpContext.Current.Session["workspaceID"]; }
+			get
+			{
+				return ConnectionHelper.Helper().GetActiveCaseID();
+			}
 		}
 
 		public int UserID

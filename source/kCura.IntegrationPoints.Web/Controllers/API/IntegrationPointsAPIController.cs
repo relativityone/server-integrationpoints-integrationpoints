@@ -1,13 +1,8 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
-using Relativity.CustomPages;
-using Relativity.CustomPages.localhost;
-using kCura.IntegrationPoints.Web;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
