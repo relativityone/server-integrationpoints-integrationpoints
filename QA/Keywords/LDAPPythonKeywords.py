@@ -11,7 +11,7 @@ def Get_Path_to_Newest_LDAP_Install_Folder():
         Gets the path to the Folder containing the newest Method Installation.
         '''
 	list = []
-	dir = "\\\\BLD-PKGS.kcura.corp\\Packages\\\LDAPSync\\default\\"
+	dir = "\\\\BLD-PKGS.kcura.corp\\Packages\\\IntegrationPoints\\default\\"
 	
 	for folder in os.listdir(dir):
 		modifedtime = os.path.getctime(os.path.join( dir + folder))
