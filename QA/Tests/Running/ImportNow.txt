@@ -153,7 +153,7 @@
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
+| Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt

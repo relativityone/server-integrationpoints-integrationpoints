@@ -193,5 +193,5 @@
 | Library	| String
 | Library	| Collections
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
+| Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
