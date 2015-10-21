@@ -26,4 +26,4 @@ def Get_Path_to_Newest_Integration_Points():
         '''
 	list = []
 	folder = Get_Path_to_Newest_LDAP_Install_Folder()
-	return os.path.join(folder, "RelativityIntegrationPoints.Auto.rap")
+	return os.path.join(folder, "Application\RelativityIntegrationPoints.Auto.rap")
