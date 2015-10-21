@@ -142,5 +142,5 @@
 | Resource	| ${KEYWORD_DIR}/OrionCollections/OrionCore.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/RelativityKeywords.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/SmokeTest/SmokeTestKeywords.txt
-| Resource	| ${METHOD_KEYWORD_DIR}/BackendKeywords.txt
-| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/BackendKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt

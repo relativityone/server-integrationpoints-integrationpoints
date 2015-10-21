@@ -324,6 +324,6 @@
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/Views/ItemListKeywords.txt
-| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

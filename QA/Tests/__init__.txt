@@ -22,4 +22,4 @@
 
 *** Settings ***
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/Database/RelativityDatabaseKeywords.txt	| # Setup connection to the relativity database
-| Resource	| ${METHOD_KEYWORD_DIR}/BackendKeywords.txt	| # Get Application Version from Application Library
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/BackendKeywords.txt	| # Get Application Version from Application Library

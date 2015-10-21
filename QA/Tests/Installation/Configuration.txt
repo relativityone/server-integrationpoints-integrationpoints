@@ -121,10 +121,10 @@
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-| Library	| ${METHOD_KEYWORD_DIR}/MethodPythonKeywords.py
+| Library	| ${LEGAL_HOLD_KEYWORD_DIR}/MethodPythonKeywords.py
 | Library	| ${LDAP_KEYWORD_DIR}/LDAPPythonKeywords.py
-| Resource	| ${METHOD_KEYWORD_DIR}/BackendKeywords.txt
-| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/BackendKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Platform/DataGrid/Verificationkeyword.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Platform/RelativityApplications/ADSSetupAndTeardownKeywords.txt
 | Resource	| ${KEYWORD_DIR}/API/SDK/SDKKeywords.txt
