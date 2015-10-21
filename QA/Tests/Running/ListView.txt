@@ -107,7 +107,7 @@
 
 | Create Three Integration Points
 | | [Documentation]	| Create threee Integration Points.
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | @{Step1Fields}=		| Create List	| 
 | | ... | List View Sort Testing	| 
@@ -153,7 +153,7 @@
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Integration Point created in this suite then closes all open browsers.
 | | ...				| This is run as the Suite Teardown.
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Integration Point Sort Testing
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| Integration Point Sort Testing

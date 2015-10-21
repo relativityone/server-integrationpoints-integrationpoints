@@ -101,7 +101,7 @@
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
 | | Open and Log in to Method
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | @{Step1Fields}  | Create list | ${IntegrationName} | Append/Overlay | LDAP | Custodian | no
 | | @{Step2Fields}  | Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
@@ -120,7 +120,7 @@
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | Delete the Following Integration Point | ${IntegrationName}
 

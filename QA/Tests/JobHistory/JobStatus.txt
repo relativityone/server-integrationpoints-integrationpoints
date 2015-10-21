@@ -89,7 +89,7 @@
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
 | | Open and Log in to Method
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | @{Step1Fields}  | Create list | ${IntegrationName1} | Append/Overlay |
 | | ... | LDAP | Custodian | no
@@ -134,7 +134,7 @@
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | Delete the following Integration Point using API | ${IntegrationName1}
 | | Delete the following Integration Point using API | ${IntegrationName2}

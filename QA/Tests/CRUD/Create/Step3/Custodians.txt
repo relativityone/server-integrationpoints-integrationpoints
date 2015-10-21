@@ -99,7 +99,7 @@
 
 | Delete the Objects created in this Suite then Close All Browsers
 | | [Documentation]	| Delete the Integration Points created in this Suite.
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | Delete All Integration Points with the following Name using API	| Required Custodian Fields
 

@@ -108,7 +108,7 @@
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
 | | Open and Log in to Method
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 | | Enable Strict Mode for Layouts	| # Makes 'Verify the current layout has the following fields' ensure that only the given fields are present
 
 # --------------------------------------------------------------------------------------------------------
@@ -180,7 +180,7 @@
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Integration Points created in this suite then closes all open browsers.
 | | ...				| This is run as the Suite Teardown.
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | Delete the following Integration Point using API	| ${IntegrationPoint1}
 | | Delete the following Integration Point using API	| ${IntegrationPoint2}

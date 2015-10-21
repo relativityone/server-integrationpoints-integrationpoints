@@ -101,7 +101,7 @@
 | | ...				| Run as the Suite Setup.
 | | Setup connection to the relativity database
 | | Open and Log in to Method
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 #------------------------------------------------------------------------------------------------------------------------
 
@@ -138,7 +138,7 @@
 | Delete the Integration Points created in this Suite then Close All Browsers
 | | [Documentation]	| Delete the Integration Points that were created in the Suite and then closes any open browsers.
 | | ...				| Run as the Suite Teardown.
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | Delete the following Integration Point using API	| ${IntegrationPoint1}
 
