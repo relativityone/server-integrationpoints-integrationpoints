@@ -50,6 +50,7 @@
 	<property name="CCNetLabel" value="2.0.0.0" unless="${property::exists('CCNetLabel')}" />
 	<property name="Product.Version" value="${CCNetLabel}" unless="${property::exists('Product.Version')}" />	
 	<property name="Product.Version.Triplex" value="${Product.Version}" />	
+	<property name="ILMerge.DLL.Version" value="9.2.0.0" />	
 	<property name="ProductLink" value="http://www.kcura.com" readonly="true"/>
 	<tstamp property="current.year" pattern="yyyy" />
 
@@ -182,7 +183,7 @@
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.EventHandlers.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Email.dll"' />
-			<arg line='/ver:${Product.Version}' />
+			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
 		</exec>
 	</target>
@@ -202,7 +203,7 @@
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
 			<arg line='/lib:"${source.reference.NewtonsoftJson.directory}"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.LDAPProvider.dll"' />
-			<arg line='/ver:${Product.Version}' />
+			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
 		</exec>
 	</target>
@@ -229,7 +230,7 @@
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Data.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.dll"' />
-			<arg line='/ver:${Product.Version}' />
+			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
 		</exec>
 	</target>

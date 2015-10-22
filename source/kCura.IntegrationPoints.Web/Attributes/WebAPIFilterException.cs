@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Authentication;
-using System.Web;
 using System.Web.Http.ExceptionHandling;
 using System.Web.Http.Filters;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data.Logging;
 
 namespace kCura.IntegrationPoints.Web.Attributes
 {
@@ -52,10 +48,8 @@ namespace kCura.IntegrationPoints.Web.Attributes
 			}
 			catch (Exception e)
 			{
-				EventLog.WriteEntry("Integration Points", Utils.GetPrintableException(context.Exception) +
-					Environment.NewLine + Utils.GetPrintableException(e), EventLogEntryType.Error);
+				SystemEventLoggingService.WriteErrorEvent("Integration Points", "WebAPIFilterException", context.Exception);
 			}
-
 		}
 	}
 }

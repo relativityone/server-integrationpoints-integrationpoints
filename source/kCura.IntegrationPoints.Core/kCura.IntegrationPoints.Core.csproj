@@ -176,7 +176,6 @@
     <Compile Include="Services\TaskParameterHelper.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\Domain\SynchronizerWrapper.cs" />
-    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\SyncConfiguration\" />

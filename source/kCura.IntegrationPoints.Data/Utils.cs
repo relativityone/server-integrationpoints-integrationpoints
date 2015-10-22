@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace kCura.IntegrationPoints.Core
+namespace kCura.IntegrationPoints.Data
 {
 	/// <summary>
 	/// 
@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Core
 		{
 			return new Exception(GetPrintableException(ex));
 		}
-
 
 		public static string GetPrintableException(Exception ex)
 		{
@@ -35,10 +34,9 @@ namespace kCura.IntegrationPoints.Core
 
 			if (ex.InnerException != null)
 			{
-				strBuilder.AppendLine(ex.InnerException.ToString());
+				strBuilder.Append(GetPrintableException(ex.InnerException));
 			}
 			return strBuilder.ToString();
-
 		}
 	}
 }

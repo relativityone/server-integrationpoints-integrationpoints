@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			prop.SetValue(synchronizer, "Mock value");
 			return synchronizer;
 		}
-		
+
 		[Test]
 		public void GetRightCountOfFieldsWithSystemAndArtifactFeildsRemoved()
 		{
@@ -298,9 +298,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			//ARRANGE
 			FieldMap fieldMap = new FieldMap()
 			{
-				DestinationField = new FieldEntry(){FieldIdentifier = "4000001"},
-				FieldMapType = FieldMapTypeEnum.NativeFilePath, 
-				SourceField = new FieldEntry() {FieldIdentifier = "SourceFld1"}
+				DestinationField = new FieldEntry() { FieldIdentifier = "4000001" },
+				FieldMapType = FieldMapTypeEnum.NativeFilePath,
+				SourceField = new FieldEntry() { FieldIdentifier = "SourceFld1" }
 			};
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
@@ -333,8 +333,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			//ASSERT
 			Assert.IsTrue(result);
 		}
-	
-	
+
+
 	}
 
 	public class TestRdoSynchronizer : kCura.IntegrationPoints.Synchronizers.RDO.RdoSynchronizer

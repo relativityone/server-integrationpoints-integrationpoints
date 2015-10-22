@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
-using kCura.IntegrationPoints.Core.Contracts;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Core.Domain
 {
