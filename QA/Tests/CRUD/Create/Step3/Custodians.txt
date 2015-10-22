@@ -99,7 +99,7 @@
 
 | Delete the Objects created in this Suite then Close All Browsers
 | | [Documentation]	| Delete the Integration Points created in this Suite.
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | Delete All Integration Points with the following Name using API	| Required Custodian Fields
 
@@ -110,7 +110,7 @@
 *** Settings ***
 | Library	| Collections
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
-| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

@@ -250,7 +250,7 @@
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
 | | Open and Log in to Method
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 # --------------------------------------------------------------------------------------------------------
 
@@ -304,7 +304,7 @@
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Integration Point created in this suite then closes all open browsers.
 | | ...				| This is run as the Suite Teardown.
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Integration Point Sort Testing
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| Integration Point Sort Testing
@@ -324,6 +324,6 @@
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/Views/ItemListKeywords.txt
-| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

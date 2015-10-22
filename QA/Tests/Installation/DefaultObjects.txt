@@ -93,4 +93,4 @@
 | Resource	| ${KEYWORD_DIR}/Relativity/Platform/RelativityApplications/ADSSetupAndTeardownKeywords.txt	| # Delete Workspace
 | Resource	| ${KEYWORD_DIR}/Relativity/Platform/RelativityApplications/RelativityApplicationKeywords.txt	| # Import Relativity Application
 | Resource	| ${KEYWORD_DIR}/Relativity/SmokeTest/SmokeTestKeywords.txt	| # Create New Workspace
-| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt

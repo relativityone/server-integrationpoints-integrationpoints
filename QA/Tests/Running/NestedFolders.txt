@@ -78,7 +78,7 @@
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
 | | Open and Log in to Method
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${NestedCustodian}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${NestedCustodian}
@@ -108,7 +108,7 @@
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
-| | Setup connection to the Relativity Services API for Method	| ${WorkspaceName}
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | Delete the following Integration Point using API | ${IntegrationName}
 
@@ -122,10 +122,10 @@
 *** Settings ***
 | Library	| Collections
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${KEYWORD_DIR}/Method/Method_Keywords_API.txt
-| Resource	| ${METHOD_KEYWORD_DIR}/GridKeywords.txt
-| Resource	| ${METHOD_KEYWORD_DIR}/MiscMethodKeywords.txt
-| Resource	| ${METHOD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| ${METHOD_KEYWORD_DIR}/QuestionnaireKeywords.txt
+| Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/QuestionnaireKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
