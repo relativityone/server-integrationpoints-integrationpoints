@@ -34,9 +34,12 @@ task package -depends package_initalize {
 
     foreach($o in Get-ChildItem $source_directory) {
         if($o.PSIsContainer -and !$o.FullName.Contains('NUnit') -and ([System.IO.Directory]::Exists([System.IO.Path]::Combine($o.FullName, 'bin')))) {
-            Copy-Item -Path ([System.IO.Path]::Combine($o.FullName, 'bin', '*')) -Destination $package_bin_directory -Include '*.exe', '*.dll'
-            Copy-Item -Path ([System.IO.Path]::Combine($o.FullName, 'bin', '*')) -Destination $package_pdb_directory -Include '*.pdb'
+            Copy-Item -Path ([System.IO.Path]::Combine($o.FullName, 'bin', '*')) -Destination $package_bin_directory -Include '*.exe', '*.dll', '*.msi'
         }    
+    }
+
+    if ([System.IO.Directory]::Exists([System.IO.Path]::Combine($source_directory, 'PDBs'))) {
+        Copy-Item -Path ([System.IO.Path]::Combine($source_directory, 'PDBs')) -Destination $package_pdb_directory -Include '*.pdb' -Recurse
     }
     
 }
@@ -44,7 +47,7 @@ task package -depends package_initalize {
 task sign -precondition { ($build_type -ne 'DEV') -and ($server_type -ne 'local') } {
     foreach($o in Get-ChildItem -Path $package_directory -Recurse  -Include '*.exe', '*.dll', '*.msi') {
         exec {
-            & $signscript @($o.FullName, $signtool_exe)
+            & $signscript @($o.FullName)
         }
     }
 }

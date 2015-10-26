@@ -38,12 +38,14 @@ function SignDLL($dll) {
     }
 }
 
-ForEach($dll in $args) {
-    if([System.IO.File]::Exists($dll)){
-		SignDLL $dll
-    }
-    else{
-        Write-Host "Cannot sign file" $dll "because it doesn't exist!"
-        exit 1
-    }
+ForEach($arg in $args) {
+	ForEach($dll in $arg.Split(';')) {
+		if([System.IO.File]::Exists($dll)){
+			SignDLL $dll
+		}
+		else{
+			Write-Host "Cannot sign file" $dll "because it doesn't exist!"
+			exit 1
+		}
+	}    
 }
