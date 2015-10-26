@@ -39,7 +39,7 @@ task package -depends package_initalize {
     }
 
     if ([System.IO.Directory]::Exists($pdb_directory)) {
-        Copy-Item -Path ($pdb_directory) -Destination $package_pdb_directory -Include '*.pdb' -Recurse
+        Copy-Item -Path ([System.IO.Path]::Combine($pdb_directory, '*')) -Destination $package_pdb_directory -Include '**' -Recurse
     }
     
 }
