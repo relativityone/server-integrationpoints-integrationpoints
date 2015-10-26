@@ -11,6 +11,7 @@ properties {
     $robot_directory = [System.IO.Path]::Combine($root, 'Robot')
     $testlog_directory = [System.IO.Path]::Combine($root, 'TestLogs')
     $buildlogs_directory = [System.IO.Path]::Combine($root, 'BuildLogs')
+    $pdb_directory = [System.IO.Path]::Combine($root, 'BuildLogs')
 
     #build variables
     $version = '1.0.0.0'
