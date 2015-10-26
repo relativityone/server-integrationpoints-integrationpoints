@@ -65,3 +65,4 @@ dlls.txt
 version.txt
 DevelopmentScripts/NUnit*
 BuildLogs
+PDBs
