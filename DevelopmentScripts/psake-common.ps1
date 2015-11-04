@@ -19,6 +19,7 @@ properties {
     $build_type = 'DEV'
     $branch = hg branch
     $build_config = "Debug"
+    $Injections = 'DisableInjections'
 
     #assembly info variables
     $company = 'kCura LLC'
