@@ -11,5 +11,6 @@ Namespace GeneratorHelper
 		Public Property MaxLength As String
 		Public Property Codes As List(Of CodeDTO) = New List(Of CodeDTO)
 		Public Property AssociativeArtifactTypeId As Integer
+		Public Property IsReflected As Boolean
 	End Class
 End Namespace

@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The IAPI has failed to login. Please confirm the following: The configuration WebAPI value is correct for Integration Points; Windows authentication is setup on the WebAPI; the Relativity Service Account has correct authentication data; the WebAPI version is correct..
+        ///   Looks up a localized string similar to The Import API has failed to login. Please confirm that the WebAPI value is correctly set in Instance Settings..
         /// </summary>
         internal static string Login_Failed {
             get {

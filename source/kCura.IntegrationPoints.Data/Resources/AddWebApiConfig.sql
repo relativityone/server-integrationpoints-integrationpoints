@@ -6,17 +6,16 @@ BEGIN
 		'WebAPIPath' as [Name],
 		value as [Value],
 		'' as [MachineName],
-		'The URL for the Windows Authenticated Relativity Web API endpoint used by integration points.' as [Description]
-	 FROM
-	 (SELECT CASE WHEN [Section] = 'kCura.EDDS.DBMT' THEN 2
-		else 1 end as prime, 
-		coalesce(value,'')as value
-	from [eddsdbo].[Configuration]
+		'Relativity WebAPI URL for Relativity Integration Points' as [Description]
+	FROM	[eddsdbo].[Configuration]
 	WHERE 
-		([Section] = 'kCura.EDDS.DBMT' AND [Name] = 'WebAPIPath')
-		OR
-		([Section] = 'Relativity.Core'	AND	[Name] = 'ProcessingWebAPIPath' )
-	) t1
-	where  LTRIM(RTRIM(value)) <>''
-	ORDER BY t1.prime
+				[Section] = 'kCura.EDDS.DBMT' 
+		AND 
+				[Name] = 'WebAPIPath'
+END
+ELSE
+BEGIN
+	UPDATE	[eddsdbo].[Configuration] 
+	SET			[Description] = 'Relativity WebAPI URL for Relativity Integration Points'
+	WHERE		[Section] = 'kCura.IntegrationPoints' AND [Name] = 'WebAPIPath'
 END

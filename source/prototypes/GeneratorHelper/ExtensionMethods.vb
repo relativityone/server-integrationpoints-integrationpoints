@@ -9,23 +9,25 @@ Namespace GeneratorHelper
 			Dim result = New StringBuilder()
 			Dim precedingWhiteSpace = False
 			Dim first = True
-			For Each character In value.Trim().ToCharArray()
-				If Char.IsWhiteSpace(character) Then
-					precedingWhiteSpace = True
-				ElseIf Char.IsLetter(character) OrElse (Not first AndAlso Char.IsDigit(character)) Then
+			If Not String.IsNullOrWhiteSpace(value) Then
+				For Each character In value.Trim().ToCharArray()
+					If Char.IsWhiteSpace(character) Then
+						precedingWhiteSpace = True
+					ElseIf Char.IsLetter(character) OrElse (Not first AndAlso Char.IsDigit(character)) Then
 
-					If (result.Length = 0 AndAlso Not startUpperCase) Then
-						result.Append(Char.ToLower(character))
-					ElseIf (precedingWhiteSpace OrElse result.Length = 0) Then
-						result.Append(Char.ToUpper(character))
-					Else
-						result.Append(character)
+						If (result.Length = 0 AndAlso Not startUpperCase) Then
+							result.Append(Char.ToLower(character))
+						ElseIf (precedingWhiteSpace OrElse result.Length = 0) Then
+							result.Append(Char.ToUpper(character))
+						Else
+							result.Append(character)
+						End If
+						precedingWhiteSpace = False
+
 					End If
-					precedingWhiteSpace = False
-
-				End If
-				first = False
-			Next
+					first = False
+				Next
+			End If
 			Return result.ToString()
 		End Function
 

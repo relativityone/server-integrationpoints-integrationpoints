@@ -26,11 +26,11 @@ Namespace GeneratorHelper
 			For Each obj In _objectTypes
 
 				Dim nameField = From f In obj.SystemFields Where f.FieldCategoryId = 2
-				If (nameField.Count() > 0) Then
-					obj.UserFields.Add(nameField.Single())
-					obj.SystemFields.Remove(nameField.Single())
+				If (nameField.Any()) Then
+					obj.NameField = nameField.First()
+					obj.UserFields.Add(obj.NameField)
+					obj.SystemFields.Remove(obj.NameField)
 				End If
-				obj.NameField = (From f In obj.UserFields Where f.FieldCategoryId = 2).Single
 			Next
 		End Sub
 
@@ -131,6 +131,7 @@ Namespace GeneratorHelper
 			If (fieldNode.SelectSingleNode("AssociativeArtifactTypeId").InnerText.Length > 0) Then
 				field.AssociativeArtifactTypeId = Integer.Parse(fieldNode.SelectSingleNode("AssociativeArtifactTypeId").InnerText)
 			End If
+			field.IsReflected = (field.FieldCategoryId = 3 OrElse field.FieldCategoryId = 14)
 			field.MaxLength = fieldNode.SelectSingleNode("MaxLength").InnerText
 			For Each codeNode In fieldNode.SelectNodes("Codes/Code")
 				field.Codes.Add(ParseCode(codeNode))
