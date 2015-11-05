@@ -586,7 +586,7 @@ if($build.status -eq 'SUCCESS') {
         $body += '<tr>
 				    <td>Package</td>
 				    <td>:</td>
-				    <td><a href="file:\\BLD-PKGS.kcura.corp\Packages\' + $build.product + '\' + $build.branch + '\' + $build.buildversion + '">\\BLD-PKGS.kcura.corp\Packages\' + $build.product + '\' + $build.branch + '\' + $build.version + '</a></td>
+				    <td><a href="file:\\BLD-PKGS.kcura.corp\Packages\' + $build.product + '\' + $build.branch + '\' + $build.version + '">\\BLD-PKGS.kcura.corp\Packages\' + $build.product + '\' + $build.branch + '\' + $build.version + '</a></td>
 			    </tr>'
     }
     elseif($build.config -eq 'CodeCoverage') {
