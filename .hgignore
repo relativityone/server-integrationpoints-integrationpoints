@@ -111,3 +111,4 @@ kCura.IntegrationPoints.Documentation\Help\*
 source\Dependencies\kCura.RAPBuilder\*
 source\DevelopmentScripts\kCura.RAPBuilder.exe
 *.pubxml.user
+PDB
