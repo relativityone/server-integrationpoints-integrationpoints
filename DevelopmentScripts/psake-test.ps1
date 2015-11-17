@@ -22,7 +22,7 @@ task get_testrunner {
 
 task get_nunit {
     exec {
-        & $nuget_exe @('install', 'NUnit.Runners', '-ExcludeVersion')
+        & $nuget_exe @('install', 'NUnit.Runners', '-Version', '2.6.4', '-ExcludeVersion')
     } 
 }
 
