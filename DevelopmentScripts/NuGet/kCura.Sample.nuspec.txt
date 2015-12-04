@@ -3,8 +3,8 @@
   <metadata>
     <id>kCura.Sample</id>
     <version>1.3.3.7</version>
-    <authors>kCura Corporation</authors>
-    <owners>kCura Corporation</owners>
+    <authors>kCura LLC</authors>
+    <owners>kCura LLC</owners>
     <licenseUrl>https://www.kcura.com/terms-of-use/</licenseUrl>
     <projectUrl>https://platform.kcura.com/index.html</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
