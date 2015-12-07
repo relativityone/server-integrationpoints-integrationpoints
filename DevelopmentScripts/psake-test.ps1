@@ -22,7 +22,7 @@ task get_testrunner {
 
 task get_nunit {
     exec {
-        & $nuget_exe @('install', 'NUnit.Runners', '-Version', '2.6.4', '-ExcludeVersion')
+        & $nuget_exe @('install', 'NUnit.Console', '-Version', '3.0.1', '-ExcludeVersion')
     } 
 }
 
@@ -31,10 +31,10 @@ task test -depends get_testrunner, get_nunit, test_initalize {
         & $testrunner_exe @(('/source:' + $root), 
                             ('/tests:' + $inputfile), 
                             ('/out:' + $testlog_directory), 
-                            ('/nunitx64:' + $NUnit), 
-                            ('/nunitx86:' + $NUnit_x86))
+                            ('/nunit3:' + $NUnit3))
     }
 }
+
 
 
 
