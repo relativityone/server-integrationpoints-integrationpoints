@@ -75,7 +75,7 @@ task nuget_pack {
         Write-Host "Packing" $o.FullName "..."
 
         exec {
-            & $nuget_exe @('pack', $o.FullName, '-OutputDirectory', $nuspec_directory)
+            & $nuget_exe @('pack', $o.FullName, '-OutputDirectory', $nuspec_directory) 2>&1	
         }
      }    
 }

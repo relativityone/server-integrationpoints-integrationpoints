@@ -11,7 +11,7 @@ task nuget_publish -precondition { ($build_type -eq 'GOLD') -and ($branch -eq 'd
         Write-Host "publishing" $o.FullName "..."
 
         exec {
-            & $nuget_exe @('push', $o.FullName, '-Source', $nuget_server)
+            & $nuget_exe @('push', $o.FullName, '-Source', $nuget_server) 2>&1
         }
      }    
 }
