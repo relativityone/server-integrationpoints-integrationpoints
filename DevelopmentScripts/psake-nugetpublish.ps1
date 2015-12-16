@@ -46,7 +46,7 @@ task nuget_publish -precondition { ($build_type -eq 'GOLD') -and ($branch -eq 'd
             $inOrder = $true
 
             foreach($dep in $ref.Value) {
-                if (!$order.Contains($dep)) {
+                if ($dictRef.ContainsKey($dep)) {
                     $inOrder = $false
                     break
                 }
