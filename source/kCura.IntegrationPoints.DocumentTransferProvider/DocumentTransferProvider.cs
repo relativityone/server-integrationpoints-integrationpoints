@@ -6,7 +6,7 @@
 	using Contracts.Provider;
 	using Contracts.Models;
 
-	[Contracts.DataSourceProvider(Constants.ProviderGuid)]
+	[Contracts.DataSourceProvider(Constants.PROVIDER_GUID)]
 	public class DocumentTransferProvider : IDataSourceProvider
 	{
 		public IEnumerable<FieldEntry> GetFields(string options)

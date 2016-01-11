@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Web", "kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj", "{05724E56-C325-4CA2-9122-50A41411B691}"
 	ProjectSection(ProjectDependencies) = postProject
 		{599D771D-2AE7-4321-9BAC-BE06F827CE0A} = {599D771D-2AE7-4321-9BAC-BE06F827CE0A}
@@ -69,6 +71,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Core.Contracts", "kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj", "{30503682-E18D-49DF-A308-FE7996C4108E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Email", "kCura.IntegrationPoints.Email\kCura.IntegrationPoints.Email.csproj", "{07EC646A-D785-421E-B0F5-70D256A1E1CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.DocumentTransferProvider", "kCura.IntegrationPoints.DocumentTransferProvider\kCura.IntegrationPoints.DocumentTransferProvider.csproj", "{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -332,6 +336,18 @@ Global
 		{07EC646A-D785-421E-B0F5-70D256A1E1CA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{07EC646A-D785-421E-B0F5-70D256A1E1CA}.Release|x64.ActiveCfg = Release|x64
 		{07EC646A-D785-421E-B0F5-70D256A1E1CA}.Release|x64.Build.0 = Release|x64
+		{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}.Debug|x64.Build.0 = Debug|Any CPU
+		{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}.Release|x64.ActiveCfg = Release|Any CPU
+		{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

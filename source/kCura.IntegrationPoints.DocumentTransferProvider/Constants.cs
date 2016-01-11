@@ -4,6 +4,7 @@
 
 	public class Constants
 	{
-		public const String ProviderGuid = "423B4D43-EAE9-4E14-B767-17D629DE4BB2";
+		public const String PROVIDER_GUID = "423b4d43-eae9-4e14-b767-17d629de4bb2";
+		public const String PROVIDER_NAME = "Document Transfer";
 	}
 }

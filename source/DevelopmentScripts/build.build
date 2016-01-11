@@ -71,7 +71,7 @@
 	<include buildfile="Build Application.include"/>
 
 	<!-- Build all LDAPSync projects- presence of a Build.log file indicates failure -->
-	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, merge_ldap, merge_source_provider_installer, build_ip_sdk">				
+	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, merge_ldap, merge_documentsTransfer, merge_source_provider_installer, build_ip_sdk">				
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
@@ -207,7 +207,7 @@
 			<arg line='/closed' />
 		</exec>
 	</target>
-	
+
 	<target name="merge_source_provider_installer" description="Merge all related binaries into a single library">
 		<exec program="${source.packages.directory}\ilmerge.2.13.0307\ILMerge.exe" >
 			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
@@ -230,6 +230,26 @@
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Data.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.Contracts.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Core.dll"' />
+			<arg line='/ver:${ILMerge.DLL.Version}' />
+			<arg line='/closed' />
+		</exec>
+	</target>
+	
+		<target name="merge_documentsTransfer" description="Merge all related binaries into a single library">
+		<exec program="${source.packages.directory}\ilmerge.2.13.0307\ILMerge.exe" >
+			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/out:"${target.code.directory}\kCura.DocumentTransferProvider.dll"' />
+			<arg line='/internalize:excludeDocsTransfer.txt' />
+			<arg line='/log' />
+			<arg line='/lib:"${source.reference.kCura.directory}"' />
+			<arg line='/lib:"${source.reference.MVCContrib.directory}"' />
+			<arg line='/lib:"${source.reference.CastleCore.directory}"' />
+			<arg line='/lib:"${source.reference.CastleWindsor.directory}"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
+			<arg line='/lib:"${source.reference.NewtonsoftJson.directory}"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
 		</exec>

@@ -78,6 +78,7 @@
 			<Assembly>bin\Release\kCura.IntegrationPoints.Contracts.dll</Assembly>
 			<Assembly>bin\Release\kCura.IntegrationPoints.dll</Assembly>
 			<Assembly>bin\Release\kCura.LDAPProvider.dll</Assembly>
+			<Assembly>bin\Release\kCura.DocumentTransferProvider.dll</Assembly>
 		</Assemblies>
         <ResourceFiles />
         <CustomPages>
