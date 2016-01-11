@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}</ProjectGuid>
+    <ProjectGuid>{22991306-A168-4D22-80A7-AAA99C9E9FD6}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>kCura.IntegrationPoints.DocumentTransferProvider</RootNamespace>
-    <AssemblyName>kCura.IntegrationPoints.DocumentTransferProvider</AssemblyName>
+    <RootNamespace>kCura.IntegrationPoints.DocumentTransferProvider.Shared</RootNamespace>
+    <AssemblyName>kCura.IntegrationPoints.DocumentTransferProvider.Shared</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -31,9 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.EventHandler">
-      <HintPath>..\..\example\ProviderIncludes\Provider\kCura.EventHandler.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,32 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DocumentTransferProvider.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
-      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
-      <Name>kCura.IntegrationPoints.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider.Shared\kCura.IntegrationPoints.DocumentTransferProvider.Shared.csproj">
-      <Project>{22991306-a168-4d22-80a7-aaa99c9e9fd6}</Project>
-      <Name>kCura.IntegrationPoints.DocumentTransferProvider.Shared</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
-      <Project>{fcaf52cd-0f8f-4d71-ac61-b7591a181a08}</Project>
-      <Name>kCura.IntegrationPoints.SourceProviderInstaller</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

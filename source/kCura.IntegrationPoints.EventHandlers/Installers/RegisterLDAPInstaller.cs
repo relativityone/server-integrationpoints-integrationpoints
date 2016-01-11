@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.EventHandler;
 using System.Runtime.InteropServices;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.SourceProviderInstaller;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers

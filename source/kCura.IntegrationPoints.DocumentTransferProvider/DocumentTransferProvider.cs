@@ -5,6 +5,7 @@
 	using System.Data;
 	using Contracts.Provider;
 	using Contracts.Models;
+	using Shared;
 
 	[Contracts.DataSourceProvider(Constants.PROVIDER_GUID)]
 	public class DocumentTransferProvider : IDataSourceProvider
