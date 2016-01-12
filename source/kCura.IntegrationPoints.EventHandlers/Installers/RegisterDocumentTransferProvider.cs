@@ -3,8 +3,8 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Runtime.InteropServices;
-	using kCura.IntegrationPoints.SourceProviderInstaller;
 	using kCura.IntegrationPoints.DocumentTransferProvider.Shared;
+	using kCura.IntegrationPoints.SourceProviderInstaller;
 
 	[kCura.EventHandler.CustomAttributes.Description("Add document transfer provider into relativity integration point")]
 	[kCura.EventHandler.CustomAttributes.RunOnce(false)]
@@ -20,8 +20,8 @@
 					new SourceProvider()
 					{
 						Name = Constants.PROVIDER_NAME,
-						Url = String.Format("/%applicationpath%/CustomPages/{0}/IntegrationPoints/{1}/", Constants.PROVIDER_NAME, Constants.PROVIDER_CONFIGURATION),
-						ViewDataUrl = String.Format("/%applicationpath%/CustomPages/{0}/%appId%/api/{1}/view", Constants.PROVIDER_NAME, Constants.PROVIDER_VIEW)
+						Url = String.Format("/%applicationpath%/CustomPages/{0}/{1}/",  Constants.CUSTOMPAGE_GUID, Constants.PROVIDER_CONFIGURATION),
+						ViewDataUrl = String.Format("/%applicationpath%/CustomPages/{0}/%appId%/api/{1}/view", Constants.CUSTOMPAGE_GUID, Constants.PROVIDER_VIEW)
 					}
 				}
 			};
