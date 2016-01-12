@@ -69,6 +69,11 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return View("LDAPConfiguration", "_StepLayout");
 		}
 
+		public ActionResult DocumentTransferConfiguration()
+		{
+			return View("DocumentTransferConfiguration", "_StepLayout");
+		}
+
 
 		public ActionResult Details(int id)
 		{
