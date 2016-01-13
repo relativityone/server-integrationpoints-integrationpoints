@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DocumentArtifactIdDataReader.cs" />
+    <Compile Include="DocumentTranfserDataReader.cs" />
     <Compile Include="DocumentTransferProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
