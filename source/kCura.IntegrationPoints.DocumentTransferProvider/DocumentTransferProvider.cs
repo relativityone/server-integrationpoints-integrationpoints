@@ -17,12 +17,16 @@
 
 		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
 		{
+			// identifier will be the Control_Number
 			throw new System.NotImplementedException();
 		}
 
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
 		{
-			throw new NotImplementedException();
+			// TODO: get the RSAPI client and get field names
+			// entry ids are for batching
+			// The fields are the fields that we provided
+			return new DocumentArtifactIdDataReader(null, Convert.ToInt32(options));
 		}
 	}
 }
