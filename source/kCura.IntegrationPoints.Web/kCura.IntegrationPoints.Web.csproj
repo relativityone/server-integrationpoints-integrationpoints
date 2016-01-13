@@ -189,10 +189,12 @@
     <Compile Include="Controllers\API\ImportNowController.cs" />
     <Compile Include="Controllers\API\LdapController.cs" />
     <Compile Include="Controllers\API\RdoMetaController.cs" />
+    <Compile Include="Controllers\API\SavedSearchFinderController.cs" />
     <Compile Include="Controllers\API\SourceFieldsController.cs" />
     <Compile Include="Controllers\API\SourceTypeController.cs" />
     <Compile Include="Controllers\API\RdoFilterController.cs" />
     <Compile Include="Controllers\API\WorkspaceFieldController.cs" />
+    <Compile Include="Controllers\API\WorkspaceFinderController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIController.cs" />
     <Compile Include="Controllers\API\CustodianController.cs" />
@@ -207,8 +209,10 @@
     <Compile Include="Models\EditPoint.cs" />
     <Compile Include="Models\IpDetailModel.cs" />
     <Compile Include="ISessionService.cs" />
+    <Compile Include="Models\SavedSearchModel.cs" />
     <Compile Include="Models\ScheduleModel.cs" />
     <Compile Include="Models\SyncronizerSettings.cs" />
+    <Compile Include="Models\WorkspaceModel.cs" />
     <Compile Include="RelativityUrlHelper.cs" />
     <Compile Include="RequestExtensions.cs" />
     <Compile Include="ServiceContextHelperForWeb.cs" />
@@ -301,7 +305,7 @@
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\core\messaging.js" />
-    <Content Include="Scripts\documentTransfer-provider.js" />
+    <Content Include="Scripts\relativity\Relativity-provider.js" />
     <Content Include="Scripts\dragon\dragon-dialogs.js" />
     <Content Include="Scripts\EventHandlers\integration-points-view-destination.js" />
     <Content Include="Scripts\frame-messaging.js" />
@@ -498,7 +502,7 @@
       <DependentUpon>postal.js</DependentUpon>
     </Content>
     <Content Include="Views\IntegrationPoints\NotEnoughPermission.cshtml" />
-    <Content Include="Views\IntegrationPoints\DocumentTransferConfiguration.cshtml" />
+    <Content Include="Views\IntegrationPoints\RelativityProviderConfiguration.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Data.Queries
 		public WorkspaceQuery(IRSAPIClient client)
 		{
 			_client = client;
-
 		}
 
 		public Relativity.Client.DTOs.Workspace GetWorkspace(int workspaceID)

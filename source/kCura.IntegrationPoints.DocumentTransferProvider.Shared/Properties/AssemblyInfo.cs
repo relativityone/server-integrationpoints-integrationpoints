@@ -17,6 +17,7 @@ using System.Runtime.InteropServices;
 
 [assembly:InternalsVisibleTo("kCura.IntegrationPoints.DocumentTransferProvider")]
 [assembly:InternalsVisibleTo("kCura.IntegrationPoints.EventHandlers")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.EventHandlers.Tests")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
