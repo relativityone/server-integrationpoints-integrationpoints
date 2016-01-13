@@ -20,7 +20,7 @@
 					new SourceProvider()
 					{
 						Name = Constants.PROVIDER_NAME,
-						Url = String.Format("/%applicationpath%/CustomPages/{0}/{1}/",  Constants.CUSTOMPAGE_GUID, Constants.PROVIDER_CONFIGURATION),
+						Url = String.Format("/%applicationpath%/CustomPages/{0}/IntegrationPoints/{1}/",  Constants.CUSTOMPAGE_GUID, Constants.PROVIDER_CONFIGURATION),
 						ViewDataUrl = String.Format("/%applicationpath%/CustomPages/{0}/%appId%/api/{1}/view", Constants.CUSTOMPAGE_GUID, Constants.PROVIDER_VIEW)
 					}
 				}

@@ -86,6 +86,8 @@
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
+    <Compile Include="Queries\GetSavedSearchesQuery.cs" />
+    <Compile Include="Queries\GetWorkspacesQuery.cs" />
     <Compile Include="RelativityVersion.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="EddsDbContext.cs" />

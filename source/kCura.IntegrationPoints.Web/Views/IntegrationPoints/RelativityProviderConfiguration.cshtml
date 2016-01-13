@@ -4,25 +4,23 @@
 }
 
 <link href="~/Content/site.css" rel="stylesheet" />
-<div class="card">
+<div class="card" id="relativityProviderConfiguration">
 
-    <label class="section label">My First Provider</label>
+    <label class="section label">Relativity Provider</label>
     <div class="field-row">
         <div class="field-label required">
             Workspace :
         </div>
-        <div class="field-value ">
-            <select id="workspace">
-                <option value="90">Current Workspace</option>
-            </select>
+        <div class="field-value">
+            <select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: selectedWorkspace, optionsCaption: 'Select...', select2: {}"></select>
         </div>
     </div>
     <div class="field-row">
         <div class="field-label required">
-            Saved Search : 
+            Saved Search :
         </div>
         <div class="field-value ">
-             <input type="text" name="field" id="savedSearch" class="input-box" placeholder="Please enter a saved search name" />
+            <select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', value: selectedSavedSearch,  optionsCaption: 'Select...', select2: {}"></select>
         </div>
     </div>
 </div>
@@ -37,5 +35,5 @@
     <script src="~/Scripts/jquery-postMessage.js"></script>
     <script src="~/Scripts/frame-messaging.js"></script>
     <script src="~/Scripts/ldap/ldap-edit.js"></script>
-    <script src="~/Scripts/documentTransfer-provider.js"></script>
+    <script src="~/Scripts/relativity/Relativity-provider.js"></script>
 }

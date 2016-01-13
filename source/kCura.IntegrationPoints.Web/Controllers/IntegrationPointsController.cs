@@ -69,9 +69,9 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return View("LDAPConfiguration", "_StepLayout");
 		}
 
-		public ActionResult DocumentTransferConfiguration()
+		public ActionResult RelativityProviderConfiguration()
 		{
-			return View("DocumentTransferConfiguration", "_StepLayout");
+			return View("RelativityProviderConfiguration", "_StepLayout");
 		}
 
 
