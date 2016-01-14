@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO.Pipes;
+using System.Linq;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
+using kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using kCura.Relativity.Client.Repositories;
 using NSubstitute;
-using NSubstitute.Core;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
@@ -19,11 +18,18 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		private IRelativityClientAdaptor _relativityClientAdaptor;
 		private IDataReader _instance;
 		private const int SAVED_SEARCH_ID = 123;
+		private Query<Document> _expectedQuery;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_relativityClientAdaptor = NSubstitute.Substitute.For<IRelativityClientAdaptor>();
+
+			_expectedQuery = new Query<Document>
+			{
+				Condition = new SavedSearchCondition(SAVED_SEARCH_ID),
+				Fields = FieldValue.NoFields // we only want the ArtifactId
+			};
 
 			_instance = new DocumentArtifactIdDataReader(_relativityClientAdaptor, SAVED_SEARCH_ID);
 		}
@@ -42,7 +48,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
 
 			// Act
 			bool result = _instance.Read();
@@ -62,7 +70,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Results = new List<Result<Document>>()
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet); ;
 
 			// Act
 			bool result = _instance.Read();
@@ -82,7 +92,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Results = new List<Result<Document>>()
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
 
 			// Act
 			bool result = _instance.Read();
@@ -106,7 +118,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -134,7 +148,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -165,7 +181,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
 
 			// Act
 			bool readResult1 = _instance.Read();
@@ -197,7 +215,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -222,7 +242,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -247,7 +269,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
 
 			// Act
 			bool readResult = _instance.Read();

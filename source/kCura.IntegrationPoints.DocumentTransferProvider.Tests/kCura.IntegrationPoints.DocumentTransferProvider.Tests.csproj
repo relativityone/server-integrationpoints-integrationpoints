@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\ArgumentMatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\DocumentArtifactIdDataReaderTests.cs" />
     <Compile Include="Unit\DocumentTransferDataReaderTests.cs" />
