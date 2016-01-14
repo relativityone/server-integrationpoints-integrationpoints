@@ -1,32 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 
-namespace kCura.IntegrationPoints.DocumentTransferProvider
+namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
-	public class DocumentTranfserDataReader : IDataReader
+	public class DocumentArtifactIdDataReader : IDataReader
 	{
-		private readonly IRSAPIClient _rsapiClient;
-		private readonly IEnumerable<int> _documentArtifactIds;
-		private readonly DataTable _schemaDataTable;
-		private readonly IEnumerable<FieldEntry> _fieldEntries;
-		private IEnumerator<Result<Document>> _documentsEnumerator;
+		private readonly IRelativityClientAdaptor _relativityClient;
+		private readonly int _savedSearchArtifactId;
+		private IEnumerator<Result<Document>> _savedSearchResultDocumentsEnumerator;
 		private Document _currentDocument;
 		private bool _readerOpen;
+		private const string ARTIFACT_ID = "ArtifactId";
 
-		public DocumentTranfserDataReader(IRSAPIClient proxy, IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries)
+		public DocumentArtifactIdDataReader(IRelativityClientAdaptor relativityClientAdaptor, int savedSearchArtifactId)
 		{
-			_rsapiClient = proxy;
-			_documentArtifactIds = documentArtifactIds;
-			_fieldEntries = fieldEntries;
+			_relativityClient = relativityClientAdaptor;
+			_savedSearchArtifactId = savedSearchArtifactId;
 
 			_readerOpen = true;
-			_schemaDataTable = new DataTable();
-			_schemaDataTable.Columns.AddRange(_fieldEntries.Select(x => new DataColumn(x.FieldIdentifier)).ToArray());
 		}
 
 		public void Close()
@@ -42,12 +37,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		public DataTable GetSchemaTable()
 		{
-			return _schemaDataTable;
+			throw new NotImplementedException();
 		}
 
 		public bool IsClosed
 		{
-			get { return _readerOpen; }
+			get { return !_readerOpen; }
 		}
 
 		public bool NextResult()
@@ -61,33 +56,25 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			if (!_readerOpen) return false;
 
 			// Check if search results have been populated
-			if (_documentsEnumerator == null)
+			if (_savedSearchResultDocumentsEnumerator == null)
 			{
-				// Request document objects
-				var artifactIdSetCondition = new WholeNumberCondition
-				{
-					Operator = NumericConditionEnum.In,
-					Value = _documentArtifactIds.ToList()
-				};
-
-				List<FieldValue> requestedFields = _fieldEntries.Select(x => new FieldValue(x.FieldIdentifier)).ToList();
-
+				// Request the saved search documents
 				Query<Document> query = new Query<Document>
 				{
-					Condition = artifactIdSetCondition,
-					Fields = requestedFields
+					Condition = new SavedSearchCondition(_savedSearchArtifactId),
+					Fields = FieldValue.NoFields // we only want the ArtifactId
 				};
 
 				try
 				{
-					ResultSet<Document> docResults = _rsapiClient.Repositories.Document.Query(query);
+					ResultSet<Document> docResults = _relativityClient.ExecuteDocumentQuery(query);
 					if (!docResults.Success)
 					{
 						_readerOpen = false; // TODO: handle errors?
 					}
 					else
 					{
-						_documentsEnumerator = docResults.Results.GetEnumerator();
+						_savedSearchResultDocumentsEnumerator = docResults.Results.GetEnumerator();
 					}
 				}
 				catch (Exception ex)
@@ -96,26 +83,20 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 					_readerOpen = false;
 				}
 			}
+
+			// Get next result
+			if (_savedSearchResultDocumentsEnumerator != null && _savedSearchResultDocumentsEnumerator.MoveNext())
+			{
+				Result<Document> result = _savedSearchResultDocumentsEnumerator.Current;
+				_currentDocument = result != null ? result.Artifact : null;
+
+				_readerOpen = _currentDocument != null;
+			}
 			else
 			{
-				if (_documentsEnumerator.Current != null)
-				{
-					if (_currentDocument == _documentsEnumerator.Current.Artifact)
-					{
-						_documentsEnumerator.MoveNext();
-					}
-
-					Result<Document> result = _documentsEnumerator.Current;
-					_currentDocument = result != null ? result.Artifact : null;
-
-					_readerOpen = _currentDocument != null;
-				}
-				else
-				{
-					// No results returned, close the reader
-					_currentDocument = null;
-					_readerOpen = false;
-				}
+				// No results returned, close the reader
+				_currentDocument = null;
+				_readerOpen = false;
 			}
 
 			return _readerOpen;
@@ -130,7 +111,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public void Dispose()
 		{
 			_readerOpen = false;
-			_documentsEnumerator.Dispose();
+			_savedSearchResultDocumentsEnumerator.Dispose();
 		}
 
 		public int FieldCount
@@ -173,12 +154,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		public string GetDataTypeName(int i)
 		{
-			return _schemaDataTable.Columns[i].DataType.Name;
+			return ARTIFACT_ID;
 		}
 
 		public System.DateTime GetDateTime(int i)
 		{
-			return Convert.ToDateTime(GetValue(i));
+			// We do not need this at this point
+			throw new System.NotImplementedException();
 		}
 
 		public decimal GetDecimal(int i)
@@ -193,8 +175,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		public System.Type GetFieldType(int i)
 		{
-			// TODO: double check this, this doesn't seem right
-			return  _schemaDataTable.Columns[i].DataType;
+			return typeof (Int32);
 		}
 
 		public float GetFloat(int i)
@@ -204,12 +185,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		public System.Guid GetGuid(int i)
 		{
-			return Guid.Parse(GetString(i));
+			// We do not need this at this point
+			throw new System.NotImplementedException();
 		}
 
 		public short GetInt16(int i)
 		{
-			return Convert.ToInt16(GetValue(i));
+			// We do not need this at this point
+			throw new System.NotImplementedException();
 		}
 
 		public int GetInt32(int i)
@@ -219,17 +202,18 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		public long GetInt64(int i)
 		{
-			return Convert.ToInt64(GetValue(i));
+			// We do not need this at this point
+			throw new System.NotImplementedException();
 		}
 
 		public string GetName(int i)
 		{
-			return _schemaDataTable.Columns[i].ColumnName;
+			return ARTIFACT_ID;
 		}
 
 		public int GetOrdinal(string name)
 		{
-			return _schemaDataTable.Columns[name].Ordinal;
+			return 0;
 		}
 
 		public string GetString(int i)
@@ -239,12 +223,17 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		public object GetValue(int i)
 		{
-			return _currentDocument[GetName(i)];
+			if (i == 0)
+			{
+				return _currentDocument.ArtifactID;
+			}
+
+			return null;
 		}
 
 		public int GetValues(object[] values)
 		{
-			// TODO: check if we need this
+			// We do not need this at this point
 			throw new System.NotImplementedException();
 		}
 
@@ -257,7 +246,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		{
 			get
 			{
-				return GetValue(GetOrdinal(name));
+				if (name == ARTIFACT_ID)
+				{
+					return GetValue(GetOrdinal(name));
+				}
+
+				return null;
 			}
 		}
 

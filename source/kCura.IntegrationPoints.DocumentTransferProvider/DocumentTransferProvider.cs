@@ -1,4 +1,8 @@
-﻿namespace kCura.IntegrationPoints.DocumentTransferProvider
+﻿using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations;
+using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
+using kCura.Relativity.Client;
+
+namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
 	using System;
 	using System.Collections.Generic;
@@ -13,7 +17,7 @@
 	{
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
-			throw new System.NotImplementedException();
+			return new List<FieldEntry>();
 		}
 
 		/// <summary>
@@ -25,7 +29,7 @@
 		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
 		{
 			// TODO: get the RSAPI client
-			return new DocumentArtifactIdDataReader(null, Convert.ToInt32(options));
+			return new DocumentArtifactIdDataReader(new RelativityClientAdaptor(this.CreateClient(1)), Convert.ToInt32(options));
 		}
 
 		/// <summary>
@@ -41,7 +45,21 @@
 			// TODO: get the RSAPI client
 			// entry ids are for batching
 			// The fields are the fields that we provided
-			return new DocumentTranfserDataReader(null, entryIds.Select(x => Convert.ToInt32(x)), fields);
+			return new DocumentTranfserDataReader(this.CreateClient(1033244), entryIds.Select(x => Convert.ToInt32(x)), fields);
+		}
+
+		private IRSAPIClient CreateClient(int workspaceId)
+		{
+			// Create a new instance of RSAPIClient. The first parameter indicates the endpoint Uri, 
+			// which indicates the scheme to use. The second parameter indicates the
+			// authentication type. The RSAPIClient members page in the Services API class library
+			// documents other possible constructors. The constructor also ensures a logged in session.
+
+			string localHostFQDN = System.Net.Dns.GetHostEntry("localhost").HostName;
+			Uri endpointUri = new Uri(string.Format("http://{0}/relativity.services", localHostFQDN));
+			IRSAPIClient rsapiClient = new RSAPIClient(endpointUri, new IntegratedAuthCredentials());
+			rsapiClient.APIOptions.WorkspaceID = workspaceId;
+			return rsapiClient;
 		}
 	}
 }

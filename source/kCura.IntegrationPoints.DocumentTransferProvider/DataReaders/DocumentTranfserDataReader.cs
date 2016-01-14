@@ -1,26 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 
-namespace kCura.IntegrationPoints.DocumentTransferProvider
+namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
-	public class DocumentArtifactIdDataReader : IDataReader
+	public class DocumentTranfserDataReader : IDataReader
 	{
 		private readonly IRSAPIClient _rsapiClient;
-		private readonly int _savedSearchArtifactId;
-		private IEnumerator<Result<Document>> _savedSearchResultDocumentsEnumerator;
+		private readonly IEnumerable<int> _documentArtifactIds;
+		private readonly DataTable _schemaDataTable;
+		private readonly IEnumerable<FieldEntry> _fieldEntries;
+		private IEnumerator<Result<Document>> _documentsEnumerator;
 		private Document _currentDocument;
 		private bool _readerOpen;
-		private const string ARTIFACT_ID = "ArtifactId";
 
-		public DocumentArtifactIdDataReader(IRSAPIClient proxy, int savedSearchArtifactId)
+		public DocumentTranfserDataReader(IRSAPIClient proxy, IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries)
 		{
 			_rsapiClient = proxy;
-			_savedSearchArtifactId = savedSearchArtifactId;
+			_documentArtifactIds = documentArtifactIds;
+			_fieldEntries = fieldEntries;
 
 			_readerOpen = true;
+			_schemaDataTable = new DataTable();
+			_schemaDataTable.Columns.AddRange(_fieldEntries.Select(x => new DataColumn(x.FieldIdentifier)).ToArray());
 		}
 
 		public void Close()
@@ -36,7 +42,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		public DataTable GetSchemaTable()
 		{
-			throw new NotImplementedException();
+			return _schemaDataTable;
 		}
 
 		public bool IsClosed
@@ -55,13 +61,21 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			if (!_readerOpen) return false;
 
 			// Check if search results have been populated
-			if (_savedSearchResultDocumentsEnumerator == null)
+			if (_documentsEnumerator == null)
 			{
-				// Request the saved search documents
+				// Request document objects
+				var artifactIdSetCondition = new WholeNumberCondition
+				{
+					Operator = NumericConditionEnum.In,
+					Value = _documentArtifactIds.ToList()
+				};
+
+				List<FieldValue> requestedFields = _fieldEntries.Select(x => new FieldValue(x.FieldIdentifier)).ToList();
+
 				Query<Document> query = new Query<Document>
 				{
-					Condition = new SavedSearchCondition(_savedSearchArtifactId),
-					Fields = FieldValue.NoFields // we only want the ArtifactId
+					Condition = artifactIdSetCondition,
+					Fields = requestedFields
 				};
 
 				try
@@ -73,7 +87,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 					}
 					else
 					{
-						_savedSearchResultDocumentsEnumerator = docResults.Results.GetEnumerator();
+						_documentsEnumerator = docResults.Results.GetEnumerator();
 					}
 				}
 				catch (Exception ex)
@@ -84,14 +98,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			}
 			else
 			{
-				if (_savedSearchResultDocumentsEnumerator.Current != null)
+				if (_documentsEnumerator.Current != null)
 				{
-					if (_currentDocument == _savedSearchResultDocumentsEnumerator.Current.Artifact)
+					if (_currentDocument == _documentsEnumerator.Current.Artifact)
 					{
-						_savedSearchResultDocumentsEnumerator.MoveNext();
+						_documentsEnumerator.MoveNext();
 					}
 
-					Result<Document> result = _savedSearchResultDocumentsEnumerator.Current;
+					Result<Document> result = _documentsEnumerator.Current;
 					_currentDocument = result != null ? result.Artifact : null;
 
 					_readerOpen = _currentDocument != null;
@@ -116,7 +130,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public void Dispose()
 		{
 			_readerOpen = false;
-			_savedSearchResultDocumentsEnumerator.Dispose();
+			_documentsEnumerator.Dispose();
 		}
 
 		public int FieldCount
@@ -159,13 +173,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		public string GetDataTypeName(int i)
 		{
-			return ARTIFACT_ID;
+			return _schemaDataTable.Columns[i].DataType.Name;
 		}
 
 		public System.DateTime GetDateTime(int i)
 		{
-			// We do not need this at this point
-			throw new System.NotImplementedException();
+			return Convert.ToDateTime(GetValue(i));
 		}
 
 		public decimal GetDecimal(int i)
@@ -180,7 +193,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		public System.Type GetFieldType(int i)
 		{
-			return typeof (Int32);
+			// TODO: double check this, this doesn't seem right
+			return  _schemaDataTable.Columns[i].DataType;
 		}
 
 		public float GetFloat(int i)
@@ -190,14 +204,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		public System.Guid GetGuid(int i)
 		{
-			// We do not need this at this point
-			throw new System.NotImplementedException();
+			return Guid.Parse(GetString(i));
 		}
 
 		public short GetInt16(int i)
 		{
-			// We do not need this at this point
-			throw new System.NotImplementedException();
+			return Convert.ToInt16(GetValue(i));
 		}
 
 		public int GetInt32(int i)
@@ -207,18 +219,17 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		public long GetInt64(int i)
 		{
-			// We do not need this at this point
-			throw new System.NotImplementedException();
+			return Convert.ToInt64(GetValue(i));
 		}
 
 		public string GetName(int i)
 		{
-			return ARTIFACT_ID;
+			return _schemaDataTable.Columns[i].ColumnName;
 		}
 
 		public int GetOrdinal(string name)
 		{
-			return 0;
+			return _schemaDataTable.Columns[name].Ordinal;
 		}
 
 		public string GetString(int i)
@@ -228,17 +239,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		public object GetValue(int i)
 		{
-			if (i == 0)
-			{
-				return _currentDocument.ArtifactID;
-			}
-
-			return null;
+			return _currentDocument[GetName(i)];
 		}
 
 		public int GetValues(object[] values)
 		{
-			// We do not need this at this point
+			// TODO: check if we need this
 			throw new System.NotImplementedException();
 		}
 
@@ -251,12 +257,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		{
 			get
 			{
-				if (name == ARTIFACT_ID)
-				{
-					return GetValue(GetOrdinal(name));
-				}
-
-				return null;
+				return GetValue(GetOrdinal(name));
 			}
 		}
 
