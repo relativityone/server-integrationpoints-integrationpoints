@@ -5,6 +5,8 @@ using kCura.IntegrationPoints.Core.Domain;
 
 namespace kCura.IntegrationPoints.Contracts
 {
+	using System.Collections.Generic;
+
 	/// <summary>
 	/// Entry point into the App domain to create the Provider
 	/// Internal use only:
@@ -20,10 +22,30 @@ namespace kCura.IntegrationPoints.Contracts
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyDomainLoader.ResolveAssembly;
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			var startupType = typeof(IStartUp);
+			List<Type> test = new List<Type>();
+			try
+			{
+				foreach (var abc in assemblies)
+				{
+					var test2 = abc.GetTypes();
+					foreach (var def in test2)
+					{
+						if (startupType.IsAssignableFrom(def) && def != startupType)
+						{
+							test.Add(def);
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex);
+			}
 			var types = (from a in assemblies
 									 from t in a.GetTypes()
 									 where startupType.IsAssignableFrom(t) && t != startupType
 									 select t).ToList();
+
 			if (types.Any())
 			{
 				var type = types.FirstOrDefault();
