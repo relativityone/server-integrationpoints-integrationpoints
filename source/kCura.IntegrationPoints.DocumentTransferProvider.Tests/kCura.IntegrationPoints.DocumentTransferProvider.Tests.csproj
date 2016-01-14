@@ -52,8 +52,13 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\DocumentArtifactIdDataReaderTests.cs" />
+    <Compile Include="Unit\DocumentTransferDataReaderTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider.Shared\kCura.IntegrationPoints.DocumentTransferProvider.Shared.csproj">
       <Project>{22991306-a168-4d22-80a7-aaa99c9e9fd6}</Project>
       <Name>kCura.IntegrationPoints.DocumentTransferProvider.Shared</Name>

@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			// TODO: get the RSAPI client
 			// entry ids are for batching
 			// The fields are the fields that we provided
-			return new DocumentTranfserDataReader(this.CreateClient(1033244), entryIds.Select(x => Convert.ToInt32(x)), fields);
+			return new DocumentTranfserDataReader(new RelativityClientAdaptor(this.CreateClient(1)), entryIds.Select(x => Convert.ToInt32(x)), fields);
 		}
 
 		private IRSAPIClient CreateClient(int workspaceId)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 
@@ -10,7 +11,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
 	public class DocumentTranfserDataReader : IDataReader
 	{
-		private readonly IRSAPIClient _rsapiClient;
+		private readonly IRelativityClientAdaptor _relativityClientAdaptor;
 		private readonly IEnumerable<int> _documentArtifactIds;
 		private readonly DataTable _schemaDataTable;
 		private readonly IEnumerable<FieldEntry> _fieldEntries;
@@ -18,9 +19,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private Document _currentDocument;
 		private bool _readerOpen;
 
-		public DocumentTranfserDataReader(IRSAPIClient proxy, IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries)
+		public DocumentTranfserDataReader(IRelativityClientAdaptor relativityClientAdaptor, IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries)
 		{
-			_rsapiClient = proxy;
+			_relativityClientAdaptor = relativityClientAdaptor;
 			_documentArtifactIds = documentArtifactIds;
 			_fieldEntries = fieldEntries;
 
@@ -47,7 +48,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public bool IsClosed
 		{
-			get { return _readerOpen; }
+			get { return !_readerOpen; }
 		}
 
 		public bool NextResult()
@@ -80,7 +81,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 				try
 				{
-					ResultSet<Document> docResults = _rsapiClient.Repositories.Document.Query(query);
+					ResultSet<Document> docResults = _relativityClientAdaptor.ExecuteDocumentQuery(query);
 					if (!docResults.Success)
 					{
 						_readerOpen = false; // TODO: handle errors?
@@ -96,26 +97,20 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 					_readerOpen = false;
 				}
 			}
+
+			// Get next result
+			if (_documentsEnumerator != null && _documentsEnumerator.MoveNext())
+			{
+				Result<Document> result = _documentsEnumerator.Current;
+				_currentDocument = result != null ? result.Artifact : null;
+
+				_readerOpen = _currentDocument != null;
+			}
 			else
 			{
-				if (_documentsEnumerator.Current != null)
-				{
-					if (_currentDocument == _documentsEnumerator.Current.Artifact)
-					{
-						_documentsEnumerator.MoveNext();
-					}
-
-					Result<Document> result = _documentsEnumerator.Current;
-					_currentDocument = result != null ? result.Artifact : null;
-
-					_readerOpen = _currentDocument != null;
-				}
-				else
-				{
-					// No results returned, close the reader
-					_currentDocument = null;
-					_readerOpen = false;
-				}
+				// No results returned, close the reader
+				_currentDocument = null;
+				_readerOpen = false;
 			}
 
 			return _readerOpen;
