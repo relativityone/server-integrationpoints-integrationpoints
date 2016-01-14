@@ -8,8 +8,10 @@ using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Core.Domain
 {
+	using global::Relativity.API;
+
 	//represents a wrapper to allow for certain safeties to be guaranteed when marshalling
-	internal class ProviderWrapper : MarshalByRefObject, IDataSourceProvider
+	internal class ProviderWrapper : MarshalByRefObject, IDataSourceProvider, IInternalOnlyDataSourceProvider
 	{
 		private readonly IDataSourceProvider _provider;
 		internal ProviderWrapper(IDataSourceProvider provider)
@@ -61,5 +63,16 @@ namespace kCura.IntegrationPoints.Core.Domain
 
 		}
 
+		public IHelper Client
+		{
+			set
+			{
+				IInternalOnlyDataSourceProvider internalProvider = _provider as IInternalOnlyDataSourceProvider;
+				if (internalProvider != null)
+				{
+					internalProvider.Client = value;
+				}
+			}
+		}
 	}
 }
