@@ -208,7 +208,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public string GetName(int i)
 		{
-			return ARTIFACT_ID;
+			if (i == 0)
+			{
+				return ARTIFACT_ID;
+			}
+
+			return null;
 		}
 
 		public int GetOrdinal(string name)
@@ -246,6 +251,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		{
 			get
 			{
+				// Should this except if the name isn't ARTIFACT_ID?
 				if (name == ARTIFACT_ID)
 				{
 					return GetValue(GetOrdinal(name));
