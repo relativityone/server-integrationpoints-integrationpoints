@@ -1,19 +1,62 @@
-﻿namespace kCura.IntegrationPoints.DocumentTransferProvider
-{
-	using System;
-	using System.Collections.Generic;
-	using System.Data;
-	using System.Linq;
-	using Contracts.Provider;
-	using Contracts.Models;
-	using Shared;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Client;
+using Newtonsoft.Json;
 
-	[Contracts.DataSourceProvider(Constants.PROVIDER_GUID)]
+namespace kCura.IntegrationPoints.DocumentTransferProvider
+{
+	[Contracts.DataSourceProvider(Shared.Constants.PROVIDER_GUID)]
 	public class DocumentTransferProvider : IDataSourceProvider
 	{
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
-			throw new System.NotImplementedException();
+			// TODO: Make this work with some type of RSAPI connection
+			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
+			using (IRSAPIClient client = CreateClient(settings.WorkspaceArtifactId))
+			{
+				List<Artifact> fields = GetRelativityFields(client, Convert.ToInt32(ArtifactType.Document));
+				IEnumerable<FieldEntry> fieldEntries = ParseFields(fields);
+				return fieldEntries;
+			}
+		}
+
+		private List<Artifact> GetRelativityFields(IRSAPIClient client, int rdoTypeId)
+		{
+			RelativityFieldQuery query = new RelativityFieldQuery(client);
+			var fields = query.GetFieldsForRDO(rdoTypeId);
+			return fields;
+		}
+
+		private IEnumerable<FieldEntry> ParseFields(List<Artifact> fields)
+		{
+			foreach (var result in fields)
+			{
+				var idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
+				bool isIdentifier = false;
+				if (idField != null)
+				{
+					isIdentifier = Convert.ToInt32(idField.Value) == 1;
+					if (isIdentifier)
+					{
+						result.Name += " [Object Identifier]";
+					}
+				}
+				yield return new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier, IsRequired = false };
+			}
+		}
+
+		private IRSAPIClient CreateClient(int workspaceId)
+		{
+			string localHostFqdn = System.Net.Dns.GetHostEntry("localhost").HostName;
+			Uri endpointUri = new Uri(string.Format("http://{0}/relativity.services", localHostFqdn));
+			IRSAPIClient rsapiClient = new RSAPIClient(endpointUri, new IntegratedAuthCredentials());
+			rsapiClient.APIOptions.WorkspaceID = workspaceId;
+			return rsapiClient;
 		}
 
 		/// <summary>

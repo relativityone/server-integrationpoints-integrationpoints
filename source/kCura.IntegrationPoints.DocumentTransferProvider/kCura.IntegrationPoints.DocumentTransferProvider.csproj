@@ -38,6 +38,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -51,12 +55,17 @@
     <Compile Include="DocumentArtifactIdDataReader.cs" />
     <Compile Include="DocumentTranfserDataReader.cs" />
     <Compile Include="DocumentTransferProvider.cs" />
+    <Compile Include="DocumentTransferSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-E18D-49DF-A308-FE7996C4108E}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider.Shared\kCura.IntegrationPoints.DocumentTransferProvider.Shared.csproj">
       <Project>{22991306-a168-4d22-80a7-aaa99c9e9fd6}</Project>
@@ -66,6 +75,14 @@
       <Project>{fcaf52cd-0f8f-4d71-ac61-b7591a181a08}</Project>
       <Name>kCura.IntegrationPoints.SourceProviderInstaller</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
+      <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
+      <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
