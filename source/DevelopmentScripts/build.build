@@ -132,6 +132,12 @@
 		<if test="${file::exists(buildLoggerLogFile)}">
 			<delete file="${buildLoggerLogFile}" failonerror="true"/>
 		</if>
+		
+		<exec program="..\Dependencies\NuGet.exe">
+		  <arg value="restore" />
+		  <arg value="..\kCura.IntegrationPoints.sln" />
+		</exec>
+		
 	</target>
 	
 	<target name="build_x64">
