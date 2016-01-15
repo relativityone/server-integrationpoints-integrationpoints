@@ -65,7 +65,7 @@
 		this.getSelectedOption = function() {
 			return {
 				"WorkspaceArtifactId": self.selectedWorkspace(),
-				"SavedSearch": self.selectedSavedSearch()
+				"SavedSearchArtifactId": self.selectedSavedSearch()
 			}
 		}
 	}

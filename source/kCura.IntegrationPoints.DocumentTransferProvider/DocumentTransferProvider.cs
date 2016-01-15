@@ -163,19 +163,5 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			// The fields are the fields that we provided
 			return new DocumentTranfserDataReader(new RelativityClientAdaptor(this.CreateClient(1)), entryIds.Select(x => Convert.ToInt32(x)), fields);
 		}
-
-		private IRSAPIClient CreateClient(int workspaceId)
-		{
-			// Create a new instance of RSAPIClient. The first parameter indicates the endpoint Uri, 
-			// which indicates the scheme to use. The second parameter indicates the
-			// authentication type. The RSAPIClient members page in the Services API class library
-			// documents other possible constructors. The constructor also ensures a logged in session.
-
-			string localHostFQDN = System.Net.Dns.GetHostEntry("localhost").HostName;
-			Uri endpointUri = new Uri(string.Format("http://{0}/relativity.services", localHostFQDN));
-			IRSAPIClient rsapiClient = new RSAPIClient(endpointUri, new IntegratedAuthCredentials());
-			rsapiClient.APIOptions.WorkspaceID = workspaceId;
-			return rsapiClient;
-		}
 	}
 }
