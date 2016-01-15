@@ -252,10 +252,6 @@
 			<arg line='/lib:"${source.reference.NewtonsoftJson.directory}"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.Shared.dll"' />
-			<arg line='"${source.reference.kCuraAppsCommonConfig.directory}\kCura.Apps.Common.Config.dll"' />
-			<arg line='"${source.reference.kCuraAppsCommonData.directory}\kCura.Apps.Common.Data.dll"' />
-			<arg line='"${source.reference.kCuraAppsCommonUtils.directory}\kCura.Apps.Common.Utils.dll"' />
-			<arg line='"${source.reference.Injection.directory}\kCura.Method.Injection.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
 		</exec>
