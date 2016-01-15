@@ -7,10 +7,9 @@
 	//An event raised when the user has clicked the Next or Save button.
 	message.subscribe('submit', function () {
 		//Execute save logic that persists the state.
-
 		if (viewModel.errors().length === 0) {
 			//Communicate to the host page that it to continue.
-			this.publish('saveComplete', viewModel.getselectedOption());
+			this.publish('saveComplete', viewModel.getSelectedOption());
 		} else {
 			viewModel.errors.showAllMessages();
 		}
@@ -19,7 +18,7 @@
 	//An event raised when a user clicks the Back button.
 	message.subscribe('back', function () {
 		//Execute save logic that persists the state.
-		this.publish('saveState', getModel());
+		this.publish('saveState', viewModel.getSelectedOption());
 	});
 
 	//An event raised when the host page has loaded the current settings page.
@@ -63,10 +62,10 @@
 		self.selectedWorkspace = this.selectedWorkspace;
 		
 		this.errors = ko.validation.group(this, { deep: true });
-		this.getselectedOption = function() {
+		this.getSelectedOption = function() {
 			return {
-				"WorkspaceArtifactId": self.selectedWorkspace,
-				"SavedSearch": self.selectedSavedSearch
+				"WorkspaceArtifactId": self.selectedWorkspace(),
+				"SavedSearch": self.selectedSavedSearch()
 			}
 		}
 	}
