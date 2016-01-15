@@ -66,6 +66,10 @@ task nuget_publish -precondition { ($build_type -eq 'GOLD') -and ($branch -eq 'd
     foreach ($item in $order) {
         Write-Host "publishing" $dictPath.$item "..."
         
+		exec {
+			& $nuget_exe @('push', $dictPath.$item, '-Source', $proget_server) 2>&1
+        }
+		
         exec {
             & $nuget_exe @('push', $dictPath.$item, '-Source', $nuget_server) 2>&1
         }
