@@ -111,7 +111,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		public void Dispose()
 		{
 			_readerOpen = false;
-			_savedSearchResultDocumentsEnumerator.Dispose();
+			if (_savedSearchResultDocumentsEnumerator != null)
+			{
+				_savedSearchResultDocumentsEnumerator.Dispose();
+			}
 		}
 
 		public int FieldCount
