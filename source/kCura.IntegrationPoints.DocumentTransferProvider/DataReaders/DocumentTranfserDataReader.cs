@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private IEnumerator<Result<Document>> _documentsEnumerator;
 		private Document _currentDocument;
 		private bool _readerOpen;
-		private IReadOnlyDictionary<int, string> _fieldIdToNameDictionary;
+		private IDictionary<int, string> _fieldIdToNameDictionary;
 
 		public DocumentTranfserDataReader(IRelativityClientAdaptor relativityClientAdaptor, IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries)
 		{
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 			_readerOpen = true;
 			_schemaDataTable = new DataTable();
-			_schemaDataTable.Columns.AddRange(_fieldEntries.Select(x => new DataColumn(x.DisplayName)).ToArray());
+			_schemaDataTable.Columns.AddRange(_fieldEntries.Select(x => new DataColumn(x.FieldIdentifier)).ToArray());
 			_fieldIdToNameDictionary = _fieldEntries.ToDictionary(x => Convert.ToInt32(x.FieldIdentifier), y => y.DisplayName);
 			// TODO: we may need to specify the type
 		}
