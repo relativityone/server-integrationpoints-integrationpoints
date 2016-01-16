@@ -18,16 +18,19 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private IEnumerator<Result<Document>> _documentsEnumerator;
 		private Document _currentDocument;
 		private bool _readerOpen;
+		private IReadOnlyDictionary<int, string> _fieldIdToNameDictionary;
 
 		public DocumentTranfserDataReader(IRelativityClientAdaptor relativityClientAdaptor, IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries)
 		{
 			_relativityClientAdaptor = relativityClientAdaptor;
 			_documentArtifactIds = documentArtifactIds;
-			_fieldEntries = fieldEntries;
+			_fieldEntries = fieldEntries.ToList();
 
 			_readerOpen = true;
 			_schemaDataTable = new DataTable();
-			_schemaDataTable.Columns.AddRange(_fieldEntries.Select(x => new DataColumn(x.FieldIdentifier)).ToArray());
+			_schemaDataTable.Columns.AddRange(_fieldEntries.Select(x => new DataColumn(x.DisplayName)).ToArray());
+			_fieldIdToNameDictionary = _fieldEntries.ToDictionary(x => Convert.ToInt32(x.FieldIdentifier), y => y.DisplayName);
+			// TODO: we may need to specify the type
 		}
 
 		public void Close()
@@ -67,11 +70,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				// Request document objects
 				var artifactIdSetCondition = new WholeNumberCondition
 				{
+					Field = "ArtifactId",
 					Operator = NumericConditionEnum.In,
 					Value = _documentArtifactIds.ToList()
 				};
 
-				List<FieldValue> requestedFields = _fieldEntries.Select(x => new FieldValue(x.FieldIdentifier)).ToList();
+				List<FieldValue> requestedFields = _fieldEntries.Select(x => new FieldValue() { ArtifactID = Convert.ToInt32(x.FieldIdentifier) }).ToList();
 
 				Query<Document> query = new Query<Document>
 				{
@@ -125,7 +129,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		public void Dispose()
 		{
 			_readerOpen = false;
-			_documentsEnumerator.Dispose();
+			if (_documentsEnumerator != null)
+			{
+				_documentsEnumerator.Dispose();
+			}
 		}
 
 		public int FieldCount
@@ -234,7 +241,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public object GetValue(int i)
 		{
-			return _currentDocument[GetName(i)];
+			string fieldIdAsString = GetName(i);
+			int fieldId = Convert.ToInt32(fieldIdAsString);
+			string columnName = _fieldIdToNameDictionary[fieldId];
+			return _currentDocument[columnName];
 		}
 
 		public int GetValues(object[] values)
