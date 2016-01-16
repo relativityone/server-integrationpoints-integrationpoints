@@ -11,7 +11,7 @@
 
 		if (viewModel.errors().length === 0) {
 			//Communicate to the host page that it to continue.
-			this.publish('saveComplete', viewModel.getSelectedOption());
+			this.publish('saveComplete', JSON.stringify(viewModel.getSelectedOption()));
 		} else {
 			viewModel.errors.showAllMessages();
 		}
