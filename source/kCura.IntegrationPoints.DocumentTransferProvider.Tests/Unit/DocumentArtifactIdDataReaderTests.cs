@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers;
@@ -72,7 +71,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
 				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet); ;
+				.Returns(resultSet);
 
 			// Act
 			bool result = _instance.Read();

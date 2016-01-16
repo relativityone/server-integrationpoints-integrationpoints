@@ -4,6 +4,8 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
+using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
@@ -68,8 +70,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		/// <returns>An IDataReader containing all of the saved search's document artifact ids</returns>
 		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
 		{
-			// TODO: get the RSAPI client
-			return new DocumentArtifactIdDataReader(null, Convert.ToInt32(options));
+			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
+			using (IRSAPIClient client = CreateClient(settings.WorkspaceArtifactId))
+			{
+				IRelativityClientAdaptor relativityClient = new RelativityClientAdaptor(client);
+				return new DocumentArtifactIdDataReader(relativityClient, settings.SavedSearchArtifactId);
+			}
 		}
 
 		/// <summary>
@@ -82,10 +88,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		/// <returns>An IDataReader that contains the Document RDO's for the entryIds</returns>
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
 		{
-			// TODO: get the RSAPI client
-			// entry ids are for batching
-			// The fields are the fields that we provided
-			return new DocumentTranfserDataReader(null, entryIds.Select(x => Convert.ToInt32(x)), fields);
+			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
+			using (IRSAPIClient client = CreateClient(settings.WorkspaceArtifactId))
+			{
+				IRelativityClientAdaptor relativityClient = new RelativityClientAdaptor(client);
+				return new DocumentTranfserDataReader(relativityClient, entryIds.Select(x => Convert.ToInt32(x)), fields);
+			}
+
 		}
 	}
 }
