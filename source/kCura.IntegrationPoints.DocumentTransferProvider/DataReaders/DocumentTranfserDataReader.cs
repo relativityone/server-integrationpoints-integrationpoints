@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private IEnumerator<Result<Document>> _documentsEnumerator;
 		private Document _currentDocument;
 		private bool _readerOpen;
-		private IReadOnlyDictionary<int, string> _fieldIdToNameDictionary;
+		private IDictionary<int, string> _fieldIdToNameDictionary;
 
 		public DocumentTranfserDataReader(IRelativityClientAdaptor relativityClientAdaptor, IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries)
 		{

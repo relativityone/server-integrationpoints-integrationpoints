@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		/// <returns>An IDataReader containing all of the saved search's document artifact ids</returns>
 		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
 		{
-			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>("{\r\n  \"WorkspaceArtifactId\": 1034302,\r\n  \"SavedSearchArtifactId\": 1040090\r\n}");
+			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
 			using (IRSAPIClient client = CreateClient(settings.WorkspaceArtifactId))
 			{
 				IRelativityClientAdaptor relativityClient = new RelativityClientAdaptor(client);
@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		/// <returns>An IDataReader that contains the Document RDO's for the entryIds</returns>
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
 		{
-			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>("{\r\n  \"WorkspaceArtifactId\": 1034302,\r\n  \"SavedSearchArtifactId\": 1040090\r\n}");
+			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
 			using (IRSAPIClient client = CreateClient(settings.WorkspaceArtifactId))
 			{
 				IRelativityClientAdaptor relativityClient = new RelativityClientAdaptor(client);

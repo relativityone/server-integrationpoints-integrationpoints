@@ -31,6 +31,7 @@
 	<property name="source.reference.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.1.0.77.1\lib\net45" />
 	<property name="source.reference.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.106.2\lib\net45" />
 	<property name="target.code.directory" value="${root}\bin\${buildconfig}" />
+	<property name="bin.directory" value="${root}\bin\" />
 	<property name="ldap.build.server.share" value="\\tt-img-app-9-0.testing.corp\BuildShare\LDAPSync\release-1.0" unless="${property::exists('ldap.build.server.share')}"/>
 	<property name="buildType" value="DEV" unless="${property::exists('buildType')}" />
 	<property name="Injections" value="INJECTION" unless="${property::exists('Injections')}" />
@@ -38,6 +39,7 @@
 	<property name="DevEnv" value="DEVENV" unless="${property::exists('DevEnv')}" />
 	<property name="ncover.install.directory" value="${environment::get-variable('ProgramW6432')}\NCover" />
 	<property name="ncover.output.directory" value="D:\NCover" unless="${property::exists('ncover.output.directory')}" />
+	<property name="caseId" value="1014823" unless="${property::exists('caseId')}" />
 	
 	<!-- Microsoft .NET folders -->
 	<property name="microsoft.net.directory" value="${environment::get-variable('windir')}\Microsoft.NET\Framework\v4.0.30319" unless="${property::exists('microsoft.net.directory')}" />
@@ -71,7 +73,17 @@
 	<include buildfile="Build Application.include"/>
 
 	<!-- Build all LDAPSync projects- presence of a Build.log file indicates failure -->
-	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, merge_ldap, merge_documentsTransfer, merge_source_provider_installer, build_ip_sdk">				
+	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, merge_ldap, merge_documentsTransfer, merge_source_provider_installer, build_ip_sdk, copy_files">				
+		<if test="${file::exists(logfile)}">
+			<delete file="${logfile}" failonerror="true"/>
+		</if>
+		<if test="${string::contains(action, 'build')}">
+			<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." file="${buildsuccessfile}" append="false" failonerror="false" />		
+		</if>
+		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
+	</target>
+	
+	<target name="build_all" description="Build the entire LDAPSync codebase, RAP, and uploads binaries" depends="build, copy_files, build_RAP_Package, upload_binaries_into_relativity">				
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
@@ -137,7 +149,14 @@
 		  <arg value="restore" />
 		  <arg value="..\kCura.IntegrationPoints.sln" />
 		</exec>
-		
+		<exec program="..\Dependencies\NuGet.exe">
+		  <arg value="restore" />
+		  <arg value="..\kCura.SourceProviderInstaller.sln" />
+		</exec>
+		<exec program="..\Dependencies\NuGet.exe">
+		  <arg value="restore" />
+		  <arg value="..\kCura.IntegrationPoints.Documentation.sln" />
+		</exec>		
 	</target>
 	
 	<target name="build_x64">
@@ -242,7 +261,7 @@
 		</exec>
 	</target>
 	
-		<target name="merge_documentsTransfer" description="Merge all related binaries into a single library">
+	<target name="merge_documentsTransfer" description="Merge all related binaries into a single library">
 		<exec program="${source.packages.directory}\ilmerge.2.13.0307\ILMerge.exe" >
 			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/out:"${target.code.directory}\kCura.DocumentTransferProvider.dll"' />
@@ -263,9 +282,20 @@
 		</exec>
 	</target>
 	
+	<target name="copy_files" description="Copy all dlls for rap to \bin">
+		<copy todir="${bin.directory}">
+			<fileset basedir="${target.code.directory}">
+				<include name="kCura.IntegrationPoints.Contracts.dll" />
+				<include name="kCura.IntegrationPoints.dll" />
+				<include name="kCura.LDAPProvider.dll" />
+				<include name="kCura.DocumentTransferProvider.dll" />
+			</fileset>
+		</copy>
+	</target>
+	
 	<target name="upload_binaries_into_relativity" description="Upload binary files into Relativity">
 		<exec program="${ldap.scripts.directory}\UploadLDAPSyncBinariesIntoLocalRelativity.bat" >
-			<arg line='${buildconfig}' />
+			<arg line='${caseId}' />
 			<environment>
 				<variable name="root" value="${root}" />
 			</environment>
