@@ -4,18 +4,22 @@ SET BUILDCONFIG=Debug
 SET BUILDACTION=build
 SET BUILDPROJECT=Build.build
 SET SIGNOUTPUT=false
+SET CASEID=1014823
 
 if "%1" == "/?" goto help
 if "%1" == "-?" goto help
 
 if not "%1" == "" (
-	SET "BUILDCONFIG=%1"
+	SET "CASEID=%1"
 )
 if not "%2" == "" (
-	SET "BUILDACTION=%2"
+	SET "BUILDCONFIG=%2"
 )
 if not "%3" == "" (
-	SET "buildType=%3"
+	SET "BUILDACTION=%3"
+)
+if not "%3" == "" (
+	SET "buildType=%4"
 )
 
 SET LDAPSyncRoot=%LDAPSync%
