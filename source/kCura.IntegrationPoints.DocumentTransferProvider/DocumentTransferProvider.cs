@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
+using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
@@ -22,17 +23,18 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
 			using (IRSAPIClient client = CreateClient(settings.WorkspaceArtifactId))
 			{
-				List<Artifact> fields = GetRelativityFields(client, Convert.ToInt32(ArtifactType.Document));
+				List<Artifact> fields = GetRelativityFields(client, settings.WorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
 				IEnumerable<FieldEntry> fieldEntries = ParseFields(fields);
 				return fieldEntries;
 			}
 		}
 
-		private List<Artifact> GetRelativityFields(IRSAPIClient client, int rdoTypeId)
+		private List<Relativity.Client.Artifact> GetRelativityFields(IRSAPIClient client, int workspaceId, int rdoTypeId)
 		{
 			RelativityFieldQuery query = new RelativityFieldQuery(client);
 			var fields = query.GetFieldsForRDO(rdoTypeId);
-			return fields;
+			var mappableFields = GetImportAPI(client).GetWorkspaceFields(workspaceId, rdoTypeId);
+			return fields.Where(x => mappableFields.Any(y => y.ArtifactID == x.ArtifactID)).ToList();
 		}
 
 		private IEnumerable<FieldEntry> ParseFields(List<Artifact> fields)
@@ -60,6 +62,15 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			IRSAPIClient rsapiClient = new RSAPIClient(endpointUri, new IntegratedAuthCredentials());
 			rsapiClient.APIOptions.WorkspaceID = workspaceId;
 			return rsapiClient;
+		}
+
+		private IImportAPI GetImportAPI(IRSAPIClient client)
+		{
+			string username = "XxX_BearerTokenCredentials_XxX";
+			//ReadResult readResult = client.GenerateRelativityAuthenticationToken(client.APIOptions);
+			//string authToken = readResult.Artifact.getFieldByName("AuthenticationToken").ToString();
+			string authToken = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
+			return new ExtendedImportAPI(username, authToken, "http://localhost/RelativityWebAPI/");
 		}
 
 		/// <summary>
