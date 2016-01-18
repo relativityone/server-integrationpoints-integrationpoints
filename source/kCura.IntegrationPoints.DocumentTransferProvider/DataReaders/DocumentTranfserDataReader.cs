@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private IEnumerator<Result<Document>> _documentsEnumerator;
 		private Document _currentDocument;
 		private bool _readerOpen;
-		private IDictionary<int, string> _fieldIdToNameDictionary;
+		private IDictionary<string, string> _fieldIdToNameDictionary;
 
 		public DocumentTranfserDataReader(IRelativityClientAdaptor relativityClientAdaptor, IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries)
 		{
@@ -28,8 +28,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 			_readerOpen = true;
 			_schemaDataTable = new DataTable();
-			_schemaDataTable.Columns.AddRange(_fieldEntries.Select(x => new DataColumn(x.DisplayName)).ToArray());
-			_fieldIdToNameDictionary = _fieldEntries.ToDictionary(x => Convert.ToInt32(x.FieldIdentifier), y => y.DisplayName);
+			_schemaDataTable.Columns.AddRange(_fieldEntries.Select(x => new DataColumn(x.FieldIdentifier)).ToArray());
+			_fieldIdToNameDictionary = _fieldEntries.ToDictionary(x => x.FieldIdentifier, y => y.DisplayName.Replace(" [Object Identifier]", String.Empty));
 			// TODO: we may need to specify the type
 		}
 
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public int FieldCount
 		{
-			get { return 1; }
+			get { return _schemaDataTable.Columns.Count; }
 		}
 
 		public bool GetBoolean(int i)
@@ -231,7 +231,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public int GetOrdinal(string name)
 		{
-			return _schemaDataTable.Columns[name].Ordinal;
+			return _schemaDataTable.Columns[name.Replace(" [Object Identifier]", String.Empty)].Ordinal;
 		}
 
 		public string GetString(int i)
@@ -242,9 +242,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		public object GetValue(int i)
 		{
 			string fieldIdAsString = GetName(i);
-			int fieldId = Convert.ToInt32(fieldIdAsString);
-			string columnName = _fieldIdToNameDictionary[fieldId];
-			return _currentDocument[columnName];
+			string columnName = _fieldIdToNameDictionary[fieldIdAsString];
+			return _currentDocument[columnName].Value;
 		}
 
 		public int GetValues(object[] values)
