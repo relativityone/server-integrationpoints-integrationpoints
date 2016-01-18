@@ -18,7 +18,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private IEnumerator<Result<Document>> _documentsEnumerator;
 		private Document _currentDocument;
 		private bool _readerOpen;
-		private IDictionary<string, string> _fieldIdToNameDictionary;
+		private readonly IDictionary<string, string> _fieldIdToNameDictionary;
+		private const string OBJECT_IDENTIFIER_APPENDAGE = " [Object Identifier]";
 
 		public DocumentTranfserDataReader(IRelativityClientAdaptor relativityClientAdaptor, IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries)
 		{
@@ -29,8 +30,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			_readerOpen = true;
 			_schemaDataTable = new DataTable();
 			_schemaDataTable.Columns.AddRange(_fieldEntries.Select(x => new DataColumn(x.FieldIdentifier)).ToArray());
-			_fieldIdToNameDictionary = _fieldEntries.ToDictionary(x => x.FieldIdentifier, y => y.DisplayName.Replace(" [Object Identifier]", String.Empty));
-			// TODO: we may need to specify the type
+			_fieldIdToNameDictionary = _fieldEntries.ToDictionary(x => x.FieldIdentifier, y => y.DisplayName.Replace(OBJECT_IDENTIFIER_APPENDAGE, String.Empty));
 		}
 
 		public void Close()
@@ -231,7 +231,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public int GetOrdinal(string name)
 		{
-			return _schemaDataTable.Columns[name.Replace(" [Object Identifier]", String.Empty)].Ordinal;
+			return _schemaDataTable.Columns[name].Ordinal;
 		}
 
 		public string GetString(int i)
@@ -242,7 +242,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		public object GetValue(int i)
 		{
 			string fieldIdAsString = GetName(i);
-			string columnName = _fieldIdToNameDictionary[fieldIdAsString];
+			string columnName = _fieldIdToNameDictionary[fieldIdAsString].Replace(" [Object Identifier]", String.Empty);
+
 			return _currentDocument[columnName].Value;
 		}
 

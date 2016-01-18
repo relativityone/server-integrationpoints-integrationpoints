@@ -157,7 +157,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public string GetDataTypeName(int i)
 		{
-			return ARTIFACT_ID;
+			if (i == 0)
+			{
+				return ARTIFACT_ID;
+			}
+
+			return null;
 		}
 
 		public System.DateTime GetDateTime(int i)

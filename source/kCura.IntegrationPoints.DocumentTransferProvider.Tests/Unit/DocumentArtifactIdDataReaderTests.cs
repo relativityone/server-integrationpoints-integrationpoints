@@ -280,6 +280,33 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
 			Assert.IsNull(accessorResult, "The column doesn't exist, there shouldn't be any results");
 		}
+
+		[Test]
+		public void FieldCount_ReturnsCorrectCount()
+		{
+			// Act
+			int fieldCount = _instance.FieldCount;
+
+			// Assert
+			Assert.AreEqual(1, fieldCount, "There should be 1 field");
+		}
+
+		[Test]
+		public void Dispose_BeforeRead_DoesNotExcept()
+		{
+			// Act
+			bool exceptionThrown = false;
+			try
+			{
+				_instance.Dispose();
+			}
+			catch
+			{
+				exceptionThrown = true;
+			}
+
+			Assert.IsFalse(exceptionThrown, "Dispose() should not except");	
+		}
 		#endregion
 	}
 }
