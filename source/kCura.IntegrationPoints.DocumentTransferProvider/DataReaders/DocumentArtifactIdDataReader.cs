@@ -124,12 +124,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public bool GetBoolean(int i)
 		{
-			return Convert.ToBoolean(GetValue(i));
+			throw new NotImplementedException();
 		}
 
 		public byte GetByte(int i)
 		{
-			return Convert.ToByte(GetValue(i));
+			throw new NotImplementedException();
 		}
 
 		public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public char GetChar(int i)
 		{
-			return Convert.ToChar(GetValue(i));
+			throw new System.NotImplementedException();
 		}
 
 		public long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
@@ -157,12 +157,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public string GetDataTypeName(int i)
 		{
-			if (i == 0)
-			{
-				return ARTIFACT_ID;
-			}
-
-			return null;
+			throw new System.NotImplementedException();
 		}
 
 		public System.DateTime GetDateTime(int i)
@@ -173,22 +168,27 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public decimal GetDecimal(int i)
 		{
-			return Convert.ToDecimal(GetValue(i));
+			throw new System.NotImplementedException();
 		}
 
 		public double GetDouble(int i)
 		{
-			return Convert.ToDouble(GetValue(i));
+			throw new System.NotImplementedException();
 		}
 
 		public System.Type GetFieldType(int i)
 		{
-			return typeof (Int32);
+			if (i == 0)
+			{
+				return typeof (Int32);
+			}
+
+			return null;
 		}
 
 		public float GetFloat(int i)
 		{
-			return Convert.ToSingle(GetValue(i));
+			throw new System.NotImplementedException();
 		}
 
 		public System.Guid GetGuid(int i)
@@ -226,12 +226,17 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public int GetOrdinal(string name)
 		{
-			return 0;
+			if (name == ARTIFACT_ID)
+			{
+				return 0;
+			}
+
+			return -1;
 		}
 
 		public string GetString(int i)
 		{
-			return Convert.ToString(GetValue(i));
+			throw new NotImplementedException();
 		}
 
 		public object GetValue(int i)

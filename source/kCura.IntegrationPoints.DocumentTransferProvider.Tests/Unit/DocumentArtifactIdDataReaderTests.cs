@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
@@ -94,6 +95,28 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
 				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
 				.Returns(resultSet);
+
+			// Act
+			bool result = _instance.Read();
+
+			// Assert
+			Assert.IsFalse(result, "There are no records to read, result should be false");
+			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
+		}
+
+		[Test]
+		public void Read_FirstRead_RunsSavedSearch_RequestFailsWithException_ReturnsFalse()
+		{
+			// Arrange	
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = false,
+				Results = new List<Result<Document>>()
+			};
+
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Throws(new Exception());
 
 			// Act
 			bool result = _instance.Read();
@@ -282,6 +305,120 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		}
 
 		[Test]
+		public void GetName_ValidIndex_ReturnsName()
+		{
+			// Act
+			string result = _instance.GetName(0);
+
+			// Assert
+			Assert.AreEqual("ArtifactId", result, "The result should be correct");
+		}
+
+		[Test]
+		public void GetName_InvalidIndex_ReturnsNull()
+		{
+			// Act
+			string result = _instance.GetName(1);
+
+			// Assert
+			Assert.IsNull(result, "The result should be null");
+		}
+
+		[Test]
+		public void GetOrdinal_ValidIndex_ReturnsName()
+		{
+			// Act
+			int result = _instance.GetOrdinal("ArtifactId");
+
+			// Assert
+			Assert.AreEqual(0, result, "The result should be correct");
+		}
+
+		[Test]
+		public void GetOrdinal_InvalidIndex_ReturnsNull()
+		{
+			// Act
+			int result = _instance.GetOrdinal("ASDF");
+
+			// Assert
+			Assert.AreEqual(-1, result, "The result should be -1");
+		}
+
+		[Test]
+		public void GetFieldType_ValidIndex_ReturnsType()
+		{
+			// Act
+			Type result = _instance.GetFieldType(0);
+
+			// Assert
+			Assert.AreEqual(typeof(Int32), result, "The result should be correct");
+		}
+
+		[Test]
+		public void GetFieldType_InvalidIndex_ReturnsNull()
+		{
+			// Act
+			Type result = _instance.GetFieldType(1);
+
+			// Assert
+			Assert.IsNull(result, "The result should be null");
+		}
+
+		[Test]
+		public void GetInt32_ReturnsInt32Value()
+		{
+			// Arrange
+			const int documentArtifactId = 123423;
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
+
+			// Act
+			bool readResult = _instance.Read();
+			int getResult = _instance.GetInt32(0);
+
+			// Assert
+			Assert.IsTrue(readResult, "There are records to read, result should be true");
+			Assert.AreEqual(documentArtifactId, getResult, "The result should be the documentArtifactId");
+		}
+
+		[Test]
+		public void IsDBNull_ResultNotNull_ReturnsFalse()
+		{
+			// Arrange
+			const int documentArtifactId = 123423;
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
+
+			// Act
+			bool readResult = _instance.Read();
+			bool isDbNull = _instance.IsDBNull(0);
+
+			// Assert
+			Assert.IsTrue(readResult, "There are records to read, result should be true");
+			Assert.IsFalse(isDbNull, "The result should not be DBNull");
+		}
+
+		[Test]
 		public void FieldCount_ReturnsCorrectCount()
 		{
 			// Act
@@ -307,6 +444,419 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			Assert.IsFalse(exceptionThrown, "Dispose() should not except");	
 		}
+
+		[Test]
+		public void Dispose_WhileReaderIsOpen_DoesNotExcept()
+		{
+			// Arrange
+			const int documentArtifactId = 123423;
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
+
+			// Act
+			_instance.Read();
+			bool exceptionThrown = false;
+			try
+			{
+				_instance.Dispose();
+			}
+			catch
+			{
+				exceptionThrown = true;
+			}
+
+			// Assert
+			Assert.IsFalse(exceptionThrown, "No exception should be thrown");
+		}
+
+		[Test]
+		public void Depth_ReturnsZero()
+		{
+			// Act	
+			int result = _instance.Depth;
+
+			// Assert
+			Assert.AreEqual(0, result, "The Depth should be 0");
+		}
+
+		[Test]
+		public void NextResult_ReturnsFalse()
+		{
+			// Act
+			bool result = _instance.NextResult();
+
+			// Assert
+			Assert.IsFalse(result, "NextResult() should return false");
+		}
+
+		[Test]
+		public void RecordsAffected_ReturnsNegativeOne()
+		{
+			// Act
+			int result = _instance.RecordsAffected;
+
+			// Assert
+			Assert.AreEqual(-1, result, "RecordsAffected should return -1");
+		}
+
+
+		#region NotImplemented Methods
+
+		[Test]
+		public void GetValues_ThrowsNotImplementedException()
+		{
+			// Act
+			bool notImplementedExceptionThrown = false;
+			try
+			{
+				_instance.GetValues(new object[1]);
+			}
+			catch (NotImplementedException)
+			{
+				notImplementedExceptionThrown = true;
+			}
+
+			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
+		}
+
+		[Test]
+		public void GetInt64_ThrowsNotImplementedException()
+		{
+			// Act
+			bool notImplementedExceptionThrown = false;
+			try
+			{
+				_instance.GetInt64(0);
+			}
+			catch (NotImplementedException)
+			{
+				notImplementedExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
+		}
+
+		[Test]
+		public void GetInt16_ThrowsNotImplementedException()
+		{
+			// Act
+			bool notImplementedExceptionThrown = false;
+			try
+			{
+				_instance.GetInt16(0);
+			}
+			catch (NotImplementedException)
+			{
+				notImplementedExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
+		}
+
+		[Test]
+		public void GetDateTime_ThrowsNotImplementedException()
+		{
+			// Act
+			bool notImplementedExceptionThrown = false;
+			try
+			{
+				_instance.GetDateTime(0);
+			}
+			catch (NotImplementedException)
+			{
+				notImplementedExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
+		}
+
+		[Test]
+		public void GetData_ThrowsNotImplementedException()
+		{
+			// Act
+			bool notImplementedExceptionThrown = false;
+			try
+			{
+				_instance.GetData(0);
+			}
+			catch (NotImplementedException)
+			{
+				notImplementedExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
+		}
+
+		[Test]
+		public void GetChars_ThrowsNotImplementedException()
+		{
+			// Act
+			bool notImplementedExceptionThrown = false;
+			try
+			{
+				_instance.GetChars(0, 0, new char[0], 0, 0);
+			}
+			catch (NotImplementedException)
+			{
+				notImplementedExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
+		}
+
+		[Test]
+		public void GetChar_ThrowsNotImplementedException()
+		{
+			// Act
+			bool notImplementedExceptionThrown = false;
+			try
+			{
+				_instance.GetChar(0);
+			}
+			catch (NotImplementedException)
+			{
+				notImplementedExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
+		}
+
+		[Test]
+		public void GetBytes_ThrowsNotImplementedException()
+		{
+			// Act
+			bool notImplementedExceptionThrown = false;
+			try
+			{
+				_instance.GetBytes(0, 0, new byte[0], 0, 0);
+			}
+			catch (NotImplementedException)
+			{
+				notImplementedExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
+		}
+
+		[Test]
+		public void GetByte_ThrowsNotImplementedException()
+		{
+			// Act
+			bool notImplementedExceptionThrown = false;
+			try
+			{
+				_instance.GetByte(0);
+			}
+			catch (NotImplementedException)
+			{
+				notImplementedExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
+		}
+
+		[Test]
+		public void GetBoolean_ThrowsNotImplementedException()
+		{
+			// Act
+			bool notImplementedExceptionThrown = false;
+			try
+			{
+				_instance.GetBoolean(0);
+			}
+			catch (NotImplementedException)
+			{
+				notImplementedExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
+		}
+
+		[Test]
+		public void GetSchemaTable_ThrowsNotImplementedException()
+		{
+			// Act
+			bool correctExceptionThrown = false;
+			try
+			{
+				_instance.GetSchemaTable();
+			}
+			catch (NotImplementedException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			// Assert
+			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
+		}
+
+		[Test]
+		public void GetDataTypeName_ThrowsNotImplementedException()
+		{
+			// Act
+			bool correctExceptionThrown = false;
+			try
+			{
+				_instance.GetDataTypeName(0);
+			}
+			catch (NotImplementedException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			// Assert
+			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
+		}
+
+		[Test]
+		public void GetDecimal_ThrowsNotImplementedException()
+		{
+			// Act
+			bool correctExceptionThrown = false;
+			try
+			{
+				_instance.GetDecimal(0);
+			}
+			catch (NotImplementedException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			// Assert
+			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
+		}
+
+		[Test]
+		public void GetDouble_ThrowsNotImplementedException()
+		{
+			// Act
+			bool correctExceptionThrown = false;
+			try
+			{
+				_instance.GetDouble(0);
+			}
+			catch (NotImplementedException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			// Assert
+			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
+		}
+
+		[Test]
+		public void GetFloat_ThrowsNotImplementedException()
+		{
+			// Act
+			bool correctExceptionThrown = false;
+			try
+			{
+				_instance.GetFloat(0);
+			}
+			catch (NotImplementedException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			// Assert
+			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
+		}
+
+		[Test]
+		public void GetString_ThrowsNotImplementedException()
+		{
+			// Act
+			bool correctExceptionThrown = false;
+			try
+			{
+				_instance.GetString(0);
+			}
+			catch (NotImplementedException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			// Assert
+			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
+		}
+
+		[Test]
+		public void GetGuid_ThrowsNotImplementedException()
+		{
+			// Act
+			bool correctExceptionThrown = false;
+			try
+			{
+				_instance.GetGuid(0);
+			}
+			catch (NotImplementedException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+			}
+
+			// Assert
+			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
+		}
+		#endregion
+
 		#endregion
 	}
 }
