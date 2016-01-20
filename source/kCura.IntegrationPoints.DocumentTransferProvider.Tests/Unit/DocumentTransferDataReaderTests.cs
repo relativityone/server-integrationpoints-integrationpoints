@@ -4,6 +4,7 @@ using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
+using kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -470,6 +471,150 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			}
 
 			Assert.IsFalse(exceptionThrown, "Dispose() should not except");
+		}
+
+		[Test]
+		public void Close_ReaderIsClosed()
+		{
+			// Arrange
+			const int documentArtifactId = 123423;
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			{
+				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
+			});
+
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			_relativityClientAdaptor
+				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+				.Returns(resultSet);
+
+			// Act
+			_instance.Read();
+			_instance.Close();
+			bool isClosed = _instance.IsClosed;
+
+			// Assert
+			Assert.IsTrue(isClosed, "The reader should be closed");
+		}
+
+		[Test]
+		public void Close_ReadThenCloseThenRead_ReaderIsClosed()
+		{
+			// Arrange
+			const int documentArtifactId = 123423;
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			{
+				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
+			}); 
+
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			_relativityClientAdaptor
+				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+				.Returns(resultSet);
+
+			// Act
+			_instance.Read();
+			_instance.Close();
+			bool result = _instance.Read();
+
+			// Assert
+			Assert.IsFalse(result, "The reader should be closed");
+		}
+
+		[Test]
+		public void Close_ReadThenCloseThenRead_QueryIsNotRerun()
+		{
+			// Arrange
+			const int documentArtifactId = 123423;
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			{
+				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
+			});
+
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			_relativityClientAdaptor
+				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+				.Returns(resultSet);
+
+			// Act
+			_instance.Read();
+			_instance.Close();
+			_instance.Read();
+
+			// Assert
+			_relativityClientAdaptor
+				.Received(1)
+				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
+		}
+
+
+		[Test]
+		public void Close_ReadThenClose_CannotAccessDocument()
+		{
+			// Arrange
+			const int documentArtifactId = 123423;
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			{
+				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
+			});
+
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			_relativityClientAdaptor
+				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+				.Returns(resultSet);
+
+			// Act
+			_instance.Read();
+			_instance.Close();
+
+			bool correctExceptionThrown = false;
+			try
+			{
+				object result = _instance[0];
+			}
+			catch (NullReferenceException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+				// in case another exception is thrown
+			}
+
+			// Assert
+			Assert.IsTrue(correctExceptionThrown, "Reading after running Close() should nullify the current result");
 		}
 		#endregion
 	}

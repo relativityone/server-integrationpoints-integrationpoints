@@ -37,6 +37,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		public void Close()
 		{
 			_readerOpen = false;
+			if (_documentsEnumerator != null)
+			{
+				_documentsEnumerator.Dispose();
+				_documentsEnumerator = null;
+			}
+			_currentDocument = null;
 		}
 
 		public int Depth
@@ -127,12 +133,27 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			get { return -1; }
 		}
 
+
+		// Following this example: https://msdn.microsoft.com/en-us/library/aa720693(v=vs.71).aspx -- biedrzycki: Jan 20th, 2016
 		public void Dispose()
 		{
-			_readerOpen = false;
-			if (_documentsEnumerator != null)
+			this.Dispose(true);
+			System.GC.SuppressFinalize(this);
+		}
+
+		private void Dispose(bool disposing)
+		{
+			if (disposing)
 			{
-				_documentsEnumerator.Dispose();
+				try
+				{
+					this.Close();
+				}
+				catch (Exception e)
+				{
+					throw new SystemException("An exception of type " + e.GetType() +
+											  " was encountered while closing the DocumentTransferDataReader.");
+				}
 			}
 		}
 
@@ -250,7 +271,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public int GetValues(object[] values)
 		{
-			// TODO: check if we need this
 			throw new System.NotImplementedException();
 		}
 

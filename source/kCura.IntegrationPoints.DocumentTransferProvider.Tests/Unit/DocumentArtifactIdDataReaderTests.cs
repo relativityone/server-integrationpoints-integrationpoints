@@ -542,6 +542,135 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		}
 
 		[Test]
+		public void Close_ReaderIsClosed()
+		{
+			// Arrange
+			const int documentArtifactId = 123423;
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			_relativityClientAdaptor
+				.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+					x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
+
+			// Act
+			_instance.Read();
+			_instance.Close();
+			bool isClosed = _instance.IsClosed;
+
+			// Assert
+			Assert.IsTrue(isClosed, "The reader should be closed");
+		}
+
+		[Test]
+		public void Close_ReadThenCloseThenRead_ReaderIsClosed()
+		{
+			// Arrange
+			const int documentArtifactId = 123423;
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			_relativityClientAdaptor
+				.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+					x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
+
+			// Act
+			_instance.Read();
+			_instance.Close();
+			bool result = _instance.Read();
+
+			// Assert
+			Assert.IsFalse(result, "The reader should be closed");
+		}
+
+		[Test]
+		public void Close_ReadThenCloseThenRead_QueryIsNotRerun()
+		{
+			// Arrange
+			const int documentArtifactId = 123423;
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			_relativityClientAdaptor
+				.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+					x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
+
+			// Act
+			_instance.Read();
+			_instance.Close();
+			_instance.Read();
+
+			// Assert
+			_relativityClientAdaptor
+				.Received(1)
+				.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+					x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)));
+		}
+
+
+		[Test]
+		public void Close_ReadThenClose_CannotAccessDocument()
+		{
+			// Arrange
+			const int documentArtifactId = 123423;
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			_relativityClientAdaptor
+				.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+					x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
+
+			// Act
+			_instance.Read();
+			_instance.Close();
+
+			bool correctExceptionThrown = false;
+			try
+			{
+				object result = _instance[0];
+			}
+			catch (NullReferenceException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+				// in case another exception is thrown
+			}
+
+			// Assert
+			Assert.IsTrue(correctExceptionThrown, "Reading after running Close() should nullify the current result");
+		}
+
+		[Test]
 		public void Depth_ReturnsZero()
 		{
 			// Act	
