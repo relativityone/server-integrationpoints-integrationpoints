@@ -178,12 +178,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public System.Type GetFieldType(int i)
 		{
-			if (i == 0)
+			if (i != 0)
 			{
-				return typeof (Int32);
+				throw new IndexOutOfRangeException();
 			}
 
-			return null;
+			return typeof (Int32);
 		}
 
 		public float GetFloat(int i)
@@ -216,22 +216,22 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public string GetName(int i)
 		{
-			if (i == 0)
+			if (i != 0)
 			{
-				return ARTIFACT_ID;
+				throw new IndexOutOfRangeException();
 			}
 
-			return null;
+			return ARTIFACT_ID;
 		}
 
 		public int GetOrdinal(string name)
 		{
-			if (name == ARTIFACT_ID)
+			if (name != ARTIFACT_ID)
 			{
-				return 0;
+				throw new IndexOutOfRangeException();
 			}
 
-			return -1;
+			return 0;
 		}
 
 		public string GetString(int i)
@@ -241,12 +241,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public object GetValue(int i)
 		{
-			if (i == 0)
+			if (i != 0)
 			{
-				return _currentDocument.ArtifactID;
+				throw new IndexOutOfRangeException();
 			}
 
-			return null;
+			return _currentDocument.ArtifactID;
 		}
 
 		public int GetValues(object[] values)
@@ -264,13 +264,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		{
 			get
 			{
-				// Should this except if the name isn't ARTIFACT_ID?
-				if (name == ARTIFACT_ID)
-				{
-					return GetValue(GetOrdinal(name));
-				}
-
-				return null;
+				return GetValue(GetOrdinal(name));
 			}
 		}
 

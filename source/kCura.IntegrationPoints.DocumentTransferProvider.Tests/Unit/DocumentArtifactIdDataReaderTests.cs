@@ -224,7 +224,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		}
 
 		[Test]
-		public void ThisNameAccessor_InvalidColumnName_ReturnsNull()
+		public void ThisNameAccessor_InvalidColumnName_ThrowsIndexOutOfRangeException()
 		{
 			// Arrange
 			const int documentArtifactId = 123423;
@@ -243,11 +243,24 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Act
 			bool readResult = _instance.Read();
-			object accessorResult = _instance["WRONG_COLUMN"];
+			// Act
+			bool correctExceptionThrown = false;
+			try
+			{
+				object accessorResult = _instance["WRONG_COLUMN"];
+			}
+			catch (IndexOutOfRangeException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+				// To catch any other types of exceptions before failing the tests
+			}
 
 			// Assert
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
-			Assert.IsNull(accessorResult, "The column doesn't exist, there shouldn't be any results");
+			Assert.IsTrue(correctExceptionThrown, "An IndexOutOfRangeException should have been thrown");
 		}
 
 		[Test]
@@ -278,7 +291,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		}
 
 		[Test]
-		public void ThisIndexAccessor_InvalidColumnIndex_ReturnsNull()
+		public void ThisIndexAccessor_InvalidColumnIndex_ThrowsIndexOutOfRangeException()
 		{
 			// Arrange
 			const int documentArtifactId = 123423;
@@ -297,11 +310,24 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Act
 			bool readResult = _instance.Read();
-			object accessorResult = _instance[1100];
+			// Act
+			bool correctExceptionThrown = false;
+			try
+			{
+				object accessorResult = _instance[1100];
+			}
+			catch (IndexOutOfRangeException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+				// To catch any other types of exceptions before failing the tests
+			}
 
 			// Assert
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
-			Assert.IsNull(accessorResult, "The column doesn't exist, there shouldn't be any results");
+			Assert.IsTrue(correctExceptionThrown, "An IndexOutOfRangeException should have been thrown");
 		}
 
 		[Test]
@@ -315,13 +341,25 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		}
 
 		[Test]
-		public void GetName_InvalidIndex_ReturnsNull()
+		public void GetName_InvalidIndex_ThrowsIndexOutOfRangeException()
 		{
 			// Act
-			string result = _instance.GetName(1);
+			bool correctExceptionThrown = false;
+			try
+			{
+				string result = _instance.GetName(1);
+			}
+			catch (IndexOutOfRangeException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+				// To catch any other types of exceptions before failing the tests
+			}
 
 			// Assert
-			Assert.IsNull(result, "The result should be null");
+			Assert.IsTrue(correctExceptionThrown, "An IndexOutOfRangeException should have been thrown");
 		}
 
 		[Test]
@@ -335,13 +373,25 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		}
 
 		[Test]
-		public void GetOrdinal_InvalidIndex_ReturnsNull()
+		public void GetOrdinal_InvalidIndex_ThrowsIndexOutOfRangeException()
 		{
 			// Act
-			int result = _instance.GetOrdinal("ASDF");
+			bool correctExceptionThrown = false;
+			try
+			{
+				int result = _instance.GetOrdinal("ASDF");
+			}
+			catch (IndexOutOfRangeException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+				// To catch any other types of exceptions before failing the tests
+			}
 
 			// Assert
-			Assert.AreEqual(-1, result, "The result should be -1");
+			Assert.IsTrue(correctExceptionThrown, "An IndexOutOfRangeException should have been thrown");
 		}
 
 		[Test]
@@ -355,13 +405,25 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		}
 
 		[Test]
-		public void GetFieldType_InvalidIndex_ReturnsNull()
+		public void GetFieldType_InvalidIndex_ThrowsIndexOutOfRangeException()
 		{
 			// Act
-			Type result = _instance.GetFieldType(1);
+			bool correctExceptionThrown = false;
+			try
+			{
+				Type result = _instance.GetFieldType(1);
+			}
+			catch (IndexOutOfRangeException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+				// To catch any other types of exceptions before failing the tests
+			}
 
 			// Assert
-			Assert.IsNull(result, "The result should be null");
+			Assert.IsTrue(correctExceptionThrown, "An IndexOutOfRangeException should have been thrown");
 		}
 
 		[Test]
