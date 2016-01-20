@@ -217,7 +217,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public System.Type GetFieldType(int i)
 		{
-			// TODO: double check this, this doesn't seem right
 			return  _schemaDataTable.Columns[i].DataType;
 		}
 
