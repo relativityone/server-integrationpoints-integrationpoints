@@ -32,8 +32,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		private List<Relativity.Client.Artifact> GetRelativityFields(IRSAPIClient client, int workspaceId, int rdoTypeId)
 		{
 			RelativityFieldQuery query = new RelativityFieldQuery(client);
-			var fields = query.GetFieldsForRDO(rdoTypeId);
-			var mappableFields = GetImportAPI(client).GetWorkspaceFields(workspaceId, rdoTypeId);
+			List<Artifact> fields = query.GetFieldsForRDO(rdoTypeId);
+			IEnumerable<kCura.Relativity.ImportAPI.Data.Field> mappableFields = GetImportAPI(client).GetWorkspaceFields(workspaceId, rdoTypeId);
 			return fields.Where(x => mappableFields.Any(y => y.ArtifactID == x.ArtifactID)).ToList();
 		}
 
