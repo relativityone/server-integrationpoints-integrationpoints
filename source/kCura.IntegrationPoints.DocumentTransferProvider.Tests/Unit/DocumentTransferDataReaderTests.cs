@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
@@ -101,6 +103,25 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		}
 
 		[Test]
+		public void Read_FirstRead_RunsSavedSearch_RequestFailsWithException_ReturnsFalse()
+		{
+			// Arrange	
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			{
+				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
+			});
+
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Throws(new Exception());
+
+			// Act
+			bool result = _instance.Read();
+
+			// Assert
+			Assert.IsFalse(result, "There are no records to read, result should be false");
+			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
+		}
+
+		[Test]
 		public void Read_ReadAllResults_GoldFlow()
 		{
 			// Arrange	
@@ -167,6 +188,54 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		#endregion
 
 		#region IDataReader methods
+		[Test]
+		public void NextResult_ReturnsFalse()
+		{
+			// Arrange	
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			{
+				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
+			});
+
+			// Act
+			bool result = _instance.NextResult();
+
+			// Assert
+			Assert.IsFalse(result, "NextResult() should return false");
+		}
+
+		[Test]
+		public void Depth_ReturnsZero()
+		{
+			// Arrange	
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			{
+				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
+			});
+
+			// Act
+			int result = _instance.Depth;
+
+			// Assert
+			Assert.AreEqual(0, result, "Depth should return 0");
+		}
+
+		[Test]
+		public void RecordsAffected_ReturnsNegativeOne()
+		{
+			// Arrange	
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			{
+				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
+			});
+
+			// Act
+			int result = _instance.RecordsAffected;
+
+			// Assert
+			Assert.AreEqual(-1, result, "RecordsAffected should alwayds return -1");
+		}
+
 		[Test]
 		public void GetName_FieldExists_LookUpSucceeds()
 		{
@@ -368,6 +437,31 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			bool exceptionThrown = false;
 			try
 			{
+				_instance.Dispose();
+			}
+			catch
+			{
+				exceptionThrown = true;
+			}
+
+			Assert.IsFalse(exceptionThrown, "Dispose() should not except");
+		}
+
+		[Test]
+		public void Dispose_WhileReaderIsOpen_DoesNotExcept()
+		{
+			// Arrange
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			{
+				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
+				new FieldEntry() { DisplayName = "DispNameTwo", FieldIdentifier = "1233"}
+			});
+
+			// Act
+			bool exceptionThrown = false;
+			try
+			{
+				_instance.Read();
 				_instance.Dispose();
 			}
 			catch
