@@ -26,11 +26,8 @@ goto end
 :help
 echo      Build the specified Application
 echo.
-echo      usage: %0 [CONFIG]
+echo      usage: %~n0 [WorkspaceId]
 echo.
-echo.           CONFIG    The configuration for the build. Possibilities are 'debug' and 'release'. (default: %BUILDCONFIG%)
+echo.           WorkspaceId    The local workspaceId of where the dlls will be updated. Invalid workspaceId has no effect.
 echo.
-echo.
-echo.		Output Application will be in %BUILDPATH% 
-echo.			(default: %BUILDPATH%\)
 :end
