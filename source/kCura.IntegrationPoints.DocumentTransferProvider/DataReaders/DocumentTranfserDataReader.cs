@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private Document _currentDocument;
 		private bool _readerOpen;
 		private readonly IDictionary<string, string> _fieldIdToNameDictionary;
-		private const string OBJECT_IDENTIFIER_APPENDAGE = " [Object Identifier]";
 
 		public DocumentTranfserDataReader(IRelativityClientAdaptor relativityClientAdaptor, IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries)
 		{
@@ -30,7 +29,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			_readerOpen = true;
 			_schemaDataTable = new DataTable();
 			_schemaDataTable.Columns.AddRange(_fieldEntries.Select(x => new DataColumn(x.FieldIdentifier)).ToArray());
-			_fieldIdToNameDictionary = _fieldEntries.ToDictionary(x => x.FieldIdentifier, y => y.DisplayName.Replace(OBJECT_IDENTIFIER_APPENDAGE, String.Empty));
+			_fieldIdToNameDictionary = _fieldEntries.ToDictionary(
+				x => x.FieldIdentifier,
+				y => y.IsIdentifier ? y.DisplayName.Replace(Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, String.Empty) : y.DisplayName);
 		}
 
 		public void Close()
@@ -70,7 +71,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				// Request document objects
 				var artifactIdSetCondition = new WholeNumberCondition
 				{
-					Field = "ArtifactId",
+					Field = Shared.Constants.ARTIFACT_ID_FIELD_NAME,
 					Operator = NumericConditionEnum.In,
 					Value = _documentArtifactIds.ToList()
 				};
@@ -242,7 +243,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		public object GetValue(int i)
 		{
 			string fieldIdAsString = GetName(i);
-			string columnName = _fieldIdToNameDictionary[fieldIdAsString].Replace(" [Object Identifier]", String.Empty);
+			string columnName = _fieldIdToNameDictionary[fieldIdAsString].Replace(Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, String.Empty);
 
 			return _currentDocument[columnName].Value;
 		}

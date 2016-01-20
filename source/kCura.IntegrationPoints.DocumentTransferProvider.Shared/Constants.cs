@@ -13,5 +13,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Shared
 		internal const String PROVIDER_NAME = "Relativity";
 		internal const String PROVIDER_CONFIGURATION = "RelativityProviderConfiguration";
 		internal const String PROVIDER_VIEW = "RelativityProvider";
+	    internal const String ARTIFACT_ID_FIELD_NAME = "ArtifactId";
+	    internal const String OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
 	}
 }

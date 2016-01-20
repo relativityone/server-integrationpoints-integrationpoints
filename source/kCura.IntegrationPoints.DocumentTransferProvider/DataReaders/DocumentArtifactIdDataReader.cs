@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private IEnumerator<Result<Document>> _savedSearchResultDocumentsEnumerator;
 		private Document _currentDocument;
 		private bool _readerOpen;
-		private const string ARTIFACT_ID = "ArtifactId";
 
 		public DocumentArtifactIdDataReader(IRelativityClientAdaptor relativityClientAdaptor, int savedSearchArtifactId)
 		{
@@ -221,12 +220,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				throw new IndexOutOfRangeException();
 			}
 
-			return ARTIFACT_ID;
+			return Shared.Constants.ARTIFACT_ID_FIELD_NAME;
 		}
 
 		public int GetOrdinal(string name)
 		{
-			if (name != ARTIFACT_ID)
+			if (name != Shared.Constants.ARTIFACT_ID_FIELD_NAME)
 			{
 				throw new IndexOutOfRangeException();
 			}

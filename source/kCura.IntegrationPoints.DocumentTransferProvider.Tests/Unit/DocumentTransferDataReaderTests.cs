@@ -270,7 +270,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange	
 			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
 			{
-				new FieldEntry() { DisplayName = "DispName [Object Identifier]", FieldIdentifier = "123"}
+				new FieldEntry() { DisplayName = "DispName" + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, FieldIdentifier = "123"}
 			});
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
@@ -326,7 +326,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange	
 			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
 			{
-				new FieldEntry() { DisplayName = "DispName [Object Identifier]", FieldIdentifier = "123"}
+				new FieldEntry() { DisplayName = "DispName" + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, FieldIdentifier = "123"}
 			});
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
@@ -354,7 +354,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange	
 			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
 			{
-				new FieldEntry() { DisplayName = "DispName [Object Identifier]", FieldIdentifier = "123"}
+				new FieldEntry() { DisplayName = "DispName" + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, FieldIdentifier = "123"}
 			});
 
 			ResultSet<Document> resultSet = new ResultSet<Document>

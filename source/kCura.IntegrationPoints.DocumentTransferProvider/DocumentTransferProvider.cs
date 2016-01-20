@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 					isIdentifier = Convert.ToInt32(idField.Value) == 1;
 					if (isIdentifier)
 					{
-						result.Name += " [Object Identifier]";
+						result.Name += Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT;
 					}
 				}
 				yield return new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier, IsRequired = false };
