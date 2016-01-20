@@ -1,4 +1,6 @@
-﻿using kCura.Relativity.Client;
+﻿using System;
+using System.Data;
+using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers
@@ -37,6 +39,43 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers
 					return false;
 				}
 
+			}
+
+			return true;
+		}
+
+		public static bool DataTablesMatch(DataTable expected, DataTable actual)
+		{
+			if (expected == null && actual == null)
+			{
+				return true;
+			}
+			if (expected == null && actual != null)
+			{
+				return false;
+			}
+			if (expected != null && actual == null)
+			{
+				return false;
+			}
+
+			if (expected.Columns.Count != actual.Columns.Count)
+			{
+				return false;
+			}
+
+			if (expected.Columns.Count == 0 
+				&& actual.Columns.Count == 0)
+			{
+				return true;
+			}
+
+			for (int i = 0; i < expected.Columns.Count; i++)
+			{
+				if (!expected.Columns[i].ColumnName.Equals(actual.Columns[i].ColumnName))
+				{
+					return false;
+				}
 			}
 
 			return true;

@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
+using NSubstitute.Core.Arguments;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
@@ -186,6 +187,85 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			Assert.IsFalse(result2, "There are no records to read, result should be false");
 			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
 		}
+
+		[Test]
+		public void Read_NoFields_DoesNotFail()
+		{
+			// Arrange	
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new FieldEntry[0]);
+
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+			};
+
+			_relativityClientAdaptor
+				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+				.Returns(resultSet);
+
+			// Act
+			bool result = _instance.Read();
+
+			// Assert
+			_relativityClientAdaptor
+				.Received(1)
+				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
+		}
+
+		[Test]
+		public void Read_NoDocumentIds_DoesNotFail()
+		{
+			// Arrange	
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new int[0], new[]
+			{
+				new FieldEntry() {DisplayName = "DispName", FieldIdentifier = "123"}
+			});
+
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+			};
+
+			_relativityClientAdaptor
+				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+				.Returns(resultSet);
+
+			// Act
+			bool result = _instance.Read();
+
+			// Assert
+			_relativityClientAdaptor
+				.Received(1)
+				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
+		}
+
+		[Test]
+		public void Read_NoDocumentIdsNoFields_DoesNotFail()
+		{
+			// Arrange	
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new int[0], new FieldEntry[0]);
+
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+			};
+
+			_relativityClientAdaptor
+				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+				.Returns(resultSet);
+
+			// Act
+			bool result = _instance.Read();
+
+			// Assert
+			_relativityClientAdaptor
+				.Received(1)
+				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
+		}
+
 		#endregion
 
 		#region IDataReader methods
@@ -615,6 +695,113 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Assert
 			Assert.IsTrue(correctExceptionThrown, "Reading after running Close() should nullify the current result");
+		}
+
+		[Test]
+		public void GetSchemaTable_OneField_ReturnsCorrectSchema()
+		{
+			// Arrange	
+			const int documentArtifactId = 123423;
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			{
+				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
+			});
+
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			var expectedResult = new DataTable() { Columns = { new DataColumn("123")}};
+
+			// Act
+			DataTable result = _instance.GetSchemaTable();
+
+			// Arrange
+			Assert.IsTrue(ArgumentMatcher.DataTablesMatch(expectedResult, result), "The schema DataTable should be correct");
+		}
+
+		[Test]
+		public void GetSchemaTable_MultipleFields_ReturnsCorrectSchema()
+		{
+			// Arrange	
+			const int documentArtifactId = 123423;
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			{
+				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
+				new FieldEntry() { DisplayName = "DispNameTwo", FieldIdentifier = "456"},
+			});
+
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			var expectedResult = new DataTable() { Columns = { new DataColumn("123"), new DataColumn("456") } };
+
+			// Act
+			DataTable result = _instance.GetSchemaTable();
+
+			// Arrange
+			Assert.IsTrue(ArgumentMatcher.DataTablesMatch(expectedResult, result), "The schema DataTable should be correct");
+		}
+
+		[Test]
+		public void GetSchemaTable_NoFields_ReturnsCorrectSchema()
+		{
+			// Arrange	
+			const int documentArtifactId = 123423;
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new FieldEntry[0]);
+
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			var expectedResult = new DataTable() { Columns = { } };
+
+			// Act
+			DataTable result = _instance.GetSchemaTable();
+
+			// Arrange
+			Assert.IsTrue(ArgumentMatcher.DataTablesMatch(expectedResult, result), "The schema DataTable should be correct");
+		}
+
+		[Test]
+		public void GetSchemaTable_NoDocumentsNoFields_ReturnsCorrectSchema()
+		{
+			// Arrange	
+			const int documentArtifactId = 123423;
+			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new int[] { }, new FieldEntry[0]);
+
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			var expectedResult = new DataTable() { Columns = { } };
+
+			// Act
+			DataTable result = _instance.GetSchemaTable();
+
+			// Arrange
+			Assert.IsTrue(ArgumentMatcher.DataTablesMatch(expectedResult, result), "The schema DataTable should be correct");
 		}
 		#endregion
 	}
