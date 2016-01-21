@@ -15,7 +15,7 @@ task show_editor -depends get_editor  {
 }
 
 
-task get_editor {
+task get_editor -precondition { (-not [System.IO.File]::Exists($buildeditor_exe)) } {
     exec {
         & $nuget_exe @('install', 'kCura.BuildTools', '-ExcludeVersion')
     }      

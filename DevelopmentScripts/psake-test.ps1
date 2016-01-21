@@ -13,14 +13,14 @@ task test_initalize {
     [System.IO.Directory]::CreateDirectory($testlog_directory)  
 }
 
-task get_testrunner {
+task get_testrunner -precondition { (-not [System.IO.File]::Exists($testrunner_exe)) }  {
     exec {
         & $nuget_exe @('install', 'kCura.TestRunner', '-ExcludeVersion')
     }    
     Copy-Item ([System.IO.Path]::Combine($development_scripts_directory, 'kCura.TestRunner', 'lib', 'kCura.TestRunner.exe')) $development_scripts_directory
 }
 
-task get_nunit {
+task get_nunit -precondition { (-not [System.IO.File]::Exists($NUnit3)) }  {
     exec {
         & $nuget_exe @('install', 'NUnit.Console', '-Version', '3.0.1', '-ExcludeVersion')
     } 

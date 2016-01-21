@@ -28,7 +28,7 @@ task build_initalize {
 }
 
 
-task get_buildhelper {
+task get_buildhelper -precondition { (-not [System.IO.File]::Exists($buildhelper_exe)) } {
     exec {
         & $nuget_exe @('install', 'kCura.BuildHelper', '-ExcludeVersion')
     }      

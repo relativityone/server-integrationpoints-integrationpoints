@@ -3,7 +3,7 @@
 
 task default -depends build_applications
 
-task get_rapbuilder {
+task get_rapbuilder -precondition { (-not [System.IO.File]::Exists($rapbuilder_exe)) } {
     exec {
         & $nuget_exe @('install', 'kCura.RAPBuilder', '-ExcludeVersion')
     }   
