@@ -427,6 +427,33 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		}
 
 		[Test]
+		public void GetString_ReturnsString()
+		{
+			// Act
+			const int documentArtifactId = 123423;
+			ResultSet<Document> resultSet = new ResultSet<Document>
+			{
+				Success = true,
+				Results = new List<Result<Document>>()
+				{
+					new Result<Document>() {Artifact = new Document(documentArtifactId)},
+				}
+			};
+
+			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
+				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
+				.Returns(resultSet);
+
+			// Act
+			bool readResult = _instance.Read();
+			string getResult = _instance.GetString(0);
+
+			// Assert
+			Assert.IsTrue(readResult, "There are records to read, result should be true");
+			Assert.AreEqual(Convert.ToString(documentArtifactId), getResult, "The result should be the documentArtifactId as a string");
+		}
+
+		[Test]
 		public void GetInt32_ReturnsInt32Value()
 		{
 			// Arrange
@@ -1005,26 +1032,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
 		}
 
-		[Test]
-		public void GetString_ThrowsNotImplementedException()
-		{
-			// Act
-			bool correctExceptionThrown = false;
-			try
-			{
-				_instance.GetString(0);
-			}
-			catch (NotImplementedException)
-			{
-				correctExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			// Assert
-			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
-		}
 
 		[Test]
 		public void GetGuid_ThrowsNotImplementedException()

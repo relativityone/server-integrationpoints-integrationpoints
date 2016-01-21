@@ -255,7 +255,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public string GetString(int i)
 		{
-			throw new NotImplementedException();
+			object value = GetValue(i);
+			string stringValue = Convert.ToString(value);
+
+			return stringValue;
 		}
 
 		public object GetValue(int i)
