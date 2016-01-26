@@ -54,13 +54,6 @@
     <DocumentationFile>bin\kCura.IntegrationPoints.Contracts.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.Relativity.Client">
-      <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.API, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -84,7 +77,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="PluginBuilder.cs" />
-    <Compile Include="Provider\IInternalOnlyDataSourceProvider.cs" />
     <Compile Include="Provider\IDataSourceProvider.cs" />
     <Compile Include="Provider\IFieldProvider.cs" />
     <Compile Include="IStartUp.cs" />
