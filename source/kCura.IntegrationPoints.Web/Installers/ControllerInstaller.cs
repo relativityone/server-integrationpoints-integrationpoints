@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<WebAPIFilterException>().ImplementedBy<WebAPIFilterException>());
 
 			container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod((k) =>
-				k.Resolve<WebClientFactory>().CreateClient()).LifestyleTransient().IsDefault());
+				k.Resolve<WebClientFactory>().CreateClient()).LifestyleTransient());
 
 			container.Register(Component.For<IDBContext>().UsingFactoryMethod((k) =>
 				k.Resolve<WebClientFactory>().CreateDbContext()).LifestyleTransient());

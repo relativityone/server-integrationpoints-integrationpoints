@@ -44,18 +44,11 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			Dictionary<string, SourceProviderInstaller.SourceProvider> installingProviderDict = providers.ToDictionary(x => x.GUID.ToString(), x => x);
 			Dictionary<string, Data.SourceProvider> installedRdoProviderDict = installedRdoProviders.ToDictionary(x => x.Identifier, x => x);
 
-			/*
-			List<Data.SourceProvider> providersToBeRemoved =
-				installedRdoProviders.Where(x => !installingProviderDict.ContainsKey(x.Identifier)).ToList();
-			*/
-
 			List<Data.SourceProvider> providersToBeUpdated =
 				installedRdoProviders.Where(x => installingProviderDict.ContainsKey(x.Identifier)).ToList();
 
 			List<SourceProviderInstaller.SourceProvider> providersToBeInstalled =
 				providers.Where(x => !installedRdoProviderDict.ContainsKey(x.GUID.ToString())).ToList();
-
-			//RemoveProviders(providersToBeRemoved);
 
 			UpdateExistingProviders(providersToBeUpdated, providers);
 
