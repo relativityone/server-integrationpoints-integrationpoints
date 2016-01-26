@@ -57,6 +57,9 @@
     <Reference Include="kCura.Relativity.Client">
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="NSubstitute, Version=1.5.0.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NSubstitute.1.8.0.0\lib\net45\NSubstitute.dll</HintPath>
@@ -109,6 +112,8 @@
     <Compile Include="Integration\IntegrationPointQueryTest.cs" />
     <Compile Include="Integration\PermissionServiceIntegrationTest.cs" />
     <Compile Include="Integration\Queries\GetRecentJobHistoryTests.cs" />
+    <Compile Include="Integration\Queries\GetSavedSearchesQueryTests..cs" />
+    <Compile Include="Integration\Queries\GetWorkspacesQueryTests.cs" />
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />
     <Compile Include="Unit\BaseRDOTests.cs" />
     <Compile Include="MockDBContext.cs" />
