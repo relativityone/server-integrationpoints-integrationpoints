@@ -2,8 +2,9 @@
     $root = ""       
     $buildid = 0
 
-    $buildserver = 'bld-mstr-01.kcura.corp'
+    $buildserver = 'http://teamcity.kcura.corp'
     $database = 'TCBuildVersion'
+    $proget = 'https://proget.kcura.corp/feeds/NuGet/'
 }
 
 task default -depends sendemail
@@ -97,7 +98,7 @@ Function GetAuth() {
 Function GetBuildInfo($id) {
 
     $base64AuthInfo = GetAuth
-    $statusraw = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "http://$buildserver/app/rest/builds/id:$id"
+    $statusraw = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "$buildserver/app/rest/builds/id:$id"
 
     $bld = New-Object Build
     $bld.id = $id
@@ -149,7 +150,7 @@ Function GetBuildInfo($id) {
 Function GetBuildChanges([Build] $bld) {
     $base64AuthInfo = GetAuth
     $id = $bld.id
-    $changesraw = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "http://$buildserver/app/rest/changes?locator=build:$id"
+    $changesraw = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "$buildserver/app/rest/changes?locator=build:$id"
 
     $x = [xml]$changesraw.InnerXml
 
@@ -202,8 +203,8 @@ Function GetBuildChanges([Build] $bld) {
 
     $bld.changes = ''
 
-    $urlFiles = "http://$buildserver/viewModification.html?modId=####&tab=vcsModificationFiles"
-    $urlExtra = "http://$buildserver/viewLog.html?buildId=$buildid&tab=buildChangesDiv"
+    $urlFiles = "$buildserver/viewModification.html?modId=####&tab=vcsModificationFiles"
+    $urlExtra = "$buildserver/viewLog.html?buildId=$buildid&tab=buildChangesDiv"
 
     $bld.changesCount = 0
 
@@ -279,7 +280,7 @@ Function GetBuildChanges([Build] $bld) {
 Function GetBuildMessages([Build] $bld) {
     $base64AuthInfo = GetAuth
     $id = $bld.id
-    $importantMessage = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "http://$buildserver/viewLog.html?buildId=$id&tab=buildLog&filter=important&hideBlocks=true&state=&expand=all#_"
+    $importantMessage = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "$buildserver/viewLog.html?buildId=$id&tab=buildLog&filter=important&hideBlocks=true&state=&expand=all#_"
 
     $importantMessage = $importantMessage.Substring($importantMessage.IndexOf('<div class="log rTree" id="buildLog">'), $importantMessage.IndexOf('<!-- END EXTENSION CONTENT jetbrains.buildServer.controllers.viewLog.BuildLogTab -->', $importantMessage.IndexOf('<div class="log rTree" id="buildLog">')) - $importantMessage.IndexOf('<div class="log rTree" id="buildLog">'));
 
@@ -324,7 +325,7 @@ Function GetBuildDependencies([Build] $bld, [int] $id) {
     if($bld.id -eq $id) {
         if($bld.dependencyID -ne 0) {
             $bld.dependencies += '<div align="center" style="border: 2px solid Red;">
-                                    <a href="http://' + $buildserver + '/viewLog.html?buildId=' + $bld.id + '">
+                                    <a href="' + $buildserver + '/viewLog.html?buildId=' + $bld.id + '">
                                         ' + $bld.product + ' :: ' + $bld.project + ' :: ' + $bld.config + '<br/>
                                         ' + $bld.version + '
                                 
@@ -341,7 +342,7 @@ Function GetBuildDependencies([Build] $bld, [int] $id) {
                                 &uarr;
                             </div>
                             <div align="center" style="border: 2px solid Black;">
-                                <a href="http://' + $buildserver + '/viewLog.html?buildId=' + $bldTmp.id + '">
+                                <a href="' + $buildserver + '/viewLog.html?buildId=' + $bldTmp.id + '">
                                     ' + $bldTmp.product + ' :: ' + $bldTmp.project + ' :: ' + $bldTmp.config + '<br/>
                                     [' + $bldTmp.branch + '] ' + $bldTmp.agent + ' (' + $bldTmp.buildType + ') ' + $bldTmp.version + '
                                 </a>
@@ -352,6 +353,7 @@ Function GetBuildDependencies([Build] $bld, [int] $id) {
         }
         else {
             $bld.branch = $bldTmp.branch
+            $bld.version = $bldTmp.version
         }
     }      
 
@@ -360,7 +362,7 @@ Function GetBuildDependencies([Build] $bld, [int] $id) {
 
 Function GetStatistics([Build] $bld, [int] $id) {
     $base64AuthInfo = GetAuth
-    $statusraw = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "http://$buildserver/app/rest/builds/id:$id/statistics"
+    $statusraw = Invoke-RestMethod -Headers @{Authorization=("Basic {0}" -f $base64AuthInfo)} "$buildserver/app/rest/builds/id:$id/statistics"
     
     $x = [xml]$statusraw.InnerXml
 
@@ -498,6 +500,35 @@ SET NOCOUNT ON
 "
 }
 
+Function NuGetParseVersion($nugetString) {
+    
+    $parts = $nugetString.Split('.')
+
+    $returnVal = ''
+
+    $num = $false
+
+    foreach ($p in $parts) {
+        
+        if (-not $num) {
+            if ($p -match '^[1-9]') {
+                $returnVal += '/'
+                $num = $true
+            }
+            elseif ($returnVal.Length -gt 0) {
+                $returnVal += '.'
+            }            
+        }
+        elseif ($returnVal.Length -gt 0) {
+            $returnVal += '.'
+        }
+
+        $returnVal += $p
+    }
+
+    return $returnVal
+}
+
 $build = GetBuildInfo $buildid
 
 $build = GetBuildChanges $build
@@ -518,7 +549,7 @@ $body = '<div>
 			<table style="width: 100%; font-family: Tahoma;">
 				<tr>
 					<td>
-						<b>BUILD</b>&nbsp;<b style="color:' + $build.statusColor + '">' + $build.status + '</b>'
+						<b>' + $build.config + '</b>&nbsp;<b style="color:' + $build.statusColor + '">' + $build.status + '</b>'
 
 
 
@@ -529,7 +560,7 @@ if($build.canceledBy -ne $null -and $build.canceledBy -ne ''){
 $body += '
 					</td>
 					<td style="text-align: right">
-						<a href="http://bld-mstr-01.kcura.corp" style="text-decoration:none;"><b style="color:2AA4FC">Team</b><font color="FBBD30">City</font></a>
+						<a href="' + $buildserver + '" style="text-decoration:none;"><b style="color:2AA4FC">Team</b><font color="FBBD30">City</font></a>
 					</td>
 				</tr>		
 			</table>		
@@ -584,10 +615,33 @@ if($build.status -eq 'SUCCESS') {
 
     if($build.config.startsWith('Build')) {
         $body += '<tr>
-				    <td>Package</td>
-				    <td>:</td>
+				    <td style="vertical-align: top">Package</td>
+				    <td style="vertical-align: top">:</td>
 				    <td><a href="file:\\BLD-PKGS.kcura.corp\Packages\' + $build.product + '\' + $build.branch + '\' + $build.version + '">\\BLD-PKGS.kcura.corp\Packages\' + $build.product + '\' + $build.branch + '\' + $build.version + '</a></td>
 			    </tr>'
+        
+
+        foreach ($folder in [System.IO.Directory]::GetDirectories('\\BLD-PKGS.kcura.corp\Packages\' + $build.product + '\' + $build.branch + '\' + $build.version)) {
+            $body += '<a style="font-size: 8pt" href="' + $folder + '">[' +  [System.IO.Path]::GetFileName($folder) + ']</a>  '
+        }
+
+        
+        
+        if ([System.IO.Directory]::Exists('\\BLD-PKGS.kcura.corp\Packages\' + $build.product + '\' + $build.branch + '\' + $build.version + '\NuGet')) {
+            $body += '<tr>
+				        <td style="vertical-align: top">NuGet</td>
+				        <td style="vertical-align: top">:</td>
+				        <td>'
+
+            foreach ($file in [System.IO.Directory]::GetFiles(('\\BLD-PKGS.kcura.corp\Packages\' + $build.product + '\' + $build.branch + '\' + $build.version + '\NuGet'))) {
+                $body += '<a href="' +  $proget + (NuGetParseVersion ([System.IO.Path]::GetFileNameWithoutExtension($file))) +'">' +  [System.IO.Path]::GetFileNameWithoutExtension($file) + '</a><br/>'
+            }
+         
+            
+            $body += '</td>
+			        </tr>'
+        }
+               
     }
     elseif($build.config -eq 'CodeCoverage') {
         $body += '<tr>
@@ -619,7 +673,7 @@ else {
 $body += '<tr>
 					<td>Links</td>
 					<td>:</td>
-					<td><a href="http://' + $buildserver + '/viewLog.html?buildId=' + $build.id + '">[Overview]</a>  <a href="http://' + $buildserver + '/viewLog.html?buildId=' + $build.id + '&tab=buildLog&filter=debug">[Build Log]</a> ' 
+					<td><a href="' + $buildserver + '/viewLog.html?buildId=' + $build.id + '">[Overview]</a>  <a href="' + $buildserver + '/viewLog.html?buildId=' + $build.id + '&tab=buildLog&filter=debug">[Build Log]</a> ' 
 
 if([System.IO.File]::Exists('\\BLD-PKGS.kcura.corp\Packages\' + $build.product + '\' + $build.branch + '\' + $build.version + '\CoverageReports\fullcoveragereport.html')){
 
@@ -653,7 +707,7 @@ $body += '  <tr>
 
 
 $Conn = New-Object System.Data.SqlClient.SqlConnection
-$Conn.ConnectionString = "server='$buildserver';Database='$database';trusted_connection=true;"
+$Conn.ConnectionString = "server='teamcity.kcura.corp';Database='$database';trusted_connection=true;"
 
 $Conn.Open()
 
