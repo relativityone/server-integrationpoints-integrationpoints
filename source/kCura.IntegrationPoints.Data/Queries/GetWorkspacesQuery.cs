@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 		}
 
 		/// <summary>
-		/// Get all workspaces within specified workspace via RSAPI client.
+		/// Get all workspaces
 		/// </summary>
 		/// <returns>query result contains workspace artifact(s).</returns>
 		public QueryResult ExecuteQuery()
