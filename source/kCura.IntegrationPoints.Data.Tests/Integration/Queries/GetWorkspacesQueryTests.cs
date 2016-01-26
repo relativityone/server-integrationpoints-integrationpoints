@@ -15,7 +15,7 @@
 			IRSAPIClient client = Substitute.For<IRSAPIClient>();
 			client.APIOptions = new APIOptions();
 
-			GetSavedSearchesQuery getSavedSearchesQuery = new GetSavedSearchesQuery(client);
+			GetWorkspacesQuery getSavedSearchesQuery = new GetWorkspacesQuery(client);
 			getSavedSearchesQuery.ExecuteQuery();
 
 			client.Received().Query(Arg.Is<APIOptions>(option => option == client.APIOptions),
