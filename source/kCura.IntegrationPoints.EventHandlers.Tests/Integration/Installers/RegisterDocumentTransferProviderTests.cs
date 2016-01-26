@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 	internal class RegisterDocumentTransferProviderTests
 	{
 		[Test]
-		public void RegisterDocumentTransferProvider_returnCollectInstanlationDetail()
+		public void RegisterDocumentTransferProvider_ReturnCorrectInstallationDetail()
 		{
 			RegisterDocumentTransferProvider installer = new RegisterDocumentTransferProvider();
 			IDictionary<Guid, SourceProvider> installationInfo = installer.GetSourceProviders();
