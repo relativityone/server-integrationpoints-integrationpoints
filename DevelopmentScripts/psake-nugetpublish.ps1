@@ -3,7 +3,7 @@
 
 task default -depends nuget_publish
 
-task nuget_publish -precondition { ($build_type -eq 'GOLD') -and ($branch -eq 'default' -or $branch.startsWith('release')) } {
+task nuget_publish {
     $dictRef = @{}
     $dictPath = @{}
     $order = @()
@@ -70,9 +70,10 @@ task nuget_publish -precondition { ($build_type -eq 'GOLD') -and ($branch -eq 'd
 			& $nuget_exe @('push', $dictPath.$item, '-Source', $proget_server) 2>&1
         }
 		
-        exec {
-            & $nuget_exe @('push', $dictPath.$item, '-Source', $nuget_server) 2>&1
-        }
-
+		if (($build_type -eq 'GOLD') -and ($branch -eq 'default' -or $branch.startsWith('release'))) {		
+			exec {
+				& $nuget_exe @('push', $dictPath.$item, '-Source', $nuget_server) 2>&1
+			}
+		}
     }  
 }
