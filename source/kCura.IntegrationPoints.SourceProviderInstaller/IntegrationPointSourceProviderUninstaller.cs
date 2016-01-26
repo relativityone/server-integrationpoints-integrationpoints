@@ -1,9 +1,11 @@
 ﻿using System;
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Core.Services.Syncronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 using kCura.Relativity.Client;
@@ -44,6 +46,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		protected IntegrationPointSourceProviderUninstaller()
 		{
 		}
+
 		private IWorkspaceDBContext _workspaceDbContext;
 		internal IWorkspaceDBContext GetWorkspaceDbContext()
 		{
@@ -128,7 +131,12 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		{
 			get
 			{
-				return _importService ?? (_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext, this.DeleteIntegrationPoints));
+				if (_importService == null)
+				{
+					_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext, DeleteIntegrationPoints);
+				}
+
+				return _importService;
 			}
 			set { _importService = value; }
 		}

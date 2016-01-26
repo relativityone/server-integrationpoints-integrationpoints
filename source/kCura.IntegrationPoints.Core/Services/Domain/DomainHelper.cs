@@ -126,8 +126,9 @@ namespace kCura.IntegrationPoints.Core.Domain
 		{
 			this.LoadRequiredAssemblies(domain);
 			this.LoadClientLibraries(domain, provider, applicationGuid);
-			var manager = this.CreateInstance<DomainManager>(domain);
+			DomainManager manager = this.CreateInstance<DomainManager>(domain);
 			manager.Init();
+
 			return manager;
 		}
 

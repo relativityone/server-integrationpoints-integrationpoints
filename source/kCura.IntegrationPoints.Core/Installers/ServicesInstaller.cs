@@ -3,6 +3,7 @@ using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Domain;
 using kCura.IntegrationPoints.Core.Models;
@@ -28,7 +29,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IErrorService>().ImplementedBy<Services.ErrorService>().Named("ErrorService").LifestyleTransient());
 			container.Register(Component.For<Core.Services.ObjectTypeService>().ImplementedBy<Core.Services.ObjectTypeService>().LifestyleTransient());
 
-			container.Register(Component.For<IDataSyncronizerFactory>().ImplementedBy<MockFactory>().DependsOn(new { container = container }).LifeStyle.Transient);
 			container.Register(Component.For<IDataProviderFactory>().ImplementedBy<AppDomainFactory>().LifestyleTransient());
 			container.Register(Component.For<DomainHelper>().ImplementedBy<DomainHelper>().LifestyleTransient());
 
@@ -67,7 +67,9 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<CustodianService>().ImplementedBy<CustodianService>().LifestyleTransient());
 
 			container.Register(Component.For<ITabService>().ImplementedBy<RSAPITabService>().LifeStyle.Transient);
-			container.Register(Component.For<GeneralWithCustodianRdoSynchronizerFactory>().ImplementedBy<GeneralWithCustodianRdoSynchronizerFactory>().DependsOn(new { container = container }).LifestyleTransient());
+			container.Register(Component.For<ISynchronizerFactory>().ImplementedBy<GeneralWithCustodianRdoSynchronizerFactory>().DependsOn(new { container = container }).LifestyleTransient());
+			container.Register(Component.For<IProviderFactory>().ImplementedBy<DefaultProviderFactory>().DependsOn(new { windsorContainer = container }).LifestyleTransient());
+			//container.Register(Component.For<RSAPIRdoQuery>().ImplementedBy<RSAPIRdoQuery>().LifeStyle.Transient);
 			container.Register(Component.For<ManagerQueueService>().ImplementedBy<ManagerQueueService>().LifestyleTransient());
 			container.Register(Component.For<IGuidService>().ImplementedBy<DefaultGuidService>().LifestyleTransient());
 			container.Register(Component.For<JobHistoryService>().ImplementedBy<JobHistoryService>().LifestyleTransient());

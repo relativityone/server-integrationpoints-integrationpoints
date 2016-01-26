@@ -26,12 +26,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	public class SyncWorker : ITask
 	{
 		internal ICaseServiceContext _caseServiceContext;
-		internal IDataSyncronizerFactory _dataSyncronizerFactory;
 		internal IDataProviderFactory _dataProviderFactory;
 		internal kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 		internal JobHistoryService _jobHistoryService;
 		internal JobHistoryErrorService _jobHistoryErrorService;
-		internal GeneralWithCustodianRdoSynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
+		internal kCura.IntegrationPoints.Contracts.ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
 		internal IJobManager _jobManager;
 		private JobStatisticsService _statisticsService;
 		private IEnumerable<Core.IBatchStatus> _batchStatus;
@@ -42,16 +41,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		}
 
 		public SyncWorker(ICaseServiceContext caseServiceContext,
-											IDataSyncronizerFactory dataSyncronizerFactory,
 											IDataProviderFactory dataProviderFactory,
 											kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
-											GeneralWithCustodianRdoSynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+											kCura.IntegrationPoints.Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 											JobHistoryService jobHistoryService,
 											JobHistoryErrorService jobHistoryErrorService,
 											IJobManager jobManager, IEnumerable<IBatchStatus> statuses, JobStatisticsService statisticsService)
 		{
 			_caseServiceContext = caseServiceContext;
-			_dataSyncronizerFactory = dataSyncronizerFactory;
 			_dataProviderFactory = dataProviderFactory;
 			_serializer = serializer;
 			_appDomainRdoSynchronizerFactoryFactory = appDomainRdoSynchronizerFactoryFactory;
@@ -258,8 +255,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				factory.TaskJobSubmitter = new TaskJobSubmitter(_jobManager, job, TaskType.SyncCustodianManagerWorker, this.BatchInstance);
 			}
-			Contracts.PluginBuilder.Current.SetSynchronizerFactory(_appDomainRdoSynchronizerFactoryFactory);
-			IDataSynchronizer sourceProvider = _dataSyncronizerFactory.GetSyncronizer(providerGuid, configuration);
+			IDataSynchronizer sourceProvider = _appDomainRdoSynchronizerFactoryFactory.CreateSyncronizer(providerGuid, configuration);
 			return sourceProvider;
 		}
 

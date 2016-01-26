@@ -13,11 +13,12 @@ namespace kCura.IntegrationPoints.Agent
 		{
 			return new EmailConfiguration
 			{
-				Domain = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPServer,
-				Password = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPPassword,
-				Port = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPPort,
-				UserName = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPUserName,
-				UseSSL = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPSSLisRequired
+				// TODO: This has to come back -- biedrzycki: Jan 26, 2016
+//				Domain = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPServer,
+//				Password = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPPassword,
+//				Port = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPPort,
+//				UserName = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPUserName,
+//				UseSSL = kCura.Apps.Common.Config.Sections.NotificationConfig.SMTPSSLisRequired
 			};
 
 		}

@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Castle.MicroKernel;
+using Castle.MicroKernel.Resolvers.SpecializedResolvers;
+using Castle.Windsor;
+using Castle.Windsor.Installer;
 using kCura.IntegrationPoints.Core.Domain;
 
 namespace kCura.IntegrationPoints.Contracts
@@ -14,6 +18,10 @@ namespace kCura.IntegrationPoints.Contracts
 	///  </summary>
 	public class DomainManager : MarshalByRefObject
 	{
+		private IProviderFactory _providerFactory;
+		private ISynchronizerFactory _synchronizerFactory;
+		private WindsorContainer _windsorContainer;
+
 		/// <summary>
 		/// Called to initilized the provider's app domain and do any setup work needed
 		/// </summary>
@@ -21,13 +29,13 @@ namespace kCura.IntegrationPoints.Contracts
 		{
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyDomainLoader.ResolveAssembly;
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-			var startupType = typeof(IStartUp);
+			Type startupType = typeof(IStartUp);
 			List<Type> test = new List<Type>();
 			try
 			{
-				foreach (var abc in assemblies)
+				foreach (Assembly assembly in assemblies)
 				{
-					var test2 = abc.GetTypes();
+					Type[] test2 = assembly.GetTypes();
 					foreach (var def in test2)
 					{
 						if (startupType.IsAssignableFrom(def) && def != startupType)
@@ -60,6 +68,15 @@ namespace kCura.IntegrationPoints.Contracts
 			}
 		}
 
+		private void SetUpCastleWindsor()
+		{
+			_windsorContainer = new WindsorContainer();
+			IKernel kernel = _windsorContainer.Kernel;
+			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
+			var installerFactory = new InstallerFactory();
+			_windsorContainer.Install(FromAssembly.InThisApplication(installerFactory));
+		}
+
 		/// <summary>
 		/// Gets the provider in the app domain from the specific identifier
 		/// </summary>
@@ -67,7 +84,17 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <returns>A Data source provider to retrieve data and pass along to the source.</returns>
 		public Provider.IDataSourceProvider GetProvider(Guid identifer)
 		{
-			return new ProviderWrapper(PluginBuilder.Current.GetProviderFactory().CreateProvider(identifer));
+			if (_windsorContainer == null)
+			{
+				this.SetUpCastleWindsor();
+			}
+
+			if (_providerFactory == null)
+			{
+				_providerFactory = _windsorContainer.Resolve<IProviderFactory>();
+			}
+
+			return new ProviderWrapper(_providerFactory.CreateProvider(identifer));
 		}
 
 		/// <summary>
@@ -78,7 +105,17 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <returns>A synchronizer that will bring data into a system.</returns>
 		public Synchronizer.IDataSynchronizer GetSyncronizer(Guid identifier, string options)
 		{
-			return new SynchronizerWrapper(PluginBuilder.Current.GetSynchronizerFactory().CreateSyncronizer(identifier, options));
+			if (_windsorContainer == null)
+			{
+				this.SetUpCastleWindsor();
+			}
+
+			if (_synchronizerFactory == null)
+			{
+				_synchronizerFactory = _windsorContainer.Resolve<ISynchronizerFactory>();
+			}
+
+			return new SynchronizerWrapper(_synchronizerFactory.CreateSyncronizer(identifier, options));
 		}
 
 	}

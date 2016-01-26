@@ -15,9 +15,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			{
 				APIOptions = { WorkspaceID = 1383218 }
 			};
-			var rdoQuery = new RSAPIRdoQuery(client);
-
-			var data = rdoQuery.GetAllRdo();
+//			var rdoQuery = new RSAPIRdoQuery(client);
+//
+//			var data = rdoQuery.GetAllRdo();
 		}
 
 
