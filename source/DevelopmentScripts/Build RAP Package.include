@@ -23,7 +23,7 @@
 	<target name="build_RAP_Package" depends="deploy_web_project,sign_files,build_custom_pages_zip, generate_RAP_package" />
 	
 	<target name="deploy_web_project" description="deployes custom pages to a directory">
-		<exec program="${microsoft.net64.directory}\MSBuild.exe">
+		<exec program="${msbuild}">
 			<arg line='"${ldap.web.directory}\${ldap.web.name}"' />
 			<arg line='/property:SourceRoot="${root}"' />
 			<arg line="/property:Configuration=${buildconfig}" />
