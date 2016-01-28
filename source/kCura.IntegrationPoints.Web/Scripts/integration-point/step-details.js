@@ -447,6 +447,8 @@ var IP = IP || {};
 		});
 
 		this.CustodianManagerFieldContainsLink = JSON.parse(settings.destination || "{}").CustodianManagerFieldContainsLink;
+		this.ExtractedTextFieldContainsFilePath = JSON.parse(settings.destination || "{}").ExtractedTextFieldContainsFilePath;
+
 		this.selectedOverwrite = ko.observable(settings.selectedOverwrite);
 		this.scheduler = new Scheduler(settings.scheduler);
 		this.submit = function () {

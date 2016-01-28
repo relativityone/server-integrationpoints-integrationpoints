@@ -18,6 +18,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			NestedValueDelimiter = Convert.ToChar("\\");
 			ImportOverwriteMode = ImportOverwriteModeEnum.Append;
 			ImportOverlayBehavior = ImportOverlayBehaviorEnum.UseRelativityDefaults;
+
+			// this is used in processing by default
+			// TODO : it might be better to have this as option in mapping field page. Wait for PM decision - SAMO 1/28/2016
+			ExtractedTextEncoding = Encoding.Unicode;
 		}
 		#endregion
 
