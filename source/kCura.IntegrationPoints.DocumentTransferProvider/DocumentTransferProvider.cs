@@ -33,15 +33,17 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		{
 			RelativityFieldQuery query = new RelativityFieldQuery(client);
 			List<Artifact> fields = query.GetFieldsForRDO(rdoTypeId);
-			IEnumerable<kCura.Relativity.ImportAPI.Data.Field> mappableFields = GetImportAPI(client).GetWorkspaceFields(workspaceId, rdoTypeId);
-			return fields.Where(x => mappableFields.Any(y => y.ArtifactID == x.ArtifactID)).ToList();
+			Dictionary<int, Relativity.ImportAPI.Data.Field> mappableFields = GetImportAPI(client).GetWorkspaceFields(workspaceId, rdoTypeId).ToDictionary(x => x.ArtifactID);
+			
+			// ContainsKey is 0(1) https://msdn.microsoft.com/en-us/library/kw5aaea4.aspx
+			return fields.Where(x => mappableFields.ContainsKey(x.ArtifactID)).ToList();
 		}
 
 		private IEnumerable<FieldEntry> ParseFields(List<Artifact> fields)
 		{
-			foreach (var result in fields)
+			foreach (Artifact result in fields)
 			{
-				var idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
+				Field idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
 				bool isIdentifier = false;
 				if (idField != null)
 				{

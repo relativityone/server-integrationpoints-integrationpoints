@@ -5,13 +5,17 @@ namespace kCura.IntegrationPoints.Data.Queries
 {
 	public class GetWorkspacesQuery
 	{
-		private IRSAPIClient _client;
+		private readonly IRSAPIClient _client;
 
 		public GetWorkspacesQuery(IRSAPIClient client)
 		{
 			_client = client;
 		}
 
+		/// <summary>
+		/// Get all workspaces
+		/// </summary>
+		/// <returns>query result contains workspace artifact(s).</returns>
 		public QueryResult ExecuteQuery()
 		{
 			var query = new Query();
