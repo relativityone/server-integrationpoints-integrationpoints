@@ -45,6 +45,8 @@
 	<property name="microsoft.vs.directory" value="${string::replace(environment::get-variable('VS100COMNTOOLS'), '\Common7\Tools\', '')}" unless="${property::exists('microsoft.vs.directory')}" />
 	<property name="microsoft.vs9.directory" value="${string::replace(environment::get-variable('VS90COMNTOOLS'), '\Common7\Tools\', '')}" unless="${property::exists('microsoft.vs9.directory')}" />
 	
+	<property name="msbuild" value="${environment::get-variable('ProgramFiles(x86)')}\MSBuild\14.0\Bin\msbuild.exe" unless="${property::exists('msbuild')}" />
+	
 	<!-- Version properties -->
 	<property name="CCNetLabel" value="2.0.0.0" unless="${property::exists('CCNetLabel')}" />
 	<property name="Product.Version" value="${CCNetLabel}" unless="${property::exists('Product.Version')}" />	
@@ -130,7 +132,7 @@
 	</target>
 	
 	<target name="build_x64">
-		<exec program="${microsoft.net64.directory}\MSBuild.exe">
+		<exec program="${msbuild}">
 			<arg line='"${targetsfile}"' />
 			<arg line='/property:SourceRoot="${root}"' />
 			<arg line="/property:Configuration=${buildconfig}" />
