@@ -50,11 +50,11 @@
 		this.workspaces = ko.observableArray(state.workspaces);
 		this.savedSearches = ko.observableArray(state.savedSearches);
 
-		this.selectedWorkspace = ko.observable(state.selectedWorkspace).extend({
+		this.WorkspaceArtifactId = ko.observable(state.WorkspaceArtifactId).extend({
 			required: true
 		});
 
-		this.selectedSavedSearch = ko.observable(state.selectedSavedSearch).extend({
+		this.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId).extend({
 			required: true
 		});
 
@@ -64,6 +64,7 @@
 			// load savedsearches
 			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('SavedSearchFinder') }).then(function (result) {
 				self.savedSearches(result);
+
 			});
 		}
 			
@@ -77,8 +78,8 @@
 		this.errors = ko.validation.group(this, { deep: true });
 		this.getSelectedOption = function() {
 			return {
-				"WorkspaceArtifactId": self.selectedWorkspace(),
-				"SavedSearchArtifactId": self.selectedSavedSearch()
+				"WorkspaceArtifactId": self.WorkspaceArtifactId(),
+				"SavedSearchArtifactId": self.SavedSearchArtifactId()
 			}
 		}
 	}
