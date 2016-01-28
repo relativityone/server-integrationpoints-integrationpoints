@@ -48,7 +48,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public int DestinationFolderArtifactID { get; set; }
 		public bool? DisableExtractedTextEncodingCheck { get; set; }
 		public bool DisableUserSecurityCheck { get; set; }
+
+		[JsonIgnore]
 		public Encoding ExtractedTextEncoding { get; set; }
+
 		public bool ExtractedTextFieldContainsFilePath { get; set; }
 		public int IdentityFieldId { get; set; }
 		public int MaximumErrorCount { get; set; }
