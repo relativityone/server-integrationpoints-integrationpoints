@@ -1,4 +1,5 @@
-﻿var IP = IP || {};
+﻿/// <reference path="../jquery-1.8.2.min.js" />
+var IP = IP || {};
 
 ko.validation.rules.pattern.message = 'Invalid.';
 
@@ -166,6 +167,7 @@ ko.validation.insertValidationMessage = function (element) {
 		if (typeof model.CustodianManagerFieldContainsLink === "undefined") {
 			model.CustodianManagerFieldContainsLink = "true";
 		}
+
 		this.CustodianManagerFieldContainsLink = ko.observable(model.CustodianManagerFieldContainsLink || "false");
 		this.sourceField = ko.observableArray([]);
 		this.workspaceFieldSelected = ko.observableArray([]);
@@ -178,6 +180,9 @@ ko.validation.insertValidationMessage = function (element) {
 		this.parentField = ko.observableArray([]);
 
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
+		this.ExtractedTextFieldContainsFilePath = ko.observable(model.ExtractedTextFieldContainsFilePath || "false");
+
+
 		this.nativeFilePathValue = ko.observableArray([]).extend({
 			required: {
 				onlyIf: function () {
@@ -417,8 +422,8 @@ ko.validation.insertValidationMessage = function (element) {
 				identifer: model.identifer,
 				CustodianManagerFieldContainsLink: model.CustodianManagerFieldContainsLink,
 				importNativeFile: model.importNativeFile,
-				nativeFilePathValue: model.nativeFilePathValue
-
+				nativeFilePathValue: model.nativeFilePathValue,
+				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath
 			} || '';
 		}
 
@@ -476,6 +481,8 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.nativeFilePathValue = this.model.nativeFilePathValue();
 			this.returnModel.identifer = this.model.selectedUniqueId();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
+			this.returnModel.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
+
 			var map = [];
 			var emptyField = { name: '', identifer: '' };
 			var maxMapFieldLength = Math.max(this.model.mappedWorkspace().length, this.model.sourceMapped().length);//make sure we grab the left overs
@@ -533,18 +540,28 @@ ko.validation.insertValidationMessage = function (element) {
 						}
 					}
 				}
-				if (this.model.isDocument && this.model.importNativeFile() == "true") {
-					var nativePathField = "";
-					for (var i = 0; i < allSourceField.length; i++) {
-						if (allSourceField[i].name === this.model.nativeFilePathValue()) {
-							nativePathField = allSourceField[i];
+
+				var _destination = JSON.parse(this.returnModel.destination);
+
+				// specific to document type
+				if (this.model.isDocument){
+				    // pushing native file setting
+					if (this.model.importNativeFile() == "true") {
+						var nativePathField = "";
+						for (var i = 0; i < allSourceField.length; i++) {
+							if (allSourceField[i].name === this.model.nativeFilePathValue()) {
+								nativePathField = allSourceField[i];
+							}
 						}
+						map.push({
+							sourceField: _createEntry(nativePathField),
+							destinationField: {},
+							fieldMapType: "NativeFilePath"
+						});
 					}
-					map.push({
-						sourceField:_createEntry(nativePathField),  
-						destinationField: {},
-						fieldMapType: "NativeFilePath"
-					});
+
+					// pushing extracted text location setting
+					_destination.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
 				}
 
 				this.bus.subscribe('saveComplete', function (data) {
@@ -556,7 +573,6 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.map = JSON.stringify(map);
 				this.returnModel.identifer = this.model.selectedUniqueId();
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
-				var _destination = JSON.parse(this.returnModel.destination);
 				_destination.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
 				this.returnModel.destination = JSON.stringify(_destination);
 				d.resolve(this.returnModel);
