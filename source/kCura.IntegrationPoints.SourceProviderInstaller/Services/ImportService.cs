@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			{
 				foreach (SourceProviderInstaller.SourceProvider provider in providers)
 				{
-					TryLoadingProvider(factory, provider);
+					//TryLoadingProvider(factory, provider);
 				}
 			}
 		}

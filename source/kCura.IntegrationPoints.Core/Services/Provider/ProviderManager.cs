@@ -2,10 +2,12 @@
 using System.Linq;
 using System.Reflection;
 using Castle.MicroKernel;
+using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.IntegrationPoints.Core.Domain;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Contracts
 {
@@ -52,15 +54,32 @@ namespace kCura.IntegrationPoints.Contracts
 			IKernel kernel = _windsorContainer.Kernel;
 			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
 			var installerFactory = new InstallerFactory();
-			_windsorContainer.Install(FromAssembly.InThisApplication(installerFactory));
+			_windsorContainer.Install(
+				FromAssembly.InDirectory(
+					new AssemblyFilter(AppDomain.CurrentDomain.RelativeSearchPath)
+						.FilterByName(this.FilterByAllowedAssemblyNames)));
+		}
+
+		private bool FilterByAllowedAssemblyNames(AssemblyName assemblyName)
+		{
+			string[] allowedInstallerAssemblies = new[]
+			{"kCura.IntegrationPoints", "kCura.IntegrationPoints.Contracts", "kCura.DocumentTransferProvider.dll"};
+
+			if (allowedInstallerAssemblies.Contains(assemblyName.Name))
+			{
+				return true;
+			}
+
+			return false;
 		}
 
 		/// <summary>
 		/// Gets the provider in the app domain from the specific identifier
 		/// </summary>
 		/// <param name="identifer">The identifier that represents the provider</param>
+		/// <param name="helper">Optional IHelper object to use for resolving classes</param>
 		/// <returns>A Data source provider to retrieve data and pass along to the source.</returns>
-		public Provider.IDataSourceProvider GetProvider(Guid identifer)
+		public Provider.IDataSourceProvider GetProvider(Guid identifer, IHelper helper = null)
 		{
 			if (_windsorContainer == null)
 			{
@@ -69,6 +88,14 @@ namespace kCura.IntegrationPoints.Contracts
 
 			if (_providerFactory == null)
 			{
+				if (helper != null)
+				{
+					if (!_windsorContainer.Kernel.HasComponent(typeof(IHelper)))
+					{
+						_windsorContainer.Register(Component.For<IHelper>().Instance(helper).LifestyleTransient());
+					}
+				}
+
 				_providerFactory = _windsorContainer.Resolve<IProviderFactory>();
 			}
 

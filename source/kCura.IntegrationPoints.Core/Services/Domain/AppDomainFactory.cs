@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Services.Provider;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Domain
 {
@@ -22,12 +23,12 @@ namespace kCura.IntegrationPoints.Core.Domain
 			_relativityFeaturePathService = relativityFeaturePathService;
 		}
 
-		public IDataSourceProvider GetDataProvider(Guid applicationGuid, Guid providerGuid)
+		public IDataSourceProvider GetDataProvider(Guid applicationGuid, Guid providerGuid, IHelper helper = null)
 		{
 			_newDomain = _helper.CreateNewDomain(_relativityFeaturePathService);
 			DomainManager domainManager = _helper.SetupDomainAndCreateManager(_newDomain, _provider, applicationGuid);
 
-			return domainManager.GetProvider(providerGuid);
+			return domainManager.GetProvider(providerGuid, helper);
 		}
 
 		public void Dispose()

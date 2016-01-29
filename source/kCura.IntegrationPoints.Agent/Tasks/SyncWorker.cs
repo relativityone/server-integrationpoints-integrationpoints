@@ -19,6 +19,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -26,6 +27,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	public class SyncWorker : ITask
 	{
 		internal ICaseServiceContext _caseServiceContext;
+		private readonly IHelper _helper;
 		internal IDataProviderFactory _dataProviderFactory;
 		internal kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 		internal JobHistoryService _jobHistoryService;
@@ -40,15 +42,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			set { _batchStatus = value; }
 		}
 
-		public SyncWorker(ICaseServiceContext caseServiceContext,
-											IDataProviderFactory dataProviderFactory,
-											kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
-											kCura.IntegrationPoints.Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
-											JobHistoryService jobHistoryService,
-											JobHistoryErrorService jobHistoryErrorService,
-											IJobManager jobManager, IEnumerable<IBatchStatus> statuses, JobStatisticsService statisticsService)
+		public SyncWorker(
+			ICaseServiceContext caseServiceContext,
+			IHelper helper,
+			IDataProviderFactory dataProviderFactory,
+			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
+			kCura.IntegrationPoints.Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+			JobHistoryService jobHistoryService,
+			JobHistoryErrorService jobHistoryErrorService,
+			IJobManager jobManager, 
+			IEnumerable<IBatchStatus> statuses,
+			JobStatisticsService statisticsService)
 		{
 			_caseServiceContext = caseServiceContext;
+			_helper = helper;
 			_dataProviderFactory = dataProviderFactory;
 			_serializer = serializer;
 			_appDomainRdoSynchronizerFactoryFactory = appDomainRdoSynchronizerFactoryFactory;
@@ -243,7 +250,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
 			Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
-			IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(applicationGuid, providerGuid);
+			IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(applicationGuid, providerGuid, _helper);
 			return sourceProvider;
 		}
 

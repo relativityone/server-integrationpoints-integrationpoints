@@ -11,12 +11,20 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
 	[Contracts.DataSourceProvider(Shared.Constants.PROVIDER_GUID)]
 	public class DocumentTransferProvider : IDataSourceProvider
 	{
+		private readonly IHelper _helper;
+
+		public DocumentTransferProvider(IHelper helper)
+		{
+			_helper = helper;
+		}
+
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
 			// TODO: Make this work with some type of RSAPI connection
@@ -59,11 +67,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		private IRSAPIClient CreateClient(int workspaceId)
 		{
-			string localHostFqdn = System.Net.Dns.GetHostEntry("localhost").HostName;
-			Uri endpointUri = new Uri(string.Format("http://{0}/relativity.services", localHostFqdn));
-			IRSAPIClient rsapiClient = new RSAPIClient(endpointUri, new IntegratedAuthCredentials());
-			rsapiClient.APIOptions.WorkspaceID = workspaceId;
-			return rsapiClient;
+			IRSAPIClient client = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
+			client.APIOptions.WorkspaceID = workspaceId;
+
+			return client;
 		}
 
 		private IImportAPI GetImportAPI(IRSAPIClient client)

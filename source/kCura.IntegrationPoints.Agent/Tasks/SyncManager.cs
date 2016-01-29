@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -23,7 +24,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IDataProviderFactory _providerFactory;
 		private IJobManager _jobManager;
 		private IJobService _jobService;
-		private IntegrationPointService _helper;
+		private readonly IHelper _helper;
+		private IntegrationPointService _integrationPointService;
 		private IScheduleRuleFactory _scheduleRuleFactory;
 		private kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private IGuidService _guidService;
@@ -42,7 +44,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IDataProviderFactory providerFactory,
 			IJobManager jobManager,
 			IJobService jobService,
-			IntegrationPointService helper,
+			IHelper helper,
+			IntegrationPointService integrationPointService,
 			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 			IGuidService guidService,
 			JobHistoryService jobHistoryService,
@@ -55,6 +58,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobManager = jobManager;
 			_jobService = jobService;
 			_helper = helper;
+			_integrationPointService = integrationPointService;
 			_serializer = serializer;
 			_guidService = guidService;
 			_jobHistoryService = jobHistoryService;
@@ -97,9 +101,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
 				Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
 				Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
-				IDataSourceProvider provider = _providerFactory.GetDataProvider(applicationGuid, providerGuid);
-				FieldEntry idField = _helper.GetIdentifierFieldEntry(this.IntegrationPoint.ArtifactId);
-				string options = _helper.GetSourceOptions(this.IntegrationPoint.ArtifactId);
+				IDataSourceProvider provider = _providerFactory.GetDataProvider(applicationGuid, providerGuid, _helper);
+				FieldEntry idField = _integrationPointService.GetIdentifierFieldEntry(this.IntegrationPoint.ArtifactId);
+				string options = _integrationPointService.GetSourceOptions(this.IntegrationPoint.ArtifactId);
 				IDataReader idReader = provider.GetBatchableIds(idField, options);
 
 				return new ReaderEnumerable(idReader);
@@ -160,7 +164,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					throw new ArgumentNullException("Job must have a Related Object ArtifactID");
 				}
 				var integrationPointID = job.RelatedObjectArtifactID;
-				this.IntegrationPoint = _helper.GetRDO(job.RelatedObjectArtifactID);
+				this.IntegrationPoint = _integrationPointService.GetRDO(job.RelatedObjectArtifactID);
 				if (this.IntegrationPoint.SourceProvider == 0)
 				{
 					throw new Exception("Cannot import source provider with unknown id.");
