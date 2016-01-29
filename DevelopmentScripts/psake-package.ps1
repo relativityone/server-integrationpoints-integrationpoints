@@ -33,7 +33,7 @@ task package -depends package_initalize {
     }
 
     foreach($o in Get-ChildItem $source_directory) {
-        if($o.PSIsContainer -and !$o.FullName.Contains('NUnit') -and ([System.IO.Directory]::Exists([System.IO.Path]::Combine($o.FullName, 'bin')))) {
+        if($o.PSIsContainer -and ([System.IO.Directory]::Exists([System.IO.Path]::Combine($o.FullName, 'bin')))) {
             Copy-Item -Path ([System.IO.Path]::Combine($o.FullName, 'bin', '*')) -Destination $package_bin_directory -Include '*.exe', '*.dll', '*.msi'
         }    
     }
