@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <param name="identifer">The identifier that represents the provider</param>
 		/// <param name="helper">Optional IHelper object to use for resolving classes</param>
 		/// <returns>A Data source provider to retrieve data and pass along to the source.</returns>
-		public Provider.IDataSourceProvider GetProvider(Guid identifer, IHelper helper = null)
+		public Provider.IDataSourceProvider GetProvider(Guid identifer, IHelper helper)
 		{
 			if (_windsorContainer == null)
 			{
