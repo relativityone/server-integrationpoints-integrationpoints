@@ -34,7 +34,7 @@ task package -depends package_initalize {
 
     foreach($o in Get-ChildItem $source_directory) {
         if($o.PSIsContainer -and ([System.IO.Directory]::Exists([System.IO.Path]::Combine($o.FullName, 'bin')))) {
-            Copy-Item -Path ([System.IO.Path]::Combine($o.FullName, 'bin', '*')) -Destination $package_bin_directory -Include '*.exe', '*.dll', '*.msi'
+            Get-ChildItem -Path ([System.IO.Path]::Combine($o.FullName, 'bin')) -Recurse -Include '*.exe', '*.dll', '*.msi' | Copy-Item  -Destination $package_bin_directory
         }    
     }
 
