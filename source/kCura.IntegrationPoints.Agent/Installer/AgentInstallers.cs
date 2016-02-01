@@ -31,10 +31,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<SendEmailManager>().ImplementedBy<SendEmailManager>().LifeStyle.Transient);
 			container.Register(Component.For<SendEmailWorker>().ImplementedBy<SendEmailWorker>().LifeStyle.Transient);
 			container.Register(Component.For<JobStatisticsService>().ImplementedBy<JobStatisticsService>().LifeStyle.Transient);
-			container.Register(
-				Component.For<ISendable>()
-					.ImplementedBy<SMTP>()
-					.DependsOn(Dependency.OnValue<EmailConfiguration>(new RelativityConfigurationFactory().GetConfiguration())));
+		
 			
 
 		}
