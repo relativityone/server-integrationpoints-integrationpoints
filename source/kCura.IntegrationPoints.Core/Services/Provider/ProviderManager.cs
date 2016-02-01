@@ -63,7 +63,12 @@ namespace kCura.IntegrationPoints.Contracts
 		private bool FilterByAllowedAssemblyNames(AssemblyName assemblyName)
 		{
 			string[] allowedInstallerAssemblies = new[]
-			{"kCura.IntegrationPoints", "kCura.IntegrationPoints.Contracts", "kCura.DocumentTransferProvider.dll"};
+			{
+				"kCura.IntegrationPoints", 
+				"kCura.IntegrationPoints.Contracts", 
+				"kCura.IntegrationPoints.Core", 
+				"kCura.IntegrationPoints.Data"
+			};
 
 			if (allowedInstallerAssemblies.Contains(assemblyName.Name))
 			{

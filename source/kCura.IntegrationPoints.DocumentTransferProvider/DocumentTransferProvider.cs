@@ -27,7 +27,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
-			// TODO: Make this work with some type of RSAPI connection
 			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
 			using (IRSAPIClient client = CreateClient(settings.WorkspaceArtifactId))
 			{
