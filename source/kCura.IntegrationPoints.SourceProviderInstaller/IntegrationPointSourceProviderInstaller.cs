@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			{
 				if (_importService == null)
 				{
-					_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext, DeleteIntegrationPoints);
+					_importService = new ImportService(this.CaseServiceContext, this.EddsServiceContext, DeleteIntegrationPoints, base.Helper);
 				}
 
 				return _importService;

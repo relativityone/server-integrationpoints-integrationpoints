@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Queries;
+using Relativity.API;
 
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
@@ -17,12 +18,18 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 		private readonly ICaseServiceContext _caseContext;
 		private readonly IEddsServiceContext _eddsContext;
 		private readonly DeleteIntegrationPoints _deleteintegrationPoint;
+		private readonly IHelper _helper;
 
-		public ImportService(ICaseServiceContext caseContext, IEddsServiceContext eddsContext, DeleteIntegrationPoints deleteIntegrationPoints)
+		public ImportService(
+			ICaseServiceContext caseContext,
+			IEddsServiceContext eddsContext,
+			DeleteIntegrationPoints deleteIntegrationPoints,
+			IHelper helper)
 		{
 			_caseContext = caseContext;
 			_eddsContext = eddsContext;
 			_deleteintegrationPoint = deleteIntegrationPoints;
+			_helper = helper;
 		}
 
 		public void InstallProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providers)
@@ -135,7 +142,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			{
 				foreach (SourceProviderInstaller.SourceProvider provider in providers)
 				{
-					//TryLoadingProvider(factory, provider);
+					TryLoadingProvider(factory, provider);
 				}
 			}
 		}
@@ -164,7 +171,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 		{
 			try
 			{
-				factory.GetDataProvider(provider.ApplicationGUID, provider.GUID);
+				factory.GetDataProvider(provider.ApplicationGUID, provider.GUID, _helper);
 			}
 			catch (Exception ex)
 			{
