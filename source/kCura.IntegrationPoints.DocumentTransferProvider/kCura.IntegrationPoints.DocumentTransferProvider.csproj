@@ -42,8 +42,7 @@
       <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.API, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Relativity.API">
       <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.ImportAPI.Wrapper">
@@ -61,7 +60,7 @@
     <Compile Include="DataReaders\DocumentTranfserDataReader.cs" />
     <Compile Include="DocumentTransferProvider.cs" />
     <Compile Include="DocumentTransferSettings.cs" />
-    <Compile Include="Exceptions\UnexpectedResultException.cs" />
+    <Compile Include="Exceptions\ReadDataFromRelativityException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

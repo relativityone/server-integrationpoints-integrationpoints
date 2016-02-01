@@ -9,12 +9,11 @@ using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using Artifact = kCura.Relativity.Client.Artifact;
-using Relativity.API;
 using Field = kCura.Relativity.Client.Field;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
@@ -44,7 +43,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			RelativityFieldQuery query = new RelativityFieldQuery(client);
 			List<Artifact> fields = query.GetFieldsForRDO(rdoTypeId);
 			Dictionary<int, Relativity.ImportAPI.Data.Field> mappableFields = GetImportAPI(client).GetWorkspaceFields(workspaceId, rdoTypeId).ToDictionary(x => x.ArtifactID);
-			
+
 			// ContainsKey is 0(1) https://msdn.microsoft.com/en-us/library/kw5aaea4.aspx
 			return fields.Where(x => mappableFields.ContainsKey(x.ArtifactID)).ToList();
 		}
@@ -122,7 +121,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 				List<Artifact> fieldEntries = GetLongTextFields(client, Convert.ToInt32(ArtifactType.Document));
 				return new DocumentTranfserDataReader(relativityClient, entryIds.Select(x => Convert.ToInt32(x)), fields, fieldEntries);
 			}
-
 		}
 
 		private List<Artifact> GetLongTextFields(IRSAPIClient client, int rdoTypeId)
