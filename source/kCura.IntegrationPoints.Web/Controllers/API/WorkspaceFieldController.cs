@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class WorkspaceFieldController : ApiController
 	{
-		// TODO: This concrete class should be replaced by an interface -- biedrzycki: Jan 25, 2016
 		private readonly kCura.IntegrationPoints.Contracts.ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
 		public WorkspaceFieldController(ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory)
 		{
