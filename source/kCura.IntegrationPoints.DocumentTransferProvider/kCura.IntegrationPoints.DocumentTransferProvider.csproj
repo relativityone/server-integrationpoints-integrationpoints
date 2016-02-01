@@ -61,6 +61,7 @@
     <Compile Include="DataReaders\DocumentTranfserDataReader.cs" />
     <Compile Include="DocumentTransferProvider.cs" />
     <Compile Include="DocumentTransferSettings.cs" />
+    <Compile Include="Exceptions\UnexpectedResultException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

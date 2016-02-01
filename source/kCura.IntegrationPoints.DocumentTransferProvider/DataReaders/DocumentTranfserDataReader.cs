@@ -20,6 +20,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private bool _readerOpen;
 		private readonly IDictionary<string, string> _fieldIdToNameDictionary;
 
+		private readonly HashSet<int> _longTextFieldsArtifactIds;
+
 		public DocumentTranfserDataReader(IRelativityClientAdaptor relativityClientAdaptor, IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries)
 		{
 			_relativityClientAdaptor = relativityClientAdaptor;
@@ -32,6 +34,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			_fieldIdToNameDictionary = _fieldEntries.ToDictionary(
 				x => x.FieldIdentifier,
 				y => y.IsIdentifier ? y.DisplayName.Replace(Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, String.Empty) : y.DisplayName);
+		}
+
+		public DocumentTranfserDataReader(IRelativityClientAdaptor relativityClientAdaptor,
+			IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries,
+			List<Relativity.Client.Artifact> documentFields) : this(relativityClientAdaptor, documentArtifactIds, fieldEntries)
+		{
+			_longTextFieldsArtifactIds = new HashSet<int>(documentFields.Select(artifact => artifact.ArtifactID));
 		}
 
 		public void Close()
@@ -48,7 +57,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		public int Depth
 		{
 			//change if we support nesting in the future
-			get { return 0;} 
+			get { return 0; }
 		}
 
 		public DataTable GetSchemaTable()
@@ -82,8 +91,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 					Value = _documentArtifactIds.ToList()
 				};
 
-				List<FieldValue> requestedFields = _fieldEntries.Select(x => new FieldValue() { ArtifactID = Convert.ToInt32(x.FieldIdentifier) }).ToList();
-
+				// only query for non-full text fields at this time
+				List<FieldValue> requestedFields = _fieldEntries.Where(field => _longTextFieldsArtifactIds.Contains(Convert.ToInt32(field.FieldIdentifier)) == false)
+																.Select(x => new FieldValue() { ArtifactID = Convert.ToInt32(x.FieldIdentifier) }).ToList();
 				Query<Document> query = new Query<Document>
 				{
 					Condition = artifactIdSetCondition,
@@ -132,7 +142,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			// this feature if wanted can be easily added just was not at this point because we are not supporting batching at this point
 			get { return -1; }
 		}
-
 
 		// Following this example: https://msdn.microsoft.com/en-us/library/aa720693(v=vs.71).aspx -- biedrzycki: Jan 20th, 2016
 		public void Dispose()
@@ -217,7 +226,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public System.Type GetFieldType(int i)
 		{
-			return  _schemaDataTable.Columns[i].DataType;
+			return _schemaDataTable.Columns[i].DataType;
 		}
 
 		public float GetFloat(int i)
@@ -260,12 +269,27 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			return Convert.ToString(GetValue(i));
 		}
 
+		private String LoadLongTextFieldValue(int fieldArtifactId)
+		{
+			return _relativityClientAdaptor.GetLongTextFieldValue(_currentDocument.ArtifactID, fieldArtifactId);
+		}
+
 		public object GetValue(int i)
 		{
 			string fieldIdAsString = GetName(i);
-			string columnName = _fieldIdToNameDictionary[fieldIdAsString].Replace(Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, String.Empty);
+			int fieldId = Convert.ToInt32(fieldIdAsString);
 
-			return _currentDocument[columnName].Value;
+			Object result = null;
+			if (_longTextFieldsArtifactIds.Contains(fieldId))
+			{
+				result = LoadLongTextFieldValue(fieldId);
+			}
+			else
+			{
+				string columnName = _fieldIdToNameDictionary[fieldIdAsString].Replace(Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, String.Empty);
+				result = _currentDocument[columnName].Value;
+			}
+			return result;
 		}
 
 		public int GetValues(object[] values)
