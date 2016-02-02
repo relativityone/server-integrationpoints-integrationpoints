@@ -40,27 +40,26 @@
 	<property name="ncover.install.directory" value="${environment::get-variable('ProgramW6432')}\NCover" />
 	<property name="ncover.output.directory" value="D:\NCover" unless="${property::exists('ncover.output.directory')}" />
 	<property name="caseId" value="1014823" unless="${property::exists('caseId')}" />
-
+	
 	<!-- Microsoft .NET folders -->
 	<property name="microsoft.net.directory" value="${environment::get-variable('windir')}\Microsoft.NET\Framework\v4.0.30319" unless="${property::exists('microsoft.net.directory')}" />
 	<property name="microsoft.net64.directory" value="${environment::get-variable('windir')}\Microsoft.NET\Framework64\v4.0.30319" unless="${property::exists('microsoft.net64.directory')}" />
 	<property name="microsoft.interop.directory" value="${environment::get-variable('ProgramFiles(x86)')}\Microsoft.NET" unless="${property::exists('microsoft.interop.directory')}" />
 	<property name="microsoft.vs.directory" value="${string::replace(environment::get-variable('VS100COMNTOOLS'), '\Common7\Tools\', '')}" unless="${property::exists('microsoft.vs.directory')}" />
-
-	<property name="msbuild" value="${environment::get-variable('ProgramFiles(x86)')}\MSBuild\14.0\Bin\msbuild.exe" unless="${property::exists('msbuild')}" />
-
+	<property name="microsoft.vs9.directory" value="${string::replace(environment::get-variable('VS90COMNTOOLS'), '\Common7\Tools\', '')}" unless="${property::exists('microsoft.vs9.directory')}" />
+	
 	<!-- Version properties -->
 	<property name="CCNetLabel" value="2.0.0.0" unless="${property::exists('CCNetLabel')}" />
-	<property name="Product.Version" value="${CCNetLabel}" unless="${property::exists('Product.Version')}" />
-	<property name="Product.Version.Triplex" value="${Product.Version}" />
-	<property name="ILMerge.DLL.Version" value="9.3.0.0" />
+	<property name="Product.Version" value="${CCNetLabel}" unless="${property::exists('Product.Version')}" />	
+	<property name="Product.Version.Triplex" value="${Product.Version}" />	
+	<property name="ILMerge.DLL.Version" value="9.3.0.0" />	
 	<property name="ProductLink" value="http://www.kcura.com" readonly="true"/>
 	<tstamp property="current.year" pattern="yyyy" />
 
 	<!-- shared package creation properties -->
 	<property name="packageFolder" value="E:\Packages" unless="${property::exists('packageFolder')}" />
 	<property name="branchDir" value="LDAP" unless="${property::exists('branchDir')}" />
-
+	
 	<loadtasks assembly="${source.code.directory}\Dependencies\nantcontrib-0.91\bin\NAnt.Contrib.Tasks.dll" />
 
 	<include buildfile="Build Package.include" />
@@ -89,22 +88,22 @@
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
 		<if test="${string::contains(action, 'build')}">
-			<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." file="${buildsuccessfile}" append="false" failonerror="false" />
+			<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." file="${buildsuccessfile}" append="false" failonerror="false" />		
 		</if>
 		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
 	</target>
-
+	
 	<target name="build_initialize">
 		<echo message="Initializing a ${buildconfig} ${action}..." />
 		<tstamp>
 			<formatter property="DSTAMP" pattern="yyyy-MM-dd"/>
 			<formatter property="TSTAMP" pattern="HH:mm:ss"/>
 		</tstamp>
-
-		<!-- Based on the buildType parameter passed in Enable/Disable Injections and TimeMachine. -->
-
+		
+		<!-- Based on the buildType parameter passed in Enable/Disable Injections and TimeMachine. -->	
+		
 		<echo message="${DSTAMP} ${TSTAMP} ${buildType} ${action} buildType value was passed." />
-
+		
 		<choose>
 			<when test="${string::contains(buildType,'GOLD')}">
 				<property name="Injections" value="NO_INJECTION" />
@@ -137,11 +136,11 @@
 				<echo message="${DSTAMP} ${TSTAMP} Based on ${buildType} buildType ${TimeMachine} was set." />
 			</otherwise>
 		</choose>
-
+		
 		<if test="${file::exists(buildsuccessfile)}">
 			<delete file="${buildsuccessfile}" failonerror="true" />
 		</if>
-
+	
 		<if test="${file::exists(buildLoggerLogFile)}">
 			<delete file="${buildLoggerLogFile}" failonerror="true"/>
 		</if>
@@ -159,9 +158,9 @@
 		  <arg value="..\kCura.IntegrationPoints.Documentation.sln" />
 		</exec>		
 	</target>
-
+	
 	<target name="build_x64">
-		<exec program="${msbuild}">
+		<exec program="${microsoft.net64.directory}\MSBuild.exe">
 			<arg line='"${targetsfile}"' />
 			<arg line='/property:SourceRoot="${root}"' />
 			<arg line="/property:Configuration=${buildconfig}" />
@@ -171,14 +170,14 @@
 			<arg line='/logger:"${buildLogger}";"${buildLoggerLogFile}"'/>
 			<arg line="/noconsolelogger" />
 			<arg line="/filelogger" />
-			<arg line='/flp:LogFile="${logfile}";Verbosity=${verbosity}' />
+			<arg line='/flp:LogFile="${logfile}";Verbosity=${verbosity}' />      
 			<arg line="/target:BuildMethod" />
 			<arg line="/verbosity:${verbosity}" />
 			<arg line='/p:DefineConstants="${DevEnv},${TimeMachine},${Injections}"' />
 			<arg line="/nologo" />
 		</exec>
 	</target>
-
+	
 	<target name="merge_binaries" description="Merge all related binaries into a single library">
 		<exec program="${source.packages.directory}\ilmerge.2.13.0307\ILMerge.exe" >
 			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
@@ -261,7 +260,7 @@
 			<arg line='/closed' />
 		</exec>
 	</target>
-
+	
 	<target name="merge_documentsTransfer" description="Merge all related binaries into a single library">
 		<exec program="${source.packages.directory}\ilmerge.2.13.0307\ILMerge.exe" >
 			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
