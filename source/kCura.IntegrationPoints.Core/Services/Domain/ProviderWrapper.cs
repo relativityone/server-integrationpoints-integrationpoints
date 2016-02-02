@@ -32,7 +32,6 @@ namespace kCura.IntegrationPoints.Core.Domain
 			{
 				throw Utils.GetNonCustomException(e);
 			}
-
 		}
 
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
@@ -45,7 +44,6 @@ namespace kCura.IntegrationPoints.Core.Domain
 			{
 				throw Utils.GetNonCustomException(e);
 			}
-
 		}
 
 		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
@@ -58,8 +56,6 @@ namespace kCura.IntegrationPoints.Core.Domain
 			{
 				throw Utils.GetNonCustomException(e);
 			}
-
 		}
-
 	}
 }

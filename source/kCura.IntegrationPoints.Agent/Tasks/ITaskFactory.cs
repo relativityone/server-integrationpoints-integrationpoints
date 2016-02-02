@@ -4,12 +4,11 @@ using Castle.Windsor;
 using Castle.Windsor.Installer;
 using kCura.Agent;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Email;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
 using kCura.ScheduleQueue.Core;
@@ -61,6 +60,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Container.Install(FromAssembly.InThisApplication());
 			Container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod((k) =>
 				k.Resolve<RsapiClientFactory>().CreateClientForWorkspace(job.WorkspaceID, ExecutionIdentity.System)).LifestyleTransient());
+			Container.Register(Component.For<ISendable>()
+				.ImplementedBy<SMTP>()
+				.DependsOn(Dependency.OnValue<EmailConfiguration>(new RelativityConfigurationFactory().GetConfiguration())));
 
 		}
 

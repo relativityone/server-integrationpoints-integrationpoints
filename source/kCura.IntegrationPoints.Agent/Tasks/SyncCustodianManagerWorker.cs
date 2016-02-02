@@ -18,6 +18,7 @@ using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -26,17 +27,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IRSAPIClient _workspaceRsapiClient;
 		private ManagerQueueService _managerQueueService;
 		public SyncCustodianManagerWorker(ICaseServiceContext caseServiceContext,
-										IDataSyncronizerFactory dataSyncronizerFactory,
 										IDataProviderFactory dataProviderFactory,
+										IHelper helper,
 										kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
-										GeneralWithCustodianRdoSynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+										Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 										JobHistoryService jobHistoryService,
 										JobHistoryErrorService jobHistoryErrorService,
 										IJobManager jobManager,
 										IRSAPIClient workspaceRsapiClient,
 										ManagerQueueService managerQueueService,
 			JobStatisticsService statisticsService)
-			: base(caseServiceContext, dataSyncronizerFactory, dataProviderFactory, serializer,
+			: base(caseServiceContext, helper, dataProviderFactory, serializer,
 			appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager, null, statisticsService)
 		{
 			_workspaceRsapiClient = workspaceRsapiClient;

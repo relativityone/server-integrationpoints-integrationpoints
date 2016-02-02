@@ -1,0 +1,2 @@
+kCura.IntegrationPoints.DocumentTransferProvider.DocumentTransferProvider
+kCura.IntegrationPoints.DocumentTransferProvider.RegisterDocumentTransferProvider

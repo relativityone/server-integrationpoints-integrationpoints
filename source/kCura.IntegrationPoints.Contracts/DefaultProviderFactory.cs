@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
 using kCura.IntegrationPoints.Contracts.Provider;
 
 namespace kCura.IntegrationPoints.Contracts
@@ -10,11 +11,16 @@ namespace kCura.IntegrationPoints.Contracts
 	/// </summary>
 	public class DefaultProviderFactory : IProviderFactory
 	{
+		private readonly IWindsorContainer _windsorContainer;
 
-        /// <summary>
+		/// <summary>
         ///Initializes an new instance of the DefaultProviderFactory class.
         /// </summary>     
-        public DefaultProviderFactory() { }
+		/// <param name="windsorContainer">The windsorContainer from which to resolve providers</param>
+        public DefaultProviderFactory(IWindsorContainer windsorContainer)
+		{
+			_windsorContainer = windsorContainer;
+		}
 
 		/// <summary>
 		/// Creates a new data source provider using the GUID specified as the identifier.
@@ -49,6 +55,7 @@ namespace kCura.IntegrationPoints.Contracts
 			}
 			return providerTypes.First();
 		}
+
 		/// <summary>
         /// Creates a new instance of the provider type using the Activator with an empty constructor.
 		/// </summary>
@@ -56,11 +63,25 @@ namespace kCura.IntegrationPoints.Contracts
         /// <returns>A new instance of a data source provider.</returns>
 		protected virtual IDataSourceProvider CreateInstance(Type providerType)
 		{
-			var provider = Activator.CreateInstance(providerType) as IDataSourceProvider;
-			if (provider == null)
+			IDataSourceProvider provider = null;
+			string assemblyQualifiedName = providerType.AssemblyQualifiedName;
+
+			try
+			{
+				if (!_windsorContainer.Kernel.HasComponent(assemblyQualifiedName))
+				{
+					_windsorContainer.Register(
+						Component.For<IDataSourceProvider>().ImplementedBy(providerType).Named(assemblyQualifiedName));
+				}
+
+				provider = _windsorContainer.Resolve<IDataSourceProvider>(assemblyQualifiedName);
+			} 
+			catch
 			{
 				throw new Exception(string.Format(Properties.Resources.CouldNotCreateProvider, providerType));
 			}
+
+			// TODO: check if provider can be null -- biedrzycki: Jan 25, 2016
 			return provider;
 		}
 	}

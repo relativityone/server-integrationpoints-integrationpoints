@@ -18,10 +18,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			NestedValueDelimiter = Convert.ToChar("\\");
 			ImportOverwriteMode = ImportOverwriteModeEnum.Append;
 			ImportOverlayBehavior = ImportOverlayBehaviorEnum.UseRelativityDefaults;
+
+			// this is used in processing by default
+			// TODO : it might be better to have this as option in mapping field page. Wait for PM decision - SAMO 1/28/2016
+			ExtractedTextEncoding = Encoding.Unicode;
 		}
 		#endregion
 
 		#region "Public Properties"
+		public string Provider { get; set; }
 		public int ArtifactTypeId { get; set; }
 		public string BulkLoadFileFieldDelimiter { get; set; }
 		public bool DisableControlNumberCompatibilityMode { get; set; }
@@ -44,7 +49,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public int DestinationFolderArtifactID { get; set; }
 		public bool? DisableExtractedTextEncodingCheck { get; set; }
 		public bool DisableUserSecurityCheck { get; set; }
+
+		[JsonIgnore]
 		public Encoding ExtractedTextEncoding { get; set; }
+
 		public bool ExtractedTextFieldContainsFilePath { get; set; }
 		public int IdentityFieldId { get; set; }
 		public int MaximumErrorCount { get; set; }

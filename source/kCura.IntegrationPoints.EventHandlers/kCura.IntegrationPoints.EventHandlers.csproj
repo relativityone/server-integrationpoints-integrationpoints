@@ -81,6 +81,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ConsoleEventHandlerBase.cs" />
+    <Compile Include="Installers\RegisterDocumentTransferProvider.cs" />
     <Compile Include="Installers\RunEveryTimeInstaller.cs" />
     <Compile Include="Installers\Uninstaller.cs" />
     <Compile Include="Installers\RegisterLDAPInstaller.cs" />
@@ -115,6 +116,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider.Shared\kCura.IntegrationPoints.DocumentTransferProvider.Shared.csproj">
+      <Project>{22991306-a168-4d22-80a7-aaa99c9e9fd6}</Project>
+      <Name>kCura.IntegrationPoints.DocumentTransferProvider.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.SourceProviderInstaller\kCura.IntegrationPoints.SourceProviderInstaller.csproj">
       <Project>{fcaf52cd-0f8f-4d71-ac61-b7591a181a08}</Project>

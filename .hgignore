@@ -110,4 +110,7 @@ Regression Automation */
 kCura.IntegrationPoints.Documentation\Help\*
 source\Dependencies\kCura.RAPBuilder\*
 source\DevelopmentScripts\kCura.RAPBuilder.exe
+source\publish\*
 *.pubxml.user
+
+source\packages\Newtonsoft.Json.8.0.2

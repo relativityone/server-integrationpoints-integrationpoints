@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			//
 			var options = new ImportSettings();
 			options.ArtifactTypeId = 1268820;
-			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
+			fieldMock.GetFieldsForRdo(Arg.Any<int>()).Returns(new List<Artifact>
 			{
 				new Artifact {Name = "Name", ArtifactID = 1},
 				new Artifact {Name = "System Created On", ArtifactID = 2},
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				Name = "Document"
 			});
 			var options = new ImportSettings { ArtifactTypeId = 1268820 };
-			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
+			fieldMock.GetFieldsForRdo(Arg.Any<int>()).Returns(new List<Artifact>
 			{
 				new Artifact {Name = "Name", ArtifactID = 1},
 				new Artifact {Name = "System Created On", ArtifactID = 2},
@@ -118,7 +118,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			});
 			var options = new ImportSettings();
 			options.ArtifactTypeId = 1268820;
-			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
+			fieldMock.GetFieldsForRdo(Arg.Any<int>()).Returns(new List<Artifact>
 			{
 				new Artifact {Name = "Name", ArtifactID = 1},
 				new Artifact {Name = "Value", ArtifactID = 2},
@@ -150,7 +150,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				Name = "Document"
 			});
 			var options = new ImportSettings { ArtifactTypeId = 1268820 };
-			fieldMock.GetFieldsForRDO(Arg.Any<int>()).Returns(new List<Artifact>
+			fieldMock.GetFieldsForRdo(Arg.Any<int>()).Returns(new List<Artifact>
 			{
 				new Artifact {Name = "Name", ArtifactID = 1},
 				new Artifact {Name = "Value", ArtifactID = 2},

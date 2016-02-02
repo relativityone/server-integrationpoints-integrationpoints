@@ -19,19 +19,19 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Syncronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-
 	public class SyncWorker : ITask
 	{
 		internal ICaseServiceContext _caseServiceContext;
-		internal IDataSyncronizerFactory _dataSyncronizerFactory;
+		private readonly IHelper _helper;
 		internal IDataProviderFactory _dataProviderFactory;
 		internal kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 		internal JobHistoryService _jobHistoryService;
 		internal JobHistoryErrorService _jobHistoryErrorService;
-		internal GeneralWithCustodianRdoSynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
+		internal kCura.IntegrationPoints.Contracts.ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
 		internal IJobManager _jobManager;
 		private JobStatisticsService _statisticsService;
 		private IEnumerable<Core.IBatchStatus> _batchStatus;
@@ -41,17 +41,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			set { _batchStatus = value; }
 		}
 
-		public SyncWorker(ICaseServiceContext caseServiceContext,
-											IDataSyncronizerFactory dataSyncronizerFactory,
-											IDataProviderFactory dataProviderFactory,
-											kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
-											GeneralWithCustodianRdoSynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
-											JobHistoryService jobHistoryService,
-											JobHistoryErrorService jobHistoryErrorService,
-											IJobManager jobManager, IEnumerable<IBatchStatus> statuses, JobStatisticsService statisticsService)
+		public SyncWorker(
+			ICaseServiceContext caseServiceContext,
+			IHelper helper,
+			IDataProviderFactory dataProviderFactory,
+			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
+			kCura.IntegrationPoints.Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+			JobHistoryService jobHistoryService,
+			JobHistoryErrorService jobHistoryErrorService,
+			IJobManager jobManager, 
+			IEnumerable<IBatchStatus> statuses,
+			JobStatisticsService statisticsService)
 		{
 			_caseServiceContext = caseServiceContext;
-			_dataSyncronizerFactory = dataSyncronizerFactory;
+			_helper = helper;
 			_dataProviderFactory = dataProviderFactory;
 			_serializer = serializer;
 			_appDomainRdoSynchronizerFactoryFactory = appDomainRdoSynchronizerFactoryFactory;
@@ -246,7 +249,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
 			Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
-			IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(applicationGuid, providerGuid);
+			IDataSourceProvider sourceProvider = _dataProviderFactory.GetDataProvider(applicationGuid, providerGuid, _helper);
 			return sourceProvider;
 		}
 
@@ -258,8 +261,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				factory.TaskJobSubmitter = new TaskJobSubmitter(_jobManager, job, TaskType.SyncCustodianManagerWorker, this.BatchInstance);
 			}
-			Contracts.PluginBuilder.Current.SetSynchronizerFactory(_appDomainRdoSynchronizerFactoryFactory);
-			IDataSynchronizer sourceProvider = _dataSyncronizerFactory.GetSyncronizer(providerGuid, configuration);
+			IDataSynchronizer sourceProvider = _appDomainRdoSynchronizerFactoryFactory.CreateSyncronizer(providerGuid, configuration);
 			return sourceProvider;
 		}
 

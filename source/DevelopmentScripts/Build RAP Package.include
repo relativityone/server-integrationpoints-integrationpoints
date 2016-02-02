@@ -9,8 +9,8 @@
 	<property name="ldap.web.name" value="kCura.IntegrationPoints.Web.csproj"/>
 	<property name="ldap.web.zip" value="${Product.Version}" readonly="false"/>
 	<property name="Package.ProductVersionTriplex" value="${Product.Version.Triplex}" />
-	<property name="target.web.out" value="${root}\publish\bin\web\${buildconfig}"/>
-	<property name="target.web.publish" value="${root}\publish\web\${buildconfig}"/>
+	<property name="target.web.out" value="${root}\publish\bin\web"/>
+	<property name="target.web.publish" value="${root}\publish\web"/>
 	<property name="Injections" value="INJECTION" unless="${property::exists('Injections')}" />
 	<property name="TimeMachine" value="TIME_MACHINE" unless="${property::exists('TimeMachine')}" />
 	<property name="windows.sdk.directory" value="${environment::get-variable('ProgramFiles(x86)')}\Microsoft SDKs\Windows\v7.0A" unless="${property::exists('windows.sdk.directory')}" />
@@ -19,11 +19,12 @@
 	<property name="ldap.scripts.directory" value="${path::combine(root, 'DevelopmentScripts')}" />
 	<property name="ldapRelativityBuildServer" value="" unless="${property::exists('ldapRelativityBuildServer')}" />
 	<property name="ldapRelativityBuildCaseID" value="" unless="${property::exists('ldapRelativityBuildCaseID')}" />
-
+	<property name="signOutput" value="true" unless="${property::exists('signOutput')}" />
+	
 	<!--<target name="build_RAP_Package" depends="deploy_web_project,sign_files,build_custom_pages_zip, generate_RAP_package" />-->
 	<target name="build_RAP_Package" depends="deploy_web_project,sign_files,build_applications" />
 	
-	<target name="deploy_web_project" description="deployes custom pages to a directory">
+	<target name="deploy_web_project" description="deploys custom pages to a directory">
 		<exec program="${msbuild}">
 			<arg line='"${ldap.web.directory}\${ldap.web.name}"' />
 			<arg line='/property:SourceRoot="${root}"' />
@@ -43,12 +44,19 @@
 	</target>
 	
 	<target name="sign_files" description="Signs dlls and exes using signtool.exe">
-		<exec program="${ldap.scripts.directory}\sign.ldap.files.bat">
-			<environment>
-				<variable name="SIGNTOOL" value="${signtool}" />
-				<variable name="sourceLDAPDirectory" value="${Package.source.code.directory}" />
-			</environment>
-		</exec>
+		<choose>
+			<when test="${signOutput=='true'}">
+				<exec program="${ldap.scripts.directory}\sign.ldap.files.bat">
+					<environment>
+						<variable name="SIGNTOOL" value="${signtool}" />
+						<variable name="sourceLDAPDirectory" value="${Package.source.code.directory}" />
+					</environment>
+				</exec>
+			</when>
+			<otherwise>
+				<echo message="Skip signing" />
+			</otherwise>
+		</choose>
 	</target>
 	
 	<target name="build_custom_pages_zip" description="zips up custom pages directory">

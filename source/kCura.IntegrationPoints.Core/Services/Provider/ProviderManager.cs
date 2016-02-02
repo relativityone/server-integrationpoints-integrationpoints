@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Castle.MicroKernel;
+using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Resolvers.SpecializedResolvers;
+using Castle.Windsor;
+using Castle.Windsor.Installer;
 using kCura.IntegrationPoints.Core.Domain;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Contracts
 {
@@ -12,6 +18,10 @@ namespace kCura.IntegrationPoints.Contracts
 	///  </summary>
 	public class DomainManager : MarshalByRefObject
 	{
+		private IProviderFactory _providerFactory;
+		private ISynchronizerFactory _synchronizerFactory;
+		private WindsorContainer _windsorContainer;
+
 		/// <summary>
 		/// Called to initilized the provider's app domain and do any setup work needed
 		/// </summary>
@@ -19,7 +29,7 @@ namespace kCura.IntegrationPoints.Contracts
 		{
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyDomainLoader.ResolveAssembly;
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-			var startupType = typeof(IStartUp);
+			Type startupType = typeof(IStartUp);
 			var types = (from a in assemblies
 									 from t in a.GetTypes()
 									 where startupType.IsAssignableFrom(t) && t != startupType
@@ -38,14 +48,63 @@ namespace kCura.IntegrationPoints.Contracts
 			}
 		}
 
+		private void SetUpCastleWindsor()
+		{
+			_windsorContainer = new WindsorContainer();
+			IKernel kernel = _windsorContainer.Kernel;
+			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
+			var installerFactory = new InstallerFactory();
+			_windsorContainer.Install(
+				FromAssembly.InDirectory(
+					new AssemblyFilter(AppDomain.CurrentDomain.RelativeSearchPath)
+						.FilterByName(this.FilterByAllowedAssemblyNames)));
+		}
+
+		private bool FilterByAllowedAssemblyNames(AssemblyName assemblyName)
+		{
+			string[] allowedInstallerAssemblies = new[]
+			{
+				"kCura.IntegrationPoints", 
+				"kCura.IntegrationPoints.Contracts", 
+				"kCura.IntegrationPoints.Core", 
+				"kCura.IntegrationPoints.Data"
+			};
+
+			if (allowedInstallerAssemblies.Contains(assemblyName.Name))
+			{
+				return true;
+			}
+
+			return false;
+		}
+
 		/// <summary>
 		/// Gets the provider in the app domain from the specific identifier
 		/// </summary>
 		/// <param name="identifer">The identifier that represents the provider</param>
+		/// <param name="helper">Optional IHelper object to use for resolving classes</param>
 		/// <returns>A Data source provider to retrieve data and pass along to the source.</returns>
-		public Provider.IDataSourceProvider GetProvider(Guid identifer)
+		public Provider.IDataSourceProvider GetProvider(Guid identifer, IHelper helper)
 		{
-			return new ProviderWrapper(PluginBuilder.Current.GetProviderFactory().CreateProvider(identifer));
+			if (_windsorContainer == null)
+			{
+				this.SetUpCastleWindsor();
+			}
+
+			if (_providerFactory == null)
+			{
+				if (helper != null)
+				{
+					if (!_windsorContainer.Kernel.HasComponent(typeof(IHelper)))
+					{
+						_windsorContainer.Register(Component.For<IHelper>().Instance(helper).LifestyleTransient());
+					}
+				}
+
+				_providerFactory = _windsorContainer.Resolve<IProviderFactory>();
+			}
+
+			return new ProviderWrapper(_providerFactory.CreateProvider(identifer));
 		}
 
 		/// <summary>
@@ -56,7 +115,17 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <returns>A synchronizer that will bring data into a system.</returns>
 		public Synchronizer.IDataSynchronizer GetSyncronizer(Guid identifier, string options)
 		{
-			return new SynchronizerWrapper(PluginBuilder.Current.GetSynchronizerFactory().CreateSyncronizer(identifier, options));
+			if (_windsorContainer == null)
+			{
+				this.SetUpCastleWindsor();
+			}
+
+			if (_synchronizerFactory == null)
+			{
+				_synchronizerFactory = _windsorContainer.Resolve<ISynchronizerFactory>();
+			}
+
+			return new SynchronizerWrapper(_synchronizerFactory.CreateSyncronizer(identifier, options));
 		}
 
 	}
