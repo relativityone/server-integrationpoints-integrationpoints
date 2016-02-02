@@ -11,6 +11,8 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
+using Artifact = kCura.Relativity.Client.Artifact;
+using Field = kCura.Relativity.Client.Field;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
@@ -41,7 +43,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			RelativityFieldQuery query = new RelativityFieldQuery(client);
 			List<Artifact> fields = query.GetFieldsForRDO(rdoTypeId);
 			Dictionary<int, Relativity.ImportAPI.Data.Field> mappableFields = GetImportAPI(client).GetWorkspaceFields(workspaceId, rdoTypeId).ToDictionary(x => x.ArtifactID);
-			
+
 			// ContainsKey is 0(1) https://msdn.microsoft.com/en-us/library/kw5aaea4.aspx
 			return fields.Where(x => mappableFields.ContainsKey(x.ArtifactID)).ToList();
 		}
@@ -108,12 +110,55 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
 		{
 			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
+
 			using (IRSAPIClient client = CreateClient(settings.WorkspaceArtifactId))
 			{
 				IRelativityClientAdaptor relativityClient = new RelativityClientAdaptor(client);
-				return new DocumentTranfserDataReader(relativityClient, entryIds.Select(x => Convert.ToInt32(x)), fields);
-			}
 
+				// TODO - modify query to only get 'Field Type'. SAMO - 1/29/2016
+				//List<Artifact> documentFields = GetExtractedTextFields(client, (int)ArtifactType.Document);
+
+				List<Artifact> fieldEntries = GetLongTextFields(client, Convert.ToInt32(ArtifactType.Document));
+				return new DocumentTranfserDataReader(relativityClient, entryIds.Select(x => Convert.ToInt32(x)), fields, fieldEntries);
+			}
+		}
+
+		private List<Artifact> GetLongTextFields(IRSAPIClient client, int rdoTypeId)
+		{
+			CompositeCondition condition = new CompositeCondition()
+			{
+				Condition1 =
+					new ObjectCondition
+					{
+						Field = "Object Type Artifact Type ID",
+						Operator = ObjectConditionEnum.AnyOfThese,
+						Value = new List<int> { rdoTypeId }
+					},
+				Operator = CompositeConditionEnum.And,
+				Condition2 =
+					new TextCondition()
+					{
+						Field = "Field Type",
+						Operator = TextConditionEnum.EqualTo,
+						Value = "Long Text"
+					}
+			};
+
+			Query query = new Query()
+			{
+				ArtifactTypeName = "Field",
+				Fields = new List<Field>(),
+				Condition = condition
+			};
+
+			var result = client.Query(client.APIOptions, query);
+			if (!result.Success)
+			{
+				var messages = result.Message;
+				var e = messages;
+				throw new Exception(e);
+			}
+			return result.QueryArtifacts;
 		}
 	}
 }
