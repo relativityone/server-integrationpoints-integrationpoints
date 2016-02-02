@@ -33,6 +33,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<IPermissionService>().ImplementedBy<PermissionService>().LifestyleTransient());
 			container.Register(Component.For<WebClientFactory>().ImplementedBy<WebClientFactory>().LifestyleTransient());
 			container.Register(Component.For<RdoSynchronizer>().ImplementedBy<RdoSynchronizer>().LifestyleTransient());
+			container.Register(Component.For<RdoSynchronizerPush>().ImplementedBy<RdoSynchronizerPush>().LifestyleTransient());
 			container.Register(Component.For<kCura.Apps.Common.Utils.Serializers.ISerializer>().ImplementedBy<kCura.Apps.Common.Utils.Serializers.JSONSerializer>().LifestyleTransient());
 			container.Register(Classes.FromThisAssembly().BasedOn<IHttpController>().LifestyleTransient());
 			container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => ConnectionHelper.Helper()).LifestylePerWebRequest());
