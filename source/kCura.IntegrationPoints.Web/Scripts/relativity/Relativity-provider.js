@@ -1,4 +1,4 @@
-﻿$(function () {
+﻿$(function (root) {
 	//Create a new communication object that talks to the host page.
 	var message = IP.frameMessaging();
 
@@ -15,6 +15,14 @@
 		} else {
 			viewModel.errors.showAllMessages();
 		}
+
+		// Modify destination objec to contain target workspaceId
+		var destinationJson = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination;
+		var destination = JSON.parse(destinationJson);
+		destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
+		destination.Provider = "relativity";
+		destinationJson = JSON.stringify(destination);
+		IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination = destinationJson;
 	});
 
 	//An event raised when a user clicks the Back button.
@@ -50,7 +58,7 @@
 		this.workspaces = ko.observableArray(state.workspaces);
 		this.savedSearches = ko.observableArray(state.savedSearches);
 
-		this.WorkspaceArtifactId = ko.observable(state.WorkspaceArtifactId).extend({
+		this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId).extend({
 			required: true
 		});
 
@@ -74,12 +82,12 @@
 				self.workspaces(result);
 			});
 		}
-
+		
 		this.errors = ko.validation.group(this, { deep: true });
 		this.getSelectedOption = function() {
 			return {
-				"WorkspaceArtifactId": self.WorkspaceArtifactId(),
-				"SavedSearchArtifactId": self.SavedSearchArtifactId()
+				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
+				"WorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top)
 			}
 		}
 	}

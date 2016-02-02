@@ -31,9 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.EventHandler">
-      <HintPath>..\..\example\ProviderIncludes\Provider\kCura.EventHandler.dll</HintPath>
-    </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
@@ -67,14 +64,6 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
-      <Project>{30503682-E18D-49DF-A308-FE7996C4108E}</Project>
-      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
-      <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
-      <Name>kCura.IntegrationPoints.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider.Shared\kCura.IntegrationPoints.DocumentTransferProvider.Shared.csproj">
       <Project>{22991306-a168-4d22-80a7-aaa99c9e9fd6}</Project>

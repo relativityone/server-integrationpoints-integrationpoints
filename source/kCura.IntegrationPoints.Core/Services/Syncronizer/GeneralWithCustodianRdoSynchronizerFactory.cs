@@ -24,6 +24,12 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 		{
 			var json = JsonConvert.DeserializeObject<ImportSettings>(options);
 			var rdoObjectType = _query.GetObjectType(json.ArtifactTypeId);
+
+			if (json.Provider.ToLower() == "relativity")
+			{
+				return _container.Kernel.Resolve<kCura.IntegrationPoints.Synchronizers.RDO.RdoSynchronizerPush>();
+			}
+
 			//name is very bad, we should consider switching to guid
 			switch (rdoObjectType.Name.ToLower())
 			{
