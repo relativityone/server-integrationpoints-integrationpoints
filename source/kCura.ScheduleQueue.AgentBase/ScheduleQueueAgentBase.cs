@@ -77,19 +77,29 @@ namespace kCura.ScheduleQueue.AgentBase
 
 			OnRaiseAgentLogEntry(10, LogCategory.Info, "Started.");
 
-			OnRaiseAgentLogEntry(20, LogCategory.Info, "Initialize Local Services");
-			Initialize();
+			try
+			{
+				OnRaiseAgentLogEntry(20, LogCategory.Info, "Initialize Local Services");
+				Initialize();
 
-			OnRaiseAgentLogEntry(20, LogCategory.Info, "Initialize Manager Config settings factory");
-			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(base.Helper);
+				OnRaiseAgentLogEntry(20, LogCategory.Info, "Initialize Manager Config settings factory");
+				Manager.Settings.Factory = new HelperConfigSqlServiceFactory(base.Helper);
 
-			OnRaiseAgentLogEntry(20, LogCategory.Info, "Check for Queue Table");
-			CheckQueueTable();
+				OnRaiseAgentLogEntry(20, LogCategory.Info, "Check for Queue Table");
+				CheckQueueTable();
 
-			OnRaiseAgentLogEntry(20, LogCategory.Info, "Process jobs");
-			ProcessQueueJobs();
-
-			if (!errorRaised)
+				OnRaiseAgentLogEntry(20, LogCategory.Info, "Process jobs");
+				ProcessQueueJobs();
+			}
+			catch (Exception ex)
+			{
+				OnRaiseAgentLogEntry(20, LogCategory.Warn, string.Format("{0} {1}", ex.Message, ex.StackTrace));
+			}
+			if (errorRaised)
+			{
+				OnRaiseAgentLogEntry(10, LogCategory.Info, "Completed with errors.");
+			}
+			else
 			{
 				OnRaiseAgentLogEntry(10, LogCategory.Info, "Completed.");
 			}
