@@ -26,6 +26,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		#endregion
 
 		#region "Public Properties"
+		public string Provider { get; set; }
 		public int ArtifactTypeId { get; set; }
 		public string BulkLoadFileFieldDelimiter { get; set; }
 		public bool DisableControlNumberCompatibilityMode { get; set; }

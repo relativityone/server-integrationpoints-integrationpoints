@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Data
 {
 	public class IntegrationPointQuery
 	{
-			private readonly IRSAPIService _context;
+		private readonly IRSAPIService _context;
 		public IntegrationPointQuery(IRSAPIService context)
 		{
 			_context = context;

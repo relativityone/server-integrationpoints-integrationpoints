@@ -14,6 +14,15 @@ using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
+	public class DestinationConfigurationModel
+	{
+		public int ArtifactId;
+		public string ImportOverwriteMode;
+		public int CaseArtifactId;
+		public bool CustodianManagerFieldContainsLink;
+		public bool ExtractedTextFieldContainsFilePath;
+	}
+
 	[Contracts.DataSourceProvider(Shared.Constants.PROVIDER_GUID)]
 	public class DocumentTransferProvider : IDataSourceProvider
 	{
@@ -32,7 +41,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		private List<Relativity.Client.Artifact> GetRelativityFields(IRSAPIClient client, int workspaceId, int rdoTypeId)
 		{
 			RelativityFieldQuery query = new RelativityFieldQuery(client);
-			List<Artifact> fields = query.GetFieldsForRDO(rdoTypeId);
+			List<Artifact> fields = query.GetFieldsForRdo(rdoTypeId);
 			Dictionary<int, Relativity.ImportAPI.Data.Field> mappableFields = GetImportAPI(client).GetWorkspaceFields(workspaceId, rdoTypeId).ToDictionary(x => x.ArtifactID);
 			
 			// ContainsKey is 0(1) https://msdn.microsoft.com/en-us/library/kw5aaea4.aspx

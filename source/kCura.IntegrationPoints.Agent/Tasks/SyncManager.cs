@@ -37,7 +37,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			set { _batchStatus = value; }
 		}
 
-
 		public SyncManager(ICaseServiceContext caseServiceContext,
 			IDataProviderFactory providerFactory,
 			IJobManager jobManager,

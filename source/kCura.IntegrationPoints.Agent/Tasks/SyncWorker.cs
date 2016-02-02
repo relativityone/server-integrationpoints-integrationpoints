@@ -22,7 +22,6 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-
 	public class SyncWorker : ITask
 	{
 		internal ICaseServiceContext _caseServiceContext;

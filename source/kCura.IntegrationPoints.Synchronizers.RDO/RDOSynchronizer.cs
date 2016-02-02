@@ -20,15 +20,23 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		protected readonly RelativityFieldQuery FieldQuery;
 		private Relativity.ImportAPI.IImportAPI _api;
 		private readonly ImportApiFactory _factory;
-		protected Relativity.ImportAPI.IImportAPI GetImportApi(ImportSettings settings)
-		{
-			return _api ?? (_api = _factory.GetImportAPI(settings));
-		}
+
+		private IImportService _importService;
+		private bool _isJobComplete = false;
+		private Exception _jobError;
+		private List<KeyValuePair<string, string>> _rowErrors;
+		private ImportSettings ImportSettings { get; set; }
+		private NativeFileImportService NativeFileImportService { get; set; }
 
 		public RdoSynchronizer(RelativityFieldQuery fieldQuery, ImportApiFactory factory)
 		{
 			FieldQuery = fieldQuery;
 			_factory = factory;
+		}
+
+		protected Relativity.ImportAPI.IImportAPI GetImportApi(ImportSettings settings)
+		{
+			return _api ?? (_api = _factory.GetImportAPI(settings));
 		}
 
 		private List<string> IgnoredList
@@ -51,7 +59,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		protected List<Relativity.Client.Artifact> GetRelativityFields(ImportSettings settings)
 		{
-			var fields = FieldQuery.GetFieldsForRDO(settings.ArtifactTypeId);
+			var fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
 			var mappableFields = GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId);
 			return fields.Where(x => mappableFields.Any(y => y.ArtifactID == x.ArtifactID)).ToList();
 		}
@@ -83,14 +91,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				}
 			}
 		}
-
-
-		private IImportService _importService;
-		private bool _isJobComplete = false;
-		private Exception _jobError;
-		private List<KeyValuePair<string, string>> _rowErrors;
-		private ImportSettings ImportSettings { get; set; }
-		private NativeFileImportService NativeFileImportService { get; set; }
 
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{

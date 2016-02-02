@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 		public static ImportApiFactory GetMockAPI(RelativityFieldQuery query)
 		{
 			var import = NSubstitute.Substitute.For<Relativity.ImportAPI.IImportAPI>();
-			var result = query.GetFieldsForRDO(0);
+			var result = query.GetFieldsForRdo(0);
 			var list = new List<kCura.Relativity.ImportAPI.Data.Field>();
 			var mi = typeof(Relativity.ImportAPI.Data.Field).GetProperty("ArtifactID").GetSetMethod(true);
 			foreach (var r in result)
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				Name = "Test1"
 			});
 
-			fieldQuery.GetFieldsForRDO(Arg.Any<int>()).Returns(artifacts);
+			fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
 			var sync = RDOSynchronizerTest.ChangeWebAPIPath(new RDOCustodianSynchronizer(fieldQuery, GetMockAPI(fieldQuery)));
@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				Name = "Test1"
 			});
 
-			fieldQuery.GetFieldsForRDO(Arg.Any<int>()).Returns(artifacts);
+			fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
 			var sync = RDOSynchronizerTest.ChangeWebAPIPath(new RDOCustodianSynchronizer(fieldQuery, GetMockAPI(fieldQuery)));
@@ -131,7 +131,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				Name = "Test1"
 			});
 
-			fieldQuery.GetFieldsForRDO(Arg.Any<int>()).Returns(artifacts);
+			fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
 			var sync = RDOSynchronizerTest.ChangeWebAPIPath(new RDOCustodianSynchronizer(fieldQuery, GetMockAPI(fieldQuery)));
