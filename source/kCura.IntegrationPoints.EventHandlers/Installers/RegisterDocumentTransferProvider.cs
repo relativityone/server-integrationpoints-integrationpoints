@@ -25,6 +25,7 @@
 					{
 						Name = Constants.PROVIDER_NAME,
 						Url = String.Format("/%applicationpath%/CustomPages/{0}/IntegrationPoints/{1}/",  Constants.CUSTOMPAGE_GUID, Constants.PROVIDER_CONFIGURATION),
+						ViewDataUrl = String.Format("/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/%appId%/api/relativity/view")
 					}
 				}
 			};
