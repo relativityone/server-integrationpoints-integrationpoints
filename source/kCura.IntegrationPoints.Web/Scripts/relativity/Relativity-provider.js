@@ -16,7 +16,7 @@
 			viewModel.errors.showAllMessages();
 		}
 
-		// Modify destination objec to contain target workspaceId
+		// Modify destination object to contain target workspaceId
 		var destinationJson = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination;
 		var destination = JSON.parse(destinationJson);
 		destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();

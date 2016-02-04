@@ -49,9 +49,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			});
 
 			//ACT
-			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
 			var str = JsonConvert.SerializeObject(options);
-			var numberOfFields = rdoSyncronizer.GetFields(str).Count();
+			var numberOfFields = rdoSynchronizer.GetFields(str).Count();
 			//ASSERT
 
 			Assert.AreEqual(3, numberOfFields);
@@ -89,8 +89,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
-			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
-			var listOfFieldEntry = rdoSyncronizer.GetFields(str).ToList();
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
+			var listOfFieldEntry = rdoSynchronizer.GetFields(str).ToList();
 
 
 			//ASSERT
@@ -129,8 +129,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
-			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
-			var numberOfFields = rdoSyncronizer.GetFields(str).Count();
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
+			var numberOfFields = rdoSynchronizer.GetFields(str).Count();
 
 			//ASSERT
 			Assert.AreEqual(5, numberOfFields);
@@ -169,8 +169,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
-			var rdoSyncronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
-			var listOfFieldEntry = rdoSyncronizer.GetFields(str).ToList();
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
+			var listOfFieldEntry = rdoSynchronizer.GetFields(str).ToList();
 
 			//ASSERT
 			Assert.AreEqual(expectedFieldEntry.Count, listOfFieldEntry.Count);

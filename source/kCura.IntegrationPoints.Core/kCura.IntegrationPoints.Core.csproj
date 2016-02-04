@@ -167,8 +167,8 @@
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />
     <Compile Include="Services\SourceTypes\LdapSourceTypeCreator.cs" />
     <Compile Include="Services\SourceTypes\SourceTypeFactory.cs" />
-    <Compile Include="Services\Syncronizer\GeneralWithCustodianRdoSynchronizerFactory.cs" />
-    <Compile Include="Services\Syncronizer\RDOSyncronizerProvider.cs" />
+    <Compile Include="Services\Synchronizer\GeneralWithCustodianRdoSynchronizerFactory.cs" />
+    <Compile Include="Services\Synchronizer\RDOSynchronizerProvider.cs" />
     <Compile Include="Services\Tabs\ITabService.cs" />
     <Compile Include="Services\Tabs\RSAPITabService.cs" />
     <Compile Include="Services\TaskParameterHelper.cs" />

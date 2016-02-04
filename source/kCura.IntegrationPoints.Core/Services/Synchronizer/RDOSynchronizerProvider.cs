@@ -5,15 +5,15 @@ using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 
-namespace kCura.IntegrationPoints.Core.Services.Syncronizer
+namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 {
-	public class RDOSyncronizerProvider
+	public class RDOSynchronizerProvider
 	{
 		public const string RDO_SYNC_TYPE_GUID = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
 
 		private readonly ICaseServiceContext _context;
 
-		public RDOSyncronizerProvider(ICaseServiceContext context)
+		public RDOSynchronizerProvider(ICaseServiceContext context)
 		{
 			_context = context;
 		}
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 			}
 		}
 
-		public int GetRdoSyncronizerId()
+		public int GetRdoSynchronizerId()
 		{
 			var q = new Query<RDO>();
 			q.Condition = new TextCondition(Guid.Parse(Data.DestinationProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, RDO_SYNC_TYPE_GUID);

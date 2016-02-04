@@ -11,20 +11,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class WorkspaceFieldController : ApiController
 	{
-		private readonly kCura.IntegrationPoints.Contracts.ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
-		public WorkspaceFieldController(ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory)
+		private readonly kCura.IntegrationPoints.Contracts.ISynchronizerFactory _appDomainRdoSynchronizerFactory;
+		public WorkspaceFieldController(ISynchronizerFactory appDomainRdoSynchronizerFactory)
 		{
-			_appDomainRdoSynchronizerFactoryFactory = appDomainRdoSynchronizerFactoryFactory;
+			_appDomainRdoSynchronizerFactory = appDomainRdoSynchronizerFactory;
 		}
 
 		[HttpPost]
 		[Route("{workspaceID}/api/WorkspaceField/")]
-		public HttpResponseMessage Post([FromBody] SyncronizerSettings settings)
+		public HttpResponseMessage Post([FromBody] SynchronizerSettings settings)
 		{
-			IDataSynchronizer syncronizer = _appDomainRdoSynchronizerFactoryFactory.CreateSyncronizer(Guid.Empty, settings.Settings);
-			var fields = syncronizer.GetFields(settings.Settings).ToList();
+			IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, settings.Settings);
+			var fields = synchronizer.GetFields(settings.Settings).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
 		}
 	}
 }
-	
