@@ -40,9 +40,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
 			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
-			using (IRSAPIClient client = CreateClient(settings.WorkspaceArtifactId))
+			using (IRSAPIClient client = CreateClient(settings.SourceWorkspaceArtifactId))
 			{
-				List<Artifact> fields = GetRelativityFields(client, settings.WorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
+				List<Artifact> fields = GetRelativityFields(client, settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
 				IEnumerable<FieldEntry> fieldEntries = ParseFields(fields);
 				return fieldEntries;
 			}
@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
 		{
 			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
-			using (IRSAPIClient client = CreateClient(settings.WorkspaceArtifactId))
+			using (IRSAPIClient client = CreateClient(settings.SourceWorkspaceArtifactId))
 			{
 				IRelativityClientAdaptor relativityClient = new RelativityClientAdaptor(client);
 				return new DocumentArtifactIdDataReader(relativityClient, settings.SavedSearchArtifactId);
@@ -143,7 +143,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		{
 			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
 
-			using (IRSAPIClient client = CreateClient(settings.WorkspaceArtifactId))
+			using (IRSAPIClient client = CreateClient(settings.SourceWorkspaceArtifactId))
 			{
 				IRelativityClientAdaptor relativityClient = new RelativityClientAdaptor(client);
 

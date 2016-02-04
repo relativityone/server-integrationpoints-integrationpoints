@@ -87,7 +87,8 @@
 		this.getSelectedOption = function() {
 			return {
 				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
-				"WorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top)
+				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
+				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
 			}
 		}
 	}
