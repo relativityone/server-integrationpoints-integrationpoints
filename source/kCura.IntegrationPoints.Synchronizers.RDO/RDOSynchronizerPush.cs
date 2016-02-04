@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
@@ -13,9 +14,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		private new List<Relativity.Client.Artifact> GetRelativityFields(ImportSettings settings)
 		{
-			var fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId, settings.CaseArtifactId);
-			var mappableFields = GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId);
-			return fields.Where(x => mappableFields.Any(y => y.ArtifactID == x.ArtifactID)).ToList();
+			List<Artifact> fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId, settings.CaseArtifactId);
+			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId).Select(x => x.ArtifactID));
+			return fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
 		}
 
 		public override IEnumerable<FieldEntry> GetFields(string options)
