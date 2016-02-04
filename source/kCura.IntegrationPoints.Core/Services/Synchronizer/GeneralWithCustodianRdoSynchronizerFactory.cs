@@ -6,7 +6,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 
-namespace kCura.IntegrationPoints.Core.Services.Syncronizer
+namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 {
 	public class GeneralWithCustodianRdoSynchronizerFactory : kCura.IntegrationPoints.Contracts.ISynchronizerFactory
 	{
@@ -20,27 +20,26 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 
 		public ITaskJobSubmitter TaskJobSubmitter { get; set; }
 
-		public IDataSynchronizer CreateSyncronizer(Guid identifier, string options)
+		public IDataSynchronizer CreateSynchronizer(Guid identifier, string options)
 		{
 			var json = JsonConvert.DeserializeObject<ImportSettings>(options);
 			var rdoObjectType = _query.GetObjectType(json.ArtifactTypeId);
 
 			if (json.Provider.ToLower() == "relativity")
 			{
-				return _container.Kernel.Resolve<kCura.IntegrationPoints.Synchronizers.RDO.RdoSynchronizerPush>();
+				return _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizerPush).AssemblyQualifiedName);
 			}
 
 			//name is very bad, we should consider switching to guid
 			switch (rdoObjectType.Name.ToLower())
 			{
 				case "custodian":
-					var s = _container.Kernel.Resolve<kCura.IntegrationPoints.Synchronizers.RDO.RDOCustodianSynchronizer>();
+					var s = (RDOCustodianSynchronizer)_container.Kernel.Resolve<IDataSynchronizer>(typeof(RDOCustodianSynchronizer).AssemblyQualifiedName);
 					s.TaskJobSubmitter = TaskJobSubmitter;
 					return s;
 				default:
-					return _container.Kernel.Resolve<kCura.IntegrationPoints.Synchronizers.RDO.RdoSynchronizer>();
+					return _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizer).AssemblyQualifiedName);
 			}
-
 		}
 	}
 }
