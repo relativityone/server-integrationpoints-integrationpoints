@@ -19,10 +19,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		[HttpPost]
 		[Route("{workspaceID}/api/WorkspaceField/")]
-		public HttpResponseMessage Post([FromBody] SyncronizerSettings settings)
+		public HttpResponseMessage Post([FromBody] SynchronizerSettings settings)
 		{
-			IDataSynchronizer syncronizer = _appDomainRdoSynchronizerFactory.CreateSyncronizer(Guid.Empty, settings.Settings);
-			var fields = syncronizer.GetFields(settings.Settings).ToList();
+			IDataSynchronizer synchronizer = _appDomainRdoSynchronizerFactory.CreateSynchronizer(Guid.Empty, settings.Settings);
+			var fields = synchronizer.GetFields(settings.Settings).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
 		}
 	}

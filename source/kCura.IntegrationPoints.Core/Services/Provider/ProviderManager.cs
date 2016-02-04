@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <param name="identifier">The identifier that represents the synchronizer to create.</param>
 		/// <param name="options">The options for that synchronizer that will be passed on initialization.</param>
 		/// <returns>A synchronizer that will bring data into a system.</returns>
-		public Synchronizer.IDataSynchronizer GetSyncronizer(Guid identifier, string options)
+		public Synchronizer.IDataSynchronizer GetSynchronizer(Guid identifier, string options)
 		{
 			if (_windsorContainer == null)
 			{
@@ -125,7 +125,7 @@ namespace kCura.IntegrationPoints.Contracts
 				_synchronizerFactory = _windsorContainer.Resolve<ISynchronizerFactory>();
 			}
 
-			return new SynchronizerWrapper(_synchronizerFactory.CreateSyncronizer(identifier, options));
+			return new SynchronizerWrapper(_synchronizerFactory.CreateSynchronizer(identifier, options));
 		}
 
 	}

@@ -16,7 +16,7 @@ using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Services.Syncronizer;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -227,11 +227,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
 
-			IDataSynchronizer dataSyncronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
+			IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
 
-			SetupSubscriptions(dataSyncronizer, job);
+			SetupSubscriptions(dataSynchronizer, job);
 
-			dataSyncronizer.SyncData(sourceData, fieldMap, destinationConfiguration);
+			dataSynchronizer.SyncData(sourceData, fieldMap, destinationConfiguration);
 		}
 
 		internal virtual List<FieldEntry> GetSourceFields(IEnumerable<FieldMap> fieldMap)
@@ -261,7 +261,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				factory.TaskJobSubmitter = new TaskJobSubmitter(_jobManager, job, TaskType.SyncCustodianManagerWorker, this.BatchInstance);
 			}
-			IDataSynchronizer sourceProvider = _appDomainRdoSynchronizerFactoryFactory.CreateSyncronizer(providerGuid, configuration);
+			IDataSynchronizer sourceProvider = _appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration);
 			return sourceProvider;
 		}
 
