@@ -43,26 +43,46 @@
 	<script src="~/Scripts/jquery-postMessage.js"></script>
 	
 	<script>
-		var helpURL = "https://help.kcura.com/integrationpoints";
+	    var helpURL = "https://help.kcura.com/integrationpoints";
 	</script>
 	<script src="~/Scripts/HelpUtil.js"></script>
 	<script>
-		IP.data.params = IP.data.params || {};
-		IP.data.params['appID'] = @Model.AppID;
-		IP.data.params['artifactID'] = @Model.ArtifactID;
-		IP.data.params['userID'] = @Model.UserID;
+	    IP.data.params = IP.data.params || {};
+	    IP.data.params['appID'] = @Model.AppID;
+	    IP.data.params['artifactID'] = @Model.ArtifactID;
+	    IP.data.params['userID'] = @Model.UserID;
 	    IP.data.params['caseUserID'] = @Model.CaseUserID;
-		IP.data.params['URL'] = "@Html.Raw(@Model.URL)";
-		$("#cancel").on("click", function() {
+	    IP.data.params['URL'] = "@Html.Raw(@Model.URL)";
+	    $("#cancel").on("click", function() {
 			
-			var getBasePath = IP.utils.getBasePath();
-			var route = IP.redirect.get();
-			if (!IP.redirect.isEdit()) {
-				route = document.URL.split('CustomPages')[0]+"@Html.Raw(@Model.URL)" ;
-			}
-			window.top.location =route;
-		});
+	        var getBasePath = IP.utils.getBasePath();
+	        var route = IP.redirect.get();
+	        if (!IP.redirect.isEdit()) {
+	            route = document.URL.split('CustomPages')[0]+"@Html.Raw(@Model.URL)" ;
+	        }
+	        window.top.location =route;
+	    });
 	</script>
 	@Scripts.Render("~/bundles/ipEdit")
 	@Scripts.Render("~/bundles/dragon")
+
+    @if (!Model.ShowRelativityDataProvider)
+    {
+        // TODO: remove this when we no longer need the ShowRelativityDataProviderToggle
+        <script>
+            $( document ).ready(function() {
+                removeRelativityDataProvider();
+            });
+
+            function removeRelativityDataProvider() {
+                var optionToRemove = $("#sourceProvider option[value='423b4d43-eae9-4e14-b767-17d629de4bb2']");
+                if (optionToRemove.length) {
+                    optionToRemove.remove();
+                } else {
+                    // repeate until the element exists
+                    setTimeout(removeRelativityDataProvider, 500);
+                }
+            }
+        </script>
+    }
 }

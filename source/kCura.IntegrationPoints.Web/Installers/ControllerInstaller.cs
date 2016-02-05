@@ -1,13 +1,13 @@
-﻿using System.Web.Http.Controllers;
+﻿using System.Data.SqlClient;
+using System.Threading.Tasks;
+using System.Web.Http.Controllers;
 using System.Web.Mvc;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Services.Syncronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.LDAPProvider;
@@ -18,6 +18,8 @@ using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using IDBContext = Relativity.API.IDBContext;
 using Relativity.CustomPages;
+using Relativity.Toggles;
+using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Web.Installers
 {
@@ -69,7 +71,26 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<RelativityUrlHelper>().ImplementedBy<RelativityUrlHelper>().LifeStyle.Transient);
 
 			container.Register(Component.For<IEncryptionManager>().ImplementedBy<DefaultEncryptionManager>().LifeStyle.Transient);
-			container.Register(Component.For<WebAPILoginException>().ImplementedBy<WebAPILoginException>().LifeStyle.Transient); 
+			container.Register(Component.For<WebAPILoginException>().ImplementedBy<WebAPILoginException>().LifeStyle.Transient);
+
+			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
+			container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(
+				() =>
+				{
+					SqlConnection connection = ConnectionHelper.Helper().GetDBContext(-1).GetConnection(true);
+
+					return connection;
+				},
+				async () =>
+				{
+					Task<SqlConnection> task = Task.Run(() =>
+					{
+						SqlConnection connection = ConnectionHelper.Helper().GetDBContext(-1).GetConnection(true);
+						return connection;	
+					});
+
+					return await task;
+				})).LifestyleTransient());
 		}
 	}
 }

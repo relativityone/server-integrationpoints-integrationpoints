@@ -12,5 +12,6 @@ namespace kCura.IntegrationPoints.Web.Models
 		public int UserID { get; set; }
 		public int CaseUserID { get; set; }
 		public string URL { get; set; }
+		public bool ShowRelativityDataProvider { get; set; }
 	}
 }
