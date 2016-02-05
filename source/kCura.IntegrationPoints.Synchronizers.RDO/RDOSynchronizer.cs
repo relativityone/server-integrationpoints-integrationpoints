@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using Newtonsoft.Json;
@@ -106,11 +108,31 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			_jobError = null;
 			_rowErrors = new List<KeyValuePair<string, string>>();
 
-			foreach (var row in data)
+			bool movedNext = true;
+			IEnumerator<IDictionary<FieldEntry, object>> enumerator = data.GetEnumerator();
+
+			do
 			{
-				var importRow = GenerateImportRow(row, fieldMap, this.ImportSettings);
-				if (importRow != null) _importService.AddRow(importRow);
-			}
+				try
+				{
+					movedNext = enumerator.MoveNext();
+					if (movedNext)
+					{
+						var importRow = GenerateImportRow(enumerator.Current, fieldMap, this.ImportSettings);
+						if (importRow != null)
+						{
+							_importService.AddRow(importRow);
+						}
+					}
+				}
+				catch (ProviderReadDataException exception)
+				{
+					ItemError(exception.Identifier, exception.Message);
+				}
+
+			} while (movedNext);
+
+
 			_importService.PushBatchIfFull(true);
 
 			bool isJobDone = false;

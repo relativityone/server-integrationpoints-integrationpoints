@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					batchStatus.JobStarted(job);
 				}
-				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
+				SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
 				Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
 				Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
 				IDataSourceProvider provider = _providerFactory.GetDataProvider(applicationGuid, providerGuid, _helper);
