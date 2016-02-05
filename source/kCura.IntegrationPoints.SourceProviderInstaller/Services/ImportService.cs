@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Queries;
 using Relativity.API;
 
-
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 {
 	internal class ImportService : IImportService
@@ -39,7 +38,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			Guid applicationGuid = GetApplicationGuid(applicationID);
 			sourceProviders.ToList().ForEach(x => x.ApplicationGUID = applicationGuid);
 
-			InstallSyncronizerForCoreOnly(applicationGuid);
+			InstallSynchronizerForCoreOnly(applicationGuid);
 
 			ValidateProviders(sourceProviders);
 
@@ -73,12 +72,12 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			{ }
 		}
 
-		private void InstallSyncronizerForCoreOnly(Guid applicationGuid)
+		private void InstallSynchronizerForCoreOnly(Guid applicationGuid)
 		{
 			//This is hack untill we introduce installation of Destination Providers
 			if (applicationGuid == new Guid(Application.GUID))
 			{
-				new Core.Services.Syncronizer.RDOSyncronizerProvider(_caseContext).CreateOrUpdateLdapSourceType();
+				new Core.Services.Synchronizer.RDOSynchronizerProvider(_caseContext).CreateOrUpdateLdapSourceType();
 			}
 		}
 

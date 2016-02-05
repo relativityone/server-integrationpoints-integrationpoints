@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor;
 using kCura.EventHandler;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Services.Syncronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
-using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {

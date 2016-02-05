@@ -16,11 +16,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Adaptors
 		ResultSet<Document> ExecuteDocumentQuery(Query<Document> query);
 
 		/// <summary>
-		/// Return a long text field value of a given document
+		/// Return a result set of documents give the query model
 		/// </summary>
-		/// <param name="documentArtifactId">The document's artifact Id</param>
-		/// <param name="longTextFieldArtifactId">The long text field's artifact Id</param>
+		/// <param name="document">the document to be read </param>
 		/// <returns></returns>
-		String GetLongTextFieldValue(int documentArtifactId, int longTextFieldArtifactId);
+		ResultSet<Document> ReadDocument(Document document);
 	}
 }

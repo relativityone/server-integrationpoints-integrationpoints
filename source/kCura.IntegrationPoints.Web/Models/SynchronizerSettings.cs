@@ -1,6 +1,6 @@
 ﻿namespace kCura.IntegrationPoints.Web.Models
 {
-	public class SyncronizerSettings
+	public class SynchronizerSettings
 	{
 		public string Settings { get; set; }
 
