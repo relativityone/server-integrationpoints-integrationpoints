@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Dynamic;
+using System.Text.RegularExpressions;
 using System.Web.Http;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -10,25 +12,31 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpPost]
 		public IHttpActionResult GetViewFields([FromBody] object data)
 		{
-			dynamic settings = Newtonsoft.Json.JsonConvert.DeserializeObject(data.ToString());
-
-			int workspaceArtifactId = 0;
-			int savedSearchArtifactId = 0;
+			List<KeyValuePair<string, object>> result = new List<KeyValuePair<string, object>>();;
 			try
 			{
-				workspaceArtifactId = (int)settings.WorkspaceArtifactId;
-				savedSearchArtifactId =  (int)settings.SavedSearchArtifactId;
+				ExpandoObject settings = Newtonsoft.Json.JsonConvert.DeserializeObject<ExpandoObject>(data.ToString()) as ExpandoObject;
+				
+				if (settings != null)
+				{
+					// This is to print out variables as friendly text
+					// kudos: http://stackoverflow.com/questions/4488969/split-a-string-by-capital-letters
+					 var regex = new Regex(@"
+						(?<=[A-Z])(?=[A-Z][a-z]) |
+						(?<=[^A-Z])(?=[A-Z]) |
+						(?<=[A-Za-z])(?=[^A-Za-z])", RegexOptions.IgnorePatternWhitespace);
+
+					foreach (KeyValuePair<string, object> kvp in settings)
+					{
+						string key = regex.Replace(kvp.Key, " ");
+						result.Add(new KeyValuePair<string, object>(key, kvp.Value));
+					}
+				}
 			}
 			catch
 			{
 				return BadRequest(kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.INVALID_PARAMETERS);
 			}
-
-			var result = new List<KeyValuePair<string, int>>
-			{
-				new KeyValuePair<string, int>(kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.TARGET_WORKSPACE_ID, workspaceArtifactId),
-				new KeyValuePair<string, int>(kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.SAVED_SEARCH_ID, savedSearchArtifactId)
-			};
 
 			return Ok(result);
 		}
