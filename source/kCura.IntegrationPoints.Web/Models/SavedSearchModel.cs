@@ -15,15 +15,22 @@
 		public int Value { get; private set; }
 		public String DisplayName { get; private set; }
 
-		public static IList<SavedSearchModel> GetAllSavedSearches(IRSAPIClient context)
+		public static IList<SavedSearchModel> GetAllPublicSavedSearches(IRSAPIClient context)
 		{
 			const String identifier = "Text Identifier";
+			const String security = "Security";
 
 			GetSavedSearchesQuery query = new GetSavedSearchesQuery(context);
 			List<Artifact> artifacts = query.ExecuteQuery().QueryArtifacts;
 			List<SavedSearchModel> result = new List<SavedSearchModel>(artifacts.Count);
 			foreach (var artifact in artifacts)
 			{
+				Field securityField = artifact.getFieldByName(security);
+				if (securityField == null || (bool)securityField.Value == false)
+				{
+					continue;
+				}
+
 				Field textIdentifierField = artifact.getFieldByName(identifier);
 				if (textIdentifierField != null && textIdentifierField.Value != null)
 				{
