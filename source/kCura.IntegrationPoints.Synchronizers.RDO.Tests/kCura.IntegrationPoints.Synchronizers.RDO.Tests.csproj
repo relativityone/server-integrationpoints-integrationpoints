@@ -92,11 +92,12 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Unit\BatchManagerTests.cs" />
+    <Compile Include="Unit\RDOSynchronizerPushTests.cs" />
     <Compile Include="Unit\ImportServiceTests.cs" />
     <Compile Include="Unit\ImportSettingsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\RDOCustodianSynchronizerTests.cs" />
-    <Compile Include="Unit\RDOSynchronizerTest.cs" />
+    <Compile Include="Unit\RDOSynchronizerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">

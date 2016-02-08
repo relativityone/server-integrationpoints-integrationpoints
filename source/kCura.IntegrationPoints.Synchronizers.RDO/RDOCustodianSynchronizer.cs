@@ -8,7 +8,7 @@ using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public class RDOCustodianSynchronizer : RdoSynchronizer
+	public class RDOCustodianSynchronizer : RdoSynchronizerPull
 	{
 		private const string LDAPMapFullNameFieldName = "CustomFullName";
 

@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.LDAPProvider;
-using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
