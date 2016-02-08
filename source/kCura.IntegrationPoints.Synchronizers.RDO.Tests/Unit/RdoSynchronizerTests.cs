@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
@@ -14,7 +13,7 @@ using Assert = NUnit.Framework.Assert;
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 {
 	[TestFixture]
-	public class RDOSynchronizerTest
+	public class RdoSynchronizerTests
 	{
 		public static RdoSynchronizer ChangeWebAPIPath(RdoSynchronizer synchronizer)
 		{
@@ -49,7 +48,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			});
 
 			//ACT
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizerPull(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock)));
 			var str = JsonConvert.SerializeObject(options);
 			var numberOfFields = rdoSynchronizer.GetFields(str).Count();
 			//ASSERT
@@ -89,7 +88,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizerPull(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock)));
 			var listOfFieldEntry = rdoSynchronizer.GetFields(str).ToList();
 
 
@@ -129,7 +128,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizerPull(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock)));
 			var numberOfFields = rdoSynchronizer.GetFields(str).Count();
 
 			//ASSERT
@@ -169,7 +168,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
-			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizer(fieldMock, RDOCustodianSynchronizerTests.GetMockAPI(fieldMock)));
+			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizerPull(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock)));
 			var listOfFieldEntry = rdoSynchronizer.GetFields(str).ToList();
 
 			//ASSERT
@@ -333,11 +332,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			//ASSERT
 			Assert.IsTrue(result);
 		}
-
-
 	}
 
-	public class TestRdoSynchronizer : kCura.IntegrationPoints.Synchronizers.RDO.RdoSynchronizer
+	public class TestRdoSynchronizer : kCura.IntegrationPoints.Synchronizers.RDO.RdoSynchronizerPull
 	{
 		public TestRdoSynchronizer()
 			: base(null, null)

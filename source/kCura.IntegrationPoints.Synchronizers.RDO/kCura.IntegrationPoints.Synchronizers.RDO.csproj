@@ -72,6 +72,9 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Config.cs" />
+    <Compile Include="RDOSynchronizerPull.cs" />
+    <Compile Include="IImportApiFactory.cs" />
+    <Compile Include="IRelativityFieldQuery.cs" />
     <Compile Include="RDOSynchronizerPush.cs" />
     <Compile Include="EmbeddedAssembly.cs" />
     <Compile Include="ImportApiFactory.cs" />
