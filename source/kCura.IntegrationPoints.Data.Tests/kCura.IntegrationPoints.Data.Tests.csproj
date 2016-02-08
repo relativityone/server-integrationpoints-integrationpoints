@@ -117,7 +117,7 @@
     <Compile Include="Integration\Queries\GetSavedSearchesQueryTests..cs" />
     <Compile Include="Integration\Queries\GetWorkspacesQueryTests.cs" />
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />
-    <Compile Include="Unit\BaseRDOTests.cs" />
+    <Compile Include="Unit\BaseRdoTests.cs" />
     <Compile Include="MockDBContext.cs" />
     <Compile Include="Unit\PermissionServiceTest.cs" />
     <Compile Include="Unit\RdoGetterTest.cs" />

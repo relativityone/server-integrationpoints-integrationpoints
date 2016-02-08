@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			_context = context;
 		}
 
-		public Data.JobHistory GetRDO(Guid batchInstance)
+		public Data.JobHistory GetRdo(Guid batchInstance)
 		{
 			var query = new Query<RDO>();
 			query.ArtifactTypeGuid = Guid.Parse(ObjectTypeGuids.JobHistory);
@@ -27,11 +27,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			return jobHistory;
 		}
 
-		public Data.JobHistory CreateRDO(Data.IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUTC)
+		public Data.JobHistory CreateRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUTC)
 		{
 			Data.JobHistory jobHistory = null;
 
-			try { jobHistory = GetRDO(batchInstance); }
+			try { jobHistory = GetRdo(batchInstance); }
 			catch { }
 
 			if (jobHistory == null)
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			return jobHistory;
 		}
 
-		public void UpdateRDO(Data.JobHistory jobHistory)
+		public void UpdateRdo(Data.JobHistory jobHistory)
 		{
 			_context.RsapiService.JobHistoryLibrary.Update(jobHistory);
 		}

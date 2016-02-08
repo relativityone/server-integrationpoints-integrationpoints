@@ -84,7 +84,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseRDO.cs" />
+    <Compile Include="BaseRdo.cs" />
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
@@ -129,7 +129,7 @@
     <Compile Include="Queries\JobHistoryErrorQuery.cs" />
     <Compile Include="Queries\JobStatisticsQuery.cs" />
     <Compile Include="RdoGetter.cs" />
-    <Compile Include="RDOHelper.cs" />
+    <Compile Include="RdoHelper.cs" />
     <Compile Include="RelativityRdoQuery.cs" />
     <Compile Include="Resources\Resource.Designer.cs">
       <AutoGen>True</AutoGen>

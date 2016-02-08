@@ -163,12 +163,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					throw new ArgumentNullException("Job must have a Related Object ArtifactID");
 				}
 				var integrationPointID = job.RelatedObjectArtifactID;
-				this.IntegrationPoint = _integrationPointService.GetRDO(job.RelatedObjectArtifactID);
+				this.IntegrationPoint = _integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 				if (this.IntegrationPoint.SourceProvider == 0)
 				{
 					throw new Exception("Cannot import source provider with unknown id.");
 				}
-				this.JobHistory = _jobHistoryService.CreateRDO(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
+				this.JobHistory = _jobHistoryService.CreateRdo(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
 				_jobHistoryErrorService.JobHistory = this.JobHistory;
 				_jobHistoryErrorService.IntegrationPoint = IntegrationPoint;
 				kCura.Method.Injection.InjectionManager.Instance.Evaluate("0F8D9778-5228-4D7A-A911-F731292F9CF0");
@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					this.JobHistory.StartTimeUTC = DateTime.UtcNow;
 					//TODO: jobHistory.JobStatus = "";
-					_jobHistoryService.UpdateRDO(this.JobHistory);
+					_jobHistoryService.UpdateRdo(this.JobHistory);
 				}
 			}
 			catch (Exception ex)

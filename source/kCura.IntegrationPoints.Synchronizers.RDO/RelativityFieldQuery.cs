@@ -6,7 +6,7 @@ using Field = kCura.Relativity.Client.Field;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public class RelativityFieldQuery
+	public class RelativityFieldQuery : IRelativityFieldQuery
 	{
 		private readonly IRSAPIClient _client;
 
@@ -53,9 +53,5 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			return result.QueryArtifacts;
 		}
-
-
-
-
 	}
 }

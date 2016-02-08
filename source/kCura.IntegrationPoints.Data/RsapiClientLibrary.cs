@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Data
 
 		private static void CheckResult<TResult>(ResultSet<TResult> result) where TResult : kCura.Relativity.Client.DTOs.Artifact
 		{
-			RDOHelper.CheckResult(result);
+			RdoHelper.CheckResult(result);
 		}
 
 		private static void CheckObject(T obj)

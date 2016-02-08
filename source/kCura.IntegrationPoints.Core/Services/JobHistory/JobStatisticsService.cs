@@ -54,10 +54,10 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			var tableName = JobTracker.GenerateTableTempTableName(_job, _helper.GetBatchInstance(_job).ToString());
 			var stats = _query.UpdateAndRetreiveStats(tableName, _job.JobId, new JobStatistics { Completed = total, Errored = rowErrors });
 			rowErrors = 0;
-			var historyRdo = _service.GetRDO(_helper.GetBatchInstance(_job));
+			var historyRdo = _service.GetRdo(_helper.GetBatchInstance(_job));
 			historyRdo.RecordsImported = stats.Imported;
 			historyRdo.RecordsWithErrors = stats.Errored;
-			_service.UpdateRDO(historyRdo);
+			_service.UpdateRdo(historyRdo);
 		}
 
 	}

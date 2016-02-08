@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using kCura.Relativity.Client.DTOs;
-using NSubstitute;
 using NUnit.Framework;
 using Choice = kCura.Relativity.Client.Choice;
 
 namespace kCura.IntegrationPoints.Data.Tests.Unit
 {
-	public class BaseRDOTests
+	public class BaseRdoTests
 	{
 		private Guid guidChoice1 = Guid.Parse("E68EF4BE-EB69-4CB6-94FC-D205F2096411");
 		private Guid guidChoice2 = Guid.Parse("5F8731F3-C899-4419-BA0F-7E05E4F739DF");

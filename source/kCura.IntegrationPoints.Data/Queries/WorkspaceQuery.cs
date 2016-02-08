@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Data.Queries
@@ -23,7 +19,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 			{
 				_client.APIOptions.WorkspaceID = -1;
 				var result = _client.Repositories.Workspace.Read(workspaceID);
-				RDOHelper.CheckResult(result);
+				RdoHelper.CheckResult(result);
 				return result.Results.First().Artifact;
 			}
 			finally

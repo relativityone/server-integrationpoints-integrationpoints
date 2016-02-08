@@ -7,7 +7,7 @@ using kCura.Relativity.ImportAPI;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public class ImportApiFactory
+	public class ImportApiFactory : IImportApiFactory
 	{
 		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
 

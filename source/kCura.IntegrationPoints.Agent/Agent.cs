@@ -87,10 +87,10 @@ namespace kCura.IntegrationPoints.Agent
 			TaskFactory.Release(task);
 		}
 
-		private CreateErrorRDO errorService;
+		private CreateErrorRdo errorService;
 		private void RaiseException(Job job, Exception exception)
 		{
-			if (errorService == null) errorService = new CreateErrorRDO(this.EddsRsapiClient);
+			if (errorService == null) errorService = new CreateErrorRdo(this.EddsRsapiClient);
 			errorService.Execute(job, exception, "Relativity Integration Points Agent");
 		}
 

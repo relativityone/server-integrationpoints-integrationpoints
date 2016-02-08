@@ -62,9 +62,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				//get all job parameters
 				GetParameters(job);
 
-				base.GetIntegrationPointRDO(job);
+				base.GetIntegrationPointRdo(job);
 
-				base.GetJobHistoryRDO();
+				base.GetJobHistoryRdo();
 
 				kCura.Method.Injection.InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
 

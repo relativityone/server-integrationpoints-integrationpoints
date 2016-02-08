@@ -8,13 +8,13 @@ using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public class RDOCustodianSynchronizer : RdoSynchronizer
+	public class RdoCustodianSynchronizer : RdoSynchronizerPull
 	{
 		private const string LDAPMapFullNameFieldName = "CustomFullName";
 
 		public ITaskJobSubmitter TaskJobSubmitter { get; set; }
 
-		public RDOCustodianSynchronizer(RelativityFieldQuery fieldQuery, ImportApiFactory factory)
+		public RdoCustodianSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory)
 			: base(fieldQuery, factory)
 		{ }
 
