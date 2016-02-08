@@ -67,7 +67,6 @@ properties {
     $nuspec_directory = [System.IO.Path]::Combine($development_scripts_directory,'NuGet')
     $nuget_exe_directory = [System.IO.Path]::Combine($vendor_directory,'NuGet')
     $nuget_exe = [System.IO.Path]::Combine($nuget_exe_directory,'NuGet.exe')
-    $nuget_server = 'http://dv-scm-nuget.kcura.corp/NuGet/'
 	$proget_server = 'https://proget.kcura.corp/nuget/NuGet'
     $nuget_version = $version
 

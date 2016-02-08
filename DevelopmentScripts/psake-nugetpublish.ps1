@@ -69,11 +69,5 @@ task nuget_publish {
 		exec {
 			& $nuget_exe @('push', $dictPath.$item, '-Source', $proget_server) 2>&1
         }
-		
-		if (($build_type -eq 'GOLD') -and ($branch -eq 'default' -or $branch.startsWith('release'))) {		
-			exec {
-				& $nuget_exe @('push', $dictPath.$item, '-Source', $nuget_server) 2>&1
-			}
-		}
     }  
 }
