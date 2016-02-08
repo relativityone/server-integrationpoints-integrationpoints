@@ -34,28 +34,33 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 		public void InstallProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providers)
 		{
 			IList<SourceProvider> sourceProviders = providers as IList<SourceProvider> ?? providers.ToList();
-			int applicationID = sourceProviders.Select(x => x.ApplicationID).First();
-			Guid applicationGuid = GetApplicationGuid(applicationID);
-			sourceProviders.ToList().ForEach(x => x.ApplicationGUID = applicationGuid);
 
-			InstallSynchronizerForCoreOnly(applicationGuid);
+			// install one provider at a time
+			foreach (SourceProvider provider in sourceProviders)
+			{
+				// when we migrate providers, we should already know which app does the provider belong to.
+				if (provider.ApplicationGUID == Guid.Empty)
+				{
+					provider.ApplicationGUID = GetApplicationGuid(provider.ApplicationID);
+				}
 
-			ValidateProviders(sourceProviders);
+				InstallSynchronizerForCoreOnly(provider.ApplicationGUID);
+				ValidateProviders(sourceProviders);
 
-			List<Data.SourceProvider> installedRdoProviders =
-				new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(applicationGuid);
-			Dictionary<string, SourceProviderInstaller.SourceProvider> installingProviderDict = sourceProviders.ToDictionary(x => x.GUID.ToString(), x => x);
-			Dictionary<string, Data.SourceProvider> installedRdoProviderDict = installedRdoProviders.ToDictionary(x => x.Identifier, x => x);
+				List<Data.SourceProvider> installedRdoProviders = new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(provider.ApplicationGUID);
+				Dictionary<string, SourceProviderInstaller.SourceProvider> installingProviderDict = sourceProviders.ToDictionary(x => x.GUID.ToString(), x => x);
+				Dictionary<string, Data.SourceProvider> installedRdoProviderDict = installedRdoProviders.ToDictionary(x => x.Identifier, x => x);
 
-			List<Data.SourceProvider> providersToBeUpdated =
-				installedRdoProviders.Where(x => installingProviderDict.ContainsKey(x.Identifier)).ToList();
+				List<Data.SourceProvider> providersToBeUpdated =
+					installedRdoProviders.Where(x => installingProviderDict.ContainsKey(x.Identifier)).ToList();
 
-			List<SourceProviderInstaller.SourceProvider> providersToBeInstalled =
-				sourceProviders.Where(x => !installedRdoProviderDict.ContainsKey(x.GUID.ToString())).ToList();
+				List<SourceProviderInstaller.SourceProvider> providersToBeInstalled =
+					sourceProviders.Where(x => !installedRdoProviderDict.ContainsKey(x.GUID.ToString())).ToList();
 
-			UpdateExistingProviders(providersToBeUpdated, sourceProviders);
+				UpdateExistingProviders(providersToBeUpdated, sourceProviders);
 
-			AddNewProviders(providersToBeInstalled);
+				AddNewProviders(providersToBeInstalled);
+			}
 		}
 
 		public void UninstallProvider(int applicationID)

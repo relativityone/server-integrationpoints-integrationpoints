@@ -159,6 +159,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			{
 				GUID = x.Key,
 				ApplicationID = base.ApplicationArtifactId,
+				ApplicationGUID = x.Value.ApplicationGUID,
 				Name = x.Value.Name,
 				Url = x.Value.Url,
 				ViewDataUrl = x.Value.ViewDataUrl
