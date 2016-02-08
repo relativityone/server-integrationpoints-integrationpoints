@@ -2,7 +2,7 @@
     $root = ""       
     $buildid = 0
 
-    $buildserver = 'http://teamcity.kcura.corp'
+    $buildserver = 'https://teamcity.kcura.corp'
     $database = 'TCBuildVersion'
     $proget = 'https://proget.kcura.corp/feeds/NuGet/'
 }
