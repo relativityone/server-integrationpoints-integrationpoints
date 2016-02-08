@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using Newtonsoft.Json;
-using Artifact = kCura.Relativity.Client.Artifact;
-using Field = kCura.Relativity.Client.Field;
 
 namespace kCura.IntegrationPoints.Data
 {

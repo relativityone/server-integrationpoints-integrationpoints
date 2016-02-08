@@ -12,13 +12,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 	[TestFixture]
 	public class RdoSynchronizerPushTests
 	{
-		public static RdoSynchronizer ChangeWebAPIPath(RdoSynchronizer synchronizer)
-		{
-			var prop = synchronizer.GetType().GetProperty("WebAPIPath");
-			prop.SetValue(synchronizer, "Mock value");
-			return synchronizer;
-		}
-
 		private RdoSynchronizerPush _rdoSynchronizerPush;
 		private IRelativityFieldQuery _relativityFieldQuery;
 		private IImportApiFactory _importApiFactory;

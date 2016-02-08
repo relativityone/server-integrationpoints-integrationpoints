@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public ITaskJobSubmitter TaskJobSubmitter { get; set; }
 
-		public RdoCustodianSynchronizer(RelativityFieldQuery fieldQuery, ImportApiFactory factory)
+		public RdoCustodianSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory)
 			: base(fieldQuery, factory)
 		{ }
 

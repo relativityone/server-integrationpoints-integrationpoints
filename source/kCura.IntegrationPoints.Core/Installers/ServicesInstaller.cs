@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<RdoSynchronizerProvider>().ImplementedBy<RdoSynchronizerProvider>().LifeStyle.Transient);
 
 
-			container.Register(Component.For<RelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
+			container.Register(Component.For<IRelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
 			container.Register(Component.For<IntegrationPointService>().ImplementedBy<IntegrationPointService>().LifestyleTransient());
 			container.Register(
 				Component.For<GetSourceProviderRdoByIdentifier>()
@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<JobHistoryErrorQuery>().ImplementedBy<JobHistoryErrorQuery>().LifestyleTransient());
 			container.Register(Component.For<TaskParameterHelper>().ImplementedBy<TaskParameterHelper>().LifestyleTransient());
 			
-			container.Register(Component.For<ImportApiFactory>().ImplementedBy<ImportApiFactory>().LifeStyle.Transient);
+			container.Register(Component.For<IImportApiFactory>().ImplementedBy<ImportApiFactory>().LifeStyle.Transient);
 
 			container.Register(Component.For<RelativityFeaturePathService>().ImplementedBy<RelativityFeaturePathService>().LifeStyle.Transient);
 		}
