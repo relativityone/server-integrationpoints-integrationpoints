@@ -84,11 +84,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				kCura.Method.Injection.InjectionManager.Instance.Evaluate("640E9695-AB99-4763-ADC5-03E1252277F7");
 
-				GetIntegrationPointRDO(job);
+				GetIntegrationPointRdo(job);
 
 				List<string> entryIDs = GetEntryIDs(job);
 
-				GetJobHistoryRDO();
+				GetJobHistoryRdo();
 
 				kCura.Method.Injection.InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
 
@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		internal void GetIntegrationPointRDO(Job job)
+		internal void GetIntegrationPointRdo(Job job)
 		{
 			if (this.IntegrationPoint != null) return;
 
@@ -170,11 +170,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		internal void GetJobHistoryRDO()
+		internal void GetJobHistoryRdo()
 		{
 			if (this.JobHistory != null) return;
 
-			this.JobHistory = _jobHistoryService.CreateRDO(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
+			this.JobHistory = _jobHistoryService.CreateRdo(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
 			_jobHistoryErrorService.JobHistory = this.JobHistory;
 			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPoint;
 		}

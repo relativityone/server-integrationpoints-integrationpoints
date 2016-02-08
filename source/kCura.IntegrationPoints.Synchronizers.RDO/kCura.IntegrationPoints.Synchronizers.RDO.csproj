@@ -74,10 +74,10 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Config.cs" />
-    <Compile Include="RDOSynchronizerPull.cs" />
+    <Compile Include="RdoSynchronizerPull.cs" />
     <Compile Include="IImportApiFactory.cs" />
     <Compile Include="IRelativityFieldQuery.cs" />
-    <Compile Include="RDOSynchronizerPush.cs" />
+    <Compile Include="RdoSynchronizerPush.cs" />
     <Compile Include="EmbeddedAssembly.cs" />
     <Compile Include="ImportApiFactory.cs" />
     <Compile Include="ImportOverlayBehaviorEnum.cs" />
@@ -89,8 +89,8 @@
     <Compile Include="ImportAPI\ImportService.cs" />
     <Compile Include="ImportSettings.cs" />
     <Compile Include="NativeFileImportService.cs" />
-    <Compile Include="RDOCustodianSynchronizer.cs" />
-    <Compile Include="RDOSynchronizer.cs" />
+    <Compile Include="RdoCustodianSynchronizer.cs" />
+    <Compile Include="RdoSynchronizer.cs" />
     <Compile Include="RelativityFieldQuery.cs" />
     <Compile Include="Properties\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>

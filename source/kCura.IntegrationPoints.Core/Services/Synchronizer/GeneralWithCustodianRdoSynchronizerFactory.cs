@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 			switch (rdoObjectType.Name.ToLower())
 			{
 				case "custodian":
-					var s = (RDOCustodianSynchronizer)_container.Kernel.Resolve<IDataSynchronizer>(typeof(RDOCustodianSynchronizer).AssemblyQualifiedName);
+					var s = (RdoCustodianSynchronizer)_container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoCustodianSynchronizer).AssemblyQualifiedName);
 					s.TaskJobSubmitter = TaskJobSubmitter;
 					return s;
 				default:

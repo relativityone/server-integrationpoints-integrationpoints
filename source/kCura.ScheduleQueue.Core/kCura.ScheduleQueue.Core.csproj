@@ -122,7 +122,7 @@
     <Compile Include="Interfaces\JobLogState.cs" />
     <Compile Include="Interfaces\TaskResult.cs" />
     <Compile Include="Interfaces\TaskStatusEnum.cs" />
-    <Compile Include="Logging\CreateErrorRDO.cs" />
+    <Compile Include="Logging\CreateErrorRdo.cs" />
     <Compile Include="Logging\JobLogService.cs" />
     <Compile Include="Logging\JobLog.cs" />
     <Compile Include="Logging\SystemEventLoggingService.cs" />

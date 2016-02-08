@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		public string Convert()
 		{
 			var details = _serializer.Deserialize<TaskParameters>(_job.JobDetails);
-			var history = _historyService.GetRDO(details.BatchInstance);
+			var history = _historyService.GetRdo(details.BatchInstance);
 			var error = _query.GetJobLevelError(history.ArtifactId);
 			return error.Error;
 		}

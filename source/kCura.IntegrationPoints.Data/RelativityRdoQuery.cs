@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Data
 			
 			}
 			var result = _client.Repositories.ObjectType.Query(qry);
-			RDOHelper.CheckResult(result);
+			RdoHelper.CheckResult(result);
 			
 			return result.Results.Select(x => x.Artifact).ToList();
 		}
@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Data
 			qry.Condition = new TextCondition(ObjectTypeFieldNames.Name, TextConditionEnum.EqualTo, objectTypeName);
 
 			var result = _client.Repositories.ObjectType.Query(qry);
-			RDOHelper.CheckResult(result);
+			RdoHelper.CheckResult(result);
 			if (!result.Results.First().Artifact.DescriptorArtifactTypeID.HasValue)
 			{
 				throw new Exception(string.Format("Object type with name {0} was not found in workspace {1}.", objectTypeName, _client.APIOptions.WorkspaceID));

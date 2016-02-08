@@ -7,13 +7,13 @@ using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 {
-	public class RDOSynchronizerProvider
+	public class RdoSynchronizerProvider
 	{
 		public const string RDO_SYNC_TYPE_GUID = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
 
 		private readonly ICaseServiceContext _context;
 
-		public RDOSynchronizerProvider(ICaseServiceContext context)
+		public RdoSynchronizerProvider(ICaseServiceContext context)
 		{
 			_context = context;
 		}

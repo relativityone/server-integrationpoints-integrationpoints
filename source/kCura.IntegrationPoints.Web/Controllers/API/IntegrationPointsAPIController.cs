@@ -10,8 +10,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	{
 		private readonly IntegrationPointService _reader;
 		private readonly RelativityUrlHelper _urlHelper;
-		private readonly Core.Services.Synchronizer.RDOSynchronizerProvider _provider;
-		public IntegrationPointsAPIController(IntegrationPointService reader, RelativityUrlHelper urlHelper, Core.Services.Synchronizer.RDOSynchronizerProvider provider)
+		private readonly Core.Services.Synchronizer.RdoSynchronizerProvider _provider;
+		public IntegrationPointsAPIController(IntegrationPointService reader, RelativityUrlHelper urlHelper, Core.Services.Synchronizer.RdoSynchronizerProvider provider)
 		{
 			_reader = reader;
 			_urlHelper = urlHelper;

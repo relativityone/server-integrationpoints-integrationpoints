@@ -3,11 +3,11 @@ using kCura.Relativity.Client;
 
 namespace kCura.ScheduleQueue.Core.Logging
 {
-	public class CreateErrorRDO
+	public class CreateErrorRdo
 	{
 		private readonly IRSAPIClient service;
 
-		public CreateErrorRDO(IRSAPIClient service)
+		public CreateErrorRdo(IRSAPIClient service)
 		{
 			this.service = service;
 		}
