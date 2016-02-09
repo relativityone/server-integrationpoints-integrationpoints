@@ -18,10 +18,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			NestedValueDelimiter = Convert.ToChar("\\");
 			ImportOverwriteMode = ImportOverwriteModeEnum.Append;
 			ImportOverlayBehavior = ImportOverlayBehaviorEnum.UseRelativityDefaults;
-
-			// this is used in processing by default
-			// TODO : it might be better to have this as option in mapping field page. Wait for PM decision - SAMO 1/28/2016
-			ExtractedTextEncoding = Encoding.Unicode;
 		}
 		#endregion
 
@@ -51,7 +47,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public bool DisableUserSecurityCheck { get; set; }
 
 		[JsonIgnore]
-		public Encoding ExtractedTextEncoding { get; set; }
+		public Encoding ExtractedTextEncoding { get { return Encoding.GetEncoding(ExtractedTextFileEncoding); } }
+
+		public String ExtractedTextFileEncoding { get; set; }
 
 		public bool ExtractedTextFieldContainsFilePath { get; set; }
 		public int IdentityFieldId { get; set; }

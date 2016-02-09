@@ -129,7 +129,12 @@
                     </ul>
                 </div>
             </div>
+            <div class="field-row" data-bind="visible: ExtractedTextFieldContainsFilePath() == 'true'">
+                <div class="field-label required ">Encoding for undetectable files:</div>
+                <div class="field-value ">
+                    <select id="endcodings" data-bind="options: ExtractedTextFileEncodingList, value: ExtractedTextFileEncoding, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
+                </div>
+            </div>
         </div>
-    </div>
-		
+	</div>
 </script>

@@ -180,8 +180,23 @@ ko.validation.insertValidationMessage = function (element) {
 		this.parentField = ko.observableArray([]);
 
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
-		this.ExtractedTextFieldContainsFilePath = ko.observable(model.ExtractedTextFieldContainsFilePath || "false");
 
+		this.ExtractedTextFieldContainsFilePath = ko.observable(model.ExtractedTextFieldContainsFilePath || "false");
+		this.ExtractedTextFileEncoding = ko.observable(model.ExtractedTextFileEncoding || "utf-16").extend(
+		{
+			required : {
+				onlyIf: function() {
+					return self.ExtractedTextFieldContainsFilePath() === 'true';
+				}
+			}
+		});
+
+		this.ExtractedTextFileEncodingList = ko.observableArray([]);
+		if (self.ExtractedTextFileEncodingList.length === 0) {
+			IP.data.ajax( { type: 'get', url: IP.utils.generateWebAPIURL('GetAvaliableEncodings') }).then(function (result) {
+				self.ExtractedTextFileEncodingList(result);
+			});
+		}
 
 		this.nativeFilePathValue = ko.observableArray([]).extend({
 			required: {
@@ -423,8 +438,9 @@ ko.validation.insertValidationMessage = function (element) {
 				CustodianManagerFieldContainsLink: model.CustodianManagerFieldContainsLink,
 				importNativeFile: model.importNativeFile,
 				nativeFilePathValue: model.nativeFilePathValue,
-				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath
-			} || '';
+				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
+				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
+		} || '';
 		}
 
 		var stepCache = {};
@@ -482,6 +498,7 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.identifer = this.model.selectedUniqueId();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 			this.returnModel.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
+			this.returnModel.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
 
 			var map = [];
 			var emptyField = { name: '', identifer: '' };
@@ -562,6 +579,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 					// pushing extracted text location setting
 					_destination.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
+					_destination.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
 				}
 
 				this.bus.subscribe('saveComplete', function (data) {

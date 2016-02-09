@@ -103,8 +103,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.Settings.DisableNativeLocationValidation = Settings.DisableNativeLocationValidation;
 			importJob.Settings.DisableNativeValidation = Settings.DisableNativeValidation;
 			importJob.Settings.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck;
-			importJob.Settings.ExtractedTextEncoding = Settings.ExtractedTextEncoding;
 			importJob.Settings.ExtractedTextFieldContainsFilePath = Settings.ExtractedTextFieldContainsFilePath;
+
+			// only set if the extracted file map links to extracted text location
+			if (Settings.ExtractedTextFieldContainsFilePath)
+			{
+				importJob.Settings.ExtractedTextEncoding = Settings.ExtractedTextEncoding;
+			}
+
 			importJob.Settings.FileSizeColumn = Settings.FileSizeColumn;
 			importJob.Settings.FileSizeMapped = Settings.FileSizeMapped;
 			importJob.Settings.FolderPathSourceFieldName = Settings.FolderPathSourceFieldName;
@@ -124,7 +130,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.Settings.SendEmailOnLoadCompletion = Settings.SendEmailOnLoadCompletion;
 			importJob.Settings.StartRecordNumber = Settings.StartRecordNumber;
 			importJob.Settings.SelectedIdentifierFieldName = _idToFieldDictionary[Settings.IdentityFieldId].Name;
-
 			importJob.OnComplete += new IImportNotifier.OnCompleteEventHandler(ImportJob_OnComplete);
 			importJob.OnFatalException += new IImportNotifier.OnFatalExceptionEventHandler(ImportJob_OnComplete);
 			ImportService_OnBatchSubmit(_batchManager.CurrentSize, _batchManager.MinimumBatchSize);
