@@ -54,6 +54,12 @@ Invoke-psake .\psake-nugetpublish.ps1 -properties @{'version'=$VERSION;
                                                     'build_type'=$BUILDTYPE;}
 if ($psake.build_success -eq $false) { exit 1 }  
 
+Invoke-psake .\psake-builddoc.ps1 -properties @{'version'=$VERSION;
+                                                'server_type'=$SERVERTYPE;
+                                                'build_config'=$BUILDCONFIG;
+                                                'build_type'=$BUILDTYPE;}
+if ($psake.build_success -eq $false) { exit 1 }  
+
 Invoke-psake .\psake-package.ps1 -properties @{'version'=$VERSION;
                                                'product'=$PRODUCT;
                                                'package_root_directory'=$PACKAGEROOT;

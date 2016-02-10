@@ -12,6 +12,7 @@ properties {
     $testlog_directory = [System.IO.Path]::Combine($root, 'TestLogs')
     $buildlogs_directory = [System.IO.Path]::Combine($root, 'BuildLogs')
     $pdb_directory = [System.IO.Path]::Combine($root, 'PDBs')
+    $doc_directory = [System.IO.Path]::Combine($root, 'Documentation')
 
     #build variables
     $version = '1.0.0.0'

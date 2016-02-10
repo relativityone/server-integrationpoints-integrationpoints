@@ -11,11 +11,13 @@ task package_initalize {
     $script:package_cp_directory = [System.IO.Path]::Combine($package_directory, 'CustomPages')
     $script:package_nuget_directory = [System.IO.Path]::Combine($package_directory, 'NuGet')
     $script:package_pdb_directory = [System.IO.Path]::Combine($package_directory, 'PDBs')
+    $script:package_doc_directory = [System.IO.Path]::Combine($package_directory, 'Documentation')
 
     [System.IO.Directory]::CreateDirectory($package_directory)
     [System.IO.Directory]::CreateDirectory($package_nuget_directory)
     [System.IO.Directory]::CreateDirectory($package_bin_directory) 
     [System.IO.Directory]::CreateDirectory($package_pdb_directory)
+    [System.IO.Directory]::CreateDirectory($package_doc_directory)
 }
 
 task package -depends package_initalize { 
@@ -40,6 +42,10 @@ task package -depends package_initalize {
 
     if ([System.IO.Directory]::Exists($pdb_directory)) {
         Copy-Item -Path ([System.IO.Path]::Combine($pdb_directory, '*')) -Destination $package_pdb_directory -Include '**' -Recurse
+    }
+
+    if ([System.IO.Directory]::Exists($doc_directory)) {
+        Copy-Item -Path ([System.IO.Path]::Combine($doc_directory, '*')) -Destination $package_doc_directory -Include '**' -Recurse
     }
     
 }
