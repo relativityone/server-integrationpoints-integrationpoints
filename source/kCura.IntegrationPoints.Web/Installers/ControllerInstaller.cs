@@ -70,7 +70,24 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<IEncryptionManager>().ImplementedBy<DefaultEncryptionManager>().LifeStyle.Transient);
 			container.Register(Component.For<WebAPILoginException>().ImplementedBy<WebAPILoginException>().LifeStyle.Transient);
 
-			container.Register(Component.For<IToggleProvider>().Instance(ToggleProvider.Current));
+			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
+			container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(
+				() =>
+				{
+					SqlConnection connection = ConnectionHelper.Helper().GetDBContext(-1).GetConnection(true);
+
+					return connection;
+				},
+				async () =>
+				{
+					Task<SqlConnection> task = Task.Run(() =>
+					{
+						SqlConnection connection = ConnectionHelper.Helper().GetDBContext(-1).GetConnection(true);
+						return connection;	
+					});
+
+					return await task;
+				})).LifestyleTransient());
 		}
 	}
 }
