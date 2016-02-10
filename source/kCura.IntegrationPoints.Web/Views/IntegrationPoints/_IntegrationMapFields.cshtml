@@ -114,7 +114,7 @@
                 </div>
             </div>
         </div>
-        <div class="card" data-bind="visible: isDocument() == 'true'">
+        <div data-bind="visible: isDocument() == 'true'">
             <span class="label title">Extracted Text</span>
             <div class="field-row">
                 <div class="field-label required ">Field Contains File Location</div>
@@ -132,7 +132,7 @@
             <div class="field-row" data-bind="visible: ExtractedTextFieldContainsFilePath() == 'true'">
                 <div class="field-label required ">Encoding for undetectable files:</div>
                 <div class="field-value ">
-                    <select id="endcodings" data-bind="options: ExtractedTextFileEncodingList, value: ExtractedTextFileEncoding, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
+                    <select id="encodings" data-bind="options: ExtractedTextFileEncodingList, value: ExtractedTextFileEncoding, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...' ,select2: {}"></select>
                 </div>
             </div>
         </div>

@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public abstract class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Synchronizer.IDataSynchronizer, IBatchReporter
+	public abstract class RdoSynchronizerBase : kCura.IntegrationPoints.Contracts.Synchronizer.IDataSynchronizer, IBatchReporter
 	{
 		public event BatchCompleted OnBatchComplete;
 		public event BatchSubmitted OnBatchSubmit;
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private ImportSettings ImportSettings { get; set; }
 		private NativeFileImportService NativeFileImportService { get; set; }
 
-		protected RdoSynchronizer(IRelativityFieldQuery fieldQuery, IImportApiFactory factory)
+		protected RdoSynchronizerBase(IRelativityFieldQuery fieldQuery, IImportApiFactory factory)
 		{
 			FieldQuery = fieldQuery;
 			_factory = factory;

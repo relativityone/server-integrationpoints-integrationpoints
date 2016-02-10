@@ -7,16 +7,16 @@ using System.Web.Http;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-	public class GetAvaliableEncodingsController : ApiController
+	public class GetAvailableEncodingsController : ApiController
 	{
 		[HttpGet]
 		public HttpResponseMessage Get()
 		{
-			List<AvaiableEncodingInfo> encodings = new List<AvaiableEncodingInfo>();
+			List<AvailableEncodingInfo> encodings = new List<AvailableEncodingInfo>();
 
 			foreach (EncodingInfo info in Encoding.GetEncodings())
 			{
-				encodings.Add(new AvaiableEncodingInfo()
+				encodings.Add(new AvailableEncodingInfo()
 				{
 					DisplayName = info.DisplayName,
 					Name = info.Name
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return Request.CreateResponse(HttpStatusCode.OK, encodings);
 		}
 
-		private class AvaiableEncodingInfo
+		private class AvailableEncodingInfo
 		{
 			public string DisplayName { get; set; }
 			public string Name { get; set; }

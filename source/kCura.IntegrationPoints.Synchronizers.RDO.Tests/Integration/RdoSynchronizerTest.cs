@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 				APIOptions = { WorkspaceID = 1025517 }
 			};
 			var rdoQuery = new RSAPIRdoQuery(client);
-			var rdo = new RdoSynchronizer(new RelativityFieldQuery(client), null);
+			var rdo = new RdoSynchronizerBase(new RelativityFieldQuery(client), null);
 			//ASSERT
 
 			rdo.GetFields(JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1000043 }));
@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Integration
 			};
 			var rdoQuery = new RSAPIRdoQuery(client);
 			var fq = new RelativityFieldQuery(client);
-			var rdo = new RdoSynchronizer(fq, RDOCustodianSynchronizerTests.GetMockAPI(fq));
+			var rdo = new RdoSynchronizerBase(fq, RDOCustodianSynchronizerTests.GetMockAPI(fq));
 			ImportSettings settings = new ImportSettings();
 
 			settings.WebServiceURL = "http://localhost/RelativityWebAPI/";

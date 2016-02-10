@@ -4,7 +4,7 @@ using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public class RdoSynchronizerPull : RdoSynchronizer
+	public class RdoSynchronizerPull : RdoSynchronizerBase
 	{
 		public RdoSynchronizerPull(IRelativityFieldQuery fieldQuery, IImportApiFactory factory)
 			: base(fieldQuery, factory)

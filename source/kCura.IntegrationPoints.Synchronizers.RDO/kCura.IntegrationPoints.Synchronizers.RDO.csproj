@@ -90,7 +90,7 @@
     <Compile Include="ImportSettings.cs" />
     <Compile Include="NativeFileImportService.cs" />
     <Compile Include="RdoCustodianSynchronizer.cs" />
-    <Compile Include="RdoSynchronizer.cs" />
+    <Compile Include="RdoSynchronizerBase.cs" />
     <Compile Include="RelativityFieldQuery.cs" />
     <Compile Include="Properties\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
