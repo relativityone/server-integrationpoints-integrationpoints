@@ -65,21 +65,4 @@
 	</script>
 	@Scripts.Render("~/bundles/ipEdit")
 	@Scripts.Render("~/bundles/dragon")
-
-    @if (!Model.ShowRelativityDataProvider)
-    {
-        // TODO: remove this when we no longer need the ShowRelativityDataProviderToggle
-        <script>
-            $( document ).ready(function() {
-                setInterval(removeRelativityDataProvider, 100);
-            });
-
-            function removeRelativityDataProvider() {
-                var optionToRemove = $("#sourceProvider option[value='423b4d43-eae9-4e14-b767-17d629de4bb2']");
-                if (optionToRemove.length ) {
-                    optionToRemove.remove();
-                } 
-            }
-        </script>
-    }
 }

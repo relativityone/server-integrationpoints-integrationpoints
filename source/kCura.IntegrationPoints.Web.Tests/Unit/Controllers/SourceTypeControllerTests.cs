@@ -1,0 +1,169 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Http.Controllers;
+using System.Web.Http.Hosting;
+using System.Web.Http.Routing;
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
+using kCura.IntegrationPoints.Core.Services.SourceTypes;
+using kCura.IntegrationPoints.Web.Controllers.API;
+using kCura.IntegrationPoints.Web.Models;
+using kCura.IntegrationPoints.Web.Toggles;
+using Newtonsoft.Json;
+using NSubstitute;
+using NUnit.Framework;
+using Relativity.Toggles;
+
+namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
+{
+	[TestFixture]
+	public class SourceTypeControllerTests
+	{
+		private SourceTypeController _instance;
+		private IWindsorContainer _windsorContainer;
+		private IToggleProvider _toggleProvider;
+		private ISourceTypeFactory _sourceTypeFactory;
+
+		private void SetUpWindsorContainer()
+		{
+			_windsorContainer.Register(Component.For<IToggleProvider>().Instance(_toggleProvider).LifestyleTransient());
+			_windsorContainer.Register(Component.For<ISourceTypeFactory>().Instance(_sourceTypeFactory).LifestyleTransient());
+			_windsorContainer.Register(Component.For<SourceTypeController>());
+		}
+
+		[SetUp]
+		public void SetUp()
+		{
+			_windsorContainer = new WindsorContainer();
+			_toggleProvider = NSubstitute.Substitute.For<IToggleProvider>();
+			_sourceTypeFactory = NSubstitute.Substitute.For<ISourceTypeFactory>();
+
+			var config = new HttpConfiguration();
+			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
+			var route = config.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}");
+			var routeData = new HttpRouteData(route, new HttpRouteValueDictionary { { "controller", "SourceTypeController" } });
+
+			this.SetUpWindsorContainer();
+
+			// Set up Request on controller
+			_instance = _windsorContainer.Kernel.Resolve<SourceTypeController>();
+			_instance.ControllerContext = new HttpControllerContext(config, routeData, request);
+			_instance.Request = request;
+			_instance.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = config;
+		}
+
+		[Test]
+		public void Get_GoldFlow()
+		{
+			// Arrange
+			IEnumerable<SourceType> sourceTypeModels = new List<SourceType>()
+			{
+				new SourceType()
+				{
+					Name = "name",
+					ID = "d39d9a5e-e009-4c33-b112-73cc45c2ae2d", // some random guid
+					ArtifactID = 123,
+					SourceURL = "url"
+				},
+				new SourceType()
+				{
+					Name = "name",
+					ID = kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID,
+					ArtifactID = 123,
+					SourceURL = "url"
+				}
+			};
+
+			_sourceTypeFactory.GetSourceTypes().Returns(sourceTypeModels);
+			_toggleProvider.IsEnabled<ShowRelativityDataProviderToggle>().Returns(true);
+
+			// Act
+			HttpResponseMessage response = _instance.Get();
+
+			// Assert
+			Assert.IsNotNull(response);
+			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+			Assert.AreEqual(
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"d39d9a5e-e009-4c33-b112-73cc45c2ae2d\",\"url\":\"url\"},{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\"}]",
+				response.Content.ReadAsStringAsync().Result);
+		}
+
+		[Test]
+		public void Get_ShowRelativityDataProviderToggle_Disabled_RelativityProiderIsNotReturned()
+		{
+			// Arrange
+			IEnumerable<SourceType> sourceTypeModels = new List<SourceType>()
+			{
+				new SourceType()
+				{
+					Name = "name",
+					ID = "d39d9a5e-e009-4c33-b112-73cc45c2ae2d", // some random guid
+					ArtifactID = 123,
+					SourceURL = "url"
+				},
+				new SourceType()
+				{
+					Name = "name",
+					ID = kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID,
+					ArtifactID = 123,
+					SourceURL = "url"
+				}
+			};
+
+			_sourceTypeFactory.GetSourceTypes().Returns(sourceTypeModels);
+			_toggleProvider.IsEnabled<ShowRelativityDataProviderToggle>().Returns(false);
+
+			// Act
+			HttpResponseMessage response = _instance.Get();
+
+			// Assert
+			Assert.IsNotNull(response);
+			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+			Assert.AreEqual(
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"d39d9a5e-e009-4c33-b112-73cc45c2ae2d\",\"url\":\"url\"}]",
+				response.Content.ReadAsStringAsync().Result);
+		}
+
+		[Test]
+		public void Get_ShowRelativityDataProviderToggle_DisabledAndRelativityProviderIsNotPresent()
+		{
+			// Arrange
+			IEnumerable<SourceType> sourceTypeModels = new List<SourceType>()
+			{
+				new SourceType()
+				{
+					Name = "name",
+					ID = "d39d9a5e-e009-4c33-b112-73cc45c2ae2d", // some random guid
+					ArtifactID = 123,
+					SourceURL = "url"
+				},
+				new SourceType()
+				{
+					Name = "name",
+					ID = "77795906-04FA-49F6-ADF4-AD1020C32668",
+					ArtifactID = 123,
+					SourceURL = "url"
+				}
+			};
+
+			_sourceTypeFactory.GetSourceTypes().Returns(sourceTypeModels);
+			_toggleProvider.IsEnabled<ShowRelativityDataProviderToggle>().Returns(true);
+
+			// Act
+			HttpResponseMessage response = _instance.Get();
+
+			// Assert
+			Assert.IsNotNull(response);
+			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+			Assert.AreEqual(
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"d39d9a5e-e009-4c33-b112-73cc45c2ae2d\",\"url\":\"url\"},{\"name\":\"name\",\"id\":123,\"value\":\"77795906-04FA-49F6-ADF4-AD1020C32668\",\"url\":\"url\"}]",
+				response.Content.ReadAsStringAsync().Result);
+		}
+	}
+}

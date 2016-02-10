@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public bool ExtractedTextFieldContainsFilePath;
 	}
 
-	[Contracts.DataSourceProvider(Shared.Constants.PROVIDER_GUID)]
+	[Contracts.DataSourceProvider(Shared.Constants.RELATIVITY_PROVIDER_GUID)]
 	public class DocumentTransferProvider : IDataSourceProvider
 	{
 		private readonly IHelper _helper;

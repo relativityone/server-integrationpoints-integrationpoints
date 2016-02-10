@@ -20,11 +20,11 @@
 			return new Dictionary<Guid, SourceProvider>()
 			{
 				{
-					new Guid(Constants.PROVIDER_GUID),
+					new Guid(Constants.RELATIVITY_PROVIDER_GUID),
 					new SourceProvider()
 					{
-						Name = Constants.PROVIDER_NAME,
-						Url = String.Format("/%applicationpath%/CustomPages/{0}/IntegrationPoints/{1}/",  Constants.CUSTOMPAGE_GUID, Constants.PROVIDER_CONFIGURATION),
+						Name = Constants.RELATIVITY_PROVIDER_NAME,
+						Url = String.Format("/%applicationpath%/CustomPages/{0}/IntegrationPoints/{1}/",  Constants.RELATIVITY_CUSTOMPAGE_GUID, Constants.RELATIVITY_PROVIDER_CONFIGURATION),
 						ViewDataUrl = String.Format("/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/%appId%/api/relativity/view")
 					}
 				}

@@ -219,6 +219,7 @@
     <Compile Include="ISessionService.cs" />
     <Compile Include="Models\SavedSearchModel.cs" />
     <Compile Include="Models\ScheduleModel.cs" />
+    <Compile Include="Models\SourceTypeModel.cs" />
     <Compile Include="Models\SynchronizerSettings.cs" />
     <Compile Include="Models\WorkspaceModel.cs" />
     <Compile Include="RelativityUrlHelper.cs" />

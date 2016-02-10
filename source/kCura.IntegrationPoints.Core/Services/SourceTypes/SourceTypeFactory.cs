@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 		public int ArtifactID { get; set; }
 	}
 
-	public class SourceTypeFactory
+	public class SourceTypeFactory : ISourceTypeFactory
 	{
 		private readonly ICaseServiceContext _context;
 		public SourceTypeFactory(ICaseServiceContext context)

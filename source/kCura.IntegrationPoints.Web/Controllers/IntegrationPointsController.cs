@@ -23,20 +23,17 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		private readonly RSAPIRdoQuery _rdoQuery;
 		private readonly ITabService _tabService;
 		private readonly IPermissionService _permissionService;
-		private readonly IToggleProvider _toggleProvider;
 
 		public IntegrationPointsController(
 			IntegrationPointService reader, 
 			RSAPIRdoQuery relativityRdoQuery, 
 			ITabService tabService, 
-			IPermissionService permissionService,
-			IToggleProvider toggleProvider)
+			IPermissionService permissionService)
 		{
 			_reader = reader;
 			_rdoQuery = relativityRdoQuery;
 			_tabService = tabService;
 			_permissionService = permissionService;
-			_toggleProvider = toggleProvider;
 		}
 
 		public ActionResult Edit(int? id)
@@ -45,10 +42,8 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			var tabID = _tabService.GetTabId(objectTypeId);
 			var objectID = _rdoQuery.GetObjectType(objectTypeId).ParentArtifact.ArtifactID;
 			var previousURL = "List.aspx?AppID=" + SessionService.WorkspaceID + "&ArtifactID=" + objectID + "&ArtifactTypeID=" + objectTypeId + "&SelectedTab=" + tabID;
-			bool isShowRelativityDataProviderToggleEnabled = _toggleProvider.IsEnabled<ShowRelativityDataProviderToggle>();
 			if (_permissionService.userCanImport(SessionService.WorkspaceUserID))
 			{
-				bool showRelativityDataProvider = isShowRelativityDataProviderToggleEnabled;
 				return View(new EditPoint
 				{
 					AppID = SessionService.WorkspaceID,
@@ -56,7 +51,6 @@ namespace kCura.IntegrationPoints.Web.Controllers
 					UserID = base.SessionService.UserID,
 					CaseUserID = base.SessionService.WorkspaceUserID,
 					URL = previousURL,
-					ShowRelativityDataProvider = showRelativityDataProvider
 				});
 			}
 			return View("NotEnoughPermission", new EditPoint { URL = previousURL });
