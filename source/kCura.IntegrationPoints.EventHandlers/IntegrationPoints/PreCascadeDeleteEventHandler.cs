@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client.Repositories;
-using kCura.ScheduleQueue.Core.Data.Queries;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {

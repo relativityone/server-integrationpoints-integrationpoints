@@ -1,20 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using kCura.EventHandler;
-using kCura.EventHandler.PostExecuteAction;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.Repositories;
-using kCura.ScheduleQueue.Core;
-using kCura.ScheduleQueue.Core.Services;
-using Relativity.API;
 using Console = kCura.EventHandler.Console;
-
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {

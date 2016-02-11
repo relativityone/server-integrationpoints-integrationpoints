@@ -14,7 +14,5 @@
 		public const string URL_FOR_INTEGRATIONPOINTS_EDIT = "Edit";
 		public const string URL_FOR_INTEGRATIONPOINTS_VIEW = "Details";
 		// ReSharper restore InconsistentNaming
-
-
 	}
 }
