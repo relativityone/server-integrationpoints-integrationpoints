@@ -20,6 +20,7 @@
 				<attribute type="ComVisibleAttribute" value="false" />
 				<attribute type="AssemblyVersionAttribute" value="${Product.Version}" />
 				<attribute type="AssemblyFileVersionAttribute" value="${Product.Version}" />
+				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.EventHandlers.Tests" />
 			</attributes>
 		</asminfo>
 	</target>
