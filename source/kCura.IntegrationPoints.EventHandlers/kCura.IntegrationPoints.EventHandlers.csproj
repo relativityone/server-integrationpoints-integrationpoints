@@ -92,7 +92,7 @@
     <Compile Include="ExternalTabURLService.cs" />
     <Compile Include="IntegrationPoints\DeleteEventHandler.cs" />
     <Compile Include="IntegrationPoints\PageInteractionEventHandler.cs" />
-    <Compile Include="IntegrationPoints\SourceProvidersImgrationEventHandler.cs" />
+    <Compile Include="IntegrationPoints\SourceProvidersMigrationEventHandler.cs" />
     <Compile Include="IntegrationPoints\PreCascadeDeleteEventHandler.cs" />
     <Compile Include="IntegrationPoints\PreLoadEventHandler.cs" />
     <Compile Include="IntegrationPoints\PreMassDeleteEventHandler.cs" />

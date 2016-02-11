@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 		}
 
-		protected List<SourceProvider> GetSourceProvidersFromPreviousWorkspace()
+		protected virtual List<SourceProvider> GetSourceProvidersFromPreviousWorkspace()
 		{
 			Query<RDO> query = new Query<RDO>();
 			query.Fields = GetAllSourceProviderFields();

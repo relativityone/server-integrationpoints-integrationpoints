@@ -4,18 +4,21 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.SourceProviderInstaller;
+using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
 	[Guid("0846CFFC-757D-4F19-A439-24510012CCBE")]
 	[EventHandler.CustomAttributes.Description("This is an event handler to register back provider after creating workspace using the template that has integration point installed.")]
-	public class SourceProvidersImgrationEventHandler : IntegrationPointMigrationEventHandlerBase
+	public class SourceProvidersMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
 	{
+		internal IImportService ImportService;
+
 		public override Response Execute()
 		{
 			List<SourceProviderInstaller.SourceProvider> sourceProviders = GetSourceProvidersToInstall();
-			SourceProvidersMigration migrationJob = new SourceProvidersMigration(sourceProviders, Helper);
+			SourceProvidersMigration migrationJob = new SourceProvidersMigration(sourceProviders, Helper, ImportService);
 			migrationJob.Execute();
 
 			return new Response
@@ -48,10 +51,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			private readonly List<SourceProviderInstaller.SourceProvider> _sourceProviders;
 
-			public SourceProvidersMigration(List<SourceProviderInstaller.SourceProvider> sourceProvidersToMigrate, IEHHelper helper)
+			public SourceProvidersMigration(List<SourceProviderInstaller.SourceProvider> sourceProvidersToMigrate, IEHHelper helper, IImportService importService)
 			{
 				_sourceProviders = sourceProvidersToMigrate;
 				Helper = helper;
+				ImportService = importService;
 			}
 
 			public override IDictionary<Guid, SourceProvider> GetSourceProviders()
