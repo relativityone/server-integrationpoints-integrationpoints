@@ -13,12 +13,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	[EventHandler.CustomAttributes.Description("This is an event handler to register back provider after creating workspace using the template that has integration point installed.")]
 	public class SourceProvidersMigrationEventHandler : IntegrationPointMigrationEventHandlerBase
 	{
-		internal IImportService ImportService;
+		internal IImportService Importer;
 
 		public override Response Execute()
 		{
 			List<SourceProviderInstaller.SourceProvider> sourceProviders = GetSourceProvidersToInstall();
-			SourceProvidersMigration migrationJob = new SourceProvidersMigration(sourceProviders, Helper, ImportService);
+			SourceProvidersMigration migrationJob = new SourceProvidersMigration(sourceProviders, Helper, Importer);
 			migrationJob.Execute();
 
 			return new Response

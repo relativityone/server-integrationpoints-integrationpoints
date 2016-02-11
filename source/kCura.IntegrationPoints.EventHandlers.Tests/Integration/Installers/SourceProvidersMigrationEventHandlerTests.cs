@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 		[TestFixtureSetUp]
 		public void Setup()
 		{
-			ImportService = new MockImportService();
+			Importer = new MockImportService();
 		}
 
 		private List<SourceProvider> _providersStub;
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			Execute();
 
 			//assert
-			MockImportService importService = (MockImportService)ImportService;
+			MockImportService importService = (MockImportService)Importer;
 			Assert.IsNotNull(importService.InstalledProviders);
 			Assert.AreEqual(1, importService.InstalledProviders.Count());
 			VerifyInstalledProvider(providerToInstalled, importService.InstalledProviders.ElementAt(0));
@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			Execute();
 
 			//assert
-			MockImportService importService = (MockImportService)ImportService;
+			MockImportService importService = (MockImportService)Importer;
 			Assert.IsNotNull(importService.InstalledProviders);
 
 			List<SourceProviderInstaller.SourceProvider> installedProviders = importService.InstalledProviders.ToList();
