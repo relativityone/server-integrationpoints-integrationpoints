@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Client;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Services.Synchronizer
@@ -27,7 +29,13 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 
 			if (json.Provider.ToLower() == "relativity")
 			{
-				return _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizerPush).AssemblyQualifiedName);
+				IRSAPIClient client = _container.Resolve<IRSAPIClient>();
+				client.APIOptions.WorkspaceID = json.CaseArtifactId;
+				Dictionary<string, RelativityFieldQuery> dict = new Dictionary<string, RelativityFieldQuery>
+				{
+					{"fieldQuery", new RelativityFieldQuery(client)}
+				};
+				return _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizerPush).AssemblyQualifiedName, dict);
 			}
 
 			//name is very bad, we should consider switching to guid

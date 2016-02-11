@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
+using kCura.Relativity.Client;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
@@ -58,7 +59,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 		}
 
-		protected abstract List<Relativity.Client.Artifact> GetRelativityFields(ImportSettings settings);
+		protected List<Relativity.Client.Artifact> GetRelativityFields(ImportSettings settings)
+		{
+			List<Artifact> fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
+			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId).Select(x => x.ArtifactID));
+			return fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
+		}
 
 		public virtual IEnumerable<FieldEntry> GetFields(string options)
 		{
