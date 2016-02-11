@@ -20,20 +20,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return GetAllFields(rdoTypeId);
 		}
 
-		public virtual List<Artifact> GetFieldsForRdo(int rdoTypeId, int workspaceId)
-		{
-			int previousWorkspaceId = _client.APIOptions.WorkspaceID;
-			_client.APIOptions.WorkspaceID = workspaceId;
-			try
-			{
-				return GetAllFields(rdoTypeId);
-			}
-			finally
-			{
-				_client.APIOptions.WorkspaceID = previousWorkspaceId;
-			}
-		}
-
 		public List<Artifact> GetAllFields(int rdoTypeId)
 		{
 			Query q = new Query()
