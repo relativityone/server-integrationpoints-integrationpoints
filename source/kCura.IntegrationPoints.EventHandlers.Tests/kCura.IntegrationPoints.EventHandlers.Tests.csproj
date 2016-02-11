@@ -90,6 +90,7 @@
     <Compile Include="Integration\InstallDllTests.cs" />
     <Compile Include="Integration\DeleteHistoryServiceTest.cs" />
     <Compile Include="Integration\Installers\RegisterDocumentTransferProviderTests.cs" />
+    <Compile Include="Integration\Installers\SourceProvidersMigrationEventHandlerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

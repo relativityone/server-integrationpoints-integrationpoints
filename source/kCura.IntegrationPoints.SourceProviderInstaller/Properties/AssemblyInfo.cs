@@ -23,6 +23,7 @@ using System.Runtime.InteropServices;
 [assembly: Guid("8b3cc4cc-85d2-4992-8c6e-4b02397b5061")]
 
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.EventHandlers")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.EventHandlers.Tests")]
 
 // Version information for an assembly consists of the following four values:
 //
