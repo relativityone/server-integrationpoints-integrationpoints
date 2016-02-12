@@ -32,9 +32,9 @@ namespace kCura.IntegrationPoints.Email
 			{
 				exceptions.Add(new Exception(Properties.Resources.SMTP_Port_Negative));
 			}
-			if (string.IsNullOrEmpty(_configuration.UserName) || string.IsNullOrEmpty(_configuration.Password))
+			if (string.IsNullOrEmpty(_configuration.Domain))
 			{
-				exceptions.Add(new Exception(Properties.Resources.SMTP_USERNAME_PASSWORD_INVALID));
+				exceptions.Add(new Exception(Properties.Resources.SMTP_Requires_SMTP_Domain));
 			}
 
 			if (exceptions.Any())

@@ -86,7 +86,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				default:
 					return null;
 			}
-			return null;
 		}
 
 		public void Release(ITask task)
