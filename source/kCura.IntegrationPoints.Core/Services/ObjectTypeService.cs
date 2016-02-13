@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client.DTOs;
+﻿using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
