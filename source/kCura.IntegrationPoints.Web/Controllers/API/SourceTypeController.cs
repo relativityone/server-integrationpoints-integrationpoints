@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				url = x.SourceURL
 			}).ToList();
 
-			// TODO: Remove the toggle one the Relativity provider is ready
+			// TODO: Remove the toggle once the Relativity provider is ready
 			bool isShowRelativityDataProviderToggleEnabled = _toggleProvider.IsEnabled<ShowRelativityDataProviderToggle>();
 			if (!isShowRelativityDataProviderToggleEnabled)
 			{

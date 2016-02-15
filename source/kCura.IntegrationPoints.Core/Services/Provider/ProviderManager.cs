@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using Castle.MicroKernel;
@@ -6,8 +9,10 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Domain;
 using Relativity.API;
+using Relativity.APIHelper;
 
 namespace kCura.IntegrationPoints.Contracts
 {
@@ -46,6 +51,15 @@ namespace kCura.IntegrationPoints.Contracts
 					}
 				}
 			}
+
+			Bootstrapper.InitAppDomain(Constants.IntegrationPoints.AppDomain_Subsystem_Name, Constants.IntegrationPoints.Application_GuidString, AppDomain.CurrentDomain);
+			this.SetUpSystemToken();
+		}
+
+		private void SetUpSystemToken()
+		{
+			object systemTokenProvider = AppDomain.CurrentDomain.GetData(Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider);
+			ExtensionPointServiceFinder.SystemTokenProvider = systemTokenProvider as IProvideSystemTokens;
 		}
 
 		private void SetUpCastleWindsor()

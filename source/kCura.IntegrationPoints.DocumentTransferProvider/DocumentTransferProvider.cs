@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
@@ -77,32 +78,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		private IRSAPIClient CreateClient(int workspaceId)
 		{
-			string localHostFqdn = System.Net.Dns.GetHostEntry("localhost").HostName;
-			Uri endpointUri = new Uri(string.Format("http://{0}/relativity.services", localHostFqdn));
-			IRSAPIClient rsapiClient = new RSAPIClient(endpointUri, new IntegratedAuthCredentials());
-			rsapiClient.APIOptions.WorkspaceID = workspaceId;
-			return rsapiClient;
+			IRSAPIClient client = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
+			client.APIOptions.WorkspaceID = workspaceId;
 
-			//using (StreamWriter writer = new StreamWriter(@"c:\beforeRSAPI.txt"))
-			//{
-			//	if (_helper == null)
-			//	{
-			//		writer.WriteLine("Null");
-			//	}
-			//	else
-			//	{
-			//		writer.WriteLine("REST Service Url: " + _helper.GetServicesManager().GetRESTServiceUrl());
-			//		writer.WriteLine("Services Url: " + _helper.GetServicesManager().GetServicesURL());
-			//	}
-			//}
-			//IRSAPIClient client = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
-			//using (StreamWriter writer = new StreamWriter(@"c:\afterRSAPI.txt"))
-			//{
-			//	writer.WriteLine("WorkspaceId: " + client.APIOptions.WorkspaceID);
-			//}
-			//client.APIOptions.WorkspaceID = workspaceId;
-
-			//return client;
+			return client;
 		}
 
 		private IImportAPI GetImportAPI(IRSAPIClient client)

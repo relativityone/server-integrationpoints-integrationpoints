@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Data.Models;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Domain
 {
@@ -127,6 +130,9 @@ namespace kCura.IntegrationPoints.Core.Domain
 			this.LoadRequiredAssemblies(domain);
 			this.LoadClientLibraries(domain, provider, applicationGuid);
 			DomainManager manager = this.CreateInstance<DomainManager>(domain);
+
+			domain.SetData(Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider, ExtensionPointServiceFinder.SystemTokenProvider);
+
 			manager.Init();
 
 			return manager;

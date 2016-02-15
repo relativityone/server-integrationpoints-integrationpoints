@@ -78,7 +78,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.APIHelper">
+      <HintPath>..\Dependencies\kCura\Relativity.APIHelper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml.Linq" />
@@ -90,6 +94,7 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="BatchEmail.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Installers\KeywordInstaller.cs" />
     <Compile Include="JobHistoryStatus.cs" />
     <Compile Include="IBatchStatus.cs" />
