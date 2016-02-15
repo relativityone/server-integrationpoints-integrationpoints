@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Data.Models;
-using Microsoft.Web.Administration;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Domain
