@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Data.Models;
+using Microsoft.Web.Administration;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Domain
@@ -132,6 +133,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 			DomainManager manager = this.CreateInstance<DomainManager>(domain);
 
 			domain.SetData(Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider, ExtensionPointServiceFinder.SystemTokenProvider);
+			domain.SetData(Constants.IntegrationPoints.AppDomain_Data_ConnectionString, kCura.Config.Config.ConnectionString);
 
 			manager.Init();
 

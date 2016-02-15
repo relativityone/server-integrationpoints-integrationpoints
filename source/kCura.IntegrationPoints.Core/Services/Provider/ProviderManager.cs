@@ -54,12 +54,19 @@ namespace kCura.IntegrationPoints.Contracts
 
 			Bootstrapper.InitAppDomain(Constants.IntegrationPoints.AppDomain_Subsystem_Name, Constants.IntegrationPoints.Application_GuidString, AppDomain.CurrentDomain);
 			this.SetUpSystemToken();
+			this.SetUpConnectionString();
 		}
 
 		private void SetUpSystemToken()
 		{
 			object systemTokenProvider = AppDomain.CurrentDomain.GetData(Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider);
 			ExtensionPointServiceFinder.SystemTokenProvider = systemTokenProvider as IProvideSystemTokens;
+		}
+
+		private void SetUpConnectionString()
+		{
+			string connectionString = AppDomain.CurrentDomain.GetData(Constants.IntegrationPoints.AppDomain_Data_ConnectionString) as string;
+			kCura.Config.Config.SetConnectionString(connectionString);
 		}
 
 		private void SetUpCastleWindsor()
