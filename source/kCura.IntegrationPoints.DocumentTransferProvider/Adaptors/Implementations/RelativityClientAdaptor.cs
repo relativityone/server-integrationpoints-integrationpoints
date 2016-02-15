@@ -1,4 +1,5 @@
-﻿using kCura.Relativity.Client;
+﻿using System;
+using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations
@@ -12,10 +13,15 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementati
 			_rsapiClient = rsapiClient;
 		}
 
-		public ResultSet<Document> ExecuteDocumentQuery(Query<Document> query)
+		public QueryResultSet<Document> ExecuteDocumentQuery(Query<Document> query)
 		{
-			ResultSet<Document> results = _rsapiClient.Repositories.Document.Query(query);
+			QueryResultSet<Document> results = _rsapiClient.Repositories.Document.Query(query);
+			return results;
+		}
 
+		public QueryResultSet<Document> ExecuteSubSetOfDocumentQuery(string token, int start, int length)
+		{
+			QueryResultSet<Document> results = _rsapiClient.Repositories.Document.QuerySubset(token, start, length);
 			return results;
 		}
 

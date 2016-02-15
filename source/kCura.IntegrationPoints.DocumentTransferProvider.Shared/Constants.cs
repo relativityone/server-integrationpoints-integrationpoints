@@ -13,5 +13,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Shared
 	    internal const string INVALID_PARAMETERS = "Invalid parameters";
 	    internal const string TARGET_WORKSPACE_ID = "Target Workspace ID";
 	    internal const string SAVED_SEARCH_ID = "Saved Search ID";
+	    internal const int QUERY_BATCH_SIZE = 10000;
 	}
 }

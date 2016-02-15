@@ -15,6 +15,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private Document _currentDocument;
 		private bool _readerOpen;
 
+		private QueryResultSet<Document> _currentQueryResult;
+		private int _readEntriesCount;
+
 		public DocumentArtifactIdDataReader(IRelativityClientAdaptor relativityClientAdaptor, int savedSearchArtifactId)
 		{
 			_relativityClient = relativityClientAdaptor;
@@ -63,30 +66,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			// Check if search results have been populated
 			if (_savedSearchResultDocumentsEnumerator == null)
 			{
-				// Request the saved search documents
-				Query<Document> query = new Query<Document>
-				{
-					Condition = new SavedSearchCondition(_savedSearchArtifactId),
-					Fields = FieldValue.NoFields // we only want the ArtifactId
-				};
 
-				try
+				FetchDataToRead(() =>
 				{
-					ResultSet<Document> docResults = _relativityClient.ExecuteDocumentQuery(query);
-					if (!docResults.Success)
-					{
-						_readerOpen = false; // TODO: handle errors?
-					}
-					else
-					{
-						_savedSearchResultDocumentsEnumerator = docResults.Results.GetEnumerator();
-					}
-				}
-				catch (Exception ex)
-				{
-					// TODO: Handle errors -- biedrzycki: Jan 13, 2015
-					_readerOpen = false;
-				}
+					// Request the saved search documents
+					Query<Document> query = BuildSavedSearchQuery();
+					return _relativityClient.ExecuteDocumentQuery(query);
+				});
 			}
 
 			// Get next result
@@ -94,8 +80,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			{
 				Result<Document> result = _savedSearchResultDocumentsEnumerator.Current;
 				_currentDocument = result != null ? result.Artifact : null;
-
 				_readerOpen = _currentDocument != null;
+				_readEntriesCount++;
+			}
+			else if (_currentQueryResult.TotalCount - _readEntriesCount > 0 && String.IsNullOrWhiteSpace(_currentQueryResult.QueryToken) == false)
+			{
+				FetchDataToRead(() => _relativityClient.ExecuteSubSetOfDocumentQuery(_currentQueryResult.QueryToken, _readEntriesCount, Shared.Constants.QUERY_BATCH_SIZE));
+				return Read();
 			}
 			else
 			{
@@ -103,8 +94,39 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				_currentDocument = null;
 				_readerOpen = false;
 			}
-
 			return _readerOpen;
+		}
+
+		private void FetchDataToRead(Func<QueryResultSet<Document>> functionToGetDocuments)
+		{
+			try
+			{
+				// Request the saved search documents
+				_currentQueryResult = functionToGetDocuments();
+				if (!_currentQueryResult.Success)
+				{
+					_readerOpen = false; // TODO: handle errors?
+				}
+				else
+				{
+					_savedSearchResultDocumentsEnumerator = _currentQueryResult.Results.GetEnumerator();
+				}
+			}
+			catch (Exception ex)
+			{
+				// TODO: Handle errors -- biedrzycki: Jan 13, 2015
+				_readerOpen = false;
+			}
+		}
+
+		private Query<Document> BuildSavedSearchQuery()
+		{
+			// Request the saved search documents
+			return new Query<Document>
+			{
+				Condition = new SavedSearchCondition(_savedSearchArtifactId),
+				Fields = FieldValue.NoFields // we only want the ArtifactId
+			};
 		}
 
 		public int RecordsAffected

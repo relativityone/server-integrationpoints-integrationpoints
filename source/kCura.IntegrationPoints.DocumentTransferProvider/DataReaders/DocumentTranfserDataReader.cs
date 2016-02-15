@@ -23,6 +23,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		private readonly HashSet<int> _longTextFieldsArtifactIds;
 
+		private QueryResultSet<Document> _currentQueryResult;
+		private int _readEntriesCount;
+
 		public DocumentTranfserDataReader(IRelativityClientAdaptor relativityClientAdaptor,
 			IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries,
 			List<Relativity.Client.Artifact> documentFields)
@@ -92,38 +95,30 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				// only query for non-full text fields at this time
 				List<FieldValue> requestedFields = _fieldEntries.Where(field => _longTextFieldsArtifactIds.Contains(Convert.ToInt32(field.FieldIdentifier)) == false)
 																.Select(x => new FieldValue() { ArtifactID = Convert.ToInt32(x.FieldIdentifier) }).ToList();
-				Query<Document> query = new Query<Document>
+				FetchDataToRead(() =>
 				{
-					Condition = artifactIdSetCondition,
-					Fields = requestedFields
-				};
-
-				try
-				{
-					ResultSet<Document> docResults = _relativityClientAdaptor.ExecuteDocumentQuery(query);
-					if (!docResults.Success)
+					// Request the saved search documents
+					Query<Document> query = new Query<Document>
 					{
-						_readerOpen = false; // TODO: handle errors?
-					}
-					else
-					{
-						_documentsEnumerator = docResults.Results.GetEnumerator();
-					}
-				}
-				catch (Exception ex)
-				{
-					// TODO: Handle errors -- biedrzycki: Jan 13, 2015
-					_readerOpen = false;
-				}
-			}
+						Condition = artifactIdSetCondition,
+						Fields = requestedFields
+					};
+					return _relativityClientAdaptor.ExecuteDocumentQuery(query);
+				});
+		}
 
 			// Get next result
 			if (_documentsEnumerator != null && _documentsEnumerator.MoveNext())
 			{
 				Result<Document> result = _documentsEnumerator.Current;
 				_currentDocument = result != null ? result.Artifact : null;
-
 				_readerOpen = _currentDocument != null;
+				_readEntriesCount++;
+			}
+			else if (_currentQueryResult.TotalCount - _readEntriesCount > 0 && String.IsNullOrWhiteSpace(_currentQueryResult.QueryToken) == false)
+			{
+				FetchDataToRead(() => _relativityClientAdaptor.ExecuteSubSetOfDocumentQuery(_currentQueryResult.QueryToken, _readEntriesCount, Shared.Constants.QUERY_BATCH_SIZE));
+				return Read();
 			}
 			else
 			{
@@ -133,6 +128,27 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			}
 
 			return _readerOpen;
+		}
+
+		private void FetchDataToRead(Func<QueryResultSet<Document>> functionToGetDocuments)
+		{
+			try
+			{
+				_currentQueryResult = functionToGetDocuments();
+				if (!_currentQueryResult.Success)
+				{
+					_readerOpen = false; // TODO: handle errors?
+				}
+				else
+				{
+					_documentsEnumerator = _currentQueryResult.Results.GetEnumerator();
+				}
+			}
+			catch (Exception ex)
+			{
+				// TODO: Handle errors -- biedrzycki: Jan 13, 2015
+				_readerOpen = false;
+			}
 		}
 
 		public int RecordsAffected
