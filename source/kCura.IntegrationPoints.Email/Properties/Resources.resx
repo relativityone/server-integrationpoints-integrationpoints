@@ -120,7 +120,7 @@
   <data name="SMTP_Port_Negative" xml:space="preserve">
     <value>Smtp Port cannot be negative.</value>
   </data>
-  <data name="SMTP_USERNAME_PASSWORD_INVALID" xml:space="preserve">
-    <value>Missing SMTP Username/Password combination.</value>
+  <data name="SMTP_Requires_SMTP_Domain" xml:space="preserve">
+    <value>The SMTP host was not specified.</value>
   </data>
 </root>

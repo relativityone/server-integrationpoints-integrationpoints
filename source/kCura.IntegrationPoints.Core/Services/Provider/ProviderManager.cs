@@ -148,6 +148,5 @@ namespace kCura.IntegrationPoints.Contracts
 
 			return new SynchronizerWrapper(_synchronizerFactory.CreateSynchronizer(identifier, options));
 		}
-
 	}
 }

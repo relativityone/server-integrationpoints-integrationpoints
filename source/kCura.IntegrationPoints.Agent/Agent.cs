@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor;
-using Castle.Windsor.Installer;
+using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
@@ -14,7 +11,6 @@ using kCura.ScheduleQueue.Core.Logging;
 using kCura.ScheduleQueue.Core.TimeMachine;
 using Relativity.API;
 using ITaskFactory = kCura.IntegrationPoints.Agent.Tasks.ITaskFactory;
-using kCura.Apps.Common.Data;
 
 namespace kCura.IntegrationPoints.Agent
 {

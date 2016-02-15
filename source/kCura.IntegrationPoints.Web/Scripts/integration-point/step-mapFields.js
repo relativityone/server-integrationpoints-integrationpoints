@@ -193,7 +193,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.ExtractedTextFileEncodingList = ko.observableArray([]);
 		if (self.ExtractedTextFileEncodingList.length === 0) {
-			IP.data.ajax( { type: 'get', url: IP.utils.generateWebAPIURL('GetAvaliableEncodings') }).then(function (result) {
+			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
 				self.ExtractedTextFileEncodingList(result);
 			});
 		}

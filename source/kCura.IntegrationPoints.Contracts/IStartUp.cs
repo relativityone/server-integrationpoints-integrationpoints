@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace kCura.IntegrationPoints.Contracts
+﻿namespace kCura.IntegrationPoints.Contracts
 {
 	/// <summary>
 	/// Makes an initial call into an application domain to perform setup work.

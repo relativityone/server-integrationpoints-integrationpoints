@@ -1,11 +1,11 @@
-﻿namespace kCura.IntegrationPoints.EventHandlers.Installers
-{
-	using System;
-	using System.Collections.Generic;
-	using System.Runtime.InteropServices;
-	using kCura.IntegrationPoints.DocumentTransferProvider.Shared;
-	using kCura.IntegrationPoints.SourceProviderInstaller;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using kCura.IntegrationPoints.DocumentTransferProvider.Shared;
+using kCura.IntegrationPoints.SourceProviderInstaller;
 
+namespace kCura.IntegrationPoints.EventHandlers.Installers
+{
 	[kCura.EventHandler.CustomAttributes.Description("Add Relativity provider into relativity integration point")]
 	[kCura.EventHandler.CustomAttributes.RunOnce(false)]
 	[Guid("93057ef0-9b7e-4fc5-9691-7f97e98cc703")]

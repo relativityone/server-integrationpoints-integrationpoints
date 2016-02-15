@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			List<Artifact> fields = new List<Artifact>();
 			IEnumerable<Field> mappableFields = new List<Field>();
 
-			_relativityFieldQuery.GetFieldsForRdo(Arg.Is(artifactTypeId), Arg.Is(caseArtifactId))
+			_relativityFieldQuery.GetFieldsForRdo(Arg.Is(artifactTypeId))
 				.Returns(fields);
 
 			_importApiFactory.GetImportAPI(Arg.Any<ImportSettings>())
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			_relativityFieldQuery
 				.Received(1)
-				.GetFieldsForRdo(Arg.Is(artifactTypeId), Arg.Is(caseArtifactId));
+				.GetFieldsForRdo(Arg.Is(artifactTypeId));
 			_importApiFactory
 				.Received(1)
 				.GetImportAPI(Arg.Any<ImportSettings>());
