@@ -1,4 +1,27 @@
-﻿<script id="step3" type="text/html">
+﻿<script>
+	function overrideIe10() {
+		var isIe10 = navigator.userAgent.toLowerCase().indexOf('msie 10') > -1;
+		if (isIe10) {
+			moveFieldMappingPane(100);
+		}
+	}
+
+	function moveFieldMappingPane(interval) {
+		var b = $("#mapFields");
+		var a = $("#fieldMappings");
+
+		if (a.length > 0 && b.length > 0) {
+			b.css("position", "absolute");
+			b.css("top", "85px");
+			a.css("min-width", "1250px");
+			a.css("min-height", "490px");
+		} else {
+			setTimeout(moveFieldMappingPane, interval);
+		}
+	}
+</script>
+
+<script id="step3" type="text/html">
     <div class="card" id="fieldMappings">
         <div>
             <span class="label title">Field Mappings</span>
@@ -137,4 +160,8 @@
             </div>
         </div>
 	</div>
+</script>
+
+<script type="text/javascript">
+	overrideIe10();
 </script>
