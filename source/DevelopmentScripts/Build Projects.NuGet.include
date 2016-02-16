@@ -7,8 +7,6 @@
 	<property name="nuspec.directory" value="${path::combine(source.code.directory, 'nugspec')}" />
 	<property name="NuGet.exe.directory" value="C:\NuGet" />
 	<property name="NuGet_exe" value="C:\NuGet\NuGet.exe" unless="${property::exists('NuGet_exe')}" />
-	<property name="NuGet.Server" value="http://dv-scm-nuget.kcura.corp/NuGet/nuget" />
-	<property name="NuGet.Server.Source" value="http://dv-scm-nuget.kcura.corp/NuGet/" />
 	<property name="ProGet.Server" value="https://proget.kcura.corp/nuget/NuGet" />
 	<property name="NuGet.Version" value="9.2.0.0" unless="${property::exists('Product.Version')}" />
 	<property name="NuGet.Version" value="${Product.Version}" />
@@ -47,12 +45,6 @@
 						</exec>
 						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
 							<arg line="push kCura.IntegrationPoints.Web.${NuGet.Version}.nupkg -Source ${ProGet.Server}" />
-						</exec>
-						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-							<arg line="push kCura.IntegrationPoints.Contracts.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
-						</exec>
-						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
-							<arg line="push kCura.IntegrationPoints.Web.${NuGet.Version}.nupkg -Source ${NuGet.Server.Source}" />
 						</exec>
 					</when>
 					<otherwise>
