@@ -53,8 +53,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adaptors\Implementations\ConfigAdapter.cs" />
     <Compile Include="Adaptors\Implementations\RelativityClientAdaptor.cs" />
     <Compile Include="Adaptors\IRelativityClientAdaptor.cs" />
+    <Compile Include="Adaptors\IIntegrationPointsConfig.cs" />
     <Compile Include="DataReaders\DocumentArtifactIdDataReader.cs" />
     <Compile Include="DataReaders\DocumentTranfserDataReader.cs" />
     <Compile Include="DocumentTransferProvider.cs" />

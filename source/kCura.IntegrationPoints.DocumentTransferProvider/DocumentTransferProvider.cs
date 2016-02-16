@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		{
 			RelativityFieldQuery query = new RelativityFieldQuery(client);
 			List<Artifact> fields = query.GetFieldsForRdo(rdoTypeId);
-			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportAPI(client).GetWorkspaceFields(workspaceId, rdoTypeId).Select(x => x.ArtifactID));
+			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportAPI().GetWorkspaceFields(workspaceId, rdoTypeId).Select(x => x.ArtifactID));
 
 			// Contains is 0(1) https://msdn.microsoft.com/en-us/library/kw5aaea4.aspx
 			return fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
@@ -84,13 +84,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			return client;
 		}
 
-		private IImportAPI GetImportAPI(IRSAPIClient client)
+		private IImportAPI GetImportAPI()
 		{
-			string username = "XxX_BearerTokenCredentials_XxX";
-			//ReadResult readResult = client.GenerateRelativityAuthenticationToken(client.APIOptions);
-			//string authToken = readResult.Artifact.getFieldByName("AuthenticationToken").ToString();
+			const string username = "XxX_BearerTokenCredentials_XxX";
 			string authToken = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
-			return new ExtendedImportAPI(username, authToken, "http://localhost/RelativityWebAPI/");
+
+			// TODO: we need to make IIntegrationPointsConfig a dependency or use a factory -- biedrzycki: Feb 16th, 2016
+			IIntegrationPointsConfig config = new ConfigAdapter(_helper.GetDBContext(-1));
+			return new ExtendedImportAPI(username, authToken, config.GetWebApiUrl);
 		}
 
 		/// <summary>
