@@ -385,7 +385,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-02-12T19:20:57.4809609Z</ExtractionDate>
+  <ExtractionDate>2016-02-16T00:01:44.4945158Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -6065,7 +6065,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.3.215.2</RelativityVersion>
-  <Version>2.0.0.0</Version>
+  <Version>2.0.0.1</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>30db7baa-93da-4227-bdb1-e3df9e8edc72</OriginSignature>
   <MasterScripts />
@@ -6095,7 +6095,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.0</ApplicationVersion>
+      <ApplicationVersion>2.0.0.1</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038277</ArtifactId>
@@ -6106,7 +6106,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.0</ApplicationVersion>
+      <ApplicationVersion>2.0.0.1</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038278</ArtifactId>
@@ -6117,7 +6117,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.0</ApplicationVersion>
+      <ApplicationVersion>2.0.0.1</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038279</ArtifactId>
@@ -6128,7 +6128,18 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.0</ApplicationVersion>
+      <ApplicationVersion>2.0.0.1</ApplicationVersion>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1038393</ArtifactId>
+      <AssemblyArtifactId>1018550</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.SourceProvidersMigrationEventHandler</Name>
+      <Guid>0846cffc-757d-4f19-a439-24510012ccbe</Guid>
+      <Guids>f16b83c6-8631-49f9-84b0-c444fdbfae25</Guids>
+      <ExecutionType>14</ExecutionType>
+      <Order>60</Order>
+      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
+      <ApplicationVersion>2.0.0.1</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />
