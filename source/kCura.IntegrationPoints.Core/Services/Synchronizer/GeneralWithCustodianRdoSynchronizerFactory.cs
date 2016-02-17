@@ -26,16 +26,16 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 		{
 			var json = JsonConvert.DeserializeObject<ImportSettings>(options);
 			var rdoObjectType = _query.GetObjectType(json.ArtifactTypeId);
-
-			if (json.Provider.ToLower() == "relativity")
-			{
+			
+			if (json.Provider != null && json.Provider.ToLower() == "relativity")
+			{ 
 				IRSAPIClient client = _container.Resolve<IRSAPIClient>();
 				client.APIOptions.WorkspaceID = json.CaseArtifactId;
 				Dictionary<string, RelativityFieldQuery> dict = new Dictionary<string, RelativityFieldQuery>
 				{
 					{"fieldQuery", new RelativityFieldQuery(client)}
 				};
-				return _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizerPush).AssemblyQualifiedName, dict);
+				return _container.Kernel.Resolve<IDataSynchronizer>(typeof (RdoSynchronizerPush).AssemblyQualifiedName, dict);
 			}
 
 			//name is very bad, we should consider switching to guid

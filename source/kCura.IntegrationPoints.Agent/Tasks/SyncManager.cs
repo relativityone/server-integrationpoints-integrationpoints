@@ -206,6 +206,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					//no worker jobs were submitted
 					this.JobHistory.EndTimeUTC = DateTime.UtcNow;
+					this.JobHistory.JobStatus = JobStatusChoices.JobHistoryCompleted;
 					_caseServiceContext.RsapiService.JobHistoryLibrary.Update(this.JobHistory);
 				}
 			}

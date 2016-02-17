@@ -475,22 +475,7 @@ ko.validation.insertValidationMessage = function (element) {
 				self.template(self.settings.templateID);
 				self.hasTemplate = true;
 				IP.affects.hover();
-
-				// This fixes the field mapping pane alignment in IE 10 for screen widths greater than ~2300px
-				var isIe10 = navigator.userAgent.toLowerCase().indexOf('msie 10') > -1;
-				if (isIe10) {
-					var mapFields = $('body').find("#mapFields");
-					var fieldMappings = $('body').find("#fieldMappings");
-
-					if (fieldMappings.length > 0 && mapFields.length > 0) {
-						mapFields.css("position", "absolute");
-						mapFields.css("top", "85px");
-						fieldMappings.css("min-width", "1250px");
-						fieldMappings.css("min-height", "490px");
-					}
-				}
 			});
-
 		};
 
 		this.bus.subscribe("saveState", function (state) {
