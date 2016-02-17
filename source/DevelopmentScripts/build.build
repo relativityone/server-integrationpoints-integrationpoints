@@ -137,7 +137,7 @@
 	</target>
 	
 	<target name="build_x64">
-		<exec program="${msbuild}">
+		<exec program="${microsoft.net64.directory}\MSBuild.exe">
 			<arg line='"${targetsfile}"' />
 			<arg line='/property:SourceRoot="${root}"' />
 			<arg line="/property:Configuration=${buildconfig}" />

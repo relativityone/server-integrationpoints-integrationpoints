@@ -20,6 +20,21 @@
 	<target name="build_applications" depends="get_rapbuilder">	
 		<call target="build_LDAP"/>
     </target>
+
+	<target name="build_applications_local" depends="get_rapbuilder">	
+		<call target="build_LDAP_local"/>
+    </target>
+ 
+	<target name="build_LDAP_local">
+		<exec program="${ldap.scripts.directory}\kCura.RAPBuilder.exe">
+			<arg line='/source:${root}' />
+			<arg line='/input:${ldap.scripts.directory}\buildLocal.xml' />
+			<arg line='/version:${Product.Version}' />
+			<arg line='/servertype:local' />
+			<arg line='/debug:${diagnostic}' />
+			<arg line='/internaldlls:${dllout}' />
+		</exec>
+	</target>
 	
 	<target name="build_LDAP">
 		<exec program="${ldap.scripts.directory}\kCura.RAPBuilder.exe">

@@ -22,6 +22,7 @@
 
 	<!--<target name="build_RAP_Package" depends="deploy_web_project,sign_files,build_custom_pages_zip, generate_RAP_package" />-->
 	<target name="build_RAP_Package" depends="deploy_web_project,sign_files,build_applications" />
+	<target name="build_RAP_Package_Local" depends="deploy_web_project,sign_files,build_applications_local" />
 	
 	<target name="deploy_web_project" description="deployes custom pages to a directory">
 		<exec program="${msbuild}">
