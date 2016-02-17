@@ -4,11 +4,13 @@ using System.Collections.Specialized;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Castle.MicroKernel;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
+using kCura.Crypto.DataProtection;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Domain;
 using Relativity.API;
@@ -65,7 +67,10 @@ namespace kCura.IntegrationPoints.Contracts
 
 		private void SetUpConnectionString()
 		{
-			string connectionString = AppDomain.CurrentDomain.GetData(Constants.IntegrationPoints.AppDomain_Data_ConnectionString) as string;
+			var dataProtector = new kCura.Crypto.DataProtection.DataProtector(Store.MachineStore);
+			byte[] encryptedConnectionString = AppDomain.CurrentDomain.GetData(Constants.IntegrationPoints.AppDomain_Data_ConnectionString) as byte[];
+			string connectionString = System.Text.Encoding.ASCII.GetString(dataProtector.Decrypt(encryptedConnectionString));
+
 			kCura.Config.Config.SetConnectionString(connectionString);
 		}
 

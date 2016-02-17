@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
+using kCura.Crypto.DataProtection;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Data.Models;
 using Relativity.API;
@@ -130,7 +132,13 @@ namespace kCura.IntegrationPoints.Core.Domain
 			DomainManager manager = this.CreateInstance<DomainManager>(domain);
 
 			domain.SetData(Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider, ExtensionPointServiceFinder.SystemTokenProvider);
-			domain.SetData(Constants.IntegrationPoints.AppDomain_Data_ConnectionString, kCura.Config.Config.ConnectionString);
+
+			// get, encrypt, and marshall the connection string
+			var dataProtector = new kCura.Crypto.DataProtection.DataProtector(Store.MachineStore);
+			string connectionString = kCura.Config.Config.ConnectionString;
+			byte[] connectionStringBytes = Encoding.ASCII.GetBytes(connectionString);
+			byte[] encryptedConnectionString = dataProtector.Encrypt(connectionStringBytes);
+			domain.SetData(Constants.IntegrationPoints.AppDomain_Data_ConnectionString, encryptedConnectionString);
 
 			manager.Init();
 
