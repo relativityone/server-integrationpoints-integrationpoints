@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Castle.MicroKernel;
 using Castle.MicroKernel.Registration;
@@ -34,6 +36,7 @@ namespace kCura.IntegrationPoints.Contracts
 		/// </summary>
 		public void Init()
 		{
+			// Resolve new app domain's assemlbies
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyDomainLoader.ResolveAssembly;
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			Type startupType = typeof(IStartUp);
@@ -54,24 +57,78 @@ namespace kCura.IntegrationPoints.Contracts
 				}
 			}
 
+			// Run bootstrapper for app domain
 			Bootstrapper.InitAppDomain(Constants.IntegrationPoints.AppDomain_Subsystem_Name, Constants.IntegrationPoints.Application_GuidString, AppDomain.CurrentDomain);
-			this.SetUpSystemToken();
-			this.SetUpConnectionString();
-		}
 
-		private void SetUpSystemToken()
-		{
-			object systemTokenProvider = AppDomain.CurrentDomain.GetData(Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider);
-			ExtensionPointServiceFinder.SystemTokenProvider = systemTokenProvider as IProvideSystemTokens;
-		}
-
-		private void SetUpConnectionString()
-		{
+			// Get marshalled data
 			var dataProtector = new kCura.Crypto.DataProtection.DataProtector(Store.MachineStore);
-			byte[] encryptedConnectionString = AppDomain.CurrentDomain.GetData(Constants.IntegrationPoints.AppDomain_Data_ConnectionString) as byte[];
-			string connectionString = System.Text.Encoding.ASCII.GetString(dataProtector.Decrypt(encryptedConnectionString));
+			this.SetUpSystemToken(dataProtector);
+			this.SetUpConnectionString(dataProtector);
+		}
 
-			kCura.Config.Config.SetConnectionString(connectionString);
+		/// <summary>
+		/// Sets the SystemTokenProvider for the domain by retrieving the encrytped AppDomain data
+		/// </summary>
+		/// <param name="dataProtector">A DataProtector instance to use for decyrpting the AppDomain data</param>
+		private void SetUpSystemToken(kCura.Crypto.DataProtection.DataProtector dataProtector)
+		{
+			byte[] data = this.RetrieveAppData(dataProtector, Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider);
+			IProvideSystemTokens systemTokenProvider = this.ByteArrayToClass<IProvideSystemTokens>(data);
+			if (systemTokenProvider != null)
+			{
+				ExtensionPointServiceFinder.SystemTokenProvider = systemTokenProvider;
+			}
+		}
+
+		/// <summary>
+		/// Sets the connection string for the domain by retrieving the encrypted AppDomain data
+		/// </summary>
+		/// <param name="dataProtector">A DataProtector instance to use for decyrpting the AppDomain data</param>
+		private void SetUpConnectionString(kCura.Crypto.DataProtection.DataProtector dataProtector)
+		{
+			byte[] data = this.RetrieveAppData(dataProtector, Constants.IntegrationPoints.AppDomain_Data_ConnectionString);
+			if (data != null)
+			{
+				string connectionString = System.Text.Encoding.ASCII.GetString(data);
+
+				kCura.Config.Config.SetConnectionString(connectionString);
+			}
+		}
+
+		private byte[] RetrieveAppData(kCura.Crypto.DataProtection.DataProtector dataProtector, string key)
+		{
+			byte[] encryptedData = AppDomain.CurrentDomain.GetData(key) as byte[];
+			if (encryptedData == null)
+			{
+				return null;
+			}
+
+			byte[] decryptedData = dataProtector.Decrypt(encryptedData);
+
+			return decryptedData;
+		}
+
+		// kudos to : http://stackoverflow.com/questions/4865104/convert-any-object-to-a-byte
+		/// <summary>
+		/// Convert a byte array to an Object
+		/// </summary>
+		/// <typeparam name="T">Type of object to create from byte array</typeparam>
+		/// <param name="byteArray">Array of bytes representing class</param>
+		/// <returns>An instance of the request type</returns>
+		private T ByteArrayToClass<T>(byte[] byteArray) where T : class
+		{
+			if (byteArray == null)
+			{
+				return null;
+			}
+
+			var stream = new MemoryStream();
+			var formatter = new BinaryFormatter();
+			stream.Write(byteArray, 0, byteArray.Length);
+			stream.Seek(0, SeekOrigin.Begin);
+			T obj = formatter.Deserialize(stream) as T;
+
+			return obj;
 		}
 
 		private void SetUpCastleWindsor()

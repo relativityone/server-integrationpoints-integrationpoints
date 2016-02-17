@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using kCura.Crypto.DataProtection;
 using kCura.IntegrationPoints.Contracts;
@@ -131,18 +132,64 @@ namespace kCura.IntegrationPoints.Core.Domain
 			this.LoadClientLibraries(domain, provider, applicationGuid);
 			DomainManager manager = this.CreateInstance<DomainManager>(domain);
 
-			domain.SetData(Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider, ExtensionPointServiceFinder.SystemTokenProvider);
+			IDictionary<string, byte[]> dataDictionary = new Dictionary<string, byte[]>();
 
-			// get, encrypt, and marshall the connection string
-			var dataProtector = new kCura.Crypto.DataProtection.DataProtector(Store.MachineStore);
+			// Get the SystemTokenProvider
+			IProvideSystemTokens systemTokenProvider = ExtensionPointServiceFinder.SystemTokenProvider;
+			byte[] systemTokenProviderBytes = this.ObjectToByteArray(systemTokenProvider);
+			dataDictionary.Add(Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider, systemTokenProviderBytes);
+
+			// Get the connection string
 			string connectionString = kCura.Config.Config.ConnectionString;
 			byte[] connectionStringBytes = Encoding.ASCII.GetBytes(connectionString);
-			byte[] encryptedConnectionString = dataProtector.Encrypt(connectionStringBytes);
-			domain.SetData(Constants.IntegrationPoints.AppDomain_Data_ConnectionString, encryptedConnectionString);
+			dataDictionary.Add(Constants.IntegrationPoints.AppDomain_Data_ConnectionString, connectionStringBytes);
+
+			// Marshal the data
+			this.MarshalDataToDomain(domain, dataDictionary);
 
 			manager.Init();
 
 			return manager;
+		}
+
+		/// <summary>
+		/// Encyrpts and marshals a dictionary to the target AppDomain
+		/// </summary>
+		/// <param name="targetDomain">The domain to marshal the data to</param>
+		/// <param name="dataDictionary">A dictionary of settings to set on the AppDomain</param>
+		private void MarshalDataToDomain(AppDomain targetDomain, IDictionary<string, byte[]> dataDictionary)
+		{
+			var dataProtector = new kCura.Crypto.DataProtection.DataProtector(Store.MachineStore);
+
+			foreach (string key in dataDictionary.Keys)
+			{
+				byte[] value = dataDictionary[key];
+				byte[] encryptedData = null;
+				if (value != null)
+				{
+					encryptedData = dataProtector.Encrypt(dataDictionary[key]);
+				}
+
+				targetDomain.SetData(key, encryptedData);
+			}
+		}
+
+		// kudos to : http://stackoverflow.com/questions/4865104/convert-any-object-to-a-byte
+		/// <summary>
+		/// Convert an object to a byte array
+		/// </summary>
+		/// <param name="obj">Object to convert to byte aray. Note: Object must be serializable</param>
+		/// <returns>byte array representation of object</returns>
+		private byte[] ObjectToByteArray(Object obj)
+		{
+			if (obj == null)
+				return null;
+
+			var formatter = new BinaryFormatter();
+			var stream = new MemoryStream();
+			formatter.Serialize(stream, obj);
+
+			return stream.ToArray();
 		}
 
 		private void DeployLibraryFiles(AppDomain domain, RelativityFeaturePathService relativityFeaturePathService)
