@@ -137,7 +137,7 @@
 	</target>
 	
 	<target name="build_x64">
-		<exec program="${microsoft.net64.directory}\MSBuild.exe">
+		<exec program="${msbuild}">
 			<arg line='"${targetsfile}"' />
 			<arg line='/property:SourceRoot="${root}"' />
 			<arg line="/property:Configuration=${buildconfig}" />
@@ -156,7 +156,7 @@
 	</target>
 	
 	<target name="merge_binaries" description="Merge all related binaries into a single library">
-		<exec program="${source.packages.directory}\ilmerge.2.13.0307\ILMerge.exe" >
+		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/out:"${target.code.directory}\kCura.IntegrationPoints.dll"' />
 			<arg line='/internalize:ilmergeExcludeMain.txt' />
@@ -191,7 +191,7 @@
 	</target>
 
 	<target name="merge_ldap" description="Merge all related binaries into a single library">
-		<exec program="${source.packages.directory}\ilmerge.2.13.0307\ILMerge.exe" >
+		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/out:"${target.code.directory}\kCura.LDAPProvider.dll"' />
 			<arg line='/internalize:ilmergeExcludeLDAP.txt' />
@@ -211,7 +211,7 @@
 	</target>
 	
 	<target name="merge_source_provider_installer" description="Merge all related binaries into a single library">
-		<exec program="${source.packages.directory}\ilmerge.2.13.0307\ILMerge.exe" >
+		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/out:"${target.code.directory}\kCura.SourceProviderInstaller.dll"' />
 			<arg line='/internalize:ilmergeExcludeSourceProviderInstaller.txt' />
