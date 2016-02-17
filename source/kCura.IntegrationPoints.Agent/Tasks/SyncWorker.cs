@@ -123,7 +123,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_jobHistoryErrorService.CommitErrors();
 				PostExecute(job);
 			}
-
 		}
 
 		internal void PostExecute(Job job)
