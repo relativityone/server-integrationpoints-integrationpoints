@@ -99,6 +99,21 @@ IP.affects = (function() {
 		var _forceIERedraw = function () {
 			$('#forceRedraw').text(1); //force IE to redraw
 		};
+
+		// This fixes the field mapping pane alignment in IE 10 for screen widths greater than ~2300px
+		var isIe10 = navigator.userAgent.toLowerCase().indexOf('msie 10') > -1;
+		if (isIe10) {
+			var mapFields = $('body').find("#mapFields");
+			var fieldMappings = $('body').find("#fieldMappings");
+
+			if (fieldMappings.length > 0 && mapFields.length > 0) {
+				mapFields.css("position", "absolute");
+				mapFields.css("top", "85px");
+				fieldMappings.css("min-width", "1250px");
+				fieldMappings.css("min-height", "490px");
+			}
+		}
+
 		var _init = function (source, destination) {
 			$(source).on('mousemove', function (event) {
 				var $this = $(this);
