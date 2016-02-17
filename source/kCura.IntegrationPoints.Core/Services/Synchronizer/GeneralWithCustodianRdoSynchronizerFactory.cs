@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 					s.TaskJobSubmitter = TaskJobSubmitter;
 					return s;
 				default:
-					return _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizerBase).AssemblyQualifiedName);
+					return _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizerPull).AssemblyQualifiedName);
 			}
 		}
 	}
