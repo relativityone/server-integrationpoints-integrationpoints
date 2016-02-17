@@ -159,8 +159,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			public int Counter { get { return ReadEntriesCount; } }
 
-			public override int FieldCount { get; }
-
 			public override string GetName(int i)
 			{
 				throw new NotImplementedException();
@@ -175,6 +173,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			{
 				throw new NotImplementedException();
 			}
+
+			public override int FieldCount { get { return 0; } }
 
 			public override string GetDataTypeName(int i)
 			{
