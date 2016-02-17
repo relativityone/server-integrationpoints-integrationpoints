@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Contracts
 			// Run bootstrapper for app domain
 			Bootstrapper.InitAppDomain(Constants.IntegrationPoints.AppDomain_Subsystem_Name, Constants.IntegrationPoints.Application_GuidString, AppDomain.CurrentDomain);
 
-			// Get marshalled data
+			// Get marshaled data
 			var dataProtector = new kCura.Crypto.DataProtection.DataProtector(Store.MachineStore);
 			this.SetUpSystemToken(dataProtector);
 			this.SetUpConnectionString(dataProtector);
