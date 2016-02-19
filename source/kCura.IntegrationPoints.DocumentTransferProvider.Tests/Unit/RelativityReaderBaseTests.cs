@@ -152,7 +152,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			private readonly QueryResultSet<Document> _initialResult;
 
 			public MockRelativityReaderBase(IRelativityClientAdaptor relativityClient, QueryResultSet<Document> initialResult)
-				: base(relativityClient)
+				: base(relativityClient, new[] { new DataColumn("Testing") })
 			{
 				_initialResult = initialResult;
 			}
@@ -173,8 +173,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			{
 				throw new NotImplementedException();
 			}
-
-			public override int FieldCount { get { return 0; } }
 
 			public override string GetDataTypeName(int i)
 			{

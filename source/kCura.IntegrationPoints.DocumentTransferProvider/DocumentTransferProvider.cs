@@ -126,11 +126,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			{
 				IRelativityClientAdaptor relativityClient = new RelativityClientAdaptor(client);
 
-				// TODO - modify query to only get 'Field Type'. SAMO - 1/29/2016
-				//List<Artifact> documentFields = GetExtractedTextFields(client, (int)ArtifactType.Document);
-
-				List<Artifact> fieldEntries = GetLongTextFields(client, Convert.ToInt32(ArtifactType.Document));
-				return new DocumentTranfserDataReader(relativityClient, entryIds.Select(x => Convert.ToInt32(x)), fields, fieldEntries);
+				List<Artifact> longTextfieldEntries = GetLongTextFields(client, Convert.ToInt32(ArtifactType.Document));
+				return new DocumentTranfserDataReader(relativityClient, entryIds.Select(x => Convert.ToInt32(x)), fields, longTextfieldEntries);
 			}
 		}
 

@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Services.Conversion;
+using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 
 namespace kCura.IntegrationPoints.Core.Conversion
 {

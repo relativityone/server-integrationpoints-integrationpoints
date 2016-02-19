@@ -11,14 +11,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private readonly int _savedSearchArtifactId;
 
 		public DocumentArtifactIdDataReader(IRelativityClientAdaptor relativityClientAdaptor, int savedSearchArtifactId) :
-			base(relativityClientAdaptor)
+			base(relativityClientAdaptor, new [] { new DataColumn(Shared.Constants.ARTIFACT_ID_FIELD_NAME) })
 		{
 			_savedSearchArtifactId = savedSearchArtifactId;
-		}
-
-		public override DataTable GetSchemaTable()
-		{
-			throw new NotImplementedException();
 		}
 
 		protected override QueryResultSet<Document> ExecuteQueryToGetInitialResult()
@@ -31,14 +26,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			return RelativityClient.ExecuteDocumentQuery(query);
 		}
 
-		public override int FieldCount
-		{
-			get { return 1; }
-		}
-
 		public override string GetDataTypeName(int i)
 		{
-			throw new System.NotImplementedException();
+			return typeof (Int32).ToString();
 		}
 
 		public override Type GetFieldType(int i)
@@ -48,25 +38,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				throw new IndexOutOfRangeException();
 			}
 			return typeof(Int32);
-		}
-
-		public override string GetName(int i)
-		{
-			if (i != 0)
-			{
-				throw new IndexOutOfRangeException();
-			}
-
-			return Shared.Constants.ARTIFACT_ID_FIELD_NAME;
-		}
-
-		public override int GetOrdinal(string name)
-		{
-			if (name != Shared.Constants.ARTIFACT_ID_FIELD_NAME)
-			{
-				throw new IndexOutOfRangeException();
-			}
-			return 0;
 		}
 
 		public override object GetValue(int i)

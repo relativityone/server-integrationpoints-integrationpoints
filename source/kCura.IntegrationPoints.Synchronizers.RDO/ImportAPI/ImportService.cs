@@ -63,8 +63,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public void AddRow(Dictionary<string, object> sourceFields)
 		{
 			Dictionary<string, object> importFields = GenerateImportFields(sourceFields, FieldMappings, NativeFileImportService);
-			_batchManager.Add(importFields);
-			PushBatchIfFull(false);
+			if (importFields.Count > 0)
+			{
+				_batchManager.Add(importFields);
+				PushBatchIfFull(false);
+			}
 		}
 
 		public bool PushBatchIfFull(bool forcePush)
