@@ -45,21 +45,21 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 				}
 
 				InstallSynchronizerForCoreOnly(provider.ApplicationGUID);
-				ValidateProviders(sourceProviders);
+				ValidateProvider(provider);
 
 				List<Data.SourceProvider> installedRdoProviders = new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(provider.ApplicationGUID);
-				Dictionary<string, SourceProviderInstaller.SourceProvider> installingProviderDict = sourceProviders.ToDictionary(x => x.GUID.ToString(), x => x);
 				Dictionary<string, Data.SourceProvider> installedRdoProviderDict = installedRdoProviders.ToDictionary(x => x.Identifier, x => x);
 
-				List<Data.SourceProvider> providersToBeUpdated =
-					installedRdoProviders.Where(x => installingProviderDict.ContainsKey(x.Identifier)).ToList();
-
-				List<SourceProviderInstaller.SourceProvider> providersToBeInstalled =
-					sourceProviders.Where(x => !installedRdoProviderDict.ContainsKey(x.GUID.ToString())).ToList();
-
-				UpdateExistingProviders(providersToBeUpdated, sourceProviders);
-
-				AddNewProviders(providersToBeInstalled);
+				string identifier = provider.GUID.ToString();
+				if (installedRdoProviderDict.ContainsKey(identifier))
+				{
+					Data.SourceProvider providerToUpdate = installedRdoProviderDict[identifier];
+					UpdateExistingProviders(new List<Data.SourceProvider>() { providerToUpdate }, new []{ provider });
+				}
+				else
+				{
+					AddNewProviders(new[] { provider });
+				}
 			}
 		}
 
@@ -138,18 +138,16 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			}
 		}
 
-		private void ValidateProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providers)
+		private void ValidateProvider(SourceProvider provider)
 		{
 			ISourcePluginProvider pluginProvider =
 				new DefaultSourcePluginProvider(new GetApplicationBinaries(_eddsContext.SqlContext));
 			using (AppDomainFactory factory = new AppDomainFactory(new DomainHelper(), pluginProvider, new RelativityFeaturePathService()))
 			{
-				foreach (SourceProviderInstaller.SourceProvider provider in providers)
-				{
-					TryLoadingProvider(factory, provider);
-				}
+				TryLoadingProvider(factory, provider);
 			}
 		}
+
 
 		private Guid GetApplicationGuid(int applicationID)
 		{
