@@ -3,6 +3,9 @@ using kCura.Crypto.DataProtection;
 
 namespace kCura.IntegrationPoints.Core.Services.Marshaller
 {
+	/// <summary>
+	/// This class marshals data to a target AppDomain after first encrypting each entry
+	/// </summary>
 	internal class SecureAppDomainDataMarshaller : IAppDomainDataMarshaller
 	{
 		private readonly DataProtector _dataProtector;
