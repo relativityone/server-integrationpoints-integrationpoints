@@ -35,6 +35,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		internal IJobManager _jobManager;
 		private JobStatisticsService _statisticsService;
 		private IEnumerable<Core.IBatchStatus> _batchStatus;
+
 		public IEnumerable<Core.IBatchStatus> BatchStatus
 		{
 			get { return _batchStatus ?? (_batchStatus = new List<IBatchStatus>()); }
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			kCura.IntegrationPoints.Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
 			JobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
-			IJobManager jobManager, 
+			IJobManager jobManager,
 			IEnumerable<IBatchStatus> statuses,
 			JobStatisticsService statisticsService)
 		{
@@ -123,7 +124,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_jobHistoryErrorService.CommitErrors();
 				PostExecute(job);
 			}
-
 		}
 
 		internal void PostExecute(Job job)
@@ -219,19 +219,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			string sourceConfiguration, string destinationConfiguration, List<string> entryIDs,
 			Data.SourceProvider sourceProviderRdo, Data.DestinationProvider destinationProvider, Job job)
 		{
+			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
+
 			IDataSourceProvider sourceProvider = GetSourceProvider(sourceProviderRdo, job);
 
-			List<FieldEntry> sourceFields = GetSourceFields(fieldMap);
+			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
 
 			IDataReader sourceDataReader = sourceProvider.GetData(sourceFields, entryIDs, sourceConfiguration);
-
-			IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
 
 			IDataSynchronizer dataSynchronizer = GetDestinationProvider(destinationProvider, destinationConfiguration, job);
 
 			SetupSubscriptions(dataSynchronizer, job);
 
-			dataSynchronizer.SyncData(sourceData, fieldMap, destinationConfiguration);
+			dataSynchronizer.SyncData(sourceDataReader, fieldMaps, destinationConfiguration);
 		}
 
 		internal virtual List<FieldEntry> GetSourceFields(IEnumerable<FieldMap> fieldMap)

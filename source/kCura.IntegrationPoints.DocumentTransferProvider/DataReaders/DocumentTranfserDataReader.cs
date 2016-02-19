@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -13,31 +14,24 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 	public class DocumentTranfserDataReader : RelativityReaderBase
 	{
 		private readonly IEnumerable<int> _documentArtifactIds;
-		private readonly DataTable _schemaDataTable;
 		private readonly IEnumerable<FieldEntry> _fieldEntries;
-		private readonly IDictionary<string, string> _fieldIdToNameDictionary;
-		private readonly HashSet<int> _longTextFieldsArtifactIds;
+		private readonly HashSet<int> _longTextFieldArtifactIds;
 
 		public DocumentTranfserDataReader(IRelativityClientAdaptor relativityClientAdaptor,
 			IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries,
-			List<Relativity.Client.Artifact> documentFields) :
-			base(relativityClientAdaptor)
+			List<Relativity.Client.Artifact> longTextfieldEntries) :
+			base(relativityClientAdaptor, GenerateDataColumnsFromFieldEntries(fieldEntries))
 		{
 			_documentArtifactIds = documentArtifactIds;
 			_fieldEntries = fieldEntries.ToList();
 
-			_schemaDataTable = new DataTable();
-			_schemaDataTable.Columns.AddRange(_fieldEntries.Select(x => new DataColumn(x.FieldIdentifier)).ToArray());
-			_fieldIdToNameDictionary = _fieldEntries.ToDictionary(
-				x => x.FieldIdentifier,
-				y => y.IsIdentifier ? y.DisplayName.Replace(Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, String.Empty) : y.DisplayName);
-
-			_longTextFieldsArtifactIds =  new HashSet<int>(documentFields.Select(artifact => artifact.ArtifactID));
+			// From SynchronizerObjectBuilder, the existing framework assuming that the reader from get data will use artifact Id as the name of the column.
+			_longTextFieldArtifactIds = new HashSet<int>(longTextfieldEntries.Select(artifact => Convert.ToInt32(artifact.ArtifactID)));
 		}
 
-		public override DataTable GetSchemaTable()
+		private static DataColumn[] GenerateDataColumnsFromFieldEntries(IEnumerable<FieldEntry> fieldEntries)
 		{
-			return _schemaDataTable;
+			return fieldEntries.Select(x => new DataColumn(x.FieldIdentifier)).ToArray();
 		}
 
 		protected override QueryResultSet<Document> ExecuteQueryToGetInitialResult()
@@ -50,8 +44,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			};
 
 			// only query for non-full text fields at this time
-			List<FieldValue> requestedFields = _fieldEntries.Where(field => _longTextFieldsArtifactIds.Contains(Convert.ToInt32(field.FieldIdentifier)) == false)
-															.Select(x => new FieldValue() { ArtifactID = Convert.ToInt32(x.FieldIdentifier) }).ToList();
+			List<FieldValue> requestedFields = _fieldEntries.Where(field => _longTextFieldArtifactIds.Contains(Convert.ToInt32(field.FieldIdentifier)) == false)
+												.Select(x => new FieldValue() { ArtifactID = Convert.ToInt32(x.FieldIdentifier) }).ToList();
 
 			Query<Document> query = new Query<Document>
 			{
@@ -61,45 +55,29 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			return RelativityClient.ExecuteDocumentQuery(query);
 		}
 
-		public override int FieldCount
-		{
-			get { return _schemaDataTable.Columns.Count; }
-		}
-
 		public override string GetDataTypeName(int i)
 		{
-			return _schemaDataTable.Columns[i].DataType.Name;
+			return GetFieldType(i).ToString();
 		}
 
 		public override Type GetFieldType(int i)
 		{
-			return _schemaDataTable.Columns[i].DataType;
-		}
-
-		public override string GetName(int i)
-		{
-			return _schemaDataTable.Columns[i].ColumnName;
-		}
-
-		public override int GetOrdinal(string name)
-		{
-			return _schemaDataTable.Columns[name].Ordinal;
+			string columnName = GetName(i);
+			return CurrentDocument[columnName] == null ? typeof(object) : CurrentDocument[columnName].GetType();
 		}
 
 		public override object GetValue(int i)
 		{
-			string fieldIdAsString = GetName(i);
-			int fieldId = Convert.ToInt32(fieldIdAsString);
-
 			Object result = null;
-			if (_longTextFieldsArtifactIds.Contains(fieldId))
+			int fieldArtifactId = Convert.ToInt32(GetName(i));
+
+			if (_longTextFieldArtifactIds.Contains(fieldArtifactId))
 			{
-				result = LoadLongTextFieldValueOfCurrentDocument(fieldId);
+				result = LoadLongTextFieldValueOfCurrentDocument(fieldArtifactId);
 			}
 			else
 			{
-				string columnName = _fieldIdToNameDictionary[fieldIdAsString].Replace(Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, String.Empty);
-				result = CurrentDocument[columnName].Value;
+				result = CurrentDocument[fieldArtifactId].Value;
 			}
 			return result;
 		}

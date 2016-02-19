@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -11,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public abstract class RdoSynchronizerBase : kCura.IntegrationPoints.Contracts.Synchronizer.IDataSynchronizer, IBatchReporter
+	public abstract class RdoSynchronizerBase : Contracts.Synchronizer.IDataSynchronizer, IBatchReporter
 	{
 		public event BatchCompleted OnBatchComplete;
 		public event BatchSubmitted OnBatchSubmit;
@@ -146,6 +147,32 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			} while (!isJobDone);
 
 			FinalizeSyncData(data, fieldMap, this.ImportSettings);
+		}
+
+		public void SyncData(IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
+		{
+			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
+			IDataReader sourceReader = new RelativityReaderDecorator(data, fieldMaps);
+
+			this.NativeFileImportService = new NativeFileImportService();
+
+			this.ImportSettings = GetSyncDataImportSettings(fieldMaps, options, this.NativeFileImportService);
+
+			var importFieldMap = GetSyncDataImportFieldMap(fieldMaps, this.ImportSettings);
+
+			_importService = InitializeImportService(this.ImportSettings, importFieldMap, this.NativeFileImportService);
+
+			_importService.KickOffImport(sourceReader);
+
+			bool isJobDone = false;
+			do
+			{
+				lock (_importService)
+				{
+					isJobDone = bool.Parse(_isJobComplete.ToString());
+				}
+				Thread.Sleep(1000);
+			} while (!isJobDone);
 		}
 
 		private string _webAPIPath;
