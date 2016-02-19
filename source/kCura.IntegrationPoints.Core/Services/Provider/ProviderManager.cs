@@ -15,6 +15,7 @@ using Castle.Windsor.Installer;
 using kCura.Crypto.DataProtection;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Domain;
+using kCura.IntegrationPoints.Core.Services.Marshaller;
 using Relativity.API;
 using Relativity.APIHelper;
 
@@ -61,19 +62,20 @@ namespace kCura.IntegrationPoints.Contracts
 			Bootstrapper.InitAppDomain(Constants.IntegrationPoints.AppDomain_Subsystem_Name, Constants.IntegrationPoints.Application_GuidString, AppDomain.CurrentDomain);
 
 			// Get marshaled data
-			var dataProtector = new kCura.Crypto.DataProtection.DataProtector(Store.MachineStore);
-			this.SetUpSystemToken(dataProtector);
-			this.SetUpConnectionString(dataProtector);
+			IAppDomainDataMarshaller dataMarshaller = new SecureAppDomainDataMarshaller();
+			this.SetUpSystemToken(dataMarshaller);
+			this.SetUpConnectionString(dataMarshaller);
 		}
 
 		/// <summary>
 		/// Sets the SystemTokenProvider for the domain by retrieving the encrytped AppDomain data
 		/// </summary>
-		/// <param name="dataProtector">A DataProtector instance to use for decyrpting the AppDomain data</param>
-		private void SetUpSystemToken(kCura.Crypto.DataProtection.DataProtector dataProtector)
+		/// <param name="dataMarshaller">The dataMarshaller class to use for retrieving the marshaled data</param>
+		private void SetUpSystemToken(IAppDomainDataMarshaller dataMarshaller)
 		{
-			byte[] data = this.RetrieveAndDecryptAppData(dataProtector, Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider);
-			IProvideSystemTokens systemTokenProvider = this.ByteArrayToClass<IProvideSystemTokens>(data);
+			ISerializationHelper serializationHelper = new SerializationHelper();
+			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider);
+			IProvideSystemTokens systemTokenProvider = serializationHelper.Deserialize<IProvideSystemTokens>(data);
 			if (systemTokenProvider != null)
 			{
 				ExtensionPointServiceFinder.SystemTokenProvider = systemTokenProvider;
@@ -83,69 +85,15 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <summary>
 		/// Sets the connection string for the domain by retrieving the encrypted AppDomain data
 		/// </summary>
-		/// <param name="dataProtector">A DataProtector instance to use for decyrpting the AppDomain data</param>
-		private void SetUpConnectionString(kCura.Crypto.DataProtection.DataProtector dataProtector)
+		private void SetUpConnectionString(IAppDomainDataMarshaller dataMarshaller)
 		{
-			byte[] data = this.RetrieveAndDecryptAppData(dataProtector, Constants.IntegrationPoints.AppDomain_Data_ConnectionString);
+			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Constants.IntegrationPoints.AppDomain_Data_ConnectionString);
 			if (data != null && data.Length > 0)
 			{
 				string connectionString = System.Text.Encoding.ASCII.GetString(data);
 
 				kCura.Config.Config.SetConnectionString(connectionString);
 			}
-		}
-
-		/// <summary>
-		/// Retrieves and decrypts data set in the current AppDomain
-		/// </summary>
-		/// <param name="dataProtector">The DataProtector instance to use for decryping the data</param>
-		/// <param name="key">The key to use for looking up the AppDomain data</param>
-		/// <returns>The decrypted data for the key if the entry exists, an empty byte array if the entry does not exist</returns>
-		private byte[] RetrieveAndDecryptAppData(kCura.Crypto.DataProtection.DataProtector dataProtector, string key)
-		{
-			byte[] encryptedData = AppDomain.CurrentDomain.GetData(key) as byte[];
-			if (encryptedData == null || encryptedData.Length == 0)
-			{
-				return new byte[]{};
-			}
-
-			byte[] decryptedData = dataProtector.Decrypt(encryptedData);
-
-			return decryptedData;
-		}
-
-		// kudos to : http://stackoverflow.com/questions/4865104/convert-any-object-to-a-byte
-		/// <summary>
-		/// Convert a byte array to an Object
-		/// </summary>
-		/// <typeparam name="T">Type of object to create from byte array</typeparam>
-		/// <param name="byteArray">Array of bytes representing class</param>
-		/// <returns>An instance of the request type</returns>
-		private T ByteArrayToClass<T>(byte[] byteArray) where T : class
-		{
-			if (byteArray == null)
-			{
-				return null;
-			}
-
-			T obj = null;
-			using (var stream = new MemoryStream())
-			{
-				stream.Write(byteArray, 0, byteArray.Length);
-				stream.Seek(0, SeekOrigin.Begin);
-
-				var formatter = new BinaryFormatter();
-				try
-				{
-					obj = formatter.Deserialize(stream) as T;
-				}
-				catch
-				{
-					// Surpress errors. This can happen when the byte count is less than that of the expected class type's size
-				}
-			}
-
-			return obj;
 		}
 
 		private void SetUpCastleWindsor()

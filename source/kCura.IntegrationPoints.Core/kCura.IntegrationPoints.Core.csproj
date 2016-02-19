@@ -150,6 +150,10 @@
     <Compile Include="Services\Keywords\KeywordFactory.cs" />
     <Compile Include="Services\Keywords\RipNameKeyword.cs" />
     <Compile Include="Services\Keywords\WorkspaceNameKeyword.cs" />
+    <Compile Include="Services\Marshaller\IAppDomainDataMarshaller.cs" />
+    <Compile Include="Services\Marshaller\ISerializationHelper.cs" />
+    <Compile Include="Services\Marshaller\SecureAppDomainDataMarshaller.cs" />
+    <Compile Include="Services\Marshaller\SerializationHelper.cs" />
     <Compile Include="Services\Provider\DefaultSourcePluginProvider.cs" />
     <Compile Include="Services\Domain\AppDomainFactory.cs" />
     <Compile Include="Services\Provider\ProviderManager.cs" />

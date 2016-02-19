@@ -5,8 +5,10 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.Crypto.DataProtection;
 using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Core.Services.Marshaller;
 using kCura.IntegrationPoints.Data.Models;
 using Relativity.API;
 
@@ -135,8 +137,9 @@ namespace kCura.IntegrationPoints.Core.Domain
 			IDictionary<string, byte[]> dataDictionary = new Dictionary<string, byte[]>();
 
 			// Get the SystemTokenProvider
+			ISerializationHelper serializationHelper = new SerializationHelper();
 			IProvideSystemTokens systemTokenProvider = ExtensionPointServiceFinder.SystemTokenProvider;
-			byte[] systemTokenProviderBytes = this.ObjectToByteArray(systemTokenProvider);
+			byte[] systemTokenProviderBytes = serializationHelper.Serialize(systemTokenProvider);
 			dataDictionary.Add(Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider, systemTokenProviderBytes);
 
 			// Get the connection string
@@ -145,55 +148,12 @@ namespace kCura.IntegrationPoints.Core.Domain
 			dataDictionary.Add(Constants.IntegrationPoints.AppDomain_Data_ConnectionString, connectionStringBytes);
 
 			// Marshal the data
-			this.EncryptAndMarshalDataToDomain(domain, dataDictionary);
+			IAppDomainDataMarshaller dataMarshaller = new SecureAppDomainDataMarshaller();
+			dataMarshaller.MarshalDataToDomain(domain, dataDictionary);
 
 			manager.Init();
 
 			return manager;
-		}
-
-		/// <summary>
-		/// Encyrpts and marshals a dictionary to the target AppDomain
-		/// </summary>
-		/// <param name="targetDomain">The domain to marshal the data to</param>
-		/// <param name="dataDictionary">A dictionary of settings to set on the AppDomain</param>
-		private void EncryptAndMarshalDataToDomain(AppDomain targetDomain, IDictionary<string, byte[]> dataDictionary)
-		{
-			var dataProtector = new kCura.Crypto.DataProtection.DataProtector(Store.MachineStore);
-
-			foreach (KeyValuePair<string, byte[]> entry in dataDictionary)
-			{
-				byte[] value = entry.Value;
-				byte[] encryptedData = {};
-				if (value != null)
-				{
-					encryptedData = dataProtector.Encrypt(value);
-				}
-
-				targetDomain.SetData(entry.Key, encryptedData);
-			}
-		}
-
-		// kudos to : http://stackoverflow.com/questions/4865104/convert-any-object-to-a-byte
-		/// <summary>
-		/// Convert an object to a byte array
-		/// </summary>
-		/// <param name="obj">Object to convert to byte aray. Note: Object must be serializable</param>
-		/// <returns>byte array representation of object</returns>
-		private byte[] ObjectToByteArray(Object obj)
-		{
-			if (obj == null)
-				return new byte[]{};
-
-			var formatter = new BinaryFormatter();
-			byte[] streamBytes = {};
-			using (var stream = new MemoryStream())
-			{
-				formatter.Serialize(stream, obj);
-				streamBytes = stream.ToArray();
-			}
-
-			return streamBytes;
 		}
 
 		private void DeployLibraryFiles(AppDomain domain, RelativityFeaturePathService relativityFeaturePathService)
