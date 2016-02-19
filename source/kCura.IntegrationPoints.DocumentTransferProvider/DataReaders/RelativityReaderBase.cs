@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.Relativity.Client.DTOs;
 
@@ -14,9 +16,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		protected bool ReaderOpen;
 		protected Document CurrentDocument;
 		protected readonly IRelativityClientAdaptor RelativityClient;
+		protected readonly DataTable SchemaDataTable;
 
-		protected RelativityReaderBase(IRelativityClientAdaptor relativityClient)
+		protected RelativityReaderBase(IRelativityClientAdaptor relativityClient, DataColumn[] columns)
 		{
+			SchemaDataTable = new DataTable();
+			SchemaDataTable.Columns.AddRange(columns);
+
 			RelativityClient = relativityClient;
 			ReaderOpen = true;
 		}
@@ -34,7 +40,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			get { return 0; }
 		}
 
-		public abstract int FieldCount { get; }
+		public int FieldCount
+		{
+			get { return SchemaDataTable.Columns.Count; }
+		}
+
 		public bool IsClosed { get { return !ReaderOpen; } }
 
 		public virtual int RecordsAffected
@@ -131,9 +141,20 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			return Convert.ToInt64(GetValue(i));
 		}
 
-		public abstract string GetName(int i);
-		public abstract int GetOrdinal(string name);
-		public abstract DataTable GetSchemaTable();
+		public virtual string GetName(int i)
+		{
+			return SchemaDataTable.Columns[i].ColumnName;
+		}
+
+		public virtual int GetOrdinal(string name)
+		{
+			return SchemaDataTable.Columns[name].Ordinal;
+		}
+
+		public virtual DataTable GetSchemaTable()
+		{
+			return SchemaDataTable;
+		}
 
 		public virtual string GetString(int i)
 		{
@@ -209,7 +230,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			// Check if search results have been populated
 			if (Enumerator == null)
 			{
-				// Request document objects													.Select(x => new FieldValue() { ArtifactID = Convert.ToInt32(x.FieldIdentifier) }).ToList();
+				// Request document objects
 				FetchDataToRead(ExecuteQueryToGetInitialResult);
 			}
 

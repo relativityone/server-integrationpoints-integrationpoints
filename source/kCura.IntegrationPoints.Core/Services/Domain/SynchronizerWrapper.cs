@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
@@ -28,6 +29,18 @@ namespace kCura.IntegrationPoints.Core.Domain
 		}
 
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
+		{
+			try
+			{
+				_synchronizer.SyncData(data, fieldMap, options);
+			}
+			catch (Exception e)
+			{
+				throw Utils.GetNonCustomException(e);
+			}
+		}
+
+		public void SyncData(IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
 		{
 			try
 			{
