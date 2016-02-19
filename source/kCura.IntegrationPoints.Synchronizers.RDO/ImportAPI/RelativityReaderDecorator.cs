@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				object result = null;
 				string sourceName = _targetNameToSourceIdentifier[name];
 				result = _source[sourceName];
-				if (result == null && _identifiers.Contains(name))
+				if ((result == null || result == DBNull.Value) && _identifiers.Contains(name))
 				{
 					throw new Exception(String.Format("Identifier[{0}] must have a value.", name));
 				}

@@ -196,7 +196,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				catch (Exception e)
 				{
 					throw new SystemException("An exception of type " + e.GetType() +
-											  " was encountered while closing the" + this.GetType().Name);
+											  " was encountered while closing the " + this.GetType().Name);
 				}
 			}
 		}
