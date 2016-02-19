@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Contracts
 		/// </summary>
 		public void Init()
 		{
-			// Resolve new app domain's assemlbies
+			// Resolve new app domain's assemblies
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyDomainLoader.ResolveAssembly;
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			Type startupType = typeof(IStartUp);
@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <param name="dataProtector">A DataProtector instance to use for decyrpting the AppDomain data</param>
 		private void SetUpSystemToken(kCura.Crypto.DataProtection.DataProtector dataProtector)
 		{
-			byte[] data = this.RetrieveAppData(dataProtector, Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider);
+			byte[] data = this.RetrieveAndDecryptAppData(dataProtector, Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider);
 			IProvideSystemTokens systemTokenProvider = this.ByteArrayToClass<IProvideSystemTokens>(data);
 			if (systemTokenProvider != null)
 			{
@@ -86,8 +86,8 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <param name="dataProtector">A DataProtector instance to use for decyrpting the AppDomain data</param>
 		private void SetUpConnectionString(kCura.Crypto.DataProtection.DataProtector dataProtector)
 		{
-			byte[] data = this.RetrieveAppData(dataProtector, Constants.IntegrationPoints.AppDomain_Data_ConnectionString);
-			if (data != null)
+			byte[] data = this.RetrieveAndDecryptAppData(dataProtector, Constants.IntegrationPoints.AppDomain_Data_ConnectionString);
+			if (data != null && data.Length > 0)
 			{
 				string connectionString = System.Text.Encoding.ASCII.GetString(data);
 
@@ -95,12 +95,18 @@ namespace kCura.IntegrationPoints.Contracts
 			}
 		}
 
-		private byte[] RetrieveAppData(kCura.Crypto.DataProtection.DataProtector dataProtector, string key)
+		/// <summary>
+		/// Retrieves and decrypts data set in the current AppDomain
+		/// </summary>
+		/// <param name="dataProtector">The DataProtector instance to use for decryping the data</param>
+		/// <param name="key">The key to use for looking up the AppDomain data</param>
+		/// <returns>The decrypted data for the key if the entry exists, an empty byte array if the entry does not exist</returns>
+		private byte[] RetrieveAndDecryptAppData(kCura.Crypto.DataProtection.DataProtector dataProtector, string key)
 		{
 			byte[] encryptedData = AppDomain.CurrentDomain.GetData(key) as byte[];
-			if (encryptedData == null)
+			if (encryptedData == null || encryptedData.Length == 0)
 			{
-				return null;
+				return new byte[]{};
 			}
 
 			byte[] decryptedData = dataProtector.Decrypt(encryptedData);
@@ -122,11 +128,22 @@ namespace kCura.IntegrationPoints.Contracts
 				return null;
 			}
 
-			var stream = new MemoryStream();
-			var formatter = new BinaryFormatter();
-			stream.Write(byteArray, 0, byteArray.Length);
-			stream.Seek(0, SeekOrigin.Begin);
-			T obj = formatter.Deserialize(stream) as T;
+			T obj = null;
+			using (var stream = new MemoryStream())
+			{
+				stream.Write(byteArray, 0, byteArray.Length);
+				stream.Seek(0, SeekOrigin.Begin);
+
+				var formatter = new BinaryFormatter();
+				try
+				{
+					obj = formatter.Deserialize(stream) as T;
+				}
+				catch
+				{
+					// Surpress errors. This can happen when the byte count is less than that of the expected class type's size
+				}
+			}
 
 			return obj;
 		}

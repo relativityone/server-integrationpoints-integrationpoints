@@ -145,7 +145,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 			dataDictionary.Add(Constants.IntegrationPoints.AppDomain_Data_ConnectionString, connectionStringBytes);
 
 			// Marshal the data
-			this.MarshalDataToDomain(domain, dataDictionary);
+			this.EncryptAndMarshalDataToDomain(domain, dataDictionary);
 
 			manager.Init();
 
@@ -157,20 +157,20 @@ namespace kCura.IntegrationPoints.Core.Domain
 		/// </summary>
 		/// <param name="targetDomain">The domain to marshal the data to</param>
 		/// <param name="dataDictionary">A dictionary of settings to set on the AppDomain</param>
-		private void MarshalDataToDomain(AppDomain targetDomain, IDictionary<string, byte[]> dataDictionary)
+		private void EncryptAndMarshalDataToDomain(AppDomain targetDomain, IDictionary<string, byte[]> dataDictionary)
 		{
 			var dataProtector = new kCura.Crypto.DataProtection.DataProtector(Store.MachineStore);
 
-			foreach (string key in dataDictionary.Keys)
+			foreach (KeyValuePair<string, byte[]> entry in dataDictionary)
 			{
-				byte[] value = dataDictionary[key];
-				byte[] encryptedData = null;
+				byte[] value = entry.Value;
+				byte[] encryptedData = {};
 				if (value != null)
 				{
-					encryptedData = dataProtector.Encrypt(dataDictionary[key]);
+					encryptedData = dataProtector.Encrypt(value);
 				}
 
-				targetDomain.SetData(key, encryptedData);
+				targetDomain.SetData(entry.Key, encryptedData);
 			}
 		}
 
@@ -183,13 +183,17 @@ namespace kCura.IntegrationPoints.Core.Domain
 		private byte[] ObjectToByteArray(Object obj)
 		{
 			if (obj == null)
-				return null;
+				return new byte[]{};
 
 			var formatter = new BinaryFormatter();
-			var stream = new MemoryStream();
-			formatter.Serialize(stream, obj);
+			byte[] streamBytes = {};
+			using (var stream = new MemoryStream())
+			{
+				formatter.Serialize(stream, obj);
+				streamBytes = stream.ToArray();
+			}
 
-			return stream.ToArray();
+			return streamBytes;
 		}
 
 		private void DeployLibraryFiles(AppDomain domain, RelativityFeaturePathService relativityFeaturePathService)
