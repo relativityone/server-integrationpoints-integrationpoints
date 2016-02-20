@@ -97,17 +97,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{
-			this.NativeFileImportService = new NativeFileImportService();
-
-			this.ImportSettings = GetSyncDataImportSettings(fieldMap, options, this.NativeFileImportService);
-
-			var importFieldMap = GetSyncDataImportFieldMap(fieldMap, this.ImportSettings);
-
-			_importService = InitializeImportService(this.ImportSettings, importFieldMap, this.NativeFileImportService);
-
-			_isJobComplete = false;
-			_jobError = null;
-			_rowErrors = new List<KeyValuePair<string, string>>();
+			IntializeImportJob(fieldMap, options);
 
 			bool movedNext = true;
 			IEnumerator<IDictionary<FieldEntry, object>> enumerator = data.GetEnumerator();
@@ -136,34 +126,41 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			_importService.PushBatchIfFull(true);
 
-			bool isJobDone = false;
-			do
-			{
-				lock (_importService)
-				{
-					isJobDone = bool.Parse(_isJobComplete.ToString());
-				}
-				Thread.Sleep(1000);
-			} while (!isJobDone);
+			WaitUntilTheJobIsDone();
 
 			FinalizeSyncData(data, fieldMap, this.ImportSettings);
 		}
 
 		public void SyncData(IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
 		{
+			IntializeImportJob(fieldMap, options);
+
 			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
 			IDataReader sourceReader = new RelativityReaderDecorator(data, fieldMaps);
 
+			_importService.KickOffImport(sourceReader);
+
+			WaitUntilTheJobIsDone();
+		}
+
+
+		private void IntializeImportJob(IEnumerable<FieldMap> fieldMap, string options)
+		{
 			this.NativeFileImportService = new NativeFileImportService();
 
-			this.ImportSettings = GetSyncDataImportSettings(fieldMaps, options, this.NativeFileImportService);
+			this.ImportSettings = GetSyncDataImportSettings(fieldMap, options, this.NativeFileImportService);
 
-			var importFieldMap = GetSyncDataImportFieldMap(fieldMaps, this.ImportSettings);
+			var importFieldMap = GetSyncDataImportFieldMap(fieldMap, this.ImportSettings);
 
 			_importService = InitializeImportService(this.ImportSettings, importFieldMap, this.NativeFileImportService);
 
-			_importService.KickOffImport(sourceReader);
+			_isJobComplete = false;
+			_jobError = null;
+			_rowErrors = new List<KeyValuePair<string, string>>();
+		}
 
+		private void WaitUntilTheJobIsDone()
+		{
 			bool isJobDone = false;
 			do
 			{
