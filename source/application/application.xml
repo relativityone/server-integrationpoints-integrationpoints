@@ -385,7 +385,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-02-16T00:01:44.4945158Z</ExtractionDate>
+  <ExtractionDate>2016-02-22T16:25:39.7287958Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -2405,32 +2405,10 @@
               <Type>0</Type>
             </Category>
             <Category>
-              <CategoryId>1000416</CategoryId>
-              <LayoutArtifactId>1038382</LayoutArtifactId>
-              <Order>10</Order>
-              <Title>Status </Title>
-              <Collapsible>false</Collapsible>
-              <DefaultCollapsed>false</DefaultCollapsed>
-              <TabbedDisplay>0</TabbedDisplay>
-              <ParentCategory xsi:nil="true" />
-              <Type>0</Type>
-            </Category>
-            <Category>
               <CategoryId>1000417</CategoryId>
               <LayoutArtifactId>1038382</LayoutArtifactId>
               <Order>20</Order>
               <Title>Import Scheduling</Title>
-              <Collapsible>false</Collapsible>
-              <DefaultCollapsed>false</DefaultCollapsed>
-              <TabbedDisplay>0</TabbedDisplay>
-              <ParentCategory xsi:nil="true" />
-              <Type>0</Type>
-            </Category>
-            <Category>
-              <CategoryId>1000418</CategoryId>
-              <LayoutArtifactId>1038382</LayoutArtifactId>
-              <Order>30</Order>
-              <Title>Source Connection</Title>
               <Collapsible>false</Collapsible>
               <DefaultCollapsed>false</DefaultCollapsed>
               <TabbedDisplay>0</TabbedDisplay>
@@ -2451,11 +2429,28 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>false</IsReadOnly>
               <LayoutArtifactId>1038382</LayoutArtifactId>
-              <Order>1</Order>
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn xsi:nil="true" />
               <Row>1</Row>
               <Rows>0</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
+              <CategoryId>1000415</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>2</Column>
+              <FieldArtifactId>1038351</FieldArtifactId>
+              <FieldDisplayTypeId>7</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>false</IsReadOnly>
+              <LayoutArtifactId>1038382</LayoutArtifactId>
+              <NameValue>Log Errors</NameValue>
+              <Order>0</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>1</Row>
+              <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
@@ -2468,10 +2463,27 @@
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038382</LayoutArtifactId>
               <NameValue>Overwrite</NameValue>
-              <Order>10</Order>
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>1</Row>
+              <Row>2</Row>
+              <Rows>1</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
+              <CategoryId>1000415</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>2</Column>
+              <FieldArtifactId>1038352</FieldArtifactId>
+              <FieldDisplayTypeId>1</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>false</IsReadOnly>
+              <LayoutArtifactId>1038382</LayoutArtifactId>
+              <NameValue>Email Notification Recipients</NameValue>
+              <Order>0</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>2</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -2484,10 +2496,10 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038382</LayoutArtifactId>
-              <Order>20</Order>
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>1</Row>
+              <Row>3</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -2500,10 +2512,10 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038382</LayoutArtifactId>
-              <Order>30</Order>
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn xsi:nil="true" />
-              <Row>1</Row>
+              <Row>4</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -2511,67 +2523,16 @@
               <CategoryId>1000415</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
-              <FieldArtifactId>1038351</FieldArtifactId>
-              <FieldDisplayTypeId>7</FieldDisplayTypeId>
-              <FullTextFieldHeight xsi:nil="true" />
-              <IsReadOnly>false</IsReadOnly>
-              <LayoutArtifactId>1038382</LayoutArtifactId>
-              <NameValue>Log Errors</NameValue>
-              <Order>40</Order>
-              <PickerViewArtifactId xsi:nil="true" />
-              <RepeatColumn>0</RepeatColumn>
-              <Row>1</Row>
-              <Rows>1</Rows>
-              <ShowNameColumn>true</ShowNameColumn>
-            </LayoutField>
-            <LayoutField>
-              <CategoryId>1000415</CategoryId>
-              <ColSpan>1</ColSpan>
-              <Column>1</Column>
-              <FieldArtifactId>1038352</FieldArtifactId>
+              <FieldArtifactId>1038340</FieldArtifactId>
               <FieldDisplayTypeId>1</FieldDisplayTypeId>
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>false</IsReadOnly>
               <LayoutArtifactId>1038382</LayoutArtifactId>
-              <NameValue>Email Notification Recipients</NameValue>
-              <Order>50</Order>
-              <PickerViewArtifactId xsi:nil="true" />
-              <RepeatColumn>0</RepeatColumn>
-              <Row>1</Row>
-              <Rows>1</Rows>
-              <ShowNameColumn>true</ShowNameColumn>
-            </LayoutField>
-            <LayoutField>
-              <CategoryId>1000416</CategoryId>
-              <ColSpan>1</ColSpan>
-              <Column>1</Column>
-              <FieldArtifactId>1038336</FieldArtifactId>
-              <FieldDisplayTypeId>6</FieldDisplayTypeId>
-              <FullTextFieldHeight xsi:nil="true" />
-              <IsReadOnly>true</IsReadOnly>
-              <LayoutArtifactId>1038382</LayoutArtifactId>
-              <NameValue>Next Scheduled Runtime (UTC)</NameValue>
+              <NameValue />
               <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
-              <RepeatColumn>0</RepeatColumn>
-              <Row>1</Row>
-              <Rows>1</Rows>
-              <ShowNameColumn>true</ShowNameColumn>
-            </LayoutField>
-            <LayoutField>
-              <CategoryId>1000416</CategoryId>
-              <ColSpan>1</ColSpan>
-              <Column>1</Column>
-              <FieldArtifactId>1038337</FieldArtifactId>
-              <FieldDisplayTypeId>6</FieldDisplayTypeId>
-              <FullTextFieldHeight xsi:nil="true" />
-              <IsReadOnly>true</IsReadOnly>
-              <LayoutArtifactId>1038382</LayoutArtifactId>
-              <NameValue>Last Runtime (UTC)</NameValue>
-              <Order>1</Order>
-              <PickerViewArtifactId xsi:nil="true" />
-              <RepeatColumn>0</RepeatColumn>
-              <Row>1</Row>
+              <RepeatColumn>1</RepeatColumn>
+              <Row>7</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -2594,42 +2555,71 @@
             <LayoutField>
               <CategoryId>1000417</CategoryId>
               <ColSpan>1</ColSpan>
+              <Column>2</Column>
+              <FieldArtifactId>1038336</FieldArtifactId>
+              <FieldDisplayTypeId>6</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>true</IsReadOnly>
+              <LayoutArtifactId>1038382</LayoutArtifactId>
+              <NameValue>Next Scheduled Runtime (UTC)</NameValue>
+              <Order>0</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>1</Row>
+              <Rows>1</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
+              <CategoryId>1000417</CategoryId>
+              <ColSpan>1</ColSpan>
               <Column>1</Column>
               <FieldArtifactId>1038343</FieldArtifactId>
               <FieldDisplayTypeId>1</FieldDisplayTypeId>
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038382</LayoutArtifactId>
-              <Order>10</Order>
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn xsi:nil="true" />
-              <Row>1</Row>
+              <Row>2</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
             <LayoutField>
-              <CategoryId>1000418</CategoryId>
+              <CategoryId>1000417</CategoryId>
               <ColSpan>1</ColSpan>
-              <Column>1</Column>
-              <FieldArtifactId>1038340</FieldArtifactId>
-              <FieldDisplayTypeId>1</FieldDisplayTypeId>
+              <Column>2</Column>
+              <FieldArtifactId>1038337</FieldArtifactId>
+              <FieldDisplayTypeId>6</FieldDisplayTypeId>
               <FullTextFieldHeight xsi:nil="true" />
-              <IsReadOnly>false</IsReadOnly>
+              <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038382</LayoutArtifactId>
+              <NameValue>Last Runtime (UTC)</NameValue>
               <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
-              <RepeatColumn xsi:nil="true" />
-              <Row>1</Row>
+              <RepeatColumn>1</RepeatColumn>
+              <Row>2</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
           </LayoutFields>
           <LayoutTexts />
-          <LayoutViews />
+          <LayoutViews>
+            <LayoutView>
+              <ConnectorFieldArtifactId>1038350</ConnectorFieldArtifactId>
+              <LayoutArtifactId>1038382</LayoutArtifactId>
+              <LinkViewArtifactId>1038379</LinkViewArtifactId>
+              <Order>21</Order>
+              <RenderLinksInPopup>false</RenderLinksInPopup>
+              <ViewArtifactId>1038379</ViewArtifactId>
+              <CategoryID xsi:nil="true" />
+              <Title>Status</Title>
+            </LayoutView>
+          </LayoutViews>
           <Name>Integration Point Details</Name>
           <Notes />
           <Order>10</Order>
-          <ApplicationVersion>0.0.0.1</ApplicationVersion>
+          <ApplicationVersion>2.0.0.3</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Integration Point</Name>
@@ -6064,8 +6054,8 @@
     </Object>
   </Objects>
   <ParentTabs />
-  <RelativityVersion>9.3.215.2</RelativityVersion>
-  <Version>2.0.0.1</Version>
+  <RelativityVersion>9.3.321.1</RelativityVersion>
+  <Version>2.0.0.3</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>30db7baa-93da-4227-bdb1-e3df9e8edc72</OriginSignature>
   <MasterScripts />
@@ -6095,7 +6085,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.1</ApplicationVersion>
+      <ApplicationVersion>2.0.0.3</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038277</ArtifactId>
@@ -6106,7 +6096,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.1</ApplicationVersion>
+      <ApplicationVersion>2.0.0.3</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038278</ArtifactId>
@@ -6117,7 +6107,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.1</ApplicationVersion>
+      <ApplicationVersion>2.0.0.3</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038279</ArtifactId>
@@ -6128,7 +6118,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.1</ApplicationVersion>
+      <ApplicationVersion>2.0.0.3</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038393</ArtifactId>
@@ -6139,7 +6129,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.1</ApplicationVersion>
+      <ApplicationVersion>2.0.0.3</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />
