@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			
 			console.ButtonList.Add(new ConsoleButton
 				{
-					DisplayText = "Import Now",
+					DisplayText = "Run Now",
 					RaisesPostBack = false,
 					Enabled = isEnabled,
 					OnClickEvent = "IP.importNow(" + this.ActiveArtifact.ArtifactID + "," + this.Application.ArtifactID + ")",
