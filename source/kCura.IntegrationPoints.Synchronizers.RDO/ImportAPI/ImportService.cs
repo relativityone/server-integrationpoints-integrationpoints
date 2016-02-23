@@ -94,7 +94,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			ImportBulkArtifactJob importJob = _importAPI.NewObjectImportJob(Settings.ArtifactTypeId);
 			importJob.SourceData.SourceData = dataReader;
-
 			importJob.Settings.ArtifactTypeId = Settings.ArtifactTypeId;
 			importJob.Settings.AuditLevel = Settings.AuditLevel;
 			importJob.Settings.CaseArtifactId = Settings.CaseArtifactId;
@@ -275,8 +274,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		private bool ShouldProcessError(JobReport.RowError error)
 		{
-			if (this.Settings.OverwriteMode == OverwriteModeEnum.Overlay
-	&& error.Message.Contains("no document to overwrite"))
+			if (this.Settings.OverwriteMode == OverwriteModeEnum.Overlay && error.Message.Contains("no document to overwrite"))
 			{
 				//skip
 				return false;

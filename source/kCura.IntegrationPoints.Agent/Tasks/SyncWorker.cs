@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (AuthenticationException e)
 			{
-				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, string.Empty, e.Message);
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, string.Empty, e.Message, e.StackTrace);
 			}
 			catch (Exception ex)
 			{
@@ -282,7 +282,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (Exception ex)
 			{
-				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyUniqueIdentifier", ex.Message);
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyUniqueIdentifier", ex.Message, ex.StackTrace);
 			}
 		}
 	}

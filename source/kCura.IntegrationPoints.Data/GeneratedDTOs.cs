@@ -510,6 +510,19 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(JobHistoryErrorFieldGuids.Error), value);
 			}
 		}
+
+		[DynamicField(JobHistoryErrorFields.StackTrace, JobHistoryErrorFieldGuids.StackTrace, FieldTypes.LongText)]
+		public string StackTrace
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(JobHistoryErrorFieldGuids.StackTrace));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(JobHistoryErrorFieldGuids.StackTrace), value);
+			}
+		}
 		[DynamicField(JobHistoryErrorFields.TimestampUTC, JobHistoryErrorFieldGuids.TimestampUTC, FieldTypes.Date)]
 		public DateTime? TimestampUTC
 		{

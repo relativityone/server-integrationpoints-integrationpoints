@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			if (IntegrationPoint.LogErrors.GetValueOrDefault(false))
 			{
-				AddError(ErrorTypeChoices.JobHistoryErrorItem, documentIdentifier, errorMessage);
+				AddError(ErrorTypeChoices.JobHistoryErrorItem, documentIdentifier, errorMessage, errorMessage);
 			}
 		}
 
@@ -78,17 +78,17 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void AddError(Relativity.Client.Choice errorType, Exception ex)
 		{
-			AddError(errorType, string.Empty, GenerateErrorMessage(ex));
+			AddError(errorType, string.Empty, ex.Message, GenerateErrorMessage(ex));
 		}
 
-		
-
-		public void AddError(Relativity.Client.Choice errorType, string documentIdentifier, string errorMessage)
+		public void AddError(Relativity.Client.Choice errorType, string documentIdentifier, string errorMessage, string stackTrace)
 		{
 			lock (_jobHistoryErrorList)
 			{
 				if (this.JobHistory != null && this.JobHistory.ArtifactId > 0)
 				{
+					DateTime now = DateTime.UtcNow;
+
 					JobHistoryError jobHistoryError = new JobHistoryError();
 					jobHistoryError.ParentArtifactId = this.JobHistory.ArtifactId;
 					jobHistoryError.JobHistory = this.JobHistory.ArtifactId;
@@ -96,7 +96,8 @@ namespace kCura.IntegrationPoints.Core.Services
 					jobHistoryError.ErrorType = errorType;
 					jobHistoryError.SourceUniqueID = documentIdentifier;
 					jobHistoryError.Error = errorMessage;
-					jobHistoryError.TimestampUTC = DateTime.UtcNow;
+					jobHistoryError.StackTrace = stackTrace;
+					jobHistoryError.TimestampUTC = now;
 
 					_jobHistoryErrorList.Add(jobHistoryError);
 				}
