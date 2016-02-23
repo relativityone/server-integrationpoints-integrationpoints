@@ -28,13 +28,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			for (int i = 0; i < mappingFields.Length; i++)
 			{
 				FieldMap map = mappingFields[i];
-				_targetNameToSourceIdentifier[map.DestinationField.ActualName] = map.SourceField.FieldIdentifier;
-				_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = map.DestinationField.ActualName;
-
-				// there should be only one, but the existing model of data structure are allowing multiple identifier fields.
-				if (map.DestinationField.IsIdentifier)
+				if (map.DestinationField != null && map.SourceField != null)
 				{
-					_identifiers.Add(map.DestinationField.ActualName);
+					_targetNameToSourceIdentifier[map.DestinationField.ActualName] = map.SourceField.FieldIdentifier;
+					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = map.DestinationField.ActualName;
+
+					// there should be only one, but the existing model of data structure are allowing multiple identifier fields.
+					if (map.DestinationField.IsIdentifier)
+					{
+						_identifiers.Add(map.DestinationField.ActualName);
+					}
 				}
 			}
 		}
