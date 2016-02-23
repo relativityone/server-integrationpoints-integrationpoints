@@ -161,7 +161,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			Assert.IsTrue(decorator.Read());
 			Assert.IsTrue(decorator.Read());
 
-			Assert.Throws<Exception>(() => { int x = (int) decorator[0]; }, "Identifier["+ _DestinationColumn0Name + "] must have a value.");
+			Assert.Throws<IndexOutOfRangeException>(() => { int x = (int) decorator[0]; }, "Identifier["+ _DestinationColumn0Name + "] must have a value.");
 		}
 
 		[Test]
