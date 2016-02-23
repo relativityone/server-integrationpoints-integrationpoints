@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
 	/// <summary>
 	/// The objective of this class is to allow dynamic reading of sources to destination in import api.
-	/// NOTE : The assumption is that the column names are artifact id of the fields due to the prior imprementation of the framework.
+	/// NOTE : The assumption is that the column names are artifact id of the fields due to the prior implementation of the framework.
 	/// </summary>
 	public class RelativityReaderDecorator : IDataReader
 	{
@@ -187,6 +187,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		public string GetName(int i)
 		{
+			if (FieldCount <= i)
+			{
+				throw new IndexOutOfRangeException(String.Format("Ordinal [{0}] does not exist in the data table", i));
+			}
 			string sourceName =  _source.GetName(i);
 			return _sourceIdentifierToTargetName[sourceName];
 		}
