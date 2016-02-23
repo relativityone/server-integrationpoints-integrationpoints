@@ -155,6 +155,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string JobHistory = @"JobHistory";
 		public const string SourceUniqueID = @"Source Unique ID";
 		public const string Error = @"Error";
+		public const string StackTrace = @"StackTrace";
 		public const string TimestampUTC = @"Timestamp (UTC)";
 		public const string ErrorType = @"Error Type";
 		public const string Name = @"Name";
@@ -165,6 +166,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string JobHistory = @"8b747b91-0627-4130-8e53-2931ffc4135f";
 		public const string SourceUniqueID = @"5519435e-ee82-4820-9546-f1af46121901";
 		public const string Error = @"4112b894-35b0-4e53-ab99-c9036d08269d";
+		public const string StackTrace = "0353DBDE-9E00-4227-8A8F-4380A8891CFF";
 		public const string TimestampUTC = @"b9cba772-e7c9-493e-b7f8-8d605a6bfe1f";
 		public const string ErrorType = @"eeffa5d3-82e3-46f8-9762-b4053d73f973";
 		public const string Name = @"84e757cc-9da2-435d-b288-0c21ec589e66";

@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				object result = _source[sourceName];
 				if ((result == null || result == DBNull.Value) && _identifiers.Contains(name))
 				{
-					throw new Exception(String.Format("Identifier[{0}] must have a value.", name));
+					throw new IndexOutOfRangeException(String.Format("Identifier[{0}] must have a value.", name));
 				}
 				return result;
 			}
