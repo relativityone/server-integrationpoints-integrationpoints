@@ -28,7 +28,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			for (int i = 0; i < mappingFields.Length; i++)
 			{
 				FieldMap map = mappingFields[i];
-				if (map.DestinationField != null && map.SourceField != null)
+				if (map.FieldMapType == FieldMapTypeEnum.NativeFilePath)
+				{
+					const string nativeFileDestinationField = "NATIVE_FILE_PATH_001";
+					_targetNameToSourceIdentifier[nativeFileDestinationField] = map.SourceField.FieldIdentifier;
+					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = nativeFileDestinationField;
+				}
+				else if (map.DestinationField != null && map.SourceField != null)
 				{
 					_targetNameToSourceIdentifier[map.DestinationField.ActualName] = map.SourceField.FieldIdentifier;
 					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = map.DestinationField.ActualName;
@@ -46,9 +52,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			get
 			{
-				object result = null;
+				if (_targetNameToSourceIdentifier.ContainsKey(name) == false)
+				{
+					throw new IndexOutOfRangeException(String.Format("{0} does not exist in the data table", name));
+				}
 				string sourceName = _targetNameToSourceIdentifier[name];
-				result = _source[sourceName];
+				object result = _source[sourceName];
 				if ((result == null || result == DBNull.Value) && _identifiers.Contains(name))
 				{
 					throw new Exception(String.Format("Identifier[{0}] must have a value.", name));
@@ -184,8 +193,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		public int GetOrdinal(string name)
 		{
-			string sourceIdentifier = _targetNameToSourceIdentifier[name];
-			return _source.GetOrdinal(sourceIdentifier);
+			if (_targetNameToSourceIdentifier.ContainsKey(name))
+			{
+				string sourceIdentifier = _targetNameToSourceIdentifier[name];
+				return _source.GetOrdinal(sourceIdentifier);
+			}
+			throw new IndexOutOfRangeException(String.Format("{0} does not exist in the data table", name));
 		}
 
 		public DataTable GetSchemaTable()
