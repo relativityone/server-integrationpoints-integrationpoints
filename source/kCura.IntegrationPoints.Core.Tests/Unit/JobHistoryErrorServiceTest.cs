@@ -34,10 +34,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			Assert.AreEqual(2, errors.Count);
 			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorJob.Name, errors[0].ErrorType.Name);
 			Assert.AreEqual("Fake job error.", errors[0].Error);
-			Assert.AreEqual("stack trace", errors[0].StackTrace);
+			Assert.AreEqual(null, errors[0].StackTrace);
 			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorItem.Name, errors[1].ErrorType.Name);
 			Assert.AreEqual("Fake item error.", errors[1].Error);
-			Assert.AreEqual(null, errors[0].StackTrace);
+			Assert.AreEqual("stack trace", errors[1].StackTrace);
 		}
 
 		[Test]
