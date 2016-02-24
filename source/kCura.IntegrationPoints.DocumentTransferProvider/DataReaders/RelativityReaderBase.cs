@@ -1,29 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
-using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.Core.Services.RDO;
+using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
 	public abstract class RelativityReaderBase : IDataReader
 	{
+		protected readonly IRDORepository RDORepository;
+		protected readonly Query ObjectQuery;
 		protected int ReadEntriesCount;
-		protected QueryResultSet<Document> CurrentQueryResult;
-		protected IEnumerator<Result<Document>> Enumerator;
+		protected ObjectQueryResutSet CurrentQueryResultSet;
+		protected IEnumerator<QueryDataItemResult> Enumerator;
 		protected bool ReaderOpen;
-		protected Document CurrentDocument;
-		protected readonly IRelativityClientAdaptor RelativityClient;
+		protected QueryDataItemResult CurrentItemResult;
 		protected readonly DataTable SchemaDataTable;
 
-		protected RelativityReaderBase(IRelativityClientAdaptor relativityClient, DataColumn[] columns)
+		protected RelativityReaderBase(IRDORepository rdoRepository, Query objectQuery, DataColumn[] columns)
 		{
+			RDORepository = rdoRepository;
+			ObjectQuery = objectQuery;
 			SchemaDataTable = new DataTable();
 			SchemaDataTable.Columns.AddRange(columns);
 
-			RelativityClient = relativityClient;
 			ReaderOpen = true;
 		}
 
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				Enumerator.Dispose();
 				Enumerator = null;
 			}
-			CurrentDocument = null;
+			CurrentItemResult = null;
 		}
 
 		public virtual bool GetBoolean(int i)
@@ -200,19 +200,19 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				}
 			}
 		}
-		protected void FetchDataToRead(Func<QueryResultSet<Document>> functionToGetDocuments)
+		protected void FetchDataToRead(Func<ObjectQueryResutSet> functionToGetDocuments)
 		{
 			try
 			{
 				// Request the saved search documents
-				CurrentQueryResult = functionToGetDocuments();
-				if (!CurrentQueryResult.Success)
+				CurrentQueryResultSet = functionToGetDocuments();
+				if (!CurrentQueryResultSet.Success)
 				{
 					ReaderOpen = false; // TODO: handle errors?
 				}
 				else
 				{
-					Enumerator = CurrentQueryResult.Results.GetEnumerator();
+					Enumerator = CurrentQueryResultSet.Data.DataResults.GetEnumerator() as IEnumerator<QueryDataItemResult>;
 				}
 			}
 			catch (Exception ex)
@@ -237,20 +237,23 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			// Get next result
 			if (Enumerator != null && Enumerator.MoveNext())
 			{
-				Result<Document> result = Enumerator.Current;
-				CurrentDocument = result != null ? result.Artifact : null;
-				ReaderOpen = CurrentDocument != null;
+				QueryDataItemResult result = Enumerator.Current;
+				CurrentItemResult = result;
+				ReaderOpen = CurrentItemResult != null;
 				ReadEntriesCount++;
 			}
-			else if (CurrentQueryResult.TotalCount - ReadEntriesCount > 0 && String.IsNullOrWhiteSpace(CurrentQueryResult.QueryToken) == false)
+			else if (CurrentQueryResultSet.Data.TotalResultCount - ReadEntriesCount > 0 && String.IsNullOrWhiteSpace(CurrentQueryResultSet.Data.QueryToken) == false)
 			{
-				FetchDataToRead(() => RelativityClient.ExecuteSubSetOfDocumentQuery(CurrentQueryResult.QueryToken, ReadEntriesCount, Shared.Constants.QUERY_BATCH_SIZE));
+				FetchDataToRead(
+					() => 
+						RDORepository.RetrieveAsync(ObjectQuery, CurrentQueryResultSet.Data.QueryToken, ReadEntriesCount, Shared.Constants.QUERY_BATCH_SIZE).Result);
+
 				return Read();
 			}
 			else
 			{
 				// No results returned, close the reader
-				CurrentDocument = null;
+				CurrentItemResult = null;
 				ReaderOpen = false;
 			}
 
@@ -261,6 +264,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		/// This method is used to define how the class can generate the initial result.
 		/// </summary>
 		/// <returns></returns>
-		protected abstract QueryResultSet<Document> ExecuteQueryToGetInitialResult();
+		protected abstract ObjectQueryResutSet ExecuteQueryToGetInitialResult();
 	}
 }

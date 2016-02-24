@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public Choice GenerateStatus(Guid batchId)
 		{
-			var query = new Query<RDO>();
+			var query = new Query<Relativity.Client.DTOs.RDO>();
 			query.Fields = new List<FieldValue> { new FieldValue(Guid.Parse(JobHistoryFieldGuids.RecordsWithErrors)) };
 			query.Condition = new TextCondition(Guid.Parse(JobHistoryFieldGuids.BatchInstance), TextConditionEnum.EqualTo, batchId.ToString());
 			var result = _rsapiService.JobHistoryLibrary.Query(query).First();

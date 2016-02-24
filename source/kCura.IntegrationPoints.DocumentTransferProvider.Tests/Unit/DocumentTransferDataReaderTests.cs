@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Core.Services.RDO;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers;
@@ -10,14 +11,14 @@ using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
-using Artifact = kCura.Relativity.Client.Artifact;
+using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 {
 	[TestFixture]
 	public class DocumentTransferDataReaderTests
 	{
-		private IRelativityClientAdaptor _relativityClientAdaptor;
+		private IRDORepository _rdoRepository;
 		private IDataReader _instance;
 
 		const int _DOCUMENT_ARTIFACTID = 123423;
@@ -27,7 +28,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_relativityClientAdaptor = NSubstitute.Substitute.For<IRelativityClientAdaptor>();
+			_rdoRepository = NSubstitute.Substitute.For<IRDORepository>();
 		}
 
 		#region Read
@@ -35,10 +36,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void Read_FirstRead_RunsSavedSearch_ReturnsTrue()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			}, new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -49,7 +50,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			//_rdoRepository.RetrieveAsync(Arg.Any<Query<Document>>()).Returns(resultSet);
 
 			// Act
 			bool result = _instance.Read();
@@ -63,10 +64,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void Read_FirstRead_RunsSavedSearch_NoResults_ReturnsFalse()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>()); ;
+			}, new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -74,7 +75,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Results = new List<Result<Document>>()
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			////_rdoRepository.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
 
 			// Act
 			bool result = _instance.Read();
@@ -88,10 +89,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void Read_FirstRead_RunsSavedSearch_RequestFails_ReturnsFalse()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -99,7 +100,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Results = new List<Result<Document>>()
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			////_rdoRepository.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
 
 			// Act
 			bool result = _instance.Read();
@@ -113,12 +114,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void Read_FirstRead_RunsSavedSearch_RequestFailsWithException_ReturnsFalse()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Throws(new Exception());
+			//_rdoRepository.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Throws(new Exception());
 
 			// Act
 			bool result = _instance.Read();
@@ -132,10 +133,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void Read_ReadAllResults_GoldFlow()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -147,7 +148,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			//_rdoRepository.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -165,10 +166,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void Read_ReadSomeResultsThenClose_GoldFlow()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -180,7 +181,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			//_rdoRepository.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -197,7 +198,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void Read_NoFields_DoesNotFail()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new FieldEntry[0], new List<Artifact>());
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new FieldEntry[0],new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -205,27 +206,27 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Results = new List<Result<Document>>()
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			bool result = _instance.Read();
 
 			// Assert
-			_relativityClientAdaptor
-				.Received(1)
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
+//			_rdoRepository
+//				.Received(1)
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
 		}
 
 		[Test]
 		public void Read_NoDocumentIds_DoesNotFail()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new int[0], new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new int[0], new[]
 			{
 				new FieldEntry() {DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -233,24 +234,24 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Results = new List<Result<Document>>()
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			bool result = _instance.Read();
 
-			// Assert
-			_relativityClientAdaptor
-				.Received(1)
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
+//			// Assert
+//			_rdoRepository
+//				.Received(1)
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
 		}
 
 		[Test]
 		public void Read_NoDocumentIdsNoFields_DoesNotFail()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new int[0], new FieldEntry[0], new List<Artifact>());
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new int[0], new FieldEntry[0],new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -258,17 +259,17 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Results = new List<Result<Document>>()
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			bool result = _instance.Read();
 
 			// Assert
-			_relativityClientAdaptor
-				.Received(1)
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
+//			_rdoRepository
+//				.Received(1)
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
 		}
 
 		#endregion
@@ -278,10 +279,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void IsDBNull_ResultNotNull_ReturnsFalse()
 		{
 			// Arrange
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
@@ -307,8 +308,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+			//_rdoRepository.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -323,10 +324,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void GetFieldType_ReturnsString()
 		{
 			// Arrange
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new	List<Artifact>());
+			}, new QueryDataItemResult[0]);
 
 			// Act
 			Type result = _instance.GetFieldType(0);
@@ -339,10 +340,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void GetFieldTypeName_ReturnsString()
 		{
 			// Arrange
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			// Act
 			string result = _instance.GetDataTypeName(0);
@@ -355,10 +356,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void NextResult_ReturnsFalse()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			// Act
 			bool result = _instance.NextResult();
@@ -371,10 +372,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void Depth_ReturnsZero()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			// Act
 			int result = _instance.Depth;
@@ -387,10 +388,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void RecordsAffected_ReturnsNegativeOne()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			// Act
 			int result = _instance.RecordsAffected;
@@ -403,10 +404,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void GetName_FieldExists_LookUpSucceeds()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -418,7 +419,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			//_rdoRepository.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
 
 			// Act
 			string fieldName = _instance.GetName(0);
@@ -431,10 +432,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void GetName_ObjetIdentifierTextInFieldExists_LookUpSucceeds()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName" + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -446,7 +447,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			//_rdoRepository.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
 
 			// Act
 			string fieldName = _instance.GetName(0);
@@ -459,10 +460,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void GetOrdinal_FieldExists_LookUpSucceeds()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -474,7 +475,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			//_rdoRepository.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
 
 			// Act
 			int ordinal = _instance.GetOrdinal("123");
@@ -487,10 +488,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void GetOrdinal_ObjetIdentifierTextInFieldExists_LookUpSucceeds()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName" + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -502,7 +503,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			//_rdoRepository.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
 
 			// Act
 			int ordinal = _instance.GetOrdinal("123");
@@ -515,10 +516,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void ThisAccessor_ObjetIdentifierTextInFieldExists_LookUpSucceeds()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName" + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -530,7 +531,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			//_rdoRepository.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -544,10 +545,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void ThisAccessor_FieldExists_LookUpSucceeds()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -559,7 +560,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
+			//_rdoRepository.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -573,11 +574,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void FieldCount_ReturnsCorrectCount()
 		{
 			// Arrange	
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
 				new FieldEntry() { DisplayName = "DispNameTwo", FieldIdentifier = "1233"}
-			} , new List<Artifact>());
+			} ,new QueryDataItemResult[0]);
 
 			// Act
 			int fieldCount = _instance.FieldCount;
@@ -590,11 +591,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void Dispose_BeforeRead_DoesNotExcept()
 		{
 			// Arrange
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
 				new FieldEntry() { DisplayName = "DispNameTwo", FieldIdentifier = "1233"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			// Act
 			bool exceptionThrown = false;
@@ -614,11 +615,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void Dispose_WhileReaderIsOpen_DoesNotExcept()
 		{
 			// Arrange
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { 1 }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
 				new FieldEntry() { DisplayName = "DispNameTwo", FieldIdentifier = "1233"}
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			// Act
 			bool exceptionThrown = false;
@@ -640,10 +641,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange
 			const int documentArtifactId = 123423;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -654,9 +655,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -672,10 +673,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange
 			const int documentArtifactId = 123423;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
-			}, new List<Artifact>()); 
+			},new QueryDataItemResult[0]); 
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -686,9 +687,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -704,10 +705,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange
 			const int documentArtifactId = 123423;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
-			}, new	List<Artifact>());
+			}, new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -718,9 +719,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -728,9 +729,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			_instance.Read();
 
 			// Assert
-			_relativityClientAdaptor
-				.Received(1)
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
+//			_rdoRepository
+//				.Received(1)
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
 		}
 
 		[Test]
@@ -738,10 +739,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange
 			const int documentArtifactId = 123423;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -752,9 +753,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -783,10 +784,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			const int documentArtifactId = 123423;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -811,11 +812,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			const int documentArtifactId = 123423;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
 				new FieldEntry() { DisplayName = "DispNameTwo", FieldIdentifier = "456"},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -840,7 +841,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			const int documentArtifactId = 123423;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new FieldEntry[0], new List<Artifact>());
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new FieldEntry[0],new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -865,7 +866,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			const int documentArtifactId = 123423;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new int[] { }, new FieldEntry[0], new List<Artifact>());
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new int[] { }, new FieldEntry[0],new QueryDataItemResult[0]);
 
 			ResultSet<Document> resultSet = new ResultSet<Document>
 			{
@@ -895,10 +896,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			string value = "999";
 
@@ -924,9 +925,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -943,10 +944,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			Int64 value = 999;
 
@@ -972,9 +973,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -991,10 +992,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			Int16 value = 999;
 
@@ -1020,9 +1021,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -1039,10 +1040,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			Int32 value = 999;
 
@@ -1068,9 +1069,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -1087,10 +1088,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			Guid value = Guid.NewGuid();
 
@@ -1116,9 +1117,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -1135,10 +1136,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			float value = 999;
 
@@ -1164,9 +1165,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -1183,10 +1184,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			double value = 999;
 
@@ -1212,9 +1213,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -1231,10 +1232,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			Decimal value = 999;
 
@@ -1260,9 +1261,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -1279,10 +1280,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			DateTime value = DateTime.Now;
 
@@ -1308,9 +1309,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -1327,10 +1328,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			char value = 'v';
 
@@ -1356,9 +1357,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -1375,10 +1376,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			byte value = 1;
 
@@ -1404,9 +1405,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -1423,10 +1424,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			bool value = true;
 
@@ -1452,9 +1453,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -1473,17 +1474,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int fieldIdentifier = 123;
 			const int longTextFieldArtifactid = 324;
 
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
 			},
-			new List<Artifact>()
-			{
-				new Artifact()
-				{
-					ArtifactID = longTextFieldArtifactid
-				}
-			});
+			new QueryDataItemResult[0]);
 
 			bool value = true;
 
@@ -1509,9 +1504,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -1638,9 +1633,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			InitializeReaderToReadLongText(extractedTextField, longTextFieldIdentifier);
 
-			_relativityClientAdaptor
-				.ReadDocument(Arg.Any<Document>())
-				.Throws<Exception>();
+//			_rdoRepository
+//				.ReadDocument(Arg.Any<Document>())
+//				.Throws<Exception>();
 
 			// Act
 			_instance.Read();
@@ -1651,9 +1646,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			InitializeReaderToReadLongText(extractedTextField, longTextFieldIdentifier);
 
-			_relativityClientAdaptor
-				.ReadDocument(Arg.Any<Document>())
-				.Returns(mockReadResult);
+//			_rdoRepository
+//				.ReadDocument(Arg.Any<Document>())
+//				.Returns(mockReadResult);
 			// Act
 			_instance.Read();
 			return _instance.GetValue(1);
@@ -1661,18 +1656,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 		private void InitializeReaderToReadLongText(string extractedTextField, int longTextFieldIdentifier)
 		{
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { _DOCUMENT_ARTIFACTID }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { _DOCUMENT_ARTIFACTID }, new[]
 			{
 				new FieldEntry() { DisplayName = _FIELD_NAME, FieldIdentifier = _FIELD_IDENTIFIER.ToString()},
 				new FieldEntry() { DisplayName = extractedTextField, FieldIdentifier = longTextFieldIdentifier.ToString()}
 			},
-			new List<Artifact>()
-			{
-					new Artifact()
-					{
-						ArtifactID = longTextFieldIdentifier
-					}
-			});
+			new QueryDataItemResult[0]);
 
 			ResultSet<Document> initialRead = new ResultSet<Document>
 			{
@@ -1696,9 +1685,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(initialRead);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(initialRead);
 		}
 
 		#endregion
@@ -1712,10 +1701,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			bool value = true;
 
@@ -1741,9 +1730,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -1772,10 +1761,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			bool value = true;
 
@@ -1801,9 +1790,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -1832,10 +1821,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			bool value = true;
 
@@ -1861,9 +1850,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
@@ -1892,10 +1881,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			const int documentArtifactId = 123423;
 			const string fieldName = "DispName";
 			const int fieldIdentifier = 123;
-			_instance = new DocumentTranfserDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
+			_instance = new DocumentTranfserDataReader(_rdoRepository, new[] { documentArtifactId }, new[]
 			{
 				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-			}, new List<Artifact>());
+			},new QueryDataItemResult[0]);
 
 			bool value = true;
 
@@ -1921,9 +1910,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-				.Returns(resultSet);
+//			_rdoRepository
+//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
+//				.Returns(resultSet);
 
 			// Act
 			_instance.Read();
