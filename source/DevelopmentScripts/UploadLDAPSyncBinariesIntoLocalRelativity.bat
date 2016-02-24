@@ -8,13 +8,12 @@ if not "%root%" == "" (
 SET dllUploader=%LDAPSyncPath%\DevelopmentScripts\ResourceFileUploader\ResourceFileUploader.exe
 SET BUILDPATH=%LDAPSyncPath%\bin
 
-SET CASEID=1014823
-
 if "%1" == "/?" goto help
 if "%1" == "/-?" goto help
+if "%1" == "" goto help
 
 if not "%1" == "" (
-	Set "CASEID=%1"
+	SET "CASEID=%1"
 )
 
 SET BUILDCONFIGPATH=%BUILDPATH%
