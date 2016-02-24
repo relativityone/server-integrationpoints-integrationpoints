@@ -7,7 +7,6 @@ using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.LDAPProvider;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.IntegrationPoints.Web.Toggles;

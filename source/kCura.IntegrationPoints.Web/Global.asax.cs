@@ -14,7 +14,6 @@ using Castle.Windsor.Installer;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.Relativity.Client;
-using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Relativity.API;
