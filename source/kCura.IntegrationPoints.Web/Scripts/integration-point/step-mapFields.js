@@ -596,6 +596,19 @@ ko.validation.insertValidationMessage = function (element) {
 							fieldMapType: "NativeFilePath"
 						});
 					}
+					if (this.model.UseFolderPathInformation() == "true") {
+						var folderPathField = "";
+						for (var i = 0; i < allSourceField.length; i++) {
+							if (allSourceField[i].name === this.model.FolderPathSourceFieldName()) {
+								folderPathField = allSourceField[i];
+							}
+						}
+						map.push({
+							sourceField: _createEntry(folderPathField),
+							destinationField: {},
+							fieldMapType: "FolderPathInformation"
+						});
+					}
 
 					// pushing create folder setting
 					_destination.UseFolderPathInformation = this.model.UseFolderPathInformation();

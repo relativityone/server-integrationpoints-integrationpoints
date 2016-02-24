@@ -308,6 +308,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				fieldMap.FieldMapType != FieldMapTypeEnum.Parent
 				&&
 				fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath
+				&&
+				fieldMap.FieldMapType != FieldMapTypeEnum.FolderPathInformation
 				);
 		}
 

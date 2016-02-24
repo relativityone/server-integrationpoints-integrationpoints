@@ -34,6 +34,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 					_targetNameToSourceIdentifier[nativeFileDestinationField] = map.SourceField.FieldIdentifier;
 					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = nativeFileDestinationField;
 				}
+				else if (map.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
+				{
+					const string folderPathInformationField = "virtual path";
+					_targetNameToSourceIdentifier[folderPathInformationField] = map.SourceField.FieldIdentifier;
+					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = folderPathInformationField;
+				}
 				else if (map.DestinationField != null && map.SourceField != null)
 				{
 					_targetNameToSourceIdentifier[map.DestinationField.ActualName] = map.SourceField.FieldIdentifier;
