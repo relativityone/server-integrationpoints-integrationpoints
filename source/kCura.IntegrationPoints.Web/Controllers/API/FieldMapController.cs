@@ -8,7 +8,6 @@ using System.Web.Http;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {

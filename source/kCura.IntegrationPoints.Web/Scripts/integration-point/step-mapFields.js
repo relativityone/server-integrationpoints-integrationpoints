@@ -181,6 +181,23 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
 
+		this.UseFolderPathInformation = ko.observable(model.UseFolderPathInformation || "false");
+		this.FolderPathSourceFieldName = ko.observable(model.FolderPathSourceFieldName || "utf-16").extend(
+		{
+			required: {
+				onlyIf: function () {
+					return self.UseFolderPathInformation() === 'true';
+				}
+			}
+		});
+
+		this.FolderPathFields = ko.observableArray([]);
+		if (self.FolderPathFields.length === 0) {
+			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetFolderPathFields') }).then(function (result) {
+				self.FolderPathFields(result);
+			});
+		}
+
 		this.ExtractedTextFieldContainsFilePath = ko.observable(model.ExtractedTextFieldContainsFilePath || "false");
 		this.ExtractedTextFileEncoding = ko.observable(model.ExtractedTextFileEncoding || "utf-16").extend(
 		{
@@ -438,6 +455,8 @@ ko.validation.insertValidationMessage = function (element) {
 				CustodianManagerFieldContainsLink: model.CustodianManagerFieldContainsLink,
 				importNativeFile: model.importNativeFile,
 				nativeFilePathValue: model.nativeFilePathValue,
+				UseFolderPathInformation: model.UseFolderPathInformation,
+				FolderPathSourceFieldName: model.FolderPathSourceFieldName,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
 				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
 		} || '';
@@ -496,6 +515,8 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.nativeFilePathValue = this.model.nativeFilePathValue();
 			this.returnModel.identifer = this.model.selectedUniqueId();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
+			this.returnModel.UseFolderPathInformation = this.model.UseFolderPathInformation();
+			this.returnModel.FolderPathSourceFieldName = this.model.FolderPathSourceFieldName();
 			this.returnModel.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
 			this.returnModel.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
 
@@ -575,6 +596,10 @@ ko.validation.insertValidationMessage = function (element) {
 							fieldMapType: "NativeFilePath"
 						});
 					}
+
+					// pushing create folder setting
+					_destination.UseFolderPathInformation = this.model.UseFolderPathInformation();
+					_destination.FolderPathSourceFieldName = this.model.FolderPathSourceFieldName();
 
 					// pushing extracted text location setting
 					_destination.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();

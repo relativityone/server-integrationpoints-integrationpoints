@@ -192,6 +192,7 @@
     <Compile Include="ControllerCustomPageService.cs" />
     <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\GetAvailableEncodingsController.cs" />
+    <Compile Include="Controllers\API\GetFolderPathFieldsController.cs" />
     <Compile Include="Controllers\API\RelativityController.cs" />
     <Compile Include="Controllers\API\FieldMapController.cs" />
     <Compile Include="Controllers\API\ImportNowController.cs" />
