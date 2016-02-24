@@ -181,7 +181,7 @@
 	
 	<target name="merge_binaries" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
-			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/targetplatform:v4' />
 			<arg line='/out:"${target.code.directory}\kCura.IntegrationPoints.dll"' />
 			<arg line='/internalize:ilmergeExcludeMain.txt' />
 			<arg line='/log' />
@@ -217,7 +217,7 @@
 
 	<target name="merge_ldap" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
-			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/targetplatform:v4' />
 			<arg line='/out:"${target.code.directory}\kCura.LDAPProvider.dll"' />
 			<arg line='/internalize:ilmergeExcludeLDAP.txt' />
 			<arg line='/log' />
@@ -237,7 +237,7 @@
 
 	<target name="merge_source_provider_installer" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
-			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/targetplatform:v4' />
 			<arg line='/out:"${target.code.directory}\kCura.SourceProviderInstaller.dll"' />
 			<arg line='/internalize:ilmergeExcludeSourceProviderInstaller.txt' />
 			<arg line='/log' />
@@ -264,7 +264,7 @@
 	
 	<target name="merge_documentsTransfer" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
-			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/targetplatform:v4' />
 			<arg line='/out:"${target.code.directory}\kCura.DocumentTransferProvider.dll"' />
 			<arg line='/internalize:excludeDocsTransfer.txt' />
 			<arg line='/log' />
