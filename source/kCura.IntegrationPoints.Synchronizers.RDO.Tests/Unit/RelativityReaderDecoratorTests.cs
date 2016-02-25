@@ -104,7 +104,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 		}
 
 		[Test]
-		public void ReaderDecoratorFieldCountReflexTheFieldsInTheActualReader()
+		public void ReaderDecoratorFieldCountReflectsTheFieldsInTheActualReader()
 		{
 			RelativityReaderDecorator decorator = new RelativityReaderDecorator(_reader, _fieldMaps);
 			Assert.AreEqual(_reader.FieldCount, decorator.FieldCount);

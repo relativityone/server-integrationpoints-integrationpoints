@@ -10,13 +10,13 @@ using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
-	public class DocumentTranfserDataReader : RelativityReaderBase
+	public class DocumentTransferDataReader : RelativityReaderBase
 	{
 		private readonly IEnumerable<int> _documentArtifactIds;
 		private readonly IEnumerable<FieldEntry> _fieldEntries;
 		private readonly HashSet<int> _longTextFieldArtifactIds;
 
-		public DocumentTranfserDataReader(IRelativityClientAdaptor relativityClientAdaptor,
+		public DocumentTransferDataReader(IRelativityClientAdaptor relativityClientAdaptor,
 			IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries,
 			List<Relativity.Client.Artifact> longTextfieldEntries) :
 			base(relativityClientAdaptor, GenerateDataColumnsFromFieldEntries(fieldEntries))

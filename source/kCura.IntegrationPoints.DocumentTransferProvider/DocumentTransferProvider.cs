@@ -126,8 +126,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			{
 				IRelativityClientAdaptor relativityClient = new RelativityClientAdaptor(client);
 
-				List<Artifact> longTextfieldEntries = GetLongTextFields(client, Convert.ToInt32(ArtifactType.Document));
-				return new DocumentTranfserDataReader(relativityClient, entryIds.Select(x => Convert.ToInt32(x)), fields, longTextfieldEntries);
+				List<Artifact> longTextFieldEntries = GetLongTextFields(client, Convert.ToInt32(ArtifactType.Document));
+				return new DocumentTransferDataReader(relativityClient, entryIds.Select(x => Convert.ToInt32(x)), fields, longTextFieldEntries);
 			}
 		}
 
