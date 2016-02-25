@@ -182,7 +182,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
 
 		this.UseFolderPathInformation = ko.observable(model.UseFolderPathInformation || "false");
-		this.FolderPathSourceFieldName = ko.observable(model.FolderPathSourceFieldName || "utf-16").extend(
+		this.FolderPathSourceField = ko.observable(model.FolderPathSourceField).extend(
 		{
 			required: {
 				onlyIf: function () {
@@ -456,7 +456,7 @@ ko.validation.insertValidationMessage = function (element) {
 				importNativeFile: model.importNativeFile,
 				nativeFilePathValue: model.nativeFilePathValue,
 				UseFolderPathInformation: model.UseFolderPathInformation,
-				FolderPathSourceFieldName: model.FolderPathSourceFieldName,
+				FolderPathSourceField: model.FolderPathSourceField,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
 				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
 		} || '';
@@ -516,7 +516,7 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.identifer = this.model.selectedUniqueId();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 			this.returnModel.UseFolderPathInformation = this.model.UseFolderPathInformation();
-			this.returnModel.FolderPathSourceFieldName = this.model.FolderPathSourceFieldName();
+			this.returnModel.FolderPathSourceField = this.model.FolderPathSourceField();
 			this.returnModel.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
 			this.returnModel.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
 
@@ -598,13 +598,22 @@ ko.validation.insertValidationMessage = function (element) {
 					}
 					if (this.model.UseFolderPathInformation() == "true") {
 						var folderPathField = "";
-						for (var i = 0; i < allSourceField.length; i++) {
-							if (allSourceField[i].name === this.model.FolderPathSourceFieldName()) {
-								folderPathField = allSourceField[i];
+						var folderPathFields = this.model.FolderPathFields();
+						for (var i = 0; i < folderPathFields.length; i++) {
+							if (folderPathFields[i].fieldIdentifier === this.model.FolderPathSourceField()) {
+								folderPathField = folderPathFields[i];
 							}
 						}
+						var entry =
+						{
+							displayName: folderPathField.actualName,
+							isIdentifier: "false",
+							fieldIdentifier: folderPathField.fieldIdentifier,
+							isRequired: "false"
+						}
+
 						map.push({
-							sourceField: _createEntry(folderPathField),
+							sourceField: entry,
 							destinationField: {},
 							fieldMapType: "FolderPathInformation"
 						});
@@ -612,7 +621,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 					// pushing create folder setting
 					_destination.UseFolderPathInformation = this.model.UseFolderPathInformation();
-					_destination.FolderPathSourceFieldName = this.model.FolderPathSourceFieldName();
+					_destination.FolderPathSourceField = this.model.FolderPathSourceField();
 
 					// pushing extracted text location setting
 					_destination.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
