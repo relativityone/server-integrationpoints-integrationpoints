@@ -255,6 +255,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		internal virtual IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
 		{
+
 			Guid providerGuid = new Guid(destinationProviderRdo.Identifier);
 			var factory = _appDomainRdoSynchronizerFactoryFactory as GeneralWithCustodianRdoSynchronizerFactory;
 			if (factory != null)

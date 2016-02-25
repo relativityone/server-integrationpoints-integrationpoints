@@ -57,11 +57,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			_context.RsapiService.JobHistoryLibrary.Update(jobHistory);
 		}
 
-		private kCura.Relativity.Client.Choice GetJobStatus()
-		{
-			return null;
-		}
-
 		protected List<FieldValue> GetFields()
 		{
 			return (from field in (BaseRdo.GetFieldMetadata(typeof(Data.JobHistory)).Values).ToList()
