@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			IImportAPI importAPI = null;
 			try
 			{
-				if (RelativityVersion.IsRelativityVersion93OrGreater)
+				if (RelativityVersion.IsRelativityVersion92OrGreater)
 				{
 					string username = _RELATIVITY_BEARER_USERNAME;
 					string token =
