@@ -372,6 +372,21 @@ namespace kCura.IntegrationPoints.Data
 				SetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobStatus), value);
 			}
 		}
+
+		[DynamicField(JobHistoryFields.DestinationWorkspace, JobHistoryFieldGuids.DestinationWorkspace, FieldTypes.FixedLengthText, 400)]
+		public string DestinationWorkspace
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(JobHistoryFieldGuids.DestinationWorkspace));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(JobHistoryFieldGuids.DestinationWorkspace), value);
+			}
+		}
+
+
 		[DynamicField(JobHistoryFields.RecordsImported, JobHistoryFieldGuids.RecordsImported, FieldTypes.WholeNumber)]
 		public int? RecordsImported
 		{

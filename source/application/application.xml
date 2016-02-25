@@ -227,6 +227,11 @@
       <ColumnName>BatchInstance</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1001608</ArtifactViewFieldId>
+      <ArtifactTypeId>1000057</ArtifactTypeId>
+      <ColumnName>DestinationWorkspace</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001564</ArtifactViewFieldId>
       <ArtifactTypeId>1000057</ArtifactTypeId>
       <ColumnName>Edit</ColumnName>
@@ -390,7 +395,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-02-23T21:59:31.4363588Z</ExtractionDate>
+  <ExtractionDate>2016-02-25T23:23:32.8003139Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -4632,6 +4637,58 @@
           <AutoAddChoices>false</AutoAddChoices>
           <ApplicationVersion>0.0.0.1</ApplicationVersion>
         </Field>
+        <Field>
+          <AllowHTML>false</AllowHTML>
+          <ArtifactId>1038395</ArtifactId>
+          <ArtifactViewFieldId>1001608</ArtifactViewFieldId>
+          <AssociativeArtifactTypeId xsi:nil="true" />
+          <Codes />
+          <CodeTypeId xsi:nil="true" />
+          <ConnectorFieldArtifactId xsi:nil="true" />
+          <DisplayName>Destination Workspace</DisplayName>
+          <DisplayValueFalse />
+          <DisplayValueTrue />
+          <FieldArtifactTypeId>1000057</FieldArtifactTypeId>
+          <FieldCategoryId>0</FieldCategoryId>
+          <FieldTypeId>0</FieldTypeId>
+          <FilterType>Search</FilterType>
+          <FormatString />
+          <FriendlyName />
+          <Guids>ff01a766-b494-4f2c-9cbb-10a5ab163b8d</Guids>
+          <Guid>ff01a766-b494-4f2c-9cbb-10a5ab163b8d</Guid>
+          <ImportBehavior xsi:nil="true" />
+          <EnableDataGrid>false</EnableDataGrid>
+          <OverlayBehavior xsi:nil="true" />
+          <IsAdditionalFileField>false</IsAdditionalFileField>
+          <IsArtifactBaseField>false</IsArtifactBaseField>
+          <IsAvailableInChoiceTree>false</IsAvailableInChoiceTree>
+          <IsAvailableToAssociativeObjects>false</IsAvailableToAssociativeObjects>
+          <IsEditable>true</IsEditable>
+          <IsGroupByEnabled>false</IsGroupByEnabled>
+          <IsIndexEnabled>false</IsIndexEnabled>
+          <IsLinked>false</IsLinked>
+          <IsRemovable>true</IsRemovable>
+          <IsRequired>false</IsRequired>
+          <IsSortable>true</IsSortable>
+          <IsVisible>true</IsVisible>
+          <Keywords />
+          <LinkType>false</LinkType>
+          <MaxLength>400</MaxLength>
+          <Notes />
+          <RelationalIndexViewArtifactID xsi:nil="true" />
+          <SourceFieldArtifactId xsi:nil="true" />
+          <UseUnicodeEncoding>true</UseUnicodeEncoding>
+          <Width />
+          <Wrapping>true</Wrapping>
+          <AllowPivot>false</AllowPivot>
+          <AllowGroupBy>false</AllowGroupBy>
+          <AvailableInViewer>false</AvailableInViewer>
+          <PopupPickerView xsi:nil="true" />
+          <FieldTreeView xsi:nil="true" />
+          <SiblingFieldArtifactID xsi:nil="true" />
+          <AutoAddChoices>false</AutoAddChoices>
+          <ApplicationVersion>2.0.0.7</ApplicationVersion>
+        </Field>
       </Fields>
       <Guid>08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9</Guid>
       <KeyWords />
@@ -5182,24 +5239,29 @@
               <Order>1</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001597</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001608</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>2</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001598</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001597</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>3</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001599</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001598</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>4</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001600</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001599</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>5</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001600</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>6</Order>
             </ViewField>
           </ViewFields>
           <ViewOrders>
@@ -5214,7 +5276,7 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>0.0.0.1</ApplicationVersion>
+          <ApplicationVersion>2.0.0.6</ApplicationVersion>
         </View>
         <View>
           <ArtifactId>1038380</ArtifactId>
@@ -6135,7 +6197,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.3.321.1</RelativityVersion>
-  <Version>2.0.0.5</Version>
+  <Version>2.0.0.7</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>30db7baa-93da-4227-bdb1-e3df9e8edc72</OriginSignature>
   <MasterScripts />
@@ -6165,7 +6227,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.5</ApplicationVersion>
+      <ApplicationVersion>2.0.0.7</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038277</ArtifactId>
@@ -6176,7 +6238,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.5</ApplicationVersion>
+      <ApplicationVersion>2.0.0.7</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038278</ArtifactId>
@@ -6187,7 +6249,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.5</ApplicationVersion>
+      <ApplicationVersion>2.0.0.7</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038279</ArtifactId>
@@ -6198,7 +6260,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.5</ApplicationVersion>
+      <ApplicationVersion>2.0.0.7</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038393</ArtifactId>
@@ -6209,7 +6271,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.5</ApplicationVersion>
+      <ApplicationVersion>2.0.0.7</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />
@@ -6300,6 +6362,7 @@
     <Id>1038372</Id>
     <Id>1038373</Id>
     <Id>1038394</Id>
+    <Id>1038395</Id>
   </FieldIds>
   <ChoiceIds>
     <Id>1038345</Id>

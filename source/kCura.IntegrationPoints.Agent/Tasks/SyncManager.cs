@@ -12,8 +12,10 @@ using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -165,7 +167,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					throw new ArgumentNullException("Job must have a Related Object ArtifactID");
 				}
-				var integrationPointID = job.RelatedObjectArtifactID;
+
 				this.IntegrationPoint = _integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 				if (this.IntegrationPoint.SourceProvider == 0)
 				{
@@ -175,6 +177,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_jobHistoryErrorService.JobHistory = this.JobHistory;
 				_jobHistoryErrorService.IntegrationPoint = IntegrationPoint;
 				kCura.Method.Injection.InjectionManager.Instance.Evaluate("0F8D9778-5228-4D7A-A911-F731292F9CF0");
+
+				ImportSettings setting = JsonConvert.DeserializeObject<ImportSettings>(this.IntegrationPoint.DestinationConfiguration);
+				JobHistory.DestinationWorkspace = String.Format("{0} [CaseId::{1}]", _caseServiceContext.GetWorkspaceName(setting.CaseArtifactId), setting.CaseArtifactId);
 
 				if (!this.JobHistory.StartTimeUTC.HasValue)
 				{
