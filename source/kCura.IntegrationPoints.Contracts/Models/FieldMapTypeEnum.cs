@@ -20,6 +20,10 @@
 		/// <summary>
 		/// The path for the native file.
 		/// </summary>
-		NativeFilePath
+		NativeFilePath,
+		/// <summary>
+		/// The path of the folder to create.
+		/// </summary>
+		FolderPathInformation
 	}
 }

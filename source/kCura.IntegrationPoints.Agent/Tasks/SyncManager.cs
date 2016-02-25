@@ -32,6 +32,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private JobHistoryService _jobHistoryService;
 		private JobHistoryErrorService _jobHistoryErrorService;
 		private IEnumerable<Core.IBatchStatus> _batchStatus;
+		private bool _errorOccurred;
 
 		public IEnumerable<Core.IBatchStatus> BatchStatus
 		{
@@ -68,6 +69,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			BatchJobCount = 0;
 			BatchInstance = Guid.NewGuid();
 			_batchStatus = batchStatuses;
+			_errorOccurred = false;
 		}
 
 		public Data.IntegrationPoint IntegrationPoint { get; set; }
@@ -109,6 +111,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (Exception ex)
 			{
+				_errorOccurred = true;
 				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 			}
 			finally
@@ -206,7 +209,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					//no worker jobs were submitted
 					this.JobHistory.EndTimeUTC = DateTime.UtcNow;
-					this.JobHistory.JobStatus = JobStatusChoices.JobHistoryCompleted;
+					if (_errorOccurred)
+					{
+						this.JobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
+						_errorOccurred = false;
+					}
 					_caseServiceContext.RsapiService.JobHistoryLibrary.Update(this.JobHistory);
 				}
 			}

@@ -71,9 +71,9 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			List<FieldEntry> fieldEntries = new List<FieldEntry>();
 
-			foreach (var artifact in artifacts)
+			foreach (Artifact artifact in artifacts)
 			{
-				foreach (var field in artifact.Fields)
+				foreach (Field field in artifact.Fields)
 				{
 					if (field.Name == "Name")
 					{
@@ -86,7 +86,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 						break;
 					}
 				}
-				
 			}
 			return fieldEntries;
 		}

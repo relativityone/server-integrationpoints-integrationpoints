@@ -257,6 +257,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				settings.DisableNativeLocationValidation = this.DisableNativeLocationValidation;
 				settings.DisableNativeValidation = this.DisableNativeValidation;
 			}
+			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
+			{
+				settings.FolderPathSourceFieldName = fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation).SourceField.ActualName;
+			}
 			return settings;
 		}
 
@@ -308,6 +312,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				fieldMap.FieldMapType != FieldMapTypeEnum.Parent
 				&&
 				fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath
+				&&
+				fieldMap.FieldMapType != FieldMapTypeEnum.FolderPathInformation
 				);
 		}
 
