@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 			if (_workspaceName == null)
 			{
 				WorkspaceQuery query = new WorkspaceQuery(helper.GetRsapiClient(ExecutionIdentity.CurrentUser));
-				Workspace workspace = query.GetWorkspace(WorkspaceID);
+				Workspace workspace = query.GetWorkspace(workspaceId);
 				_workspaceName = workspace.Name;
 			}
 			return _workspaceName;

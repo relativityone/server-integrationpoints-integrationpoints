@@ -4,10 +4,6 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Synchronizers.RDO;
-using Newtonsoft.Json;
-
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -16,6 +12,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IJobManager _jobManager;
 		private IntegrationPointService _integrationPointService;
 		private JobHistoryService _jobHistoryService;
+
 		public ImportNowController(IJobManager jobManager, IntegrationPointService integrationPointService, JobHistoryService jobHistoryService)
 		{
 			_jobManager = jobManager;
