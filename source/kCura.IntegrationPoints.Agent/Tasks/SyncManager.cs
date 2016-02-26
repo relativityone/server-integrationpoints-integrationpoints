@@ -178,9 +178,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_jobHistoryErrorService.IntegrationPoint = IntegrationPoint;
 				kCura.Method.Injection.InjectionManager.Instance.Evaluate("0F8D9778-5228-4D7A-A911-F731292F9CF0");
 
-				ImportSettings setting = JsonConvert.DeserializeObject<ImportSettings>(this.IntegrationPoint.DestinationConfiguration);
-				JobHistory.DestinationWorkspace = String.Format("{0} [CaseId::{1}]", _caseServiceContext.GetWorkspaceName(setting.CaseArtifactId), setting.CaseArtifactId);
-
 				if (!this.JobHistory.StartTimeUTC.HasValue)
 				{
 					this.JobHistory.StartTimeUTC = DateTime.UtcNow;

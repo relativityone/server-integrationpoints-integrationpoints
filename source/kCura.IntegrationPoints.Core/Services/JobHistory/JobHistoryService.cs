@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -43,6 +45,10 @@ namespace kCura.IntegrationPoints.Core.Services
 				jobHistory.JobStatus = JobStatusChoices.JobHistoryPending;
 				jobHistory.RecordsImported = 0;
 				jobHistory.RecordsWithErrors = 0;
+
+				ImportSettings setting = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+				jobHistory.DestinationWorkspace = String.Format("{0} [CaseId::{1}]", _context.GetWorkspaceName(setting.CaseArtifactId), setting.CaseArtifactId);
+
 				if (startTimeUTC.HasValue) jobHistory.StartTimeUTC = startTimeUTC.Value;
 
 				int artifactId = _context.RsapiService.JobHistoryLibrary.Create(jobHistory);

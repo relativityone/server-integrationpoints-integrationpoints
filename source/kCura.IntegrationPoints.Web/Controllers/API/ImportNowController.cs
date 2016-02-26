@@ -4,6 +4,9 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using Newtonsoft.Json;
 
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -33,6 +36,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			Data.IntegrationPoint integrationPoint = _integrationPointService.GetRdo(relatedObjectArtifactID);
 			_jobHistoryService.CreateRdo(integrationPoint, batchInstance, null);
 			_jobManager.CreateJob(jobDetails, TaskType.SyncManager, workspaceID, relatedObjectArtifactID);
+
 			return Request.CreateResponse(HttpStatusCode.OK);
 		}
 
