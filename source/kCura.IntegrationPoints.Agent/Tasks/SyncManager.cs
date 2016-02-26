@@ -216,6 +216,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						this.JobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
 						_errorOccurred = false;
 					}
+					else
+					{
+						this.JobHistory.JobStatus = JobStatusChoices.JobHistoryCompleted;
+					}
 					_caseServiceContext.RsapiService.JobHistoryLibrary.Update(this.JobHistory);
 				}
 			}
