@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 
 			var console = new Console();
-			console.Title = "IMPORT";
+			console.Title = "RUN";
 			console.ButtonList = new List<ConsoleButton>();
 			bool isEnabled = PermissionService.userCanImport(base.Helper.GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID);
 			
