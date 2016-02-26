@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Services.Tabs
 			var query = new Query<Tab>();
 			query.Condition = new WholeNumberCondition(TabFieldNames.ObjectType, NumericConditionEnum.EqualTo, objectTypeId);
 			var tab = _client.Repositories.Tab.Query(query);
-			RDOHelper.CheckResult(tab);
+			RdoHelper.CheckResult(tab);
 			if (tab.Results.Count != 1)
 			{
 				throw new Exception(string.Format("Tab id for {0} did not return only one entry", objectTypeId) );

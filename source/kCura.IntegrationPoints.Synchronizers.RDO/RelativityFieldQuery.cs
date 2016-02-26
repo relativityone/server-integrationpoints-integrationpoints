@@ -6,7 +6,7 @@ using Field = kCura.Relativity.Client.Field;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public class RelativityFieldQuery
+	public class RelativityFieldQuery : IRelativityFieldQuery
 	{
 		private readonly IRSAPIClient _client;
 
@@ -18,20 +18,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public virtual List<Artifact> GetFieldsForRdo(int rdoTypeId)
 		{
 			return GetAllFields(rdoTypeId);
-		}
-
-		public virtual List<Artifact> GetFieldsForRdo(int rdoTypeId, int workspaceId)
-		{
-			int previousWorkspaceId = _client.APIOptions.WorkspaceID;
-			_client.APIOptions.WorkspaceID = workspaceId;
-			try
-			{
-				return GetAllFields(rdoTypeId);
-			}
-			finally
-			{
-				_client.APIOptions.WorkspaceID = previousWorkspaceId;
-			}
 		}
 
 		public List<Artifact> GetAllFields(int rdoTypeId)
@@ -53,9 +39,5 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			return result.QueryArtifacts;
 		}
-
-
-
-
 	}
 }

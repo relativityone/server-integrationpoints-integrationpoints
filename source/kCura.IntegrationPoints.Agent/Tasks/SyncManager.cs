@@ -12,8 +12,10 @@ using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -32,6 +34,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private JobHistoryService _jobHistoryService;
 		private JobHistoryErrorService _jobHistoryErrorService;
 		private IEnumerable<Core.IBatchStatus> _batchStatus;
+		private bool _errorOccurred;
 
 		public IEnumerable<Core.IBatchStatus> BatchStatus
 		{
@@ -68,6 +71,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			BatchJobCount = 0;
 			BatchInstance = Guid.NewGuid();
 			_batchStatus = batchStatuses;
+			_errorOccurred = false;
 		}
 
 		public Data.IntegrationPoint IntegrationPoint { get; set; }
@@ -97,7 +101,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					batchStatus.JobStarted(job);
 				}
-				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
+				SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
 				Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
 				Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
 				IDataSourceProvider provider = _providerFactory.GetDataProvider(applicationGuid, providerGuid, _helper);
@@ -109,6 +113,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (Exception ex)
 			{
+				_errorOccurred = true;
 				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 			}
 			finally
@@ -162,13 +167,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					throw new ArgumentNullException("Job must have a Related Object ArtifactID");
 				}
-				var integrationPointID = job.RelatedObjectArtifactID;
-				this.IntegrationPoint = _integrationPointService.GetRDO(job.RelatedObjectArtifactID);
+
+				this.IntegrationPoint = _integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 				if (this.IntegrationPoint.SourceProvider == 0)
 				{
 					throw new Exception("Cannot import source provider with unknown id.");
 				}
-				this.JobHistory = _jobHistoryService.CreateRDO(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
+				this.JobHistory = _jobHistoryService.CreateRdo(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
 				_jobHistoryErrorService.JobHistory = this.JobHistory;
 				_jobHistoryErrorService.IntegrationPoint = IntegrationPoint;
 				kCura.Method.Injection.InjectionManager.Instance.Evaluate("0F8D9778-5228-4D7A-A911-F731292F9CF0");
@@ -177,7 +182,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					this.JobHistory.StartTimeUTC = DateTime.UtcNow;
 					//TODO: jobHistory.JobStatus = "";
-					_jobHistoryService.UpdateRDO(this.JobHistory);
+					_jobHistoryService.UpdateRdo(this.JobHistory);
 				}
 			}
 			catch (Exception ex)
@@ -206,6 +211,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					//no worker jobs were submitted
 					this.JobHistory.EndTimeUTC = DateTime.UtcNow;
+					if (_errorOccurred)
+					{
+						this.JobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
+						_errorOccurred = false;
+					}
 					_caseServiceContext.RsapiService.JobHistoryLibrary.Update(this.JobHistory);
 				}
 			}

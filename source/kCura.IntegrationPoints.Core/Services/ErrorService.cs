@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using kCura.IntegrationPoints.Core.Models;
 
 namespace kCura.IntegrationPoints.Core.Services

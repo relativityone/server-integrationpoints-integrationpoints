@@ -20,8 +20,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 			JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(context);
 			jobHistoryErrorService.JobHistory = new JobHistory() { ArtifactId = 111 };
-			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.");
-			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.");
+			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null);
+			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", "stack trace");
 			List<JobHistoryError> errors = new List<JobHistoryError>();
 			context.RsapiService.JobHistoryErrorLibrary.Create(Arg.Do<IEnumerable<JobHistoryError>>(x => errors.AddRange(x)));
 
@@ -34,8 +34,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			Assert.AreEqual(2, errors.Count);
 			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorJob.Name, errors[0].ErrorType.Name);
 			Assert.AreEqual("Fake job error.", errors[0].Error);
+			Assert.AreEqual(null, errors[0].StackTrace);
 			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorItem.Name, errors[1].ErrorType.Name);
 			Assert.AreEqual("Fake item error.", errors[1].Error);
+			Assert.AreEqual("stack trace", errors[1].StackTrace);
 		}
 
 		[Test]
@@ -44,8 +46,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			//ARRANGE
 			JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(null);
 			jobHistoryErrorService.JobHistory = new JobHistory() { ArtifactId = 111 };
-			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.");
-			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.");
+			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null);
+			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", null);
 
 
 			//ACT
@@ -69,7 +71,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 
 			//ACT
-			System.Exception returnedException = Assert.Throws<System.Exception>(() => jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error."));
+			System.Exception returnedException = Assert.Throws<System.Exception>(() => jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null));
 
 
 			//ASSERT

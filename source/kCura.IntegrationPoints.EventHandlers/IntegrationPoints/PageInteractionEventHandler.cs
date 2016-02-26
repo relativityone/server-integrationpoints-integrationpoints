@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Castle.Components.DictionaryAdapter.Xml;
 using kCura.EventHandler;
 
 //http://platform.kcura.com/9.0/index.htm#Customizing_workflows/Page_Interaction_event_handlers.htm?Highlight=javascript
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.Relativity.Client.DTOs;
 using kCura.IntegrationPoints.Data.Extensions;
+
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
 	[System.Runtime.InteropServices.Guid("d62ec71f-f8c1-4344-aabb-b23e376d93df")]

@@ -10,25 +10,25 @@ by editing this MSBuild file. In order to learn more about this please visit htt
   </PropertyGroup>
   <ItemGroup>
     <File Include="bin/Microsoft.Web.Infrastructure.dll">
-      <publishTime>02/18/2015 13:38:08</publishTime>
+      <publishTime>12/21/2015 11:14:47</publishTime>
     </File>
     <File Include="bin/Microsoft.Web.Mvc.FixedDisplayModes.dll">
-      <publishTime>02/18/2015 13:38:07</publishTime>
+      <publishTime>12/21/2015 11:14:46</publishTime>
     </File>
     <File Include="bin/Newtonsoft.Json.dll">
-      <publishTime>02/18/2015 13:38:08</publishTime>
+      <publishTime>12/21/2015 11:14:47</publishTime>
     </File>
     <File Include="bin/System.Net.Http.dll">
-      <publishTime>02/18/2015 13:38:08</publishTime>
+      <publishTime>12/21/2015 11:14:47</publishTime>
     </File>
     <File Include="bin/System.Net.Http.Formatting.dll">
       <publishTime>02/18/2015 13:38:07</publishTime>
     </File>
     <File Include="bin/System.Net.Http.WebRequest.dll">
-      <publishTime>02/18/2015 13:38:08</publishTime>
+      <publishTime>12/21/2015 11:14:47</publishTime>
     </File>
     <File Include="bin/System.Web.Helpers.dll">
-      <publishTime>02/18/2015 13:38:08</publishTime>
+      <publishTime>12/21/2015 11:14:47</publishTime>
     </File>
     <File Include="bin/System.Web.Http.dll">
       <publishTime>02/18/2015 13:38:07</publishTime>
@@ -37,52 +37,52 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/18/2015 13:38:07</publishTime>
     </File>
     <File Include="bin/System.Web.Mvc.dll">
-      <publishTime>02/18/2015 13:38:07</publishTime>
+      <publishTime>12/21/2015 11:14:46</publishTime>
     </File>
     <File Include="bin/System.Web.Razor.dll">
-      <publishTime>02/18/2015 13:38:07</publishTime>
+      <publishTime>12/21/2015 11:14:46</publishTime>
     </File>
     <File Include="bin/System.Web.WebPages.Deployment.dll">
-      <publishTime>02/18/2015 13:38:08</publishTime>
+      <publishTime>12/21/2015 11:14:47</publishTime>
     </File>
     <File Include="bin/System.Web.WebPages.dll">
-      <publishTime>02/18/2015 13:38:08</publishTime>
+      <publishTime>12/21/2015 11:14:47</publishTime>
     </File>
     <File Include="bin/System.Web.WebPages.Razor.dll">
-      <publishTime>02/18/2015 13:38:08</publishTime>
+      <publishTime>12/21/2015 11:14:47</publishTime>
     </File>
     <File Include="bin/Web.dll">
-      <publishTime>02/23/2015 13:15:03</publishTime>
+      <publishTime>02/18/2016 10:49:42</publishTime>
     </File>
     <File Include="Content/site.css">
-      <publishTime>02/20/2015 16:53:07</publishTime>
+      <publishTime>12/21/2015 11:14:46</publishTime>
     </File>
     <File Include="Global.asax">
-      <publishTime>02/18/2015 13:38:07</publishTime>
+      <publishTime>12/21/2015 11:14:46</publishTime>
     </File>
     <File Include="packages.config">
-      <publishTime>02/18/2015 13:38:07</publishTime>
+      <publishTime>12/21/2015 11:14:46</publishTime>
     </File>
     <File Include="Scripts/first-provider.js">
-      <publishTime>02/20/2015 16:53:07</publishTime>
+      <publishTime>12/21/2015 11:14:46</publishTime>
     </File>
     <File Include="Scripts/frame-messaging.js">
-      <publishTime>02/18/2015 13:38:07</publishTime>
+      <publishTime>12/21/2015 11:14:46</publishTime>
     </File>
     <File Include="Scripts/jquery-1.8.2.js">
-      <publishTime>02/18/2015 13:38:07</publishTime>
+      <publishTime>12/21/2015 11:14:46</publishTime>
     </File>
     <File Include="Scripts/jquery-postMessage.js">
-      <publishTime>02/18/2015 13:38:07</publishTime>
+      <publishTime>12/21/2015 11:14:46</publishTime>
     </File>
     <File Include="Views/Provider/Settings.cshtml">
-      <publishTime>02/20/2015 16:53:07</publishTime>
+      <publishTime>12/21/2015 11:14:46</publishTime>
     </File>
     <File Include="Views/Web.config">
-      <publishTime>02/18/2015 13:38:07</publishTime>
+      <publishTime>12/21/2015 11:14:46</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>02/23/2015 13:15:04</publishTime>
+      <publishTime>02/18/2016 10:49:42</publishTime>
     </File>
   </ItemGroup>
 </Project>

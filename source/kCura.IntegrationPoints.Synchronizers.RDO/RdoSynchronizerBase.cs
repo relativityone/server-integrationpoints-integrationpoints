@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
+using kCura.Relativity.Client;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public class RdoSynchronizer : kCura.IntegrationPoints.Contracts.Synchronizer.IDataSynchronizer, IBatchReporter
+	public abstract class RdoSynchronizerBase : Contracts.Synchronizer.IDataSynchronizer, IBatchReporter
 	{
 		public event BatchCompleted OnBatchComplete;
 		public event BatchSubmitted OnBatchSubmit;
@@ -17,9 +20,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public event JobError OnJobError;
 		public event RowError OnDocumentError;
 
-		protected readonly RelativityFieldQuery FieldQuery;
+		protected readonly IRelativityFieldQuery FieldQuery;
 		private Relativity.ImportAPI.IImportAPI _api;
-		private readonly ImportApiFactory _factory;
+		private readonly IImportApiFactory _factory;
 
 		private IImportService _importService;
 		private bool _isJobComplete = false;
@@ -28,7 +31,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private ImportSettings ImportSettings { get; set; }
 		private NativeFileImportService NativeFileImportService { get; set; }
 
-		public RdoSynchronizer(RelativityFieldQuery fieldQuery, ImportApiFactory factory)
+		protected RdoSynchronizerBase(IRelativityFieldQuery fieldQuery, IImportApiFactory factory)
 		{
 			FieldQuery = fieldQuery;
 			_factory = factory;
@@ -59,9 +62,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		protected List<Relativity.Client.Artifact> GetRelativityFields(ImportSettings settings)
 		{
-			var fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
-			var mappableFields = GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId);
-			return fields.Where(x => mappableFields.Any(y => y.ArtifactID == x.ArtifactID)).ToList();
+			List<Artifact> fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
+			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId).Select(x => x.ArtifactID));
+			return fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
 		}
 
 		public virtual IEnumerable<FieldEntry> GetFields(string options)
@@ -94,6 +97,55 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{
+			IntializeImportJob(fieldMap, options);
+
+			bool movedNext = true;
+			IEnumerator<IDictionary<FieldEntry, object>> enumerator = data.GetEnumerator();
+
+			do
+			{
+				try
+				{
+					movedNext = enumerator.MoveNext();
+					if (movedNext)
+					{
+						var importRow = GenerateImportRow(enumerator.Current, fieldMap, this.ImportSettings);
+						if (importRow != null)
+						{
+							_importService.AddRow(importRow);
+						}
+					}
+				}
+				catch (ProviderReadDataException exception)
+				{
+					ItemError(exception.Identifier, exception.Message);
+				}
+
+			} while (movedNext);
+
+
+			_importService.PushBatchIfFull(true);
+
+			WaitUntilTheJobIsDone();
+
+			FinalizeSyncData(data, fieldMap, this.ImportSettings);
+		}
+
+		public void SyncData(IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
+		{
+			IntializeImportJob(fieldMap, options);
+
+			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
+			IDataReader sourceReader = new RelativityReaderDecorator(data, fieldMaps);
+
+			_importService.KickOffImport(sourceReader);
+
+			WaitUntilTheJobIsDone();
+		}
+
+
+		private void IntializeImportJob(IEnumerable<FieldMap> fieldMap, string options)
+		{
 			this.NativeFileImportService = new NativeFileImportService();
 
 			this.ImportSettings = GetSyncDataImportSettings(fieldMap, options, this.NativeFileImportService);
@@ -105,14 +157,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			_isJobComplete = false;
 			_jobError = null;
 			_rowErrors = new List<KeyValuePair<string, string>>();
+		}
 
-			foreach (var row in data)
-			{
-				var importRow = GenerateImportRow(row, fieldMap, this.ImportSettings);
-				if (importRow != null) _importService.AddRow(importRow);
-			}
-			_importService.PushBatchIfFull(true);
-
+		private void WaitUntilTheJobIsDone()
+		{
 			bool isJobDone = false;
 			do
 			{
@@ -122,8 +170,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				}
 				Thread.Sleep(1000);
 			} while (!isJobDone);
-
-			FinalizeSyncData(data, fieldMap, this.ImportSettings);
 		}
 
 		private string _webAPIPath;
@@ -167,6 +213,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			protected set { _disableNativeValidation = value; }
 		}
+
 		protected virtual ImportService InitializeImportService(ImportSettings settings, Dictionary<string, int> importFieldMap, NativeFileImportService nativeFileImportService)
 		{
 			ImportService importService = new ImportService(settings, importFieldMap, new BatchManager(), nativeFileImportService, new ImportApiFactory());
@@ -209,6 +256,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles;
 				settings.DisableNativeLocationValidation = this.DisableNativeLocationValidation;
 				settings.DisableNativeValidation = this.DisableNativeValidation;
+			}
+			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
+			{
+				settings.FolderPathSourceFieldName = fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation).SourceField.ActualName;
 			}
 			return settings;
 		}
@@ -261,6 +312,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				fieldMap.FieldMapType != FieldMapTypeEnum.Parent
 				&&
 				fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath
+				&&
+				fieldMap.FieldMapType != FieldMapTypeEnum.FolderPathInformation
 				);
 		}
 

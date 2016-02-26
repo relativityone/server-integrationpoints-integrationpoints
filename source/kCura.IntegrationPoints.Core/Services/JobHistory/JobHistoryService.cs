@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -16,7 +18,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			_context = context;
 		}
 
-		public Data.JobHistory GetRDO(Guid batchInstance)
+		public Data.JobHistory GetRdo(Guid batchInstance)
 		{
 			var query = new Query<RDO>();
 			query.ArtifactTypeGuid = Guid.Parse(ObjectTypeGuids.JobHistory);
@@ -27,11 +29,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			return jobHistory;
 		}
 
-		public Data.JobHistory CreateRDO(Data.IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUTC)
+		public Data.JobHistory CreateRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUTC)
 		{
 			Data.JobHistory jobHistory = null;
 
-			try { jobHistory = GetRDO(batchInstance); }
+			try { jobHistory = GetRdo(batchInstance); }
 			catch { }
 
 			if (jobHistory == null)
@@ -43,6 +45,10 @@ namespace kCura.IntegrationPoints.Core.Services
 				jobHistory.JobStatus = JobStatusChoices.JobHistoryPending;
 				jobHistory.RecordsImported = 0;
 				jobHistory.RecordsWithErrors = 0;
+
+				ImportSettings setting = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+				jobHistory.DestinationWorkspace = String.Format("{0} [CaseId::{1}]", _context.GetWorkspaceName(setting.CaseArtifactId), setting.CaseArtifactId);
+
 				if (startTimeUTC.HasValue) jobHistory.StartTimeUTC = startTimeUTC.Value;
 
 				int artifactId = _context.RsapiService.JobHistoryLibrary.Create(jobHistory);
@@ -52,14 +58,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			return jobHistory;
 		}
 
-		public void UpdateRDO(Data.JobHistory jobHistory)
+		public void UpdateRdo(Data.JobHistory jobHistory)
 		{
 			_context.RsapiService.JobHistoryLibrary.Update(jobHistory);
-		}
-
-		private kCura.Relativity.Client.Choice GetJobStatus()
-		{
-			return null;
 		}
 
 		protected List<FieldValue> GetFields()

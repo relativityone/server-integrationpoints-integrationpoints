@@ -20,6 +20,8 @@ namespace kCura.IntegrationPoints.Contracts.Models
 	[Serializable]
 	public class FieldEntry
 	{
+		private string _actualName;
+
 		/// <summary>
 		/// Gets or set a user-friendly name for display in the Relativity UI.
 		/// </summary>
@@ -29,6 +31,18 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		/// Gets or sets a field identifier used when mapping data source fields to workspace fields.
 		/// </summary>
 		public string FieldIdentifier { get; set; }
+
+		public string ActualName
+		{
+			get
+			{
+				if (_actualName == null)
+				{
+					_actualName = IsIdentifier ? DisplayName.Replace(" [Object Identifier]", String.Empty) : DisplayName;
+				}
+				return _actualName;
+			}
+		}
 
 		/// <summary>
 		/// Gets or sets the field type. 

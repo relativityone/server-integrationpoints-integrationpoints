@@ -22,7 +22,7 @@
 		{
 			try
 			{
-				var results = SavedSearchModel.GetAllSavedSearches(_context);
+				var results = SavedSearchModel.GetAllPublicSavedSearches(_context);
 				return Request.CreateResponse(HttpStatusCode.OK, results);
 			}
 			catch (Exception)

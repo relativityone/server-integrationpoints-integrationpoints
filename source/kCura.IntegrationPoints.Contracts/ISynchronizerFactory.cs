@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 
 namespace kCura.IntegrationPoints.Contracts
@@ -18,6 +14,6 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <param name="identifier">A GUID identifing the synchronizer.</param>
 		/// <param name="options">The options specific to the current integration point identifier.</param>
 		/// <returns>A new instance of the data synchronizer.</returns>
-		IDataSynchronizer CreateSyncronizer(Guid identifier, string options);
+		IDataSynchronizer CreateSynchronizer(Guid identifier, string options);
 	}
 }

@@ -1,23 +1,24 @@
-﻿using System.Web.Http.Controllers;
+﻿using System.Data.SqlClient;
+using System.Threading.Tasks;
+using System.Web.Http.Controllers;
 using System.Web.Mvc;
 using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Services.Syncronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.LDAPProvider;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 using IDBContext = Relativity.API.IDBContext;
 using Relativity.CustomPages;
+using Relativity.Toggles;
+using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Web.Installers
 {
@@ -32,8 +33,6 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<ISessionService>().UsingFactoryMethod(k => SessionService.Session).LifestylePerWebRequest());
 			container.Register(Component.For<IPermissionService>().ImplementedBy<PermissionService>().LifestyleTransient());
 			container.Register(Component.For<WebClientFactory>().ImplementedBy<WebClientFactory>().LifestyleTransient());
-			container.Register(Component.For<RdoSynchronizer>().ImplementedBy<RdoSynchronizer>().LifestyleTransient());
-			container.Register(Component.For<RdoSynchronizerPush>().ImplementedBy<RdoSynchronizerPush>().LifestyleTransient());
 			container.Register(Component.For<kCura.Apps.Common.Utils.Serializers.ISerializer>().ImplementedBy<kCura.Apps.Common.Utils.Serializers.JSONSerializer>().LifestyleTransient());
 			container.Register(Classes.FromThisAssembly().BasedOn<IHttpController>().LifestyleTransient());
 			container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => ConnectionHelper.Helper()).LifestylePerWebRequest());
@@ -69,7 +68,26 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<RelativityUrlHelper>().ImplementedBy<RelativityUrlHelper>().LifeStyle.Transient);
 
 			container.Register(Component.For<IEncryptionManager>().ImplementedBy<DefaultEncryptionManager>().LifeStyle.Transient);
-			container.Register(Component.For<WebAPILoginException>().ImplementedBy<WebAPILoginException>().LifeStyle.Transient); 
+			container.Register(Component.For<WebAPILoginException>().ImplementedBy<WebAPILoginException>().LifeStyle.Transient);
+
+			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
+			container.Register(Component.For<IToggleProvider>().Instance(new SqlServerToggleProvider(
+				() =>
+				{
+					SqlConnection connection = ConnectionHelper.Helper().GetDBContext(-1).GetConnection(true);
+
+					return connection;
+				},
+				async () =>
+				{
+					Task<SqlConnection> task = Task.Run(() =>
+					{
+						SqlConnection connection = ConnectionHelper.Helper().GetDBContext(-1).GetConnection(true);
+						return connection;	
+					});
+
+					return await task;
+				})).LifestyleTransient());
 		}
 	}
 }

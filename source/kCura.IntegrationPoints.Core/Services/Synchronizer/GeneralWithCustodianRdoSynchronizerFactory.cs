@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Client;
 using Newtonsoft.Json;
 
-namespace kCura.IntegrationPoints.Core.Services.Syncronizer
+namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 {
 	public class GeneralWithCustodianRdoSynchronizerFactory : kCura.IntegrationPoints.Contracts.ISynchronizerFactory
 	{
@@ -20,27 +22,32 @@ namespace kCura.IntegrationPoints.Core.Services.Syncronizer
 
 		public ITaskJobSubmitter TaskJobSubmitter { get; set; }
 
-		public IDataSynchronizer CreateSyncronizer(Guid identifier, string options)
+		public IDataSynchronizer CreateSynchronizer(Guid identifier, string options)
 		{
 			var json = JsonConvert.DeserializeObject<ImportSettings>(options);
 			var rdoObjectType = _query.GetObjectType(json.ArtifactTypeId);
-
-			if (json.Provider.ToLower() == "relativity")
-			{
-				return _container.Kernel.Resolve<kCura.IntegrationPoints.Synchronizers.RDO.RdoSynchronizerPush>();
+			
+			if (json.Provider != null && json.Provider.ToLower() == "relativity")
+			{ 
+				IRSAPIClient client = _container.Resolve<IRSAPIClient>();
+				client.APIOptions.WorkspaceID = json.CaseArtifactId;
+				Dictionary<string, RelativityFieldQuery> dict = new Dictionary<string, RelativityFieldQuery>
+				{
+					{"fieldQuery", new RelativityFieldQuery(client)}
+				};
+				return _container.Kernel.Resolve<IDataSynchronizer>(typeof (RdoSynchronizerPush).AssemblyQualifiedName, dict);
 			}
 
 			//name is very bad, we should consider switching to guid
 			switch (rdoObjectType.Name.ToLower())
 			{
 				case "custodian":
-					var s = _container.Kernel.Resolve<kCura.IntegrationPoints.Synchronizers.RDO.RDOCustodianSynchronizer>();
+					var s = (RdoCustodianSynchronizer)_container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoCustodianSynchronizer).AssemblyQualifiedName);
 					s.TaskJobSubmitter = TaskJobSubmitter;
 					return s;
 				default:
-					return _container.Kernel.Resolve<kCura.IntegrationPoints.Synchronizers.RDO.RdoSynchronizer>();
+					return _container.Kernel.Resolve<IDataSynchronizer>(typeof(RdoSynchronizerPull).AssemblyQualifiedName);
 			}
-
 		}
 	}
 }

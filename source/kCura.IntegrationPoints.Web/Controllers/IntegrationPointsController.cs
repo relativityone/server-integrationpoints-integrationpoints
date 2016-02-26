@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.LDAPProvider;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Models;
+using kCura.IntegrationPoints.Web.Toggles;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
@@ -20,7 +22,12 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		private readonly RSAPIRdoQuery _rdoQuery;
 		private readonly ITabService _tabService;
 		private readonly IPermissionService _permissionService;
-		public IntegrationPointsController(IntegrationPointService reader, RSAPIRdoQuery relativityRdoQuery, ITabService tabService, IPermissionService permissionService)
+
+		public IntegrationPointsController(
+			IntegrationPointService reader, 
+			RSAPIRdoQuery relativityRdoQuery, 
+			ITabService tabService, 
+			IPermissionService permissionService)
 		{
 			_reader = reader;
 			_rdoQuery = relativityRdoQuery;
@@ -42,7 +49,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 					ArtifactID = id.GetValueOrDefault(0),
 					UserID = base.SessionService.UserID,
 					CaseUserID = base.SessionService.WorkspaceUserID,
-					URL = previousURL
+					URL = previousURL,
 				});
 			}
 			return View("NotEnoughPermission", new EditPoint { URL = previousURL });

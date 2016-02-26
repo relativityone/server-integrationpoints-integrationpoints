@@ -3,8 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using kCura.Apps.Common.Utils.Serializers;
+using kCura.Crypto.DataProtection;
 using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Core.Services.Marshaller;
 using kCura.IntegrationPoints.Data.Models;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Domain
 {
@@ -127,6 +133,24 @@ namespace kCura.IntegrationPoints.Core.Domain
 			this.LoadRequiredAssemblies(domain);
 			this.LoadClientLibraries(domain, provider, applicationGuid);
 			DomainManager manager = this.CreateInstance<DomainManager>(domain);
+
+			IDictionary<string, byte[]> dataDictionary = new Dictionary<string, byte[]>();
+
+			// Get the SystemTokenProvider
+			ISerializationHelper serializationHelper = new SerializationHelper();
+			IProvideSystemTokens systemTokenProvider = ExtensionPointServiceFinder.SystemTokenProvider;
+			byte[] systemTokenProviderBytes = serializationHelper.Serialize(systemTokenProvider);
+			dataDictionary.Add(Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider, systemTokenProviderBytes);
+
+			// Get the connection string
+			string connectionString = kCura.Config.Config.ConnectionString;
+			byte[] connectionStringBytes = Encoding.ASCII.GetBytes(connectionString);
+			dataDictionary.Add(Constants.IntegrationPoints.AppDomain_Data_ConnectionString, connectionStringBytes);
+
+			// Marshal the data
+			IAppDomainDataMarshaller dataMarshaller = new SecureAppDomainDataMarshaller();
+			dataMarshaller.MarshalDataToDomain(domain, dataDictionary);
+
 			manager.Init();
 
 			return manager;

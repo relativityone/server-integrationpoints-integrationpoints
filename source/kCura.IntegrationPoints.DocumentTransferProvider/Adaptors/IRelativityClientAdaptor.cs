@@ -13,14 +13,22 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Adaptors
 		/// </summary>
 		/// <param name="query">The Query to execute</param>
 		/// <returns>A ResultSet of Documents</returns>
-		ResultSet<Document> ExecuteDocumentQuery(Query<Document> query);
+		QueryResultSet<Document> ExecuteDocumentQuery(Query<Document> query);
 
 		/// <summary>
-		/// Return a long text field value of a given document
+		/// Executes a Subset of Document Query
 		/// </summary>
-		/// <param name="documentArtifactId">The document's artifact Id</param>
-		/// <param name="longTextFieldArtifactId">The long text field's artifact Id</param>
+		/// <param name="token">The query token value provided in the QueryResult.</param>
+		/// <param name="start">The starting index used to select a subset of Artifacts from the List of all Artifacts that satisfy the initial Query() call. The List index starts with 1.</param>
+		/// <param name="length">The maximum number of results to return.</param>
+		/// <returns>A ResultSet of Documents</returns>
+		QueryResultSet<Document> ExecuteSubSetOfDocumentQuery(string token, int start, int length);
+
+		/// <summary>
+		/// Return a result set of documents give the query model
+		/// </summary>
+		/// <param name="document">the document to be read </param>
 		/// <returns></returns>
-		String GetLongTextFieldValue(int documentArtifactId, int longTextFieldArtifactId);
+		ResultSet<Document> ReadDocument(Document document);
 	}
 }

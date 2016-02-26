@@ -63,8 +63,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		public void AddRow(Dictionary<string, object> sourceFields)
 		{
 			Dictionary<string, object> importFields = GenerateImportFields(sourceFields, FieldMappings, NativeFileImportService);
-			_batchManager.Add(importFields);
-			PushBatchIfFull(false);
+			if (importFields.Count > 0)
+			{
+				_batchManager.Add(importFields);
+				PushBatchIfFull(false);
+			}
 		}
 
 		public bool PushBatchIfFull(bool forcePush)
@@ -91,21 +94,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			ImportBulkArtifactJob importJob = _importAPI.NewObjectImportJob(Settings.ArtifactTypeId);
 			importJob.SourceData.SourceData = dataReader;
-
 			importJob.Settings.ArtifactTypeId = Settings.ArtifactTypeId;
 			importJob.Settings.AuditLevel = Settings.AuditLevel;
 			importJob.Settings.CaseArtifactId = Settings.CaseArtifactId;
 			importJob.Settings.DestinationFolderArtifactID = GetDestinationFolderArtifactID();
 			importJob.Settings.BulkLoadFileFieldDelimiter = Settings.BulkLoadFileFieldDelimiter;
 			importJob.Settings.CopyFilesToDocumentRepository = Settings.CopyFilesToDocumentRepository;
+			importJob.Settings.DestinationFolderArtifactID = Settings.DestinationFolderArtifactID;
 			importJob.Settings.DisableControlNumberCompatibilityMode = Settings.DisableControlNumberCompatibilityMode;
 			importJob.Settings.DisableExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck;
 			importJob.Settings.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation;
 			importJob.Settings.DisableNativeLocationValidation = Settings.DisableNativeLocationValidation;
 			importJob.Settings.DisableNativeValidation = Settings.DisableNativeValidation;
 			importJob.Settings.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck;
-			importJob.Settings.ExtractedTextEncoding = Settings.ExtractedTextEncoding;
 			importJob.Settings.ExtractedTextFieldContainsFilePath = Settings.ExtractedTextFieldContainsFilePath;
+
+			// only set if the extracted file map links to extracted text location
+			if (Settings.ExtractedTextFieldContainsFilePath)
+			{
+				importJob.Settings.ExtractedTextEncoding = Settings.ExtractedTextEncoding;
+			}
+
 			importJob.Settings.FileSizeColumn = Settings.FileSizeColumn;
 			importJob.Settings.FileSizeMapped = Settings.FileSizeMapped;
 			importJob.Settings.FolderPathSourceFieldName = Settings.FolderPathSourceFieldName;
@@ -125,7 +134,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.Settings.SendEmailOnLoadCompletion = Settings.SendEmailOnLoadCompletion;
 			importJob.Settings.StartRecordNumber = Settings.StartRecordNumber;
 			importJob.Settings.SelectedIdentifierFieldName = _idToFieldDictionary[Settings.IdentityFieldId].Name;
-
 			importJob.OnComplete += new IImportNotifier.OnCompleteEventHandler(ImportJob_OnComplete);
 			importJob.OnFatalException += new IImportNotifier.OnFatalExceptionEventHandler(ImportJob_OnComplete);
 			ImportService_OnBatchSubmit(_batchManager.CurrentSize, _batchManager.MinimumBatchSize);
@@ -268,8 +276,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		private bool ShouldProcessError(JobReport.RowError error)
 		{
-			if (this.Settings.OverwriteMode == OverwriteModeEnum.Overlay
-	&& error.Message.Contains("no document to overwrite"))
+			if (this.Settings.OverwriteMode == OverwriteModeEnum.Overlay && error.Message.Contains("no document to overwrite"))
 			{
 				//skip
 				return false;

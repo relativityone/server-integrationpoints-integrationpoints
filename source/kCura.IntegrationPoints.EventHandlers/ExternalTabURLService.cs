@@ -1,7 +1,4 @@
-﻿using System;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-
-namespace kCura.IntegrationPoints.EventHandlers
+﻿namespace kCura.IntegrationPoints.EventHandlers
 {
 	public class ExternalTabURLService
 	{

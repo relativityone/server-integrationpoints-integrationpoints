@@ -27,6 +27,13 @@ defaults: new { controller = "ldap", action = "Encrypt" }
 				defaults: new { controller = "ldap", action = "GetViewFields" }
 		);
 
+			config.Routes.MapHttpRoute(
+				name: "RelativityViewSettings",
+				routeTemplate: "{workspaceID}/api/relativity/view",
+				defaults: new { controller = "relativity", action = "GetViewFields" }
+			);
+
+
 
 			config.Routes.MapHttpRoute(
 					name: "DefaultApi",

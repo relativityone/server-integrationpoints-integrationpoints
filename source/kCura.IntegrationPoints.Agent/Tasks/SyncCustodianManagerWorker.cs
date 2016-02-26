@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Services.Syncronizer;
 using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -63,9 +62,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				//get all job parameters
 				GetParameters(job);
 
-				base.GetIntegrationPointRDO(job);
+				base.GetIntegrationPointRdo(job);
 
-				base.GetJobHistoryRDO();
+				base.GetJobHistoryRdo();
 
 				kCura.Method.Injection.InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
 
@@ -105,9 +104,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				var managerLinkMap = _managerFieldMap.Where(x =>
 					(x.SourceField.FieldIdentifier.Equals(fieldEntryCustodianIdentifier.FieldIdentifier) ||
 					 x.SourceField.FieldIdentifier.Equals(fieldEntryManagerIdentifier.FieldIdentifier)));
-				IDataSynchronizer dataSyncronizer = base.GetDestinationProvider(_destinationProviderRdo, newDestinationConfiguration, job);
-				base.SetupSubscriptions(dataSyncronizer, job);
-				dataSyncronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration);
+				IDataSynchronizer dataSynchronizer = base.GetDestinationProvider(_destinationProviderRdo, newDestinationConfiguration, job);
+				base.SetupSubscriptions(dataSynchronizer, job);
+				dataSynchronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration);
 
 				if (missingManagers.Any())
 				{

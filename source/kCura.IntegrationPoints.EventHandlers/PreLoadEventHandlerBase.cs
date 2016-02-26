@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography;
-using kCura.IntegrationPoints.Core;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
+﻿using kCura.IntegrationPoints.Core.Services.ServiceContext;
 
 namespace kCura.IntegrationPoints.EventHandlers
 {

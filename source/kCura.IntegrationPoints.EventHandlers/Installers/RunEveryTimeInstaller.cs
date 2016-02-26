@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.EventHandler;
+﻿using kCura.EventHandler;
 using System.Runtime.InteropServices;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Migrations;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {

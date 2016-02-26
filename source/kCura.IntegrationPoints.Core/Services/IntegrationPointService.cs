@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
@@ -30,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobService = jobService;
 		}
 
-		public Data.IntegrationPoint GetRDO(int rdoID)
+		public Data.IntegrationPoint GetRdo(int rdoID)
 		{
 			if (_rdo == null || _rdo.ArtifactId != rdoID)
 			{
@@ -41,19 +39,19 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public virtual string GetSourceOptions(int artifactID)
 		{
-			return GetRDO(artifactID).SourceConfiguration;
+			return GetRdo(artifactID).SourceConfiguration;
 		}
 
 		public virtual FieldEntry GetIdentifierFieldEntry(int artifactID)
 		{
-			var rdo = GetRDO(artifactID);
+			var rdo = GetRdo(artifactID);
 			var fields = _serializer.Deserialize<List<FieldMap>>(rdo.FieldMappings);
 			return fields.First(x => x.FieldMapType == FieldMapTypeEnum.Identifier).SourceField;
 		}
 
 		public IntegrationModel ReadIntegrationPoint(int artifactID)
 		{
-			var point = GetRDO(artifactID);
+			var point = GetRdo(artifactID);
 			return new IntegrationModel(point);
 		}
 
@@ -120,7 +118,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public IEnumerable<string> GetRecipientEmails(int integrationPoint)
 		{
-			return (this.GetRDO(integrationPoint).EmailNotificationRecipients ?? string.Empty).Split(';').Select(x => x.Trim());
+			return (this.GetRdo(integrationPoint).EmailNotificationRecipients ?? string.Empty).Split(';').Select(x => x.Trim());
 		}
 		#region Please refactor
 		public class Weekly

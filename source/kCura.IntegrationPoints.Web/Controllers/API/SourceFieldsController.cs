@@ -41,6 +41,5 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			var fields = provider.GetFields(data.Options.ToString()).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
 		}
-
 	}
 }

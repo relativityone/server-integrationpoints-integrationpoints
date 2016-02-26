@@ -3,8 +3,8 @@
     root.importNow = function (artifactId, appid) {
 
         window.Dragon.dialogs.showConfirm({
-            message: 'Are you sure you want to import data now?',
-            title: 'Import Now',
+            message: 'Are you sure you want to run this job now?',
+            title: 'Run Now',
             showCancel: true,
             width: 450,
             success: function (calls) {

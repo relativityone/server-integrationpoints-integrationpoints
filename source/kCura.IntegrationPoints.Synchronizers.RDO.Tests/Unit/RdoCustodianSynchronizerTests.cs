@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Custodian;
 using kCura.Relativity.Client;
-using kCura.Relativity.ImportAPI.Data;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using NSubstitute;
@@ -14,7 +11,7 @@ using Artifact = kCura.Relativity.Client.Artifact;
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 {
 	[TestFixture]
-	public class RDOCustodianSynchronizerTests
+	public class RdoCustodianSynchronizerTests
 	{
 
 		#region GetFields
@@ -69,7 +66,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RDOSynchronizerTest.ChangeWebAPIPath(new RDOCustodianSynchronizer(fieldQuery, GetMockAPI(fieldQuery)));
+			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(fieldQuery, GetMockAPI(fieldQuery)));
 			var fields = sync.GetFields(_settings);
 
 
@@ -102,7 +99,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RDOSynchronizerTest.ChangeWebAPIPath(new RDOCustodianSynchronizer(fieldQuery, GetMockAPI(fieldQuery)));
+			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(fieldQuery, GetMockAPI(fieldQuery)));
 			var fields = sync.GetFields(_settings);
 
 
@@ -134,7 +131,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			fieldQuery.GetFieldsForRdo(Arg.Any<int>()).Returns(artifacts);
 
 			//ACT
-			var sync = RDOSynchronizerTest.ChangeWebAPIPath(new RDOCustodianSynchronizer(fieldQuery, GetMockAPI(fieldQuery)));
+			var sync = RdoSynchronizerTests.ChangeWebAPIPath(new RdoCustodianSynchronizer(fieldQuery, GetMockAPI(fieldQuery)));
 			var fields = sync.GetFields(_settings).ToList();
 
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.ScheduleQueue.Core;
@@ -29,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		public string Convert()
 		{
 			var details = _serializer.Deserialize<TaskParameters>(_job.JobDetails);
-			var history = _historyService.GetRDO(details.BatchInstance);
+			var history = _historyService.GetRdo(details.BatchInstance);
 			var error = _query.GetJobLevelError(history.ArtifactId);
 			return error.Error;
 		}

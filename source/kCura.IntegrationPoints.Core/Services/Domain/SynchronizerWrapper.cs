@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
@@ -9,17 +10,17 @@ namespace kCura.IntegrationPoints.Core.Domain
 {
 	public class SynchronizerWrapper : MarshalByRefObject, IDataSynchronizer
 	{
-		private readonly IDataSynchronizer _syncronizer;
-		public SynchronizerWrapper(IDataSynchronizer syncronizer)
+		private readonly IDataSynchronizer _synchronizer;
+		public SynchronizerWrapper(IDataSynchronizer synchronizer)
 		{
-			_syncronizer = syncronizer;
+			_synchronizer = synchronizer;
 		}
 
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
 			try
 			{
-				return _syncronizer.GetFields(options).ToList();
+				return _synchronizer.GetFields(options).ToList();
 			}
 			catch (Exception e)
 			{
@@ -31,7 +32,19 @@ namespace kCura.IntegrationPoints.Core.Domain
 		{
 			try
 			{
-				_syncronizer.SyncData(data, fieldMap, options);
+				_synchronizer.SyncData(data, fieldMap, options);
+			}
+			catch (Exception e)
+			{
+				throw Utils.GetNonCustomException(e);
+			}
+		}
+
+		public void SyncData(IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
+		{
+			try
+			{
+				_synchronizer.SyncData(data, fieldMap, options);
 			}
 			catch (Exception e)
 			{

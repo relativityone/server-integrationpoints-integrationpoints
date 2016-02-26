@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;  
-using System.Text;
 using kCura.Relativity.Client;
 using kCura.IntegrationPoints.Data.Attributes;
 
@@ -374,6 +372,21 @@ namespace kCura.IntegrationPoints.Data
 				SetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobStatus), value);
 			}
 		}
+
+		[DynamicField(JobHistoryFields.DestinationWorkspace, JobHistoryFieldGuids.DestinationWorkspace, FieldTypes.FixedLengthText, 400)]
+		public string DestinationWorkspace
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(JobHistoryFieldGuids.DestinationWorkspace));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(JobHistoryFieldGuids.DestinationWorkspace), value);
+			}
+		}
+
+
 		[DynamicField(JobHistoryFields.RecordsImported, JobHistoryFieldGuids.RecordsImported, FieldTypes.WholeNumber)]
 		public int? RecordsImported
 		{
@@ -510,6 +523,19 @@ namespace kCura.IntegrationPoints.Data
 			set
 			{
 				SetField<string>(new System.Guid(JobHistoryErrorFieldGuids.Error), value);
+			}
+		}
+
+		[DynamicField(JobHistoryErrorFields.StackTrace, JobHistoryErrorFieldGuids.StackTrace, FieldTypes.LongText)]
+		public string StackTrace
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(JobHistoryErrorFieldGuids.StackTrace));
+			}
+			set
+			{
+				SetField<string>(new System.Guid(JobHistoryErrorFieldGuids.StackTrace), value);
 			}
 		}
 		[DynamicField(JobHistoryErrorFields.TimestampUTC, JobHistoryErrorFieldGuids.TimestampUTC, FieldTypes.Date)]

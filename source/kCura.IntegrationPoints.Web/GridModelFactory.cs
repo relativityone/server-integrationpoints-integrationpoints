@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.Relativity.Client;
 using Relativity.DragonGrid.Core.Grid;
 
 namespace kCura.IntegrationPoints.Web

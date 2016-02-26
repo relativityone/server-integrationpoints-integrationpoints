@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Queries;
 using Relativity.API;
 
-
 namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 {
 	internal class ImportService : IImportService
@@ -35,28 +34,33 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 		public void InstallProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providers)
 		{
 			IList<SourceProvider> sourceProviders = providers as IList<SourceProvider> ?? providers.ToList();
-			int applicationID = sourceProviders.Select(x => x.ApplicationID).First();
-			Guid applicationGuid = GetApplicationGuid(applicationID);
-			sourceProviders.ToList().ForEach(x => x.ApplicationGUID = applicationGuid);
 
-			InstallSyncronizerForCoreOnly(applicationGuid);
+			// install one provider at a time
+			foreach (SourceProvider provider in sourceProviders)
+			{
+				// when we migrate providers, we should already know which app does the provider belong to.
+				if (provider.ApplicationGUID == Guid.Empty)
+				{
+					provider.ApplicationGUID = GetApplicationGuid(provider.ApplicationID);
+				}
 
-			ValidateProviders(sourceProviders);
+				InstallSynchronizerForCoreOnly(provider.ApplicationGUID);
+				ValidateProvider(provider);
 
-			List<Data.SourceProvider> installedRdoProviders =
-				new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(applicationGuid);
-			Dictionary<string, SourceProviderInstaller.SourceProvider> installingProviderDict = sourceProviders.ToDictionary(x => x.GUID.ToString(), x => x);
-			Dictionary<string, Data.SourceProvider> installedRdoProviderDict = installedRdoProviders.ToDictionary(x => x.Identifier, x => x);
+				List<Data.SourceProvider> installedRdoProviders = new GetSourceProviderRdoByApplicationIdentifier(_caseContext).Execute(provider.ApplicationGUID);
+				Dictionary<string, Data.SourceProvider> installedRdoProviderDict = installedRdoProviders.ToDictionary(x => x.Identifier, x => x);
 
-			List<Data.SourceProvider> providersToBeUpdated =
-				installedRdoProviders.Where(x => installingProviderDict.ContainsKey(x.Identifier)).ToList();
-
-			List<SourceProviderInstaller.SourceProvider> providersToBeInstalled =
-				sourceProviders.Where(x => !installedRdoProviderDict.ContainsKey(x.GUID.ToString())).ToList();
-
-			UpdateExistingProviders(providersToBeUpdated, sourceProviders);
-
-			AddNewProviders(providersToBeInstalled);
+				string identifier = provider.GUID.ToString();
+				if (installedRdoProviderDict.ContainsKey(identifier))
+				{
+					Data.SourceProvider providerToUpdate = installedRdoProviderDict[identifier];
+					UpdateExistingProviders(new List<Data.SourceProvider>() { providerToUpdate }, new []{ provider });
+				}
+				else
+				{
+					AddNewProviders(new[] { provider });
+				}
+			}
 		}
 
 		public void UninstallProvider(int applicationID)
@@ -73,12 +77,12 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			{ }
 		}
 
-		private void InstallSyncronizerForCoreOnly(Guid applicationGuid)
+		private void InstallSynchronizerForCoreOnly(Guid applicationGuid)
 		{
 			//This is hack untill we introduce installation of Destination Providers
 			if (applicationGuid == new Guid(Application.GUID))
 			{
-				new Core.Services.Syncronizer.RDOSyncronizerProvider(_caseContext).CreateOrUpdateLdapSourceType();
+				new Core.Services.Synchronizer.RdoSynchronizerProvider(_caseContext).CreateOrUpdateLdapSourceType();
 			}
 		}
 
@@ -134,18 +138,16 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			}
 		}
 
-		private void ValidateProviders(IEnumerable<SourceProviderInstaller.SourceProvider> providers)
+		private void ValidateProvider(SourceProvider provider)
 		{
 			ISourcePluginProvider pluginProvider =
 				new DefaultSourcePluginProvider(new GetApplicationBinaries(_eddsContext.SqlContext));
 			using (AppDomainFactory factory = new AppDomainFactory(new DomainHelper(), pluginProvider, new RelativityFeaturePathService()))
 			{
-				foreach (SourceProviderInstaller.SourceProvider provider in providers)
-				{
-					TryLoadingProvider(factory, provider);
-				}
+				TryLoadingProvider(factory, provider);
 			}
 		}
+
 
 		private Guid GetApplicationGuid(int applicationID)
 		{
