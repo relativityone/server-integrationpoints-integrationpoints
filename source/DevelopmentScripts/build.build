@@ -264,7 +264,7 @@
 	
 	<target name="merge_documentsTransfer" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
-			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />
 			<arg line='/out:"${target.code.directory}\kCura.DocumentTransferProvider.dll"' />
 			<arg line='/internalize:excludeDocsTransfer.txt' />
 			<arg line='/log' />
