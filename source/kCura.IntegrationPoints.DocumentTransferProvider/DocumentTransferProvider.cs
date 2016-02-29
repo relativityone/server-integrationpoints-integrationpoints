@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		private QueryDataItemResult[] GetRelativityFields(int workspaceId, int rdoTypeId)
 		{
-			IRDORepository rdoRepository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), workspaceId, rdoTypeId);
+			IRDORepository rdoRepository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), workspaceId, Convert.ToInt32(ArtifactType.Field));
 			var fieldQuery = new Query()
 			{
 				Fields = new []{ "Name", "Choices", "Object Type Artifact Type ID", "Field Type", "Field Type ID", "Is Identifier", "Field Type Name"},
@@ -71,16 +71,17 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			foreach (QueryDataItemResult result in fields)
 			{
 				DataItemFieldResult idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
+				DataItemFieldResult nameField = result.Fields.First(x => x.Name.Equals("Name"));
 				bool isIdentifier = false;
 				if (idField != null)
 				{
 					isIdentifier = Convert.ToInt32(idField.Value) == 1;
 					if (isIdentifier)
 					{
-						idField.Name += Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT;
+						nameField.Value += Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT;
 					}
 				}
-				yield return new FieldEntry() { DisplayName = result.TextIdentifier, FieldIdentifier = result.ArtifactId.ToString(), IsIdentifier = isIdentifier, IsRequired = false };
+				yield return new FieldEntry() { DisplayName = (string) nameField.Value, FieldIdentifier = result.ArtifactId.ToString(), IsIdentifier = isIdentifier, IsRequired = false };
 			}
 		}
 
