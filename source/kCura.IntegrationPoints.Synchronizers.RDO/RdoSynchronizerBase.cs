@@ -259,7 +259,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			}
 			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
 			{
-				settings.FolderPathSourceFieldName = fieldMap.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation).SourceField.ActualName;
+				settings.FolderPathSourceFieldName = fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation).SourceField.ActualName;
 			}
 			return settings;
 		}
