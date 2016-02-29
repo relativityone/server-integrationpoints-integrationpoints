@@ -194,7 +194,9 @@ ko.validation.insertValidationMessage = function (element) {
 		this.FolderPathFields = ko.observableArray([]);
 		if (self.FolderPathFields.length === 0) {
 			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetFolderPathFields') }).then(function (result) {
+				// GetFolderPathFields only returns fixed-length text and long text fields
 				self.FolderPathFields(result);
+				self.nativeFilePathOption(result);
 			});
 		}
 
@@ -337,7 +339,6 @@ ko.validation.insertValidationMessage = function (element) {
 
 				var types = mapFields(sourceFields);
 				self.overlay(destinationFields);
-				self.nativeFilePathOption(sourceFields);
 				$.each(self.overlay(), function () {
 					if (this.isIdentifier) {
 						self.rdoIdentifier(this.displayName);

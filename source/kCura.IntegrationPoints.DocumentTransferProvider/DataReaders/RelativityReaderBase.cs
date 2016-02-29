@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.Relativity.Client.DTOs;
 
@@ -200,6 +198,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				}
 			}
 		}
+
 		protected void FetchDataToRead(Func<QueryResultSet<Document>> functionToGetDocuments)
 		{
 			try
