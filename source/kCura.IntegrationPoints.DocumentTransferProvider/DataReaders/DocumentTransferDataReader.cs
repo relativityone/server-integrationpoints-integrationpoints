@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
@@ -12,20 +13,22 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
 	public class DocumentTransferDataReader : RelativityReaderBase
 	{
-		private readonly IEnumerable<int> _documentArtifactIds;
+		private readonly int[] _documentArtifactIds;
 		private readonly IEnumerable<FieldEntry> _fieldEntries;
 		private readonly HashSet<int> _longTextFieldArtifactIds;
+		private readonly FieldValueLoader _fieldsLoader;
 
 		public DocumentTransferDataReader(IRelativityClientAdaptor relativityClientAdaptor,
 			IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries,
 			List<Relativity.Client.Artifact> longTextfieldEntries) :
 			base(relativityClientAdaptor, GenerateDataColumnsFromFieldEntries(fieldEntries))
 		{
-			_documentArtifactIds = documentArtifactIds;
+			_documentArtifactIds = documentArtifactIds.ToArray();
 			_fieldEntries = fieldEntries.ToList();
-
 			// From SynchronizerObjectBuilder, the existing framework assuming that the reader from get data will use artifact Id as the name of the column.
 			_longTextFieldArtifactIds = new HashSet<int>(longTextfieldEntries.Select(artifact => Convert.ToInt32(artifact.ArtifactID)));
+			_fieldsLoader = new FieldValueLoader(relativityClientAdaptor, longTextfieldEntries.Select(artifact => Convert.ToInt32(artifact.ArtifactID)).ToArray(),
+				_documentArtifactIds);
 		}
 
 		private static DataColumn[] GenerateDataColumnsFromFieldEntries(IEnumerable<FieldEntry> fieldEntries)
@@ -81,51 +84,41 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			return result;
 		}
 
+
+		private int _localCacheId;
+		private List<FieldValue> _localCache;
+		private string GetLongTextFieldFromPreLoadedCache(int documentArtifactId, int fieldArtifactId)
+		{
+			if (documentArtifactId != _localCacheId)
+			{
+				Task<List<FieldValue>> getLongTextFieldsTasks = _fieldsLoader.GetFieldsValue(documentArtifactId);
+				try
+				{
+					getLongTextFieldsTasks.Wait();
+
+					if (getLongTextFieldsTasks.IsCompleted)
+					{
+						if (getLongTextFieldsTasks.Exception != null)
+						{
+							throw getLongTextFieldsTasks.Exception;
+						}
+
+						_localCacheId = documentArtifactId;
+						_localCache = getLongTextFieldsTasks.Result;
+					}
+				}
+				catch (Exception exception)
+				{
+					throw exception.InnerException ?? exception;
+				}
+			}
+			return _localCache.First(field => field.ArtifactID == fieldArtifactId).ValueAsLongText;
+		}
+
 		private String LoadLongTextFieldValueOfCurrentDocument(int fieldArtifactId)
 		{
-			return GetLongTextFieldValue(CurrentDocument.ArtifactID, fieldArtifactId);
+			return GetLongTextFieldFromPreLoadedCache(CurrentDocument.ArtifactID, fieldArtifactId);
 		}
 
-		private String GetLongTextFieldValue(int documentArtifactId, int longTextFieldArtifactId)
-		{
-			Document documentQuery = new Document(documentArtifactId)
-			{
-				Fields = new List<FieldValue>() { new FieldValue(longTextFieldArtifactId) }
-			};
-
-			ResultSet<Document> results = null;
-			try
-			{
-				results = RelativityClient.ReadDocument(documentQuery);
-			}
-			catch (Exception e)
-			{
-				const string exceptionMessage = "Unable to read document of artifact id {0}. This may be due to the size of the field. Please reconfigure Relativity.Services' web.config to resolve the issue.";
-				throw new ProviderReadDataException(String.Format(exceptionMessage, documentArtifactId), e)
-				{
-					Identifier = documentArtifactId.ToString()
-				};
-			}
-
-			var document = results.Results.FirstOrDefault();
-			if (results.Success == false || document == null)
-			{
-				throw new ProviderReadDataException(String.Format("Unable to find a document object with artifact Id of {0}", documentArtifactId))
-				{
-					Identifier = documentArtifactId.ToString()
-				};
-			}
-
-			Document documentArtifact = document.Artifact;
-			var extractedText = documentArtifact.Fields.FirstOrDefault();
-			if (extractedText == null)
-			{
-				throw new ProviderReadDataException(String.Format("Unable to find a long field with artifact Id of {0}", longTextFieldArtifactId))
-				{
-					Identifier = documentArtifactId.ToString()
-				};
-			}
-			return extractedText.ValueAsLongText;
-		}
 	}
 }
