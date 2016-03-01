@@ -1,6 +1,8 @@
 ﻿using System;
+using Castle.Windsor.Installer;
 using kCura.Relativity.Client;
 using kCura.IntegrationPoints.Data.Attributes;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -267,6 +269,33 @@ namespace kCura.IntegrationPoints.Data
 				SetField<string>(new System.Guid(SourceProviderFieldGuids.Name), value);
 			}
 		}
+
+		public SourceProviderConfiguration Config
+		{
+			get
+			{
+				return JsonConvert.DeserializeObject<SourceProviderConfiguration>(Configuration);
+			}
+			set
+			{
+				string val = JsonConvert.SerializeObject(value);
+				Configuration = val;
+			}
+		}
+
+		[DynamicField(SourceProviderFields.Configuration, SourceProviderFieldGuids.Configuration, FieldTypes.LongText)]
+		public string Configuration 
+		{
+			get
+			{
+				return GetField<string>(new System.Guid(SourceProviderFieldGuids.Configuration));
+			}
+			private set
+			{
+				SetField<string>(new System.Guid(SourceProviderFieldGuids.Configuration), value);
+			}
+		}
+
 		private static System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> _fieldMetadata;
 		public override System.Collections.Generic.Dictionary<Guid, DynamicFieldAttribute> FieldMetadata
 		{

@@ -114,24 +114,27 @@ var IP = IP || {};
 		initDatePicker($('#scheduleRulesStartDate, #scheduleRulesEndDate'))
 	});
 
-	var Choice = function (name, value, artifactID) {
+	var Choice = function (name, value, artifactID, object) {
 		this.displayName = name;
 		this.value = value;
 		this.artifactID = artifactID;
+		this.model = object;
 	};
 
-	var Source = function (s) {
+	var Source = function (s, destination) {
 		var settings = $.extend({}, s);
 		this.templateID = 'ldapSourceConfig';
 		var self = this;
+		self.destination = destination;
 
 		this.sourceTypes = ko.observableArray();
-
 		this.selectedType = ko.observable().extend({ required: true });
+
+
 		this.sourceProvider = settings.sourceProvider || 0;
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
 			var types = $.map(result, function (entry) {
-				var c = new Choice(entry.name, entry.value, entry.id);
+				var c = new Choice(entry.name, entry.value, entry.id, entry);
 				c.href = entry.url;
 				return c;
 			});
@@ -148,6 +151,18 @@ var IP = IP || {};
 			$.each(self.sourceTypes(), function () {
 				if (this.value === selectedValue) {
 					self.sourceProvider = this.artifactID;
+					if (typeof this.model.config.compatibleRdoTypes === 'undefined' || this.model.config.compatibleRdoTypes === null) {
+						self.destination.rdoTypes(self.destination.allRdoTypes());
+					} else {
+						var compatibleRdos = this.model.config.compatibleRdoTypes;
+						var rdosToDisplay = [];
+						$.each(self.destination.allRdoTypes(), function () {
+							if (compatibleRdos.indexOf(this.value) > -1) {
+								rdosToDisplay.push(this);
+							}
+						});
+						self.destination.rdoTypes(rdosToDisplay);
+					}
 				}
 			});
 		});
@@ -166,13 +181,14 @@ var IP = IP || {};
 			var types = $.map(result, function (entry) {
 				return new Choice(entry.name, entry.value);
 			});
-			self.rdoTypes(types);
+			self.allRdoTypes(types);
 			self.artifactTypeID(settings.artifactTypeID); //this can only be populated after all the types are loaded.
 		}, function () {
 
 		});
 
 		this.templateID = 'ldapDestinationConfig';
+		this.allRdoTypes = ko.observableArray();
 		this.rdoTypes = ko.observableArray();
 
 		self.artifactTypeID = ko.observable().extend({ required: true });
@@ -435,8 +451,10 @@ var IP = IP || {};
 
 		this.logErrors = ko.observable(settings.logErrors.toString());
 		this.showErrors = ko.observable(false);
-		this.source = new Source(settings.source);
+
 		this.destination = new Destination(settings.destination);
+		this.source = new Source(settings.source, self.destination);
+
 		this.destinationProvider = settings.destinationProvider;
 		this.notificationEmails = ko.observable(settings.notificationEmails).extend({
 			emailList: {

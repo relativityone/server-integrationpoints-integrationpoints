@@ -10,5 +10,7 @@ namespace kCura.IntegrationPoints.Data
 	public interface IObjectTypeQuery
 	{
 		List<ObjectType> GetAllTypes(int userId);
+
+		Dictionary<Guid, int> GetRdoGuidToArtifactIdMap(int userId);
 	}
 }

@@ -95,6 +95,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string ApplicationIdentifier = @"Application Identifier";
 		public const string ViewConfigurationUrl = @"View Configuration Url";
 		public const string Name = @"Name";
+		public const string Configuration = @"Configuration";
 	}
 
 	public partial class SourceProviderFieldGuids 
@@ -104,6 +105,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string ApplicationIdentifier = @"0e696f9e-0e14-40f9-8cd7-34195defe5de";
 		public const string ViewConfigurationUrl = @"bb036af8-1309-4f66-98f3-3495285b4a4b";
 		public const string Name = @"9073997b-319e-482f-92fe-67e0b5860c1b";
+		public const string Configuration = @"A85E3E30-E56A-4DDB-9282-FC37DC5E70D3";
 	}
 
 
