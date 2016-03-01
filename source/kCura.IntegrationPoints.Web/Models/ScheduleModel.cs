@@ -8,7 +8,6 @@ using System.Web.Mvc;
 using kCura.Method.Web.Controls.Attributes;
 using kCura.Method.Web.Controls.Attributes.Validation;
 using kCura.Method.Web.Controls.Models.Controls;
-using Microsoft.Ajax.Utilities;
 
 namespace kCura.IntegrationPoints.Web.Models
 {

@@ -5,7 +5,6 @@ using System.Web.Http;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 
-
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class ImportNowController : ApiController
@@ -13,6 +12,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IJobManager _jobManager;
 		private IntegrationPointService _integrationPointService;
 		private JobHistoryService _jobHistoryService;
+
 		public ImportNowController(IJobManager jobManager, IntegrationPointService integrationPointService, JobHistoryService jobHistoryService)
 		{
 			_jobManager = jobManager;
@@ -33,6 +33,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			Data.IntegrationPoint integrationPoint = _integrationPointService.GetRdo(relatedObjectArtifactID);
 			_jobHistoryService.CreateRdo(integrationPoint, batchInstance, null);
 			_jobManager.CreateJob(jobDetails, TaskType.SyncManager, workspaceID, relatedObjectArtifactID);
+
 			return Request.CreateResponse(HttpStatusCode.OK);
 		}
 

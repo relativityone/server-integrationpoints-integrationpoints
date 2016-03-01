@@ -181,6 +181,25 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
 
+		this.UseFolderPathInformation = ko.observable(model.UseFolderPathInformation || "false");
+		this.FolderPathSourceField = ko.observable(model.FolderPathSourceField).extend(
+		{
+			required: {
+				onlyIf: function () {
+					return self.UseFolderPathInformation() === 'true';
+				}
+			}
+		});
+
+		this.FolderPathFields = ko.observableArray([]);
+		if (self.FolderPathFields.length === 0) {
+			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetFolderPathFields') }).then(function (result) {
+				// GetFolderPathFields only returns fixed-length text and long text fields
+				self.FolderPathFields(result);
+				self.nativeFilePathOption(result);
+			});
+		}
+
 		this.ExtractedTextFieldContainsFilePath = ko.observable(model.ExtractedTextFieldContainsFilePath || "false");
 		this.ExtractedTextFileEncoding = ko.observable(model.ExtractedTextFileEncoding || "utf-16").extend(
 		{
@@ -320,7 +339,6 @@ ko.validation.insertValidationMessage = function (element) {
 
 				var types = mapFields(sourceFields);
 				self.overlay(destinationFields);
-				self.nativeFilePathOption(sourceFields);
 				$.each(self.overlay(), function () {
 					if (this.isIdentifier) {
 						self.rdoIdentifier(this.displayName);
@@ -438,6 +456,8 @@ ko.validation.insertValidationMessage = function (element) {
 				CustodianManagerFieldContainsLink: model.CustodianManagerFieldContainsLink,
 				importNativeFile: model.importNativeFile,
 				nativeFilePathValue: model.nativeFilePathValue,
+				UseFolderPathInformation: model.UseFolderPathInformation,
+				FolderPathSourceField: model.FolderPathSourceField,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
 				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
 		} || '';
@@ -496,6 +516,8 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.nativeFilePathValue = this.model.nativeFilePathValue();
 			this.returnModel.identifer = this.model.selectedUniqueId();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
+			this.returnModel.UseFolderPathInformation = this.model.UseFolderPathInformation();
+			this.returnModel.FolderPathSourceField = this.model.FolderPathSourceField();
 			this.returnModel.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
 			this.returnModel.ExtractedTextFileEncoding = this.model.ExtractedTextFileEncoding();
 
@@ -575,6 +597,32 @@ ko.validation.insertValidationMessage = function (element) {
 							fieldMapType: "NativeFilePath"
 						});
 					}
+					if (this.model.UseFolderPathInformation() == "true") {
+						var folderPathField = "";
+						var folderPathFields = this.model.FolderPathFields();
+						for (var i = 0; i < folderPathFields.length; i++) {
+							if (folderPathFields[i].fieldIdentifier === this.model.FolderPathSourceField()) {
+								folderPathField = folderPathFields[i];
+							}
+						}
+						var entry =
+						{
+							displayName: folderPathField.actualName,
+							isIdentifier: "false",
+							fieldIdentifier: folderPathField.fieldIdentifier,
+							isRequired: "false"
+						}
+
+						map.push({
+							sourceField: entry,
+							destinationField: {},
+							fieldMapType: "FolderPathInformation"
+						});
+					}
+
+					// pushing create folder setting
+					_destination.UseFolderPathInformation = this.model.UseFolderPathInformation();
+					_destination.FolderPathSourceField = this.model.FolderPathSourceField();
 
 					// pushing extracted text location setting
 					_destination.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();

@@ -95,6 +95,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string ApplicationIdentifier = @"Application Identifier";
 		public const string ViewConfigurationUrl = @"View Configuration Url";
 		public const string Name = @"Name";
+		public const string Configuration = @"Configuration";
 	}
 
 	public partial class SourceProviderFieldGuids 
@@ -104,6 +105,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string ApplicationIdentifier = @"0e696f9e-0e14-40f9-8cd7-34195defe5de";
 		public const string ViewConfigurationUrl = @"bb036af8-1309-4f66-98f3-3495285b4a4b";
 		public const string Name = @"9073997b-319e-482f-92fe-67e0b5860c1b";
+		public const string Configuration = @"A85E3E30-E56A-4DDB-9282-FC37DC5E70D3";
 	}
 
 
@@ -127,6 +129,7 @@ namespace kCura.IntegrationPoints.Data
 	public partial class JobHistoryFields : BaseFields
 	{
 		public const string JobStatus = @"Job Status";
+		public const string DestinationWorkspace = "Destination Workspace";
 		public const string RecordsImported = @"Records Imported";
 		public const string RecordsWithErrors = @"Records with Errors";
 		public const string StartTimeUTC = @"Start Time (UTC)";
@@ -140,6 +143,7 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public const string JobStatus = @"5c28ce93-c62f-4d25-98c9-9a330a6feb52";
 		public const string RecordsImported = @"70680399-c8ea-4b12-b711-e9ecbc53cb1c";
+		public const string DestinationWorkspace = @"FF01A766-B494-4F2C-9CBB-10A5AB163B8D";
 		public const string RecordsWithErrors = @"c224104f-c1ca-4caa-9189-657e01d5504e";
 		public const string StartTimeUTC = @"25b7c8ef-66d9-41d1-a8de-29a93e47fb11";
 		public const string EndTimeUTC = @"4736cf49-ad0f-4f02-aaaa-898e07400f22";
@@ -155,6 +159,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string JobHistory = @"JobHistory";
 		public const string SourceUniqueID = @"Source Unique ID";
 		public const string Error = @"Error";
+		public const string StackTrace = @"StackTrace";
 		public const string TimestampUTC = @"Timestamp (UTC)";
 		public const string ErrorType = @"Error Type";
 		public const string Name = @"Name";
@@ -165,6 +170,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string JobHistory = @"8b747b91-0627-4130-8e53-2931ffc4135f";
 		public const string SourceUniqueID = @"5519435e-ee82-4820-9546-f1af46121901";
 		public const string Error = @"4112b894-35b0-4e53-ab99-c9036d08269d";
+		public const string StackTrace = "0353DBDE-9E00-4227-8A8F-4380A8891CFF";
 		public const string TimestampUTC = @"b9cba772-e7c9-493e-b7f8-8d605a6bfe1f";
 		public const string ErrorType = @"eeffa5d3-82e3-46f8-9762-b4053d73f973";
 		public const string Name = @"84e757cc-9da2-435d-b288-0c21ec589e66";

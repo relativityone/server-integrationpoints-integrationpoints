@@ -4,7 +4,7 @@ SET BUILDCONFIG=Debug
 SET BUILDACTION=build
 SET BUILDPROJECT=Build.build
 SET SIGNOUTPUT=false
-SET CASEID=1014823
+SET CASEID=""
 
 if "%1" == "/?" goto help
 if "%1" == "-?" goto help
@@ -24,7 +24,7 @@ if not "%3" == "" (
 
 SET LDAPSyncRoot=%LDAPSync%
 pushd %LDAPSync%\developmentscripts
-nant build_all -buildfile:"%BUILDPROJECT%" "-D:root=%LDAPSyncRoot%" "-D:buildconfig=%BUILDCONFIG%" "-D:action=%BUILDACTION%" "-D:DevEnv=DEVENV" "-D:signOutput=SIGNOUTPUT"
+nant build_all -buildfile:"%BUILDPROJECT%" "-D:root=%LDAPSyncRoot%" "-D:buildconfig=%BUILDCONFIG%" "-D:action=%BUILDACTION%" "-D:DevEnv=DEVENV" "-D:signOutput=SIGNOUTPUT" -D:caseId=%CASEID%
 popd
 goto end
 

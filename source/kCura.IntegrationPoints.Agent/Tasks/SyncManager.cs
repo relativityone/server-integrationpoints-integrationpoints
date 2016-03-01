@@ -12,8 +12,10 @@ using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -32,6 +34,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private JobHistoryService _jobHistoryService;
 		private JobHistoryErrorService _jobHistoryErrorService;
 		private IEnumerable<Core.IBatchStatus> _batchStatus;
+		private bool _errorOccurred;
 
 		public IEnumerable<Core.IBatchStatus> BatchStatus
 		{
@@ -68,6 +71,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			BatchJobCount = 0;
 			BatchInstance = Guid.NewGuid();
 			_batchStatus = batchStatuses;
+			_errorOccurred = false;
 		}
 
 		public Data.IntegrationPoint IntegrationPoint { get; set; }
@@ -109,6 +113,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (Exception ex)
 			{
+				_errorOccurred = true;
 				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 			}
 			finally
@@ -162,7 +167,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					throw new ArgumentNullException("Job must have a Related Object ArtifactID");
 				}
-				var integrationPointID = job.RelatedObjectArtifactID;
+
 				this.IntegrationPoint = _integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 				if (this.IntegrationPoint.SourceProvider == 0)
 				{
@@ -206,7 +211,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					//no worker jobs were submitted
 					this.JobHistory.EndTimeUTC = DateTime.UtcNow;
-					this.JobHistory.JobStatus = JobStatusChoices.JobHistoryCompleted;
+					if (_errorOccurred)
+					{
+						this.JobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
+						_errorOccurred = false;
+					}
+					else
+					{
+						this.JobHistory.JobStatus = JobStatusChoices.JobHistoryCompleted;
+					}
 					_caseServiceContext.RsapiService.JobHistoryLibrary.Update(this.JobHistory);
 				}
 			}

@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			string authToken = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
 
 			// TODO: we need to make IIntegrationPointsConfig a dependency or use a factory -- biedrzycki: Feb 16th, 2016
-			IIntegrationPointsConfig config = new ConfigAdapter(_helper.GetDBContext(-1));
+			IIntegrationPointsConfig config = new ConfigAdapter();
 			return new ExtendedImportAPI(username, authToken, config.GetWebApiUrl);
 		}
 

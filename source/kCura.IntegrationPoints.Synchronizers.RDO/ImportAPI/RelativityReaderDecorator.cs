@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
 	/// <summary>
 	/// The objective of this class is to allow dynamic reading of sources to destination in import api.
-	/// NOTE : The assumption is that the column names are artifact id of the fields due to the prior imprementation of the framework.
+	/// NOTE : The assumption is that the column names are artifact id of the fields due to the prior implementation of the framework.
 	/// </summary>
 	public class RelativityReaderDecorator : IDataReader
 	{
@@ -28,13 +28,28 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			for (int i = 0; i < mappingFields.Length; i++)
 			{
 				FieldMap map = mappingFields[i];
-				_targetNameToSourceIdentifier[map.DestinationField.ActualName] = map.SourceField.FieldIdentifier;
-				_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = map.DestinationField.ActualName;
-
-				// there should be only one, but the existing model of data structure are allowing multiple identifier fields.
-				if (map.DestinationField.IsIdentifier)
+				if (map.FieldMapType == FieldMapTypeEnum.NativeFilePath)
 				{
-					_identifiers.Add(map.DestinationField.ActualName);
+					const string nativeFileDestinationField = "NATIVE_FILE_PATH_001";
+					_targetNameToSourceIdentifier[nativeFileDestinationField] = map.SourceField.FieldIdentifier;
+					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = nativeFileDestinationField;
+				}
+				else if (map.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
+				{
+					const string folderPathInformationField = "virtual path";
+					_targetNameToSourceIdentifier[folderPathInformationField] = map.SourceField.FieldIdentifier;
+					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = folderPathInformationField;
+				}
+				else if (map.DestinationField != null && map.SourceField != null)
+				{
+					_targetNameToSourceIdentifier[map.DestinationField.ActualName] = map.SourceField.FieldIdentifier;
+					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = map.DestinationField.ActualName;
+
+					// there should be only one, but the existing model of data structure are allowing multiple identifier fields.
+					if (map.DestinationField.IsIdentifier)
+					{
+						_identifiers.Add(map.DestinationField.ActualName);
+					}
 				}
 			}
 		}
@@ -43,12 +58,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			get
 			{
-				object result = null;
+				if (_targetNameToSourceIdentifier.ContainsKey(name) == false)
+				{
+					throw new IndexOutOfRangeException(String.Format("{0} does not exist in the data table", name));
+				}
 				string sourceName = _targetNameToSourceIdentifier[name];
-				result = _source[sourceName];
+				object result = _source[sourceName];
 				if ((result == null || result == DBNull.Value) && _identifiers.Contains(name))
 				{
-					throw new Exception(String.Format("Identifier[{0}] must have a value.", name));
+					throw new IndexOutOfRangeException(String.Format("Identifier[{0}] must have a value.", name));
 				}
 				return result;
 			}
@@ -175,14 +193,22 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		public string GetName(int i)
 		{
+			if (FieldCount <= i)
+			{
+				throw new IndexOutOfRangeException(String.Format("Ordinal [{0}] does not exist in the data table", i));
+			}
 			string sourceName =  _source.GetName(i);
 			return _sourceIdentifierToTargetName[sourceName];
 		}
 
 		public int GetOrdinal(string name)
 		{
-			string sourceIdentifier = _targetNameToSourceIdentifier[name];
-			return _source.GetOrdinal(sourceIdentifier);
+			if (_targetNameToSourceIdentifier.ContainsKey(name))
+			{
+				string sourceIdentifier = _targetNameToSourceIdentifier[name];
+				return _source.GetOrdinal(sourceIdentifier);
+			}
+			throw new IndexOutOfRangeException(String.Format("{0} does not exist in the data table", name));
 		}
 
 		public DataTable GetSchemaTable()

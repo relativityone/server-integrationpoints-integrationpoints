@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (AuthenticationException e)
 			{
-				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, string.Empty, e.Message);
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, string.Empty, e.Message, e.StackTrace);
 			}
 			catch (Exception ex)
 			{
@@ -255,6 +255,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		internal virtual IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
 		{
+
 			Guid providerGuid = new Guid(destinationProviderRdo.Identifier);
 			var factory = _appDomainRdoSynchronizerFactoryFactory as GeneralWithCustodianRdoSynchronizerFactory;
 			if (factory != null)
@@ -282,7 +283,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (Exception ex)
 			{
-				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyUniqueIdentifier", ex.Message);
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyUniqueIdentifier", ex.Message, ex.StackTrace);
 			}
 		}
 	}

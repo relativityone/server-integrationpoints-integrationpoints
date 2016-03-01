@@ -1,11 +1,27 @@
-﻿using Castle.Core;
+﻿using System;
+using Castle.Core;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Queries;
+using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
 	public class CaseServiceContext : ICaseServiceContext
 	{
+		private string _workspaceName;
+
+		public string GetWorkspaceName(int workspaceId)
+		{
+			if (_workspaceName == null)
+			{
+				WorkspaceQuery query = new WorkspaceQuery(helper.GetRsapiClient(ExecutionIdentity.CurrentUser));
+				Workspace workspace = query.GetWorkspace(workspaceId);
+				_workspaceName = workspace.Name;
+			}
+			return _workspaceName;
+		}
+
 		public int WorkspaceID { get; set; }
 
 		private int? _eddsUserID;

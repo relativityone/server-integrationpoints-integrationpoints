@@ -88,18 +88,19 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			return isFull;
 		}
 
-		public void CleanUp(){}
+		public void CleanUp() { }
 
 		public virtual void KickOffImport(IDataReader dataReader)
 		{
 			ImportBulkArtifactJob importJob = _importAPI.NewObjectImportJob(Settings.ArtifactTypeId);
 			importJob.SourceData.SourceData = dataReader;
-
 			importJob.Settings.ArtifactTypeId = Settings.ArtifactTypeId;
 			importJob.Settings.AuditLevel = Settings.AuditLevel;
 			importJob.Settings.CaseArtifactId = Settings.CaseArtifactId;
+			importJob.Settings.DestinationFolderArtifactID = GetDestinationFolderArtifactID();
 			importJob.Settings.BulkLoadFileFieldDelimiter = Settings.BulkLoadFileFieldDelimiter;
 			importJob.Settings.CopyFilesToDocumentRepository = Settings.CopyFilesToDocumentRepository;
+			importJob.Settings.DestinationFolderArtifactID = Settings.DestinationFolderArtifactID;
 			importJob.Settings.DisableControlNumberCompatibilityMode = Settings.DisableControlNumberCompatibilityMode;
 			importJob.Settings.DisableExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck;
 			importJob.Settings.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation;
@@ -275,8 +276,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		private bool ShouldProcessError(JobReport.RowError error)
 		{
-			if (this.Settings.OverwriteMode == OverwriteModeEnum.Overlay
-	&& error.Message.Contains("no document to overwrite"))
+			if (this.Settings.OverwriteMode == OverwriteModeEnum.Overlay && error.Message.Contains("no document to overwrite"))
 			{
 				//skip
 				return false;
@@ -296,6 +296,36 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			if (OnBatchComplete != null)
 			{
 				OnBatchComplete(start, end, totalRows, errorRows);
+			}
+		}
+
+		private int GetDestinationFolderArtifactID()
+		{
+			int destinationFolderArtifactID = 0;
+			if (CurrentWorkspace != null)
+			{
+				if (Settings.ArtifactTypeId == (int)kCura.Relativity.Client.ArtifactType.Document)
+				{
+					destinationFolderArtifactID = CurrentWorkspace.RootFolderID;
+				}
+				else
+				{
+					destinationFolderArtifactID = CurrentWorkspace.RootArtifactID;
+				}
+			}
+			return destinationFolderArtifactID;
+		}
+
+		private Workspace _currentWorkspace;
+		private Workspace CurrentWorkspace
+		{
+			get
+			{
+				if (_currentWorkspace == null)
+				{
+					_currentWorkspace = _importAPI.Workspaces().First(x => x.ArtifactID.Equals(Settings.CaseArtifactId));
+				}
+				return _currentWorkspace;
 			}
 		}
 	}

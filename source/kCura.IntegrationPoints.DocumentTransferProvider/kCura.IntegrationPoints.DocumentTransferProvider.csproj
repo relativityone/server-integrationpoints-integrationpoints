@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="kCura.Config, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\kCura.Config.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
@@ -59,7 +63,8 @@
     <Compile Include="Adaptors\Implementations\ConfigAdapter.cs" />
     <Compile Include="Adaptors\IIntegrationPointsConfig.cs" />
     <Compile Include="DataReaders\DocumentArtifactIdDataReader.cs" />
-    <Compile Include="DataReaders\DocumentTranfserDataReader.cs" />
+    <Compile Include="DataReaders\DocumentTransferDataReader.cs" />
+    <Compile Include="DataReaders\FieldValueLoader.cs" />
     <Compile Include="DataReaders\RelativityReaderBase.cs" />
     <Compile Include="DocumentTransferProvider.cs" />
     <Compile Include="DocumentTransferSettings.cs" />

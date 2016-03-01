@@ -1,9 +1,6 @@
 ﻿@using System.Globalization
-@using System.Web.Services.Description
-@using kCura.Crypto
 @using kCura.IntegrationPoints.Web
 @using kCura.IntegrationPoints.Web.Extensions
-@using Microsoft.Ajax.Utilities
 @model kCura.IntegrationPoints.Web.Models.IpDetailModel
 @{
 	ViewBag.Title = "Details";
@@ -41,7 +38,7 @@
 			</div>
 		</div>
 		<div class="card">
-			<label class="section label">Import Scheduling</label>
+			<label class="section label">Scheduling</label>
 
 
 			@*@{if (ipModel.EnableScheduler == false || ipModel.EnableScheduler == null)

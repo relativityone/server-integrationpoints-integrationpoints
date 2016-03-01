@@ -1,20 +1,23 @@
-﻿using Relativity.API;
+﻿using System;
+using System.Collections;
+using kCura.Config;
+using kCura.IntegrationPoints.DocumentTransferProvider.Shared;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations
 {
 	public class ConfigAdapter : IIntegrationPointsConfig
 	{
-		private readonly IDBContext _context;
-
-		public ConfigAdapter(IDBContext context)
-		{
-			_context = context;
-		}
-
 		public string GetWebApiUrl
 		{
-			// TODO: This is NOT an acceptable solution. We must look into using kCura.Config -- biedrzycki: Feb 16th, 2016
-			get { return _context.ExecuteSqlStatementAsScalar<string>(" SELECT [Value] FROM eddsdbo.InstanceSetting Where InstanceSetting.Name = 'WebApiPath' and Section = 'kCura.IntegrationPoints' "); }
+			get
+			{
+				IDictionary config = Manager.GetConfig(Constants.CONFIG_SECTION);
+				if (config.Contains(Constants.WEB_API_PATH))
+				{
+					return config[Constants.WEB_API_PATH] as string;
+				}
+				throw new ConfigurationException(String.Format("Unable to find [{0}:{1}] in Relativity's instance settings.", Constants.CONFIG_SECTION, Constants.WEB_API_PATH));
+			}
 		}
 	}
 }
