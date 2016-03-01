@@ -471,6 +471,8 @@ var IP = IP || {};
 		});
 
 		this.CustodianManagerFieldContainsLink = JSON.parse(settings.destination || "{}").CustodianManagerFieldContainsLink;
+		this.UseFolderPathInformation = JSON.parse(settings.destination || "{}").UseFolderPathInformation;
+		this.FolderPathSourceField = JSON.parse(settings.destination || "{}").FolderPathSourceField;
 		this.ExtractedTextFieldContainsFilePath = JSON.parse(settings.destination || "{}").ExtractedTextFieldContainsFilePath;
 		this.ExtractedTextFileEncoding = JSON.parse(settings.destination || "{}").ExtractedTextFileEncoding;
 
