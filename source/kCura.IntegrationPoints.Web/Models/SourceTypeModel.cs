@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Web.Models
 		public string value { get; set; }
 		public string url { get; set; }
 
-		public SourceProviderConfigModel config { set; get; }
+		public SourceProviderConfigModel Config { set; get; }
 	}
 
 	[DataContract]
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Web.Models
 
 		public SourceProviderConfigModel(SourceProviderConfiguration originalConfig, Dictionary<Guid, int> rdoTypesCache)
 		{
-			_originalConfig = originalConfig;
+			_originalConfig = originalConfig ?? new SourceProviderConfiguration();
 			_rdoTypeCache = rdoTypesCache;
 		}
 
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Web.Models
 		{
 			get
 			{
-				if (_originalConfig == null || _originalConfig.CompatibleRdoTypes == null)
+				if (_originalConfig.CompatibleRdoTypes == null)
 				{
 					return null;
 				}
@@ -48,10 +48,22 @@ namespace kCura.IntegrationPoints.Web.Models
 				}
 				return result.ToArray();
 			}
-			set
+			set // this is requires as part of the data member attribute
+			{ }
+		}
+
+		[DataMember]
+		public ImportSettingVisibility ImportSettingVisibility
+		{
+			get
 			{
-				
+				if (_originalConfig.AvaiableImportSettings == null)
+				{
+					_originalConfig.AvaiableImportSettings = new ImportSettingVisibility();
+				}
+				return _originalConfig.AvaiableImportSettings;
 			}
+			set { }
 		}
 	}
 }

@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Data
 			return result.Results.Select(x => x.Artifact).ToList();
 		}
 
-		public Dictionary<Guid, int> GetRdoGuidToArtifactIdMap(int userId)
+		public virtual Dictionary<Guid, int> GetRdoGuidToArtifactIdMap(int userId)
 		{
 			Dictionary<Guid, int> results = new Dictionary<Guid, int>();
 			List<ObjectType> types = GetAllTypes(userId);

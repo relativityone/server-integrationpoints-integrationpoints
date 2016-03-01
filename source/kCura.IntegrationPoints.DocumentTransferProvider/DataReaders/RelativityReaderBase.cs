@@ -246,7 +246,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			{
 				FetchDataToRead(
 					() => 
-						RDORepository.RetrieveAsync(ObjectQuery, CurrentQueryResultSet.Data.QueryToken, ReadEntriesCount, Shared.Constants.QUERY_BATCH_SIZE).Result);
+						RDORepository.RetrieveAsync(ObjectQuery, CurrentQueryResultSet.Data.QueryToken, ReadEntriesCount + 1, Shared.Constants.QUERY_BATCH_SIZE).Result);
 
 				return Read();
 			}

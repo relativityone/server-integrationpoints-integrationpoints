@@ -142,6 +142,9 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 			}
 		});
+
+		this.AllowUserToMapNativeFileField = ko.observable(model.SourceProviderConfiguration.importSettingVisibility.allowUserToMapNativeFileField || true);
+
 		this.selectedUniqueId = ko.observable().extend({ required: true });
 		this.rdoIdentifier = ko.observable();
 		this.isAppendOverlay = ko.observable(true);
@@ -180,6 +183,8 @@ ko.validation.insertValidationMessage = function (element) {
 		this.parentField = ko.observableArray([]);
 
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
+
+		this.SourceProviderConfiguration = ko.observable(model.SourceProviderConfiguration);
 
 		this.UseFolderPathInformation = ko.observable(model.UseFolderPathInformation || "false");
 		this.FolderPathSourceField = ko.observable(model.FolderPathSourceField).extend(
@@ -220,7 +225,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.nativeFilePathValue = ko.observableArray([]).extend({
 			required: {
 				onlyIf: function () {
-					return (self.importNativeFile() == 'true' || self.importNativeFile == true) && self.showErrors();
+					return self.AllowUserToMapNativeFileField == true && (self.importNativeFile() == 'true' || self.importNativeFile == true) && self.showErrors();
 				},
 				message: 'The Native file path field is required.',
 			}
@@ -537,7 +542,6 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.map = JSON.stringify(map);
 			this.returnModel.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
 			setCache(this.returnModel, self.key);
-			;
 			d.resolve(this.returnModel);
 			return d.promise;
 		};

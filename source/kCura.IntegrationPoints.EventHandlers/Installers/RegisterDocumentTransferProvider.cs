@@ -33,6 +33,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 							CompatibleRdoTypes = new List<Guid>()
 							{
 								new Guid(Constants.DOC_OBJ_GUID)
+							},
+							AvaiableImportSettings = new ImportSettingVisibility()
+							{
+								AllowUserToMapNativeFileField = false
 							}
 						}
 					}

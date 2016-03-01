@@ -274,11 +274,12 @@ namespace kCura.IntegrationPoints.Data
 		{
 			get
 			{
-				return JsonConvert.DeserializeObject<SourceProviderConfiguration>(Configuration);
+				string config = Configuration;
+				return config == null ? new SourceProviderConfiguration() : JsonConvert.DeserializeObject<SourceProviderConfiguration>(config);
 			}
 			set
 			{
-				string val = JsonConvert.SerializeObject(value);
+				string val = value == null ? JsonConvert.SerializeObject(new SourceProviderConfiguration()) : JsonConvert.SerializeObject(value); 
 				Configuration = val;
 			}
 		}
@@ -428,6 +429,20 @@ namespace kCura.IntegrationPoints.Data
 				SetField<int?>(new System.Guid(JobHistoryFieldGuids.RecordsImported), value);
 			}
 		}
+
+		[DynamicField(JobHistoryFields.TotalItems, JobHistoryFieldGuids.TotalItems, FieldTypes.WholeNumber)]
+		public int? TotalItems
+		{
+			get
+			{
+				return GetField<int?>(new System.Guid(JobHistoryFieldGuids.TotalItems));
+			}
+			set
+			{
+				SetField<int?>(new System.Guid(JobHistoryFieldGuids.TotalItems), value);
+			}
+		}
+
 		[DynamicField(JobHistoryFields.RecordsWithErrors, JobHistoryFieldGuids.RecordsWithErrors, FieldTypes.WholeNumber)]
 		public int? RecordsWithErrors
 		{
