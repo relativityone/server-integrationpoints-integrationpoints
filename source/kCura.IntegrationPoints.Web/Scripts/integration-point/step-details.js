@@ -121,15 +121,15 @@ var IP = IP || {};
 		this.model = object;
 	};
 
-	var Source = function (s, destination) {
+	var Source = function (s, parentModel) {
 		var settings = $.extend({}, s);
 		this.templateID = 'ldapSourceConfig';
 		var self = this;
-		self.destination = destination;
 
 		this.sourceTypes = ko.observableArray();
 		this.selectedType = ko.observable().extend({ required: true });
 
+		this.SourceProviderConfiguration = ko.observable();
 
 		this.sourceProvider = settings.sourceProvider || 0;
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
@@ -152,16 +152,18 @@ var IP = IP || {};
 				if (this.value === selectedValue) {
 					self.sourceProvider = this.artifactID;
 					if (typeof this.model.config.compatibleRdoTypes === 'undefined' || this.model.config.compatibleRdoTypes === null) {
-						self.destination.rdoTypes(self.destination.allRdoTypes());
+						parentModel.destination.rdoTypes(parentModel.destination.allRdoTypes());
 					} else {
 						var compatibleRdos = this.model.config.compatibleRdoTypes;
 						var rdosToDisplay = [];
-						$.each(self.destination.allRdoTypes(), function () {
+						$.each(parentModel.destination.allRdoTypes(), function () {
 							if (compatibleRdos.indexOf(this.value) > -1) {
 								rdosToDisplay.push(this);
 							}
 						});
-						self.destination.rdoTypes(rdosToDisplay);
+						parentModel.destination.rdoTypes(rdosToDisplay);
+						self.SourceProviderConfiguration = this.model.config;
+						parentModel.destination.UpdateSelectedItem();
 					}
 				}
 			});
@@ -182,9 +184,9 @@ var IP = IP || {};
 				return new Choice(entry.name, entry.value);
 			});
 			self.allRdoTypes(types);
-			self.artifactTypeID(settings.artifactTypeID); //this can only be populated after all the types are loaded.
+			self.UpdateSelectedItem();
 		}, function () {
-
+			
 		});
 
 		this.templateID = 'ldapDestinationConfig';
@@ -194,6 +196,10 @@ var IP = IP || {};
 		self.artifactTypeID = ko.observable().extend({ required: true });
 		//CaseArtifactId
 		//ParentObjectIdSourceFieldName
+
+		this.UpdateSelectedItem = function() {
+			self.artifactTypeID(settings.artifactTypeID);
+		}
 	};
 
 	var Scheduler = function (model) {
@@ -453,7 +459,7 @@ var IP = IP || {};
 		this.showErrors = ko.observable(false);
 
 		this.destination = new Destination(settings.destination);
-		this.source = new Source(settings.source, self.destination);
+		this.source = new Source(settings.source, self);
 
 		this.destinationProvider = settings.destinationProvider;
 		this.notificationEmails = ko.observable(settings.notificationEmails).extend({
@@ -513,6 +519,7 @@ var IP = IP || {};
 
 				this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
 				this.model.sourceProvider = this.model.source.sourceProvider;
+				this.model.SourceProviderConfiguration = this.model.source.SourceProviderConfiguration;
 				d.resolve(ko.toJS(this.model));
 			} else {
 				this.model.errors.showAllMessages();

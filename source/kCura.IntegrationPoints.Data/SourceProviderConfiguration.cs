@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 
 namespace kCura.IntegrationPoints.Data
@@ -12,5 +13,6 @@ namespace kCura.IntegrationPoints.Data
 		/// </summary>
 		public List<Guid> CompatibleRdoTypes { set; get; }
 
+		public ImportSettingVisibility AvaiableImportSettings { set; get; }
 	}
 }

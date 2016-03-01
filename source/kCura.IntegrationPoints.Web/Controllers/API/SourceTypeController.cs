@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public SourceTypeController(ISourceTypeFactory factory,
 			IToggleProvider toggleProvider,
 			ICaseServiceContext serviceContext,
-			IObjectTypeQuery objectTypeQuery)
+			RSAPIRdoQuery objectTypeQuery)
 		{
 			_factory = factory;
 			_toggleProvider = toggleProvider;
@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpGet]
 		public HttpResponseMessage Get()
 		{
-
 			Dictionary<Guid, int> rdoTypesCache = _rdoQuery.GetRdoGuidToArtifactIdMap(_serviceContext.WorkspaceUserID);
 			List<SourceTypeModel> list = _factory.GetSourceTypes().Select(x => new SourceTypeModel()
 			{
@@ -44,7 +43,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				id = x.ArtifactID,
 				value = x.ID,
 				url = x.SourceURL,
-				config = new SourceProviderConfigModel(x.Config, rdoTypesCache)
+				Config = new SourceProviderConfigModel(x.Config, rdoTypesCache)
 			}).ToList();
 
 			// TODO: Remove the toggle once the Relativity provider is ready
@@ -60,8 +59,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					}
 				}
 			}
-
-
 			return Request.CreateResponse(HttpStatusCode.OK, list);
 		}
 	}

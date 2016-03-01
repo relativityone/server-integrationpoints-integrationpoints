@@ -13,6 +13,7 @@ using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Toggles;
+using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.Toggles;
@@ -27,7 +28,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		private IToggleProvider _toggleProvider;
 		private ISourceTypeFactory _sourceTypeFactory;
 		private ICaseServiceContext _iCaseServiceContext;
-		private IObjectTypeQuery _objTypeQuery;
+		private RSAPIRdoQuery _objTypeQuery;
 		private Guid _documentObjectGuid;
 		private Guid _randomRdoGuid;
 
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_windsorContainer.Register(Component.For<ISourceTypeFactory>().Instance(_sourceTypeFactory).LifestyleTransient());
 			_windsorContainer.Register(Component.For<SourceTypeController>());
 			_windsorContainer.Register(Component.For<ICaseServiceContext>().Instance(_iCaseServiceContext).LifestyleTransient());
-			_windsorContainer.Register(Component.For<IObjectTypeQuery>().Instance(_objTypeQuery).LifestyleTransient());
+			_windsorContainer.Register(Component.For<RSAPIRdoQuery>().Instance(_objTypeQuery).LifestyleTransient());
 		}
 
 		[SetUp]
@@ -47,9 +48,16 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_toggleProvider = NSubstitute.Substitute.For<IToggleProvider>();
 			_sourceTypeFactory = NSubstitute.Substitute.For<ISourceTypeFactory>();
 			_iCaseServiceContext = NSubstitute.Substitute.For<ICaseServiceContext>();
-			_objTypeQuery = NSubstitute.Substitute.For<IObjectTypeQuery>();
-
 			_iCaseServiceContext.WorkspaceUserID.Returns(-1);
+
+			_documentObjectGuid = new Guid("15C36703-74EA-4FF8-9DFB-AD30ECE7530D");
+			_randomRdoGuid = new Guid("b73de172-aa9c-4f9a-bd1a-947112804f82");
+			Dictionary<Guid, int> guidToTypeId = new Dictionary<Guid, int>()
+			{
+				{_documentObjectGuid, 10},
+				{_randomRdoGuid, 789456 }
+			};
+			_objTypeQuery = new RSAPIRdoQueryTest(null, guidToTypeId);
 
 			var config = new HttpConfiguration();
 			var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/api/Get");
@@ -63,14 +71,23 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_instance.ControllerContext = new HttpControllerContext(config, routeData, request);
 			_instance.Request = request;
 			_instance.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = config;
-			_documentObjectGuid = new Guid("15C36703-74EA-4FF8-9DFB-AD30ECE7530D");
-			_randomRdoGuid = new Guid("b73de172-aa9c-4f9a-bd1a-947112804f82");
-			Dictionary<Guid, int> guidToTypeId = new Dictionary<Guid, int>()
+			
+		}
+
+
+		private class RSAPIRdoQueryTest : RSAPIRdoQuery
+		{
+			private readonly Dictionary<Guid, int> _rdosToTypeArtifactIdMap;
+			public RSAPIRdoQueryTest(IRSAPIClient client, Dictionary<Guid, int> RdosToTypeArtifactIdMap) 
+				: base(client)
 			{
-				{_documentObjectGuid, 10},
-				{_randomRdoGuid, 789456 }
-			};
-			_objTypeQuery.GetRdoGuidToArtifactIdMap(-1).Returns(guidToTypeId);
+				_rdosToTypeArtifactIdMap = RdosToTypeArtifactIdMap;
+			}
+
+			public override Dictionary<Guid, int> GetRdoGuidToArtifactIdMap(int userId)
+			{
+				return _rdosToTypeArtifactIdMap;
+			}
 		}
 
 		[Test]
@@ -94,7 +111,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 					SourceURL = "url",
 					Config = new SourceProviderConfiguration()
 					{
-						CompatibleRdoTypes = new List<Guid>() { _documentObjectGuid }
+						CompatibleRdoTypes = new List<Guid>() { _documentObjectGuid },
+						AvaiableImportSettings = new ImportSettingVisibility()
+						{
+							AllowUserToMapNativeFileField = false
+						}
 					}
 				}
 			};
@@ -108,9 +129,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			// Assert
 			Assert.IsNotNull(response);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-			Assert.AreEqual(
-				"[{\"name\":\"name\",\"id\":123,\"value\":\"d39d9a5e-e009-4c33-b112-73cc45c2ae2d\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null}}" +
-				",{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[10]}}]",
+			StringAssert.AreEqualIgnoringCase(
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"d39d9a5e-e009-4c33-b112-73cc45c2ae2d\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}" +
+				",{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[10],\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":false}}}]",
 				response.Content.ReadAsStringAsync().Result);
 		}
 
@@ -142,8 +163,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			// Assert
 			Assert.IsNotNull(response);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-			Assert.AreEqual(
-				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[]}}]",
+			StringAssert.AreEqualIgnoringCase(
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[],\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
 				response.Content.ReadAsStringAsync().Result);
 		}
 
@@ -172,8 +193,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			// Assert
 			Assert.IsNotNull(response);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-			Assert.AreEqual(
-				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null}}]",
+			StringAssert.AreEqualIgnoringCase(
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
 				response.Content.ReadAsStringAsync().Result);
 		}
 
@@ -205,8 +226,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			// Assert
 			Assert.IsNotNull(response);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-			Assert.AreEqual(
-				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[]}}]",
+			StringAssert.AreEqualIgnoringCase(
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[],\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
 				response.Content.ReadAsStringAsync().Result);
 		}
 
@@ -242,8 +263,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			// Assert
 			Assert.IsNotNull(response);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-			Assert.AreEqual(
-				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[10,789456]}}]",
+			StringAssert.AreEqualIgnoringCase(
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[10,789456],\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
 				response.Content.ReadAsStringAsync().Result);
 		}
 
@@ -280,8 +301,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			// Assert
 			Assert.IsNotNull(response);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-			Assert.AreEqual(
-				"[{\"name\":\"name\",\"id\":123,\"value\":\"d39d9a5e-e009-4c33-b112-73cc45c2ae2d\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null}}]",
+			StringAssert.AreEqualIgnoringCase(
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"d39d9a5e-e009-4c33-b112-73cc45c2ae2d\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
 				response.Content.ReadAsStringAsync().Result);
 		}
 
@@ -316,8 +337,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			// Assert
 			Assert.IsNotNull(response);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-			Assert.AreEqual(
-				"[{\"name\":\"name\",\"id\":123,\"value\":\"d39d9a5e-e009-4c33-b112-73cc45c2ae2d\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null}},{\"name\":\"name\",\"id\":123,\"value\":\"77795906-04FA-49F6-ADF4-AD1020C32668\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null}}]",
+			StringAssert.AreEqualIgnoringCase(
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"d39d9a5e-e009-4c33-b112-73cc45c2ae2d\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}" +
+				",{\"name\":\"name\",\"id\":123,\"value\":\"77795906-04FA-49F6-ADF4-AD1020C32668\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
 				response.Content.ReadAsStringAsync().Result);
 		}
 	}
