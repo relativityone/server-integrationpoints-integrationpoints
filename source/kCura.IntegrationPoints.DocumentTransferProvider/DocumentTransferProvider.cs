@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Core.Services.RDO;
+using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;

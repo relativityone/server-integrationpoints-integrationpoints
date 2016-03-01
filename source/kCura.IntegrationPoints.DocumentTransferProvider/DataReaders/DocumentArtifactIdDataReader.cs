@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data;
-using kCura.IntegrationPoints.Core.Services.RDO;
+using kCura.IntegrationPoints.Contracts.RDO;
 using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders

@@ -71,6 +71,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Services.Interfaces">
+      <HintPath>..\Dependencies\kCura\Relativity.Services.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -97,6 +100,8 @@
     <Compile Include="Provider\IFieldProvider.cs" />
     <Compile Include="IStartUp.cs" />
     <Compile Include="Provider\ProviderReadDataException.cs" />
+    <Compile Include="RDO\IRDORepository.cs" />
+    <Compile Include="RDO\RDORepository.cs" />
     <Compile Include="Synchronizer\IDataSynchronizer.cs" />
   </ItemGroup>
   <ItemGroup>

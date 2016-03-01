@@ -9,8 +9,6 @@ using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Models;
 using kCura.IntegrationPoints.Web.Toggles;
-using kCura.Relativity.Client;
-using Newtonsoft.Json;
 using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API

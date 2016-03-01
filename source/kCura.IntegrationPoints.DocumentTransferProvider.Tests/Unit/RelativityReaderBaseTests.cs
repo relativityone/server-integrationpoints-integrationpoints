@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using kCura.IntegrationPoints.Core.Services.RDO;
-using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
-using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
+using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Core.Services.RDO;
-using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
+using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.Relativity.Client.DTOs;
 using Relativity.Services.ObjectQuery;
 

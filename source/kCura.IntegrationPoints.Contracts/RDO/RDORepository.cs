@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Relativity.Services.ObjectQuery;
 
-namespace kCura.IntegrationPoints.Core.Services.RDO
+namespace kCura.IntegrationPoints.Contracts.RDO
 {
 	public class RDORepository : IRDORepository
 	{

@@ -89,9 +89,6 @@
     <Reference Include="Relativity.APIHelper">
       <HintPath>..\Dependencies\kCura\Relativity.APIHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces">
-      <HintPath>..\Dependencies\kCura\Relativity.Services.Interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -160,8 +157,6 @@
     <Compile Include="Services\Provider\DefaultSourcePluginProvider.cs" />
     <Compile Include="Services\Domain\AppDomainFactory.cs" />
     <Compile Include="Services\Provider\ProviderManager.cs" />
-    <Compile Include="Services\RDO\IRDORepository.cs" />
-    <Compile Include="Services\RDO\RDORepository.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForEventHandlers.cs" />
     <Compile Include="Services\ServiceContext\IServiceContextHelper.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForAgent.cs" />

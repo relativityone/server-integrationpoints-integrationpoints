@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using kCura.IntegrationPoints.Core.Services.RDO;
-using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
+using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
-using kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
