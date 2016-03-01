@@ -34,12 +34,12 @@ namespace kCura.IntegrationPoints.Web.Models
 		{
 			get
 			{
-				if (_originalConfig == null || _originalConfig.CompartibleRdoTypes == null)
+				if (_originalConfig == null || _originalConfig.CompatibleRdoTypes == null)
 				{
 					return null;
 				}
-				List<int> result = new List<int>(_originalConfig.CompartibleRdoTypes.Count);
-				foreach (Guid guid in _originalConfig.CompartibleRdoTypes)
+				List<int> result = new List<int>(_originalConfig.CompatibleRdoTypes.Count);
+				foreach (Guid guid in _originalConfig.CompatibleRdoTypes)
 				{
 					if (_rdoTypeCache.ContainsKey(guid))
 					{

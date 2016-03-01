@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 					SourceURL = "url",
 					Config = new SourceProviderConfiguration()
 					{
-						CompartibleRdoTypes = new List<Guid>() { _documentObjectGuid }
+						CompatibleRdoTypes = new List<Guid>() { _documentObjectGuid }
 					}
 				}
 			};
@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 					SourceURL = "url",
 					Config = new SourceProviderConfiguration()
 					{
-						CompartibleRdoTypes = new List<Guid>() { new Guid(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID) }
+						CompatibleRdoTypes = new List<Guid>() { new Guid(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID) }
 					}
 				}
 			};
@@ -191,7 +191,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 					SourceURL = "url",
 					Config = new SourceProviderConfiguration()
 					{
-						CompartibleRdoTypes = new List<Guid>()
+						CompatibleRdoTypes = new List<Guid>()
 					}
 				}
 			};
@@ -224,7 +224,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 					SourceURL = "url",
 					Config = new SourceProviderConfiguration()
 					{
-						CompartibleRdoTypes = new List<Guid>()
+						CompatibleRdoTypes = new List<Guid>()
 						{
 							_documentObjectGuid,
 							_randomRdoGuid

@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Data
 		/// <summary>
 		/// Exclusive list of guid associate with Rdo types
 		/// </summary>
-		public List<Guid> CompartibleRdoTypes { set; get; }
+		public List<Guid> CompatibleRdoTypes { set; get; }
+
 	}
 }

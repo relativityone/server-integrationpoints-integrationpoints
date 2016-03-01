@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 						ViewDataUrl = String.Format("/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/%appId%/api/relativity/view"),
 						Configuration = new SourceProviderConfiguration()
 						{
-							CompartibleRdoTypes = new List<Guid>()
+							CompatibleRdoTypes = new List<Guid>()
 							{
 								// doc rdo
 								new Guid("15C36703-74EA-4FF8-9DFB-AD30ECE7530D")
