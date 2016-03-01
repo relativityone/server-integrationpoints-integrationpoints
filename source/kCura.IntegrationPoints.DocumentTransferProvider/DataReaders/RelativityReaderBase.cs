@@ -243,7 +243,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			}
 			else if (CurrentQueryResult.TotalCount - ReadEntriesCount > 0 && String.IsNullOrWhiteSpace(CurrentQueryResult.QueryToken) == false)
 			{
-				FetchDataToRead(() => RelativityClient.ExecuteSubSetOfDocumentQuery(CurrentQueryResult.QueryToken, ReadEntriesCount, Shared.Constants.QUERY_BATCH_SIZE));
+				FetchDataToRead(() => RelativityClient.ExecuteSubSetOfDocumentQuery(CurrentQueryResult.QueryToken, ReadEntriesCount + 1, Shared.Constants.QUERY_BATCH_SIZE));
 				return Read();
 			}
 			else

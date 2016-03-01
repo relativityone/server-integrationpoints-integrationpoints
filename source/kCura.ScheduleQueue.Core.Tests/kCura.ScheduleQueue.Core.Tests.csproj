@@ -104,6 +104,7 @@
     <Compile Include="Integration\Service\JobLogServiceTests.cs" />
     <Compile Include="Integration\Service\JobServiceTests.cs" />
     <Compile Include="TestDBContextHelper.cs" />
+    <Compile Include="Unit\BatchManagerBaseTests.cs" />
     <Compile Include="Unit\PeriodicScheduleRuleTest.cs" />
     <Compile Include="Unit\QueueTableHelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -121,6 +122,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Agent.Tests\kCura.IntegrationPoints.Agent.Tests.csproj">
+      <Project>{9F8F3789-4523-4C2F-BE74-ED7DF7A51D81}</Project>
+      <Name>kCura.IntegrationPoints.Agent.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-E18D-49DF-A308-FE7996C4108E}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Tests\kCura.IntegrationPoints.Core.Tests.csproj">
+      <Project>{81CAAB75-DFDA-4EFB-980C-9FEE0D9F359A}</Project>
+      <Name>kCura.IntegrationPoints.Core.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
       <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
       <Name>kCura.ScheduleQueueAgent</Name>
