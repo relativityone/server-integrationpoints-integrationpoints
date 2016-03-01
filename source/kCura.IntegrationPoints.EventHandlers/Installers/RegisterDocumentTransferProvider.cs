@@ -32,8 +32,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 						{
 							CompatibleRdoTypes = new List<Guid>()
 							{
-								// doc rdo
-								new Guid("15C36703-74EA-4FF8-9DFB-AD30ECE7530D")
+								new Guid(Constants.DOC_OBJ_GUID)
 							}
 						}
 					}
