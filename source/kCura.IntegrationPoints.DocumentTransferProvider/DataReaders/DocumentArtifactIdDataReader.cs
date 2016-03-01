@@ -44,13 +44,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		{
 			return new Query()
 			{
-				Condition = $"'ArtifactID' == {savedSearchArtifactId}",
+				Condition = $"'Artifact ID' == {savedSearchArtifactId}",
 				Fields = new string[] {}, // No fields are required for this query
 				IncludeIdWindow = false,
 				SampleParameters = null,
 				RelationalField = null,
 				SearchProviderCondition = null,
-				Sorts = new [] {"ArtifactID ASC"},
+				Sorts = new [] {"'Artifact ID' ASC"},
 				TruncateTextFields = true
 			};
 		}

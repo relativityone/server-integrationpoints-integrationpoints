@@ -33,13 +33,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		{
 			return new Query()
 			{
-				Condition = $"'{Shared.Constants.ARTIFACT_ID_FIELD_NAME}' in [{String.Join(",", documentArtifactIds.ToList())}]",
+				Condition = $"'Artifact ID' in [{String.Join(",", documentArtifactIds.ToList())}]",
 				Fields = fieldEntries.ToList().Select(x => x.DisplayName).ToArray(),
 				IncludeIdWindow = false,
 				SampleParameters = null,
 				RelationalField = null,
 				SearchProviderCondition = null,
-				Sorts = new[] { "ArtifactID ASC" },
+				Sorts = new[] { "'Artifact ID' ASC" },
 				TruncateTextFields = false
 			};
 		}
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		{
 			var longTextQuery = new Query()
 			{
-				Condition = $"'ArtifactID' == {documentArtifactId}",
+				Condition = $"'Artifact ID' == {documentArtifactId}",
 				Fields = new[] { longTextFieldName },
 				IncludeIdWindow = false,
 				SampleParameters = null,
