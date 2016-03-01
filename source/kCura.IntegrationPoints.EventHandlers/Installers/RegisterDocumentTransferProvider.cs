@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.DocumentTransferProvider.Shared;
 using kCura.IntegrationPoints.SourceProviderInstaller;
+using SourceProvider = kCura.IntegrationPoints.SourceProviderInstaller.SourceProvider;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
@@ -25,7 +27,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 					{
 						Name = Constants.RELATIVITY_PROVIDER_NAME,
 						Url = String.Format("/%applicationpath%/CustomPages/{0}/IntegrationPoints/{1}/",  Constants.RELATIVITY_CUSTOMPAGE_GUID, Constants.RELATIVITY_PROVIDER_CONFIGURATION),
-						ViewDataUrl = String.Format("/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/%appId%/api/relativity/view")
+						ViewDataUrl = String.Format("/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/%appId%/api/relativity/view"),
+						Configuration = new SourceProviderConfiguration()
+						{
+							CompartibleRdoTypes = new List<Guid>()
+							{
+								// doc rdo
+								new Guid("15C36703-74EA-4FF8-9DFB-AD30ECE7530D")
+							}
+						}
 					}
 				}
 			};
