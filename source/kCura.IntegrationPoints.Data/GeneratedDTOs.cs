@@ -274,11 +274,12 @@ namespace kCura.IntegrationPoints.Data
 		{
 			get
 			{
-				return JsonConvert.DeserializeObject<SourceProviderConfiguration>(Configuration);
+				string config = Configuration;
+				return config == null ? new SourceProviderConfiguration() : JsonConvert.DeserializeObject<SourceProviderConfiguration>(config);
 			}
 			set
 			{
-				string val = JsonConvert.SerializeObject(value);
+				string val = value == null ? JsonConvert.SerializeObject(new SourceProviderConfiguration()) : JsonConvert.SerializeObject(value); 
 				Configuration = val;
 			}
 		}
