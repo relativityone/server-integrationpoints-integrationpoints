@@ -1,20 +1,29 @@
 ﻿using System;
 using System.Data;
-using kCura.IntegrationPoints.Core.Services.RDO;
-using Relativity.Services.ObjectQuery;
+using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
 	public class DocumentArtifactIdDataReader : RelativityReaderBase
 	{
-		public DocumentArtifactIdDataReader(IRDORepository rdoRepository, int savedSearchArtifactId) :
-			base(rdoRepository, CreateQuery(savedSearchArtifactId), new [] { new DataColumn(Shared.Constants.ARTIFACT_ID_FIELD_NAME) })
+		private readonly int _savedSearchArtifactId;
+
+		public DocumentArtifactIdDataReader(IRelativityClientAdaptor relativityClientAdaptor, int savedSearchArtifactId) :
+			base(relativityClientAdaptor, new [] { new DataColumn(Shared.Constants.ARTIFACT_ID_FIELD_NAME) })
 		{
+			_savedSearchArtifactId = savedSearchArtifactId;
 		}
 
-		protected override ObjectQueryResutSet ExecuteQueryToGetInitialResult()
+		protected override QueryResultSet<Document> ExecuteQueryToGetInitialResult()
 		{
-			return RDORepository.RetrieveAsync(ObjectQuery, String.Empty).Result;
+			Query<Document> query = new Query<Document>
+			{
+				Condition = new SavedSearchCondition(_savedSearchArtifactId),
+				Fields = FieldValue.NoFields // we only want the ArtifactId
+			};
+			return RelativityClient.ExecuteDocumentQuery(query);
 		}
 
 		public override string GetDataTypeName(int i)
@@ -37,22 +46,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			{
 				throw new IndexOutOfRangeException();
 			}
-			return CurrentItemResult.ArtifactId;
-		}
-
-		private static Query CreateQuery(int savedSearchArtifactId)
-		{
-			return new Query()
-			{
-				Condition = $"'Artifact ID' == {savedSearchArtifactId}",
-				Fields = new string[] {}, // No fields are required for this query
-				IncludeIdWindow = false,
-				SampleParameters = null,
-				RelationalField = null,
-				SearchProviderCondition = null,
-				Sorts = new [] {"'Artifact ID' ASC"},
-				TruncateTextFields = true
-			};
+			return CurrentDocument.ArtifactID;
 		}
 	}
 }

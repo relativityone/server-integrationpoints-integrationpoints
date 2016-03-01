@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Services.SourceTypes
 
 		public virtual void CreateOrUpdateLdapSourceType()
 		{
-			var q = new Query<Relativity.Client.DTOs.RDO>();
+			var q = new Query<RDO>();
 			q.Condition = new TextCondition(Guid.Parse(Data.SourceProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, LDAP_SOURCE_TYPE_GUID);
 			var s = _context.RsapiService.SourceProviderLibrary.Query(q).SingleOrDefault(); //there should only be one!
 			if (s == null)

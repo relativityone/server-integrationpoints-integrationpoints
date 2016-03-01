@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public Data.JobHistory GetRdo(Guid batchInstance)
 		{
-			var query = new Query<Relativity.Client.DTOs.RDO>();
+			var query = new Query<RDO>();
 			query.ArtifactTypeGuid = Guid.Parse(ObjectTypeGuids.JobHistory);
 			query.Condition = new TextCondition(Guid.Parse(Data.JobHistoryFieldGuids.BatchInstance), TextConditionEnum.EqualTo, batchInstance.ToString());
 			query.Fields = this.GetFields();

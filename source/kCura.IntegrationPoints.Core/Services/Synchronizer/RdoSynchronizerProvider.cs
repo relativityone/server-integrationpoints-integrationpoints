@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 
 		public virtual void CreateOrUpdateLdapSourceType()
 		{
-			var q = new Query<Relativity.Client.DTOs.RDO>();
+			var q = new Query<RDO>();
 			q.Condition = new TextCondition(Guid.Parse(Data.DestinationProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, RDO_SYNC_TYPE_GUID);
 			var s = _context.RsapiService.DestinationProviderLibrary.Query(q).SingleOrDefault(); //there should only be one!
 			if (s == null)
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 
 		public int GetRdoSynchronizerId()
 		{
-			var q = new Query<Relativity.Client.DTOs.RDO>();
+			var q = new Query<RDO>();
 			q.Condition = new TextCondition(Guid.Parse(Data.DestinationProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, RDO_SYNC_TYPE_GUID);
 			var s = _context.RsapiService.DestinationProviderLibrary.Query(q).Single(); //there should only be one!
 			return s.ArtifactId;
