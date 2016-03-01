@@ -37,6 +37,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Config.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.IntegrationPoints">
+      <HintPath>..\bin\kCura.IntegrationPoints.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
@@ -51,6 +54,9 @@
     <Reference Include="Relativity.ImportAPI.Wrapper">
       <HintPath>..\Dependencies\kCura\Relativity.ImportAPI.Wrapper.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Services.Interfaces">
+      <HintPath>..\Dependencies\kCura\Relativity.Services.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -58,8 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Adaptors\Implementations\ConfigAdapter.cs" />
-    <Compile Include="Adaptors\Implementations\RelativityClientAdaptor.cs" />
-    <Compile Include="Adaptors\IRelativityClientAdaptor.cs" />
     <Compile Include="Adaptors\IIntegrationPointsConfig.cs" />
     <Compile Include="DataReaders\DocumentArtifactIdDataReader.cs" />
     <Compile Include="DataReaders\DocumentTransferDataReader.cs" />

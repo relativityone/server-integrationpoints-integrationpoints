@@ -162,9 +162,9 @@ var IP = IP || {};
 							}
 						});
 						parentModel.destination.rdoTypes(rdosToDisplay);
-						self.SourceProviderConfiguration = this.model.config;
-						parentModel.destination.UpdateSelectedItem();
 					}
+					self.SourceProviderConfiguration = this.model.config;
+					parentModel.destination.UpdateSelectedItem();
 				}
 			});
 		});

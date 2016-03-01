@@ -4,16 +4,16 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Core.Services.RDO;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
-using Artifact = kCura.Relativity.Client.Artifact;
-using Field = kCura.Relativity.Client.Field;
 using Relativity.API;
+using Relativity.Services.ObjectQuery;
+using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
@@ -39,48 +39,50 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
 			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
-			using (IRSAPIClient client = CreateClient(settings.SourceWorkspaceArtifactId))
-			{
-				List<Artifact> fields = GetRelativityFields(client, settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
-				IEnumerable<FieldEntry> fieldEntries = ParseFields(fields);
-				return fieldEntries;
-			}
+			QueryDataItemResult[] fields = GetRelativityFields(settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
+			IEnumerable<FieldEntry> fieldEntries = ParseFields(fields);
+			return fieldEntries;
 		}
 
-		private List<Relativity.Client.Artifact> GetRelativityFields(IRSAPIClient client, int workspaceId, int rdoTypeId)
+		private QueryDataItemResult[] GetRelativityFields(int workspaceId, int rdoTypeId)
 		{
-			RelativityFieldQuery query = new RelativityFieldQuery(client);
-			List<Artifact> fields = query.GetFieldsForRdo(rdoTypeId);
+			IRDORepository rdoRepository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), workspaceId, Convert.ToInt32(ArtifactType.Field));
+			var fieldQuery = new Query()
+			{
+				Fields = new []{ "Name", "Choices", "Object Type Artifact Type ID", "Field Type", "Field Type ID", "Is Identifier", "Field Type Name"},
+				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId}"
+			};
+			ObjectQueryResutSet fields = rdoRepository.RetrieveAsync(fieldQuery, String.Empty).Result;
+			if (!fields.Success)
+			{
+				var messages = fields.Message;
+				var e = messages; 
+				throw new Exception(e);	
+			}
+
 			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportAPI().GetWorkspaceFields(workspaceId, rdoTypeId).Select(x => x.ArtifactID));
 
 			// Contains is 0(1) https://msdn.microsoft.com/en-us/library/kw5aaea4.aspx
-			return fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
+			return fields.Data.DataResults.Where(x => mappableArtifactIds.Contains(x.ArtifactId)).ToArray();
 		}
 
-		private IEnumerable<FieldEntry> ParseFields(List<Artifact> fields)
+		private IEnumerable<FieldEntry> ParseFields(QueryDataItemResult[] fields)
 		{
-			foreach (Artifact result in fields)
+			foreach (QueryDataItemResult result in fields)
 			{
-				Field idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
+				DataItemFieldResult idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
+				DataItemFieldResult nameField = result.Fields.First(x => x.Name.Equals("Name"));
 				bool isIdentifier = false;
 				if (idField != null)
 				{
 					isIdentifier = Convert.ToInt32(idField.Value) == 1;
 					if (isIdentifier)
 					{
-						result.Name += Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT;
+						nameField.Value += Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT;
 					}
 				}
-				yield return new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier, IsRequired = false };
+				yield return new FieldEntry() { DisplayName = (string) nameField.Value, FieldIdentifier = result.ArtifactId.ToString(), IsIdentifier = isIdentifier, IsRequired = false };
 			}
-		}
-
-		private IRSAPIClient CreateClient(int workspaceId)
-		{
-			IRSAPIClient client = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
-			client.APIOptions.WorkspaceID = workspaceId;
-
-			return client;
 		}
 
 		private IImportAPI GetImportAPI()
@@ -102,11 +104,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
 		{
 			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
-			using (IRSAPIClient client = CreateClient(settings.SourceWorkspaceArtifactId))
-			{
-				IRelativityClientAdaptor relativityClient = new RelativityClientAdaptor(client);
-				return new DocumentArtifactIdDataReader(relativityClient, settings.SavedSearchArtifactId);
-			}
+			// TODO: DI or factory
+			IRDORepository repository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
+			IDataReader dataReader = new DocumentArtifactIdDataReader(repository, settings.SavedSearchArtifactId);
+
+			return dataReader;
 		}
 
 		/// <summary>
@@ -121,51 +123,32 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		{
 			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
 
-			using (IRSAPIClient client = CreateClient(settings.SourceWorkspaceArtifactId))
-			{
-				IRelativityClientAdaptor relativityClient = new RelativityClientAdaptor(client);
+			// TODO: DI or factory
+			int fieldTypeArtifactId = Convert.ToInt32(ArtifactType.Field);
+            IRDORepository repository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, fieldTypeArtifactId);
+			QueryDataItemResult[] longTextfieldEntries = GetLongTextFields(repository, fieldTypeArtifactId);
+            repository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
+			IDataReader dataReader =  new DocumentTransferDataReader(repository, entryIds.Select(x => Convert.ToInt32(x)), fields, longTextfieldEntries);
 
-				List<Artifact> longTextFieldEntries = GetLongTextFields(client, Convert.ToInt32(ArtifactType.Document));
-				return new DocumentTransferDataReader(relativityClient, entryIds.Select(x => Convert.ToInt32(x)), fields, longTextFieldEntries);
-			}
+			return dataReader;
 		}
 
-		private List<Artifact> GetLongTextFields(IRSAPIClient client, int rdoTypeId)
+		private QueryDataItemResult[] GetLongTextFields(IRDORepository rdoRepository, int rdoTypeId)
 		{
-			CompositeCondition condition = new CompositeCondition()
+			var longTextFieldsQuery = new global::Relativity.Services.ObjectQuery.Query()
 			{
-				Condition1 =
-					new ObjectCondition
-					{
-						Field = "Object Type Artifact Type ID",
-						Operator = ObjectConditionEnum.AnyOfThese,
-						Value = new List<int> { rdoTypeId }
-					},
-				Operator = CompositeConditionEnum.And,
-				Condition2 =
-					new TextCondition()
-					{
-						Field = "Field Type",
-						Operator = TextConditionEnum.EqualTo,
-						Value = "Long Text"
-					}
+				Condition = $"('Object Type Artifact Type ID' == {rdoTypeId} AND 'Field Type' == 'Long Text')",
 			};
 
-			Query query = new Query()
-			{
-				ArtifactTypeName = "Field",
-				Fields = new List<Field>(),
-				Condition = condition
-			};
+			ObjectQueryResutSet result = rdoRepository.RetrieveAsync(longTextFieldsQuery, String.Empty).Result;
 
-			var result = client.Query(client.APIOptions, query);
 			if (!result.Success)
 			{
 				var messages = result.Message;
 				var e = messages;
 				throw new Exception(e);
 			}
-			return result.QueryArtifacts;
+			return result.Data.DataResults;
 		}
 	}
 }
