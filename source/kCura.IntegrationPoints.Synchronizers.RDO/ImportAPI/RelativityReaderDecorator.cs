@@ -36,9 +36,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				}
 				else if (map.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
 				{
-					const string folderPathInformationField = "virtual path";
-					_targetNameToSourceIdentifier[folderPathInformationField] = map.SourceField.FieldIdentifier;
-					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = folderPathInformationField;
+					_targetNameToSourceIdentifier[map.SourceField.ActualName] = map.SourceField.FieldIdentifier;
+					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = map.SourceField.ActualName;
 				}
 				else if (map.DestinationField != null && map.SourceField != null)
 				{
