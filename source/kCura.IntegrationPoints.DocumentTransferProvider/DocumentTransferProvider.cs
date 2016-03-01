@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
             IRDORepository repository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, fieldTypeArtifactId);
 			QueryDataItemResult[] longTextfieldEntries = GetLongTextFields(repository, fieldTypeArtifactId);
             repository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
-			IDataReader dataReader =  new DocumentTranfserDataReader(repository, entryIds.Select(x => Convert.ToInt32(x)), fields, longTextfieldEntries);
+			IDataReader dataReader =  new DocumentTransferDataReader(repository, entryIds.Select(x => Convert.ToInt32(x)), fields, longTextfieldEntries);
 
 			return dataReader;
 		}

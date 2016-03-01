@@ -3,28 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Core.Services.RDO;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
 	internal class FieldValueLoader
 	{
-		private readonly IRelativityClientAdaptor _rsapi;
 		private Dictionary<int, Task<List<FieldValue>>> _cache;
 		private readonly List<FieldValue> _queryFields;
 		private readonly object _lock;
+		private readonly IRDORepository _rdoRepository;
 		private readonly int[] _documentArtifactIds;
 		private int _counter;
 
-		internal FieldValueLoader(IRelativityClientAdaptor relativityClientAdaptor,
+		internal FieldValueLoader(
+			IRDORepository rdoRepository,
 			int[] fieldIdentifiers,
 			int[] documentArtifactIds)
 		{
 			_counter = 0;
 			_lock = new object();
 			_cache = new Dictionary<int, Task<List<FieldValue>>>();
-			_rsapi = relativityClientAdaptor;
+			_rdoRepository = rdoRepository;
 			_documentArtifactIds = documentArtifactIds;
 			_queryFields = fieldIdentifiers.Select(id => new FieldValue(id)).ToList();
 
@@ -71,17 +74,20 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		{
 			return Task.Run(() =>
 			{
-				Document documentQuery = new Document(documentArtifactId)
+				// TODO: validate this query
+				var documentQuery = new Query()
 				{
-					Fields = _queryFields
+					Condition = $"'Artifact ID' == {documentArtifactId}",
+					Fields = _queryFields.Select(x => x.Name).ToArray(),
+					TruncateTextFields = false
 				};
 
-				ResultSet<Document> results = null;
+				ObjectQueryResutSet results = null;
 				try
 				{
 					lock (_lock)
 					{
-						results = _rsapi.ReadDocument(documentQuery);
+						results = _rdoRepository.RetrieveAsync(documentQuery, String.Empty).Result;
 					}
 				}
 				catch (Exception e)
@@ -94,7 +100,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 					};
 				}
 
-				var document = results.Results.FirstOrDefault();
+				QueryDataItemResult document = results.Data.DataResults.FirstOrDefault();
 				if (results.Success == false || document == null)
 				{
 					throw new ProviderReadDataException(String.Format("Unable to find a document object with artifact Id of {0}",
@@ -104,8 +110,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 					};
 				}
 
-				Document documentArtifact = document.Artifact;
-				return documentArtifact.Fields;
+				return document.Fields.Select(x => new FieldValue(x.ArtifactId) {Value = x.Value}).ToList();
 			});
 		}
 	}
