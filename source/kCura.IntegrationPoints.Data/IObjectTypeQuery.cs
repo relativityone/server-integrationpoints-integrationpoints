@@ -12,5 +12,6 @@ namespace kCura.IntegrationPoints.Data
 		List<ObjectType> GetAllTypes(int userId);
 
 		Dictionary<Guid, int> GetRdoGuidToArtifactIdMap(int userId);
+
 	}
 }
