@@ -82,12 +82,12 @@
 			</div>
 			<div class="field-row" data-bind="visible: isDocument() == 'true'">
 				<div class="field-label required ">Import Native File:</div>
-				<div class="field-value ">
+				<div class="field-value">
 					<ul>
 						<li>
-							<input type="radio" name="import" value="true" data-bind="checked: importNativeFile">Yes</li>
+							<input id="native-file-radio-0" type="radio" name="import" value="true" data-bind="checked: importNativeFile">Yes</li>
 						<li>
-							<input type="radio" name="import" value="false" data-bind="checked: importNativeFile">No</li>
+							<input id="native-file-radio-1" type="radio" name="import" value="false" data-bind="checked: importNativeFile">No</li>
 					</ul>
 
 				</div>
@@ -103,7 +103,7 @@
 				<div class="field-label required ">Custodian Manager<br/>
 					Contains Link:
 				</div>
-				<div class="field-value ">
+				<div class="field-value">
 					<ul>
 						<li>
 							<input type="radio" name="enable" value="true" data-bind="checked: CustodianManagerFieldContainsLink">Yes</li>
@@ -114,13 +114,13 @@
 			</div>
 			<div class="field-row">
 				<div class="field-label required ">Use Folder Path Information:</div>
-				<div class="field-value ">
+				<div class="field-value">
 					<ul>
 						<li>
-							<input type="radio" name="import_createFolder" value="true" data-bind="checked: UseFolderPathInformation">Yes
+							<input id="folder-path-radio-0" type="radio" name="import_createFolder" value="true" data-bind="checked: UseFolderPathInformation">Yes
 						</li>
 						<li>
-							<input type="radio" name="import_createFolder" value="false" data-bind="checked: UseFolderPathInformation">No
+							<input id="folder-path-radio-1" type="radio" name="import_createFolder" value="false" data-bind="checked: UseFolderPathInformation">No
 						</li>
 					</ul>
 				</div>
@@ -136,13 +136,13 @@
 			<span class="label title">Extracted Text</span>
 			<div class="field-row">
 				<div class="field-label required ">Field Contains File Location</div>
-				<div class="field-value ">
+				<div class="field-value">
 					<ul>
 						<li>
-							<input type="radio" name="import_extractedTextLocation" value="true" data-bind="checked: ExtractedTextFieldContainsFilePath">Yes
+							<input id="extracted-text-radio-0" type="radio" name="import_extractedTextLocation" value="true" data-bind="checked: ExtractedTextFieldContainsFilePath">Yes
 						</li>
 						<li>
-							<input type="radio" name="import_extractedTextLocation" value="false" data-bind="checked: ExtractedTextFieldContainsFilePath">No
+							<input id="extracted-text-radio-1" type="radio" name="import_extractedTextLocation" value="false" data-bind="checked: ExtractedTextFieldContainsFilePath">No
 						</li>
 					</ul>
 				</div>
