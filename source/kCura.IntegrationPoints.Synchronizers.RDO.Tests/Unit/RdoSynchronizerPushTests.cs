@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
 using NSubstitute;
