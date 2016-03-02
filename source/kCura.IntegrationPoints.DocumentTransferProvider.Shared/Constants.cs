@@ -16,6 +16,5 @@
 		internal const string TARGET_WORKSPACE_ID = "Target Workspace ID";
 		internal const string WEB_API_PATH = "WebAPIPath";
 		internal const string DOC_OBJ_GUID = "15C36703-74EA-4FF8-9DFB-AD30ECE7530D";
-		internal const string NATIVE_FILE_PATH_IDENTIFIER = "fb83020a-1853-4a14-8e92-accb6dbd2ef1";
 	}
 }

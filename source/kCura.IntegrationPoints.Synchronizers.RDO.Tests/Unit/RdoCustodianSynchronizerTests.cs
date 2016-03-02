@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.Custodian;
-using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 using NUnit.Framework;

@@ -27,26 +27,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 			RelativityClient = relativityClient;
 			ReaderOpen = true;
-
-			int ordinal = TryGetOrdinal(Shared.Constants.NATIVE_FILE_PATH_IDENTIFIER);
-			if (ordinal >= 0)
-			{
-				KnownOrdinalDictionary[Shared.Constants.NATIVE_FILE_PATH_IDENTIFIER] = ordinal;
-			}
 		}
-
-		protected int TryGetOrdinal(string id)
-		{
-			try
-			{
-				return GetOrdinal(id);
-			}
-			catch (Exception)
-			{
-			}
-			return -1;
-		}
-
 
 		public virtual object this[string name]
 		{

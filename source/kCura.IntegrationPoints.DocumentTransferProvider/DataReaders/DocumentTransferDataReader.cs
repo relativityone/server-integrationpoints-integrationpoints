@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			fields.Add(new FieldEntry()
 			{
 				DisplayName = "NATIVE_FILE_LOCATION_01",
-				FieldIdentifier = Shared.Constants.NATIVE_FILE_PATH_IDENTIFIER,
+				FieldIdentifier = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
 				FieldType = FieldType.String
 			});
 			return fields.Select(x => new DataColumn(x.FieldIdentifier)).ToArray();
@@ -115,7 +115,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 					result = CurrentDocument[fieldArtifactId].Value;
 				}
 			}
-			else if (name == Shared.Constants.NATIVE_FILE_PATH_IDENTIFIER)
+			else if (name == Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)
 			{
 				if (_nativeFileLocation.ContainsKey(CurrentDocument.ArtifactID))
 				{
