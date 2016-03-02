@@ -94,6 +94,16 @@
 		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
 	</target>
 	
+	<target name="build_and_deploy" description="Build the entire codebase, RAP, and deploys binaries" depends="build, build_RAP_Package, deploy">				
+		<if test="${file::exists(logfile)}">
+			<delete file="${logfile}" failonerror="true"/>
+		</if>
+		<if test="${string::contains(action, 'build')}">
+			<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." file="${buildsuccessfile}" append="false" failonerror="false" />		
+		</if>
+		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
+	</target>
+	
 	<target name="build_initialize">
 		<echo message="Initializing a ${buildconfig} ${action}..." />
 		<tstamp>
@@ -308,6 +318,16 @@
 				</exec>
 			</otherwise>
 		</choose>
+		
+	</target>
+	
+	<target name="deploy" description="Deploy application into Relativity">
+		<exec program="${ldap.scripts.directory}\deploy.bat" >
+			<arg line='${caseId}' />
+			<environment>
+				<variable name="root" value="${root}" />
+			</environment>
+		</exec>
 	</target>
 
 </project>
