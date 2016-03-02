@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 			if (resultSet != null && resultSet.Success)
 			{
 				_queryToken = resultSet.QueryToken;
-				resultSet.TotalCount = resultSet.TotalCount;
+				_totalDocumentsRetrieved = resultSet.TotalCount;
 
 				ArtifactDTO[] results = resultSet.Results.Select(
 					x => new ArtifactDTO()
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 
 		public bool AllDocumentsRetrieved()
 		{
-			return _queryToken == null || _totalDocumentsRetrieved - _documentsRetrieved == 0;
+			return String.IsNullOrEmpty(_queryToken) || _totalDocumentsRetrieved - _documentsRetrieved == 0;
 		}
 	}
 }

@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 				SampleParameters = null,
 				RelationalField = null,
 				SearchProviderCondition = null,
-				//Sorts = new[] { "'Artifact ID' ASC" },
+				Sorts = new[] { "ArtifactID ASC" }, // this is super weird how this field can't be in single quotes but it's what the api expects :/
 				TruncateTextFields = false
 			};
 
