@@ -1,26 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using kCura.IntegrationPoints.Contracts.RDO;
-using Relativity.Services.ObjectQuery;
+using System.Linq;
+using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
 	public abstract class RelativityReaderBase : IDataReader
 	{
-		protected readonly IRDORepository RDORepository;
-		protected readonly Query ObjectQuery;
 		protected int ReadEntriesCount;
-		protected ObjectQueryResutSet CurrentQueryResultSet;
-		protected IEnumerator<QueryDataItemResult> Enumerator;
+		protected IEnumerator<ArtifactDTO> Enumerator;
 		protected bool ReaderOpen;
-		protected QueryDataItemResult CurrentItemResult;
+		protected ArtifactDTO[] FetchedArtifacts;
+		protected ArtifactDTO CurrentArtifact;
 		protected readonly DataTable SchemaDataTable;
 
-		protected RelativityReaderBase(IRDORepository rdoRepository, Query objectQuery, DataColumn[] columns)
+		protected RelativityReaderBase(DataColumn[] columns)
 		{
-			RDORepository = rdoRepository;
-			ObjectQuery = objectQuery;
 			SchemaDataTable = new DataTable();
 			SchemaDataTable.Columns.AddRange(columns);
 
@@ -61,7 +57,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				Enumerator.Dispose();
 				Enumerator = null;
 			}
-			CurrentItemResult = null;
+			FetchedArtifacts = null;
 		}
 
 		public virtual bool GetBoolean(int i)
@@ -200,19 +196,19 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				}
 			}
 		}
-		protected void FetchDataToRead(Func<ObjectQueryResutSet> functionToGetDocuments)
+		protected void FetchDataToRead()
 		{
 			try
 			{
 				// Request the saved search documents
-				CurrentQueryResultSet = functionToGetDocuments();
-				if (!CurrentQueryResultSet.Success)
+				FetchedArtifacts = FetchArtifactDTOs();
+				if (FetchedArtifacts == null || !FetchedArtifacts.Any())
 				{
 					ReaderOpen = false; // TODO: handle errors?
 				}
 				else
 				{
-					Enumerator = CurrentQueryResultSet.Data.DataResults.GetEnumerator() as IEnumerator<QueryDataItemResult>;
+					Enumerator = ((IEnumerable<ArtifactDTO>) FetchedArtifacts).GetEnumerator();
 				}
 			}
 			catch (Exception ex)
@@ -231,39 +227,34 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			if (Enumerator == null)
 			{
 				// Request document objects
-				FetchDataToRead(ExecuteQueryToGetInitialResult);
+				FetchDataToRead();
 			}
 
 			// Get next result
 			if (Enumerator != null && Enumerator.MoveNext())
 			{
-				QueryDataItemResult result = Enumerator.Current;
-				CurrentItemResult = result;
-				ReaderOpen = CurrentItemResult != null;
+				CurrentArtifact = Enumerator.Current;
+				ReaderOpen = FetchedArtifacts != null;
 				ReadEntriesCount++;
 			}
-			else if (CurrentQueryResultSet.Data.TotalResultCount - ReadEntriesCount > 0 && String.IsNullOrWhiteSpace(CurrentQueryResultSet.Data.QueryToken) == false)
+			else if (AllArtifactsFetched())
+			//else if (CurrentQueryResultSet.Data.TotalResultCount - ReadEntriesCount > 0 && String.IsNullOrWhiteSpace(CurrentQueryResultSet.Data.QueryToken) == false)
 			{
-				FetchDataToRead(
-					() => 
-						RDORepository.RetrieveAsync(ObjectQuery, CurrentQueryResultSet.Data.QueryToken, ReadEntriesCount + 1, Shared.Constants.QUERY_BATCH_SIZE).Result);
-
+				FetchDataToRead();
 				return Read();
 			}
 			else
 			{
 				// No results returned, close the reader
-				CurrentItemResult = null;
+				FetchedArtifacts = null;
 				ReaderOpen = false;
 			}
 
 			return ReaderOpen;
 		}
 
-		/// <summary>
-		/// This method is used to define how the class can generate the initial result.
-		/// </summary>
-		/// <returns></returns>
-		protected abstract ObjectQueryResutSet ExecuteQueryToGetInitialResult();
+		protected abstract ArtifactDTO[] FetchArtifactDTOs();
+
+		protected abstract bool AllArtifactsFetched();
 	}
 }

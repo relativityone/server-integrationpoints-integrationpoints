@@ -8,6 +8,9 @@ using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
+using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
+using kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementations;
+using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
@@ -106,7 +109,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
 			// TODO: DI or factory
 			IRDORepository repository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
-			IDataReader dataReader = new DocumentArtifactIdDataReader(repository, settings.SavedSearchArtifactId);
+			IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
+			rsapiClient.APIOptions.WorkspaceID = settings.SourceWorkspaceArtifactId;
+			// TODO: create constant
+			ISavedSearchManager savedSearchManager = new RSAPISavedSearchManager(rsapiClient, settings.SavedSearchArtifactId, 1000);
+			IDataReader dataReader = new DocumentArtifactIdDataReader(savedSearchManager);
 
 			return dataReader;
 		}
@@ -124,31 +131,23 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
 
 			// TODO: DI or factory
+			int documentTypeId = Convert.ToInt32(ArtifactType.Document);
+			IRDORepository documentRepository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, documentTypeId);
+			IDocumentManager documentManager = new KeplerDocumentManager(documentRepository);
+
 			int fieldTypeArtifactId = Convert.ToInt32(ArtifactType.Field);
-            IRDORepository repository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, fieldTypeArtifactId);
-			QueryDataItemResult[] longTextfieldEntries = GetLongTextFields(repository, fieldTypeArtifactId);
-            repository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
-			IDataReader dataReader =  new DocumentTransferDataReader(repository, entryIds.Select(x => Convert.ToInt32(x)), fields, longTextfieldEntries);
+            IRDORepository fieldRepository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, fieldTypeArtifactId);
+			IFieldManager fieldManager = new KeplerFieldManager(fieldRepository);
+
+			ArtifactFieldDTO[] longTextfields = fieldManager.RetrieveLongTextFields(documentTypeId);
+
+			IDataReader dataReader =  new DocumentTransferDataReader(
+				documentManager,
+				entryIds.Select(x => Convert.ToInt32(x)),
+				fields,
+				longTextfields.Select(x => x.ArtifactId));
 
 			return dataReader;
-		}
-
-		private QueryDataItemResult[] GetLongTextFields(IRDORepository rdoRepository, int rdoTypeId)
-		{
-			var longTextFieldsQuery = new global::Relativity.Services.ObjectQuery.Query()
-			{
-				Condition = $"('Object Type Artifact Type ID' == {rdoTypeId} AND 'Field Type' == 'Long Text')",
-			};
-
-			ObjectQueryResutSet result = rdoRepository.RetrieveAsync(longTextFieldsQuery, String.Empty).Result;
-
-			if (!result.Success)
-			{
-				var messages = result.Message;
-				var e = messages;
-				throw new Exception(e);
-			}
-			return result.Data.DataResults;
 		}
 	}
 }

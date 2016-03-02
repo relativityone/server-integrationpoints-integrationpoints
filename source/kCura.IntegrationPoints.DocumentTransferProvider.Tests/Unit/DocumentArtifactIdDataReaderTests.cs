@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Fields = FieldValue.NoFields // we only want the ArtifactId
 			};
 
-			_instance = new DocumentArtifactIdDataReader(_relativityClient, SAVED_SEARCH_ID);
+			//_instance = new DocumentArtifactIdDataReader(_relativityClient, SAVED_SEARCH_ID);
 		}
 
 		#region Read

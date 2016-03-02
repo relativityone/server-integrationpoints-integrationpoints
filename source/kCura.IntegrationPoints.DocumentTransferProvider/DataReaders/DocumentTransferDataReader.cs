@@ -4,53 +4,56 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
+using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 using kCura.Relativity.Client.DTOs;
-using Relativity.Services.ObjectQuery;
-using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
 	public class DocumentTransferDataReader : RelativityReaderBase
 	{
+		private readonly IDocumentManager _documentManager;
+		private readonly IEnumerable<int> _documentArtifactIds;
+		private readonly IEnumerable<FieldEntry> _fieldEntries;
 		private readonly HashSet<int> _longTextFieldArtifactIds;
 		private readonly FieldValueLoader _fieldsLoader;
+		private bool _previousRequestReturnedEmpty = false;
 
 		public DocumentTransferDataReader(
-			IRDORepository rdoRepository,
+			IDocumentManager documentManager,
 			IEnumerable<int> documentArtifactIds,
 			IEnumerable<FieldEntry> fieldEntries,
-			QueryDataItemResult[] longTextfieldEntries) :
-			base(rdoRepository, CreateQuery(documentArtifactIds, fieldEntries), GenerateDataColumnsFromFieldEntries(fieldEntries))
+			IEnumerable<int> longTextFieldIdEntries) :
+			base(GenerateDataColumnsFromFieldEntries(fieldEntries))
 		{
+			var documentIds = documentArtifactIds as int[] ?? documentArtifactIds.ToArray();
+			var longTextIds = longTextFieldIdEntries as int[] ?? longTextFieldIdEntries.ToArray();
 
-			_longTextFieldArtifactIds = new HashSet<int>(longTextfieldEntries.Select(x => x.ArtifactId));
+			_documentManager = documentManager;
+			_documentArtifactIds = documentIds;
+			_fieldEntries = fieldEntries;
 
+			_longTextFieldArtifactIds = new HashSet<int>(longTextIds);
+
+			// TODO: the fields loader's responsibilities should be placed into the document manager class -- biedrzycki: Mar 1st, 2016
 			// From SynchronizerObjectBuilder, the existing framework assuming that the reader from get data will use artifact Id as the name of the column.
 			_fieldsLoader = new FieldValueLoader(
-				rdoRepository, 
-				longTextfieldEntries.Select(x => x.ArtifactId).ToArray(),
-				documentArtifactIds.ToArray());
+				_documentManager, 
+				longTextIds,
+				documentIds.ToArray());
 		}
 
-		private static Query CreateQuery(IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries)
+		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
-			return new Query()
-			{
-				Condition = $"'{Shared.Constants.ARTIFACT_ID_FIELD_NAME}' in [{String.Join(",", documentArtifactIds.ToList())}]",
-				Fields = fieldEntries.ToList().Select(x => x.DisplayName).ToArray(),
-				IncludeIdWindow = false,
-				SampleParameters = null,
-				RelationalField = null,
-				SearchProviderCondition = null,
-				Sorts = new[] { "'Artifact ID' ASC" },
-				TruncateTextFields = false
-			};
+			ArtifactDTO[] results =  _documentManager.RetrieveDocuments(_documentArtifactIds, new HashSet<string>(_fieldEntries.Select(x => x.DisplayName)));
+			_previousRequestReturnedEmpty = results == null || !results.Any();
+
+			return results;
 		}
 
-		protected override ObjectQueryResutSet ExecuteQueryToGetInitialResult()
+		protected override bool AllArtifactsFetched()
 		{
-			return RDORepository.RetrieveAsync(ObjectQuery, String.Empty).Result;
+			return _previousRequestReturnedEmpty;
 		}
 
 		private static DataColumn[] GenerateDataColumnsFromFieldEntries(IEnumerable<FieldEntry> fieldEntries)
@@ -65,15 +68,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public override Type GetFieldType(int i)
 		{
-			object value = CurrentItemResult.Fields[i].Value;
+			object value = CurrentArtifact.Fields[i].Value;
 			return value == null ? typeof(object) : value.GetType();
 		}
 
 		public override object GetValue(int i)
 		{
 			Object result = null;
-			int fieldArtifactId = CurrentItemResult.Fields[i].ArtifactId;
-			string fieldName = CurrentItemResult.Fields[i].Name;
+			int fieldArtifactId = CurrentArtifact.Fields[i].ArtifactId;
 
 			if (_longTextFieldArtifactIds.Contains(fieldArtifactId))
 			{
@@ -81,14 +83,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			}
 			else
 			{
-				result = CurrentItemResult.Fields[i].Value;
+				result = CurrentArtifact.Fields[i].Value;
 			}
 			return result;
 		}
 
 		private String LoadLongTextFieldValueOfCurrentDocument(int fieldArtifactId)
 		{
-			return GetLongTextFieldFromPreLoadedCache(CurrentItemResult.ArtifactId, fieldArtifactId);
+			return GetLongTextFieldFromPreLoadedCache(CurrentArtifact.ArtifactId, fieldArtifactId);
 		}
 
 		private int _localCacheId;

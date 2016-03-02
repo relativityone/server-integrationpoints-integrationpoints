@@ -1,20 +1,32 @@
 ﻿using System;
 using System.Data;
-using kCura.IntegrationPoints.Contracts.RDO;
-using Relativity.Services.ObjectQuery;
+using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
+using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
 	public class DocumentArtifactIdDataReader : RelativityReaderBase
 	{
-		public DocumentArtifactIdDataReader(IRDORepository rdoRepository, int savedSearchArtifactId) :
-			base(rdoRepository, CreateQuery(savedSearchArtifactId), new [] { new DataColumn(Shared.Constants.ARTIFACT_ID_FIELD_NAME) })
+		private readonly ISavedSearchManager _savedSearchManager;
+
+		public DocumentArtifactIdDataReader(ISavedSearchManager savedSearchManager) :
+			base(new [] { new DataColumn(Shared.Constants.ARTIFACT_ID_FIELD_NAME) })
 		{
+			_savedSearchManager = savedSearchManager;
 		}
 
-		protected override ObjectQueryResutSet ExecuteQueryToGetInitialResult()
+		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
-			return RDORepository.RetrieveAsync(ObjectQuery, String.Empty).Result;
+			ArtifactDTO[] results = _savedSearchManager.RetrieveNext();
+
+			return results;
+		}
+
+		protected override bool AllArtifactsFetched()
+		{
+			bool allDocumentsRetrieved = _savedSearchManager.AllDocumentsRetrieved();
+
+			return allDocumentsRetrieved;
 		}
 
 		public override string GetDataTypeName(int i)
@@ -37,22 +49,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			{
 				throw new IndexOutOfRangeException();
 			}
-			return CurrentItemResult.ArtifactId;
-		}
-
-		private static Query CreateQuery(int savedSearchArtifactId)
-		{
-			return new Query()
-			{
-				Condition = $"'Artifact ID' == {savedSearchArtifactId}",
-				Fields = new string[] {}, // No fields are required for this query
-				IncludeIdWindow = false,
-				SampleParameters = null,
-				RelationalField = null,
-				SearchProviderCondition = null,
-				Sorts = new [] {"'Artifact ID' ASC"},
-				TruncateTextFields = true
-			};
+			return CurrentArtifact.ArtifactId;
 		}
 	}
 }

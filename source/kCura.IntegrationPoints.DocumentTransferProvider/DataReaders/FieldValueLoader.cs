@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
+using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 using kCura.Relativity.Client.DTOs;
 using Relativity.Services.ObjectQuery;
 
@@ -14,19 +16,19 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private Dictionary<int, Task<List<FieldValue>>> _cache;
 		private readonly List<FieldValue> _queryFields;
 		private readonly object _lock;
-		private readonly IRDORepository _rdoRepository;
+		private readonly IDocumentManager _documentManager;
 		private readonly int[] _documentArtifactIds;
 		private int _counter;
 
 		internal FieldValueLoader(
-			IRDORepository rdoRepository,
+			IDocumentManager documentManager,
 			int[] fieldIdentifiers,
 			int[] documentArtifactIds)
 		{
 			_counter = 0;
 			_lock = new object();
 			_cache = new Dictionary<int, Task<List<FieldValue>>>();
-			_rdoRepository = rdoRepository;
+			_documentManager = documentManager;
 			_documentArtifactIds = documentArtifactIds;
 			_queryFields = fieldIdentifiers.Select(id => new FieldValue(id)).ToList();
 
@@ -73,20 +75,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		{
 			return Task.Run(() =>
 			{
-				// TODO: validate this query
-				var documentQuery = new Query()
-				{
-					Condition = $"'Artifact ID' == {documentArtifactId}",
-					Fields = _queryFields.Select(x => x.Name).ToArray(),
-					TruncateTextFields = false
-				};
-
-				ObjectQueryResutSet results = null;
+				ArtifactDTO document = null;
 				try
 				{
 					lock (_lock)
 					{
-						results = _rdoRepository.RetrieveAsync(documentQuery, String.Empty).Result;
+						document = _documentManager.RetrieveDocument(documentArtifactId, new HashSet<string>(_queryFields.Select(x => x.Name)));
 					}
 				}
 				catch (Exception e)
@@ -99,11 +93,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 					};
 				}
 
-				QueryDataItemResult document = results.Data.DataResults.FirstOrDefault();
-				if (results.Success == false || document == null)
+				if (document == null)
 				{
-					throw new ProviderReadDataException(String.Format("Unable to find a document object with artifact Id of {0}",
-						documentArtifactId))
+					throw new ProviderReadDataException($"Unable to find a document object with artifact Id of {documentArtifactId}")
 					{
 						Identifier = documentArtifactId.ToString()
 					};
