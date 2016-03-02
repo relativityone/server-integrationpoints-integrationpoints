@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.Relativity.Client.DTOs;
+using Relativity.InstanceSetting;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
@@ -15,15 +16,37 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		protected Document CurrentDocument;
 		protected readonly IRelativityClientAdaptor RelativityClient;
 		protected readonly DataTable SchemaDataTable;
+		protected Dictionary<string, int> KnownOrdinalDictionary;
+		 
 
 		protected RelativityReaderBase(IRelativityClientAdaptor relativityClient, DataColumn[] columns)
 		{
+			KnownOrdinalDictionary = new Dictionary<string, int>();
 			SchemaDataTable = new DataTable();
 			SchemaDataTable.Columns.AddRange(columns);
 
 			RelativityClient = relativityClient;
 			ReaderOpen = true;
+
+			int ordinal = TryGetOrdinal(Shared.Constants.NATIVE_FILE_PATH_IDENTIFIER);
+			if (ordinal >= 0)
+			{
+				KnownOrdinalDictionary[Shared.Constants.NATIVE_FILE_PATH_IDENTIFIER] = ordinal;
+			}
 		}
+
+		protected int TryGetOrdinal(string id)
+		{
+			try
+			{
+				return GetOrdinal(id);
+			}
+			catch (Exception)
+			{
+			}
+			return -1;
+		}
+
 
 		public virtual object this[string name]
 		{
@@ -146,7 +169,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public virtual int GetOrdinal(string name)
 		{
-			return SchemaDataTable.Columns[name].Ordinal;
+			if (!KnownOrdinalDictionary.ContainsKey(name))
+			{
+				int ordinal = SchemaDataTable.Columns[name].Ordinal;
+				KnownOrdinalDictionary[name] = ordinal;
+			}
+			return KnownOrdinalDictionary[name];
 		}
 
 		public virtual DataTable GetSchemaTable()

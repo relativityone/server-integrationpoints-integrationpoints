@@ -16,6 +16,7 @@ using kCura.Crypto.DataProtection;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Domain;
 using kCura.IntegrationPoints.Core.Services.Marshaller;
+using kCura.IntegrationPoints.Data;
 using Relativity.API;
 using Relativity.APIHelper;
 
@@ -59,7 +60,7 @@ namespace kCura.IntegrationPoints.Contracts
 			}
 
 			// Run bootstrapper for app domain
-			Bootstrapper.InitAppDomain(Constants.IntegrationPoints.AppDomain_Subsystem_Name, Constants.IntegrationPoints.Application_GuidString, AppDomain.CurrentDomain);
+			Bootstrapper.InitAppDomain(Core.Constants.IntegrationPoints.AppDomain_Subsystem_Name, Core.Constants.IntegrationPoints.Application_GuidString, AppDomain.CurrentDomain);
 
 			// Get marshaled data
 			IAppDomainDataMarshaller dataMarshaller = new SecureAppDomainDataMarshaller();
@@ -74,7 +75,7 @@ namespace kCura.IntegrationPoints.Contracts
 		private void SetUpSystemToken(IAppDomainDataMarshaller dataMarshaller)
 		{
 			ISerializationHelper serializationHelper = new SerializationHelper();
-			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider);
+			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Core.Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider);
 			IProvideSystemTokens systemTokenProvider = serializationHelper.Deserialize<IProvideSystemTokens>(data);
 			if (systemTokenProvider != null)
 			{
@@ -87,7 +88,7 @@ namespace kCura.IntegrationPoints.Contracts
 		/// </summary>
 		private void SetUpConnectionString(IAppDomainDataMarshaller dataMarshaller)
 		{
-			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Constants.IntegrationPoints.AppDomain_Data_ConnectionString);
+			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Core.Constants.IntegrationPoints.AppDomain_Data_ConnectionString);
 			if (data != null && data.Length > 0)
 			{
 				string connectionString = System.Text.Encoding.ASCII.GetString(data);
@@ -153,27 +154,6 @@ namespace kCura.IntegrationPoints.Contracts
 			}
 
 			return new ProviderWrapper(_providerFactory.CreateProvider(identifer));
-		}
-
-		/// <summary>
-		/// Gets the synchronizer in the app domain for the specific identifier
-		/// </summary>
-		/// <param name="identifier">The identifier that represents the synchronizer to create.</param>
-		/// <param name="options">The options for that synchronizer that will be passed on initialization.</param>
-		/// <returns>A synchronizer that will bring data into a system.</returns>
-		public Synchronizer.IDataSynchronizer GetSynchronizer(Guid identifier, string options)
-		{
-			if (_windsorContainer == null)
-			{
-				this.SetUpCastleWindsor();
-			}
-
-			if (_synchronizerFactory == null)
-			{
-				_synchronizerFactory = _windsorContainer.Resolve<ISynchronizerFactory>();
-			}
-
-			return new SynchronizerWrapper(_synchronizerFactory.CreateSynchronizer(identifier, options));
 		}
 	}
 }
