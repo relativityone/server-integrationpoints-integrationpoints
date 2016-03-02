@@ -67,10 +67,29 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		{
 			foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
 			{
-				string fieldName = fieldArtifact.Fields.FirstOrDefault(x => x.Name == "Name")?.Value as string;
-				int? isIdentifierFieldValue = fieldArtifact.Fields.FirstOrDefault(x => x.Name == "Is Identifier")?.Value as int? ;
-				bool isIdentifier = isIdentifierFieldValue.HasValue && isIdentifierFieldValue.Value > 0;
+				string fieldName = String.Empty;
+				int isIdentifierFieldValue = 0;
 
+				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
+				{
+					if (field.Name == "Name")
+					{
+						fieldName = field.Value as string;
+					}
+					else if (field.Name == "Is Identifier")
+					{
+						try
+						{
+							isIdentifierFieldValue = Convert.ToInt32(field.Value);
+						}
+						catch
+						{
+							// surpress error for invalid casts
+						}
+					}
+				}
+
+				bool isIdentifier = isIdentifierFieldValue > 0;
 				if (isIdentifier)
 				{
 					fieldName += Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT;
