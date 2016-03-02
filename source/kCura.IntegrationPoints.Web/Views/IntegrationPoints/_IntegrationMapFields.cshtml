@@ -4,8 +4,8 @@
 			<span class="label title">Field Mappings</span>
 			<span style="visibility: hidden;" id="forceRedraw"></span>
 			<div class="map-field-title">
-				<label class="list-title workspace-field">Workspace Fields</label>
-				<label class="list-title source-field">Source Attributes</label>
+				<label class="list-title workspace-field">Destination</label>
+				<label class="list-title source-field">Source</label>
 
 			</div>
 			<div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error"></div>
@@ -63,9 +63,9 @@
 		</div>
 	</div>
 	<div class="card">
-		<span class="label title">Import Settings</span>
+		<span class="label title">Settings</span>
 		<div class="identifier">
-			<div class="field-row overlay-identifier">
+			<div class="field-row overlay-identifier" data-bind="visible: isDocument() == 'false'">
 				<div class="field-label required">Unique Identifier:</div>
 				<div class="field-value ">
 					<select id="overlay-identifier" data-bind="options: overlay, value: selectedUniqueId, optionsValue: 'displayName', optionsText: 'displayName', select2: {}">
@@ -89,7 +89,6 @@
 						<li>
 							<input id="native-file-radio-1" type="radio" name="import" value="false" data-bind="checked: importNativeFile">No</li>
 					</ul>
-
 				</div>
 			</div>
 			<div class="field-row" data-bind="visible: importNativeFile() == 'true' && AllowUserToMapNativeFileField() == 'true'">
