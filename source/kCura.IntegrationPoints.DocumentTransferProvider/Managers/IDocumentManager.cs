@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers
 {
 	public interface IDocumentManager
 	{
-		ArtifactDTO RetrieveDocument(int documentId, HashSet<string> fieldNames);
-		ArtifactDTO[] RetrieveDocuments(IEnumerable<int> documentIds, HashSet<string> fieldNames);
+		ArtifactDTO RetrieveDocument(int documentId, HashSet<int> fieldIds);
+		ArtifactDTO[] RetrieveDocuments(IEnumerable<int> documentIds, HashSet<int> fieldIds);
 	}
 }

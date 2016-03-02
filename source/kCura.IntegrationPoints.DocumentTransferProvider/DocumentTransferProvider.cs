@@ -16,7 +16,6 @@ using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Services.ObjectQuery;
-using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
@@ -42,49 +41,48 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public IEnumerable<FieldEntry> GetFields(string options)
 		{
 			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
-			QueryDataItemResult[] fields = GetRelativityFields(settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
+			ArtifactDTO[] fields = GetRelativityFields(settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
 			IEnumerable<FieldEntry> fieldEntries = ParseFields(fields);
 			return fieldEntries;
 		}
 
-		private QueryDataItemResult[] GetRelativityFields(int workspaceId, int rdoTypeId)
+		private ArtifactDTO[] GetRelativityFields(int workspaceId, int rdoTypeId)
 		{
 			IRDORepository rdoRepository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), workspaceId, Convert.ToInt32(ArtifactType.Field));
-			var fieldQuery = new Query()
-			{
-				Fields = new []{ "Name", "Choices", "Object Type Artifact Type ID", "Field Type", "Field Type ID", "Is Identifier", "Field Type Name"},
-				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId}"
-			};
-			ObjectQueryResutSet fields = rdoRepository.RetrieveAsync(fieldQuery, String.Empty).Result;
-			if (!fields.Success)
-			{
-				var messages = fields.Message;
-				var e = messages; 
-				throw new Exception(e);	
-			}
+			IFieldManager fieldManager = new KeplerFieldManager(rdoRepository);
+			ArtifactDTO[] fieldArtifacts = fieldManager.RetrieveFields(
+				rdoTypeId,
+				new HashSet<string>(new[]
+				{
+					"Name", "Choices", "Object Type Artifact Type ID", "Field Type", "Field Type ID", "Is Identifier", "Field Type Name"
+				}));
 
 			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportAPI().GetWorkspaceFields(workspaceId, rdoTypeId).Select(x => x.ArtifactID));
 
 			// Contains is 0(1) https://msdn.microsoft.com/en-us/library/kw5aaea4.aspx
-			return fields.Data.DataResults.Where(x => mappableArtifactIds.Contains(x.ArtifactId)).ToArray();
+			return fieldArtifacts.Where(x => mappableArtifactIds.Contains(x.ArtifactId)).ToArray();
 		}
 
-		private IEnumerable<FieldEntry> ParseFields(QueryDataItemResult[] fields)
+		private IEnumerable<FieldEntry> ParseFields(ArtifactDTO[] fieldArtifacts)
 		{
-			foreach (QueryDataItemResult result in fields)
+			foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
 			{
-				DataItemFieldResult idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
-				DataItemFieldResult nameField = result.Fields.First(x => x.Name.Equals("Name"));
-				bool isIdentifier = false;
-				if (idField != null)
+				string fieldName = fieldArtifact.Fields.FirstOrDefault(x => x.Name == "Name")?.Value as string;
+				int? isIdentifierFieldValue = fieldArtifact.Fields.FirstOrDefault(x => x.Name == "Is Identifier")?.Value as int? ;
+				bool isIdentifier = isIdentifierFieldValue.HasValue && isIdentifierFieldValue.Value > 0;
+
+				if (isIdentifier)
 				{
-					isIdentifier = Convert.ToInt32(idField.Value) == 1;
-					if (isIdentifier)
-					{
-						nameField.Value += Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT;
-					}
+					fieldName += Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT;
 				}
-				yield return new FieldEntry() { DisplayName = (string) nameField.Value, FieldIdentifier = result.ArtifactId.ToString(), IsIdentifier = isIdentifier, IsRequired = false };
+
+				yield return new FieldEntry()
+				{
+					DisplayName = fieldName,
+					FieldIdentifier = fieldArtifact.ArtifactId.ToString(),
+					IsIdentifier = isIdentifier,
+					IsRequired = false
+				};
 			}
 		}
 
@@ -122,7 +120,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		/// Gets the RDO's who's artifact ids exist in the entryIds list
 		/// (This method is called in batches of normally 1000 entryIds)
 		/// </summary>
-		/// <param name="fields">The fields the user mapped</param>
+		/// <param name="fields">The fieldArtifacts the user mapped</param>
 		/// <param name="entryIds">The artifact ids of the documents to copy (in string format)</param>
 		/// <param name="options">The saved search artifact id (unused in this method)</param>
 		/// <returns>An IDataReader that contains the Document RDO's for the entryIds</returns>

@@ -45,7 +45,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
-			ArtifactDTO[] results =  _documentManager.RetrieveDocuments(_documentArtifactIds, new HashSet<string>(_fieldEntries.Select(x => x.DisplayName)));
+			ArtifactDTO[] results =  _documentManager.RetrieveDocuments(
+				_documentArtifactIds,
+				new HashSet<int>(_fieldEntries.Select(x => Convert.ToInt32(x.FieldIdentifier))));
+
 			_previousRequestReturnedEmpty = results == null || !results.Any();
 
 			return results;

@@ -16,12 +16,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 			_rdoRepository = rdoRepository;
 		}
 
-		public ArtifactDTO RetrieveDocument(int documentId, HashSet<string> fieldNames)
+		public ArtifactDTO RetrieveDocument(int documentId, HashSet<int> fieldIds)
 		{
 			var documentsQuery = new Query()
 			{
 				Condition = $"'Artifact ID' == {documentId}",
-				Fields = fieldNames.ToArray(),
+				Fields = fieldIds.Select(x => x.ToString()).ToArray(),
 				IncludeIdWindow = false,
 				SampleParameters = null,
 				RelationalField = null,
@@ -50,12 +50,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 			throw new Exception(resultSet.Message);
 		}
 
-		public ArtifactDTO[] RetrieveDocuments(IEnumerable<int> documentIds, HashSet<string> fieldNames)
+		public ArtifactDTO[] RetrieveDocuments(IEnumerable<int> documentIds, HashSet<int> fieldIds)
 		{
 			var documentsQuery = new Query()
 			{
 				Condition = $"'Artifact ID' in [{String.Join(",", documentIds)}]",
-				Fields = fieldNames.ToArray(),
+				Fields = fieldIds.Select(x => x.ToString()).ToArray(),
 				IncludeIdWindow = false,
 				SampleParameters = null,
 				RelationalField = null,
@@ -73,7 +73,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 					{
 						ArtifactId = x.ArtifactId,
 						ArtifactTypeId = x.ArtifactTypeId,
-						Fields = x.Fields.Select(y => new ArtifactFieldDTO() { ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value }).ToList()
+						Fields = x.Fields.Select(y => new ArtifactFieldDTO()
+						{
+							ArtifactId = y.ArtifactId,
+							FieldType = y.FieldType,
+							Name = y.Name,
+							Value = y.Value
+						}).ToList()
 					}).ToArray();
 
 				return documents;

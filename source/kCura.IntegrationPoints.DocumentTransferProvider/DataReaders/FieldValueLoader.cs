@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
 using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 using kCura.Relativity.Client.DTOs;
-using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
 	internal class FieldValueLoader
 	{
-		private Dictionary<int, Task<List<FieldValue>>> _cache;
+		private readonly Dictionary<int, Task<List<FieldValue>>> _cache;
 		private readonly List<FieldValue> _queryFields;
 		private readonly object _lock;
 		private readonly IDocumentManager _documentManager;
@@ -80,7 +78,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				{
 					lock (_lock)
 					{
-						document = _documentManager.RetrieveDocument(documentArtifactId, new HashSet<string>(_queryFields.Select(x => x.Name)));
+						document = _documentManager.RetrieveDocument(documentArtifactId, new HashSet<int>(_queryFields.Select(x => x.ArtifactID)));
 					}
 				}
 				catch (Exception e)
