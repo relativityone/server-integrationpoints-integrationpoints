@@ -4,10 +4,11 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.API;
+using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private readonly IEnumerable<FieldEntry> _fieldEntries;
 		private readonly HashSet<int> _longTextFieldArtifactIds;
 		private readonly FieldValueLoader _fieldsLoader;
+		private readonly Dictionary<int, string> _nativeFileLocation;
 
 		public DocumentTransferDataReader(IRelativityClientAdaptor relativityClientAdaptor,
 			IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries,
@@ -26,14 +28,35 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			_documentArtifactIds = documentArtifactIds.ToArray();
 			_fieldEntries = fieldEntries.ToList();
 			// From SynchronizerObjectBuilder, the existing framework assuming that the reader from get data will use artifact Id as the name of the column.
-			_longTextFieldArtifactIds = new HashSet<int>(longTextfieldEntries.Select(artifact => Convert.ToInt32(artifact.ArtifactID)));
+			_longTextFieldArtifactIds = new HashSet<int>(longTextfieldEntries.Select(artifact => artifact.ArtifactID));
 			_fieldsLoader = new FieldValueLoader(relativityClientAdaptor, longTextfieldEntries.Select(artifact => Convert.ToInt32(artifact.ArtifactID)).ToArray(),
 				_documentArtifactIds);
+
+			_nativeFileLocation = _nativeFileLocation ?? new Dictionary<int, string>();
+		}
+
+		/// TEMP constructure, we will need to create kelper service to get the file locations.
+		public DocumentTransferDataReader(IRelativityClientAdaptor relativityClientAdaptor,
+			IEnumerable<int> documentArtifactIds, IEnumerable<FieldEntry> fieldEntries,
+			List<Relativity.Client.Artifact> longTextfieldEntries,
+			IDBContext dbContext) :
+			this(relativityClientAdaptor, documentArtifactIds, fieldEntries, longTextfieldEntries)
+		{
+			var helper = new DirectSqlCallHelper(dbContext);
+			_nativeFileLocation = helper.GetFileLocation(_documentArtifactIds);
 		}
 
 		private static DataColumn[] GenerateDataColumnsFromFieldEntries(IEnumerable<FieldEntry> fieldEntries)
 		{
-			return fieldEntries.Select(x => new DataColumn(x.FieldIdentifier)).ToArray();
+			// we will always import this native file location
+			List<FieldEntry> fields = fieldEntries.ToList();
+			fields.Add(new FieldEntry()
+			{
+				DisplayName = "NATIVE_FILE_LOCATION_01",
+				FieldIdentifier = Shared.Constants.NATIVE_FILE_PATH_IDENTIFIER,
+				FieldType = FieldType.String
+			});
+			return fields.Select(x => new DataColumn(x.FieldIdentifier)).ToArray();
 		}
 
 		protected override QueryResultSet<Document> ExecuteQueryToGetInitialResult()
@@ -46,14 +69,20 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			};
 
 			// only query for non-full text fields at this time
-			List<FieldValue> requestedFields = _fieldEntries.Where(field => _longTextFieldArtifactIds.Contains(Convert.ToInt32(field.FieldIdentifier)) == false)
-												.Select(x => new FieldValue() { ArtifactID = Convert.ToInt32(x.FieldIdentifier) }).ToList();
+			List<FieldValue> requestedFields = _fieldEntries.Where(field =>
+			{
+				int id = -1;
+				bool success = Int32.TryParse(field.FieldIdentifier, out id);
+				return (success && _longTextFieldArtifactIds.Contains(id) == false);
+			} )
+			.Select(x => new FieldValue() { ArtifactID = Convert.ToInt32(x.FieldIdentifier) }).ToList();
 
 			Query<Document> query = new Query<Document>
 			{
 				Condition = artifactIdSetCondition,
 				Fields = requestedFields
 			};
+
 			return RelativityClient.ExecuteDocumentQuery(query);
 		}
 
@@ -71,22 +100,34 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		public override object GetValue(int i)
 		{
 			Object result = null;
-			int fieldArtifactId = Convert.ToInt32(GetName(i));
+			string name = GetName(i);
+			int fieldArtifactId = -1;
+			bool success = Int32.TryParse(name, out fieldArtifactId);
 
-			if (_longTextFieldArtifactIds.Contains(fieldArtifactId))
+			if (success)
 			{
-				result = LoadLongTextFieldValueOfCurrentDocument(fieldArtifactId);
+				if (_longTextFieldArtifactIds.Contains(fieldArtifactId))
+				{
+					result = LoadLongTextFieldValueOfCurrentDocument(fieldArtifactId);
+				}
+				else
+				{
+					result = CurrentDocument[fieldArtifactId].Value;
+				}
 			}
-			else
+			else if (name == Shared.Constants.NATIVE_FILE_PATH_IDENTIFIER)
 			{
-				result = CurrentDocument[fieldArtifactId].Value;
+				if (_nativeFileLocation.ContainsKey(CurrentDocument.ArtifactID))
+				{
+					result = _nativeFileLocation[CurrentDocument.ArtifactID];
+				}
 			}
 			return result;
 		}
 
-
 		private int _localCacheId;
 		private List<FieldValue> _localCache;
+
 		private string GetLongTextFieldFromPreLoadedCache(int documentArtifactId, int fieldArtifactId)
 		{
 			if (documentArtifactId != _localCacheId)
@@ -119,6 +160,5 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		{
 			return GetLongTextFieldFromPreLoadedCache(CurrentDocument.ArtifactID, fieldArtifactId);
 		}
-
 	}
 }
