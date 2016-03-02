@@ -61,6 +61,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 				Name = name,
 				SourceConfigurationUrl = url,
 				ViewConfigurationUrl = dataUrl,
+				Config = new SourceProviderConfiguration()
 			};
 
 			_providersStub = new List<SourceProvider>()
@@ -89,7 +90,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 				ArtifactId = 789,
 				Name = "test",
 				SourceConfigurationUrl = "fake url",
-				ViewConfigurationUrl = "config url"
+				ViewConfigurationUrl = "config url",
+				Config = new SourceProviderConfiguration()
 			};
 
 			SourceProvider provider2ToInstalled = new SourceProvider()
@@ -99,7 +101,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 				ArtifactId = 777,
 				Name = "test2",
 				SourceConfigurationUrl = "fake url2",
-				ViewConfigurationUrl = "config url2"
+				ViewConfigurationUrl = "config url2",
+				Config = new SourceProviderConfiguration()
 			};
 
 			_providersStub = new List<SourceProvider>()

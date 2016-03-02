@@ -6,6 +6,7 @@ using System.Threading;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
@@ -30,6 +31,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private List<KeyValuePair<string, string>> _rowErrors;
 		private ImportSettings ImportSettings { get; set; }
 		private NativeFileImportService NativeFileImportService { get; set; }
+
+		public SourceProvider SourceProvider { get; set; }
 
 		protected RdoSynchronizerBase(IRelativityFieldQuery fieldQuery, IImportApiFactory factory)
 		{
@@ -248,15 +251,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 						.Select(x => int.Parse(x.DestinationField.FieldIdentifier))
 						.First();
 			}
-			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath))
+
+			if (settings.ImportNativeFiles)
 			{
 				nativeFileImportService.ImportNativeFiles = true;
-				nativeFileImportService.SourceFieldName = fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath).SourceField.FieldIdentifier;
+				FieldMap field = fieldMap.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath);
+				nativeFileImportService.SourceFieldName = field != null ? field.SourceField.FieldIdentifier : Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
 				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
-				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles;
 				settings.DisableNativeLocationValidation = this.DisableNativeLocationValidation;
 				settings.DisableNativeValidation = this.DisableNativeValidation;
+				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles;
 			}
+			else if (SourceProvider != null && SourceProvider.Config.AlwaysImportNativeFiles)
+			{
+				nativeFileImportService.ImportNativeFiles = true;
+				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
+				settings.DisableNativeLocationValidation = this.DisableNativeLocationValidation;
+				settings.DisableNativeValidation = this.DisableNativeValidation;
+				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks;
+				nativeFileImportService.SourceFieldName = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
+			}
+
 			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
 			{
 				settings.FolderPathSourceFieldName = fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation).SourceField.ActualName;

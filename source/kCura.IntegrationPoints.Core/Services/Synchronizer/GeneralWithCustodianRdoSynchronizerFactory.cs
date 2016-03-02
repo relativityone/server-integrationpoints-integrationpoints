@@ -22,6 +22,8 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 
 		public ITaskJobSubmitter TaskJobSubmitter { get; set; }
 
+		public SourceProvider SourceProvider { get; set; }
+
 		public IDataSynchronizer CreateSynchronizer(Guid identifier, string options)
 		{
 			var json = JsonConvert.DeserializeObject<ImportSettings>(options);
@@ -33,9 +35,15 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 				client.APIOptions.WorkspaceID = json.CaseArtifactId;
 				Dictionary<string, RelativityFieldQuery> dict = new Dictionary<string, RelativityFieldQuery>
 				{
-					{"fieldQuery", new RelativityFieldQuery(client)}
+					{"fieldQuery", new RelativityFieldQuery(client)},
 				};
-				return _container.Kernel.Resolve<IDataSynchronizer>(typeof (RdoSynchronizerPush).AssemblyQualifiedName, dict);
+				IDataSynchronizer synchronizer = _container.Kernel.Resolve<IDataSynchronizer>(typeof (RdoSynchronizerPush).AssemblyQualifiedName, dict);
+				RdoSynchronizerPush syncBase = synchronizer as RdoSynchronizerPush;
+				if (syncBase != null)
+				{
+					syncBase.SourceProvider = SourceProvider;
+				}
+				return syncBase;
 			}
 
 			//name is very bad, we should consider switching to guid

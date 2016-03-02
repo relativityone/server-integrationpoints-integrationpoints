@@ -595,11 +595,13 @@ ko.validation.insertValidationMessage = function (element) {
 								nativePathField = allSourceField[i];
 							}
 						}
-						map.push({
-							sourceField: _createEntry(nativePathField),
-							destinationField: {},
-							fieldMapType: "NativeFilePath"
-						});
+						if (nativePathField !== "") {
+							map.push({
+								sourceField: _createEntry(nativePathField),
+								destinationField: {},
+								fieldMapType: "NativeFilePath"
+							});
+						}
 					}
 					if (this.model.UseFolderPathInformation() == "true") {
 						var folderPathField = "";
@@ -623,6 +625,8 @@ ko.validation.insertValidationMessage = function (element) {
 							fieldMapType: "FolderPathInformation"
 						});
 					}
+
+					_destination.ImportNativeFiles = this.model.importNativeFile();
 
 					// pushing create folder setting
 					_destination.UseFolderPathInformation = this.model.UseFolderPathInformation();
