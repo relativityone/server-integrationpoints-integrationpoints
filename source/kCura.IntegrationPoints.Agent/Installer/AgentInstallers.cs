@@ -3,7 +3,9 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Tasks;
+using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.ScheduleQueue.Core.Logging;
 
 namespace kCura.IntegrationPoints.Agent.Installer
@@ -24,6 +26,10 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<SendEmailManager>().ImplementedBy<SendEmailManager>().LifeStyle.Transient);
 			container.Register(Component.For<SendEmailWorker>().ImplementedBy<SendEmailWorker>().LifeStyle.Transient);
 			container.Register(Component.For<JobStatisticsService>().ImplementedBy<JobStatisticsService>().LifeStyle.Transient);
+
+			container.Register(Component.For<ExportWorker>().ImplementedBy<ExportWorker>()
+				.DependsOn(Dependency.OnComponent<ISynchronizerFactory, ExportDestinationSynchronizerFactory>())
+				.LifeStyle.Transient);
 		}
 	}
 }
