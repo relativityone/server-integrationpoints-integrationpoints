@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			{
 				int id = -1;
 				bool success = Int32.TryParse(x.FieldIdentifier, out id);
-				return success && _longTextFieldArtifactIds.Contains(id);
+				return success && !_longTextFieldArtifactIds.Contains(id);
 			});
 
 			HashSet<int> requestedFieldIds = new HashSet<int>(filteredFields.Select(x => Convert.ToInt32(x.FieldIdentifier)));
