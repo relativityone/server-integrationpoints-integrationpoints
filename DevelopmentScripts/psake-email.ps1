@@ -428,6 +428,15 @@ SET NOCOUNT ON
 	DECLARE @productName AS VARCHAR(255) = '$product'
 	DECLARE @branchID as INT
 	
+    IF(NOT EXISTS(SELECT TOP 1 1 FROM TCBranches 
+	        		             WHERE ProjectName = @projectName 
+	                               AND BranchName = @branchName 
+	                               AND ProductName = @productName))
+	BEGIN
+		INSERT INTO TCBranches(ProductName, ProjectName, BranchName) VALUES (@productName, @projectName, @branchName)
+	END
+
+
 	SET @branchID = (SELECT TOP 1 [ID] 
 	                 FROM TCBranches
 					 WHERE ProjectName = @projectName 
