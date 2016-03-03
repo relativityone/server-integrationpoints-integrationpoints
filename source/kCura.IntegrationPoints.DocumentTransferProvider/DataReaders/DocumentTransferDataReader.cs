@@ -7,6 +7,8 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
 using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 using kCura.Relativity.Client.DTOs;
+using Relativity.API;
+using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
@@ -18,6 +20,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private readonly HashSet<int> _longTextFieldArtifactIds;
 		private readonly FieldValueLoader _fieldsLoader;
 		private bool _previousRequestReturnedEmpty = false;
+		private readonly Dictionary<int, string> _nativeFileLocation;
 
 		public DocumentTransferDataReader(
 			IDocumentManager documentManager,
@@ -41,13 +44,37 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				_documentManager, 
 				longTextIds,
 				documentIds.ToArray());
+
+			_nativeFileLocation = _nativeFileLocation ?? new Dictionary<int, string>();
+		}
+
+		/// TEMP constructure, we will need to create kelper service to get the file locations.
+		public DocumentTransferDataReader(
+			IDocumentManager documentManager,
+			IEnumerable<int> documentArtifactIds, 
+			IEnumerable<FieldEntry> fieldEntries,
+			IEnumerable<int> longTextFieldIdEntries,
+			IDBContext dbContext) :
+			this(documentManager, documentArtifactIds, fieldEntries, longTextFieldIdEntries)
+		{
+			var helper = new DirectSqlCallHelper(dbContext);
+			_nativeFileLocation = helper.GetFileLocation(documentArtifactIds.ToArray());
 		}
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
+			IEnumerable<FieldEntry> filteredFields = _fieldEntries.Where(x =>
+			{
+				int id = -1;
+				bool success = Int32.TryParse(x.FieldIdentifier, out id);
+				return success && _longTextFieldArtifactIds.Contains(id);
+			});
+
+			HashSet<int> requestedFieldIds = new HashSet<int>(filteredFields.Select(x => Convert.ToInt32(x.FieldIdentifier)));
+
 			ArtifactDTO[] results =  _documentManager.RetrieveDocuments(
 				_documentArtifactIds,
-				new HashSet<int>(_fieldEntries.Select(x => Convert.ToInt32(x.FieldIdentifier))));
+				requestedFieldIds);
 
 			_previousRequestReturnedEmpty = results == null || !results.Any();
 
@@ -61,7 +88,16 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		private static DataColumn[] GenerateDataColumnsFromFieldEntries(IEnumerable<FieldEntry> fieldEntries)
 		{
-			return fieldEntries.Select(x => new DataColumn(x.FieldIdentifier)).ToArray();
+			// we will always import this native file location
+			List<FieldEntry> fields = fieldEntries.ToList();
+			fields.Add(new FieldEntry()
+			{
+				DisplayName = "NATIVE_FILE_LOCATION_01",
+				FieldIdentifier = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
+				FieldType = FieldType.String
+			});
+
+			return fields.Select(x => new DataColumn(x.FieldIdentifier)).ToArray();
 		}
 
 		public override string GetDataTypeName(int i)
@@ -78,16 +114,31 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		public override object GetValue(int i)
 		{
 			Object result = null;
-			int fieldArtifactId = CurrentArtifact.Fields[i].ArtifactId;
+			string fieldIdentifier = GetName(i);
+			int fieldArtifactId = -1;
+			bool success = Int32.TryParse(fieldIdentifier, out fieldArtifactId);
 
-			if (_longTextFieldArtifactIds.Contains(fieldArtifactId))
+			if (success)
 			{
-				result = LoadLongTextFieldValueOfCurrentDocument(fieldArtifactId);
+				if (_longTextFieldArtifactIds.Contains(fieldArtifactId))
+				{
+					result = LoadLongTextFieldValueOfCurrentDocument(fieldArtifactId);
+				}
+				else
+				{
+					result = CurrentArtifact.Fields[i].Value;
+					//result = CurrentArtifact[fieldArtifactId].Value;
+					// TODO: verify this ^^^^
+				}
 			}
-			else
+			else if (fieldIdentifier == Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)
 			{
-				result = CurrentArtifact.Fields[i].Value;
+				if (_nativeFileLocation.ContainsKey(CurrentArtifact.ArtifactId))
+				{
+					result = _nativeFileLocation[CurrentArtifact.ArtifactId];
+				}
 			}
+
 			return result;
 		}
 
@@ -95,9 +146,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		{
 			return GetLongTextFieldFromPreLoadedCache(CurrentArtifact.ArtifactId, fieldArtifactId);
 		}
-
 		private int _localCacheId;
 		private List<FieldValue> _localCache;
+
 		private string GetLongTextFieldFromPreLoadedCache(int documentArtifactId, int fieldArtifactId)
 		{
 			if (documentArtifactId != _localCacheId)
@@ -123,6 +174,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 					throw exception.InnerException ?? exception;
 				}
 			}
+
 			return _localCache.First(field => field.ArtifactID == fieldArtifactId).ValueAsLongText;
 		}
 	}

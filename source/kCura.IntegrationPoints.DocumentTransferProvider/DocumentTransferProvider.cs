@@ -43,6 +43,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
 			ArtifactDTO[] fields = GetRelativityFields(settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
 			IEnumerable<FieldEntry> fieldEntries = ParseFields(fields);
+
 			return fieldEntries;
 		}
 
@@ -153,8 +154,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			IDocumentManager documentManager = new KeplerDocumentManager(documentRepository);
 
 			int fieldTypeArtifactId = Convert.ToInt32(ArtifactType.Field);
-            IRDORepository fieldRepository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, fieldTypeArtifactId);
+			IRDORepository fieldRepository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, fieldTypeArtifactId);
 			IFieldManager fieldManager = new KeplerFieldManager(fieldRepository);
+				
+			IDBContext dbContext = _helper.GetDBContext(settings.SourceWorkspaceArtifactId);
 
 			ArtifactFieldDTO[] longTextfields = fieldManager.RetrieveLongTextFields(documentTypeId);
 
@@ -162,7 +165,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 				documentManager,
 				entryIds.Select(x => Convert.ToInt32(x)),
 				fields,
-				longTextfields.Select(x => x.ArtifactId));
+				longTextfields.Select(x => x.ArtifactId),
+				dbContext);
 
 			return dataReader;
 		}

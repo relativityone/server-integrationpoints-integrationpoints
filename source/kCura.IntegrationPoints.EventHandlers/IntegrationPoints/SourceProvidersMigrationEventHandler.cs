@@ -38,7 +38,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				Url = provider.SourceConfigurationUrl,
 				ViewDataUrl = provider.ViewConfigurationUrl,
 				ApplicationGUID = new Guid(provider.ApplicationIdentifier),
-				GUID = new Guid(provider.Identifier)
+				GUID = new Guid(provider.Identifier),
+				Configuration = provider.Config
 			}).ToList();
 
 			return results;

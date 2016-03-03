@@ -187,7 +187,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.SourceProviderConfiguration = ko.observable(model.SourceProviderConfiguration);
 
 		this.UseFolderPathInformation = ko.observable(model.UseFolderPathInformation || "false");
-		this.FolderPathSourceField = ko.observable(model.FolderPathSourceField).extend(
+		this.FolderPathSourceField = ko.observable().extend(
 		{
 			required: {
 				onlyIf: function () {
@@ -201,7 +201,7 @@ ko.validation.insertValidationMessage = function (element) {
 			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetFolderPathFields') }).then(function (result) {
 				// GetFolderPathFields only returns fixed-length text and long text fields
 				self.FolderPathFields(result);
-				self.nativeFilePathOption(result);
+				self.FolderPathSourceField(model.FolderPathSourceField);
 			});
 		}
 
@@ -453,7 +453,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 	var Step = function (settings) {
 		function setCache(model, key) {
-			//we only want to cache the fields this page is incharge of
+			//we only want to cache the fields this page is in charge of
 			stepCache[key] = {
 				map: model.map,
 				parentIdentifier: model.parentIdentifier,
@@ -465,7 +465,7 @@ ko.validation.insertValidationMessage = function (element) {
 				FolderPathSourceField: model.FolderPathSourceField,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
 				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
-		} || '';
+			} || '';
 		}
 
 		var stepCache = {};
@@ -595,11 +595,13 @@ ko.validation.insertValidationMessage = function (element) {
 								nativePathField = allSourceField[i];
 							}
 						}
-						map.push({
-							sourceField: _createEntry(nativePathField),
-							destinationField: {},
-							fieldMapType: "NativeFilePath"
-						});
+						if (nativePathField !== "") {
+							map.push({
+								sourceField: _createEntry(nativePathField),
+								destinationField: {},
+								fieldMapType: "NativeFilePath"
+							});
+						}
 					}
 					if (this.model.UseFolderPathInformation() == "true") {
 						var folderPathField = "";
@@ -623,6 +625,8 @@ ko.validation.insertValidationMessage = function (element) {
 							fieldMapType: "FolderPathInformation"
 						});
 					}
+
+					_destination.ImportNativeFiles = this.model.importNativeFile();
 
 					// pushing create folder setting
 					_destination.UseFolderPathInformation = this.model.UseFolderPathInformation();

@@ -83,6 +83,7 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Constants.cs" />
     <Compile Include="DataSourceProviderAttribute.cs" />
     <Compile Include="DefaultProviderFactory.cs" />
     <Compile Include="DefaultSynchronizerFactory.cs" />
