@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.DocumentTransferProvider.Models;
-using Relativity.InstanceSetting;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
@@ -61,6 +60,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				Enumerator.Dispose();
 				Enumerator = null;
 			}
+			CurrentArtifact = null;
 			FetchedArtifacts = null;
 		}
 
@@ -150,6 +150,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		{
 			if (!KnownOrdinalDictionary.ContainsKey(name))
 			{
+				DataColumn column = SchemaDataTable.Columns[name];
+				if (column == null)
+				{
+					throw new IndexOutOfRangeException(String.Format("'{0}' is not a valid column", name));	
+				}
+
 				int ordinal = SchemaDataTable.Columns[name].Ordinal;
 				KnownOrdinalDictionary[name] = ordinal;
 			}
