@@ -26,5 +26,7 @@ namespace kCura.IntegrationPoints.Data
 		/// Exclusive list of guid associate with Rdo types
 		/// </summary>
 		public List<Guid> CompatibleRdoTypes { set; get; }
+
+		public bool GetDataProvideAllFieldsRequired { set; get; }
 	}
 }

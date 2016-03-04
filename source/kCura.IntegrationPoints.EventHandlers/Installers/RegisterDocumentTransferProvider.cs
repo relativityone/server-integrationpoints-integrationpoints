@@ -38,7 +38,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 							AvaiableImportSettings = new ImportSettingVisibility()
 							{
 								AllowUserToMapNativeFileField = false
-							}
+							},
+							GetDataProvideAllFieldsRequired = true
 						}
 					}
 				}
