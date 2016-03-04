@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private readonly IEnumerable<FieldEntry> _fieldEntries;
 		private readonly HashSet<int> _longTextFieldArtifactIds;
 		private readonly FieldValueLoader _fieldsLoader;
-		private bool _previousRequestReturnedEmpty = false;
+		private bool _queryWasRun = false;
 		private readonly Dictionary<int, string> _nativeFileLocation;
 
 		public DocumentTransferDataReader(
@@ -76,14 +76,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				_documentArtifactIds,
 				requestedFieldIds);
 
-			_previousRequestReturnedEmpty = results == null || !results.Any();
+			_queryWasRun = true;
 
 			return results;
 		}
 
 		protected override bool AllArtifactsFetched()
 		{
-			return _previousRequestReturnedEmpty;
+			return _queryWasRun;
 		}
 
 		private static DataColumn[] GenerateDataColumnsFromFieldEntries(IEnumerable<FieldEntry> fieldEntries)
