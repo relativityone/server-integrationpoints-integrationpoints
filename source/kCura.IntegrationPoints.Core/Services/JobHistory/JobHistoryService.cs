@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				jobHistory.RecordsWithErrors = 0;
 
 				ImportSettings setting = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
-				jobHistory.DestinationWorkspace = String.Format("{0} [CaseId::{1}]", _context.GetWorkspaceName(setting.CaseArtifactId), setting.CaseArtifactId);
+				jobHistory.DestinationWorkspace = String.Format("{0} [Id::{1}]", _context.GetWorkspaceName(setting.CaseArtifactId), setting.CaseArtifactId);
 
 				if (startTimeUTC.HasValue) jobHistory.StartTimeUTC = startTimeUTC.Value;
 
