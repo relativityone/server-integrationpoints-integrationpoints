@@ -7,3 +7,5 @@ kCura.IntegrationPoints.Agent
 kCura.ScheduleQueue.Core
 kCura.ScheduleQueue.AgentBase
 kCura.EDDS.WebAPI
+kCura.IntegrationPoints.Services
+kCura.IntegrationPoints.Services.Interfaces.Private
