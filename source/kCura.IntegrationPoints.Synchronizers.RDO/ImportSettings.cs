@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public String ExtractedTextFileEncoding { get; set; }
 
 		/// <summary>
-		/// indicates user prefernces of importing native files.
+		/// indicates user preferences of importing native files.
 		/// </summary>
 		public bool ImportNativeFiles { get; set; }
 

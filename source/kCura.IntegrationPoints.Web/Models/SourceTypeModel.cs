@@ -57,11 +57,11 @@ namespace kCura.IntegrationPoints.Web.Models
 		{
 			get
 			{
-				if (_originalConfig.AvaiableImportSettings == null)
+				if (_originalConfig.AvailableImportSettings == null)
 				{
-					_originalConfig.AvaiableImportSettings = new ImportSettingVisibility();
+					_originalConfig.AvailableImportSettings = new ImportSettingVisibility();
 				}
-				return _originalConfig.AvaiableImportSettings;
+				return _originalConfig.AvailableImportSettings;
 			}
 			set { }
 		}

@@ -73,11 +73,11 @@ namespace kCura.IntegrationPoints.Data
 			Dictionary<Guid, int> results = new Dictionary<Guid, int>();
 			List<ObjectType> types = GetAllTypes(userId);
 
-			foreach (var type in types)
+			foreach (ObjectType type in types)
 			{
 				if (type.DescriptorArtifactTypeID.HasValue)
 				{
-					foreach (var guid in type.Guids)
+					foreach (Guid guid in type.Guids)
 					{
 						results[guid] = type.DescriptorArtifactTypeID.Value;
 					}

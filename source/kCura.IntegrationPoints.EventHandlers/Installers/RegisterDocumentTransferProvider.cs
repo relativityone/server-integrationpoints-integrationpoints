@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 							{
 								new Guid(Constants.DOC_OBJ_GUID)
 							},
-							AvaiableImportSettings = new ImportSettingVisibility()
+							AvailableImportSettings = new ImportSettingVisibility()
 							{
 								AllowUserToMapNativeFileField = false
 							},
