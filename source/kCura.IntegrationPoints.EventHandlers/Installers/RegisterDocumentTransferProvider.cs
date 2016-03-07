@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	public class RegisterDocumentTransferProvider : IntegrationPointSourceProviderInstaller
 	{
 		/// <summary>
-		/// Define guid with source provider to allow intergration core to be used for source provider installation.
+		/// Define guid with source provider to allow integration core to be used for source provider installation.
 		/// </summary>
 		/// <returns>a Dictionary with mapped Guid and Relativity source provider</returns>
 		public override IDictionary<Guid, SourceProvider> GetSourceProviders()
