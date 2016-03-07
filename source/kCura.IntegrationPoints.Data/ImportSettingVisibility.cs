@@ -13,13 +13,13 @@ namespace kCura.IntegrationPoints.Data
 		[NonSerialized]
 		private bool _allowUserToMapNativeFileField = true;
 
-		[DataMember]
 		/// <summary>
 		/// To enable visibilities of native file path mapping.
 		/// </summary>
 		/// <remarks>
 		/// This option only apply if document object is selected.
 		/// </remarks>
+		[DataMember]
 		public bool AllowUserToMapNativeFileField
 		{
 			set { _allowUserToMapNativeFileField = value; }

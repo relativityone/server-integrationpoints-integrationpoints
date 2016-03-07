@@ -18,9 +18,12 @@ namespace kCura.IntegrationPoints.Data
 		public bool AlwaysImportNativeFiles { get; set; }
 
 		/// <summary>
-		/// conguration to set the visibilities of the import settings
+		/// configuration to set the visibilities of the import settings
 		/// </summary>
-		public ImportSettingVisibility AvaiableImportSettings { set; get; }
+		/// <remarks>
+		/// Only avaiable for internal providers
+		/// </remarks>
+		internal ImportSettingVisibility AvailableImportSettings { set; get; }
 
 		/// <summary>
 		/// Exclusive list of guid associate with Rdo types

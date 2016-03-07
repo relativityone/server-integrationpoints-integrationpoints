@@ -38,11 +38,8 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 					{"fieldQuery", new RelativityFieldQuery(client)},
 				};
 				IDataSynchronizer synchronizer = _container.Kernel.Resolve<IDataSynchronizer>(typeof (RdoSynchronizerPush).AssemblyQualifiedName, dict);
-				RdoSynchronizerPush syncBase = synchronizer as RdoSynchronizerPush;
-				if (syncBase != null)
-				{
-					syncBase.SourceProvider = SourceProvider;
-				}
+				RdoSynchronizerPush syncBase = (RdoSynchronizerPush) synchronizer;
+				syncBase.SourceProvider = SourceProvider;
 				return syncBase;
 			}
 

@@ -112,7 +112,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 					Config = new SourceProviderConfiguration()
 					{
 						CompatibleRdoTypes = new List<Guid>() { _documentObjectGuid },
-						AvaiableImportSettings = new ImportSettingVisibility()
+						AvailableImportSettings = new ImportSettingVisibility()
 						{
 							AllowUserToMapNativeFileField = false
 						}

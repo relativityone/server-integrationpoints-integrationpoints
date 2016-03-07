@@ -4,7 +4,6 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.Custodian;
-using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
