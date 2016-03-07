@@ -16,6 +16,7 @@ using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Services.ObjectQuery;
+using kCura.IntegrationPoints.DocumentTransferProvider.Shared;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
@@ -55,7 +56,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 				rdoTypeId,
 				new HashSet<string>(new[]
 				{
-					"Name", "Choices", "Object Type Artifact Type ID", "Field Type", "Field Type ID", "Is Identifier", "Field Type Name"
+					Shared.Constants.Fields.Name,
+					Shared.Constants.Fields.Choices,
+					Shared.Constants.Fields.ObjectTypeArtifactTypeId,
+					Shared.Constants.Fields.FieldType,
+					Shared.Constants.Fields.FieldTypeId,
+					Shared.Constants.Fields.IsIdentifier,
+					Shared.Constants.Fields.FieldTypeName
 				}));
 
 			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportAPI().GetWorkspaceFields(workspaceId, rdoTypeId).Select(x => x.ArtifactID));
@@ -73,11 +80,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
 				{
-					if (field.Name == "Name")
+					if (field.Name == Shared.Constants.Fields.Name)
 					{
 						fieldName = field.Value as string;
 					}
-					else if (field.Name == "Is Identifier")
+					else if (field.Name == Shared.Constants.Fields.IsIdentifier)
 					{
 						try
 						{
