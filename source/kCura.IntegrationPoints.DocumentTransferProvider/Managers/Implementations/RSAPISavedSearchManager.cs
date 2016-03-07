@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 			}
 			else
 			{
-				resultSet = _rsapiClient.Repositories.Document.QuerySubset(_queryToken, _documentsRetrieved, _pageSize);
+				resultSet = _rsapiClient.Repositories.Document.QuerySubset(_queryToken, _documentsRetrieved + 1, _pageSize);
 			}
 
 			if (resultSet != null && resultSet.Success)
