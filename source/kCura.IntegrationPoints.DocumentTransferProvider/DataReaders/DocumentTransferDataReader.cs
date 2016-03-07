@@ -107,7 +107,15 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public override Type GetFieldType(int i)
 		{
-			object value = CurrentArtifact.Fields[i].Value;
+			string fieldIdentifier = GetName(i);
+			int fieldArtifactId = -1;
+			bool success = Int32.TryParse(fieldIdentifier, out fieldArtifactId);
+			object value = null;
+			if (success)
+			{
+				value = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId).Value;
+			}
+
 			return value == null ? typeof(object) : value.GetType();
 		}
 
@@ -126,9 +134,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				}
 				else
 				{
-					result = CurrentArtifact.Fields[i].Value;
-					//result = CurrentArtifact[fieldArtifactId].Value;
-					// TODO: verify this ^^^^
+					result = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId).Value;
 				}
 			}
 			else if (fieldIdentifier == Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)

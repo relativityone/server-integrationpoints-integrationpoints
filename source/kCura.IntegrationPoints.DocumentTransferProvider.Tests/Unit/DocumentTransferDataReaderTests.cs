@@ -28,20 +28,19 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		const int _FIELD_IDENTIFIER = 123;
 		const string _CONTROL_NUMBER = "WEB000123";
 
-		static readonly ArtifactDTO _templateArtifactDto = new ArtifactDTO()
-		{
-			ArtifactId = _DOCUMENT_ARTIFACTID,
-			Fields = new List<ArtifactFieldDTO>()
-					{
-						new ArtifactFieldDTO()
-						{
-							ArtifactId = _FIELD_IDENTIFIER,
-							FieldType = "Fixed Length",
-							Name = "Control Number",
-							Value = _CONTROL_NUMBER
-						}
-					}
-		};
+		private static readonly ArtifactDTO _templateArtifactDto = new ArtifactDTO(
+			_DOCUMENT_ARTIFACTID,
+			10,
+			new List<ArtifactFieldDTO>()
+			{
+				new ArtifactFieldDTO()
+				{
+					ArtifactId = _FIELD_IDENTIFIER,
+					FieldType = "Fixed Length",
+					Name = "Control Number",
+					Value = _CONTROL_NUMBER
+				}
+			});
 
 		readonly ArtifactDTO[] _templateArtifactDtos = new ArtifactDTO[]
 			{
@@ -152,8 +151,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns(new ArtifactDTO[]
 				{
-					new ArtifactDTO() {ArtifactId = documentIds[0]},
-					new ArtifactDTO() {ArtifactId =  documentIds[1]},
+					new ArtifactDTO(documentIds[0], 10, new ArtifactFieldDTO[0]),
+					new ArtifactDTO(documentIds[1], 10, new ArtifactFieldDTO[0]),
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -187,8 +186,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns(new ArtifactDTO[]
 				{
-					new ArtifactDTO() {ArtifactId = documentIds[0]},
-					new ArtifactDTO() {ArtifactId =  documentIds[1]},
+					new ArtifactDTO(documentIds[0], 10, new ArtifactFieldDTO[0]),
+					new ArtifactDTO(documentIds[1], 10, new ArtifactFieldDTO[0]),
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -976,11 +975,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
 				{
-					new ArtifactDTO()
-					{
-						ArtifactId = 1234,
-						ArtifactTypeId = 10,
-						Fields = new List<ArtifactFieldDTO>()
+					new ArtifactDTO(
+						1234,
+						10,
+						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
 							{
@@ -988,8 +986,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 								Name = "Some Number",
 								Value = value
 							}	
-						}
-					}, 
+						})
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -1026,11 +1023,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
 				{
-					new ArtifactDTO()
-					{
-						ArtifactId = 1234,
-						ArtifactTypeId = 10,
-						Fields = new List<ArtifactFieldDTO>()
+					new ArtifactDTO(
+						1234,
+						10,
+						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
 							{
@@ -1038,8 +1034,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 								Name = "Some Number",
 								Value = value
 							}
-						}
-					},
+						})
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -1076,11 +1071,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
 				{
-					new ArtifactDTO()
-					{
-						ArtifactId = 1234,
-						ArtifactTypeId = 10,
-						Fields = new List<ArtifactFieldDTO>()
+					new ArtifactDTO(
+						1234,
+						10,
+						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
 							{
@@ -1088,8 +1082,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 								Name = "Some Number",
 								Value = value
 							}
-						}
-					},
+						})
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -1125,11 +1118,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
 				{
-					new ArtifactDTO()
-					{
-						ArtifactId = 1234,
-						ArtifactTypeId = 10,
-						Fields = new List<ArtifactFieldDTO>()
+					new ArtifactDTO(
+						1234,
+						10,
+						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
 							{
@@ -1137,8 +1129,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 								Name = "Some Number",
 								Value = value
 							}
-						}
-					},
+						})
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -1175,11 +1166,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
 				{
-					new ArtifactDTO()
-					{
-						ArtifactId = 1234,
-						ArtifactTypeId = 10,
-						Fields = new List<ArtifactFieldDTO>()
+					new ArtifactDTO(
+						1234,
+						10,
+						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
 							{
@@ -1187,8 +1177,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 								Name = "Some Number",
 								Value = value
 							}
-						}
-					},
+						})
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -1225,11 +1214,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
 				{
-					new ArtifactDTO()
-					{
-						ArtifactId = 1234,
-						ArtifactTypeId = 10,
-						Fields = new List<ArtifactFieldDTO>()
+					new ArtifactDTO(
+						1234,
+						10,
+						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
 							{
@@ -1237,8 +1225,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 								Name = "Some Number",
 								Value = value
 							}
-						}
-					},
+						})
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -1275,11 +1262,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
 				{
-					new ArtifactDTO()
-					{
-						ArtifactId = 1234,
-						ArtifactTypeId = 10,
-						Fields = new List<ArtifactFieldDTO>()
+					new ArtifactDTO(
+						1234,
+						10,
+						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
 							{
@@ -1287,8 +1273,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 								Name = "Some Number",
 								Value = value
 							}
-						}
-					},
+						})
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -1325,11 +1310,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
 				{
-					new ArtifactDTO()
-					{
-						ArtifactId = 1234,
-						ArtifactTypeId = 10,
-						Fields = new List<ArtifactFieldDTO>()
+					new ArtifactDTO(
+						1234,
+						10,
+						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
 							{
@@ -1337,8 +1321,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 								Name = "Some Number",
 								Value = value
 							}
-						}
-					},
+						})
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -1375,11 +1358,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
 				{
-					new ArtifactDTO()
-					{
-						ArtifactId = 1234,
-						ArtifactTypeId = 10,
-						Fields = new List<ArtifactFieldDTO>()
+					new ArtifactDTO(
+						1234,
+						10,
+						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
 							{
@@ -1387,8 +1369,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 								Name = "Some Number",
 								Value = value
 							}
-						}
-					},
+						})
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -1425,11 +1406,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
 				{
-					new ArtifactDTO()
-					{
-						ArtifactId = 1234,
-						ArtifactTypeId = 10,
-						Fields = new List<ArtifactFieldDTO>()
+					new ArtifactDTO(
+						1234,
+						10,
+						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
 							{
@@ -1437,8 +1417,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 								Name = "Some Number",
 								Value = value
 							}
-						}
-					},
+						})
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -1475,11 +1454,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
 				{
-					new ArtifactDTO()
-					{
-						ArtifactId = 1234,
-						ArtifactTypeId = 10,
-						Fields = new List<ArtifactFieldDTO>()
+					new ArtifactDTO(
+						1234,
+						10,
+						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
 							{
@@ -1487,8 +1465,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 								Name = "Some Number",
 								Value = value
 							}
-						}
-					},
+						})
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -1523,12 +1500,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Value = longTextFieldValue
 			};
 
-			var artifactDto = new ArtifactDTO()
-			{
-				ArtifactId = _DOCUMENT_ARTIFACTID,
-				ArtifactTypeId = 10,
-				Fields = new List<ArtifactFieldDTO>() { longTextField }
-			};
+			var artifactDto = new ArtifactDTO(_DOCUMENT_ARTIFACTID, 10, new List<ArtifactFieldDTO>() { longTextField });
 
 			ArtifactDTO[] artifactDtos = { artifactDto };
 
@@ -1583,12 +1555,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Value = longTextFieldValue
 			};
 
-			var artifactDto = new ArtifactDTO()
-			{
-				ArtifactId = _DOCUMENT_ARTIFACTID,
-				ArtifactTypeId = 10,
-				Fields = new List<ArtifactFieldDTO>() { }
-			};
+			var artifactDto = new ArtifactDTO(_DOCUMENT_ARTIFACTID, 10, new List<ArtifactFieldDTO>() { });
 
 			ArtifactDTO[] artifactDtos = { artifactDto };
 
@@ -1636,12 +1603,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Value = longTextFieldValue
 			};
 
-			var artifactDto = new ArtifactDTO()
-			{
-				ArtifactId = _DOCUMENT_ARTIFACTID,
-				ArtifactTypeId = 10,
-				Fields = new List<ArtifactFieldDTO>() { }
-			};
+			var artifactDto = new ArtifactDTO(_DOCUMENT_ARTIFACTID, 10, new List<ArtifactFieldDTO>() { });
+
 
 			ArtifactDTO[] artifactDtos = { artifactDto };
 

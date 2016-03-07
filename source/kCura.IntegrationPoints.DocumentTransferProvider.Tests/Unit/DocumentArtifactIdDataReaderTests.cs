@@ -41,11 +41,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange	
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				}
+				new ArtifactDTO(1, 10, new ArtifactFieldDTO[0])
 			};
 
 			_savedSearchManager.RetrieveNext().Returns(documents);
@@ -103,16 +99,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange	
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				},
-				new ArtifactDTO()
-				{
-					ArtifactId = 10,
-					ArtifactTypeId = 10,
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
 			};
 
 			_savedSearchManager.RetrieveNext().Returns(documents);
@@ -138,16 +126,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange	
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				},
-				new ArtifactDTO()
-				{
-					ArtifactId = 10,
-					ArtifactTypeId = 10,
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
 			};
 
 			_savedSearchManager.RetrieveNext().Returns(documents);
@@ -174,16 +154,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				},
-				new ArtifactDTO()
-				{
-					ArtifactId = 10,
-					ArtifactTypeId = 10,
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
 			};
 
 			_savedSearchManager.RetrieveNext().Returns(documents);
@@ -211,11 +183,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				},
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
 			};
 
 			_savedSearchManager.RetrieveNext().Returns(documents);
@@ -253,11 +222,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				},
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchManager.RetrieveNext().Returns(documents);
@@ -279,11 +244,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				},
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchManager.RetrieveNext().Returns(documents);
@@ -414,11 +375,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Act
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				},
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchManager.RetrieveNext().Returns(documents);
@@ -440,11 +397,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				},
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchManager.RetrieveNext().Returns(documents);
@@ -466,11 +419,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				},
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchManager.RetrieveNext().Returns(documents);
@@ -519,11 +468,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				},
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchManager.RetrieveNext().Returns(documents);
@@ -552,11 +497,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				},
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchManager.RetrieveNext().Returns(documents);
@@ -578,13 +519,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				},
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
-
 			_savedSearchManager.RetrieveNext().Returns(documents);
 
 			// Act
@@ -604,11 +540,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				},
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchManager.RetrieveNext().Returns(documents);
@@ -630,11 +562,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO()
-				{
-					ArtifactId = 1,
-					ArtifactTypeId = 10,
-				},
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchManager.RetrieveNext().Returns(documents);

@@ -253,7 +253,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				ReadEntriesCount++;
 			}
 			else if (!AllArtifactsFetched())
-			//else if (CurrentQueryResultSet.Data.TotalResultCount - ReadEntriesCount > 0 && String.IsNullOrWhiteSpace(CurrentQueryResultSet.Data.QueryToken) == false)
 			{
 				FetchDataToRead();
 				return Read();

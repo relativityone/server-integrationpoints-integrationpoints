@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 				if (document == null)
 				{
-					throw new ProviderReadDataException($"Unable to find a document object with artifact Id of {documentArtifactId}")
+					throw new ProviderReadDataException(String.Format("Unable to find a document object with artifact Id of {0}", documentArtifactId))
 					{
 						Identifier = documentArtifactId.ToString()
 					};

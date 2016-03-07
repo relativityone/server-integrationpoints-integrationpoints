@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 		{
 			var documentsQuery = new Query()
 			{
-				Condition = $"'Artifact ID' == {documentId}",
+				Condition = String.Format("'Artifact ID' == {0}", documentId),
 				Fields = fieldIds.Select(x => x.ToString()).ToArray(),
 				IncludeIdWindow = false,
 				SampleParameters = null,
@@ -34,15 +34,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 			if (resultSet != null && resultSet.Success)
 			{
 				ArtifactDTO document = resultSet.Data.DataResults.Select(
-					x => new ArtifactDTO()
-					{
-						ArtifactId = x.ArtifactId,
-						ArtifactTypeId = x.ArtifactTypeId,
-						Fields =
-							x.Fields.Select(
-								y => new ArtifactFieldDTO() {ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value})
-								.ToList()
-					}).FirstOrDefault();
+					x => new ArtifactDTO(
+						x.ArtifactId,
+						x.ArtifactTypeId,
+						x.Fields.Select(
+							y => new ArtifactFieldDTO() { ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value }))
+				).FirstOrDefault();
 
 				return document;
 			}
@@ -54,7 +51,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 		{
 			var documentsQuery = new Query()
 			{
-				Condition = $"'Artifact ID' in [{String.Join(",", documentIds)}]",
+				Condition = String.Format("'Artifact ID' in [{0}]", String.Join(",", documentIds)),
 				Fields = fieldIds.Select(x => x.ToString()).ToArray(),
 				IncludeIdWindow = false,
 				SampleParameters = null,
@@ -68,18 +65,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 			if (resultSet != null && resultSet.Success)
 			{
 				ArtifactDTO[] documents = resultSet.Data.DataResults.Select(
-					x => new ArtifactDTO()
-					{
-						ArtifactId = x.ArtifactId,
-						ArtifactTypeId = x.ArtifactTypeId,
-						Fields = x.Fields.Select(y => new ArtifactFieldDTO()
-						{
-							ArtifactId = y.ArtifactId,
-							FieldType = y.FieldType,
-							Name = y.Name,
-							Value = y.Value
-						}).ToList()
-					}).ToArray();
+					x => new ArtifactDTO(
+						x.ArtifactId,
+						x.ArtifactTypeId,
+						x.Fields.Select(
+							y => new ArtifactFieldDTO() { ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value }))
+					).ToArray();
 
 				return documents;
 			}

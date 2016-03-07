@@ -46,18 +46,17 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 				_totalDocumentsRetrieved = resultSet.TotalCount;
 
 				ArtifactDTO[] results = resultSet.Results.Select(
-					x => new ArtifactDTO()
-					{
-						ArtifactId = x.Artifact.ArtifactID,
-						ArtifactTypeId = 10 // TODO: use enum but note that Relativity.ArtifactType excepts here on the agent :/
-					}).ToArray();
+					x => new ArtifactDTO(
+						x.Artifact.ArtifactID,
+						10, // TODO: use enum but note that Relativity.ArtifactType excepts here on the agent :/
+						new ArtifactFieldDTO[0])).ToArray();
 
 				_documentsRetrieved += results.Length;
 
 				return results;
 			}
 
-			throw new Exception($"Failed to retrieve for saved search ID {_savedSearchId}");
+			throw new Exception(String.Format("Failed to retrieve for saved search ID {0}", _savedSearchId));
 		}
 
 		public bool AllDocumentsRetrieved()

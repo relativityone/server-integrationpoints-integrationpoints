@@ -21,16 +21,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 
 			var longTextFieldsQuery = new Query()
 			{
-				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId} AND 'Field Type' == '{longTextFieldName}'",
+				Condition = String.Format("'Object Type Artifact Type ID' == {0} AND 'Field Type' == '{1}'", rdoTypeId, longTextFieldName),
 			};
 
 			ObjectQueryResutSet result = _rdoRepository.RetrieveAsync(longTextFieldsQuery, String.Empty).Result;
 
 			if (!result.Success)
 			{
-				var messages = result.Message;
-				var e = messages;
-				throw new Exception(e);
+				throw new Exception(result.Message);
 			}
 
 			ArtifactFieldDTO[] fieldDtos = result.Data.DataResults.Select(x => new ArtifactFieldDTO()
@@ -38,7 +36,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 				ArtifactId = x.ArtifactId,
 				FieldType = longTextFieldName,
 				Name = x.TextIdentifier,
-				Value = null
+				Value = null // Field RDO's don't have values...setting this to NULL to be explicit
 			}).ToArray();
 
 			return fieldDtos;
@@ -49,31 +47,23 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 			var fieldQuery = new Query()
 			{
 				Fields = fieldFieldsNames.ToArray(),
-				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId}"
+				Condition = String.Format("'Object Type Artifact Type ID' == {0}", rdoTypeId)
 			};
 
 			ObjectQueryResutSet result = _rdoRepository.RetrieveAsync(fieldQuery, String.Empty).Result;
 
 			if (!result.Success)
 			{
-				var messages = result.Message;
-				var e = messages;
-				throw new Exception(e);
+				throw new Exception(result.Message);
 			}
 
 			ArtifactDTO[] fieldArtifacts = result.Data.DataResults.Select(x =>
-				new ArtifactDTO()
-				{
-					ArtifactId = x.ArtifactId,
-					ArtifactTypeId = x.ArtifactTypeId,
-					Fields = x.Fields.Select(y => new ArtifactFieldDTO()
-					{
-						Name = y.Name,
-						ArtifactId = y.ArtifactId,
-						FieldType = y.FieldType,
-						Value = y.Value,
-					}).ToArray()
-				}).ToArray();
+				new ArtifactDTO(
+					x.ArtifactId,
+					x.ArtifactTypeId,
+					x.Fields.Select(
+						y => new ArtifactFieldDTO() { ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value }))
+			).ToArray();
 
 			return fieldArtifacts;
 		}
