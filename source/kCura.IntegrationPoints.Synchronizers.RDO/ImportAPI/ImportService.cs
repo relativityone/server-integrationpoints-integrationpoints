@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Security.Authentication;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
@@ -20,7 +17,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private Dictionary<int, Field> _idToFieldDictionary;
 		private Dictionary<string, Field> _mappings;
 		private Dictionary<string, int> _inputMappings;
+		private int _itemsImported;
 
+		public event StatusUpdate OnStatusUpdate;
 		public event BatchCompleted OnBatchComplete;
 		public event BatchSubmitted OnBatchSubmit;
 		public event BatchCreated OnBatchCreate;
@@ -32,7 +31,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			EmbeddedAssembly.Load("kCura.IntegrationPoints.Synchronizers.RDO.Relativity.ImportAPI.Wrapper.dll", "Relativity.ImportAPI.Wrapper.dll");
 			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
-
 			this.Settings = settings;
 			this._batchManager = batchManager;
 			this._inputMappings = fieldMappings;
@@ -135,6 +133,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.Settings.SelectedIdentifierFieldName = _idToFieldDictionary[Settings.IdentityFieldId].Name;
 			importJob.OnComplete += new IImportNotifier.OnCompleteEventHandler(ImportJob_OnComplete);
 			importJob.OnFatalException += new IImportNotifier.OnFatalExceptionEventHandler(ImportJob_OnComplete);
+			importJob.OnProgress += ImportJob_OnProgress;
 			ImportService_OnBatchSubmit(_batchManager.CurrentSize, _batchManager.MinimumBatchSize);
 
 			importJob.Execute();
@@ -277,6 +276,21 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				OnBatchComplete(start, end, totalRows, errorRows);
 			}
 		}
+
+		private void ImportJob_OnProgress(long item)
+		{
+			_itemsImported++;
+			if (_itemsImported%10 == 0)
+			{
+				if (OnStatusUpdate != null)
+				{
+					OnStatusUpdate(_itemsImported);
+				}
+			}
+			Console.WriteLine(item);
+		}
+
+		public object IntegrationPointsManager { get; set; }
 
 		private int GetDestinationFolderArtifactID()
 		{

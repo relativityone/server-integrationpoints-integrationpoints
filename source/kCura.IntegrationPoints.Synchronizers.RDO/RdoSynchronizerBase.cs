@@ -18,6 +18,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public event BatchCompleted OnBatchComplete;
 		public event BatchSubmitted OnBatchSubmit;
 		public event BatchCreated OnBatchCreate;
+		public event StatusUpdate OnStatusUpdate;
 		public event JobError OnJobError;
 		public event RowError OnDocumentError;
 
@@ -224,11 +225,30 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			importService.OnDocumentError += new RowError(ItemError);
 			importService.OnJobError += new JobError(JobError);
 
-			if (OnBatchComplete != null) importService.OnBatchComplete += OnBatchComplete;
-			if (OnBatchSubmit != null) importService.OnBatchSubmit += OnBatchSubmit;
-			if (OnBatchCreate != null) importService.OnBatchCreate += OnBatchCreate;
-			if (OnJobError != null) importService.OnJobError += OnJobError;
-			if (OnDocumentError != null) importService.OnDocumentError += OnDocumentError;
+			if (OnBatchComplete != null)
+			{
+				importService.OnBatchComplete += OnBatchComplete;
+			}
+			if (OnBatchSubmit != null)
+			{
+				importService.OnBatchSubmit += OnBatchSubmit;
+			}
+			if (OnBatchCreate != null)
+			{
+				importService.OnBatchCreate += OnBatchCreate;
+			}
+			if (OnStatusUpdate != null)
+			{
+				importService.OnStatusUpdate += OnStatusUpdate;
+			}
+			if (OnJobError != null)
+			{
+				importService.OnJobError += OnJobError;
+			}
+			if (OnDocumentError != null)
+			{
+				importService.OnDocumentError += OnDocumentError;
+			}
 
 			importService.Initialize();
 
