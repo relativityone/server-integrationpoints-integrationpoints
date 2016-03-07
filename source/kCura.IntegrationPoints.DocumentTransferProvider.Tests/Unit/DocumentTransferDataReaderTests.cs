@@ -1,1947 +1,1679 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Data;
-//using kCura.IntegrationPoints.Contracts.Models;
-//using kCura.IntegrationPoints.Contracts.Provider;
-//using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
-//using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
-//using kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers;
-//using kCura.Relativity.Client.DTOs;
-//using NSubstitute;
-//using NSubstitute.ExceptionExtensions;
-//using NUnit.Framework;
-//using Artifact = kCura.Relativity.Client.Artifact;
-//
-//namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
-//{
-//	[TestFixture]
-//	public class DocumentTransferDataReaderTests
-//	{
-//		private IDataReader _instance;
-//
-//		const int _DOCUMENT_ARTIFACTID = 123423;
-//		const string _FIELD_NAME = "DispName";
-//		const int _FIELD_IDENTIFIER = 123;
-//
-//		[SetUp]
-//		public void SetUp()
-//		{
-//		}
-//
-//		#region Read
-//		[Test]
-//		public void Read_FirstRead_RunsSavedSearch_ReturnsTrue()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(1)}
-//				}
-//			};
-//
-//			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
-//
-//			// Act
-//			bool result = _instance.Read();
-//
-//			// Assert
-//			Assert.IsTrue(result, "There are records to read, result should be true");
-//			Assert.IsFalse(_instance.IsClosed, "The reader should be open");
-//		}
-//
-//		[Test]
-//		public void Read_FirstRead_RunsSavedSearch_NoResults_ReturnsFalse()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>()); ;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//			};
-//
-//			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
-//
-//			// Act
-//			bool result = _instance.Read();
-//
-//			// Assert
-//			Assert.IsFalse(result, "There are no records to read, result should be false");
-//			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
-//		}
-//
-//		[Test]
-//		public void Read_FirstRead_RunsSavedSearch_RequestFails_ReturnsFalse()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = false,
-//				Results = new List<Result<Document>>()
-//			};
-//
-//			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
-//
-//			// Act
-//			bool result = _instance.Read();
-//
-//			// Assert
-//			Assert.IsFalse(result, "There are no records to read, result should be false");
-//			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
-//		}
-//
-//		[Test]
-//		public void Read_FirstRead_RunsSavedSearch_RequestFailsWithException_ReturnsFalse()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Throws(new Exception());
-//
-//			// Act
-//			bool result = _instance.Read();
-//
-//			// Assert
-//			Assert.IsFalse(result, "There are no records to read, result should be false");
-//			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
-//		}
-//
-//		[Test]
-//		public void Read_ReadAllResults_GoldFlow()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(1)},
-//					new Result<Document>() {Artifact = new Document(2)}
-//				}
-//			};
-//
-//			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
-//
-//			// Act
-//			bool result1 = _instance.Read();
-//			bool result2 = _instance.Read();
-//			bool result3 = _instance.Read();
-//
-//			// Assert
-//			Assert.IsTrue(result1, "There are records to read, result should be true");
-//			Assert.IsTrue(result2, "There are records to read, result should be true");
-//			Assert.IsFalse(result3, "There are no records to read, result should be false");
-//			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
-//		}
-//
-//		[Test]
-//		public void Read_ReadSomeResultsThenClose_GoldFlow()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(1)},
-//					new Result<Document>() {Artifact = new Document(2)}
-//				}
-//			};
-//
-//			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
-//
-//			// Act
-//			bool result1 = _instance.Read();
-//			_instance.Close();
-//			bool result2 = _instance.Read();
-//
-//			// Assert
-//			Assert.IsTrue(result1, "There are records to read, result should be true");
-//			Assert.IsFalse(result2, "There are no records to read, result should be false");
-//			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
-//		}
-//
-//		[Test]
-//		public void Read_NoFields_DoesNotFail()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new FieldEntry[0], new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			bool result = _instance.Read();
-//
-//			// Assert
-//			_relativityClientAdaptor
-//				.Received(1)
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
-//		}
-//
-//		[Test]
-//		public void Read_NoDocumentIds_DoesNotFail()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new int[0], new[]
-//			{
-//				new FieldEntry() {DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			bool result = _instance.Read();
-//
-//			// Assert
-//			_relativityClientAdaptor
-//				.Received(1)
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
-//		}
-//
-//		[Test]
-//		public void Read_NoDocumentIdsNoFields_DoesNotFail()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new int[0], new FieldEntry[0], new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			bool result = _instance.Read();
-//
-//			// Assert
-//			_relativityClientAdaptor
-//				.Received(1)
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
-//		}
-//
-//		#endregion
-//
-//		#region IDataReader methods
-//		[Test]
-//		public void IsDBNull_ResultNotNull_ReturnsFalse()
-//		{
-//			// Arrange
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(123)
-//								{
-//									Name = fieldName,
-//									Value = 999
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			bool readResult = _instance.Read();
-//			bool isDbNull = _instance.IsDBNull(0);
-//
-//			// Assert
-//			Assert.IsTrue(readResult, "There are records to read, result should be true");
-//			Assert.IsFalse(isDbNull, "The result should not be DBNull");
-//		}
-//
-//		[Test]
-//		public void GetFieldType_ReturnsString()
-//		{
-//			// Arrange
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new	List<Artifact>());
-//
-//			// Act
-//			Type result = _instance.GetFieldType(0);
-//
-//			// Assert
-//			Assert.AreEqual(result, typeof(string), "The types should match" );
-//		}
-//
-//		[Test]
-//		public void GetFieldTypeName_ReturnsString()
-//		{
-//			// Arrange
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			// Act
-//			string result = _instance.GetDataTypeName(0);
-//
-//			// Assert
-//			Assert.AreEqual(result, typeof(string).Name, "The types should match");
-//		}
-//
-//		[Test]
-//		public void NextResult_ReturnsFalse()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			// Act
-//			bool result = _instance.NextResult();
-//
-//			// Assert
-//			Assert.IsFalse(result, "NextResult() should return false");
-//		}
-//
-//		[Test]
-//		public void Depth_ReturnsZero()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			// Act
-//			int result = _instance.Depth;
-//
-//			// Assert
-//			Assert.AreEqual(0, result, "Depth should return 0");
-//		}
-//
-//		[Test]
-//		public void RecordsAffected_ReturnsNegativeOne()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			// Act
-//			int result = _instance.RecordsAffected;
-//
-//			// Assert
-//			Assert.AreEqual(-1, result, "RecordsAffected should alwayds return -1");
-//		}
-//
-//		[Test]
-//		public void GetName_FieldExists_LookUpSucceeds()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(1)},
-//					new Result<Document>() {Artifact = new Document(2)}
-//				}
-//			};
-//
-//			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
-//
-//			// Act
-//			string fieldName = _instance.GetName(0);
-//
-//			// Assert
-//			Assert.AreEqual("123", fieldName, "The field loopup should succeed");
-//		}
-//
-//		[Test]
-//		public void GetName_ObjetIdentifierTextInFieldExists_LookUpSucceeds()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName" + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(1)},
-//					new Result<Document>() {Artifact = new Document(2)}
-//				}
-//			};
-//
-//			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
-//
-//			// Act
-//			string fieldName = _instance.GetName(0);
-//
-//			// Assert
-//			Assert.AreEqual("123", fieldName, "The field loopup should succeed");
-//		}
-//
-//		[Test]
-//		public void GetOrdinal_FieldExists_LookUpSucceeds()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(1)},
-//					new Result<Document>() {Artifact = new Document(2)}
-//				}
-//			};
-//
-//			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
-//
-//			// Act
-//			int ordinal = _instance.GetOrdinal("123");
-//
-//			// Assert
-//			Assert.AreEqual(0, ordinal, "The ordinal should have been correct");
-//		}
-//
-//		[Test]
-//		public void GetOrdinal_ObjetIdentifierTextInFieldExists_LookUpSucceeds()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName" + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(1)},
-//					new Result<Document>() {Artifact = new Document(2)}
-//				}
-//			};
-//
-//			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
-//
-//			// Act
-//			int ordinal = _instance.GetOrdinal("123");
-//
-//			// Assert
-//			Assert.AreEqual(0, ordinal, "The ordinal should have been correct");
-//		}
-//
-//		[Test]
-//		public void ThisAccessor_ObjetIdentifierTextInFieldExists_LookUpSucceeds()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName" + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT, FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(1) {Fields = new List<FieldValue>(){ new FieldValue(){ Name = "DispName", Value = "REL001"}}}},
-//					new Result<Document>() {Artifact = new Document(1) {Fields = new List<FieldValue>(){ new FieldValue(){ Name = "DispName", Value = "REL002"}}}},
-//				}
-//			};
-//
-//			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			object result = _instance["123"];
-//
-//			// Assert
-//			Assert.AreEqual("REL001", result.ToString(), "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void ThisAccessor_FieldExists_LookUpSucceeds()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"}
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(1) {Fields = new List<FieldValue>(){ new FieldValue(){ Name = "DispName", Value = "REL001"}}}},
-//					new Result<Document>() {Artifact = new Document(1) {Fields = new List<FieldValue>(){ new FieldValue(){ Name = "DispName", Value = "REL002"}}}},
-//				}
-//			};
-//
-//			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Any<Query<Document>>()).Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			object result = _instance["123"];
-//
-//			// Assert
-//			Assert.AreEqual("REL001", result.ToString(), "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void FieldCount_ReturnsCorrectCount()
-//		{
-//			// Arrange	
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
-//				new FieldEntry() { DisplayName = "DispNameTwo", FieldIdentifier = "1233"}
-//			} , new List<Artifact>());
-//
-//			// Act
-//			int fieldCount = _instance.FieldCount;
-//
-//			// Assert
-//			Assert.AreEqual(2, fieldCount, "There should be 2 fields");
-//		}
-//
-//		[Test]
-//		public void Dispose_BeforeRead_DoesNotExcept()
-//		{
-//			// Arrange
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
-//				new FieldEntry() { DisplayName = "DispNameTwo", FieldIdentifier = "1233"}
-//			}, new List<Artifact>());
-//
-//			// Act
-//			bool exceptionThrown = false;
-//			try
-//			{
-//				_instance.Dispose();
-//			}
-//			catch
-//			{
-//				exceptionThrown = true;
-//			}
-//
-//			Assert.IsFalse(exceptionThrown, "Dispose() should not except");
-//		}
-//
-//		[Test]
-//		public void Dispose_WhileReaderIsOpen_DoesNotExcept()
-//		{
-//			// Arrange
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { 1 }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
-//				new FieldEntry() { DisplayName = "DispNameTwo", FieldIdentifier = "1233"}
-//			}, new List<Artifact>());
-//
-//			// Act
-//			bool exceptionThrown = false;
-//			try
-//			{
-//				_instance.Read();
-//				_instance.Dispose();
-//			}
-//			catch
-//			{
-//				exceptionThrown = true;
-//			}
-//
-//			Assert.IsFalse(exceptionThrown, "Dispose() should not except");
-//		}
-//
-//		[Test]
-//		public void Close_ReaderIsClosed()
-//		{
-//			// Arrange
-//			const int documentArtifactId = 123423;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			_instance.Close();
-//			bool isClosed = _instance.IsClosed;
-//
-//			// Assert
-//			Assert.IsTrue(isClosed, "The reader should be closed");
-//		}
-//
-//		[Test]
-//		public void Close_ReadThenCloseThenRead_ReaderIsClosed()
-//		{
-//			// Arrange
-//			const int documentArtifactId = 123423;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
-//			}, new List<Artifact>()); 
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			_instance.Close();
-//			bool result = _instance.Read();
-//
-//			// Assert
-//			Assert.IsFalse(result, "The reader should be closed");
-//		}
-//
-//		[Test]
-//		public void Close_ReadThenCloseThenRead_QueryIsNotRerun()
-//		{
-//			// Arrange
-//			const int documentArtifactId = 123423;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
-//			}, new	List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			_instance.Close();
-//			_instance.Read();
-//
-//			// Assert
-//			_relativityClientAdaptor
-//				.Received(1)
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>());
-//		}
-//
-//		[Test]
-//		public void Close_ReadThenClose_CannotAccessDocument()
-//		{
-//			// Arrange
-//			const int documentArtifactId = 123423;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			_instance.Close();
-//
-//			bool correctExceptionThrown = false;
-//			try
-//			{
-//				object result = _instance[0];
-//			}
-//			catch (NullReferenceException)
-//			{
-//				correctExceptionThrown = true;
-//			}
-//			catch
-//			{
-//				// in case another exception is thrown
-//			}
-//
-//			// Assert
-//			Assert.IsTrue(correctExceptionThrown, "Reading after running Close() should nullify the current result");
-//		}
-//
-//		[Test]
-//		public void GetSchemaTable_OneField_ReturnsCorrectSchema()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-//				}
-//			};
-//
-//			var expectedResult = new DataTable() { Columns = { new DataColumn("123")}};
-//
-//			// Act
-//			DataTable result = _instance.GetSchemaTable();
-//
-//			// Arrange
-//			Assert.IsTrue(ArgumentMatcher.DataTablesMatch(expectedResult, result), "The schema DataTable should be correct");
-//		}
-//
-//		[Test]
-//		public void GetSchemaTable_MultipleFields_ReturnsCorrectSchema()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = "DispName", FieldIdentifier = "123"},
-//				new FieldEntry() { DisplayName = "DispNameTwo", FieldIdentifier = "456"},
-//			}, new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-//				}
-//			};
-//
-//			var expectedResult = new DataTable() { Columns = { new DataColumn("123"), new DataColumn("456") } };
-//
-//			// Act
-//			DataTable result = _instance.GetSchemaTable();
-//
-//			// Arrange
-//			Assert.IsTrue(ArgumentMatcher.DataTablesMatch(expectedResult, result), "The schema DataTable should be correct");
-//		}
-//
-//		[Test]
-//		public void GetSchemaTable_NoFields_ReturnsCorrectSchema()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new FieldEntry[0], new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-//				}
-//			};
-//
-//			var expectedResult = new DataTable() { Columns = { } };
-//
-//			// Act
-//			DataTable result = _instance.GetSchemaTable();
-//
-//			// Arrange
-//			Assert.IsTrue(ArgumentMatcher.DataTablesMatch(expectedResult, result), "The schema DataTable should be correct");
-//		}
-//
-//		[Test]
-//		public void GetSchemaTable_NoDocumentsNoFields_ReturnsCorrectSchema()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new int[] { }, new FieldEntry[0], new List<Artifact>());
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-//				}
-//			};
-//
-//			var expectedResult = new DataTable() { Columns = { } };
-//
-//			// Act
-//			DataTable result = _instance.GetSchemaTable();
-//
-//			// Arrange
-//			Assert.IsTrue(ArgumentMatcher.DataTablesMatch(expectedResult, result), "The schema DataTable should be correct");
-//		}
-//		#endregion
-//
-//		#region Gets
-//
-//		[Test]
-//		public void GetString_GoldFlow()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			string value = "999";
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			string result = _instance.GetString(0);
-//
-//			// Arrange
-//			Assert.AreEqual(value, result, "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void GetInt64_GoldFlow()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			Int64 value = 999;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			Int64 result = _instance.GetInt64(0);
-//
-//			// Arrange
-//			Assert.AreEqual(value, result, "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void GetInt16_GoldFlow()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			Int16 value = 999;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			Int16 result = _instance.GetInt16(0);
-//
-//			// Arrange
-//			Assert.AreEqual(value, result, "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void GetInt32_GoldFlow()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			Int32 value = 999;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			Int32 result = _instance.GetInt32(0);
-//
-//			// Arrange
-//			Assert.AreEqual(value, result, "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void GetGuid_GoldFlow()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			Guid value = Guid.NewGuid();
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			Guid result = _instance.GetGuid(0);
-//
-//			// Arrange
-//			Assert.AreEqual(value, result, "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void GetFloat_GoldFlow()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			float value = 999;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			float result = _instance.GetFloat(0);
-//
-//			// Arrange
-//			Assert.AreEqual(value, result, "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void GetDouble_GoldFlow()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			double value = 999;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			double result = _instance.GetDouble(0);
-//
-//			// Arrange
-//			Assert.AreEqual(value, result, "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void GetDecimal_GoldFlow()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			Decimal value = 999;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			Decimal result = _instance.GetDecimal(0);
-//
-//			// Arrange
-//			Assert.AreEqual(value, result, "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void GetDateTime_GoldFlow()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			DateTime value = DateTime.Now;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			DateTime result = _instance.GetDateTime(0);
-//
-//			// Arrange
-//			Assert.AreEqual(value, result, "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void GetChar_GoldFlow()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			char value = 'v';
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			char result = _instance.GetChar(0);
-//
-//			// Arrange
-//			Assert.AreEqual(value, result, "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void GetByte_GoldFlow()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			byte value = 1;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			byte result = _instance.GetByte(0);
-//
-//			// Arrange
-//			Assert.AreEqual(value, result, "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void GetBoolean_GoldFlow()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			bool value = true;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			bool result = _instance.GetBoolean(0);
-//
-//			// Arrange
-//			Assert.AreEqual(value, result, "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void GetValue_NonLongTextField()
-//		{
-//			// Arrange	
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			const int longTextFieldArtifactid = 324;
-//
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			},
-//			new List<Artifact>()
-//			{
-//				new Artifact()
-//				{
-//					ArtifactID = longTextFieldArtifactid
-//				}
-//			});
-//
-//			bool value = true;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			object result = _instance.GetValue(0);
-//
-//			// Arrange
-//			Assert.AreEqual(value, result, "The result should be correct");
-//		}
-//
-//		[Test]
-//		public void GetValue_LongTextField()
-//		{
-//			// Arrange	
-//			const int longTextFieldIdentifier = 645;
-//			const string longTextFieldName = "Extracted text";
-//
-//			string value = "very long text text";
-//
-//			ResultSet<Document> longTextFieldRead = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(_DOCUMENT_ARTIFACTID)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(longTextFieldIdentifier)
-//								{
-//									Name = longTextFieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			object longTextField = LongTextFieldTestTemplate(longTextFieldRead, longTextFieldIdentifier, longTextFieldName);
-//
-//			// Arrange
-//			Assert.AreEqual(value, longTextField, "The result should be correct");
-//		}
-//
-//		[Test]		
-//		public void GetValue_DocumentReadReturnNoResult()
-//		{
-//			// Arrange	
-//			const int longTextFieldIdentifier = 645;
-//			const string longTextFieldName = "Extracted text";
-//
-//			ResultSet<Document> longTextFieldRead = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(_DOCUMENT_ARTIFACTID)
-//						{
-//							Fields = new List<FieldValue>()
-//						}
-//					},
-//				}
-//			};
-//
-//			Assert.Throws<ProviderReadDataException>(() =>
-//			{
-//				LongTextFieldTestTemplate(longTextFieldRead, longTextFieldIdentifier, longTextFieldName);
-//			});
-//		}
-//
-//		[Test]
-//		public void GetValue_DocumentReadFailed()
-//		{
-//			// Arrange	
-//			const int longTextFieldIdentifier = 645;
-//			const string longTextFieldName = "Extracted text";
-//
-//			ResultSet<Document> longTextFieldRead = new ResultSet<Document>
-//			{
-//				Success = false,
-//				Results = new List<Result<Document>>()
-//			};
-//
-//			Assert.Throws<ProviderReadDataException>(() =>
-//			{
-//				LongTextFieldTestTemplate(longTextFieldRead, longTextFieldIdentifier, longTextFieldName);
-//			});
-//		}
-//
-//		[Test]
-//		public void GetValue_DocumentReadNoFieldReturned()
-//		{
-//			// Arrange	
-//			const int longTextFieldIdentifier = 645;
-//			const string longTextFieldName = "Extracted text";
-//
-//			ResultSet<Document> longTextFieldRead = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(_DOCUMENT_ARTIFACTID)
-//						{
-//							Fields = new List<FieldValue>()
-//						}
-//					},
-//				}
-//			};
-//
-//			Assert.Throws<ProviderReadDataException>(() =>
-//			{
-//				LongTextFieldTestTemplate(longTextFieldRead, longTextFieldIdentifier, longTextFieldName);
-//			});
-//		}
-//
-//		[Test]
-//		private void GetValue_DocumentReadThrowException(ResultSet<Document> mockReadResult, int longTextFieldIdentifier, string extractedTextField)
-//		{
-//			InitializeReaderToReadLongText(extractedTextField, longTextFieldIdentifier);
-//
-//			_relativityClientAdaptor
-//				.ReadDocument(Arg.Any<Document>())
-//				.Throws<Exception>();
-//
-//			// Act
-//			_instance.Read();
-//			Assert.Throws<ProviderReadDataException>( () => { _instance.GetValue(1); });
-//		}
-//
-//		private object LongTextFieldTestTemplate(ResultSet<Document> mockReadResult, int longTextFieldIdentifier, string extractedTextField)
-//		{
-//			InitializeReaderToReadLongText(extractedTextField, longTextFieldIdentifier);
-//
-//			_relativityClientAdaptor
-//				.ReadDocument(Arg.Any<Document>())
-//				.Returns(mockReadResult);
-//			// Act
-//			_instance.Read();
-//			return _instance.GetValue(1);
-//		}
-//
-//		private void InitializeReaderToReadLongText(string extractedTextField, int longTextFieldIdentifier)
-//		{
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { _DOCUMENT_ARTIFACTID }, new[]
-//			{
-//				new FieldEntry() { DisplayName = _FIELD_NAME, FieldIdentifier = _FIELD_IDENTIFIER.ToString()},
-//				new FieldEntry() { DisplayName = extractedTextField, FieldIdentifier = longTextFieldIdentifier.ToString()}
-//			},
-//			new List<Artifact>()
-//			{
-//					new Artifact()
-//					{
-//						ArtifactID = longTextFieldIdentifier
-//					}
-//			});
-//
-//			ResultSet<Document> initialRead = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(_DOCUMENT_ARTIFACTID)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(_FIELD_IDENTIFIER)
-//								{
-//									Name = _FIELD_NAME,
-//									Value = "REL01"
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(initialRead);
-//		}
-//
-//		#endregion
-//
-//		#region NotImplemented
-//
-//		[Test]
-//		public void GetValues_ThrowsNotImplementedException()
-//		{
-//			// Arrange
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			bool value = true;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			bool correctExceptionThrown = false;
-//			try
-//			{
-//				_instance.GetValues(new object[0]);
-//			}
-//			catch (NotImplementedException)
-//			{
-//				correctExceptionThrown = true;
-//			}
-//			catch
-//			{
-//				// to catch other exceptions	
-//			}
-//
-//			// Assert
-//			Assert.IsTrue(correctExceptionThrown, "A NotImplementedException should have been thrown");
-//		}
-//
-//		[Test]
-//		public void GetData_ThrowsNotImplementedException()
-//		{
-//			// Arrange
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			bool value = true;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			bool correctExceptionThrown = false;
-//			try
-//			{
-//				_instance.GetData(0);
-//			}
-//			catch (NotImplementedException)
-//			{
-//				correctExceptionThrown = true;
-//			}
-//			catch
-//			{
-//				// to catch other exceptions	
-//			}
-//
-//			// Assert
-//			Assert.IsTrue(correctExceptionThrown, "A NotImplementedException should have been thrown");
-//		}
-//
-//		[Test]
-//		public void GetChars_ThrowsNotImplementedException()
-//		{
-//			// Arrange
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			bool value = true;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			bool correctExceptionThrown = false;
-//			try
-//			{
-//				_instance.GetChars(0, 0, new char[0], 0, 0);
-//			}
-//			catch (NotImplementedException)
-//			{
-//				correctExceptionThrown = true;
-//			}
-//			catch
-//			{
-//				// to catch other exceptions	
-//			}
-//
-//			// Assert
-//			Assert.IsTrue(correctExceptionThrown, "A NotImplementedException should have been thrown");
-//		}
-//
-//		[Test]
-//		public void GetBytes_ThrowsNotImplementedException()
-//		{
-//			// Arrange
-//			const int documentArtifactId = 123423;
-//			const string fieldName = "DispName";
-//			const int fieldIdentifier = 123;
-//			_instance = new DocumentTransferDataReader(_relativityClientAdaptor, new[] { documentArtifactId }, new[]
-//			{
-//				new FieldEntry() { DisplayName = fieldName, FieldIdentifier = fieldIdentifier.ToString()},
-//			}, new List<Artifact>());
-//
-//			bool value = true;
-//
-//			ResultSet<Document> resultSet = new ResultSet<Document>
-//			{
-//				Success = true,
-//				Results = new List<Result<Document>>()
-//				{
-//					new Result<Document>()
-//					{
-//						Artifact = new Document(documentArtifactId)
-//						{
-//							Fields = new List<FieldValue>()
-//							{
-//								new FieldValue(fieldIdentifier)
-//								{
-//									Name = fieldName,
-//									Value = value
-//								}
-//							}
-//						}
-//					},
-//				}
-//			};
-//
-//			_relativityClientAdaptor
-//				.ExecuteDocumentQuery(Arg.Any<Query<Document>>())
-//				.Returns(resultSet);
-//
-//			// Act
-//			_instance.Read();
-//			bool correctExceptionThrown = false;
-//			try
-//			{
-//				_instance.GetBytes(0, 0, new byte[0], 0, 0);
-//			}
-//			catch (NotImplementedException)
-//			{
-//				correctExceptionThrown = true;
-//			}
-//			catch
-//			{
-//				// to catch other exceptions	
-//			}
-//
-//			// Assert
-//			Assert.IsTrue(correctExceptionThrown, "A NotImplementedException should have been thrown");
-//		}
-//		#endregion
-//	}
-//}
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
+using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
+using kCura.IntegrationPoints.DocumentTransferProvider.Models;
+using kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers;
+using NSubstitute;
+using NSubstitute.ExceptionExtensions;
+using NSubstitute.ReturnsExtensions;
+using NUnit.Framework;
+
+namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
+{
+	[TestFixture]
+	public class DocumentTransferDataReaderTests
+	{
+		private IDataReader _instance;
+		private IDocumentManager _documentManager;
+
+		const int _DOCUMENT_ARTIFACTID = 123423;
+		private readonly int[] _documentIds = new[] {_DOCUMENT_ARTIFACTID};
+		const string _FIELD_NAME = "DispName";
+		const int _FIELD_IDENTIFIER = 123;
+		const string _CONTROL_NUMBER = "WEB000123";
+
+		static readonly ArtifactDTO _templateArtifactDto = new ArtifactDTO()
+		{
+			ArtifactId = _DOCUMENT_ARTIFACTID,
+			Fields = new List<ArtifactFieldDTO>()
+					{
+						new ArtifactFieldDTO()
+						{
+							ArtifactId = _FIELD_IDENTIFIER,
+							FieldType = "Fixed Length",
+							Name = "Control Number",
+							Value = _CONTROL_NUMBER
+						}
+					}
+		};
+
+		readonly ArtifactDTO[] _templateArtifactDtos = new ArtifactDTO[]
+			{
+				_templateArtifactDto
+			};
+
+		private readonly FieldEntry[] _templateFieldEntries = new FieldEntry[]
+		{
+			new FieldEntry() {DisplayName = _FIELD_NAME, FieldIdentifier = _FIELD_IDENTIFIER.ToString()}
+		};
+
+		[SetUp]
+		public void SetUp()
+		{
+			_documentManager = NSubstitute.Substitute.For<IDocumentManager>();
+		}
+
+		#region Read
+		[Test]
+		public void Read_FirstRead_RetrievesDocuments_ReturnsTrue()
+		{
+			// Arrange	
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager, 
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			bool result = _instance.Read();
+
+			// Assert
+			Assert.IsTrue(result, "There are records to read, result should be true");
+			Assert.IsFalse(_instance.IsClosed, "The reader should be open");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void Read_FirstRead_RunsSavedSearch_NoResults_ReturnsFalse()
+		{
+			// Arrange	
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(new ArtifactDTO[0]);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			bool result = _instance.Read();
+
+			// Assert
+			Assert.IsFalse(result, "There are no records to read, result should be false");
+			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void Read_FirstRead_RunsSavedSearch_RequestFailsWithException_ReturnsFalse()
+		{
+			// Arrange	
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Throws(new Exception());
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			bool result = _instance.Read();
+
+			// Assert
+			Assert.IsFalse(result, "There are no records to read, result should be false");
+			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
+		}
+
+		[Test]
+		public void Read_ReadAllResults_GoldFlow()
+		{
+			// Arrange	
+			int[] documentIds = { 123, 345 };
+			_documentManager.RetrieveDocuments(
+				Arg.Is(documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns(new ArtifactDTO[]
+				{
+					new ArtifactDTO() {ArtifactId = documentIds[0]},
+					new ArtifactDTO() {ArtifactId =  documentIds[1]},
+				});
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			bool result1 = _instance.Read();
+			bool result2 = _instance.Read();
+			bool result3 = _instance.Read();
+
+			// Assert
+			Assert.IsTrue(result1, "There are records to read, result should be true");
+			Assert.IsTrue(result2, "There are records to read, result should be true");
+			Assert.IsFalse(result3, "There are no records to read, result should be false");
+			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void Read_ReadSomeResultsThenClose_GoldFlow()
+		{
+			// Arrange	
+			int[] documentIds = { 123, 345 };
+			_documentManager.RetrieveDocuments(
+				Arg.Is(documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns(new ArtifactDTO[]
+				{
+					new ArtifactDTO() {ArtifactId = documentIds[0]},
+					new ArtifactDTO() {ArtifactId =  documentIds[1]},
+				});
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			bool result1 = _instance.Read();
+			_instance.Close();
+			bool result2 = _instance.Read();
+
+			// Assert
+			Assert.IsTrue(result1, "There are records to read, result should be true");
+			Assert.IsFalse(result2, "There are no records to read, result should be false");
+			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void Read_NoFields_DoesNotFail()
+		{
+			// Arrange	
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+					.Returns(_templateArtifactDtos);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new List<FieldEntry>(), 
+				new int[0]);
+
+			// Act
+			bool result = _instance.Read();
+
+			// Assert
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())));
+		}
+
+		[Test]
+		public void Read_NoDocumentIds_DoesNotFail()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				new int[0],
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			bool result = _instance.Read();
+
+			// Assert
+			_documentManager.Received(0).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())));
+		}
+
+		[Test]
+		public void Read_NoDocumentIdsNoFields_DoesNotFail()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				new int[0],
+				new List<FieldEntry>(),
+				new int[0]);
+
+			// Act
+			bool result = _instance.Read();
+
+			// Assert
+			_documentManager.Received(0).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())));
+		}
+
+		#endregion
+
+		#region IDataReader methods
+		[Test]
+		public void IsDBNull_ResultNotNull_ReturnsFalse()
+		{
+			// Arrange
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			bool readResult = _instance.Read();
+			bool isDbNull = _instance.IsDBNull(0);
+
+			// Assert
+			Assert.IsTrue(readResult, "There are records to read, result should be true");
+			Assert.IsFalse(isDbNull, "The result should not be DBNull");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetFieldType_ReturnsString()
+		{
+			// Arrange
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			Type result = _instance.GetFieldType(0);
+
+			// Assert
+			Assert.AreEqual(result, typeof(string), "The types should match" );
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetFieldTypeName_ReturnsString()
+		{
+			// Arrange
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			string result = _instance.GetDataTypeName(0);
+
+			// Assert
+			Assert.AreEqual(result, typeof(string).FullName, "The types should match");
+		}
+
+		[Test]
+		public void NextResult_ReturnsFalse()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			bool result = _instance.NextResult();
+
+			// Assert
+			Assert.IsFalse(result, "NextResult() should return false");
+		}
+
+		[Test]
+		public void Depth_ReturnsZero()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			int result = _instance.Depth;
+
+			// Assert
+			Assert.AreEqual(0, result, "Depth should return 0");
+		}
+
+		[Test]
+		public void RecordsAffected_ReturnsNegativeOne()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			int result = _instance.RecordsAffected;
+
+			// Assert
+			Assert.AreEqual(-1, result, "RecordsAffected should alwayds return -1");
+		}
+
+		[Test]
+		public void GetName_FieldExists_LookUpSucceeds()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			string fieldName = _instance.GetName(0);
+
+			// Assert
+			Assert.AreEqual(_FIELD_IDENTIFIER.ToString(), fieldName, "The field loopup should succeed");
+		}
+
+		[Test]
+		public void GetName_ObjetIdentifierTextInFieldExists_LookUpSucceeds()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[]
+				{
+					new FieldEntry()
+					{
+						DisplayName = _FIELD_NAME + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT,
+						FieldIdentifier = _FIELD_IDENTIFIER.ToString()
+					}
+				},
+				new int[0]);
+
+			// Act
+			string fieldName = _instance.GetName(0);
+
+			// Assert
+			Assert.AreEqual(_FIELD_IDENTIFIER.ToString(), fieldName, "The field loopup should succeed");
+		}
+
+		[Test]
+		public void GetOrdinal_FieldExists_LookUpSucceeds()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			int ordinal = _instance.GetOrdinal(_FIELD_IDENTIFIER.ToString());
+
+			// Assert
+			Assert.AreEqual(0, ordinal, "The ordinal should have been correct");
+		}
+
+		[Test]
+		public void GetOrdinal_ObjetIdentifierTextInFieldExists_LookUpSucceeds()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[]
+				{
+					new FieldEntry()
+					{
+						DisplayName = _FIELD_NAME + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT,
+						FieldIdentifier = _FIELD_IDENTIFIER.ToString()
+					}
+				},
+				new int[0]);
+
+			// Act
+			int ordinal = _instance.GetOrdinal(_FIELD_IDENTIFIER.ToString());
+
+			// Assert
+			Assert.AreEqual(0, ordinal, "The ordinal should have been correct");
+		}
+
+		[Test]
+		public void ThisAccessor_ObjetIdentifierTextInFieldExists_LookUpSucceeds()
+		{
+			// Arrange	
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[]
+				{
+					new FieldEntry()
+					{
+						DisplayName = _FIELD_NAME + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT,
+						FieldIdentifier = _FIELD_IDENTIFIER.ToString()
+					}
+				},
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			object result = _instance[_FIELD_IDENTIFIER.ToString()];
+
+			// Assert
+			Assert.AreEqual(_CONTROL_NUMBER, result.ToString(), "The result should be correct");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void ThisAccessor_FieldExists_LookUpSucceeds()
+		{
+			// Arrange	
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			object result = _instance[_FIELD_IDENTIFIER.ToString()];
+
+			// Assert
+			Assert.AreEqual(_CONTROL_NUMBER, result.ToString(), "The result should be correct");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void FieldCount_NoLongTextFields_ReturnsCorrectCount()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			int fieldCount = _instance.FieldCount;
+
+			// Assert
+			Assert.AreEqual(2, fieldCount, "There should be 2 fields");
+		}
+
+		[Test]
+		public void FieldCount_WithLongTextFields_ReturnsCorrectCount()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[] {1232});
+
+			// Act
+			int fieldCount = _instance.FieldCount;
+
+			// Assert
+			Assert.AreEqual(2, fieldCount, "There should be 2 fields");
+		}
+
+		[Test]
+		public void Dispose_BeforeRead_DoesNotExcept()
+		{
+			// Arrange
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			bool exceptionThrown = false;
+			try
+			{
+				_instance.Dispose();
+			}
+			catch
+			{
+				exceptionThrown = true;
+			}
+
+			Assert.IsFalse(exceptionThrown, "Dispose() should not except");
+			_documentManager.Received(0).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void Dispose_WhileReaderIsOpen_DoesNotExcept()
+		{
+			// Arrange
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			bool exceptionThrown = false;
+			try
+			{
+				_instance.Read();
+				_instance.Dispose();
+			}
+			catch
+			{
+				exceptionThrown = true;
+			}
+
+			Assert.IsFalse(exceptionThrown, "Dispose() should not except");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void Close_ReaderIsClosed()
+		{
+			// Arrange
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			_instance.Close();
+			bool isClosed = _instance.IsClosed;
+
+			// Assert
+			Assert.IsTrue(isClosed, "The reader should be closed");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void Close_ReadThenCloseThenRead_ReaderIsClosed()
+		{
+			// Arrange
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			_instance.Close();
+			bool result = _instance.Read();
+
+			// Assert
+			Assert.IsFalse(result, "The reader should be closed");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void Close_ReadThenCloseThenRead_QueryIsNotRerun()
+		{
+			// Arrange
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			_instance.Close();
+			_instance.Read();
+
+			// Assert
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void Close_ReadThenClose_CannotAccessDocument()
+		{
+			// Arrange
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			_instance.Close();
+
+			bool correctExceptionThrown = false;
+			try
+			{
+				object result = _instance[0];
+			}
+			catch (NullReferenceException)
+			{
+				correctExceptionThrown = true;
+			}
+			catch
+			{
+				// in case another exception is thrown
+			}
+
+			// Assert
+			Assert.IsTrue(correctExceptionThrown, "Reading after running Close() should nullify the current result");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetSchemaTable_OneField_ReturnsCorrectSchema()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			var expectedResult = new DataTable() { Columns = { new DataColumn(_FIELD_IDENTIFIER.ToString()), new DataColumn(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) }};
+
+			// Act
+			DataTable result = _instance.GetSchemaTable();
+
+			// Arrange
+			Assert.IsTrue(ArgumentMatcher.DataTablesMatch(expectedResult, result), "The schema DataTable should be correct");
+		}
+
+		[Test]
+		public void GetSchemaTable_MultipleFields_ReturnsCorrectSchema()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[]
+				{
+					new FieldEntry() {FieldIdentifier = "123", DisplayName = "abc"},
+					new FieldEntry() {FieldIdentifier = "456", DisplayName = "def"},
+				}, 
+				new int[0]);
+
+			var expectedResult = new DataTable()
+			{
+				Columns = { new DataColumn("123"), new DataColumn("456"), new DataColumn(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) }
+			};
+
+			// Act
+			DataTable result = _instance.GetSchemaTable();
+
+			// Arrange
+			Assert.IsTrue(ArgumentMatcher.DataTablesMatch(expectedResult, result), "The schema DataTable should be correct");
+		}
+
+		[Test]
+		public void GetSchemaTable_NoFields_ReturnsCorrectSchema()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[0],
+				new int[0]);
+
+			var expectedResult = new DataTable() { Columns = { new DataColumn(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) } };
+
+			// Act
+			DataTable result = _instance.GetSchemaTable();
+
+			// Arrange
+			Assert.IsTrue(ArgumentMatcher.DataTablesMatch(expectedResult, result), "The schema DataTable should be correct");
+		}
+
+		[Test]
+		public void GetSchemaTable_NoDocumentsNoFields_ReturnsCorrectSchema()
+		{
+			// Arrange	
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				new int[0],
+				new FieldEntry[0],
+				new int[0]);
+
+			var expectedResult = new DataTable() { Columns = { new DataColumn(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) } }; 
+
+			// Act
+			DataTable result = _instance.GetSchemaTable();
+
+			// Arrange
+			Assert.IsTrue(ArgumentMatcher.DataTablesMatch(expectedResult, result), "The schema DataTable should be correct");
+		}
+		#endregion
+
+		#region Gets
+
+		[Test]
+		public void GetString_GoldFlow()
+		{
+			// Arrange	
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				_templateFieldEntries,
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			string result = _instance.GetString(0);
+
+			// Arrange
+			Assert.AreEqual(_CONTROL_NUMBER, result, "The result should be correct");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetInt64_GoldFlow()
+		{
+			// Arrange	
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			Int64 value = Int64.MaxValue;
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
+				{
+					new ArtifactDTO()
+					{
+						ArtifactId = 1234,
+						ArtifactTypeId = 10,
+						Fields = new List<ArtifactFieldDTO>()
+						{
+							new ArtifactFieldDTO()
+							{
+								ArtifactId = 123,
+								Name = "Some Number",
+								Value = value
+							}	
+						}
+					}, 
+				});
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[] {new FieldEntry() {FieldIdentifier = "123", DisplayName = "Some Number"}, },
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			Int64 result = _instance.GetInt64(0);
+
+			// Arrange
+			Assert.AreEqual(value, result, "The result should be correct");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetInt16_GoldFlow()
+		{
+			// Arrange	
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			Int16 value = Int16.MaxValue;
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
+				{
+					new ArtifactDTO()
+					{
+						ArtifactId = 1234,
+						ArtifactTypeId = 10,
+						Fields = new List<ArtifactFieldDTO>()
+						{
+							new ArtifactFieldDTO()
+							{
+								ArtifactId = 123,
+								Name = "Some Number",
+								Value = value
+							}
+						}
+					},
+				});
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[] { new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, },
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			Int16 result = _instance.GetInt16(0);
+
+			// Arrange
+			Assert.AreEqual(value, result, "The result should be correct");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetInt32_GoldFlow()
+		{
+			// Arrange	
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			Int32 value = Int32.MaxValue;
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
+				{
+					new ArtifactDTO()
+					{
+						ArtifactId = 1234,
+						ArtifactTypeId = 10,
+						Fields = new List<ArtifactFieldDTO>()
+						{
+							new ArtifactFieldDTO()
+							{
+								ArtifactId = 123,
+								Name = "Some Number",
+								Value = value
+							}
+						}
+					},
+				});
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[] { new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, },
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			Int32 result = _instance.GetInt32(0);
+
+			// Arrange
+			Assert.AreEqual(value, result, "The result should be correct");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test()]
+		public void GetGuid_GoldFlow()
+		{
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			Guid value = Guid.NewGuid();
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
+				{
+					new ArtifactDTO()
+					{
+						ArtifactId = 1234,
+						ArtifactTypeId = 10,
+						Fields = new List<ArtifactFieldDTO>()
+						{
+							new ArtifactFieldDTO()
+							{
+								ArtifactId = 123,
+								Name = "Some Number",
+								Value = value
+							}
+						}
+					},
+				});
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[] { new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, },
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			Guid result = _instance.GetGuid(0);
+
+			// Arrange
+			Assert.AreEqual(value, result, "The result should be correct");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetFloat_GoldFlow()
+		{
+			// Arrange	
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			float value = float.MaxValue;
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
+				{
+					new ArtifactDTO()
+					{
+						ArtifactId = 1234,
+						ArtifactTypeId = 10,
+						Fields = new List<ArtifactFieldDTO>()
+						{
+							new ArtifactFieldDTO()
+							{
+								ArtifactId = 123,
+								Name = "Some Number",
+								Value = value
+							}
+						}
+					},
+				});
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[] { new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, },
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			float result = _instance.GetFloat(0);
+
+			// Arrange
+			Assert.AreEqual(value, result, "The result should be correct");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetDouble_GoldFlow()
+		{
+			// Arrange	
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			double value = double.MaxValue;
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
+				{
+					new ArtifactDTO()
+					{
+						ArtifactId = 1234,
+						ArtifactTypeId = 10,
+						Fields = new List<ArtifactFieldDTO>()
+						{
+							new ArtifactFieldDTO()
+							{
+								ArtifactId = 123,
+								Name = "Some Number",
+								Value = value
+							}
+						}
+					},
+				});
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[] { new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, },
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			double result = _instance.GetDouble(0);
+
+			// Arrange
+			Assert.AreEqual(value, result, "The result should be correct");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetDecimal_GoldFlow()
+		{
+			// Arrange	
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			decimal value = decimal.MaxValue;
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
+				{
+					new ArtifactDTO()
+					{
+						ArtifactId = 1234,
+						ArtifactTypeId = 10,
+						Fields = new List<ArtifactFieldDTO>()
+						{
+							new ArtifactFieldDTO()
+							{
+								ArtifactId = 123,
+								Name = "Some Number",
+								Value = value
+							}
+						}
+					},
+				});
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[] { new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, },
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			decimal result = _instance.GetDecimal(0);
+
+			// Arrange
+			Assert.AreEqual(value, result, "The result should be correct");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetDateTime_GoldFlow()
+		{
+			// Arrange	
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			DateTime value = DateTime.Now;
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
+				{
+					new ArtifactDTO()
+					{
+						ArtifactId = 1234,
+						ArtifactTypeId = 10,
+						Fields = new List<ArtifactFieldDTO>()
+						{
+							new ArtifactFieldDTO()
+							{
+								ArtifactId = 123,
+								Name = "Some Number",
+								Value = value
+							}
+						}
+					},
+				});
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[] { new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, },
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			DateTime result = _instance.GetDateTime(0);
+
+			// Arrange
+			Assert.AreEqual(value, result, "The result should be correct");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetChar_GoldFlow()
+		{
+			// Arrange	
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			char value = 'a';
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
+				{
+					new ArtifactDTO()
+					{
+						ArtifactId = 1234,
+						ArtifactTypeId = 10,
+						Fields = new List<ArtifactFieldDTO>()
+						{
+							new ArtifactFieldDTO()
+							{
+								ArtifactId = 123,
+								Name = "Some Number",
+								Value = value
+							}
+						}
+					},
+				});
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[] { new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, },
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			char result = _instance.GetChar(0);
+
+			// Arrange
+			Assert.AreEqual(value, result, "The result should be correct");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetByte_GoldFlow()
+		{
+			// Arrange	
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			byte value = 1;
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
+				{
+					new ArtifactDTO()
+					{
+						ArtifactId = 1234,
+						ArtifactTypeId = 10,
+						Fields = new List<ArtifactFieldDTO>()
+						{
+							new ArtifactFieldDTO()
+							{
+								ArtifactId = 123,
+								Name = "Some Number",
+								Value = value
+							}
+						}
+					},
+				});
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[] { new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, },
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			byte result = _instance.GetByte(0);
+
+			// Arrange
+			Assert.AreEqual(value, result, "The result should be correct");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetBoolean_GoldFlow()
+		{
+			// Arrange	
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
+				.Returns<ArtifactDTO>(_templateArtifactDto);
+
+			bool value = false;
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
+				{
+					new ArtifactDTO()
+					{
+						ArtifactId = 1234,
+						ArtifactTypeId = 10,
+						Fields = new List<ArtifactFieldDTO>()
+						{
+							new ArtifactFieldDTO()
+							{
+								ArtifactId = 123,
+								Name = "Some Number",
+								Value = value
+							}
+						}
+					},
+				});
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				new FieldEntry[] { new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, },
+				new int[0]);
+
+			// Act
+			_instance.Read();
+			bool result = _instance.GetBoolean(0);
+
+			// Arrange
+			Assert.AreEqual(value, result, "The result should be correct");
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetValue_LongTextField_GoldFlow()
+		{
+			// Arrange	
+			const string longTextFieldValue = "woop, der it is!";
+			const int longTextFieldIdentifier = 8392;
+			const string longTextFieldName = "LongTextFieldNameGoesHere";
+			var longTextField = new ArtifactFieldDTO()
+			{
+				ArtifactId = longTextFieldIdentifier,
+				FieldType = "Long Text",
+				Name = longTextFieldName,
+				Value = longTextFieldValue
+			};
+
+			var artifactDto = new ArtifactDTO()
+			{
+				ArtifactId = _DOCUMENT_ARTIFACTID,
+				ArtifactTypeId = 10,
+				Fields = new List<ArtifactFieldDTO>() { longTextField }
+			};
+
+			ArtifactDTO[] artifactDtos = { artifactDto };
+
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Contains(longTextField.ArtifactId))))
+				.Returns<ArtifactDTO>(artifactDto);
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			var fieldEntries = _templateFieldEntries.ToList();
+			fieldEntries.Add(new FieldEntry() { FieldIdentifier = longTextFieldIdentifier.ToString(), DisplayName = longTextFieldName });
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				fieldEntries.ToArray(),
+				new[] { longTextFieldIdentifier });
+
+			// Act
+			_instance.Read();
+			object result = _instance.GetValue(1);
+
+			// Arrange
+			Assert.AreEqual(longTextFieldValue, result as string, "The result should be correct");
+
+			_documentManager.Received(1).RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Contains(longTextField.ArtifactId))));
+			_documentManager.Received(1).RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
+		}
+
+		[Test]
+		public void GetValue_DocumentReadFailed()
+		{
+			// Arrange	
+			const string longTextFieldValue = "woop, der it is!";
+			const int longTextFieldIdentifier = 8392;
+			const string longTextFieldName = "LongTextFieldNameGoesHere";
+			var longTextField = new ArtifactFieldDTO()
+			{
+				ArtifactId = longTextFieldIdentifier,
+				FieldType = "Long Text",
+				Name = longTextFieldName,
+				Value = longTextFieldValue
+			};
+
+			var artifactDto = new ArtifactDTO()
+			{
+				ArtifactId = _DOCUMENT_ARTIFACTID,
+				ArtifactTypeId = 10,
+				Fields = new List<ArtifactFieldDTO>() { }
+			};
+
+			ArtifactDTO[] artifactDtos = { artifactDto };
+
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Contains(longTextField.ArtifactId))))
+				.ReturnsNull();
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			var fieldEntries = _templateFieldEntries.ToList();
+			fieldEntries.Add(new FieldEntry() { FieldIdentifier = longTextFieldIdentifier.ToString(), DisplayName = longTextFieldName });
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				fieldEntries.ToArray(),
+				new[] { longTextFieldIdentifier });
+
+			// Act
+			Assert.Throws<ProviderReadDataException>(() =>
+			{
+				_instance.Read();
+				object result = _instance.GetValue(1);
+			});
+		}
+
+		[Test]
+		public void GetValue_LongTextField_DocumentReadThrowsException()
+		{
+			// Arrange	
+			const string longTextFieldValue = "woop, der it is!";
+			const int longTextFieldIdentifier = 8392;
+			const string longTextFieldName = "LongTextFieldNameGoesHere";
+			var longTextField = new ArtifactFieldDTO()
+			{
+				ArtifactId = longTextFieldIdentifier,
+				FieldType = "Long Text",
+				Name = longTextFieldName,
+				Value = longTextFieldValue
+			};
+
+			var artifactDto = new ArtifactDTO()
+			{
+				ArtifactId = _DOCUMENT_ARTIFACTID,
+				ArtifactTypeId = 10,
+				Fields = new List<ArtifactFieldDTO>() { }
+			};
+
+			ArtifactDTO[] artifactDtos = { artifactDto };
+
+			// for retrieving long text field values (per doc)
+			_documentManager.RetrieveDocument(
+				Arg.Is(_DOCUMENT_ARTIFACTID),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Contains(longTextField.ArtifactId))))
+				.Throws(new Exception());
+
+			// for retrieving all the documents
+			_documentManager.RetrieveDocuments(
+				Arg.Is(_documentIds),
+				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
+				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
+
+			var fieldEntries = _templateFieldEntries.ToList();
+			fieldEntries.Add(new FieldEntry() { FieldIdentifier = longTextFieldIdentifier.ToString(), DisplayName = longTextFieldName });
+
+			_instance = new DocumentTransferDataReader(
+				_documentManager,
+				_documentIds,
+				fieldEntries.ToArray(),
+				new[] { longTextFieldIdentifier });
+
+			// Act
+			Assert.Throws<ProviderReadDataException>(() =>
+			{
+				_instance.Read();
+				object result = _instance.GetValue(1);
+			});
+		}
+
+		#endregion
+	}
+}
