@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Models
 			ArtifactId = artifactId;
 			ArtifactTypeId = artifactTypeId;
 			Fields = fields.ToList();
-			_fieldDictionary = Fields.ToDictionary(x => x.ArtifactId, y => y);
+			_fieldDictionary = Fields.Where(x => x.ArtifactId > 0).ToDictionary(x => x.ArtifactId, y => y);
 		}
 
 		public int ArtifactId { get; private set; }
