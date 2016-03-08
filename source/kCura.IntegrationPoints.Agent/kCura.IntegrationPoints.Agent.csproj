@@ -99,6 +99,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Agent.cs" />
+    <Compile Include="Tasks\ExportWorker.cs" />
     <Compile Include="Installer\AgentInstallers.cs" />
     <Compile Include="RelativityConfigurationFactory.cs" />
     <Compile Include="Tasks\SendEmailManager.cs" />
