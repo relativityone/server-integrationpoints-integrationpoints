@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				}
 			});
 
-		readonly ArtifactDTO[] _templateArtifactDtos = new ArtifactDTO[]
+		private readonly ArtifactDTO[] _templateArtifactDtos = new ArtifactDTO[]
 			{
 				_templateArtifactDto
 			};
@@ -397,6 +397,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				_documentManager,
 				_documentIds,
 				_templateFieldEntries,
+				b
 				new int[0]);
 
 			// Act
@@ -437,11 +438,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			string fieldName = _instance.GetName(0);
 
 			// Assert
-			Assert.AreEqual(_FIELD_IDENTIFIER.ToString(), fieldName, "The field loopup should succeed");
+			Assert.AreEqual(_FIELD_IDENTIFIER.ToString(), fieldName, "The field lookup should succeed");
 		}
 
 		[Test]
-		public void GetName_ObjetIdentifierTextInFieldExists_LookUpSucceeds()
+		public void GetName_ObjectIdentifierTextInFieldExists_LookUpSucceeds()
 		{
 			// Arrange	
 			_instance = new DocumentTransferDataReader(
@@ -461,7 +462,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			string fieldName = _instance.GetName(0);
 
 			// Assert
-			Assert.AreEqual(_FIELD_IDENTIFIER.ToString(), fieldName, "The field loopup should succeed");
+			Assert.AreEqual(_FIELD_IDENTIFIER.ToString(), fieldName, "The field lookup should succeed");
 		}
 
 		[Test]
@@ -482,7 +483,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		}
 
 		[Test]
-		public void GetOrdinal_ObjetIdentifierTextInFieldExists_LookUpSucceeds()
+		public void GetOrdinal_ObjectIdentifierTextInFieldExists_LookUpSucceeds()
 		{
 			// Arrange	
 			_instance = new DocumentTransferDataReader(
@@ -506,7 +507,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		}
 
 		[Test]
-		public void ThisAccessor_ObjetIdentifierTextInFieldExists_LookUpSucceeds()
+		public void ThisAccessor_ObjectIdentifierTextInFieldExists_LookUpSucceeds()
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)

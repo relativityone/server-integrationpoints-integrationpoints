@@ -37,6 +37,7 @@ namespace kCura.IntegrationPoints.Contracts.RDO
 			Edit = 2,
 			Delete = 3,
 			Secure = 4,
+			Manager = 5,
 			Add = 6
 		}
 	}
