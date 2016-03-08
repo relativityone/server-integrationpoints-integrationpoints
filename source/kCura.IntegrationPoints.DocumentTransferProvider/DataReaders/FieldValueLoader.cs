@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
@@ -11,25 +10,22 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
 	internal class FieldValueLoader
 	{
-		private readonly Dictionary<int, Task<List<FieldValue>>> _cache;
-		private readonly List<FieldValue> _queryFields;
-		private readonly object _lock;
+		private readonly Dictionary<int, Task<FieldValue>> _cache;
 		private readonly IDocumentManager _documentManager;
 		private readonly int[] _documentArtifactIds;
+		private readonly int[] _fieldsToQuery;
 		private int _counter;
 
 		internal FieldValueLoader(
 			IDocumentManager documentManager,
-			int[] fieldIdentifiers,
-			int[] documentArtifactIds)
+			int[] documentArtifactIds,
+			int field)
 		{
 			_counter = 0;
-			_lock = new object();
-			_cache = new Dictionary<int, Task<List<FieldValue>>>();
+			_cache = new Dictionary<int, Task<FieldValue>>();
 			_documentManager = documentManager;
 			_documentArtifactIds = documentArtifactIds;
-			_queryFields = fieldIdentifiers.Select(id => new FieldValue(id)).ToList();
-
+			_fieldsToQuery = new[] { field };
 			StartRequestingLongText();
 		}
 
@@ -57,29 +53,26 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			_cache[documentArtifactId] = LoadLongTextFieldsValues(documentArtifactId);
 		}
 
-		public Task<List<FieldValue>> GetFieldsValue(int documentArtifactId)
+		public Task<FieldValue> GetFieldsValue(int documentArtifactId)
 		{
 			LoadNextLongTextFieldsValuesIntoCache();
 			if (_cache.ContainsKey(documentArtifactId))
 			{
-				Task<List<FieldValue>> fields = _cache[documentArtifactId];
+				Task<FieldValue> fields = _cache[documentArtifactId];
 				_cache.Remove(documentArtifactId);
 				return fields;
 			}
 			return LoadLongTextFieldsValues(documentArtifactId);
-		} 
+		}
 
-		private Task<List<FieldValue>> LoadLongTextFieldsValues(int documentArtifactId)
+		private Task<FieldValue> LoadLongTextFieldsValues(int documentArtifactId)
 		{
 			return Task.Run(() =>
 			{
 				ArtifactDTO document = null;
 				try
 				{
-					lock (_lock)
-					{
-						document = _documentManager.RetrieveDocument(documentArtifactId, new HashSet<int>(_queryFields.Select(x => x.ArtifactID)));
-					}
+					document = _documentManager.RetrieveDocument(documentArtifactId, _fieldsToQuery);
 				}
 				catch (Exception e)
 				{
@@ -99,7 +92,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 					};
 				}
 
-				return document.Fields.Select(x => new FieldValue(x.ArtifactId) {Value = x.Value}).ToList();
+				ArtifactFieldDTO field = document.Fields[0];
+				return new FieldValue(field.ArtifactId) { Value = field.Value };
 			});
 		}
 	}

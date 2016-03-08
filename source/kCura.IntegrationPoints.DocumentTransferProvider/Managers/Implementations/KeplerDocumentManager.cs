@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 			_rdoRepository = rdoRepository;
 		}
 
-		public ArtifactDTO RetrieveDocument(int documentId, HashSet<int> fieldIds)
+		public ArtifactDTO RetrieveDocument(int documentId, ICollection<int> fieldIds)
 		{
 			var documentsQuery = new Query()
 			{

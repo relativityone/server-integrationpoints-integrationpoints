@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private readonly FieldValueLoader _fieldsLoader;
 		private bool _queryWasRun = false;
 		private readonly Dictionary<int, string> _nativeFileLocation;
+		private readonly Dictionary<int, FieldValueLoader> _longTextFieldsLoader = new Dictionary<int, FieldValueLoader>();
 
 		public DocumentTransferDataReader(
 			IDocumentManager documentManager,
@@ -29,8 +30,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			IEnumerable<int> longTextFieldIdEntries) :
 			base(GenerateDataColumnsFromFieldEntries(fieldEntries))
 		{
-			var documentIds = documentArtifactIds as int[] ?? documentArtifactIds.ToArray();
-			var longTextIds = longTextFieldIdEntries as int[] ?? longTextFieldIdEntries.ToArray();
+			int[] documentIds = documentArtifactIds as int[] ?? documentArtifactIds.ToArray();
+			int[] longTextIds = longTextFieldIdEntries as int[] ?? longTextFieldIdEntries.ToArray();
 
 			_documentManager = documentManager;
 			_documentArtifactIds = documentIds;
@@ -40,10 +41,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 			// TODO: the fields loader's responsibilities should be placed into the document manager class -- biedrzycki: Mar 1st, 2016
 			// From SynchronizerObjectBuilder, the existing framework assuming that the reader from get data will use artifact Id as the name of the column.
-			_fieldsLoader = new FieldValueLoader(
-				_documentManager, 
-				longTextIds,
-				documentIds.ToArray());
+			foreach (var longTextField in longTextIds)
+			{
+				_longTextFieldsLoader[longTextField] = new FieldValueLoader(_documentManager, documentIds, longTextField);
+			}
 
 			_nativeFileLocation = _nativeFileLocation ?? new Dictionary<int, string>();
 		}
@@ -51,7 +52,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		/// TEMP constructure, we will need to create kelper service to get the file locations.
 		public DocumentTransferDataReader(
 			IDocumentManager documentManager,
-			IEnumerable<int> documentArtifactIds, 
+			IEnumerable<int> documentArtifactIds,
 			IEnumerable<FieldEntry> fieldEntries,
 			IEnumerable<int> longTextFieldIdEntries,
 			IDBContext dbContext) :
@@ -72,7 +73,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 			HashSet<int> requestedFieldIds = new HashSet<int>(filteredFields.Select(x => Convert.ToInt32(x.FieldIdentifier)));
 
-			ArtifactDTO[] results =  _documentManager.RetrieveDocuments(
+			ArtifactDTO[] results = _documentManager.RetrieveDocuments(
 				_documentArtifactIds,
 				requestedFieldIds);
 
@@ -146,36 +147,28 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		{
 			return GetLongTextFieldFromPreLoadedCache(CurrentArtifact.ArtifactId, fieldArtifactId);
 		}
-		private int _localCacheId;
-		private List<FieldValue> _localCache;
 
 		private string GetLongTextFieldFromPreLoadedCache(int documentArtifactId, int fieldArtifactId)
 		{
-			if (documentArtifactId != _localCacheId)
+			var fieldLoader = _longTextFieldsLoader[fieldArtifactId];
+			Task<FieldValue> getLongTextFieldsTasks = fieldLoader.GetFieldsValue(documentArtifactId);
+			try
 			{
-				Task<List<FieldValue>> getLongTextFieldsTasks = _fieldsLoader.GetFieldsValue(documentArtifactId);
-				try
+				getLongTextFieldsTasks.Wait();
+
+				if (getLongTextFieldsTasks.IsCompleted)
 				{
-					getLongTextFieldsTasks.Wait();
-
-					if (getLongTextFieldsTasks.IsCompleted)
+					if (getLongTextFieldsTasks.Exception != null)
 					{
-						if (getLongTextFieldsTasks.Exception != null)
-						{
-							throw getLongTextFieldsTasks.Exception;
-						}
-
-						_localCacheId = documentArtifactId;
-						_localCache = getLongTextFieldsTasks.Result;
+						throw getLongTextFieldsTasks.Exception;
 					}
 				}
-				catch (Exception exception)
-				{
-					throw exception.InnerException ?? exception;
-				}
 			}
-
-			return _localCache.First(field => field.ArtifactID == fieldArtifactId).ValueAsLongText;
+			catch (Exception exception)
+			{
+				throw exception.InnerException ?? exception;
+			}
+			return getLongTextFieldsTasks.Result.ValueAsLongText;
 		}
 	}
 }
