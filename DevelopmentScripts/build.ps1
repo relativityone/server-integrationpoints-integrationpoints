@@ -25,6 +25,7 @@ for ($i = 0; $i -lt $args.count; $i++){
         "^[/-]v"      {$VERSION = $args[$i + 1]; $i++}
         "^[/-]ap"     {$BUILD   = $false}
         "^[/-]no"     {$APPS    = $false}
+        "^[/-]sk"     {$BUILD   = $false; $APPS = $false}
         "^[/-]t"      {$TEST    = $true}
         "^[/-]nu"     {$NUGET   = $true}
         "^[/-]p"      {$PACKAGE = $true}   
@@ -76,16 +77,17 @@ write-host "usage: build [debug|release] [dev|alpha|beta|rc|gold] [-version VERS
 write-host ""
 write-host "options:"
 write-host ""
-write-host "    -e[ditor]        opens Build Helper Project Editor to edit the build.xml file" 
+write-host "    -e[ditor]          opens Build Helper Project Editor to edit the build.xml file" 
 write-host "" 
-write-host "    -v[ersion]       sets the version # for the build, default is 1.0.0.0 (example: 1.3.3.7)"  
-write-host "    -ap[ps]          skips the build step, continues to only build apps"
-write-host "    -no[apps]        skips build apps step"
-write-host "    -t[est]          runs nunit test step"
-write-host "    -nu[get]         runs the nuget pack step"
-write-host "    -p[ackage]       runs the package step"
+write-host "    -v[ersion] VERSION sets the version # for the build, default is 1.0.0.0 (example: 1.3.3.7)"  
+write-host "    -ap[ps]            skips the build step, continues to only build apps"
+write-host "    -no[apps]          skips build apps step"
+write-host "    -sk[ip]            skips build and build apps step"
+write-host "    -t[est]            runs nunit test step"
+write-host "    -nu[get]           runs the nuget pack step"
+write-host "    -p[ackage]         runs the package step"
 write-host ""
-write-host "    -al[ert]         show alert popup when build completes"
+write-host "    -al[ert]           show alert popup when build completes"
 write-host ""
 
 exit
@@ -150,6 +152,11 @@ if($PACKAGE -and $STATUS){
                                                                           'build_config'=$BUILDCONFIG;
                                                                           'build_type'=$BUILDTYPE;}
     if ($psake.build_success -eq $false) { $STATUS = $false }
+}
+
+if($VERSION -ne "1.0.0.0") {
+
+    hg revert $root\Version
 }
 
 $endTime = Get-Date
