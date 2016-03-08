@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Data
 	public class SourceProviderConfiguration
 	{
 		/// <summary>
-		/// config to set import native files. 
+		/// Config to set import native files. 
 		/// If this config set to true or false and user set copy native files to true, a new file will be created by copying the orignal native.
 		/// If this config set to true and user set copy native files to false, files will be set to linking to the native.
 		/// If this config set to false and user set copy native files to false, files will not be imported.
@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Data
 		/// configuration to set the visibilities of the import settings
 		/// </summary>
 		/// <remarks>
-		/// Only avaiable for internal providers
+		/// Only available for internal providers
 		/// </remarks>
 		internal ImportSettingVisibility AvailableImportSettings { set; get; }
 
