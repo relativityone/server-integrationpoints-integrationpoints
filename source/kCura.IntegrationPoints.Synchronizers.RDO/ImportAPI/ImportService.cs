@@ -20,8 +20,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private readonly Dictionary<string, int> _inputMappings;
 		private int _itemsImported;
 
-		private const int _JOB_PROGRESS_TIMEOUT = 5000;
-		private int _lastjobProgressUpdate = 0;
+		private const int _JOB_PROGRESS_TIMEOUT_MILLISECONDS = 5000;
+		private int _lastJobProgressUpdate = 0;
 
 		public event StatusUpdate OnStatusUpdate;
 		public event BatchCompleted OnBatchComplete;
@@ -286,9 +286,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private void ImportJob_OnProgress(long item)
 		{
 			_itemsImported++;
-			if (Environment.TickCount - _lastjobProgressUpdate > _JOB_PROGRESS_TIMEOUT)
+			if (Environment.TickCount - _lastJobProgressUpdate > _JOB_PROGRESS_TIMEOUT_MILLISECONDS)
 			{
-				_lastjobProgressUpdate = Environment.TickCount;
+				_lastJobProgressUpdate = Environment.TickCount;
 				if (OnStatusUpdate != null)
 				{
 					OnStatusUpdate(_itemsImported);
