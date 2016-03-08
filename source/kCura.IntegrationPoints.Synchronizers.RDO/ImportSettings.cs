@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		/// <summary>
 		/// indicates user preferences of importing native files.
 		/// </summary>
-		public bool ImportNativeFiles { get; set; }
+		public bool ImportNativeFile { get; set; }
 
 		public bool ExtractedTextFieldContainsFilePath { get; set; }
 		public int IdentityFieldId { get; set; }
