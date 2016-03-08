@@ -390,16 +390,16 @@ namespace kCura.IntegrationPoints.Data
 	[DynamicObject(ObjectTypes.JobHistory, ObjectTypes.Workspace, "", ObjectTypeGuids.JobHistory)]
 	public partial class JobHistory : BaseRdo
 	{
-		[DynamicField(JobHistoryFields.JobStatus, JobHistoryFieldGuids.JobStatus, FieldTypes.SingleChoice)]
-		public Choice JobStatus
+		[DynamicField(JobHistoryFields.Status, JobHistoryFieldGuids.Status, FieldTypes.SingleChoice)]
+		public Choice Status
 		{
 			get
 			{
-				return GetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobStatus));
+				return GetField<Choice>(new System.Guid(JobHistoryFieldGuids.Status));
 			}
 			set
 			{
-				SetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobStatus), value);
+				SetField<Choice>(new System.Guid(JobHistoryFieldGuids.Status), value);
 			}
 		}
 
@@ -417,16 +417,16 @@ namespace kCura.IntegrationPoints.Data
 		}
 
 
-		[DynamicField(JobHistoryFields.RecordsImported, JobHistoryFieldGuids.RecordsImported, FieldTypes.WholeNumber)]
-		public int? RecordsImported
+		[DynamicField(JobHistoryFields.ItemsImported, JobHistoryFieldGuids.ItemsImported, FieldTypes.WholeNumber)]
+		public int? ItemsImported
 		{
 			get
 			{
-				return GetField<int?>(new System.Guid(JobHistoryFieldGuids.RecordsImported));
+				return GetField<int?>(new System.Guid(JobHistoryFieldGuids.ItemsImported));
 			}
 			set
 			{
-				SetField<int?>(new System.Guid(JobHistoryFieldGuids.RecordsImported), value);
+				SetField<int?>(new System.Guid(JobHistoryFieldGuids.ItemsImported), value);
 			}
 		}
 
@@ -443,16 +443,16 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 
-		[DynamicField(JobHistoryFields.RecordsWithErrors, JobHistoryFieldGuids.RecordsWithErrors, FieldTypes.WholeNumber)]
-		public int? RecordsWithErrors
+		[DynamicField(JobHistoryFields.ItemsWithErrors, JobHistoryFieldGuids.ItemsWithErrors, FieldTypes.WholeNumber)]
+		public int? ItemsWithErrors
 		{
 			get
 			{
-				return GetField<int?>(new System.Guid(JobHistoryFieldGuids.RecordsWithErrors));
+				return GetField<int?>(new System.Guid(JobHistoryFieldGuids.ItemsWithErrors));
 			}
 			set
 			{
-				SetField<int?>(new System.Guid(JobHistoryFieldGuids.RecordsWithErrors), value);
+				SetField<int?>(new System.Guid(JobHistoryFieldGuids.ItemsWithErrors), value);
 			}
 		}
 		[DynamicField(JobHistoryFields.StartTimeUTC, JobHistoryFieldGuids.StartTimeUTC, FieldTypes.Date)]

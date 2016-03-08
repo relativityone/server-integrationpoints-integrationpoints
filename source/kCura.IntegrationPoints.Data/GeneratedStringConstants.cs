@@ -122,11 +122,11 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class JobHistoryFields : BaseFields
 	{
-		public const string JobStatus = @"Job Status";
+		public const string Status = @"Status";
 		public const string DestinationWorkspace = "Destination Workspace";
-		public const string RecordsImported = @"Records Imported";
+		public const string ItemsImported = @"Items Imported";
 		public const string TotalItems = @"Total Items";
-		public const string RecordsWithErrors = @"Records with Errors";
+		public const string ItemsWithErrors = @"Items with Errors";
 		public const string StartTimeUTC = @"Start Time (UTC)";
 		public const string EndTimeUTC = @"End Time (UTC)";
 		public const string IntegrationPoint = @"Integration Point";
@@ -136,11 +136,11 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class JobHistoryFieldGuids 
 	{
-		public const string JobStatus = @"5c28ce93-c62f-4d25-98c9-9a330a6feb52";
-		public const string RecordsImported = @"70680399-c8ea-4b12-b711-e9ecbc53cb1c";
+		public const string Status = @"5c28ce93-c62f-4d25-98c9-9a330a6feb52";
+		public const string ItemsImported = @"70680399-c8ea-4b12-b711-e9ecbc53cb1c";
 		public const string TotalItems = @"576189A9-0347-4B20-9369-B16D1AC89B4B";
 		public const string DestinationWorkspace = @"FF01A766-B494-4F2C-9CBB-10A5AB163B8D";
-		public const string RecordsWithErrors = @"c224104f-c1ca-4caa-9189-657e01d5504e";
+		public const string ItemsWithErrors = @"c224104f-c1ca-4caa-9189-657e01d5504e";
 		public const string StartTimeUTC = @"25b7c8ef-66d9-41d1-a8de-29a93e47fb11";
 		public const string EndTimeUTC = @"4736cf49-ad0f-4f02-aaaa-898e07400f22";
 		public const string IntegrationPoint = @"d3e791d3-2e21-45f4-b403-e7196bd25eea";
