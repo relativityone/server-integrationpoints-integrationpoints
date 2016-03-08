@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers
 		/// <param name="documentId">The artifact id of the document to retrieve</param>
 		/// <param name="fieldIds">The artifact Ids of the fields to retrieve</param>
 		/// <returns>An ArtifactDTO for the document</returns>
-		ArtifactDTO RetrieveDocument(int documentId, HashSet<int> fieldIds);
+		ArtifactDTO RetrieveDocument(int documentId, ICollection<int> fieldIds);
 
 		/// <summary>
 		/// Retrieves multiple documents
