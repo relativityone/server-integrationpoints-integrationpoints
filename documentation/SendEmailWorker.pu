@@ -1,0 +1,15 @@
+@startuml
+
+title RIP Agent Workflow - SendEmailWorker
+
+
+start
+
+:Deserialize emails;
+repeat
+    :Send notification email;
+repeat while (for each email address)
+
+stop
+
+@enduml

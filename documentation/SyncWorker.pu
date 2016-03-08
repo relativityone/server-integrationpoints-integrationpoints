@@ -1,0 +1,38 @@
+@startuml
+
+title RIP Agent Workflow - SyncWorker
+
+
+start
+
+:Mark jobs as "Processing";
+:Retrieve IP RDO;
+:Get Entry IDs from JobDetails;
+:Get JobHistory RDO;
+
+if (SourceProvider is set) then (true)
+    if (DestinationProvider is set) then (true)
+        :Get DestinationProvider RDO;
+        partition ExecuteImport {
+            :Get SourceProvider;
+            :DataProvider.GetData();
+            :Create Synchronizer;
+            :Set up statistics and JobHistorError subscriptions;
+            
+            if (SourceProvider.Config.GetDataProvideAllFieldsRequired) then (true)
+                :dataSynchronizer.SyncData();
+            else (false)
+                :GetSourceData;
+                :dataSynchronizerSyncData();
+            endif
+        }
+    else (false)
+        :Throw exception;
+    endif
+else (false)
+    :Throw exception;
+endif
+
+stop
+
+@enduml
