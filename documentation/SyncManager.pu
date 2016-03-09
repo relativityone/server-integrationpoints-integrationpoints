@@ -16,26 +16,7 @@ partition JobPreExecute {
 
 partition GetUnbatchedIDs {
     :Get Data Provider RDO;
-    partition CreateAndSetUpNewAppDomain {
-        :Create new AppDomain;
-        :Copy AppDomain configuration file;
-        :Set bin path;
-        :Deploy library files;
-        :Load required assemblies;
-        :Load client libraries;
-        :Serialize, encrypt, and marshal SystemTokenProvider;
-        :Serialize, encrypt, and marshal connection string;
-        partition InitializeNewAppDomain {
-            :Resolve assemblies;
-            :Run Bootstrapper;
-            :Retrieved, unencrypt, and set marshalled data;
-        }
-    }
-    partition GetProvider {
-        :Set up Castle.Windsor;
-        :Resolve dependencies;
-        :Create instance of provider;
-    }
+    :GetDataProvider|
     :GetBatchableIds;
 }
 

@@ -1,0 +1,21 @@
+@startuml
+
+title Step 3 - Custom Page Load - Workflow
+
+start
+
+partition GetWorkspaceFields {
+    :CreateSynchronizer|
+    :Synchronizer.GetFields();
+    :Serialize and return fields;
+}
+
+partition GetSourceFields {
+    :GetDataProvider|
+    :DataProvider.GetFields();
+    :Serialize and return fields;
+}
+
+stop
+
+@enduml

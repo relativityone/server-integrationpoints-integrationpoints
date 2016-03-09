@@ -2,7 +2,6 @@
 
 title RIP Agent Workflow - SyncWorker
 
-
 start
 
 :Mark jobs as "Processing";
@@ -14,8 +13,8 @@ if (SourceProvider is set) then (true)
     if (DestinationProvider is set) then (true)
         :Get DestinationProvider RDO;
         partition ExecuteImport {
-            :Get SourceProvider;
-            :DataProvider.GetData();
+			:GetDataProvider|
+            :SourceProvider.GetData();
             :Create Synchronizer;
             :Set up statistics and JobHistorError subscriptions;
             
