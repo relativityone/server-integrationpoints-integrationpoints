@@ -397,7 +397,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				_documentManager,
 				_documentIds,
 				_templateFieldEntries,
-				b
 				new int[0]);
 
 			// Act
@@ -1501,15 +1500,19 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Value = longTextFieldValue
 			};
 
-			var artifactDto = new ArtifactDTO(_DOCUMENT_ARTIFACTID, 10, new List<ArtifactFieldDTO>() { longTextField });
-
-			ArtifactDTO[] artifactDtos = { artifactDto };
+			var artifactDtoOnlyLongTextField = new ArtifactDTO(
+				_DOCUMENT_ARTIFACTID,
+				10,
+				new List<ArtifactFieldDTO>()
+				{
+					longTextField
+				});
 
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocument(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
-				Arg.Is(Arg.Is<HashSet<int>>(x => x.Contains(longTextField.ArtifactId))))
-				.Returns<ArtifactDTO>(artifactDto);
+				Arg.Is(Arg.Is<int[]>(x => x[0] == longTextFieldIdentifier)))
+				.Returns<ArtifactDTO>(artifactDtoOnlyLongTextField);
 
 			// for retrieving all the documents
 			_documentManager.RetrieveDocuments(
@@ -1517,13 +1520,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
-			var fieldEntries = _templateFieldEntries.ToList();
-			fieldEntries.Add(new FieldEntry() { FieldIdentifier = longTextFieldIdentifier.ToString(), DisplayName = longTextFieldName });
+			List<FieldEntry> fieldEntries = _templateFieldEntries.ToList();
+			fieldEntries.Add(new FieldEntry() {FieldIdentifier = longTextFieldIdentifier.ToString(), DisplayName = longTextFieldName});
 
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
-				fieldEntries.ToArray(),
+				fieldEntries,
 				new[] { longTextFieldIdentifier });
 
 			// Act
@@ -1535,7 +1538,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			_documentManager.Received(1).RetrieveDocument(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
-				Arg.Is(Arg.Is<HashSet<int>>(x => x.Contains(longTextField.ArtifactId))));
+				Arg.Is(Arg.Is<int[]>(x => x[0] == longTextFieldIdentifier)));
 			_documentManager.Received(1).RetrieveDocuments(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));

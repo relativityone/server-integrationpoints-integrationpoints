@@ -32,7 +32,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private void StartRequestingLongText()
 		{
 			// load ahead 20 documents' long text fields
-			for (int count = 0; count < 20; count++)
+			int requestCount = Math.Min(20, _documentArtifactIds.Length);
+			for (int count = 0; count < requestCount; count++)
 			{
 				LoadNextLongTextFieldsValuesIntoCache();
 			}
