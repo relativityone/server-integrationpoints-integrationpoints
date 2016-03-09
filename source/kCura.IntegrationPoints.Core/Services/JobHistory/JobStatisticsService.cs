@@ -3,7 +3,6 @@ using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.ScheduleQueue.Core;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {

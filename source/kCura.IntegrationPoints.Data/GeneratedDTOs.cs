@@ -1,5 +1,4 @@
 ﻿using System;
-using Castle.Windsor.Installer;
 using kCura.Relativity.Client;
 using kCura.IntegrationPoints.Data.Attributes;
 using Newtonsoft.Json;
