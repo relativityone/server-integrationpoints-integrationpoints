@@ -43,6 +43,10 @@ if (SourceProvider is set) then (true)
             else
                 :Set JobHistory.Status = "Completed";
             endif
+			
+			if (Job has recipient emails) then (true)
+				:Create SendEmailManager job;
+			endif
         endif
     }
 else (false)
