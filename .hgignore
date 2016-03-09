@@ -117,3 +117,4 @@ source\packages\Newtonsoft.Json.8.0.2
 source\TestLogs\output64.xml
 
 source\.vs\config\applicationhost.config
+documentation/images/*
