@@ -28,6 +28,23 @@ if (SourceProvider is set) then (true)
     else (false)
         :Throw exception;
     endif
+    
+    if (Any exceptions were thrown above) then (true)
+        :Create JobHistoryError;
+    endif
+    
+    partition PostExecute {
+        :Check "RIP_JobTracker_{WorkspaceId}_{RootJobId}_{batchId}" for jobs;
+        if (Current batch is last job) then (true)
+            if (Current batch had item level errors) then (true)
+                :Set JobHistory.Status = "Completed with errors";
+            elseif (Current batch had job errors) then (true)
+                :Set JobHistory.Status = "Error - job failed";
+            else
+                :Set JobHistory.Status = "Completed";
+            endif
+        endif
+    }
 else (false)
     :Throw exception;
 endif
