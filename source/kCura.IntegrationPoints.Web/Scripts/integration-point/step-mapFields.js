@@ -626,7 +626,7 @@ ko.validation.insertValidationMessage = function (element) {
 						});
 					}
 
-					_destination.ImportNativeFiles = this.model.importNativeFile();
+					_destination.importNativeFile = this.model.importNativeFile();
 
 					// pushing create folder setting
 					_destination.UseFolderPathInformation = this.model.UseFolderPathInformation();

@@ -252,24 +252,19 @@
       <ColumnName>IntegrationPoint</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
-      <ArtifactViewFieldId>1001597</ArtifactViewFieldId>
+      <ArtifactViewFieldId>1001598</ArtifactViewFieldId>
       <ArtifactTypeId>1000057</ArtifactTypeId>
-      <ColumnName>JobStatus</ColumnName>
+      <ColumnName>ItemsImported</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001599</ArtifactViewFieldId>
+      <ArtifactTypeId>1000057</ArtifactTypeId>
+      <ColumnName>ItemswithErrors</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001566</ArtifactViewFieldId>
       <ArtifactTypeId>1000057</ArtifactTypeId>
       <ColumnName>Name</ColumnName>
-    </ArtifactViewField>
-    <ArtifactViewField>
-      <ArtifactViewFieldId>1001598</ArtifactViewFieldId>
-      <ArtifactTypeId>1000057</ArtifactTypeId>
-      <ColumnName>RecordsImported</ColumnName>
-    </ArtifactViewField>
-    <ArtifactViewField>
-      <ArtifactViewFieldId>1001599</ArtifactViewFieldId>
-      <ArtifactTypeId>1000057</ArtifactTypeId>
-      <ColumnName>RecordswithErrors</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001565</ArtifactViewFieldId>
@@ -280,6 +275,11 @@
       <ArtifactViewFieldId>1001600</ArtifactViewFieldId>
       <ArtifactTypeId>1000057</ArtifactTypeId>
       <ColumnName>StartTimeUTC</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001597</ArtifactViewFieldId>
+      <ArtifactTypeId>1000057</ArtifactTypeId>
+      <ColumnName>Status</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001561</ArtifactViewFieldId>
@@ -405,7 +405,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-03-01T00:11:22.2372505Z</ExtractionDate>
+  <ExtractionDate>2016-03-08T16:53:02.838001Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -4396,7 +4396,7 @@
           </Codes>
           <CodeTypeId>1000127</CodeTypeId>
           <ConnectorFieldArtifactId xsi:nil="true" />
-          <DisplayName>Job Status</DisplayName>
+          <DisplayName>Status</DisplayName>
           <DisplayValueFalse />
           <DisplayValueTrue />
           <FieldArtifactTypeId>1000057</FieldArtifactTypeId>
@@ -4438,7 +4438,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>true</AutoAddChoices>
-          <ApplicationVersion>0.0.0.1</ApplicationVersion>
+          <ApplicationVersion>2.0.0.13</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -4448,7 +4448,7 @@
           <Codes />
           <CodeTypeId xsi:nil="true" />
           <ConnectorFieldArtifactId xsi:nil="true" />
-          <DisplayName>Records Imported</DisplayName>
+          <DisplayName>Items Imported</DisplayName>
           <DisplayValueFalse />
           <DisplayValueTrue />
           <FieldArtifactTypeId>1000057</FieldArtifactTypeId>
@@ -4490,7 +4490,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.1</ApplicationVersion>
+          <ApplicationVersion>2.0.0.13</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -4500,7 +4500,7 @@
           <Codes />
           <CodeTypeId xsi:nil="true" />
           <ConnectorFieldArtifactId xsi:nil="true" />
-          <DisplayName>Records with Errors</DisplayName>
+          <DisplayName>Items with Errors</DisplayName>
           <DisplayValueFalse />
           <DisplayValueTrue />
           <FieldArtifactTypeId>1000057</FieldArtifactTypeId>
@@ -4542,7 +4542,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>0.0.0.1</ApplicationVersion>
+          <ApplicationVersion>2.0.0.13</ApplicationVersion>
         </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
@@ -6317,7 +6317,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.3.321.1</RelativityVersion>
-  <Version>2.0.0.12</Version>
+  <Version>2.0.0.13</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>30db7baa-93da-4227-bdb1-e3df9e8edc72</OriginSignature>
   <MasterScripts />
@@ -6347,7 +6347,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.12</ApplicationVersion>
+      <ApplicationVersion>2.0.0.13</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038277</ArtifactId>
@@ -6358,7 +6358,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.12</ApplicationVersion>
+      <ApplicationVersion>2.0.0.13</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038278</ArtifactId>
@@ -6369,7 +6369,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.12</ApplicationVersion>
+      <ApplicationVersion>2.0.0.13</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038279</ArtifactId>
@@ -6380,7 +6380,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.12</ApplicationVersion>
+      <ApplicationVersion>2.0.0.13</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038393</ArtifactId>
@@ -6391,7 +6391,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.12</ApplicationVersion>
+      <ApplicationVersion>2.0.0.13</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />

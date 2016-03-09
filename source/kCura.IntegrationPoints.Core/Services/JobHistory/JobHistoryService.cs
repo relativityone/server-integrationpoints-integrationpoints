@@ -42,9 +42,9 @@ namespace kCura.IntegrationPoints.Core.Services
 				jobHistory.Name = integrationPoint.Name;
 				jobHistory.IntegrationPoint = new[] { integrationPoint.ArtifactId };
 				jobHistory.BatchInstance = batchInstance.ToString();
-				jobHistory.JobStatus = JobStatusChoices.JobHistoryPending;
-				jobHistory.RecordsImported = 0;
-				jobHistory.RecordsWithErrors = 0;
+				jobHistory.Status = JobStatusChoices.JobHistoryPending;
+				jobHistory.ItemsImported = 0;
+				jobHistory.ItemsWithErrors = 0;
 
 				ImportSettings setting = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
 				jobHistory.DestinationWorkspace = String.Format("{0} [Id::{1}]", _context.GetWorkspaceName(setting.CaseArtifactId), setting.CaseArtifactId);

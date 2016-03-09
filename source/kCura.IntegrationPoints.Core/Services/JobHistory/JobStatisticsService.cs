@@ -62,8 +62,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			JobStatistics stats = _query.UpdateAndRetrieveStats(tableName, _job.JobId, new JobStatistics { Completed = total, Errored = _rowErrors });
 			_rowErrors = 0;
 			Data.JobHistory historyRdo = _service.GetRdo(_helper.GetBatchInstance(_job));
-			historyRdo.RecordsImported = stats.Imported;
-			historyRdo.RecordsWithErrors = stats.Errored;
+			historyRdo.ItemsImported = stats.Imported;
+			historyRdo.ItemsWithErrors = stats.Errored;
 			_service.UpdateRdo(historyRdo);
 		}
 
@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				EnableMutex(identifier);
 
 				Data.JobHistory historyRdo = _service.GetRdo(_helper.GetBatchInstance(_job));
-				historyRdo.RecordsImported += count;
+				historyRdo.ItemsImported += count;
 				_service.UpdateRdo(historyRdo);
 
 				_context.CommitTransaction();

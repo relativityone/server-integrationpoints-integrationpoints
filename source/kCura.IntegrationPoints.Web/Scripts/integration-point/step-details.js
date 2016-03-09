@@ -475,6 +475,7 @@ var IP = IP || {};
 		this.FolderPathSourceField = JSON.parse(settings.destination || "{}").FolderPathSourceField;
 		this.ExtractedTextFieldContainsFilePath = JSON.parse(settings.destination || "{}").ExtractedTextFieldContainsFilePath;
 		this.ExtractedTextFileEncoding = JSON.parse(settings.destination || "{}").ExtractedTextFileEncoding;
+		this.importNativeFile = JSON.parse(settings.destination || "{}").importNativeFile;
 
 		this.selectedOverwrite = ko.observable(settings.selectedOverwrite);
 		this.scheduler = new Scheduler(settings.scheduler);

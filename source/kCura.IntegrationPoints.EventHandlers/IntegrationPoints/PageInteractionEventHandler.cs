@@ -25,9 +25,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		public override Response PopulateScriptBlocks()
 		{
-			var response = new Response();
-			response.Success = true;
-			response.Message = string.Empty;
+			Response response = new Response
+			{
+				Success = true,
+				Message = string.Empty
+			};
 
 			String applicationPath = GetApplicationPath(this.Application.ApplicationUrl);
 
@@ -52,12 +54,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/integration-point/time-utils.js");
 
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL234324324", Script = "<script>var IP = IP ||{};IP.cpPath = '" + applicationPath + "';</script>" });
-				var nextScheduledRuntimeFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.NextScheduledRuntimeUTC));
-				var destinationFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationConfiguration));
-				var destinationProviderFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationProvider));
-				var sourceProviderFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.SourceProvider));
-				var lastRuntimeFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.LastRuntimeUTC));
-				var sourceConfigurationFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.SourceConfiguration));
+				int nextScheduledRuntimeFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.NextScheduledRuntimeUTC));
+				int destinationFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationConfiguration));
+				int destinationProviderFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationProvider));
+				int sourceProviderFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.SourceProvider));
+				int lastRuntimeFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.LastRuntimeUTC));
+				int sourceConfigurationFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.SourceConfiguration));
 
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL2343243453", Script = "<script>var IP = IP ||{};IP.nextTimeid= ['" + nextScheduledRuntimeFieldId + "', '" + lastRuntimeFieldId + "'] ;</script>" });
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.destinationid= '" + destinationFieldId + "';</script>" });
@@ -68,11 +70,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = "<script>var IP = IP ||{}; IP.sourceConfiguration= '" + sourceConfigurationFieldId + "';</script>" });
 				this.RegisterClientScriptBlock(new kCura.EventHandler.ScriptBlock() { Key = "refreshFunc", Script = "<script type=\"text/javascript\"> function refreshList(){ $('.associative-list').load(document.URL +  ' .associative-list'); setTimeout(refreshList, 5000);};</script>" });
 
-				var script = new StringBuilder();
+				StringBuilder script = new StringBuilder();
 				script.Append("<script>");
 				script.Append("var IP = IP || {};");
 				script.Append("IP.params = IP.params || {};");
-				foreach (var keyValuePair in GetParams())
+				foreach (KeyValuePair<string,object> keyValuePair in GetParams())
 				{
 					script.AppendFormat("IP.params['{0}'] = '{1}';", keyValuePair.Key, keyValuePair.Value);
 				}

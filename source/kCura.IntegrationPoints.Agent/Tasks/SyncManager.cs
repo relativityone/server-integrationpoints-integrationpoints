@@ -179,7 +179,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				if (!this.JobHistory.StartTimeUTC.HasValue)
 				{
 					this.JobHistory.StartTimeUTC = DateTime.UtcNow;
-					//TODO: jobHistory.JobStatus = "";
+					//TODO: jobHistory.Status = "";
 					_jobHistoryService.UpdateRdo(this.JobHistory);
 				}
 			}
@@ -214,12 +214,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						this.JobHistory.EndTimeUTC = DateTime.UtcNow;
 						if (_errorOccurred)
 						{
-							this.JobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
+							this.JobHistory.Status = JobStatusChoices.JobHistoryErrorJobFailed;
 							_errorOccurred = false;
 						}
 						else
 						{
-							this.JobHistory.JobStatus = JobStatusChoices.JobHistoryCompleted;
+							this.JobHistory.Status = JobStatusChoices.JobHistoryCompleted;
 						}
 					}
 					_caseServiceContext.RsapiService.JobHistoryLibrary.Update(this.JobHistory);

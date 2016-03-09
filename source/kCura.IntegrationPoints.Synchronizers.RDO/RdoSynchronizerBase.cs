@@ -272,7 +272,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 						.First();
 			}
 
-			if (settings.ImportNativeFiles)
+			if (settings.ImportNativeFile)
 			{
 				nativeFileImportService.ImportNativeFiles = true;
 				FieldMap field = fieldMap.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath);
