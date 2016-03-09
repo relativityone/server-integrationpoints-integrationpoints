@@ -1,0 +1,20 @@
+@startuml
+
+title Agent High Level Workflow
+
+start
+
+:SyncManager;
+note right: Use DataProvider to get batchable identifiers
+repeat 
+    :SyncWorker;
+    note left: Use DataProvider to pull / push
+repeat while (More batches exist?)
+:SendEmailManager;
+note right: Get emails to notify
+:SendEmailWorker;
+note right: Send all emails
+
+stop
+
+@enduml
