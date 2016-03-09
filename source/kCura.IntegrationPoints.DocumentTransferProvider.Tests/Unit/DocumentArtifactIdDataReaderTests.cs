@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
