@@ -4,6 +4,10 @@ title Step 3 - Custom Page Load - Workflow
 
 start
 
+:GetFolderPathFields;
+:GetAvailableEncodings;
+:Check if object type is Custodian;
+
 partition GetWorkspaceFields {
     :CreateSynchronizer|
     :Synchronizer.GetFields();
@@ -15,6 +19,8 @@ partition GetSourceFields {
     :DataProvider.GetFields();
     :Serialize and return fields;
 }
+
+:Check if RDO has parent;
 
 stop
 
