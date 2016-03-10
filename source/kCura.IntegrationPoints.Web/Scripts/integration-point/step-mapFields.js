@@ -154,7 +154,7 @@ ko.validation.insertValidationMessage = function (element) {
 				onlyIf: function () {
 					return self.showErrors() && self.mappedWorkspace().length >= 0;
 				},
-				params: [model.selectedOverwrite, self.selectedUniqueId, self.rdoIdentifier]
+				params: [self.selectedUniqueId, self.rdoIdentifier]
 			}
 		});
 
@@ -185,6 +185,11 @@ ko.validation.insertValidationMessage = function (element) {
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
 
 		this.SourceProviderConfiguration = ko.observable(model.SourceProviderConfiguration);
+
+		this.OverwriteOptions = ko.observableArray(['Append', 'Append/Overlay', 'Overlay Only']);
+		self.OverwriteOptions = this.OverwriteOptions;
+
+		this.SelectedOverwrite = ko.observable(model.SelectedOverwrite || 'Append');
 
 		this.UseFolderPathInformation = ko.observable(model.UseFolderPathInformation || "false");
 		this.FolderPathSourceField = ko.observable().extend(
@@ -408,7 +413,6 @@ ko.validation.insertValidationMessage = function (element) {
 				self.mappedWorkspace(mapFields(destinationMapped));
 				self.sourceField(mapFields(sourceNotMapped));
 				self.sourceMapped(mapFields(sourceMapped));
-				self.isAppendOverlay(model.selectedOverwrite !== "Append");
 			}).fail(function (result) {
 				IP.message.error.raise(result);
 			});
@@ -462,6 +466,7 @@ ko.validation.insertValidationMessage = function (element) {
 				importNativeFile: model.importNativeFile,
 				nativeFilePathValue: model.nativeFilePathValue,
 				UseFolderPathInformation: model.UseFolderPathInformation,
+				SelectedOverwrite: model.SelectedOverwrite,
 				FolderPathSourceField: model.FolderPathSourceField,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
 				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
@@ -521,6 +526,7 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.nativeFilePathValue = this.model.nativeFilePathValue();
 			this.returnModel.identifer = this.model.selectedUniqueId();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
+			this.returnModel.SelectedOverwrite = this.model.SelectedOverwrite();
 			this.returnModel.UseFolderPathInformation = this.model.UseFolderPathInformation();
 			this.returnModel.FolderPathSourceField = this.model.FolderPathSourceField();
 			this.returnModel.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
@@ -626,6 +632,7 @@ ko.validation.insertValidationMessage = function (element) {
 						});
 					}
 
+					_destination.ImportOverwriteMode = ko.toJS(this.model.SelectedOverwrite).replace('/', '').replace(' ', '');
 					_destination.importNativeFile = this.model.importNativeFile();
 
 					// pushing create folder setting
@@ -646,6 +653,7 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.map = JSON.stringify(map);
 				this.returnModel.identifer = this.model.selectedUniqueId();
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
+				this.returnModel.SelectedOverwrite = this.model.SelectedOverwrite();
 				_destination.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
 				this.returnModel.destination = JSON.stringify(_destination);
 				d.resolve(this.returnModel);
