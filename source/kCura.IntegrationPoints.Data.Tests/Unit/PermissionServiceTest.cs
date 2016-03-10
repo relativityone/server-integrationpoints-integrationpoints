@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Permission;
@@ -24,7 +26,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		}
 
 		[Test]
-		public void UserCanImport_UserHasPermissionToImport()
+		public void UserCanImport_UserHasPermissionToImport_UserPermissionIsTrue()
 		{
 			//ARRANGE
 			_permissionManager.GetPermissionSelectedAsync(
@@ -47,7 +49,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		}
 
 		[Test]
-		public void UserCanImport_UserDoesNotHavePermissionToImport()
+		public void UserCanImport_UserDoesNotHavePermissionToImport_UserPermissionIsFalse()
 		{
 			//ARRANGE
 			_permissionManager.GetPermissionSelectedAsync(
@@ -70,7 +72,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		}
 
 		[Test]
-		public void UserCanImport_ServiceReturnsIncorrectPermissionIdWithSuccess()
+		public void UserCanImport_ServiceReturnsIncorrectPermissionIdWithSuccess_UserPermissionIsFalse()
 		{
 			//ARRANGE
 			_permissionManager.GetPermissionSelectedAsync(
@@ -93,7 +95,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		}
 
 		[Test]
-		public void UserCanImport_ServiceReturnsIncorrectPermissionIdWithNoSuccess()
+		public void UserCanImport_ServiceReturnsIncorrectPermissionIdWithNoSuccess_UserPermissionIsFalse()
 		{
 			//ARRANGE
 			_permissionManager.GetPermissionSelectedAsync(
@@ -116,13 +118,30 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		}
 
 		[Test]
-		public void UserCanImport_ServiceReturnsNoPermissions()
+		public void UserCanImport_ServiceReturnsNoPermissions_UserPermissionsIsFalse()
 		{
 			//ARRANGE
 			_permissionManager.GetPermissionSelectedAsync(
 				Arg.Is(WORKSPACE_ID),
 				Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = 158 } }, x)))
 				.Returns(Task.FromResult(new List<PermissionValue>() {}));
+
+			//ACT
+			bool userCanImport = _instance.UserCanImport(WORKSPACE_ID);
+
+			//ASSERT 
+			Assert.IsFalse(userCanImport, "The user should not have correct permissions");
+		}
+
+		[Test]
+		public void UserCanImport_ServiceThrowsException_UserPermissionIsFalse()
+		{
+			//ARRANGE
+			_permissionManager.GetPermissionSelectedAsync(
+				Arg.Is(WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => this.PermissionValuesMatch(new List<PermissionRef>() {new PermissionRef() {PermissionID = 158}}, x)))
+				.Throws(new Exception());
 
 			//ACT
 			bool userCanImport = _instance.UserCanImport(WORKSPACE_ID);
