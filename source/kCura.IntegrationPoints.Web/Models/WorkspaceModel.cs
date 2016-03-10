@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Web.Models
 {
@@ -17,13 +19,14 @@ namespace kCura.IntegrationPoints.Web.Models
 		public static List<WorkspaceModel> GetWorkspaceModels(IRSAPIClient context)
 		{
 			GetWorkspacesQuery query = new GetWorkspacesQuery(context);
-			List<Artifact> artifacts = query.ExecuteQuery().QueryArtifacts;
-			List<WorkspaceModel> result = new List<WorkspaceModel>(artifacts.Count);
+			IEnumerable<Result<Workspace>> workspaces = query.ExecuteQuery().Results;
+			List<WorkspaceModel> result = workspaces.Select(
+				workspace => new WorkspaceModel()
+				{
+					DisplayName = String.Format("{0} [Id:{1}]", workspace.Artifact.Name, workspace.Artifact.ArtifactID),
+					Value = workspace.Artifact.ArtifactID
+				}).ToList();
 
-			foreach (var artifact in artifacts)
-			{
-				result.Add(new WorkspaceModel() { DisplayName = String.Format("{0} [Id:{1}]",artifact.Name, artifact.ArtifactID), Value = artifact.ArtifactID} );
-			}
 			return result;
 		}
 	}

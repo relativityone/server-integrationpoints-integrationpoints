@@ -25,17 +25,27 @@ namespace kCura.IntegrationPoints.Data
 					PermissionID = ALLOW_IMPORT_PERMISSION_ID
 				};
 
-				Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(workspaceId, new List<PermissionRef>() {allowImportPermission});
-				List<PermissionValue> permissionValues = permissionValuesTask.Result;
-
-				if (permissionValues == null || !permissionValues.Any())
+				bool userHasImportPermissions = false;
+				try
 				{
-					return false;
-				}
+					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(workspaceId,
+						new List<PermissionRef>() {allowImportPermission});
+					List<PermissionValue> permissionValues = permissionValuesTask.Result;
 
-				PermissionValue allowImportPermissionValue = permissionValues.First();
-				bool userHasImportPermissions = allowImportPermissionValue.Selected &&
-				                                allowImportPermissionValue.PermissionID == ALLOW_IMPORT_PERMISSION_ID;
+					if (permissionValues == null || !permissionValues.Any())
+					{
+						return false;
+					}
+
+					PermissionValue allowImportPermissionValue = permissionValues.First();
+					userHasImportPermissions = allowImportPermissionValue.Selected &&
+												allowImportPermissionValue.PermissionID == ALLOW_IMPORT_PERMISSION_ID;
+				}
+				catch 
+				{
+					// invalid id's will cause the request to except
+					// surpress these errors and do not give the user access	
+				}
 
 				return userHasImportPermissions;
 			}
