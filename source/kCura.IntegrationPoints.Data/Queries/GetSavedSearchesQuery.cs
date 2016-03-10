@@ -1,4 +1,6 @@
-﻿namespace kCura.IntegrationPoints.Data.Queries
+﻿using System.Collections.Generic;
+
+namespace kCura.IntegrationPoints.Data.Queries
 {
 	using System;
 	using kCura.Relativity.Client;
@@ -18,8 +20,19 @@
 		/// <returns>query result contains saved search artifact(s).</returns>
 		public QueryResult ExecuteQuery()
 		{
-			var query = new Query();
-			query.ArtifactTypeID = (Int32)ArtifactType.Search;
+			var query = new Query()
+			{
+				ArtifactTypeID = (Int32)ArtifactType.Search,
+				Sorts = new List<Sort>()
+				{
+					new Sort()
+					{
+						Field = "Name",
+						Direction = SortEnum.Ascending
+					}
+				}
+			};
+
 			return _client.Query(_client.APIOptions, query);
 		}
 	}
