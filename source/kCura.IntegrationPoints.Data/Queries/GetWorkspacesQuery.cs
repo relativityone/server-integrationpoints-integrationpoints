@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
@@ -16,11 +18,21 @@ namespace kCura.IntegrationPoints.Data.Queries
 		/// Get all workspaces
 		/// </summary>
 		/// <returns>query result contains workspace artifact(s).</returns>
-		public QueryResult ExecuteQuery()
+		public QueryResultSet<Workspace> ExecuteQuery()
 		{
-			var query = new Query();
-			query.ArtifactTypeID = (Int32)ArtifactType.Case;
-			return _client.Query(_client.APIOptions, query);
+			var workspaceQuery = new Query<Workspace>
+			{
+				Fields = new List<FieldValue>() { new FieldValue() { Name = "Name"} },
+				Sorts = new List<Sort>() {
+					new Sort()
+					{
+						Field = "Name",
+						Direction = SortEnum.Ascending
+					}
+				}
+			};
+
+			return _client.Repositories.Workspace.Query(workspaceQuery);
 		}
 	}
 }
