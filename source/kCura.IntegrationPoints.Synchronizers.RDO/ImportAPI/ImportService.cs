@@ -104,7 +104,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.Settings.DestinationFolderArtifactID = GetDestinationFolderArtifactId();
 			importJob.Settings.BulkLoadFileFieldDelimiter = Settings.BulkLoadFileFieldDelimiter;
 			importJob.Settings.CopyFilesToDocumentRepository = Settings.CopyFilesToDocumentRepository;
-			importJob.Settings.DestinationFolderArtifactID = Settings.DestinationFolderArtifactID;
 			importJob.Settings.DisableControlNumberCompatibilityMode = Settings.DisableControlNumberCompatibilityMode;
 			importJob.Settings.DisableExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck;
 			importJob.Settings.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation;
