@@ -20,8 +20,11 @@
 
 			client.Received().Query(Arg.Is<APIOptions>(option => option == client.APIOptions),
 				Arg.Is<Query>(query =>
-							query.ArtifactTypeID == (Int32)ArtifactType.Search &&
-							query.Condition == null ));
+							query.ArtifactTypeID == (Int32)ArtifactType.Search 
+							&& query.Condition == null
+							&& query.Sorts.Count == 1
+							&& query.Sorts[0].Field == "Name"
+							&& query.Sorts[0].Direction == SortEnum.Ascending));
 		}
 	}
 }
