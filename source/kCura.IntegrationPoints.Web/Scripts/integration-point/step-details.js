@@ -449,8 +449,6 @@ var IP = IP || {};
 		var settings = $.extend({}, m);
 		var self = this;
 		this.name = ko.observable(settings.name).extend({ required: true });
-		this.overwrite = ko.observableArray([
-			'Append/Overlay', 'Append', 'Overlay Only']);
 		if (typeof settings.logErrors === "undefined") {
 			settings.logErrors = "true";
 		}
@@ -470,6 +468,7 @@ var IP = IP || {};
 			}
 		});
 
+		this.SelectedOverwrite = JSON.parse(settings.destination || "{}").SelectedOverwrite;
 		this.CustodianManagerFieldContainsLink = JSON.parse(settings.destination || "{}").CustodianManagerFieldContainsLink;
 		this.UseFolderPathInformation = JSON.parse(settings.destination || "{}").UseFolderPathInformation;
 		this.FolderPathSourceField = JSON.parse(settings.destination || "{}").FolderPathSourceField;
@@ -477,7 +476,6 @@ var IP = IP || {};
 		this.ExtractedTextFileEncoding = JSON.parse(settings.destination || "{}").ExtractedTextFileEncoding;
 		this.importNativeFile = JSON.parse(settings.destination || "{}").importNativeFile;
 
-		this.selectedOverwrite = ko.observable(settings.selectedOverwrite);
 		this.scheduler = new Scheduler(settings.scheduler);
 		this.submit = function () {
 			this.showErrors(true);
@@ -515,7 +513,6 @@ var IP = IP || {};
 			if (this.model.errors().length === 0) {
 				this.model.destination = JSON.stringify({
 					artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,
-					ImportOverwriteMode: ko.toJS(this.model.selectedOverwrite).replace('/', '').replace(' ', ''),
 					CaseArtifactId: IP.data.params['appID'],
 					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
 				});
