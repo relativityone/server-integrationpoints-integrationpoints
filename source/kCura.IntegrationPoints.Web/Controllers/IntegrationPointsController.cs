@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			var tabID = _tabService.GetTabId(objectTypeId);
 			var objectID = _rdoQuery.GetObjectType(objectTypeId).ParentArtifact.ArtifactID;
 			var previousURL = "List.aspx?AppID=" + SessionService.WorkspaceID + "&ArtifactID=" + objectID + "&ArtifactTypeID=" + objectTypeId + "&SelectedTab=" + tabID;
-			if (_permissionService.userCanImport(SessionService.WorkspaceUserID))
+			if (_permissionService.UserCanImport(SessionService.WorkspaceUserID))
 			{
 				return View(new EditPoint
 				{

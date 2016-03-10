@@ -1,4 +1,6 @@
-﻿using kCura.IntegrationPoints.Data;
+﻿using System.Runtime.InteropServices;
+using kCura.IntegrationPoints.Data;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers
 {
@@ -9,6 +11,11 @@ namespace kCura.IntegrationPoints.EventHandlers
 		{
 			return _workspaceDbContext ??
 			       (_workspaceDbContext = new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID())));
+		}
+
+		public IServicesMgr GetServicesMgr
+		{
+			get { return base.Helper.GetServicesManager(); }
 		}
 	}
 }
