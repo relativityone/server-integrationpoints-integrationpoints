@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Data
 	public class PermissionService : IPermissionService
 	{
 		private readonly IServicesMgr _servicesMgr;
-		private const int ALLOW_IMPORT_PERMISSION_ID = 158;
+		private const int _ALLOW_IMPORT_PERMISSION_ID = 158; // 158 is the artifact id of the "Allow Import" permission
 
 		public PermissionService(IServicesMgr servicesMgr)
 		{
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Data
 			{
 				var allowImportPermission = new PermissionRef()
 				{
-					PermissionID = ALLOW_IMPORT_PERMISSION_ID
+					PermissionID = _ALLOW_IMPORT_PERMISSION_ID
 				};
 
 				bool userHasImportPermissions = false;
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Data
 
 					PermissionValue allowImportPermissionValue = permissionValues.First();
 					userHasImportPermissions = allowImportPermissionValue.Selected &&
-												allowImportPermissionValue.PermissionID == ALLOW_IMPORT_PERMISSION_ID;
+												allowImportPermissionValue.PermissionID == _ALLOW_IMPORT_PERMISSION_ID;
 				}
 				catch 
 				{
