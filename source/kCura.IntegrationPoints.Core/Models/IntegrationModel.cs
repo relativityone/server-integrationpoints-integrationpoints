@@ -133,6 +133,7 @@ namespace kCura.IntegrationPoints.Core.Models
 
 			return point;
 		}
+
 		public IntegrationModel(IntegrationPoint ip)
 		{
 			this.ArtifactID = ip.ArtifactId;
