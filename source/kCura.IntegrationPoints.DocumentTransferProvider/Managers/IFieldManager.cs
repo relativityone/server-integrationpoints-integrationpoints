@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers
@@ -10,7 +11,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers
 		/// </summary>
 		/// <param name="rdoTypeId">The artifact id of the rdo's type</param>
 		/// <returns>An array of ArtifactFieldDTO for the rdo</returns>
-		ArtifactFieldDTO[] RetrieveLongTextFields(int rdoTypeId);
+		Task<ArtifactFieldDTO[]> RetrieveLongTextFieldsAsync(int rdoTypeId);
 
 		/// <summary>
 		/// Retrieves fields for an rdo
@@ -18,6 +19,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers
 		/// <param name="rdoTypeId">The artifact id of the rdo's type</param>
 		/// <param name="fieldFieldsNames">The names of the fields to retrieve for the field artifact</param>
 		/// <returns>An array of ArtifactDTO with populated fields for the given rdo type</returns>
-		ArtifactDTO[] RetrieveFields(int rdoTypeId, HashSet<string> fieldFieldsNames);
+		Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, HashSet<string> fieldFieldsNames);
 	}
 }

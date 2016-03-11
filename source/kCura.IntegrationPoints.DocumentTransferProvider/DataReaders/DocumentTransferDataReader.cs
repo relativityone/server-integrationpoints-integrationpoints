@@ -73,9 +73,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 			HashSet<int> requestedFieldIds = new HashSet<int>(filteredFields.Select(x => Convert.ToInt32(x.FieldIdentifier)));
 
-			ArtifactDTO[] results = _documentManager.RetrieveDocuments(
+			ArtifactDTO[] results = _documentManager.RetrieveDocumentsAsync(
 				_documentArtifactIds,
-				requestedFieldIds);
+				requestedFieldIds).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			_queryWasRun = true;
 

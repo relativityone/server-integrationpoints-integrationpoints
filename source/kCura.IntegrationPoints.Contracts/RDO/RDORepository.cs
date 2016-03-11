@@ -18,17 +18,14 @@ namespace kCura.IntegrationPoints.Contracts.RDO
 
 		public async Task<ObjectQueryResutSet> RetrieveAsync(Query query, string queryToken, int startIndex = 1, int pageSize = 1000)
 		{
-			Task<ObjectQueryResutSet> resultSet = _objectQueryManager.QueryAsync(
-				_workspaceId, 
-				_artifactTypeId, 
-				query, 
-				startIndex, 
-				pageSize, 
-				new int[] { (int)ObjectQueryPermissions.View }, 
+			return await _objectQueryManager.QueryAsync(
+				_workspaceId,
+				_artifactTypeId,
+				query,
+				startIndex,
+				pageSize,
+				new int[] {(int) ObjectQueryPermissions.View},
 				queryToken);
-
-
-			return await resultSet;
 		}
 
 		private enum ObjectQueryPermissions
