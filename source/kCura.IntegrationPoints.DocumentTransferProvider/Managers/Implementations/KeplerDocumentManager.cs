@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 using Relativity.Services.ObjectQuery;
@@ -16,7 +17,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 			_rdoRepository = rdoRepository;
 		}
 
-		public ArtifactDTO RetrieveDocument(int documentId, ICollection<int> fieldIds)
+		public async Task<ArtifactDTO> RetrieveDocumentAsync(int documentId, ICollection<int> fieldIds)
 		{
 			var documentsQuery = new Query()
 			{
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 				TruncateTextFields = false
 			};
 
-			ObjectQueryResutSet resultSet = _rdoRepository.RetrieveAsync(documentsQuery, String.Empty).Result;
+			ObjectQueryResutSet resultSet = await _rdoRepository.RetrieveAsync(documentsQuery, String.Empty);
 
 			if (resultSet != null && resultSet.Success)
 			{
@@ -47,7 +48,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 			throw new Exception(resultSet.Message);
 		}
 
-		public ArtifactDTO[] RetrieveDocuments(IEnumerable<int> documentIds, HashSet<int> fieldIds)
+		public async Task<ArtifactDTO[]> RetrieveDocumentsAsync(IEnumerable<int> documentIds, HashSet<int> fieldIds)
 		{
 			var documentsQuery = new Query()
 			{
@@ -60,7 +61,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 				TruncateTextFields = false
 			};
 
-			ObjectQueryResutSet resultSet = _rdoRepository.RetrieveAsync(documentsQuery, String.Empty).Result;
+			ObjectQueryResutSet resultSet = await _rdoRepository.RetrieveAsync(documentsQuery, String.Empty);
 
 			if (resultSet != null && resultSet.Success)
 			{

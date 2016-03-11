@@ -64,13 +64,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -87,7 +87,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Assert
 			Assert.IsTrue(result, "There are records to read, result should be true");
 			Assert.IsFalse(_instance.IsClosed, "The reader should be open");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void Read_FirstRead_RunsSavedSearch_NoResults_ReturnsFalse()
 		{
 			// Arrange	
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[0]);
@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Assert
 			Assert.IsFalse(result, "There are no records to read, result should be false");
 			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void Read_FirstRead_RunsSavedSearch_RequestFailsWithException_ReturnsFalse()
 		{
 			// Arrange	
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Throws(new Exception());
@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			int[] documentIds = { 123, 345 };
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns(new ArtifactDTO[]
@@ -171,7 +171,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			Assert.IsTrue(result2, "There are records to read, result should be true");
 			Assert.IsFalse(result3, "There are no records to read, result should be false");
 			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			int[] documentIds = { 123, 345 };
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns(new ArtifactDTO[]
@@ -205,7 +205,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			Assert.IsTrue(result1, "There are records to read, result should be true");
 			Assert.IsFalse(result2, "There are no records to read, result should be false");
 			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -214,7 +214,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void Read_NoFields_DoesNotFail()
 		{
 			// Arrange	
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 					.Returns(_templateArtifactDtos);
@@ -229,7 +229,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			bool result = _instance.Read();
 
 			// Assert
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())));
 		}
@@ -248,7 +248,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			bool result = _instance.Read();
 
 			// Assert
-			_documentManager.Received(0).RetrieveDocuments(
+			_documentManager.Received(0).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())));
 		}
@@ -267,7 +267,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			bool result = _instance.Read();
 
 			// Assert
-			_documentManager.Received(0).RetrieveDocuments(
+			_documentManager.Received(0).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())));
 		}
@@ -280,13 +280,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -304,7 +304,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Assert
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
 			Assert.IsFalse(isDbNull, "The result should not be DBNull");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -314,13 +314,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -337,7 +337,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Assert
 			Assert.AreEqual(result, typeof(string), "The types should match" );
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -347,13 +347,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -510,13 +510,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -540,7 +540,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Assert
 			Assert.AreEqual(_CONTROL_NUMBER, result.ToString(), "The result should be correct");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -550,13 +550,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -573,7 +573,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Assert
 			Assert.AreEqual(_CONTROL_NUMBER, result.ToString(), "The result should be correct");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -617,13 +617,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -646,7 +646,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			}
 
 			Assert.IsFalse(exceptionThrown, "Dispose() should not except");
-			_documentManager.Received(0).RetrieveDocuments(
+			_documentManager.Received(0).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -656,13 +656,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -686,7 +686,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			}
 
 			Assert.IsFalse(exceptionThrown, "Dispose() should not except");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -696,13 +696,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -720,7 +720,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Assert
 			Assert.IsTrue(isClosed, "The reader should be closed");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -730,13 +730,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -754,7 +754,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Assert
 			Assert.IsFalse(result, "The reader should be closed");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -764,13 +764,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -787,7 +787,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			_instance.Read();
 
 			// Assert
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -797,13 +797,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -834,7 +834,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Assert
 			Assert.IsTrue(correctExceptionThrown, "Reading after running Close() should nullify the current result");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -930,13 +930,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -953,7 +953,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Arrange
 			Assert.AreEqual(_CONTROL_NUMBER, result, "The result should be correct");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -963,14 +963,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			Int64 value = Int64.MaxValue;
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
@@ -1001,7 +1001,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Arrange
 			Assert.AreEqual(value, result, "The result should be correct");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -1011,14 +1011,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			Int16 value = Int16.MaxValue;
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
@@ -1049,7 +1049,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Arrange
 			Assert.AreEqual(value, result, "The result should be correct");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -1059,14 +1059,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			Int32 value = Int32.MaxValue;
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
@@ -1097,7 +1097,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Arrange
 			Assert.AreEqual(value, result, "The result should be correct");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -1106,14 +1106,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void GetGuid_GoldFlow()
 		{
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			Guid value = Guid.NewGuid();
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
@@ -1144,7 +1144,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Arrange
 			Assert.AreEqual(value, result, "The result should be correct");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -1154,14 +1154,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			float value = float.MaxValue;
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
@@ -1192,7 +1192,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Arrange
 			Assert.AreEqual(value, result, "The result should be correct");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -1202,14 +1202,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			double value = double.MaxValue;
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
@@ -1240,7 +1240,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Arrange
 			Assert.AreEqual(value, result, "The result should be correct");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -1250,14 +1250,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			decimal value = decimal.MaxValue;
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
@@ -1288,7 +1288,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Arrange
 			Assert.AreEqual(value, result, "The result should be correct");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -1298,14 +1298,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			DateTime value = DateTime.Now;
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
@@ -1336,7 +1336,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Arrange
 			Assert.AreEqual(value, result, "The result should be correct");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -1346,14 +1346,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			char value = 'a';
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
@@ -1384,7 +1384,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Arrange
 			Assert.AreEqual(value, result, "The result should be correct");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -1394,14 +1394,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			byte value = 1;
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
@@ -1432,7 +1432,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Arrange
 			Assert.AreEqual(value, result, "The result should be correct");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -1442,14 +1442,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			// Arrange	
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
 				.Returns<ArtifactDTO>(_templateArtifactDto);
 
 			bool value = false;
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(new ArtifactDTO[]
@@ -1480,7 +1480,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Arrange
 			Assert.AreEqual(value, result, "The result should be correct");
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -1509,13 +1509,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				});
 
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<int[]>(x => x[0] == longTextFieldIdentifier)))
 				.Returns<ArtifactDTO>(artifactDtoOnlyLongTextField);
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -1536,10 +1536,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange
 			Assert.AreEqual(longTextFieldValue, result as string, "The result should be correct");
 
-			_documentManager.Received(1).RetrieveDocument(
+			_documentManager.Received(1).RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<int[]>(x => x[0] == longTextFieldIdentifier)));
-			_documentManager.Received(1).RetrieveDocuments(
+			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
 		}
@@ -1564,13 +1564,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			ArtifactDTO[] artifactDtos = { artifactDto };
 
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Contains(longTextField.ArtifactId))))
 				.ReturnsNull();
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
@@ -1613,13 +1613,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			ArtifactDTO[] artifactDtos = { artifactDto };
 
 			// for retrieving long text field values (per doc)
-			_documentManager.RetrieveDocument(
+			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Contains(longTextField.ArtifactId))))
 				.Throws(new Exception());
 
 			// for retrieving all the documents
-			_documentManager.RetrieveDocuments(
+			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);

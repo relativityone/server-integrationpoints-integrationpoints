@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers
@@ -11,7 +12,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers
 		/// <param name="documentId">The artifact id of the document to retrieve</param>
 		/// <param name="fieldIds">The artifact Ids of the fields to retrieve</param>
 		/// <returns>An ArtifactDTO for the document</returns>
-		ArtifactDTO RetrieveDocument(int documentId, ICollection<int> fieldIds);
+		Task<ArtifactDTO> RetrieveDocumentAsync(int documentId, ICollection<int> fieldIds);
 
 		/// <summary>
 		/// Retrieves multiple documents
@@ -19,6 +20,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers
 		/// <param name="documentIds">The artifact ids of the documents to retrieve</param>
 		/// <param name="fieldIds">The artifact Ids of the fields to retrieve</param>
 		/// <returns>An array of document ArtifactDTOs</returns>
-		ArtifactDTO[] RetrieveDocuments(IEnumerable<int> documentIds, HashSet<int> fieldIds);
+		Task<ArtifactDTO[]> RetrieveDocumentsAsync(IEnumerable<int> documentIds, HashSet<int> fieldIds);
 	}
 }
