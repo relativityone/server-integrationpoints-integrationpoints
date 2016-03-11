@@ -15,7 +15,7 @@ start
 partition InitializeNewAppDomain {
 	:Resolve assemblies;
 	:Run Bootstrapper;
-	:Retrieved, unencrypt, and set marshalled data;
+	:Retrieve, deserialize, unencrypt, and set marshalled data;
 }
 partition GetProvider {
 	:Set up Castle.Windsor;

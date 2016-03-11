@@ -36,10 +36,12 @@ partition RaiseJobPostExecute {
     :Set the JobHistory.TotalItems;
     if (No batches were created) then (true)
         if (Any errors occurred) then (true)
-            :Set JobHistory.Status == "Error - job failed";
+            :Set JobHistory.Status = "Error - job failed";
         else (false)
-            :Set JobHistory.Status == "Completed";
+            :Set JobHistory.Status = "Completed";
         endif
+	else (false)
+		:Set JobHistory.Status = "Completed";
     endif
 }
 stop

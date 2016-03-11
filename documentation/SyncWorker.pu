@@ -16,7 +16,7 @@ if (SourceProvider is set) then (true)
 			:GetDataProvider|
             :SourceProvider.GetData();
             :Create Synchronizer;
-            :Set up statistics and JobHistorError subscriptions;
+            :Set up statistics and JobHistoryError subscriptions;
             
             if (SourceProvider.Config.GetDataProvideAllFieldsRequired) then (true)
                 :dataSynchronizer.SyncData();
