@@ -68,12 +68,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		private Task<FieldValue> LoadLongTextFieldsValues(int documentArtifactId)
 		{
-			return Task.Run(() =>
+			return Task.Run(async () =>
 			{
 				ArtifactDTO document = null;
 				try
 				{
-					document = _documentManager.RetrieveDocument(documentArtifactId, _fieldsToQuery);
+					document = await _documentManager.RetrieveDocumentAsync(documentArtifactId, _fieldsToQuery);
 				}
 				catch (Exception e)
 				{
