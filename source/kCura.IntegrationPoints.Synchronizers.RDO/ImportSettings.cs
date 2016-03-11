@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			MultiValueDelimiter = Convert.ToChar(";");
 			ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles;
 			NestedValueDelimiter = Convert.ToChar("\\");
-			ImportOverwriteMode = ImportOverwriteModeEnum.Append;
+			ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly;
 			ImportOverlayBehavior = ImportOverlayBehaviorEnum.UseRelativityDefaults;
 		}
 		#endregion
