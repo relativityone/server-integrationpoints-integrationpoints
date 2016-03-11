@@ -71,14 +71,31 @@
 </script>
 
 <script type="text/html" id="ldapDestinationConfig">
-	<div class="field-row">
-		<div class="field-label required">
-			Destination RDO:
-		</div>
-		<div class="field-value">
-			<select id="destinationRdo" data-bind="options: rdoTypes, optionsText: 'displayName', optionsValue: 'value', value: artifactTypeID, optionsCaption: 'Select...', select2: {}"></select>
-		</div>
-	</div>
+    <div class="field-row">
+        <div class="field-label required">
+            Destination Provider:
+        </div>
+        <div class="field-value">
+            <select id="destinationProviderType" data-bind="options: destinationTypes, optionsText: 'displayName', optionsValue: 'displayName', value: selectedDestinationType, optionsCaption: 'Select Destination...', select2: {}"></select>
+        </div>
+    </div>
+    <div class="field-row" data-bind="visible: selectedDestinationType() == 'Fileshare' ">
+        <div class="field-label required">
+           Fileshare:
+        </div>
+        <div class="field-value">
+           <input data-bind="value: selectedDestinationPath" />
+        </div>
+    </div>
+
+    <div class="field-row" > @* data-bind="visible: selectedDestinationType() == 'Relativity' ">*@
+        <div class="field-label required">
+            Destination RDO:
+        </div>
+        <div class="field-value">
+            <select id="destinationRdo" data-bind="options: rdoTypes, optionsText: 'displayName', optionsValue: 'value', value: artifactTypeID, optionsCaption: 'Select...', select2: {}"></select>
+        </div>
+    </div>
 </script>
 
 <script type="text/html" id="schedulingConfig">

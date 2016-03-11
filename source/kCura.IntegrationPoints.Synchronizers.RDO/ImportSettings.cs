@@ -43,6 +43,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public int CaseArtifactId { get; set; }
 		public bool CopyFilesToDocumentRepository { get; set; }
 		public int DestinationFolderArtifactID { get; set; }
+		public string DestinationProviderType { get; set; }
+		public string Fileshare { get; set; }
 		public bool? DisableExtractedTextEncodingCheck { get; set; }
 		public bool DisableUserSecurityCheck { get; set; }
 

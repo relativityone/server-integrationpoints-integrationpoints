@@ -172,10 +172,48 @@ var IP = IP || {};
 
 		});
 
+		
+
 		this.templateID = 'ldapDestinationConfig';
 		this.rdoTypes = ko.observableArray();
 
-		self.artifactTypeID = ko.observable().extend({ required: true });
+	   
+
+		this.destinationTypes = ko.observableArray([
+           new Choice("Relativity", 0),
+           new Choice("Fileshare", 1)
+		]);
+
+		this.selectedDestinationType = ko.observable().extend({ required: true });
+		$.each(self.destinationTypes(), function () {
+
+		    if (this.displayName === settings.destinationProviderType) {
+		        self.selectedDestinationType(settings.destinationProviderType);
+		    }
+		});
+
+		this.isEnabled =function (type) {
+		    return self.selectedDestinationType() === type;
+		};
+		this.selectedDestinationPath = ko.observable(settings.fileshare).extend({
+		    required: {
+		        onlyIf: function () {
+		            return self.isEnabled("Fileshare");
+		        }
+		    }
+		});
+
+		//this.selectedDestinationType.subscribe(function (selectedValue) {
+		//    this.selectedDestinationPath = selectedValue;
+		//});
+		this.artifactTypeID = ko.observable().extend({ required: true });
+        //    .extend({
+		//    required: {
+		//        onlyIf: function () {
+		//            return self.isEnabled("Relativity");
+		//        }
+		//    }
+		//});
 		//CaseArtifactId
 		//ParentObjectIdSourceFieldName
 	};
@@ -487,7 +525,9 @@ var IP = IP || {};
 			this.model.submit();
 			if (this.model.errors().length === 0) {
 				this.model.destination = JSON.stringify({
-					artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,
+				    artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,	
+			        destinationProviderType: ko.toJS(this.model.destination).selectedDestinationType,
+			        fileshare: ko.toJS(this.model.destination).selectedDestinationPath,
 					ImportOverwriteMode: ko.toJS(this.model.selectedOverwrite).replace('/', '').replace(' ', ''),
 					CaseArtifactId: IP.data.params['appID'],
 					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
