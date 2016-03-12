@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Domain;
 using kCura.IntegrationPoints.Core.Services.Marshaller;
 using Relativity.API;
 using Relativity.APIHelper;
+using Relativity.Authentication.Interfaces;
 
 namespace kCura.IntegrationPoints.Contracts
 {

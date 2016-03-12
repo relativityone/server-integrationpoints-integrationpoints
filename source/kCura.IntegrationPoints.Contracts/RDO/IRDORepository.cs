@@ -5,6 +5,6 @@ namespace kCura.IntegrationPoints.Contracts.RDO
 {
 	public interface IRDORepository
 	{
-		Task<ObjectQueryResutSet> RetrieveAsync(Query query, string queryToken, int startIndex = 1, int pageSize = 1000);
+		Task<ObjectQueryResultSet> RetrieveAsync(Query query, string queryToken, int startIndex = 1, int pageSize = 1000);
 	}
 }

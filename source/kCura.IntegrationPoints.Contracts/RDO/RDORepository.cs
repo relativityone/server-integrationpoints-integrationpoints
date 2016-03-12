@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Contracts.RDO
 			_artifactTypeId = artifactTypeId;
 		}
 
-		public async Task<ObjectQueryResutSet> RetrieveAsync(Query query, string queryToken, int startIndex = 1, int pageSize = 1000)
+		public async Task<ObjectQueryResultSet> RetrieveAsync(Query query, string queryToken, int startIndex = 1, int pageSize = 1000)
 		{
 			return await _objectQueryManager.QueryAsync(
 				_workspaceId,

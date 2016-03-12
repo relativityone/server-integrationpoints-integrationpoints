@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 				TruncateTextFields = false
 			};
 
-			ObjectQueryResutSet resultSet = await _rdoRepository.RetrieveAsync(documentsQuery, String.Empty);
+			ObjectQueryResultSet resultSet = await _rdoRepository.RetrieveAsync(documentsQuery, String.Empty);
 
 			if (resultSet != null && resultSet.Success)
 			{
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 				TruncateTextFields = false
 			};
 
-			ObjectQueryResutSet resultSet = await _rdoRepository.RetrieveAsync(documentsQuery, String.Empty);
+			ObjectQueryResultSet resultSet = await _rdoRepository.RetrieveAsync(documentsQuery, String.Empty);
 
 			if (resultSet != null && resultSet.Success)
 			{
