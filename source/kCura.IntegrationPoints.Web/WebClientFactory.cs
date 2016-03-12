@@ -39,5 +39,10 @@ namespace kCura.IntegrationPoints.Web
 		{
 			return _factory.CreateDbContext(WorkspaceID);
 		}
+
+		public IServicesMgr CreateServicesMgr()
+		{
+			return _factory.CreateServicesMgr();
+		}
 	}
 }

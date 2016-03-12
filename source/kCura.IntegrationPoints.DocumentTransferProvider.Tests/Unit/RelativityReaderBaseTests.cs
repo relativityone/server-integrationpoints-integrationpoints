@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
-using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
+using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
+using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
+using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 {
@@ -13,40 +17,25 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 	public class RelativityReaderBaseTests
 	{
 		private const string _TOKEN_FOR_MORE = "There are some more things to get";
-		private IRelativityClientAdaptor _adaptor;
 
 		[SetUp]
 		public void Setup()
 		{
-			_adaptor = Substitute.For<IRelativityClientAdaptor>();
 		}
 
-		protected QueryResultSet<Document> ExecuteQueryToGetInitialResult()
+		protected ArtifactDTO[] ExecuteQueryToGetInitialResult()
 		{
-			return new QueryResultSet<Document>()
+			return new ArtifactDTO []
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>()
-					{
-						Artifact = new Document(1)
-					},
-					new Result<Document>()
-					{
-						Artifact = new Document(2)
-					}
-				},
-				Message = "lol",
-				QueryToken = _TOKEN_FOR_MORE,
-				TotalCount = 3
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(10,10, new ArtifactFieldDTO[0]),
 			};
 		}
 
 		[Test]
 		public void ReadDocumentCounterGetUpdated()
 		{
-			MockRelativityReaderBase instance = new MockRelativityReaderBase(_adaptor, ExecuteQueryToGetInitialResult());
+			MockRelativityReaderBase instance = new MockRelativityReaderBase(ExecuteQueryToGetInitialResult, () => true);
 			Assert.AreEqual(0, instance.Counter);
 
 			instance.Read();
@@ -58,24 +47,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void ReadDocumentsUntilTheEnd_FetchMoreData()
 		{
-			MockRelativityReaderBase instance = new MockRelativityReaderBase(_adaptor, ExecuteQueryToGetInitialResult());
-
-			var newResult = new QueryResultSet<Document>()
-			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>()
-					{
-						Artifact = new Document(3)
-					}
-				},
-				Message = "lol",
-				QueryToken = String.Empty,
-				TotalCount = 3
-			};
-
-			_adaptor.ExecuteSubSetOfDocumentQuery(_TOKEN_FOR_MORE, 2, Shared.Constants.QUERY_BATCH_SIZE).Returns(newResult);
+			MockRelativityReaderBase instance = new MockRelativityReaderBase(ExecuteQueryToGetInitialResult, () => false);
 
 			Assert.AreEqual(true, instance.Read());
 			Assert.AreEqual(true, instance.Read());
@@ -87,7 +59,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void ReadDocumentsUntilTheEnd_NoMoreData_TheReaderClose()
 		{
-			MockRelativityReaderBase instance = new MockRelativityReaderBase(_adaptor, ExecuteQueryToGetInitialResult());
+			MockRelativityReaderBase instance = new MockRelativityReaderBase(ExecuteQueryToGetInitialResult, () => true);
 
 			Assert.AreEqual(true, instance.Read());
 			Assert.AreEqual(true, instance.Read());
@@ -98,25 +70,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void ReadDocumentsUntilTheEnd_FetchMoreDataAndReadToEnd()
 		{
-			MockRelativityReaderBase instance = new MockRelativityReaderBase(_adaptor, ExecuteQueryToGetInitialResult());
-
-			var newResult = new QueryResultSet<Document>()
+			int fetchCount = 0;
+			MockRelativityReaderBase instance = new MockRelativityReaderBase(ExecuteQueryToGetInitialResult, () =>
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>()
-					{
-						Artifact = new Document(3)
-					}
-				},
-				Message = "lol",
-				QueryToken = String.Empty,
-				TotalCount = 3
-			};
+				fetchCount++;
+				return fetchCount > 1;
+			});
 
-			_adaptor.ExecuteSubSetOfDocumentQuery(_TOKEN_FOR_MORE, 2, Shared.Constants.QUERY_BATCH_SIZE).Returns(newResult);
-
+			Assert.AreEqual(true, instance.Read());
 			Assert.AreEqual(true, instance.Read());
 			Assert.AreEqual(true, instance.Read());
 			Assert.AreEqual(true, instance.Read());
@@ -127,18 +88,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void ReadDocumentsUntilTheEnd_FetchMoreDataFail()
 		{
-			MockRelativityReaderBase instance = new MockRelativityReaderBase(_adaptor, ExecuteQueryToGetInitialResult());
-
-			var newResult = new QueryResultSet<Document>()
-			{
-				Success = false,
-				Results = null,
-				Message = "lol",
-				QueryToken = String.Empty,
-				TotalCount = 3
-			};
-
-			_adaptor.ExecuteSubSetOfDocumentQuery(_TOKEN_FOR_MORE, 2, Shared.Constants.QUERY_BATCH_SIZE).Returns(newResult);
+			int fetchCount = 0;
+			MockRelativityReaderBase instance = new MockRelativityReaderBase(
+				() => fetchCount == 0 ? this.ExecuteQueryToGetInitialResult() : null, 
+				() => true);
 
 			Assert.AreEqual(true, instance.Read());
 			Assert.AreEqual(true, instance.Read());
@@ -149,12 +102,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 		private class MockRelativityReaderBase : RelativityReaderBase
 		{
-			private readonly QueryResultSet<Document> _initialResult;
+			private readonly Func<ArtifactDTO[]> _fetchFunction;
+			private readonly Func<bool> _allArtifactsFetchedFunc;
 
-			public MockRelativityReaderBase(IRelativityClientAdaptor relativityClient, QueryResultSet<Document> initialResult)
-				: base(relativityClient, new[] { new DataColumn("Testing") })
+			public MockRelativityReaderBase(Func<ArtifactDTO[]> fetchFunction, Func<bool> allArtifactsFetchedFunc)
+				: base(new[] { new DataColumn("Testing")})
 			{
-				_initialResult = initialResult;
+				_fetchFunction = fetchFunction;
+				_allArtifactsFetchedFunc = allArtifactsFetchedFunc;
 			}
 
 			public int Counter { get { return ReadEntriesCount; } }
@@ -189,9 +144,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				throw new NotImplementedException();
 			}
 
-			protected override QueryResultSet<Document> ExecuteQueryToGetInitialResult()
+			protected override ArtifactDTO[] FetchArtifactDTOs()
 			{
-				return _initialResult;
+				return _fetchFunction.Invoke();
+			}
+
+			protected override bool AllArtifactsFetched()
+			{
+				return _allArtifactsFetchedFunc.Invoke();
 			}
 		}
 	}

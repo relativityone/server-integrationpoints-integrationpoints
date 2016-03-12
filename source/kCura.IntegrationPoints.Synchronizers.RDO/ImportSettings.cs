@@ -48,8 +48,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		[JsonIgnore]
 		public Encoding ExtractedTextEncoding { get { return Encoding.GetEncoding(ExtractedTextFileEncoding); } }
-
 		public String ExtractedTextFileEncoding { get; set; }
+
+		/// <summary>
+		/// indicates user preferences of importing native files.
+		/// </summary>
+		public bool ImportNativeFile { get; set; }
 
 		public bool ExtractedTextFieldContainsFilePath { get; set; }
 		public int IdentityFieldId { get; set; }

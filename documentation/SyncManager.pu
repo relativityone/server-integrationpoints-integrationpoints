@@ -1,0 +1,49 @@
+@startuml
+
+title RIP Agent Workflow - SyncManager
+
+
+start
+
+partition JobPreExecute {
+    :Retrieve IP RDO;
+    if (No Source Provider) then (true)
+        :Throw Exception;
+    else (false)
+        partition CreateJobHistoryRDO {
+            if (Job submitted from console) then (true)
+                :Use already created JobHistory RDO; 
+            else (false)
+                :Create a new JobHistory RDO instance with Status = "Pending";
+            endif
+        }
+    endif
+}
+
+partition GetUnbatchedIDs {
+    :Get Data Provider RDO;
+    :GetDataProvider|
+    :GetBatchableIds;
+}
+
+:Create SyncWorker jobs in batches;
+
+partition RaiseJobPostExecute {
+    if (Job is a scheduled job) then (true)
+        :Set next run date for IntegrationPoint;
+    endif
+    
+    :Set the JobHistory.TotalItems;
+    if (No batches were created) then (true)
+        if (Any errors occurred) then (true)
+            :Set JobHistory.Status = "Error - job failed";
+        else (false)
+            :Set JobHistory.Status = "Completed";
+        endif
+	else (false)
+		:Set JobHistory.Status = "Completed";
+    endif
+}
+stop
+
+@enduml

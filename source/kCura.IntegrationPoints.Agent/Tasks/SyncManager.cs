@@ -12,10 +12,8 @@ using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Provider;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -181,7 +179,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				if (!this.JobHistory.StartTimeUTC.HasValue)
 				{
 					this.JobHistory.StartTimeUTC = DateTime.UtcNow;
-					//TODO: jobHistory.JobStatus = "";
+					//TODO: jobHistory.Status = "";
 					_jobHistoryService.UpdateRdo(this.JobHistory);
 				}
 			}
@@ -195,7 +193,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		private void JobPostExecute(Job job, TaskResult taskResult)
+		private void JobPostExecute(Job job, TaskResult taskResult, int items)
 		{
 			try
 			{
@@ -207,14 +205,22 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPoint);
 
-				if (BatchJobCount == 0 && this.JobHistory != null)
+				if (this.JobHistory != null)
 				{
-					//no worker jobs were submitted
-					this.JobHistory.EndTimeUTC = DateTime.UtcNow;
-					if (_errorOccurred)
+					this.JobHistory.TotalItems = items;
+					if (BatchJobCount == 0)
 					{
-						this.JobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
-						_errorOccurred = false;
+						//no worker jobs were submitted
+						this.JobHistory.EndTimeUTC = DateTime.UtcNow;
+						if (_errorOccurred)
+						{
+							this.JobHistory.Status = JobStatusChoices.JobHistoryErrorJobFailed;
+							_errorOccurred = false;
+						}
+						else
+						{
+							this.JobHistory.Status = JobStatusChoices.JobHistoryCompleted;
+						}
 					}
 					_caseServiceContext.RsapiService.JobHistoryLibrary.Update(this.JobHistory);
 				}

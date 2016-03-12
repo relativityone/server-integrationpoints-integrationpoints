@@ -1,35 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
+﻿using System.Collections.Generic;
 using System.Linq;
-using kCura.Relativity.Client.DTOs;
+using System.Threading.Tasks;
+using Relativity.API;
+using Relativity.Services.Permission;
 
 namespace kCura.IntegrationPoints.Data
 {
 	public class PermissionService : IPermissionService
 	{
-		private readonly IWorkspaceDBContext _context;
-		public PermissionService(IWorkspaceDBContext context)
+		private readonly IServicesMgr _servicesMgr;
+		private const int _ALLOW_IMPORT_PERMISSION_ID = 158; // 158 is the artifact id of the "Allow Import" permission
+
+		public PermissionService(IServicesMgr servicesMgr)
 		{
-			_context = context;
+			_servicesMgr = servicesMgr;
 		}
 
-
-		public bool userCanImport(int userId)
+		public bool UserCanImport(int workspaceId)
 		{
-			var sql = Resources.Resource.CheckImportPermission;
-			var param = new SqlParameter("@userID", userId);
-			var result = _context.ExecuteSqlStatementAsDataTable(sql, new List<SqlParameter> { param });
-			if (result != null && result.Rows != null)
+			using (IPermissionManager proxy = _servicesMgr.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
 			{
-				var user = result.Rows.Cast<DataRow>().Select(x => x.Field<int>("UserArtifactID")).FirstOrDefault();
-				if (user > 0)
+				var allowImportPermission = new PermissionRef()
 				{
-					return true;
+					PermissionID = _ALLOW_IMPORT_PERMISSION_ID
+				};
+
+				bool userHasImportPermissions = false;
+				try
+				{
+					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(workspaceId,
+						new List<PermissionRef>() {allowImportPermission});
+					List<PermissionValue> permissionValues = permissionValuesTask.Result;
+
+					if (permissionValues == null || !permissionValues.Any())
+					{
+						return false;
+					}
+
+					PermissionValue allowImportPermissionValue = permissionValues.First();
+					userHasImportPermissions = allowImportPermissionValue.Selected &&
+												allowImportPermissionValue.PermissionID == _ALLOW_IMPORT_PERMISSION_ID;
 				}
+				catch 
+				{
+					// invalid id's will cause the request to except
+					// surpress these errors and do not give the user access	
+				}
+
+				return userHasImportPermissions;
 			}
-			return false;
 		}
 
 	}

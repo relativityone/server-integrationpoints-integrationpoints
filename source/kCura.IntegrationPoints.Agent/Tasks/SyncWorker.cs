@@ -79,6 +79,23 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ExecuteTask(job);
 		}
 
+		private SourceProvider _sourceProvider;
+		protected Data.SourceProvider SourceProvider
+		{
+			get
+			{
+				if (this.IntegrationPoint == null)
+				{
+					throw new ArgumentException("Integration Point Rdo has yet to be retrieved.");
+				}
+				if (_sourceProvider == null)
+				{
+					_sourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
+				}
+				return _sourceProvider;
+			}
+		}
+
 		internal virtual void ExecuteTask(Job job)
 		{
 			try
@@ -101,12 +118,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					throw new ArgumentException("Cannot import destination provider with unknown id.");
 				}
-				Data.SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
 				Data.DestinationProvider destinationProvider = _caseServiceContext.RsapiService.DestinationProviderLibrary.Read(this.IntegrationPoint.DestinationProvider.Value);
 				IEnumerable<FieldMap> fieldMap = GetFieldMap(this.IntegrationPoint.FieldMappings);
 				string sourceConfiguration = GetSourceConfiguration(this.IntegrationPoint.SourceConfiguration);
 
-				ExecuteImport(fieldMap, sourceConfiguration, this.IntegrationPoint.DestinationConfiguration, entryIDs, sourceProviderRdo, destinationProvider, job);
+				ExecuteImport(fieldMap, sourceConfiguration, this.IntegrationPoint.DestinationConfiguration, entryIDs, SourceProvider, destinationProvider, job);
 
 				InjectErrors();
 			}
@@ -221,7 +237,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			FieldMap[] fieldMaps = fieldMap as FieldMap[] ?? fieldMap.ToArray();
 
-			IDataSourceProvider sourceProvider = GetSourceProvider(sourceProviderRdo, job);
+			IDataSourceProvider sourceProvider = GetSourceProvider(SourceProvider, job);
 
 			List<FieldEntry> sourceFields = GetSourceFields(fieldMaps);
 
@@ -231,7 +247,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			SetupSubscriptions(dataSynchronizer, job);
 
-			dataSynchronizer.SyncData(sourceDataReader, fieldMaps, destinationConfiguration);
+			if (SourceProvider.Config.GetDataProvideAllFieldsRequired)
+			{
+				dataSynchronizer.SyncData(sourceDataReader, fieldMaps, destinationConfiguration);
+			}
+			else
+			{
+				IEnumerable<IDictionary<FieldEntry, object>> sourceData = GetSourceData(sourceFields, sourceDataReader);
+				dataSynchronizer.SyncData(sourceData, fieldMaps, destinationConfiguration);
+			}
 		}
 
 		internal virtual List<FieldEntry> GetSourceFields(IEnumerable<FieldMap> fieldMap)
@@ -261,6 +285,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			if (factory != null)
 			{
 				factory.TaskJobSubmitter = new TaskJobSubmitter(_jobManager, job, TaskType.SyncCustodianManagerWorker, this.BatchInstance);
+				factory.SourceProvider = SourceProvider;
 			}
 			IDataSynchronizer sourceProvider = _appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration);
 			return sourceProvider;

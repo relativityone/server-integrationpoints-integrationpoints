@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {
@@ -31,5 +32,10 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 		/// The key-value pairs represent  the names of fields that a user can set on a source provider, and the values that the user has entered for these fields. After a user has created a new integration point, the custom page displays these key-value pairs for reference purposes.
 		/// </remarks>
 		public string ViewDataUrl { get; set; }
+
+		/// <summary>
+		/// Get or set configuration associate to source provider
+		/// </summary>
+		public SourceProviderConfiguration Configuration { set; get; }
 	}
 }

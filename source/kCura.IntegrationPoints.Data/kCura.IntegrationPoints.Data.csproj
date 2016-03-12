@@ -70,6 +70,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Services.DataContracts">
+      <HintPath>..\Dependencies\kCura\Relativity.Services.DataContracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.Interfaces, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.Services.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
@@ -88,6 +95,7 @@
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
+    <Compile Include="ImportSettingVisibility.cs" />
     <Compile Include="Queries\GetSavedSearchesQuery.cs" />
     <Compile Include="Queries\GetWorkspacesQuery.cs" />
     <Compile Include="RelativityVersion.cs" />
@@ -149,6 +157,7 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="SourceProviderConfiguration.cs" />
     <Compile Include="SqlObjectTypeQuery.cs" />
     <Compile Include="Queries\WorkspaceQuery.cs" />
     <Compile Include="Utils.cs" />
@@ -202,7 +211,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\CheckImportPermission.sql" />
     <Content Include="Resources\AddWebApiConfig.sql" />
     <Content Include="Resources\CreateJobTrackingEntry.sql" />
     <Content Include="Resources\GetJobCustodianManagerLinks.sql" />

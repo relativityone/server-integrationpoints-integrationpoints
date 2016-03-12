@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using kCura.Apps.Common.Utils.Serializers;
-using kCura.Crypto.DataProtection;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Services.Marshaller;
 using kCura.IntegrationPoints.Data.Models;
 using Relativity.API;
+using Relativity.Authentication.Interfaces;
 
 namespace kCura.IntegrationPoints.Core.Domain
 {

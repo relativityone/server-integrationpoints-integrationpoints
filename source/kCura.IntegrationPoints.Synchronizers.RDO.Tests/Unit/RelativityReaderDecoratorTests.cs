@@ -244,7 +244,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			RelativityReaderDecorator decorator = new RelativityReaderDecorator(_reader, _fieldMaps);
 			Assert.IsTrue(decorator.Read());
 
-			string folderInformationPath = (string)decorator["virtual path"];
+			string folderInformationPath = (string)decorator[_fieldMaps[4].SourceField.DisplayName];
 			Assert.AreEqual(_ExpectFolderInformationPath, folderInformationPath);
 		}
 	}

@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Reflection;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Tests;
 using kCura.ScheduleQueue.Core;
-using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 

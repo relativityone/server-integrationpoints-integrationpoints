@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Security.Authentication;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
 using kCura.Relativity.ImportAPI.Data;
@@ -15,30 +12,37 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
 	public class ImportService : IImportService, IBatchReporter
 	{
-		private IImportAPI _importAPI;
-		private BatchManager _batchManager;
+		private IImportAPI _importApi;
+		private readonly ImportApiFactory _factory;
+		private readonly BatchManager _batchManager;
 		private Dictionary<int, Field> _idToFieldDictionary;
 		private Dictionary<string, Field> _mappings;
-		private Dictionary<string, int> _inputMappings;
+		private readonly Dictionary<string, int> _inputMappings;
+		private int _itemsImported;
 
+		private const int _JOB_PROGRESS_TIMEOUT_MILLISECONDS = 5000;
+		private int _lastJobProgressUpdate = 0;
+
+		public event StatusUpdate OnStatusUpdate;
 		public event BatchCompleted OnBatchComplete;
 		public event BatchSubmitted OnBatchSubmit;
 		public event BatchCreated OnBatchCreate;
 		public event JobError OnJobError;
 		public event RowError OnDocumentError;
 
-		private readonly ImportApiFactory _factory;
 		public ImportService(ImportSettings settings, Dictionary<string, int> fieldMappings, BatchManager batchManager, NativeFileImportService nativeFileImportService, ImportApiFactory factory)
 		{
 			EmbeddedAssembly.Load("kCura.IntegrationPoints.Synchronizers.RDO.Relativity.ImportAPI.Wrapper.dll", "Relativity.ImportAPI.Wrapper.dll");
 			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
-
 			this.Settings = settings;
 			this._batchManager = batchManager;
 			this._inputMappings = fieldMappings;
 			this.NativeFileImportService = nativeFileImportService;
 			_factory = factory;
-			if (_batchManager != null) _batchManager.OnBatchCreate += ImportService_OnBatchCreate;
+			if (_batchManager != null)
+			{
+				_batchManager.OnBatchCreate += ImportService_OnBatchCreate;
+			}
 		}
 
 		static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
@@ -51,10 +55,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		public virtual void Initialize()
 		{
-			if (_importAPI == null)
+			if (_importApi == null)
 			{
 				Connect(Settings);
-				SetupFieldDictionary(_importAPI);
+				SetupFieldDictionary(_importApi);
 				Dictionary<string, int> fieldMapping = _inputMappings;
 				_mappings = ValidateAllMappedFieldsAreInWorkspace(fieldMapping, _idToFieldDictionary);
 			}
@@ -92,15 +96,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		public virtual void KickOffImport(IDataReader dataReader)
 		{
-			ImportBulkArtifactJob importJob = _importAPI.NewObjectImportJob(Settings.ArtifactTypeId);
+			ImportBulkArtifactJob importJob = _importApi.NewObjectImportJob(Settings.ArtifactTypeId);
 			importJob.SourceData.SourceData = dataReader;
 			importJob.Settings.ArtifactTypeId = Settings.ArtifactTypeId;
 			importJob.Settings.AuditLevel = Settings.AuditLevel;
 			importJob.Settings.CaseArtifactId = Settings.CaseArtifactId;
-			importJob.Settings.DestinationFolderArtifactID = GetDestinationFolderArtifactID();
+			importJob.Settings.DestinationFolderArtifactID = GetDestinationFolderArtifactId();
 			importJob.Settings.BulkLoadFileFieldDelimiter = Settings.BulkLoadFileFieldDelimiter;
 			importJob.Settings.CopyFilesToDocumentRepository = Settings.CopyFilesToDocumentRepository;
-			importJob.Settings.DestinationFolderArtifactID = Settings.DestinationFolderArtifactID;
 			importJob.Settings.DisableControlNumberCompatibilityMode = Settings.DisableControlNumberCompatibilityMode;
 			importJob.Settings.DisableExtractedTextEncodingCheck = Settings.DisableExtractedTextEncodingCheck;
 			importJob.Settings.DisableExtractedTextFileLocationValidation = Settings.DisableExtractedTextFileLocationValidation;
@@ -108,7 +111,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.Settings.DisableNativeValidation = Settings.DisableNativeValidation;
 			importJob.Settings.DisableUserSecurityCheck = Settings.DisableUserSecurityCheck;
 			importJob.Settings.ExtractedTextFieldContainsFilePath = Settings.ExtractedTextFieldContainsFilePath;
-
 			// only set if the extracted file map links to extracted text location
 			if (Settings.ExtractedTextFieldContainsFilePath)
 			{
@@ -136,6 +138,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.Settings.SelectedIdentifierFieldName = _idToFieldDictionary[Settings.IdentityFieldId].Name;
 			importJob.OnComplete += new IImportNotifier.OnCompleteEventHandler(ImportJob_OnComplete);
 			importJob.OnFatalException += new IImportNotifier.OnFatalExceptionEventHandler(ImportJob_OnComplete);
+			importJob.OnProgress += ImportJob_OnProgress;
 			ImportService_OnBatchSubmit(_batchManager.CurrentSize, _batchManager.MinimumBatchSize);
 
 			importJob.Execute();
@@ -148,7 +151,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		internal void Connect(ImportSettings settings)
 		{
-			_importAPI = _factory.GetImportAPI(settings);
+			_importApi = _factory.GetImportAPI(settings);
 		}
 
 		internal void SetupFieldDictionary(IImportAPI api)
@@ -178,16 +181,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			List<int> missingFields = new List<int>();
 			foreach (string mapSourceFieldName in fieldMapping.Keys)
 			{
-				int mapRDOFieldID = fieldMapping[mapSourceFieldName];
-				if (!rdoAllFields.ContainsKey(mapRDOFieldID))
+				int mapRdoFieldId = fieldMapping[mapSourceFieldName];
+				if (!rdoAllFields.ContainsKey(mapRdoFieldId))
 				{
-					missingFields.Add(mapRDOFieldID);
+					missingFields.Add(mapRdoFieldId);
 				}
 				else
 				{
 					if (!mapping.ContainsKey(mapSourceFieldName))
 					{
-						Field destinationField = rdoAllFields[mapRDOFieldID];
+						Field destinationField = rdoAllFields[mapRdoFieldId];
 						mapping.Add(mapSourceFieldName, destinationField);
 					}
 				}
@@ -204,14 +207,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			Dictionary<string, object> importFields = new Dictionary<string, object>();
 
-			foreach (string sourceFieldID in sourceFields.Keys)
+			foreach (string sourceFieldId in sourceFields.Keys)
 			{
-				if (mapping.ContainsKey(sourceFieldID))
+				if (mapping.ContainsKey(sourceFieldId))
 				{
-					Field rdoField = mapping[sourceFieldID];
+					Field rdoField = mapping[sourceFieldId];
 
 					if (!importFields.ContainsKey(rdoField.Name))
-						importFields.Add(rdoField.Name, sourceFields[sourceFieldID]);
+						importFields.Add(rdoField.Name, sourceFields[sourceFieldId]);
 				}
 			}
 			if (nativeFileImportService != null && nativeFileImportService.ImportNativeFiles)
@@ -266,29 +269,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			{
 				foreach (JobReport.RowError error in errors)
 				{
-					if (ShouldProcessError(error))
-					{
-						OnDocumentError(error.Identifier, error.Message);
-					}
+					OnDocumentError(error.Identifier, error.Message);
 				}
 			}
-		}
-
-		private bool ShouldProcessError(JobReport.RowError error)
-		{
-			if (this.Settings.OverwriteMode == OverwriteModeEnum.Overlay && error.Message.Contains("no document to overwrite"))
-			{
-				//skip
-				return false;
-			}
-			else if (this.Settings.OverwriteMode == OverwriteModeEnum.Append
-							 && error.Message.Contains("document with identifier")
-							 && error.Message.Contains("already exists in the workspace"))
-			{
-				//skip
-				return false;
-			}
-			return true;
 		}
 
 		private void CompleteBatch(DateTime start, DateTime end, int totalRows, int errorRows)
@@ -299,21 +282,35 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			}
 		}
 
-		private int GetDestinationFolderArtifactID()
+		private void ImportJob_OnProgress(long item)
 		{
-			int destinationFolderArtifactID = 0;
+			_itemsImported++;
+			if (Environment.TickCount - _lastJobProgressUpdate > _JOB_PROGRESS_TIMEOUT_MILLISECONDS)
+			{
+				_lastJobProgressUpdate = Environment.TickCount;
+				if (OnStatusUpdate != null)
+				{
+					OnStatusUpdate(_itemsImported);
+					_itemsImported = 0;
+				}
+			}
+		}
+
+		private int GetDestinationFolderArtifactId()
+		{
+			int destinationFolderArtifactId = 0;
 			if (CurrentWorkspace != null)
 			{
 				if (Settings.ArtifactTypeId == (int)kCura.Relativity.Client.ArtifactType.Document)
 				{
-					destinationFolderArtifactID = CurrentWorkspace.RootFolderID;
+					destinationFolderArtifactId = CurrentWorkspace.RootFolderID;
 				}
 				else
 				{
-					destinationFolderArtifactID = CurrentWorkspace.RootArtifactID;
+					destinationFolderArtifactId = CurrentWorkspace.RootArtifactID;
 				}
 			}
-			return destinationFolderArtifactID;
+			return destinationFolderArtifactId;
 		}
 
 		private Workspace _currentWorkspace;
@@ -323,7 +320,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			{
 				if (_currentWorkspace == null)
 				{
-					_currentWorkspace = _importAPI.Workspaces().First(x => x.ArtifactID.Equals(Settings.CaseArtifactId));
+					_currentWorkspace = _importApi.Workspaces().First(x => x.ArtifactID.Equals(Settings.CaseArtifactId));
 				}
 				return _currentWorkspace;
 			}

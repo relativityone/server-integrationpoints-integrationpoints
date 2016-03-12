@@ -89,6 +89,9 @@
     <Reference Include="Relativity.APIHelper">
       <HintPath>..\Dependencies\kCura\Relativity.APIHelper.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Authentication.Interfaces">
+      <HintPath>..\Dependencies\kCura\Relativity.Authentication.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />

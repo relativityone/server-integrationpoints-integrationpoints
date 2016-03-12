@@ -1,0 +1,58 @@
+@startuml
+
+title RIP Agent Workflow - SyncWorker
+
+start
+
+:Mark jobs as "Processing";
+:Retrieve IP RDO;
+:Get Entry IDs from JobDetails;
+:Get JobHistory RDO;
+
+if (SourceProvider is set) then (true)
+    if (DestinationProvider is set) then (true)
+        :Get DestinationProvider RDO;
+        partition ExecuteImport {
+			:GetDataProvider|
+            :SourceProvider.GetData();
+            :Create Synchronizer;
+            :Set up statistics and JobHistoryError subscriptions;
+            
+            if (SourceProvider.Config.GetDataProvideAllFieldsRequired) then (true)
+                :dataSynchronizer.SyncData();
+            else (false)
+                :GetSourceData;
+                :dataSynchronizerSyncData();
+            endif
+        }
+    else (false)
+        :Throw exception;
+    endif
+    
+    if (Any exceptions were thrown above) then (true)
+        :Create JobHistoryError;
+    endif
+    
+    partition PostExecute {
+        :Check "RIP_JobTracker_{WorkspaceId}_{RootJobId}_{batchId}" for jobs;
+        if (Current batch is last job) then (true)
+            if (Current batch had item level errors) then (true)
+                :Set JobHistory.Status = "Completed with errors";
+            elseif (Current batch had job errors) then (true)
+                :Set JobHistory.Status = "Error - job failed";
+            else
+                :Set JobHistory.Status = "Completed";
+            endif
+			
+			if (Job has recipient emails) then (true)
+				:Create SendEmailManager job;
+			endif
+        endif
+    }
+else (false)
+    :Throw exception;
+endif
+
+stop
+
+@enduml

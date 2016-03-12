@@ -32,6 +32,13 @@ namespace kCura.IntegrationPoints.Core
 			var context = _helper.GetDBContext(workspaceID);
 			return context;
 		}
+
+		public IServicesMgr CreateServicesMgr()
+		{
+			IServicesMgr servicesMgr = _helper.GetServicesManager();
+
+			return servicesMgr;
+		}
 		
 	}
 }

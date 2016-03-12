@@ -2,28 +2,27 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
-using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
 	public abstract class RelativityReaderBase : IDataReader
 	{
 		protected int ReadEntriesCount;
-		protected QueryResultSet<Document> CurrentQueryResult;
-		protected IEnumerator<Result<Document>> Enumerator;
+		protected IEnumerator<ArtifactDTO> Enumerator;
 		protected bool ReaderOpen;
-		protected Document CurrentDocument;
-		protected readonly IRelativityClientAdaptor RelativityClient;
+		protected ArtifactDTO[] FetchedArtifacts;
+		protected ArtifactDTO CurrentArtifact;
 		protected readonly DataTable SchemaDataTable;
+		protected Dictionary<string, int> KnownOrdinalDictionary;
+		 
 
-		protected RelativityReaderBase(IRelativityClientAdaptor relativityClient, DataColumn[] columns)
+		protected RelativityReaderBase(DataColumn[] columns)
 		{
+			KnownOrdinalDictionary = new Dictionary<string, int>();
 			SchemaDataTable = new DataTable();
 			SchemaDataTable.Columns.AddRange(columns);
 
-			RelativityClient = relativityClient;
 			ReaderOpen = true;
 		}
 
@@ -61,7 +60,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				Enumerator.Dispose();
 				Enumerator = null;
 			}
-			CurrentDocument = null;
+			CurrentArtifact = null;
+			FetchedArtifacts = null;
 		}
 
 		public virtual bool GetBoolean(int i)
@@ -148,7 +148,18 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public virtual int GetOrdinal(string name)
 		{
-			return SchemaDataTable.Columns[name].Ordinal;
+			if (!KnownOrdinalDictionary.ContainsKey(name))
+			{
+				DataColumn column = SchemaDataTable.Columns[name];
+				if (column == null)
+				{
+					throw new IndexOutOfRangeException(String.Format("'{0}' is not a valid column", name));	
+				}
+
+				int ordinal = SchemaDataTable.Columns[name].Ordinal;
+				KnownOrdinalDictionary[name] = ordinal;
+			}
+			return KnownOrdinalDictionary[name];
 		}
 
 		public virtual DataTable GetSchemaTable()
@@ -200,19 +211,19 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				}
 			}
 		}
-		protected void FetchDataToRead(Func<QueryResultSet<Document>> functionToGetDocuments)
+		protected void FetchDataToRead()
 		{
 			try
 			{
 				// Request the saved search documents
-				CurrentQueryResult = functionToGetDocuments();
-				if (!CurrentQueryResult.Success)
+				FetchedArtifacts = FetchArtifactDTOs();
+				if (FetchedArtifacts == null || !FetchedArtifacts.Any())
 				{
 					ReaderOpen = false; // TODO: handle errors?
 				}
 				else
 				{
-					Enumerator = CurrentQueryResult.Results.GetEnumerator();
+					Enumerator = ((IEnumerable<ArtifactDTO>) FetchedArtifacts).GetEnumerator();
 				}
 			}
 			catch (Exception ex)
@@ -231,36 +242,33 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			if (Enumerator == null)
 			{
 				// Request document objects
-				FetchDataToRead(ExecuteQueryToGetInitialResult);
+				FetchDataToRead();
 			}
 
 			// Get next result
 			if (Enumerator != null && Enumerator.MoveNext())
 			{
-				Result<Document> result = Enumerator.Current;
-				CurrentDocument = result != null ? result.Artifact : null;
-				ReaderOpen = CurrentDocument != null;
+				CurrentArtifact = Enumerator.Current;
+				ReaderOpen = FetchedArtifacts != null;
 				ReadEntriesCount++;
 			}
-			else if (CurrentQueryResult.TotalCount - ReadEntriesCount > 0 && String.IsNullOrWhiteSpace(CurrentQueryResult.QueryToken) == false)
+			else if (!AllArtifactsFetched())
 			{
-				FetchDataToRead(() => RelativityClient.ExecuteSubSetOfDocumentQuery(CurrentQueryResult.QueryToken, ReadEntriesCount, Shared.Constants.QUERY_BATCH_SIZE));
+				FetchDataToRead();
 				return Read();
 			}
 			else
 			{
 				// No results returned, close the reader
-				CurrentDocument = null;
+				FetchedArtifacts = null;
 				ReaderOpen = false;
 			}
 
 			return ReaderOpen;
 		}
 
-		/// <summary>
-		/// This method is used to define how the class can generate the initial result.
-		/// </summary>
-		/// <returns></returns>
-		protected abstract QueryResultSet<Document> ExecuteQueryToGetInitialResult();
+		protected abstract ArtifactDTO[] FetchArtifactDTOs();
+
+		protected abstract bool AllArtifactsFetched();
 	}
 }
