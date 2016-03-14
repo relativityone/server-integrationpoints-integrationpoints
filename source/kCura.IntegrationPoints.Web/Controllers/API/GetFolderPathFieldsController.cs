@@ -28,12 +28,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			string authToken = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
 			IImportAPI importApi = new ExtendedImportAPI(_USERNAME, authToken, Config.WebAPIPath);
 
-			List<FieldEntry> fieldEntries = GetTextFields(Convert.ToInt32(ArtifactType.Document));
+			List<FieldEntry> textFields = GetTextFields(Convert.ToInt32(ArtifactType.Document));
 			IEnumerable<Relativity.ImportAPI.Data.Field> workspaceFields = importApi.GetWorkspaceFields(_client.APIOptions.WorkspaceID, Convert.ToInt32(ArtifactType.Document));
 			HashSet<int> mappableArtifactIds = new HashSet<int>(workspaceFields.Select(x => x.ArtifactID));
-			IEnumerable<FieldEntry> abc = fieldEntries.Where(x => mappableArtifactIds.Contains(Convert.ToInt32(x.FieldIdentifier)));
+			IEnumerable<FieldEntry> textMappableFields = textFields.Where(x => mappableArtifactIds.Contains(Convert.ToInt32(x.FieldIdentifier)));
 
-			return Request.CreateResponse(HttpStatusCode.OK, abc, Configuration.Formatters.JsonFormatter);
+			return Request.CreateResponse(HttpStatusCode.OK, textMappableFields, Configuration.Formatters.JsonFormatter);
 		}
 
 		private List<FieldEntry> GetTextFields(int rdoTypeId)
