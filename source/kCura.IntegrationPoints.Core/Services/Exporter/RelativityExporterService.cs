@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data.Queries;
 using Newtonsoft.Json;
 using Relativity.Core;
 using Relativity.Core.Authentication;
-using Relativity.Data.QueryBuilders.Dynamic;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
@@ -32,13 +30,15 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_exporter = new global::Relativity.Core.Api.Shared.Manager.Export.Exporter
 			{
 				CurrentServiceContext = context,
-				DynamicallyLoadedDllPaths = global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
+				DynamicallyLoadedDllPaths = global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths,
+				MultiValueDeimiter = IntegrationPoints.Contracts.Constants.MULTI_VALUE_DEIMITER,
+				NestedValueDelimiter = IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER
 			};
 
 			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
 
-			QueryFieldLookup fieldLookupHelper = new QueryFieldLookup(context, (int) ArtifactType.Document);
-			Dictionary<int,int> fieldsReferences = new Dictionary<int, int>();
+			QueryFieldLookup fieldLookupHelper = new QueryFieldLookup(context, (int)ArtifactType.Document);
+			Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
 			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
 			{
 				int artifactId = Convert.ToInt32(source.FieldIdentifier);
