@@ -34,10 +34,14 @@ namespace kCura.IntegrationPoints.Contracts
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyDomainLoader.ResolveAssembly;
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			Type startupType = typeof(IStartUp);
-			var types = (from a in assemblies
-									 from t in a.GetTypes()
-									 where startupType.IsAssignableFrom(t) && t != startupType
-									 select t).ToList();
+
+			var types = new List<Type>();
+			foreach (var assembly in assemblies)
+			{
+				Type[] loadableTypes = assembly.GetLoadableTypes();
+				types.AddRange(loadableTypes.Where(type => startupType.IsAssignableFrom(type) && type != startupType));
+			}
+
 			if (types.Any())
 			{
 				var type = types.FirstOrDefault();
@@ -105,9 +109,9 @@ namespace kCura.IntegrationPoints.Contracts
 		{
 			string[] allowedInstallerAssemblies = new[]
 			{
-				"kCura.IntegrationPoints", 
-				"kCura.IntegrationPoints.Contracts", 
-				"kCura.IntegrationPoints.Core", 
+				"kCura.IntegrationPoints",
+				"kCura.IntegrationPoints.Contracts",
+				"kCura.IntegrationPoints.Core",
 				"kCura.IntegrationPoints.Data"
 			};
 

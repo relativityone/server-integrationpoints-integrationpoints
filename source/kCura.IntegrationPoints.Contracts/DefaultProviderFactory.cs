@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
@@ -39,10 +40,13 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <returns></returns>
 		protected virtual Type GetType(Guid identifer)
 		{
-			var types = from a in AppDomain.CurrentDomain.GetAssemblies()
-									from t in a.GetTypes()
-									where t.IsDefined(typeof(DataSourceProviderAttribute), true) 
-									select t;
+			List<Type> types = new List<Type>();
+			foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+			{
+				Type[] loadableTypes = assembly.GetLoadableTypes();
+				types.AddRange(loadableTypes.Where(type => type.IsDefined(typeof(DataSourceProviderAttribute), true)));
+			}
+
 			var providerTypes = types.Where(x => x.GetCustomAttributes(typeof(DataSourceProviderAttribute), true)
 													.Cast<DataSourceProviderAttribute>().Any(y => y.Identifier.Equals(identifer))).ToList();
 			if (providerTypes.Count() > 1)

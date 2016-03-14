@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 
 			container.Register(Component.For<SyncManager>().ImplementedBy<SyncManager>().LifeStyle.Transient);
 			container.Register(Component.For<SyncWorker>().ImplementedBy<SyncWorker>().LifeStyle.Transient);
+			container.Register(Component.For<ExportServiceManager>().ImplementedBy<ExportServiceManager>().LifeStyle.Transient);
 			container.Register(Component.For<SyncCustodianManagerWorker>().ImplementedBy<SyncCustodianManagerWorker>().LifeStyle.Transient);
 			container.Register(Component.For<CreateErrorRdo>().ImplementedBy<CreateErrorRdo>().LifeStyle.Transient);
 			container.Register(Component.For<ITaskFactory>().AsFactory(x => x.SelectedWith(new TaskComponentSelector())).LifeStyle.Transient);

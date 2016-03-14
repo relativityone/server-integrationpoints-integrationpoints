@@ -155,6 +155,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				task = GetTask(job);
 				if (task != null)
 				{
+					
 					task.Execute(job);
 
 					OnRaiseJobLogEntry(job, JobLogState.Finished);
