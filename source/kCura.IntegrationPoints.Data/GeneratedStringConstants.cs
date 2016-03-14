@@ -176,7 +176,7 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class OverwriteFieldsChoices
 	{
-		public static Choice IntegrationPointAppend = new Choice(Guid.Parse("998c2b04-d42e-435b-9fba-11fec836aad8"), @"Append");
+		public static Choice IntegrationPointAppendOnly = new Choice(Guid.Parse("998c2b04-d42e-435b-9fba-11fec836aad8"), @"Append Only");
 		public static Choice IntegrationPointAppendOverlay = new Choice(Guid.Parse("5450ebc3-ac57-4e6a-9d28-d607bbdcf6fd"), @"Append/Overlay");
 		public static Choice IntegrationPointOverlayOnly = new Choice(Guid.Parse("70a1052d-93a3-4b72-9235-ac65f0d5a515"), @"Overlay Only");
 	}
