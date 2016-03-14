@@ -113,8 +113,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.Core.Api.Contracts.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Data">
-      <HintPath>..\..\..\Mainline\EDDS\Relativity.Core.Api\bin\Relativity.Data.dll</HintPath>
+    <Reference Include="Relativity.Data, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.Data.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.DataGrid.Logging, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>

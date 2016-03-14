@@ -63,17 +63,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				string destinationConfig = IntegrationPointDto.DestinationConfiguration;
 				DirectSqlCallHelper helper = new DirectSqlCallHelper(_caseServiceContext.SqlContext);
 
-				IDataSynchronizer synchronizer = GetRdoDestinationProviderAsync(destinationConfig);
+				IDataSynchronizer synchronizer = GetRdoDestinationProvider(destinationConfig);
 
 				SetupSubscriptions(synchronizer, job);
 
 				// Initialize Exporter
-				IExporterService exporter = ExporterFactory.BuildExporter(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration);
+				IExporterService exporter = ExporterFactory.BuildExporter(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, helper);
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 
-				IEnumerable<FieldEntry> sources = MappedFields.Select(map => map.SourceField);
-				synchronizer.SyncData(new DocumentTransferDataReader(exporter, sources, helper), MappedFields, destinationConfig);
+				synchronizer.SyncData(exporter.GetDataReader(), MappedFields, destinationConfig);
 			}
 			catch (Exception ex)
 			{
@@ -154,8 +153,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		internal IDataSynchronizer GetRdoDestinationProviderAsync(string configuration)
+		internal IDataSynchronizer GetRdoDestinationProvider(string configuration)
 		{
+			// if you want to create add another synchronizer aka exporter, you may add it here.
 			// RDO synchronizer
 			Guid providerGuid = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
 			var factory = _synchronizerFactory as GeneralWithCustodianRdoSynchronizerFactory;

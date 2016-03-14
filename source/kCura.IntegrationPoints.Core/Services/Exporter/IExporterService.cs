@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
@@ -12,6 +8,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	/// </summary>
 	public interface IExporterService
 	{
+		IDataReader GetDataReader();
+
 		ArtifactDTO[] RetrieveData(int size);
 
 		bool HasDataToRetrieve { get; }
