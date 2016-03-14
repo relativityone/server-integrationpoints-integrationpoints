@@ -93,7 +93,8 @@
     <Reference Include="Relativity.APIHelper">
       <HintPath>..\Dependencies\kCura\Relativity.APIHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Authentication.Interfaces">
+    <Reference Include="Relativity.Authentication.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.Authentication.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Core, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">

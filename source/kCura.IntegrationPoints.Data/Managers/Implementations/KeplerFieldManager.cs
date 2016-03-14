@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Managers.Implementations
 				Condition = String.Format("'Object Type Artifact Type ID' == {0} AND 'Field Type' == '{1}'", rdoTypeId, longTextFieldName),
 			};
 
-			ObjectQueryResutSet result = _rdoRepository.RetrieveAsync(longTextFieldsQuery, String.Empty).Result;
+			ObjectQueryResultSet result = _rdoRepository.RetrieveAsync(longTextFieldsQuery, String.Empty).Result;
 
 			if (!result.Success)
 			{
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Data.Managers.Implementations
 				Condition = String.Format("'Object Type Artifact Type ID' == {0}", rdoTypeId)
 			};
 
-			ObjectQueryResutSet result = _rdoRepository.RetrieveAsync(fieldQuery, String.Empty).Result;
+			ObjectQueryResultSet result = _rdoRepository.RetrieveAsync(fieldQuery, String.Empty).Result;
 
 			if (!result.Success)
 			{

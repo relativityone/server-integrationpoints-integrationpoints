@@ -76,10 +76,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				IEnumerable<FieldEntry> sources = MappedFields.Select(map => map.SourceField);
 				synchronizer.SyncData(new DocumentTransferDataReader(exporter, sources, helper), MappedFields, destinationConfig);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				JobHistoryDto.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
-				throw;
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 			}
 			finally
 			{

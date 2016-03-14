@@ -132,6 +132,7 @@ namespace kCura.ScheduleQueue.AgentBase
 				//	continue;
 				//}
 
+				
 				TaskResult taskResult = ExecuteTask(nextJob);
 
 				FinalizeJob(nextJob, taskResult);

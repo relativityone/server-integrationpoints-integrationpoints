@@ -26,13 +26,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			int startAt,
 			string config)
 		{
-			//TODO : wait for chris hogan to response on how to handle this properly. - Amornborvornwong - 3/14/2016
-			ClaimsPrincipal claimPrincipal = new ClaimsPrincipal(new List<ClaimsIdentity>() { new ClaimsIdentity(new List<Claim>() { new Claim("rel_uai", "9") }) });
 			ExportUsingSavedSearchSettings settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
 			_exporter = new global::Relativity.Core.Api.Shared.Manager.Export.Exporter
 			{
-				CurrentServiceContext = claimPrincipal.GetNewServiceContext(settings.SourceWorkspaceArtifactId),
-				DynamicallyLoadedDllPaths = global::Relativity.Core.Config.DynamicallyLoadedDllPaths
+				CurrentServiceContext = ClaimsPrincipal.Current.GetNewServiceContext(settings.SourceWorkspaceArtifactId),
+				DynamicallyLoadedDllPaths = global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
 			};
 
 			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
