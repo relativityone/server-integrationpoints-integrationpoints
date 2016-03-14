@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 						}
 						catch
 						{
-							// surpress error for invalid casts
+							// suppress error for invalid casts
 						}
 					}
 				}

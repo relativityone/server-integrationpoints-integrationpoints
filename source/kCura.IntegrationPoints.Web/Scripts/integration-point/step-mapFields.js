@@ -186,7 +186,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.SourceProviderConfiguration = ko.observable(model.SourceProviderConfiguration);
 
-		this.OverwriteOptions = ko.observableArray(['Append', 'Append/Overlay', 'Overlay Only']);
+		this.OverwriteOptions = ko.observableArray(['Append Only', 'Overlay Only', 'Append/Overlay']);
 		self.OverwriteOptions = this.OverwriteOptions;
 
 		this.SelectedOverwrite = ko.observable(model.SelectedOverwrite || 'Append');
