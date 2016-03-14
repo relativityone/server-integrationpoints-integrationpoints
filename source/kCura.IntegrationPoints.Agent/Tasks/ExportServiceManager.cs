@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
@@ -165,7 +164,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				factory.SourceProvider = SourceProvider;
 			}
 			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(providerGuid, configuration);
-			return synchronizer;	
+			return synchronizer;
 		}
 
 		private void UpdateJobStatus()

@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	{
 		private readonly IExporterService _relativityExporterService;
 		private Dictionary<int, string> _nativeFileLocation;
-		private const string SPECIAL_NATIVE_FILE_LOCATION_FIELD = "fb83020a-1853-4a14-8e92-accb6dbd2ef1";
 		private readonly DirectSqlCallHelper _sqlHelper;
 
 		public DocumentTransferDataReader(
@@ -44,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			fields.Add(new FieldEntry()
 			{
 				DisplayName = "NATIVE_FILE_LOCATION_01",
-				FieldIdentifier = SPECIAL_NATIVE_FILE_LOCATION_FIELD,
+				FieldIdentifier = kCura.IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
 				FieldType = FieldType.String
 			});
 
@@ -80,7 +79,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			{
 				result = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId).Value;
 			}
-			else if (fieldIdentifier == SPECIAL_NATIVE_FILE_LOCATION_FIELD)
+			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)
 			{
 				if (_nativeFileLocation.ContainsKey(CurrentArtifact.ArtifactId) == false)
 				{
