@@ -16,7 +16,6 @@ using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Services.ObjectQuery;
-using kCura.IntegrationPoints.DocumentTransferProvider.Shared;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
@@ -92,7 +91,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 						}
 						catch
 						{
-							// surpress error for invalid casts
+							// suppress error for invalid casts
 						}
 					}
 				}
