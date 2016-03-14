@@ -1,22 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Configuration;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using Castle.MicroKernel;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
-using kCura.Crypto.DataProtection;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Domain;
 using kCura.IntegrationPoints.Core.Services.Marshaller;
-using kCura.IntegrationPoints.Data;
 using Relativity.API;
 using Relativity.APIHelper;
 
@@ -42,10 +34,14 @@ namespace kCura.IntegrationPoints.Contracts
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyDomainLoader.ResolveAssembly;
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			Type startupType = typeof(IStartUp);
-			var types = (from a in assemblies
-									 from t in a.GetTypes()
-									 where startupType.IsAssignableFrom(t) && t != startupType
-									 select t).ToList();
+
+			var types = new List<Type>();
+			foreach (var assembly in assemblies)
+			{
+				Type[] loadableTypes = assembly.GetLoadableTypes();
+				types.AddRange(loadableTypes.Where(type => startupType.IsAssignableFrom(type) && type != startupType));
+			}
+
 			if (types.Any())
 			{
 				var type = types.FirstOrDefault();
@@ -113,9 +109,9 @@ namespace kCura.IntegrationPoints.Contracts
 		{
 			string[] allowedInstallerAssemblies = new[]
 			{
-				"kCura.IntegrationPoints", 
-				"kCura.IntegrationPoints.Contracts", 
-				"kCura.IntegrationPoints.Core", 
+				"kCura.IntegrationPoints",
+				"kCura.IntegrationPoints.Contracts",
+				"kCura.IntegrationPoints.Core",
 				"kCura.IntegrationPoints.Data"
 			};
 

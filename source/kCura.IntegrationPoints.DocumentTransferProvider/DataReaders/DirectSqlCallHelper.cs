@@ -6,7 +6,9 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
 	/// <summary>
-	/// Temp class, will be removed as soon as kelper servide of file is done.
+	/// IMPORTANT : 
+	/// This is a temporary class that is used to query data of which no relativity api is supported.
+	/// To fix this, we will need to introduce/modify kelper service(s) functionalities to aquire this data.
 	/// </summary>
 	public class DirectSqlCallHelper
 	{
@@ -40,5 +42,27 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			}
 			return result;
 		}
+
+
+		public Dictionary<int, int> GetArtifactViewFieldId(int[] fieldArtifactIds)
+		{
+			Dictionary<int, int> results = new Dictionary<int, int>();
+			if (fieldArtifactIds.Length > 0)
+			{
+				string param = String.Join(",", fieldArtifactIds);
+				String query = String.Format(@"SELECT [ArtifactID], [ArtifactViewFieldID] FROM [EDDSDBO].[Field] WHERE [ArtifactID] IN ({0})", param);
+				using (IDataReader reader = _context.ExecuteSQLStatementAsReader(query))
+				{
+					while (reader.Read())
+					{
+						int artifactId = reader.GetInt32(0);
+						int avfId = reader.GetInt32(1);
+						results[artifactId] = avfId;
+						
+					}
+				}
+			}
+			return results;
+		} 
 	}
 }

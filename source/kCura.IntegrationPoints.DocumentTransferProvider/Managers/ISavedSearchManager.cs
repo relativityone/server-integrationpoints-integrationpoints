@@ -1,4 +1,4 @@
-﻿using kCura.IntegrationPoints.DocumentTransferProvider.Models;
+﻿using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers
 {

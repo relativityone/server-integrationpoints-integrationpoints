@@ -185,6 +185,7 @@
 			<arg line='/out:"${target.code.directory}\kCura.IntegrationPoints.dll"' />
 			<arg line='/internalize:ilmergeExcludeMain.txt' />
 			<arg line='/log' />
+			<arg line='/AllowDup' />
 			<arg line='/lib:"${target.code.directory}"' />
 			<arg line='/lib:"${source.reference.kCura.directory}"' />
 			<arg line='/lib:"${source.reference.MVCContrib.directory}"' />
@@ -247,6 +248,7 @@
 			<arg line='/lib:"${source.reference.MVCContrib.directory}"' />
 			<arg line='/lib:"${source.reference.CastleCore.directory}"' />
 			<arg line='/lib:"${source.reference.CastleWindsor.directory}"' />
+			<arg line='/lib:"C:\SourceCode\Mainline\EDDS\Relativity.Core.Api\bin"' />
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />

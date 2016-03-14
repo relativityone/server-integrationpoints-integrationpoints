@@ -6,21 +6,27 @@ namespace kCura.IntegrationPoints.Contracts.RDO
 	public class RDORepository : IRDORepository
 	{
 		private readonly IObjectQueryManager _objectQueryManager;
-		private readonly int _workspaceId;
-		private readonly int _artifactTypeId;
+
+		public int WorkspaceId { set; get; }
+		public int ArtifactTypeId { set; get; }
+
+		public RDORepository(IObjectQueryManager objectQueryManager)
+		{
+			_objectQueryManager = objectQueryManager;
+		}
 
 		public RDORepository(IObjectQueryManager objectQueryManager, int workspaceId, int artifactTypeId)
 		{
 			_objectQueryManager = objectQueryManager;
-			_workspaceId = workspaceId;
-			_artifactTypeId = artifactTypeId;
+			WorkspaceId = workspaceId;
+			ArtifactTypeId = artifactTypeId;
 		}
 
 		public async Task<ObjectQueryResutSet> RetrieveAsync(Query query, string queryToken, int startIndex = 1, int pageSize = 1000)
 		{
 			Task<ObjectQueryResutSet> resultSet = _objectQueryManager.QueryAsync(
-				_workspaceId, 
-				_artifactTypeId, 
+				WorkspaceId,
+				ArtifactTypeId, 
 				query, 
 				startIndex, 
 				pageSize, 

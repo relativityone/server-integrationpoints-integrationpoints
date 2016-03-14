@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using kCura.IntegrationPoints.Contracts.RDO;
-using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
-using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
-using kCura.IntegrationPoints.DocumentTransferProvider.Models;
-using kCura.Relativity.Client.DTOs;
-using NSubstitute;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.Readers;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 {
@@ -25,7 +18,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 		protected ArtifactDTO[] ExecuteQueryToGetInitialResult()
 		{
-			return new ArtifactDTO []
+			return new ArtifactDTO[]
 			{
 				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 				new ArtifactDTO(10,10, new ArtifactFieldDTO[0]),
@@ -90,7 +83,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			int fetchCount = 0;
 			MockRelativityReaderBase instance = new MockRelativityReaderBase(
-				() => fetchCount == 0 ? this.ExecuteQueryToGetInitialResult() : null, 
+				() => fetchCount == 0 ? this.ExecuteQueryToGetInitialResult() : null,
 				() => true);
 
 			Assert.AreEqual(true, instance.Read());
@@ -106,7 +99,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			private readonly Func<bool> _allArtifactsFetchedFunc;
 
 			public MockRelativityReaderBase(Func<ArtifactDTO[]> fetchFunction, Func<bool> allArtifactsFetchedFunc)
-				: base(new[] { new DataColumn("Testing")})
+				: base(new[] { new DataColumn("Testing") })
 			{
 				_fetchFunction = fetchFunction;
 				_allArtifactsFetchedFunc = allArtifactsFetchedFunc;

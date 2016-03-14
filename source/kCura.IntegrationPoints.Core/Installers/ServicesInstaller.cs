@@ -3,22 +3,28 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Domain;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Managers;
+using kCura.IntegrationPoints.Data.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
+using Relativity.API;
+using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -84,6 +90,15 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IImportApiFactory>().ImplementedBy<ImportApiFactory>().LifeStyle.Transient);
 
 			container.Register(Component.For<RelativityFeaturePathService>().ImplementedBy<RelativityFeaturePathService>().LifeStyle.Transient);
+
+			if (container.Kernel.HasComponent(typeof(IHelper)))
+			{
+				IHelper helper = container.Resolve<IHelper>();
+				IObjectQueryManager queryManager = helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
+
+				container.Register(Component.For<IRDORepository>().ImplementedBy<RDORepository>().DependsOn(new { objectQueryManager = queryManager }).LifeStyle.Transient);
+				container.Register(Component.For<IFieldManager>().ImplementedBy<KeplerFieldManager>().LifeStyle.Transient);
+			}
 		}
 	}
 }

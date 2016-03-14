@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
-using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
@@ -35,10 +34,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		}
 
 		#region Read
+
 		[Test]
 		public void Read_FirstRead_RunsSavedSearch_ReturnsTrue()
 		{
-			// Arrange	
+			// Arrange
 			var documents = new ArtifactDTO[]
 			{
 				new ArtifactDTO(1, 10, new ArtifactFieldDTO[0])
@@ -59,8 +59,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void Read_FirstRead_RunsSavedSearch_NoResults_ReturnsFalse()
 		{
-			// Arrange	
-			var documents = new ArtifactDTO[]{};
+			// Arrange
+			var documents = new ArtifactDTO[] { };
 
 			_savedSearchManager.RetrieveNext().Returns(documents);
 			_savedSearchManager.AllDocumentsRetrieved().Returns(true);
@@ -75,11 +75,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			_savedSearchManager.Received(1).AllDocumentsRetrieved();
 		}
 
-
 		[Test]
 		public void Read_FirstRead_RunsSavedSearch_RequestFailsWithException_ReturnsFalse()
 		{
-			// Arrange	
+			// Arrange
 			_savedSearchManager.RetrieveNext().Throws(new Exception());
 			_savedSearchManager.AllDocumentsRetrieved().Returns(true);
 
@@ -96,7 +95,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void Read_ReadAllResults_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			var documents = new ArtifactDTO[]
 			{
 				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
@@ -123,7 +122,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void Read_ReadSomeResultsThenClose_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			var documents = new ArtifactDTO[]
 			{
 				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
@@ -145,9 +144,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			_savedSearchManager.Received(1).RetrieveNext();
 			_savedSearchManager.Received(1).RetrieveNext();
 		}
-		#endregion
+
+		#endregion Read
 
 		#region DataReaderTests
+
 		[Test]
 		public void ThisNameAccessor_GoldFlow()
 		{
@@ -459,7 +460,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				exceptionThrown = true;
 			}
 
-			Assert.IsFalse(exceptionThrown, "Dispose() should not except");	
+			Assert.IsFalse(exceptionThrown, "Dispose() should not except");
 		}
 
 		[Test]
@@ -555,7 +556,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			_savedSearchManager.Received(0).AllDocumentsRetrieved();
 		}
 
-
 		[Test]
 		public void Close_ReadThenClose_CannotAccessDocument()
 		{
@@ -594,7 +594,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void Depth_ReturnsZero()
 		{
-			// Act	
+			// Act
 			int result = _instance.Depth;
 
 			// Assert
@@ -620,6 +620,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Assert
 			Assert.AreEqual(-1, result, "RecordsAffected should return -1");
 		}
-		#endregion
+
+		#endregion DataReaderTests
 	}
 }

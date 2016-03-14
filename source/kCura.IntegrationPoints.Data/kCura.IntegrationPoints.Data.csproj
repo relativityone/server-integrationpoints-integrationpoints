@@ -52,9 +52,6 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints.Core">
-      <HintPath>..\kCura.IntegrationPoints.Web\Bin\kCura.IntegrationPoints.Core.dll</HintPath>
-    </Reference>
     <Reference Include="kCura.Relativity.Client, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
@@ -69,6 +66,9 @@
     <Reference Include="Relativity.API, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.Interfaces">
+      <HintPath>..\Dependencies\kCura\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -89,6 +89,13 @@
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="ImportSettingVisibility.cs" />
+    <Compile Include="Managers\IDocumentManager.cs" />
+    <Compile Include="Managers\IFieldManager.cs" />
+    <Compile Include="Managers\Implementations\KeplerDocumentManager.cs" />
+    <Compile Include="Managers\Implementations\KeplerFieldManager.cs" />
+    <Compile Include="Managers\Implementations\RSAPISavedSearchManager.cs" />
+    <Compile Include="Managers\ISavedSearchManager.cs" />
+    <Compile Include="Queries\DirectSqlCallHelper.cs" />
     <Compile Include="Queries\GetSavedSearchesQuery.cs" />
     <Compile Include="Queries\GetWorkspacesQuery.cs" />
     <Compile Include="RelativityVersion.cs" />
@@ -217,7 +224,16 @@
     <Content Include="Resources\SetBlankLogErrorsToNo.Sql" />
     <Content Include="Resources\UpdateJobStatistics.sql" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir  "$(SolutionDir)bin"

@@ -66,7 +66,6 @@
     <Compile Include="DataReaders\DocumentArtifactIdDataReader.cs" />
     <Compile Include="DataReaders\DocumentTransferDataReader.cs" />
     <Compile Include="DataReaders\FieldValueLoader.cs" />
-    <Compile Include="DataReaders\RelativityReaderBase.cs" />
     <Compile Include="DocumentTransferProvider.cs" />
     <Compile Include="DocumentTransferSettings.cs" />
     <Compile Include="Managers\IDocumentManager.cs" />
@@ -75,8 +74,6 @@
     <Compile Include="Managers\Implementations\KeplerFieldManager.cs" />
     <Compile Include="Managers\Implementations\RSAPISavedSearchManager.cs" />
     <Compile Include="Managers\ISavedSearchManager.cs" />
-    <Compile Include="Models\ArtifactDTO.cs" />
-    <Compile Include="Models\ArtifactFieldDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
