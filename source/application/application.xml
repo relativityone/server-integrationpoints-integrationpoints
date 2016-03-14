@@ -405,7 +405,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-03-08T16:53:02.838001Z</ExtractionDate>
+  <ExtractionDate>2016-03-11T19:32:22.9764514Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -2113,14 +2113,14 @@
               <Guid>998c2b04-d42e-435b-9fba-11fec836aad8</Guid>
               <IsActive>true</IsActive>
               <Keywords />
-              <Name>Append</Name>
+              <Name>Append Only</Name>
               <Notes />
               <OIHiliteStyleID>3</OIHiliteStyleID>
               <Order>0</Order>
               <ParentArtifactId>1003663</ParentArtifactId>
               <ParentIsCode>false</ParentIsCode>
-              <UpdateInSearchEngine>false</UpdateInSearchEngine>
-              <ApplicationVersion>0.0.0.1</ApplicationVersion>
+              <UpdateInSearchEngine>true</UpdateInSearchEngine>
+              <ApplicationVersion>2.0.0.14</ApplicationVersion>
             </Code>
             <Code>
               <ArtifactId>1038346</ArtifactId>
@@ -5396,7 +5396,7 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>2.0.0.12</ApplicationVersion>
+          <ApplicationVersion>2.0.0.14</ApplicationVersion>
         </View>
         <View>
           <ArtifactId>1038380</ArtifactId>
@@ -6317,7 +6317,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.3.321.1</RelativityVersion>
-  <Version>2.0.0.13</Version>
+  <Version>2.0.0.14</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>30db7baa-93da-4227-bdb1-e3df9e8edc72</OriginSignature>
   <MasterScripts />
@@ -6347,7 +6347,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.13</ApplicationVersion>
+      <ApplicationVersion>2.0.0.14</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038277</ArtifactId>
@@ -6358,7 +6358,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.13</ApplicationVersion>
+      <ApplicationVersion>2.0.0.14</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038278</ArtifactId>
@@ -6369,7 +6369,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.13</ApplicationVersion>
+      <ApplicationVersion>2.0.0.14</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038279</ArtifactId>
@@ -6380,7 +6380,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.13</ApplicationVersion>
+      <ApplicationVersion>2.0.0.14</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038393</ArtifactId>
@@ -6391,7 +6391,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.13</ApplicationVersion>
+      <ApplicationVersion>2.0.0.14</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />
