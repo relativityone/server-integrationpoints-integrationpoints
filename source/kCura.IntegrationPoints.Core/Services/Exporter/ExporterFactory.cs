@@ -8,9 +8,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class ExporterFactory
 	{
-		public static IExporterService BuildExporter(DirectSqlCallHelper queryHelper, FieldMap[] mappedFiles, string config)
+		public static IExporterService BuildExporter(FieldMap[] mappedFiles, string config)
 		{
-			return new RelativityExporterService(queryHelper, mappedFiles, 0, config);
+			return new RelativityExporterService(mappedFiles, 0, config);
 		}
 	}
 }

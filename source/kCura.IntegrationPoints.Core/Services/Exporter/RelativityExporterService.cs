@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Data.Queries;
 using Newtonsoft.Json;
 using Relativity.Core;
 using Relativity.Core.Authentication;
+using Relativity.Data.QueryBuilders.Dynamic;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
@@ -21,21 +22,30 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly int[] _avfIds;
 
 		public RelativityExporterService(
-			DirectSqlCallHelper dataHelper,
 			FieldMap[] mappedFields,
 			int startAt,
 			string config)
 		{
 			ExportUsingSavedSearchSettings settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
+
+			BaseServiceContext context = ClaimsPrincipal.Current.GetNewServiceContext(settings.SourceWorkspaceArtifactId);
 			_exporter = new global::Relativity.Core.Api.Shared.Manager.Export.Exporter
 			{
-				CurrentServiceContext = ClaimsPrincipal.Current.GetNewServiceContext(settings.SourceWorkspaceArtifactId),
+				CurrentServiceContext = context,
 				DynamicallyLoadedDllPaths = global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
 			};
 
 			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
-			Dictionary<int, int> fieldsReferences = dataHelper.GetArtifactViewFieldId(_fieldArtifactIds);
+
+			QueryFieldLookup fieldLookupHelper = new QueryFieldLookup(context, (int) ArtifactType.Document);
+			Dictionary<int,int> fieldsReferences = new Dictionary<int, int>();
+			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
+			{
+				int artifactId = Convert.ToInt32(source.FieldIdentifier);
+				fieldsReferences[artifactId] = fieldLookupHelper.GetFieldByArtifactID(artifactId).AvfId;
+			}
 			_avfIds = _fieldArtifactIds.Select(artifactId => fieldsReferences[artifactId]).ToArray(); // need to make sure that this is in order
+
 
 			_exportJobInfo = _exporter.InitializeSearchExport(settings.SavedSearchArtifactId, _avfIds, startAt);
 			_retrievedDataCount = 0;

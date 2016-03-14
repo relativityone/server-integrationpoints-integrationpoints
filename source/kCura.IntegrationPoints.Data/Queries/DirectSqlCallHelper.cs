@@ -42,27 +42,5 @@ namespace kCura.IntegrationPoints.Data.Queries
 			}
 			return result;
 		}
-
-
-		public Dictionary<int, int> GetArtifactViewFieldId(int[] fieldArtifactIds)
-		{
-			Dictionary<int, int> results = new Dictionary<int, int>();
-			if (fieldArtifactIds.Length > 0)
-			{
-				string param = String.Join(",", fieldArtifactIds);
-				String query = String.Format(@"SELECT [ArtifactID], [ArtifactViewFieldID] FROM [EDDSDBO].[Field] WHERE [ArtifactID] IN ({0})", param);
-				using (IDataReader reader = _context.ExecuteSQLStatementAsReader(query))
-				{
-					while (reader.Read())
-					{
-						int artifactId = reader.GetInt32(0);
-						int avfId = reader.GetInt32(1);
-						results[artifactId] = avfId;
-						
-					}
-				}
-			}
-			return results;
-		} 
 	}
 }

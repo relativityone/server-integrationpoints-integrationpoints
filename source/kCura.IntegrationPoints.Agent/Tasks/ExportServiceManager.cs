@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				SetupSubscriptions(synchronizer, job);
 
 				// Initialize Exporter
-				IExporterService exporter = ExporterFactory.BuildExporter(helper, MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration);
+				IExporterService exporter = ExporterFactory.BuildExporter(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration);
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 
