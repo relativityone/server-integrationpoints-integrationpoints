@@ -6,8 +6,8 @@ namespace kCura.IntegrationPoints.Core.Services.Conversion
 {
 	public class SynchronizerObjectBuilder : IObjectBuilder
 	{
-		private List<FieldEntry> _fields;
-		public SynchronizerObjectBuilder(List<FieldEntry> fields)
+		private readonly IEnumerable<FieldEntry> _fields;
+		public SynchronizerObjectBuilder(IEnumerable<FieldEntry> fields)
 		{
 			_fields = fields;
 		}

@@ -231,8 +231,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			SetupSubscriptions(dataSynchronizer, job);
 
-			dataSynchronizer.SyncData(sourceDataReader, fieldMaps, destinationConfiguration);
-		}
+            dataSynchronizer.SyncData(entryIDs, sourceDataReader, fieldMaps, destinationConfiguration);
+        }
 
 		internal virtual List<FieldEntry> GetSourceFields(IEnumerable<FieldMap> fieldMap)
 		{

@@ -52,9 +52,6 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints.Core">
-      <HintPath>..\kCura.IntegrationPoints.Web\Bin\kCura.IntegrationPoints.Core.dll</HintPath>
-    </Reference>
     <Reference Include="kCura.Relativity.Client, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
@@ -88,8 +85,11 @@
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
+    <Compile Include="FileInfo.cs" />
+    <Compile Include="Queries\FileQuery.cs" />
     <Compile Include="Queries\GetSavedSearchesQuery.cs" />
     <Compile Include="Queries\GetWorkspacesQuery.cs" />
+    <Compile Include="Queries\IFileQuery.cs" />
     <Compile Include="RelativityVersion.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="EddsDbContext.cs" />

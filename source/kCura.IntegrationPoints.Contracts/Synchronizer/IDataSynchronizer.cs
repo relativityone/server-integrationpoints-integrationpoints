@@ -20,12 +20,13 @@ namespace kCura.IntegrationPoints.Contracts.Synchronizer
 		[Obsolete]
 		void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options);
 
-		/// <summary>
-		/// Synchronizes data from the data source provider and imports it into Relativity.
-		/// </summary>
-		/// <param name="data">The reader used to read the records to insert into the system.</param>
-		/// <param name="fieldMap">The field mapping used to import data into the system.</param>
-		/// <param name="options">The option settings used to synchronize the source data with the destination.</param>
-		void SyncData(IDataReader data, IEnumerable<FieldMap> fieldMap, string options);
+        /// <summary>
+        /// Synchronizes data from the data source provider and imports it into Relativity.
+        /// </summary>
+        /// <param name="entryIds">Record IDs of the data being imported.</param>
+        /// <param name="data">The reader used to read the records to insert into the system.</param>
+        /// <param name="fieldMap">The field mapping used to import data into the system.</param>
+        /// <param name="options">The option settings used to synchronize the source data with the destination.</param>
+        void SyncData(IEnumerable<string> entryIds, IDataReader data, IEnumerable<FieldMap> fieldMap, string options);
 	}
 }

@@ -18,6 +18,8 @@ namespace kCura.IntegrationPoints.Data.Installers
 			container.Register(Component.For<JobStatisticsQuery>().ImplementedBy<JobStatisticsQuery>().LifeStyle.Transient);
 
 			container.Register(Component.For<WorkspaceQuery>().ImplementedBy<WorkspaceQuery>().LifeStyle.Transient);
-		}
-	}
+
+            container.Register(Component.For<IFileQuery>().ImplementedBy<FileQuery>().LifeStyle.Transient);
+        }
+    }
 }

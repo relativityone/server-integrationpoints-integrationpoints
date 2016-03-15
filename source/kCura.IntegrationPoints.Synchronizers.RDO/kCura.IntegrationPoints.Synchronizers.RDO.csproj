@@ -76,6 +76,7 @@
     <Compile Include="Config.cs" />
     <Compile Include="ExportSynchroznizer.cs" />
     <Compile Include="ImportAPI\RelativityReaderDecorator.cs" />
+    <Compile Include="RdoFieldSynchronizerBase.cs" />
     <Compile Include="RdoSynchronizerPull.cs" />
     <Compile Include="IImportApiFactory.cs" />
     <Compile Include="IRelativityFieldQuery.cs" />

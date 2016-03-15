@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public abstract class RdoSynchronizerBase : Contracts.Synchronizer.IDataSynchronizer, IBatchReporter
+	public abstract class RdoSynchronizerBase : RdoFieldSynchronizerBase, Contracts.Synchronizer.IDataSynchronizer, IBatchReporter
 	{
 		public event BatchCompleted OnBatchComplete;
 		public event BatchSubmitted OnBatchSubmit;
@@ -20,82 +20,18 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public event JobError OnJobError;
 		public event RowError OnDocumentError;
 
-		protected readonly IRelativityFieldQuery FieldQuery;
-		private Relativity.ImportAPI.IImportAPI _api;
-		private readonly IImportApiFactory _factory;
-
-		private IImportService _importService;
+        private IImportService _importService;
 		private bool _isJobComplete = false;
 		private Exception _jobError;
 		private List<KeyValuePair<string, string>> _rowErrors;
 		private ImportSettings ImportSettings { get; set; }
 		private NativeFileImportService NativeFileImportService { get; set; }
 
-		protected RdoSynchronizerBase(IRelativityFieldQuery fieldQuery, IImportApiFactory factory)
+		protected RdoSynchronizerBase(IRelativityFieldQuery fieldQuery, IImportApiFactory factory) : base(fieldQuery, factory)
 		{
-			FieldQuery = fieldQuery;
-			_factory = factory;
 		}
 
-		protected Relativity.ImportAPI.IImportAPI GetImportApi(ImportSettings settings)
-		{
-			return _api ?? (_api = _factory.GetImportAPI(settings));
-		}
-
-		private List<string> IgnoredList
-		{
-			get
-			{
-				// fields don't have any space in between words 
-				var list = new List<string>
-			    {
-					"Is System Artifact",
-					"System Created By",
-					"System Created On",
-					"System Last Modified By",
-					"System Last Modified On",
-					"Artifact ID"
-			    };
-				return list;
-			}
-		}
-
-		protected List<Relativity.Client.Artifact> GetRelativityFields(ImportSettings settings)
-		{
-			List<Artifact> fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
-			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId).Select(x => x.ArtifactID));
-			return fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
-		}
-
-		public virtual IEnumerable<FieldEntry> GetFields(string options)
-		{
-			ImportSettings settings = GetSettings(options);
-			var fields = GetRelativityFields(settings);
-			return ParseFields(fields);
-		}
-
-		protected IEnumerable<FieldEntry> ParseFields(List<Relativity.Client.Artifact> fields)
-		{
-			foreach (var result in fields)
-			{
-				if (!IgnoredList.Contains(result.Name))
-				{
-					var idField = result.Fields.FirstOrDefault(x => x.Name.Equals("Is Identifier"));
-					bool isIdentifier = false;
-					if (idField != null)
-					{
-						isIdentifier = Convert.ToInt32(idField.Value) == 1;
-						if (isIdentifier)
-						{
-							result.Name += " [Object Identifier]";
-						}
-					}
-					yield return new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier, IsRequired = false };
-				}
-			}
-		}
-
-		public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
+	    public void SyncData(IEnumerable<IDictionary<FieldEntry, object>> data, IEnumerable<FieldMap> fieldMap, string options)
 		{
 			IntializeImportJob(fieldMap, options);
 
@@ -131,7 +67,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			FinalizeSyncData(data, fieldMap, this.ImportSettings);
 		}
 
-		public void SyncData(IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
+		public void SyncData(IEnumerable<string> entryIds, IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
 		{
 			IntializeImportJob(fieldMap, options);
 
@@ -142,7 +78,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			WaitUntilTheJobIsDone();
 		}
-
 
 		private void IntializeImportJob(IEnumerable<FieldMap> fieldMap, string options)
 		{
@@ -172,21 +107,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			} while (!isJobDone);
 		}
 
-		private string _webAPIPath;
-		public string WebAPIPath
-		{
-			get
-			{
-				if (string.IsNullOrEmpty(_webAPIPath))
-				{
-					_webAPIPath = Config.WebAPIPath;
-				}
-				return _webAPIPath;
-			}
-			protected set { _webAPIPath = value; }
-		}
-
-		private bool? _disableNativeLocationValidation;
+	    private bool? _disableNativeLocationValidation;
 		public bool? DisableNativeLocationValidation
 		{
 			get
@@ -291,22 +212,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return;
 		}
 
-		protected ImportSettings GetSettings(string options)
-		{
-			ImportSettings settings = JsonConvert.DeserializeObject<ImportSettings>(options);
-
-			if (string.IsNullOrEmpty(settings.WebServiceURL))
-			{
-				settings.WebServiceURL = this.WebAPIPath;
-				if (string.IsNullOrEmpty(settings.WebServiceURL))
-				{
-					throw new Exception("No WebAPI path set for integration points.");
-				}
-			}
-			return settings;
-		}
-
-		protected bool IncludeFieldInImport(FieldMap fieldMap)
+	    protected bool IncludeFieldInImport(FieldMap fieldMap)
 		{
 			return (
 				fieldMap.FieldMapType != FieldMapTypeEnum.Parent
