@@ -192,7 +192,7 @@ var IP = IP || {};
 		    }
 		});
 
-		this.isEnabled =function (type) {
+		this.isEnabled = function (type) {
 		    return self.selectedDestinationType() === type;
 		};
 		this.selectedDestinationPath = ko.observable(settings.fileshare).extend({
@@ -203,17 +203,25 @@ var IP = IP || {};
 		    }
 		});
 
-		//this.selectedDestinationType.subscribe(function (selectedValue) {
-		//    this.selectedDestinationPath = selectedValue;
-		//});
-		this.artifactTypeID = ko.observable().extend({ required: true });
-        //    .extend({
-		//    required: {
-		//        onlyIf: function () {
-		//            return self.isEnabled("Relativity");
-		//        }
-		//    }
-		//});
+	
+		this.artifactTypeID = ko.observable()//.extend({ required: true });
+            .extend({
+		    required: {
+		        onlyIf: function () {
+		            return self.isEnabled("Relativity");
+		        }
+		    }
+            });
+
+		this.selectedDestinationType.subscribe(function (selectedValue) {
+		    if (selectedValue === "Fileshare") {
+		        self.artifactTypeID(10);
+		    }
+		    else {
+		        self.artifactTypeID(settings.artifactTypeID);
+		    }
+
+		});
 		//CaseArtifactId
 		//ParentObjectIdSourceFieldName
 	};
