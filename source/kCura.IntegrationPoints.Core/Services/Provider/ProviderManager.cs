@@ -10,8 +10,6 @@ using Castle.Windsor.Installer;
 using kCura.IntegrationPoints.Core.Domain;
 using kCura.IntegrationPoints.Core.Services.Marshaller;
 using Relativity.API;
-using Relativity.APIHelper;
-using Relativity.Authentication.Interfaces;
 
 namespace kCura.IntegrationPoints.Contracts
 {
@@ -23,11 +21,10 @@ namespace kCura.IntegrationPoints.Contracts
 	public class DomainManager : MarshalByRefObject
 	{
 		private IProviderFactory _providerFactory;
-		private ISynchronizerFactory _synchronizerFactory;
 		private WindsorContainer _windsorContainer;
 
 		/// <summary>
-		/// Called to initilized the provider's app domain and do any setup work needed
+		/// Called to initialized the provider's app domain and do any setup work needed
 		/// </summary>
 		public void Init()
 		{
@@ -56,28 +53,9 @@ namespace kCura.IntegrationPoints.Contracts
 				}
 			}
 
-			// Run bootstrapper for app domain
-			Bootstrapper.InitAppDomain(Core.Constants.IntegrationPoints.AppDomain_Subsystem_Name, Core.Constants.IntegrationPoints.Application_GuidString, AppDomain.CurrentDomain);
-
 			// Get marshaled data
 			IAppDomainDataMarshaller dataMarshaller = new SecureAppDomainDataMarshaller();
-			this.SetUpSystemToken(dataMarshaller);
 			this.SetUpConnectionString(dataMarshaller);
-		}
-
-		/// <summary>
-		/// Sets the SystemTokenProvider for the domain by retrieving the encrytped AppDomain data
-		/// </summary>
-		/// <param name="dataMarshaller">The dataMarshaller class to use for retrieving the marshaled data</param>
-		private void SetUpSystemToken(IAppDomainDataMarshaller dataMarshaller)
-		{
-			ISerializationHelper serializationHelper = new SerializationHelper();
-			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Core.Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider);
-			IProvideSystemTokens systemTokenProvider = serializationHelper.Deserialize<IProvideSystemTokens>(data);
-			if (systemTokenProvider != null)
-			{
-				ExtensionPointServiceFinder.SystemTokenProvider = systemTokenProvider;
-			}
 		}
 
 		/// <summary>

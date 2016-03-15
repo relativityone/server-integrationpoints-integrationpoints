@@ -7,8 +7,7 @@ using System.Text;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Core.Services.Marshaller;
 using kCura.IntegrationPoints.Data.Models;
-using Relativity.API;
-using Relativity.Authentication.Interfaces;
+using Relativity.APIHelper;
 
 namespace kCura.IntegrationPoints.Core.Domain
 {
@@ -18,7 +17,6 @@ namespace kCura.IntegrationPoints.Core.Domain
 		{
 			//loads the contracts dll into the app domain so we can reference 
 			var assemblyPath = new Uri(typeof(AssemblyDomainLoader).Assembly.CodeBase).LocalPath; //TODO switch to this instead
-			//var assemblyPath = @"C:\SourceCode\LDAPSync\source\bin\Debug\kCura.IntegrationPoints.Contracts.dll";
 			var stream = File.ReadAllBytes(assemblyPath);
 			var dir = Path.Combine(domain.BaseDirectory, new FileInfo(assemblyPath).Name);
 			File.WriteAllBytes(dir, stream);
@@ -31,7 +29,6 @@ namespace kCura.IntegrationPoints.Core.Domain
 		{
 			var type = typeof(T);
 			var instance = domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName) as T;
-			//dynamic instance = domain.CreateInstanceAndUnwrap("kCura.IntegrationPoints.Contracts", type.FullName);
 			if (instance == null)
 			{
 				throw new Exception(string.Format("Could not create an instance of {0} in app domain {1}.", type.Name, domain.FriendlyName));
@@ -134,12 +131,6 @@ namespace kCura.IntegrationPoints.Core.Domain
 
 			IDictionary<string, byte[]> dataDictionary = new Dictionary<string, byte[]>();
 
-			// Get the SystemTokenProvider
-			ISerializationHelper serializationHelper = new SerializationHelper();
-			IProvideSystemTokens systemTokenProvider = ExtensionPointServiceFinder.SystemTokenProvider;
-			byte[] systemTokenProviderBytes = serializationHelper.Serialize(systemTokenProvider);
-			dataDictionary.Add(Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider, systemTokenProviderBytes);
-
 			// Get the connection string
 			string connectionString = kCura.Config.Config.ConnectionString;
 			byte[] connectionStringBytes = Encoding.ASCII.GetBytes(connectionString);
@@ -150,6 +141,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 			dataMarshaller.MarshalDataToDomain(domain, dataDictionary);
 
 			manager.Init();
+			Bootstrapper.InitAppDomain(Core.Constants.IntegrationPoints.AppDomain_Subsystem_Name, Core.Constants.IntegrationPoints.Application_GuidString, domain);
 
 			return manager;
 		}
@@ -164,14 +156,11 @@ namespace kCura.IntegrationPoints.Core.Domain
 
 			//kCura.Agent
 			libDllPath = relativityFeaturePathService.WebProcessingPath;
-			//if (!string.IsNullOrWhiteSpace(libDllPath)) CopyDirectoryFiles(libDllPath, finalDllPath, true, false);
 			if (!string.IsNullOrWhiteSpace(libDllPath)) CopyFileWithWildcard(libDllPath, finalDllPath, "kCura.Agent*");
 
 			//FSharp.Core
 			libDllPath = relativityFeaturePathService.EddsPath;
 			if (!string.IsNullOrWhiteSpace(libDllPath)) CopyFileWithWildcard(Path.Combine(libDllPath, "bin"), finalDllPath, "FSharp.Core*");
-
-			//PrepAssemblies(domain);
 		}
 
 		private void CopyFileWithWildcard(string sourceDir, string targetDir, string fileName)

@@ -15,18 +15,21 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class GetFolderPathFieldsController : ApiController
 	{
 		private readonly IRSAPIClient _client;
-		private const string _USERNAME = "XxX_BearerTokenCredentials_XxX";
+		private readonly IImportApiFactory _importApiFactory;
+		private readonly IConfig _config;
 
-		public GetFolderPathFieldsController(IRSAPIClient client)
+		public GetFolderPathFieldsController(IRSAPIClient client, IImportApiFactory importApiFactory, IConfig config)
 		{
 			_client = client;
+			_importApiFactory = importApiFactory;
+			_config = config;
 		}
 
 		[HttpGet]
 		public HttpResponseMessage Get()
 		{
-			string authToken = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
-			IImportAPI importApi = new ExtendedImportAPI(_USERNAME, authToken, Config.WebAPIPath);
+			ImportSettings settings = new ImportSettings { WebServiceURL = _config.WebApiPath };
+			IImportAPI importApi = _importApiFactory.GetImportAPI(settings);
 
 			List<FieldEntry> textFields = GetTextFields(Convert.ToInt32(ArtifactType.Document));
 			IEnumerable<Relativity.ImportAPI.Data.Field> workspaceFields = importApi.GetWorkspaceFields(_client.APIOptions.WorkspaceID, Convert.ToInt32(ArtifactType.Document));

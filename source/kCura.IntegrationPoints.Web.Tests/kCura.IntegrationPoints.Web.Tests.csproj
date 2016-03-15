@@ -75,6 +75,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.ImportAPI.Wrapper, Version=9.3.0.0, Culture=neutral, PublicKeyToken=15fe5e0f8dc0bf95, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.ImportAPI.Wrapper.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Toggles, Version=1.0.0.64, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Toggles.1.0.0.64\lib\net45\Relativity.Toggles.dll</HintPath>
       <Private>True</Private>
@@ -155,6 +159,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>
       <Name>kCura.IntegrationPoints.LDAPProvider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
+      <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
+      <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj">
       <Project>{05724e56-c325-4ca2-9122-50a41411b691}</Project>
