@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.Web.Tests</RootNamespace>
     <AssemblyName>kCura.IntegrationPoints.Web.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -63,9 +63,9 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NSubstitute, Version=1.9.2.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -74,6 +74,10 @@
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.ImportAPI.Wrapper, Version=9.3.0.0, Culture=neutral, PublicKeyToken=15fe5e0f8dc0bf95, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.ImportAPI.Wrapper.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Toggles, Version=1.0.0.64, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Toggles.1.0.0.64\lib\net45\Relativity.Toggles.dll</HintPath>
@@ -155,6 +159,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>
       <Name>kCura.IntegrationPoints.LDAPProvider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
+      <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
+      <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj">
       <Project>{05724e56-c325-4ca2-9122-50a41411b691}</Project>

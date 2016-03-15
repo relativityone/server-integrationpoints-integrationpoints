@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -12,12 +13,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IJobManager _jobManager;
 		private IntegrationPointService _integrationPointService;
 		private JobHistoryService _jobHistoryService;
+		private ICaseServiceContext _caseServiceContext;
 
-		public ImportNowController(IJobManager jobManager, IntegrationPointService integrationPointService, JobHistoryService jobHistoryService)
+		public ImportNowController(IJobManager jobManager,
+			ICaseServiceContext caseServiceContext,
+			IntegrationPointService integrationPointService,
+			JobHistoryService jobHistoryService)
 		{
 			_jobManager = jobManager;
 			_integrationPointService = integrationPointService;
 			_jobHistoryService = jobHistoryService;
+			_caseServiceContext = caseServiceContext;
 		}
 
 		// POST api/importnow
@@ -32,8 +38,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			};
 			Data.IntegrationPoint integrationPoint = _integrationPointService.GetRdo(relatedObjectArtifactID);
 			_jobHistoryService.CreateRdo(integrationPoint, batchInstance, null);
-			_jobManager.CreateJob(jobDetails, TaskType.SyncManager, workspaceID, relatedObjectArtifactID);
+		  	var sourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value);
 
+			// if relativity provider is selected, we will create an export task
+			if (sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+			{
+				_jobManager.CreateJob(jobDetails, TaskType.ExportService, workspaceID, relatedObjectArtifactID);
+			}
+			else
+			{
+				_jobManager.CreateJob(jobDetails, TaskType.SyncManager, workspaceID, relatedObjectArtifactID);
+			}
 			return Request.CreateResponse(HttpStatusCode.OK);
 		}
 

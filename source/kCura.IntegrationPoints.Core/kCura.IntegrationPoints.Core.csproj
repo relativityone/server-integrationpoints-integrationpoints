@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.Core</RootNamespace>
     <AssemblyName>kCura.IntegrationPoints.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -79,8 +79,16 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Utility, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\kCura.Utility.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.API, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -89,8 +97,33 @@
     <Reference Include="Relativity.APIHelper">
       <HintPath>..\Dependencies\kCura\Relativity.APIHelper.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Authentication.Interfaces">
+    <Reference Include="Relativity.Authentication.Interfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.Authentication.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Core, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Core.Api, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.Core.Api.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Core.Api.Contracts, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.Core.Api.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Data, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.DataGrid.Logging, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.DataGrid.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.Interfaces, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -138,6 +171,10 @@
     <Compile Include="Queries\GetSourceProviderRdoByApplicationIdentifier.cs" />
     <Compile Include="Services\Domain\ProviderWrapper.cs" />
     <Compile Include="Services\Domain\RelativityFeaturePathService.cs" />
+    <Compile Include="Services\Exporter\DocumentTransferDataReader.cs" />
+    <Compile Include="Services\Exporter\ExporterFactory.cs" />
+    <Compile Include="Services\Exporter\IExporterService.cs" />
+    <Compile Include="Services\Exporter\RelativityExporterService.cs" />
     <Compile Include="Services\Guid\GuidService.cs" />
     <Compile Include="Services\Guid\IGuidService.cs" />
     <Compile Include="Services\IDeleteHistoryErrorService.cs" />

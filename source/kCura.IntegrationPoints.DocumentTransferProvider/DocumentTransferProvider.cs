@@ -10,13 +10,11 @@ using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
 using kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementations;
-using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using Relativity.API;
 using Relativity.Services.ObjectQuery;
-using kCura.IntegrationPoints.DocumentTransferProvider.Shared;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
@@ -92,7 +90,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 						}
 						catch
 						{
-							// surpress error for invalid casts
+							// suppress error for invalid casts
 						}
 					}
 				}
@@ -163,12 +161,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			int fieldTypeArtifactId = Convert.ToInt32(ArtifactType.Field);
 			IRDORepository fieldRepository = new RDORepository(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, fieldTypeArtifactId);
 			IFieldManager fieldManager = new KeplerFieldManager(fieldRepository);
-				
+
 			IDBContext dbContext = _helper.GetDBContext(settings.SourceWorkspaceArtifactId);
 
 			ArtifactFieldDTO[] longTextfields = fieldManager.RetrieveLongTextFieldsAsync(documentTypeId).ConfigureAwait(false).GetAwaiter().GetResult(); ;
 
-			IDataReader dataReader =  new DocumentTransferDataReader(
+			IDataReader dataReader = new DocumentTransferDataReader(
 				documentManager,
 				entryIds.Select(x => Convert.ToInt32(x)),
 				fields,

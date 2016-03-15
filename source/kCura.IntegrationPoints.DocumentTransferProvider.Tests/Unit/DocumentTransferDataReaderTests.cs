@@ -7,7 +7,6 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
-using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 using kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -22,11 +21,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		private IDataReader _instance;
 		private IDocumentManager _documentManager;
 
-		const int _DOCUMENT_ARTIFACTID = 123423;
-		private readonly int[] _documentIds = new[] {_DOCUMENT_ARTIFACTID};
-		const string _FIELD_NAME = "DispName";
-		const int _FIELD_IDENTIFIER = 123;
-		const string _CONTROL_NUMBER = "WEB000123";
+		private const int _DOCUMENT_ARTIFACTID = 123423;
+		private readonly int[] _documentIds = new[] { _DOCUMENT_ARTIFACTID };
+		private const string _FIELD_NAME = "DispName";
+		private const int _FIELD_IDENTIFIER = 123;
+		private const string _CONTROL_NUMBER = "WEB000123";
 
 		private static readonly ArtifactDTO _templateArtifactDto = new ArtifactDTO(
 			_DOCUMENT_ARTIFACTID,
@@ -59,10 +58,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		}
 
 		#region Read
+
 		[Test]
 		public void Read_FirstRead_RetrievesDocuments_ReturnsTrue()
 		{
-			// Arrange	
+			// Arrange
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
 			_instance = new DocumentTransferDataReader(
-				_documentManager, 
+				_documentManager,
 				_documentIds,
 				_templateFieldEntries,
 				new int[0]);
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void Read_FirstRead_RunsSavedSearch_NoResults_ReturnsFalse()
 		{
-			// Arrange	
+			// Arrange
 			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void Read_FirstRead_RunsSavedSearch_RequestFailsWithException_ReturnsFalse()
 		{
-			// Arrange	
+			// Arrange
 			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))))
@@ -144,7 +144,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void Read_ReadAllResults_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			int[] documentIds = { 123, 345 };
 			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(documentIds),
@@ -179,7 +179,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void Read_ReadSomeResultsThenClose_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			int[] documentIds = { 123, 345 };
 			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(documentIds),
@@ -213,7 +213,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void Read_NoFields_DoesNotFail()
 		{
-			// Arrange	
+			// Arrange
 			_documentManager.RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())))
@@ -222,7 +222,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
-				new List<FieldEntry>(), 
+				new List<FieldEntry>(),
 				new int[0]);
 
 			// Act
@@ -237,7 +237,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void Read_NoDocumentIds_DoesNotFail()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				new int[0],
@@ -256,7 +256,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void Read_NoDocumentIdsNoFields_DoesNotFail()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				new int[0],
@@ -272,9 +272,10 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Arg.Is(Arg.Is<HashSet<int>>(x => !x.Any())));
 		}
 
-		#endregion
+		#endregion Read
 
 		#region IDataReader methods
+
 		[Test]
 		public void IsDBNull_ResultNotNull_ReturnsFalse()
 		{
@@ -336,7 +337,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			Type result = _instance.GetFieldType(0);
 
 			// Assert
-			Assert.AreEqual(result, typeof(string), "The types should match" );
+			Assert.AreEqual(result, typeof(string), "The types should match");
 			_documentManager.Received(1).RetrieveDocumentsAsync(
 				Arg.Is(_documentIds),
 				Arg.Is(Arg.Is<HashSet<int>>(x => x.Count() == 1 && x.Contains(_FIELD_IDENTIFIER))));
@@ -375,7 +376,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void NextResult_ReturnsFalse()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
@@ -392,7 +393,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void Depth_ReturnsZero()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
@@ -409,7 +410,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void RecordsAffected_ReturnsNegativeOne()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
@@ -426,7 +427,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetName_FieldExists_LookUpSucceeds()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
@@ -443,7 +444,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetName_ObjectIdentifierTextInFieldExists_LookUpSucceeds()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
@@ -467,7 +468,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetOrdinal_FieldExists_LookUpSucceeds()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
@@ -484,7 +485,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetOrdinal_ObjectIdentifierTextInFieldExists_LookUpSucceeds()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
@@ -508,7 +509,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void ThisAccessor_ObjectIdentifierTextInFieldExists_LookUpSucceeds()
 		{
-			// Arrange	
+			// Arrange
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
@@ -548,7 +549,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void ThisAccessor_FieldExists_LookUpSucceeds()
 		{
-			// Arrange	
+			// Arrange
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
@@ -581,7 +582,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void FieldCount_NoLongTextFields_ReturnsCorrectCount()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
@@ -598,12 +599,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void FieldCount_WithLongTextFields_ReturnsCorrectCount()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
 				_templateFieldEntries,
-				new int[] {1232});
+				new int[] { 1232 });
 
 			// Act
 			int fieldCount = _instance.FieldCount;
@@ -842,14 +843,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetSchemaTable_OneField_ReturnsCorrectSchema()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
 				_templateFieldEntries,
 				new int[0]);
 
-			var expectedResult = new DataTable() { Columns = { new DataColumn(_FIELD_IDENTIFIER.ToString()), new DataColumn(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) }};
+			var expectedResult = new DataTable() { Columns = { new DataColumn(_FIELD_IDENTIFIER.ToString()), new DataColumn(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) } };
 
 			// Act
 			DataTable result = _instance.GetSchemaTable();
@@ -861,7 +862,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetSchemaTable_MultipleFields_ReturnsCorrectSchema()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
@@ -869,7 +870,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				{
 					new FieldEntry() {FieldIdentifier = "123", DisplayName = "abc"},
 					new FieldEntry() {FieldIdentifier = "456", DisplayName = "def"},
-				}, 
+				},
 				new int[0]);
 
 			var expectedResult = new DataTable()
@@ -887,7 +888,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetSchemaTable_NoFields_ReturnsCorrectSchema()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
@@ -906,14 +907,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetSchemaTable_NoDocumentsNoFields_ReturnsCorrectSchema()
 		{
-			// Arrange	
+			// Arrange
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				new int[0],
 				new FieldEntry[0],
 				new int[0]);
 
-			var expectedResult = new DataTable() { Columns = { new DataColumn(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) } }; 
+			var expectedResult = new DataTable() { Columns = { new DataColumn(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) } };
 
 			// Act
 			DataTable result = _instance.GetSchemaTable();
@@ -921,14 +922,15 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Arrange
 			Assert.IsTrue(ArgumentMatcher.DataTablesMatch(expectedResult, result), "The schema DataTable should be correct");
 		}
-		#endregion
+
+		#endregion IDataReader methods
 
 		#region Gets
 
 		[Test]
 		public void GetString_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
@@ -961,7 +963,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetInt64_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
@@ -985,14 +987,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 								ArtifactId = 123,
 								Name = "Some Number",
 								Value = value
-							}	
+							}
 						})
 				});
 
 			_instance = new DocumentTransferDataReader(
 				_documentManager,
 				_documentIds,
-				new FieldEntry[] {new FieldEntry() {FieldIdentifier = "123", DisplayName = "Some Number"}, },
+				new FieldEntry[] { new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, },
 				new int[0]);
 
 			// Act
@@ -1009,7 +1011,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetInt16_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
@@ -1057,7 +1059,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetInt32_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
@@ -1152,7 +1154,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetFloat_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
@@ -1200,7 +1202,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetDouble_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
@@ -1248,7 +1250,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetDecimal_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
@@ -1296,7 +1298,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetDateTime_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
@@ -1344,7 +1346,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetChar_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
@@ -1392,7 +1394,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetByte_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
@@ -1440,7 +1442,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetBoolean_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			// for retrieving long text field values (per doc)
 			_documentManager.RetrieveDocumentAsync(
 				Arg.Is(_DOCUMENT_ARTIFACTID),
@@ -1488,7 +1490,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetValue_LongTextField_GoldFlow()
 		{
-			// Arrange	
+			// Arrange
 			const string longTextFieldValue = "woop, der it is!";
 			const int longTextFieldIdentifier = 8392;
 			const string longTextFieldName = "LongTextFieldNameGoesHere";
@@ -1547,7 +1549,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetValue_DocumentReadFailed()
 		{
-			// Arrange	
+			// Arrange
 			const string longTextFieldValue = "woop, der it is!";
 			const int longTextFieldIdentifier = 8392;
 			const string longTextFieldName = "LongTextFieldNameGoesHere";
@@ -1595,7 +1597,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[Test]
 		public void GetValue_LongTextField_DocumentReadThrowsException()
 		{
-			// Arrange	
+			// Arrange
 			const string longTextFieldValue = "woop, der it is!";
 			const int longTextFieldIdentifier = 8392;
 			const string longTextFieldName = "LongTextFieldNameGoesHere";
@@ -1608,7 +1610,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			};
 
 			var artifactDto = new ArtifactDTO(_DOCUMENT_ARTIFACTID, 10, new List<ArtifactFieldDTO>() { });
-
 
 			ArtifactDTO[] artifactDtos = { artifactDto };
 
@@ -1641,6 +1642,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			});
 		}
 
-		#endregion
+		#endregion Gets
 	}
 }

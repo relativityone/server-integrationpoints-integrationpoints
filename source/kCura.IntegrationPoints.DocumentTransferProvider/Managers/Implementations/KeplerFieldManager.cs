@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Contracts.Models;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.RDO;
-using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementations
@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementati
 	public class KeplerFieldManager : IFieldManager
 	{
 		private readonly IRDORepository _rdoRepository;
+
 		public KeplerFieldManager(IRDORepository rdoRepository)
 		{
 			_rdoRepository = rdoRepository;

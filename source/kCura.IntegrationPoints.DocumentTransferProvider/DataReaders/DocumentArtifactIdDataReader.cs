@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Data;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.Readers;
 using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
-using kCura.IntegrationPoints.DocumentTransferProvider.Models;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
@@ -10,7 +11,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private readonly ISavedSearchManager _savedSearchManager;
 
 		public DocumentArtifactIdDataReader(ISavedSearchManager savedSearchManager) :
-			base(new [] { new DataColumn(Shared.Constants.ARTIFACT_ID_FIELD_NAME) })
+			base(new[] { new DataColumn(Shared.Constants.ARTIFACT_ID_FIELD_NAME) })
 		{
 			_savedSearchManager = savedSearchManager;
 		}
@@ -31,7 +32,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		public override string GetDataTypeName(int i)
 		{
-			return typeof (Int32).ToString();
+			return typeof(Int32).ToString();
 		}
 
 		public override Type GetFieldType(int i)

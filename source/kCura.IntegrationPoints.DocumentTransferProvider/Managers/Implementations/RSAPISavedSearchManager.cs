@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using kCura.IntegrationPoints.DocumentTransferProvider.Models;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 

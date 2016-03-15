@@ -1,29 +1,41 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using kCura.Apps.Common.Config;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public class Config
+	public class Config : IConfig
 	{
-		private static IDictionary _underlyingSetting;
-		protected static IDictionary ConfigSettings
+		private static readonly Lazy<Config> _instance = new Lazy<Config>(() => new Config());
+		private static IDictionary _dictionary;
+
+		public static Config Instance
 		{
-			get { return _underlyingSetting ?? (_underlyingSetting = Manager.Instance.GetConfig("kCura.IntegrationPoints")); }
+			get { return _instance.Value; }
 		}
 
-		public static string WebAPIPath
+		protected Config() :
+			this(Manager.Instance.GetConfig("kCura.IntegrationPoints"))
+		{ }
+
+		internal Config(IDictionary dictionary)
 		{
-			get { return ConfigHelper.GetValue(ConfigSettings["WebAPIPath"], string.Empty); }
+			_dictionary = dictionary;
 		}
 
-		public static bool DisableNativeLocationValidation
+		public string WebApiPath
 		{
-			get { return ConfigHelper.GetValue<bool>(ConfigSettings["DisableNativeLocationValidation"], false); }
+			get { return ConfigHelper.GetValue(_dictionary["WebAPIPath"], string.Empty); }
 		}
 
-		public static bool DisableNativeValidation
+		public bool DisableNativeLocationValidation
 		{
-			get { return ConfigHelper.GetValue<bool>(ConfigSettings["DisableNativeValidation"], false); }
+			get { return ConfigHelper.GetValue<bool>(_dictionary["DisableNativeLocationValidation"], false); }
+		}
+
+		public bool DisableNativeValidation
+		{
+			get { return ConfigHelper.GetValue<bool>(_dictionary["DisableNativeValidation"], false); }
 		}
 	}
 }

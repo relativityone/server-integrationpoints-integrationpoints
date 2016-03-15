@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.DocumentTransferProvider.Models;
+using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Managers
 {
