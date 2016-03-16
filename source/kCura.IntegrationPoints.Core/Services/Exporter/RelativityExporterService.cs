@@ -72,21 +72,24 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			List<ArtifactDTO> result = new List<ArtifactDTO>(size);
 			object[] retrievedData = _exporter.RetrieveResults(_exportJobInfo.RunId, _avfIds, size);
-			int artifactType = (int)ArtifactType.Document;
-			foreach (var data in retrievedData)
+			if (retrievedData != null)
 			{
-				ArtifactFieldDTO[] fields = new ArtifactFieldDTO[_avfIds.Length];
-				object[] fieldsValue = (object[])data;
-				for (int index = 0; index < _avfIds.Length; index++)
+				int artifactType = (int)ArtifactType.Document;
+				foreach (var data in retrievedData)
 				{
-					fields[index] = new ArtifactFieldDTO()
+					ArtifactFieldDTO[] fields = new ArtifactFieldDTO[_avfIds.Length];
+					object[] fieldsValue = (object[])data;
+					for (int index = 0; index < _avfIds.Length; index++)
 					{
-						Name = _exportJobInfo.ColumnNames[index],
-						ArtifactId = _fieldArtifactIds[index],
-						Value = fieldsValue[index]
-					};
+						fields[index] = new ArtifactFieldDTO()
+						{
+							Name = _exportJobInfo.ColumnNames[index],
+							ArtifactId = _fieldArtifactIds[index],
+							Value = fieldsValue[index]
+						};
+					}
+					result.Add(new ArtifactDTO(Convert.ToInt32(fieldsValue[_avfIds.Length]), artifactType, fields));
 				}
-				result.Add(new ArtifactDTO(Convert.ToInt32(fieldsValue[_avfIds.Length]), artifactType, fields));
 			}
 			return result.ToArray();
 		}
