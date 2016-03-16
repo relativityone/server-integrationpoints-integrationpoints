@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Web", "kCura.IntegrationPoints.Web\kCura.IntegrationPoints.Web.csproj", "{05724E56-C325-4CA2-9122-50A41411B691}"
 	ProjectSection(ProjectDependencies) = postProject
 		{599D771D-2AE7-4321-9BAC-BE06F827CE0A} = {599D771D-2AE7-4321-9BAC-BE06F827CE0A}
@@ -78,6 +80,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.DocumentTransferProvider.Shared", "kCura.IntegrationPoints.DocumentTransferProvider.Shared\kCura.IntegrationPoints.DocumentTransferProvider.Shared.csproj", "{22991306-A168-4D22-80A7-AAA99C9E9FD6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.DocumentTransferProvider.Tests", "kCura.IntegrationPoints.DocumentTransferProvider.Tests\kCura.IntegrationPoints.DocumentTransferProvider.Tests.csproj", "{75B57398-7E27-4DF2-BF9F-A7E4A46E898E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FilesDestinationProvider.Core", "kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj", "{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests", "kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.csproj", "{CACFB723-C66D-47AD-882F-28F35A5C890C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -376,6 +382,30 @@ Global
 		{75B57398-7E27-4DF2-BF9F-A7E4A46E898E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{75B57398-7E27-4DF2-BF9F-A7E4A46E898E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{75B57398-7E27-4DF2-BF9F-A7E4A46E898E}.Release|x64.ActiveCfg = Release|Any CPU
+		{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}.Debug|x64.ActiveCfg = Debug|x64
+		{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}.Debug|x64.Build.0 = Debug|x64
+		{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}.Release|x64.ActiveCfg = Release|x64
+		{1FC70536-A8EF-48CE-B20A-E5C5C6723F23}.Release|x64.Build.0 = Release|x64
+		{CACFB723-C66D-47AD-882F-28F35A5C890C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CACFB723-C66D-47AD-882F-28F35A5C890C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CACFB723-C66D-47AD-882F-28F35A5C890C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CACFB723-C66D-47AD-882F-28F35A5C890C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CACFB723-C66D-47AD-882F-28F35A5C890C}.Debug|x64.ActiveCfg = Debug|x64
+		{CACFB723-C66D-47AD-882F-28F35A5C890C}.Debug|x64.Build.0 = Debug|x64
+		{CACFB723-C66D-47AD-882F-28F35A5C890C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CACFB723-C66D-47AD-882F-28F35A5C890C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CACFB723-C66D-47AD-882F-28F35A5C890C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{CACFB723-C66D-47AD-882F-28F35A5C890C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{CACFB723-C66D-47AD-882F-28F35A5C890C}.Release|x64.ActiveCfg = Release|x64
+		{CACFB723-C66D-47AD-882F-28F35A5C890C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
