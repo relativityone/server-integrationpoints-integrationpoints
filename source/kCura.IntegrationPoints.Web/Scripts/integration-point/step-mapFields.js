@@ -189,7 +189,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.OverwriteOptions = ko.observableArray(['Append Only', 'Overlay Only', 'Append/Overlay']);
 		self.OverwriteOptions = this.OverwriteOptions;
 
-		this.SelectedOverwrite = ko.observable(model.SelectedOverwrite || 'Append');
+		this.SelectedOverwrite = ko.observable(model.SelectedOverwrite || 'Append Only');
 
 		this.UseFolderPathInformation = ko.observable(model.UseFolderPathInformation || "false");
 		this.FolderPathSourceField = ko.observable().extend(
