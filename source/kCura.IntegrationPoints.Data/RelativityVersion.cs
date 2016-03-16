@@ -22,7 +22,7 @@ namespace kCura.Method.Data.Utility
 				if (!_isRelativityVersion92OrGreater.HasValue)
 				{
 					Version currentRelativityVersion = GetCurrentVersion();
-					Version version = new Version(9, 2);
+					Version version = new Version(9, 2, 500, 0);
 					if (version.CompareTo(currentRelativityVersion) > 0)
 					{
 						_isRelativityVersion92OrGreater = false;
