@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						{
 							value = ExportApiDataHelper.SanitizeMultiObjectField(value);
 						}
-						else if (_singleChioceFieldsArtifactIds.Contains(artifactId))
+						else if (_singleChoiceFieldsArtifactIds.Contains(artifactId))
 						{
 							value = ExportApiDataHelper.SanitizeSingleChoiceField(value);
 						}
