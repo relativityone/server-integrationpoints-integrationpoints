@@ -89,6 +89,7 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -109,6 +110,7 @@
     <Compile Include="Unit\JobStatusUpdaterTests.cs" />
     <Compile Include="Unit\RdoFilterTest.cs" />
     <Compile Include="Unit\Services\Domain\RelativityFeaturePathServiceTests.cs" />
+    <Compile Include="Unit\Services\Export\ExportApiHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">

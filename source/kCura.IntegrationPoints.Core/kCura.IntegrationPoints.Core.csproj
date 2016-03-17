@@ -172,6 +172,7 @@
     <Compile Include="Services\Domain\ProviderWrapper.cs" />
     <Compile Include="Services\Domain\RelativityFeaturePathService.cs" />
     <Compile Include="Services\Exporter\DocumentTransferDataReader.cs" />
+    <Compile Include="Services\Exporter\ExportApiDataHelper.cs" />
     <Compile Include="Services\Exporter\ExporterFactory.cs" />
     <Compile Include="Services\Exporter\IExporterService.cs" />
     <Compile Include="Services\Exporter\RelativityExporterService.cs" />
