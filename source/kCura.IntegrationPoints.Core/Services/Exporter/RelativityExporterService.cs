@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						}
 						else if (_singleChioceFieldsArtifactIds.Contains(artifactId))
 						{
-							value = SanitizeSingleChoiceField(value);
+							value = ExportApiDataHelper.SanitizeSingleChoiceField(value);
 						}
 
 						fields[index] = new ArtifactFieldDTO()
@@ -125,17 +125,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				}
 			}
 			return result.ToArray();
-		}
-
-		private string SanitizeSingleChoiceField(object rawValue)
-		{
-			string value = rawValue as string;
-			if (String.IsNullOrEmpty(value) == false)
-			{
-				value = value.Replace((char)11,  (char)0);
-				value = value.Replace("&#x0B;", String.Empty);
-			}
-			return value ?? String.Empty;
 		}
 
 		public bool HasDataToRetrieve
