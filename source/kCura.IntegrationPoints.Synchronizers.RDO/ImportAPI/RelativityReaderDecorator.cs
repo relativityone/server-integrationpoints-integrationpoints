@@ -19,8 +19,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		public RelativityReaderDecorator(IDataReader sourceReader, FieldMap[] mappingFields)
 		{
-			const string nativeFileDestinationField = "NATIVE_FILE_PATH_001";
-
 			_targetNameToSourceIdentifier = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			_sourceIdentifierToTargetName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -32,8 +30,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				FieldMap map = mappingFields[i];
 				if (map.FieldMapType == FieldMapTypeEnum.NativeFilePath)
 				{
-					_targetNameToSourceIdentifier[nativeFileDestinationField] = map.SourceField.FieldIdentifier;
-					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = nativeFileDestinationField;
+					_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME] = map.SourceField.FieldIdentifier;
+					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME;
 				}
 				else if (map.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
 				{
@@ -59,8 +57,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			var schemaTable = sourceReader.GetSchemaTable();
 			if (schemaTable != null && schemaTable.Columns.Contains(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD))
 			{
-				_targetNameToSourceIdentifier[nativeFileDestinationField] = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
-				_sourceIdentifierToTargetName[Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD] = nativeFileDestinationField;
+				_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME] = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
+				_sourceIdentifierToTargetName[Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD] = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME;
 			}
 		}
 

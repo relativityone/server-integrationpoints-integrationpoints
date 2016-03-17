@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			List<FieldEntry> fields = fieldEntries.ToList();
 			fields.Add(new FieldEntry()
 			{
-				DisplayName = "NATIVE_FILE_LOCATION_01",
+				DisplayName = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME,
 				FieldIdentifier = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
 				FieldType = FieldType.String
 			});
