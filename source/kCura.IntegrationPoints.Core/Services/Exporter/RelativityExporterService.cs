@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly Export.InitializationResults _exportJobInfo;
 		private readonly int _retrievedDataCount;
 
-		private readonly HashSet<int> _singleChioceFieldsArtifactIds;
+		private readonly HashSet<int> _singleChoiceFieldsArtifactIds;
 		private readonly HashSet<int> _multipleObjectFieldArtifactIds;
 		 
 		private readonly FieldMap[] _mappedFields;
@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			string config,
 			DirectSqlCallHelper helper)
 		{
-			_singleChioceFieldsArtifactIds = new HashSet<int>();
+			_singleChoiceFieldsArtifactIds = new HashSet<int>();
 			_multipleObjectFieldArtifactIds = new HashSet<int>();
 
 			ExportUsingSavedSearchSettings settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				}
 				else if (fieldInfo.FieldType == FieldTypeHelper.FieldType.Code)
 				{
-					_singleChioceFieldsArtifactIds.Add(artifactId);
+					_singleChoiceFieldsArtifactIds.Add(artifactId);
 				}
 			}
 
