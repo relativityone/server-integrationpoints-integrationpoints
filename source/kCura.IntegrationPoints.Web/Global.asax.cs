@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
@@ -26,15 +24,15 @@ namespace kCura.IntegrationPoints.Web
 
 	public class MvcApplication : System.Web.HttpApplication
 	{
-		//private static IWindsorContainer _container;
 		public static IWindsorContainer _container;
 
 		protected void Application_Start()
 		{
 			AreaRegistration.RegisterAllAreas();
 
+			kCura.Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(ConnectionHelper.Helper());
 			CreateWindsorContainer();
-			
+
 			WebApiConfig.Register(GlobalConfiguration.Configuration);
 			FilterConfig.RegisterWebAPIFilters(GlobalConfiguration.Configuration, _container);
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
@@ -46,8 +44,8 @@ namespace kCura.IntegrationPoints.Web
 			var settings = jsonFormatter.SerializerSettings;
 			settings.Formatting = Formatting.Indented;
 			settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-			kCura.Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(ConnectionHelper.Helper());
 			GlobalConfiguration.Configuration.EnsureInitialized();
+
 		}
 
 		public void Application_Error(object sender, EventArgs e)

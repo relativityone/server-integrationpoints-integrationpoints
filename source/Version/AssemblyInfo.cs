@@ -19,7 +19,11 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.EventHandlers")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.EventHandlers.Tests")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.DocumentTransferProvider")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web.Tests")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 //[assembly: Guid("9808fab4-ae17-49c5-a74a-e34543378422")]

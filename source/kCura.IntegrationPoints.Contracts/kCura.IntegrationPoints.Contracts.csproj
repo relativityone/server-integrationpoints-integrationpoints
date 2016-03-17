@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -71,6 +71,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Services.Interfaces">
+      <HintPath>..\Dependencies\kCura\Relativity.Services.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -80,11 +83,16 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssmblyExtension.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="DataSourceProviderAttribute.cs" />
     <Compile Include="DefaultProviderFactory.cs" />
     <Compile Include="DefaultSynchronizerFactory.cs" />
     <Compile Include="IProviderFactory.cs" />
     <Compile Include="ISynchronizerFactory.cs" />
+    <Compile Include="Models\ArtifactDTO.cs" />
+    <Compile Include="Models\ArtifactFieldDTO.cs" />
+    <Compile Include="Models\ExportSettings.cs" />
     <Compile Include="Models\FieldMapTypeEnum.cs" />
     <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Models\FieldEntry.cs" />
@@ -97,6 +105,9 @@
     <Compile Include="Provider\IFieldProvider.cs" />
     <Compile Include="IStartUp.cs" />
     <Compile Include="Provider\ProviderReadDataException.cs" />
+    <Compile Include="RDO\IRDORepository.cs" />
+    <Compile Include="RDO\RDORepository.cs" />
+    <Compile Include="Readers\RelativityReaderBase.cs" />
     <Compile Include="Synchronizer\IDataSynchronizer.cs" />
   </ItemGroup>
   <ItemGroup>

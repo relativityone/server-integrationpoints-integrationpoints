@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Mono.Cecil;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
@@ -27,11 +22,13 @@ namespace kCura.IntegrationPoints.Data.Queries
 	public class JobStatisticsQuery
 	{
 		private readonly IWorkspaceDBContext _context;
+
 		public JobStatisticsQuery(IWorkspaceDBContext context)
 		{
 			_context = context;
 		}
-		public JobStatistics UpdateAndRetreiveStats(string tableName, long jobId, JobStatistics stats)
+
+		public JobStatistics UpdateAndRetrieveStats(string tableName, long jobId, JobStatistics stats)
 		{
 			var sql = Resources.Resource.CreateJobTrackingEntry + Resources.Resource.UpdateJobStatistics;
 			var p1 = new SqlParameter("@tableName", tableName);

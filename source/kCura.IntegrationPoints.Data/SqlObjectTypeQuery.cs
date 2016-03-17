@@ -32,5 +32,23 @@ namespace kCura.IntegrationPoints.Data
 			}
 			return new List<ObjectType>();
 		}
+
+		public Dictionary<Guid, int> GetRdoGuidToArtifactIdMap(int userId)
+		{
+			Dictionary<Guid, int> results = new Dictionary<Guid, int>();
+			List<ObjectType> types = GetAllTypes(userId);
+
+			foreach (var type in types)
+			{
+				if (type.DescriptorArtifactTypeID.HasValue)
+				{
+					foreach (var guid in type.Guids)
+					{
+						results[guid] = type.DescriptorArtifactTypeID.Value;
+					}
+				}
+			}
+			return results;
+		}
 	}
 }

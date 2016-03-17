@@ -1,0 +1,22 @@
+@startuml
+
+title CreateSynchronizer
+
+start
+
+:Deserialize options;
+:Get RDO Object Type;
+if (options.Provider == "relativity") then (true)
+    :Resolve IRSAPIClient;
+    :Return RdoSynchronizerPush;
+else (false)
+    if (RDO Object Type == "custodian") then (true)
+        :Return RdoCustodianSynchronizer;
+    else (false)
+        :Return RdoSynchronizerPull;
+    endif
+endif
+
+stop
+
+@enduml

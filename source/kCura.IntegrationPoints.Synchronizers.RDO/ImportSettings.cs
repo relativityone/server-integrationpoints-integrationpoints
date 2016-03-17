@@ -13,10 +13,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			ImportAuditLevel = ImportAuditLevelEnum.FullAudit;
 			ExtractedTextFieldContainsFilePath = false;
-			MultiValueDelimiter = Convert.ToChar(";");
+			MultiValueDelimiter = IntegrationPoints.Contracts.Constants.MULTI_VALUE_DEIMITER;
 			ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles;
-			NestedValueDelimiter = Convert.ToChar("\\");
-			ImportOverwriteMode = ImportOverwriteModeEnum.Append;
+			NestedValueDelimiter = IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER;
+			ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly;
 			ImportOverlayBehavior = ImportOverlayBehaviorEnum.UseRelativityDefaults;
 		}
 		#endregion
@@ -50,8 +50,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		[JsonIgnore]
 		public Encoding ExtractedTextEncoding { get { return Encoding.GetEncoding(ExtractedTextFileEncoding); } }
-
 		public String ExtractedTextFileEncoding { get; set; }
+
+		/// <summary>
+		/// indicates user preferences of importing native files.
+		/// </summary>
+		public bool ImportNativeFile { get; set; }
 
 		public bool ExtractedTextFieldContainsFilePath { get; set; }
 		public int IdentityFieldId { get; set; }

@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 
 		public bool IsClosed
 		{
-			get { return _readerOpen; }
+			get { return !_readerOpen; }
 		}
 
 		public bool NextResult()

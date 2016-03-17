@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.ScheduleQueue.Core.Tests</RootNamespace>
     <AssemblyName>kCura.ScheduleQueue.Core.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -78,7 +78,7 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NSubstitute">
-      <HintPath>..\packages\NSubstitute.1.8.0.0\lib\net45\NSubstitute.dll</HintPath>
+      <HintPath>..\packages\NSubstitute.1.9.2.0\lib\net45\NSubstitute.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -104,6 +104,7 @@
     <Compile Include="Integration\Service\JobLogServiceTests.cs" />
     <Compile Include="Integration\Service\JobServiceTests.cs" />
     <Compile Include="TestDBContextHelper.cs" />
+    <Compile Include="Unit\BatchManagerBaseTests.cs" />
     <Compile Include="Unit\PeriodicScheduleRuleTest.cs" />
     <Compile Include="Unit\QueueTableHelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -121,6 +122,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Agent.Tests\kCura.IntegrationPoints.Agent.Tests.csproj">
+      <Project>{9F8F3789-4523-4C2F-BE74-ED7DF7A51D81}</Project>
+      <Name>kCura.IntegrationPoints.Agent.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
+      <Project>{30503682-E18D-49DF-A308-FE7996C4108E}</Project>
+      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Tests\kCura.IntegrationPoints.Core.Tests.csproj">
+      <Project>{81CAAB75-DFDA-4EFB-980C-9FEE0D9F359A}</Project>
+      <Name>kCura.IntegrationPoints.Core.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
       <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
       <Name>kCura.ScheduleQueueAgent</Name>

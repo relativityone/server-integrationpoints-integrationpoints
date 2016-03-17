@@ -9,17 +9,11 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
 	public class CaseServiceContext : ICaseServiceContext
 	{
-		private string _workspaceName;
-
 		public string GetWorkspaceName(int workspaceId)
 		{
-			if (_workspaceName == null)
-			{
-				WorkspaceQuery query = new WorkspaceQuery(helper.GetRsapiClient(ExecutionIdentity.CurrentUser));
-				Workspace workspace = query.GetWorkspace(WorkspaceID);
-				_workspaceName = workspace.Name;
-			}
-			return _workspaceName;
+			WorkspaceQuery query = new WorkspaceQuery(helper.GetRsapiClient(ExecutionIdentity.CurrentUser));
+			Workspace workspace = query.GetWorkspace(workspaceId);
+			return workspace.Name;
 		}
 
 		public int WorkspaceID { get; set; }

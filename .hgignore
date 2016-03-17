@@ -113,7 +113,10 @@ source\DevelopmentScripts\kCura.RAPBuilder.exe
 source\publish\*
 *.pubxml.user
 
-source\packages\Newtonsoft.Json.8.0.2
+source\packages\Newtonsoft.Json.8.0.2\*
+source\packages\NSubstitute.1.9.2.0\*
+source\packages\NUnit.2.6.4\*
 source\TestLogs\output64.xml
 
 source\.vs\config\applicationhost.config
+documentation/images/*

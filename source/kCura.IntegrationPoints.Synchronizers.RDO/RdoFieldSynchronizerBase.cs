@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
         protected List<Relativity.Client.Artifact> GetRelativityFields(ImportSettings settings)
         {
             List<Artifact> fields = FieldQuery.GetFieldsForRdo(settings.ArtifactTypeId);
-            HashSet<int> mappableArtifactIds = new HashSet<int>(Enumerable.Select<Field, int>(GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId), x => x.ArtifactID));
+			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportApi(settings).GetWorkspaceFields(settings.CaseArtifactId, settings.ArtifactTypeId).Select(x => x.ArtifactID));
             return fields.Where(x => mappableArtifactIds.Contains(x.ArtifactID)).ToList();
         }
 
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             {
                 if (string.IsNullOrEmpty(_webAPIPath))
                 {
-                    _webAPIPath = Config.WebAPIPath;
+					_webAPIPath = Config.Instance.WebApiPath;
                 }
                 return _webAPIPath;
             }

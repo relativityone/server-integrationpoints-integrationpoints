@@ -74,6 +74,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Config.cs" />
+    <Compile Include="IConfig.cs" />
     <Compile Include="ExportSynchroznizer.cs" />
     <Compile Include="ImportAPI\RelativityReaderDecorator.cs" />
     <Compile Include="RdoFieldSynchronizerBase.cs" />

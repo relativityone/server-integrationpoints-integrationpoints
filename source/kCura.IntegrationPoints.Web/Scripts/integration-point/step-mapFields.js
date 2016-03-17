@@ -142,6 +142,9 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 			}
 		});
+
+		this.AllowUserToMapNativeFileField = ko.observable(model.SourceProviderConfiguration.importSettingVisibility.allowUserToMapNativeFileField || true);
+
 		this.selectedUniqueId = ko.observable().extend({ required: true });
 		this.rdoIdentifier = ko.observable();
 		this.isAppendOverlay = ko.observable(true);
@@ -151,7 +154,7 @@ ko.validation.insertValidationMessage = function (element) {
 				onlyIf: function () {
 					return self.showErrors() && self.mappedWorkspace().length >= 0;
 				},
-				params: [model.selectedOverwrite, self.selectedUniqueId, self.rdoIdentifier]
+				params: [self.selectedUniqueId, self.rdoIdentifier]
 			}
 		});
 
@@ -181,8 +184,15 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.importNativeFile = ko.observable(model.importNativeFile || "false");
 
+		this.SourceProviderConfiguration = ko.observable(model.SourceProviderConfiguration);
+
+		this.OverwriteOptions = ko.observableArray(['Append Only', 'Overlay Only', 'Append/Overlay']);
+		self.OverwriteOptions = this.OverwriteOptions;
+
+		this.SelectedOverwrite = ko.observable(model.SelectedOverwrite || 'Append Only');
+
 		this.UseFolderPathInformation = ko.observable(model.UseFolderPathInformation || "false");
-		this.FolderPathSourceField = ko.observable(model.FolderPathSourceField).extend(
+		this.FolderPathSourceField = ko.observable().extend(
 		{
 			required: {
 				onlyIf: function () {
@@ -194,7 +204,9 @@ ko.validation.insertValidationMessage = function (element) {
 		this.FolderPathFields = ko.observableArray([]);
 		if (self.FolderPathFields.length === 0) {
 			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetFolderPathFields') }).then(function (result) {
+				// GetFolderPathFields only returns fixed-length text and long text fields
 				self.FolderPathFields(result);
+				self.FolderPathSourceField(model.FolderPathSourceField);
 			});
 		}
 
@@ -218,7 +230,7 @@ ko.validation.insertValidationMessage = function (element) {
 		this.nativeFilePathValue = ko.observableArray([]).extend({
 			required: {
 				onlyIf: function () {
-					return (self.importNativeFile() == 'true' || self.importNativeFile == true) && self.showErrors();
+					return self.AllowUserToMapNativeFileField == true && (self.importNativeFile() == 'true' || self.importNativeFile == true) && self.showErrors();
 				},
 				message: 'The Native file path field is required.',
 			}
@@ -337,7 +349,6 @@ ko.validation.insertValidationMessage = function (element) {
 
 				var types = mapFields(sourceFields);
 				self.overlay(destinationFields);
-				self.nativeFilePathOption(sourceFields);
 				$.each(self.overlay(), function () {
 					if (this.isIdentifier) {
 						self.rdoIdentifier(this.displayName);
@@ -402,7 +413,6 @@ ko.validation.insertValidationMessage = function (element) {
 				self.mappedWorkspace(mapFields(destinationMapped));
 				self.sourceField(mapFields(sourceNotMapped));
 				self.sourceMapped(mapFields(sourceMapped));
-				self.isAppendOverlay(model.selectedOverwrite !== "Append");
 			}).fail(function (result) {
 				IP.message.error.raise(result);
 			});
@@ -447,7 +457,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 	var Step = function (settings) {
 		function setCache(model, key) {
-			//we only want to cache the fields this page is incharge of
+			//we only want to cache the fields this page is in charge of
 			stepCache[key] = {
 				map: model.map,
 				parentIdentifier: model.parentIdentifier,
@@ -456,10 +466,11 @@ ko.validation.insertValidationMessage = function (element) {
 				importNativeFile: model.importNativeFile,
 				nativeFilePathValue: model.nativeFilePathValue,
 				UseFolderPathInformation: model.UseFolderPathInformation,
+				SelectedOverwrite: model.SelectedOverwrite,
 				FolderPathSourceField: model.FolderPathSourceField,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
 				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
-		} || '';
+			} || '';
 		}
 
 		var stepCache = {};
@@ -515,6 +526,7 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.nativeFilePathValue = this.model.nativeFilePathValue();
 			this.returnModel.identifer = this.model.selectedUniqueId();
 			this.returnModel.parentIdentifier = this.model.selectedIdentifier();
+			this.returnModel.SelectedOverwrite = this.model.SelectedOverwrite();
 			this.returnModel.UseFolderPathInformation = this.model.UseFolderPathInformation();
 			this.returnModel.FolderPathSourceField = this.model.FolderPathSourceField();
 			this.returnModel.ExtractedTextFieldContainsFilePath = this.model.ExtractedTextFieldContainsFilePath();
@@ -536,7 +548,6 @@ ko.validation.insertValidationMessage = function (element) {
 			this.returnModel.map = JSON.stringify(map);
 			this.returnModel.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
 			setCache(this.returnModel, self.key);
-			;
 			d.resolve(this.returnModel);
 			return d.promise;
 		};
@@ -590,11 +601,13 @@ ko.validation.insertValidationMessage = function (element) {
 								nativePathField = allSourceField[i];
 							}
 						}
-						map.push({
-							sourceField: _createEntry(nativePathField),
-							destinationField: {},
-							fieldMapType: "NativeFilePath"
-						});
+						if (nativePathField !== "") {
+							map.push({
+								sourceField: _createEntry(nativePathField),
+								destinationField: {},
+								fieldMapType: "NativeFilePath"
+							});
+						}
 					}
 					if (this.model.UseFolderPathInformation() == "true") {
 						var folderPathField = "";
@@ -619,6 +632,9 @@ ko.validation.insertValidationMessage = function (element) {
 						});
 					}
 
+					_destination.ImportOverwriteMode = ko.toJS(this.model.SelectedOverwrite).replace('/', '').replace(' ', '');
+					_destination.importNativeFile = this.model.importNativeFile();
+
 					// pushing create folder setting
 					_destination.UseFolderPathInformation = this.model.UseFolderPathInformation();
 					_destination.FolderPathSourceField = this.model.FolderPathSourceField();
@@ -637,6 +653,7 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.map = JSON.stringify(map);
 				this.returnModel.identifer = this.model.selectedUniqueId();
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
+				this.returnModel.SelectedOverwrite = this.model.SelectedOverwrite();
 				_destination.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
 				this.returnModel.destination = JSON.stringify(_destination);
 				d.resolve(this.returnModel);

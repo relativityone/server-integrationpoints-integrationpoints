@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.LDAPProvider;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
@@ -29,6 +30,8 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Classes.FromThisAssembly().BasedOn<IController>().LifestyleTransient());
 			container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
 			container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
+
+			container.Register(Component.For<IConfig>().Instance(Config.Instance));
 
 			container.Register(Component.For<ISessionService>().UsingFactoryMethod(k => SessionService.Session).LifestylePerWebRequest());
 			container.Register(Component.For<IPermissionService>().ImplementedBy<PermissionService>().LifestyleTransient());
@@ -56,6 +59,9 @@ namespace kCura.IntegrationPoints.Web.Installers
 
 			container.Register(Component.For<IDBContext>().UsingFactoryMethod((k) =>
 				k.Resolve<WebClientFactory>().CreateDbContext()).LifestyleTransient());
+
+			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod((k) =>
+				k.Resolve<WebClientFactory>().CreateServicesMgr()).LifestyleTransient());
 
 			container.Register(Component.For<GridModelFactory>().ImplementedBy<GridModelFactory>().LifestyleTransient());
 

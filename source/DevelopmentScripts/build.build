@@ -191,10 +191,11 @@
 	
 	<target name="merge_binaries" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
-			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/targetplatform:v4' />
 			<arg line='/out:"${target.code.directory}\kCura.IntegrationPoints.dll"' />
 			<arg line='/internalize:ilmergeExcludeMain.txt' />
 			<arg line='/log' />
+			<arg line='/AllowDup' />
 			<arg line='/lib:"${target.code.directory}"' />
 			<arg line='/lib:"${source.reference.kCura.directory}"' />
 			<arg line='/lib:"${source.reference.MVCContrib.directory}"' />
@@ -220,6 +221,8 @@
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Email.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.Shared.dll"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Services.dll"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Services.Interfaces.Private.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
 		</exec>
@@ -227,7 +230,7 @@
 
 	<target name="merge_ldap" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
-			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/targetplatform:v4' />
 			<arg line='/out:"${target.code.directory}\kCura.LDAPProvider.dll"' />
 			<arg line='/internalize:ilmergeExcludeLDAP.txt' />
 			<arg line='/log' />
@@ -247,7 +250,7 @@
 
 	<target name="merge_source_provider_installer" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
-			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/targetplatform:v4' />
 			<arg line='/out:"${target.code.directory}\kCura.SourceProviderInstaller.dll"' />
 			<arg line='/internalize:ilmergeExcludeSourceProviderInstaller.txt' />
 			<arg line='/log' />
@@ -274,7 +277,7 @@
 	
 	<target name="merge_documentsTransfer" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
-			<arg line='/targetplatform:"v4,C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
+			<arg line='/targetplatform:v4' />
 			<arg line='/out:"${target.code.directory}\kCura.DocumentTransferProvider.dll"' />
 			<arg line='/internalize:excludeDocsTransfer.txt' />
 			<arg line='/log' />

@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				if (permissionService == null)
 				{
 					permissionService =
-								 new PermissionService(base.GetWorkspaceDbContext());
+								 new PermissionService(base.GetServicesMgr);
 				}
 				return permissionService;
 
@@ -27,28 +27,24 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		public override Console GetConsole(PageEvent pageEvent)
 		{
-
 			var console = new Console();
 			console.Title = "RUN";
 			console.ButtonList = new List<ConsoleButton>();
-			bool isEnabled = PermissionService.userCanImport(base.Helper.GetAuthenticationManager().UserInfo.WorkspaceUserArtifactID);
+			bool isEnabled = PermissionService.UserCanImport(base.Helper.GetActiveCaseID());
 			
 			console.ButtonList.Add(new ConsoleButton
-				{
-					DisplayText = "Run Now",
-					RaisesPostBack = false,
-					Enabled = isEnabled,
-					OnClickEvent = "IP.importNow(" + this.ActiveArtifact.ArtifactID + "," + this.Application.ArtifactID + ")",
-
-				});
+			{
+				DisplayText = "Run Now",
+				RaisesPostBack = false,
+				Enabled = isEnabled,
+				OnClickEvent = "IP.importNow(" + this.ActiveArtifact.ArtifactID + "," + this.Application.ArtifactID + ")",
+			});
 			
 			return console;
 		}
 
 		public override void OnButtonClick(ConsoleButton consoleButton)
 		{
-
-
 		}
 
 		public override FieldCollection RequiredFields

@@ -5,7 +5,7 @@ using System.Linq;
 namespace kCura.ScheduleQueue.Core.BatchProcess
 {
 	public delegate void JobPreExecuteEvent(Job job);
-	public delegate void JobPostExecuteEvent(Job job, TaskResult taskResult);
+	public delegate void JobPostExecuteEvent(Job job, TaskResult taskResult, int items);
 
 	public abstract class BatchManagerBase<T> : ITask
 	{
@@ -20,10 +20,11 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 		public virtual void Execute(Job job)
 		{
 			TaskResult taskResult = new TaskResult();
+			int items = 0; 
 			try
 			{
 				OnRaiseJobPreExecute(job);
-				BatchTask(job, GetUnbatchedIDs(job));
+				items = BatchTask(job, GetUnbatchedIDs(job));
 				taskResult.Status = TaskStatusEnum.Success;
 			}
 			catch (Exception e)
@@ -34,7 +35,7 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 			}
 			finally
 			{
-				OnRaiseJobPostExecute(job, taskResult);
+				OnRaiseJobPostExecute(job, taskResult, items);
 			}
 		}
 
@@ -44,39 +45,39 @@ namespace kCura.ScheduleQueue.Core.BatchProcess
 				RaiseJobPreExecute(job);
 		}
 
-		protected virtual void OnRaiseJobPostExecute(Job job, TaskResult taskResult)
+		protected virtual void OnRaiseJobPostExecute(Job job, TaskResult taskResult, int items)
 		{
 			if (RaiseJobPostExecute != null)
-				RaiseJobPostExecute(job, taskResult);
+				RaiseJobPostExecute(job, taskResult, items);
 		}
 
 		public virtual int BatchSize { get; private set; }
 
 		public abstract IEnumerable<T> GetUnbatchedIDs(Job job);
 
-		public virtual void BatchTask(Job job, IEnumerable<T> batchIDs)
+		public virtual int BatchTask(Job job, IEnumerable<T> batchIDs)
 		{
+			int count = 0;
 			var list = new List<T>();
-			var idx = 0;
 			foreach (var id in batchIDs)
 			{
 				//TODO: later we will need to generate error entry for every item we bypass
 				if (id != null && (id is string && id.ToString() != string.Empty))
 				{
 					list.Add(id);
-					if (idx >= BatchSize)
+					count += 1;
+					if (list.Count == BatchSize)
 					{
 						CreateBatchJob(job, list);
 						list = new List<T>();
-						idx = 0;
 					}
-					idx++;
 				}
 			}
 			if (list.Any())
 			{
 				CreateBatchJob(job, list);
 			}
+			return count;
 		}
 		public abstract void CreateBatchJob(Job job, List<T> batchIDs);
 	}

@@ -1,0 +1,22 @@
+@startuml
+
+title RIP Agent Workflow - SendEmailManager
+
+
+start
+
+partition GetUnbatchedIDs {
+    if (JobDetails contains emails) then (true)
+        :Return deserialized emails as ids;
+    else (false)
+        :Return no emails;
+    endif
+}
+
+partition CreateBatchJob {
+    :Create SendEmailWorker job with emails;
+}
+
+stop
+
+@enduml

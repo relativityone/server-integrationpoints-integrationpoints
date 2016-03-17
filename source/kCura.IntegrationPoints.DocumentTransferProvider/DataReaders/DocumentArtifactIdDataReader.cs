@@ -1,34 +1,38 @@
 ﻿using System;
 using System.Data;
-using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.Readers;
+using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
 	public class DocumentArtifactIdDataReader : RelativityReaderBase
 	{
-		private readonly int _savedSearchArtifactId;
+		private readonly ISavedSearchManager _savedSearchManager;
 
-		public DocumentArtifactIdDataReader(IRelativityClientAdaptor relativityClientAdaptor, int savedSearchArtifactId) :
-			base(relativityClientAdaptor, new [] { new DataColumn(Shared.Constants.ARTIFACT_ID_FIELD_NAME) })
+		public DocumentArtifactIdDataReader(ISavedSearchManager savedSearchManager) :
+			base(new[] { new DataColumn(Shared.Constants.ARTIFACT_ID_FIELD_NAME) })
 		{
-			_savedSearchArtifactId = savedSearchArtifactId;
+			_savedSearchManager = savedSearchManager;
 		}
 
-		protected override QueryResultSet<Document> ExecuteQueryToGetInitialResult()
+		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
-			Query<Document> query = new Query<Document>
-			{
-				Condition = new SavedSearchCondition(_savedSearchArtifactId),
-				Fields = FieldValue.NoFields // we only want the ArtifactId
-			};
-			return RelativityClient.ExecuteDocumentQuery(query);
+			ArtifactDTO[] results = _savedSearchManager.RetrieveNext();
+
+			return results;
+		}
+
+		protected override bool AllArtifactsFetched()
+		{
+			bool allDocumentsRetrieved = _savedSearchManager.AllDocumentsRetrieved();
+
+			return allDocumentsRetrieved;
 		}
 
 		public override string GetDataTypeName(int i)
 		{
-			return typeof (Int32).ToString();
+			return typeof(Int32).ToString();
 		}
 
 		public override Type GetFieldType(int i)
@@ -46,7 +50,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			{
 				throw new IndexOutOfRangeException();
 			}
-			return CurrentDocument.ArtifactID;
+			return CurrentArtifact.ArtifactId;
 		}
 	}
 }

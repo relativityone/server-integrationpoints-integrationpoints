@@ -1,23 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Configuration;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using Castle.MicroKernel;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
-using kCura.Crypto.DataProtection;
-using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Domain;
 using kCura.IntegrationPoints.Core.Services.Marshaller;
 using Relativity.API;
-using Relativity.APIHelper;
 
 namespace kCura.IntegrationPoints.Contracts
 {
@@ -29,11 +21,10 @@ namespace kCura.IntegrationPoints.Contracts
 	public class DomainManager : MarshalByRefObject
 	{
 		private IProviderFactory _providerFactory;
-		private ISynchronizerFactory _synchronizerFactory;
 		private WindsorContainer _windsorContainer;
 
 		/// <summary>
-		/// Called to initilized the provider's app domain and do any setup work needed
+		/// Called to initialized the provider's app domain and do any setup work needed
 		/// </summary>
 		public void Init()
 		{
@@ -41,10 +32,14 @@ namespace kCura.IntegrationPoints.Contracts
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyDomainLoader.ResolveAssembly;
 			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			Type startupType = typeof(IStartUp);
-			var types = (from a in assemblies
-									 from t in a.GetTypes()
-									 where startupType.IsAssignableFrom(t) && t != startupType
-									 select t).ToList();
+
+			var types = new List<Type>();
+			foreach (var assembly in assemblies)
+			{
+				Type[] loadableTypes = assembly.GetLoadableTypes();
+				types.AddRange(loadableTypes.Where(type => startupType.IsAssignableFrom(type) && type != startupType));
+			}
+
 			if (types.Any())
 			{
 				var type = types.FirstOrDefault();
@@ -58,28 +53,9 @@ namespace kCura.IntegrationPoints.Contracts
 				}
 			}
 
-			// Run bootstrapper for app domain
-			Bootstrapper.InitAppDomain(Constants.IntegrationPoints.AppDomain_Subsystem_Name, Constants.IntegrationPoints.Application_GuidString, AppDomain.CurrentDomain);
-
 			// Get marshaled data
 			IAppDomainDataMarshaller dataMarshaller = new SecureAppDomainDataMarshaller();
-			this.SetUpSystemToken(dataMarshaller);
 			this.SetUpConnectionString(dataMarshaller);
-		}
-
-		/// <summary>
-		/// Sets the SystemTokenProvider for the domain by retrieving the encrytped AppDomain data
-		/// </summary>
-		/// <param name="dataMarshaller">The dataMarshaller class to use for retrieving the marshaled data</param>
-		private void SetUpSystemToken(IAppDomainDataMarshaller dataMarshaller)
-		{
-			ISerializationHelper serializationHelper = new SerializationHelper();
-			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Constants.IntegrationPoints.AppDomain_Data_SystemTokenProvider);
-			IProvideSystemTokens systemTokenProvider = serializationHelper.Deserialize<IProvideSystemTokens>(data);
-			if (systemTokenProvider != null)
-			{
-				ExtensionPointServiceFinder.SystemTokenProvider = systemTokenProvider;
-			}
 		}
 
 		/// <summary>
@@ -87,7 +63,7 @@ namespace kCura.IntegrationPoints.Contracts
 		/// </summary>
 		private void SetUpConnectionString(IAppDomainDataMarshaller dataMarshaller)
 		{
-			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Constants.IntegrationPoints.AppDomain_Data_ConnectionString);
+			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Core.Constants.IntegrationPoints.AppDomain_Data_ConnectionString);
 			if (data != null && data.Length > 0)
 			{
 				string connectionString = System.Text.Encoding.ASCII.GetString(data);
@@ -112,9 +88,9 @@ namespace kCura.IntegrationPoints.Contracts
 		{
 			string[] allowedInstallerAssemblies = new[]
 			{
-				"kCura.IntegrationPoints", 
-				"kCura.IntegrationPoints.Contracts", 
-				"kCura.IntegrationPoints.Core", 
+				"kCura.IntegrationPoints",
+				"kCura.IntegrationPoints.Contracts",
+				"kCura.IntegrationPoints.Core",
 				"kCura.IntegrationPoints.Data"
 			};
 
@@ -153,27 +129,6 @@ namespace kCura.IntegrationPoints.Contracts
 			}
 
 			return new ProviderWrapper(_providerFactory.CreateProvider(identifer));
-		}
-
-		/// <summary>
-		/// Gets the synchronizer in the app domain for the specific identifier
-		/// </summary>
-		/// <param name="identifier">The identifier that represents the synchronizer to create.</param>
-		/// <param name="options">The options for that synchronizer that will be passed on initialization.</param>
-		/// <returns>A synchronizer that will bring data into a system.</returns>
-		public Synchronizer.IDataSynchronizer GetSynchronizer(Guid identifier, string options)
-		{
-			if (_windsorContainer == null)
-			{
-				this.SetUpCastleWindsor();
-			}
-
-			if (_synchronizerFactory == null)
-			{
-				_synchronizerFactory = _windsorContainer.Resolve<ISynchronizerFactory>();
-			}
-
-			return new SynchronizerWrapper(_synchronizerFactory.CreateSynchronizer(identifier, options));
 		}
 	}
 }

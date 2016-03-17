@@ -6,6 +6,7 @@ using System.Threading;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public event BatchCompleted OnBatchComplete;
 		public event BatchSubmitted OnBatchSubmit;
 		public event BatchCreated OnBatchCreate;
+		public event StatusUpdate OnStatusUpdate;
 		public event JobError OnJobError;
 		public event RowError OnDocumentError;
 
@@ -26,6 +28,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private List<KeyValuePair<string, string>> _rowErrors;
 		private ImportSettings ImportSettings { get; set; }
 		private NativeFileImportService NativeFileImportService { get; set; }
+
+		public SourceProvider SourceProvider { get; set; }
 
 		protected RdoSynchronizerBase(IRelativityFieldQuery fieldQuery, IImportApiFactory factory) : base(fieldQuery, factory)
 		{
@@ -114,7 +118,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				if (!_disableNativeLocationValidation.HasValue)
 				{
-					_disableNativeLocationValidation = Config.DisableNativeLocationValidation;
+					_disableNativeLocationValidation = Config.Instance.DisableNativeLocationValidation;
 				}
 				return _disableNativeLocationValidation;
 			}
@@ -128,7 +132,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				if (!_disableNativeValidation.HasValue)
 				{
-					_disableNativeValidation = Config.DisableNativeValidation;
+					_disableNativeValidation = Config.Instance.DisableNativeValidation;
 				}
 				return _disableNativeValidation;
 			}
@@ -142,11 +146,30 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			importService.OnDocumentError += new RowError(ItemError);
 			importService.OnJobError += new JobError(JobError);
 
-			if (OnBatchComplete != null) importService.OnBatchComplete += OnBatchComplete;
-			if (OnBatchSubmit != null) importService.OnBatchSubmit += OnBatchSubmit;
-			if (OnBatchCreate != null) importService.OnBatchCreate += OnBatchCreate;
-			if (OnJobError != null) importService.OnJobError += OnJobError;
-			if (OnDocumentError != null) importService.OnDocumentError += OnDocumentError;
+			if (OnBatchComplete != null)
+			{
+				importService.OnBatchComplete += OnBatchComplete;
+			}
+			if (OnBatchSubmit != null)
+			{
+				importService.OnBatchSubmit += OnBatchSubmit;
+			}
+			if (OnBatchCreate != null)
+			{
+				importService.OnBatchCreate += OnBatchCreate;
+			}
+			if (OnStatusUpdate != null)
+			{
+				importService.OnStatusUpdate += OnStatusUpdate;
+			}
+			if (OnJobError != null)
+			{
+				importService.OnJobError += OnJobError;
+			}
+			if (OnDocumentError != null)
+			{
+				importService.OnDocumentError += OnDocumentError;
+			}
 
 			importService.Initialize();
 
@@ -169,15 +192,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 						.Select(x => int.Parse(x.DestinationField.FieldIdentifier))
 						.First();
 			}
-			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath))
+
+			if (settings.ImportNativeFile)
 			{
 				nativeFileImportService.ImportNativeFiles = true;
-				nativeFileImportService.SourceFieldName = fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath).SourceField.FieldIdentifier;
+				FieldMap field = fieldMap.FirstOrDefault(x => x.FieldMapType == FieldMapTypeEnum.NativeFilePath);
+				nativeFileImportService.SourceFieldName = field != null ? field.SourceField.FieldIdentifier : Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
 				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
-				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles;
 				settings.DisableNativeLocationValidation = this.DisableNativeLocationValidation;
 				settings.DisableNativeValidation = this.DisableNativeValidation;
+				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.CopyFiles;
 			}
+			else if (SourceProvider != null && SourceProvider.Config.AlwaysImportNativeFiles)
+			{
+				nativeFileImportService.ImportNativeFiles = true;
+				settings.NativeFilePathSourceFieldName = nativeFileImportService.DestinationFieldName;
+				settings.DisableNativeLocationValidation = this.DisableNativeLocationValidation;
+				settings.DisableNativeValidation = this.DisableNativeValidation;
+				settings.ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.SetFileLinks;
+				nativeFileImportService.SourceFieldName = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
+			}
+
 			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
 			{
 				settings.FolderPathSourceFieldName = fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation).SourceField.ActualName;

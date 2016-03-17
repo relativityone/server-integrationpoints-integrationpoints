@@ -69,6 +69,7 @@
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Synchronizers.RDO.Tests\bin\kCura.IntegrationPoints.Synchronizers.RDO.Tests.dll')}" />
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Agent.Tests\bin\kCura.IntegrationPoints.Agent.Tests.dll')}" />
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.EventHandlers.Tests\bin\kCura.IntegrationPoints.EventHandlers.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.DocumentTransferProvider.Tests\bin\kCura.IntegrationPoints.DocumentTransferProvider.Tests.dll')}" />
 	</assemblyfileset>
 
 	<assemblyfileset id="unitTestAssembliesX64_Part2">

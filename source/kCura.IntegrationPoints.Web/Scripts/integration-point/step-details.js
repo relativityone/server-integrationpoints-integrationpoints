@@ -114,24 +114,27 @@ var IP = IP || {};
 		initDatePicker($('#scheduleRulesStartDate, #scheduleRulesEndDate'))
 	});
 
-	var Choice = function (name, value, artifactID) {
+	var Choice = function (name, value, artifactID, object) {
 		this.displayName = name;
 		this.value = value;
 		this.artifactID = artifactID;
+		this.model = object;
 	};
 
-	var Source = function (s) {
+	var Source = function (s, parentModel) {
 		var settings = $.extend({}, s);
 		this.templateID = 'ldapSourceConfig';
 		var self = this;
 
 		this.sourceTypes = ko.observableArray();
-
 		this.selectedType = ko.observable().extend({ required: true });
+
+		this.SourceProviderConfiguration = ko.observable();
+
 		this.sourceProvider = settings.sourceProvider || 0;
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('SourceType') }).then(function (result) {
 			var types = $.map(result, function (entry) {
-				var c = new Choice(entry.name, entry.value, entry.id);
+				var c = new Choice(entry.name, entry.value, entry.id, entry);
 				c.href = entry.url;
 				return c;
 			});
@@ -148,6 +151,20 @@ var IP = IP || {};
 			$.each(self.sourceTypes(), function () {
 				if (this.value === selectedValue) {
 					self.sourceProvider = this.artifactID;
+					if (typeof this.model.config.compatibleRdoTypes === 'undefined' || this.model.config.compatibleRdoTypes === null) {
+						parentModel.destination.rdoTypes(parentModel.destination.allRdoTypes());
+					} else {
+						var compatibleRdos = this.model.config.compatibleRdoTypes;
+						var rdosToDisplay = [];
+						$.each(parentModel.destination.allRdoTypes(), function () {
+							if (compatibleRdos.indexOf(this.value) > -1) {
+								rdosToDisplay.push(this);
+							}
+						});
+						parentModel.destination.rdoTypes(rdosToDisplay);
+					}
+					self.SourceProviderConfiguration = this.model.config;
+					parentModel.destination.UpdateSelectedItem();
 				}
 			});
 		});
@@ -166,15 +183,14 @@ var IP = IP || {};
 			var types = $.map(result, function (entry) {
 				return new Choice(entry.name, entry.value);
 			});
-			self.rdoTypes(types);
-			self.artifactTypeID(settings.artifactTypeID); //this can only be populated after all the types are loaded.
+			self.allRdoTypes(types);
+			self.UpdateSelectedItem();
 		}, function () {
-
+			
 		});
 
-		
-
 		this.templateID = 'ldapDestinationConfig';
+		this.allRdoTypes = ko.observableArray();
 		this.rdoTypes = ko.observableArray();
 
 	   
@@ -224,6 +240,10 @@ var IP = IP || {};
 		});
 		//CaseArtifactId
 		//ParentObjectIdSourceFieldName
+
+		this.UpdateSelectedItem = function() {
+			self.artifactTypeID(settings.artifactTypeID);
+		}
 	};
 
 	var Scheduler = function (model) {
@@ -473,16 +493,16 @@ var IP = IP || {};
 		var settings = $.extend({}, m);
 		var self = this;
 		this.name = ko.observable(settings.name).extend({ required: true });
-		this.overwrite = ko.observableArray([
-			'Append/Overlay', 'Append', 'Overlay Only']);
 		if (typeof settings.logErrors === "undefined") {
 			settings.logErrors = "true";
 		}
 
 		this.logErrors = ko.observable(settings.logErrors.toString());
 		this.showErrors = ko.observable(false);
-		this.source = new Source(settings.source);
+
 		this.destination = new Destination(settings.destination);
+		this.source = new Source(settings.source, self);
+
 		this.destinationProvider = settings.destinationProvider;
 		this.notificationEmails = ko.observable(settings.notificationEmails).extend({
 			emailList: {
@@ -492,11 +512,14 @@ var IP = IP || {};
 			}
 		});
 
+		this.SelectedOverwrite = settings.selectedOverwrite;
 		this.CustodianManagerFieldContainsLink = JSON.parse(settings.destination || "{}").CustodianManagerFieldContainsLink;
+		this.UseFolderPathInformation = JSON.parse(settings.destination || "{}").UseFolderPathInformation;
+		this.FolderPathSourceField = JSON.parse(settings.destination || "{}").FolderPathSourceField;
 		this.ExtractedTextFieldContainsFilePath = JSON.parse(settings.destination || "{}").ExtractedTextFieldContainsFilePath;
 		this.ExtractedTextFileEncoding = JSON.parse(settings.destination || "{}").ExtractedTextFileEncoding;
+		this.importNativeFile = JSON.parse(settings.destination || "{}").importNativeFile;
 
-		this.selectedOverwrite = ko.observable(settings.selectedOverwrite);
 		this.scheduler = new Scheduler(settings.scheduler);
 		this.submit = function () {
 			this.showErrors(true);
@@ -536,13 +559,13 @@ var IP = IP || {};
 				    artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,	
 			        destinationProviderType: ko.toJS(this.model.destination).selectedDestinationType,
 			        fileshare: ko.toJS(this.model.destination).selectedDestinationPath,
-					ImportOverwriteMode: ko.toJS(this.model.selectedOverwrite).replace('/', '').replace(' ', ''),
 					CaseArtifactId: IP.data.params['appID'],
 					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
 				});
 
 				this.model.scheduler.sendOn = JSON.stringify(ko.toJS(this.model.scheduler.sendOn));
 				this.model.sourceProvider = this.model.source.sourceProvider;
+				this.model.SourceProviderConfiguration = this.model.source.SourceProviderConfiguration;
 				d.resolve(ko.toJS(this.model));
 			} else {
 				this.model.errors.showAllMessages();

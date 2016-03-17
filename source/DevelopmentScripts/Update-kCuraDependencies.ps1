@@ -1,5 +1,5 @@
-﻿$destinationDir = "C:\SourceCode\IntegrationPoints\source\Dependencies\kCura"
-$mainlineLibDir = "C:\SourceCode\Mainline\lib"
+﻿$destinationDir = "S:\SourceCode\IntegrationPoints\source\Dependencies\kCura"
+$mainlineLibDir = "S:\SourceCode\Relativity\lib"
 
 $dependencies = Get-ChildItem -Path $destinationDir
 

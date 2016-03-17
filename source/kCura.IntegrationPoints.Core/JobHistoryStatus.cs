@@ -16,6 +16,9 @@ namespace kCura.IntegrationPoints.Core
 		private readonly IJobStatusUpdater _updater;
 		private readonly ISerializer _serializer;
 		private readonly IRSAPIService _service;
+
+		public JobHistory JobHistory { set; get; }
+
 		public JobHistoryStatus(IJobStatusUpdater jobStatusUpdater, ISerializer serializer, IRSAPIService rsapiService)
 		{
 			_updater = jobStatusUpdater;
@@ -26,26 +29,30 @@ namespace kCura.IntegrationPoints.Core
 		public void JobStarted(Job job)
 		{
 			var result = GetHistory(job);
-			result.JobStatus = JobStatusChoices.JobHistoryProcessing;
+			result.Status = JobStatusChoices.JobHistoryProcessing;
 			_service.JobHistoryLibrary.Update(result);
 		}
 
 		public void JobComplete(Job job)
 		{
 			var result = GetHistory(job);
-			result.JobStatus = _updater.GenerateStatus(result);
+			result.Status = _updater.GenerateStatus(result);
 			result.EndTimeUTC = DateTime.UtcNow;
 			_service.JobHistoryLibrary.Update(result);
 		}
 
 		private JobHistory GetHistory(Job job)
 		{
-			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-			var query = new Query<RDO>();
-			query.Fields = new List<FieldValue> { new FieldValue(Guid.Parse(JobHistoryFieldGuids.RecordsWithErrors)) };
-			query.Condition = new TextCondition(Guid.Parse(JobHistoryFieldGuids.BatchInstance), TextConditionEnum.EqualTo, taskParameters.BatchInstance.ToString());
-			var result = _service.JobHistoryLibrary.Query(query).First();
-			return result;
+			if (JobHistory == null)
+			{
+				TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+				var query = new Query<RDO>();
+				query.Fields = new List<FieldValue> { new FieldValue(Guid.Parse(JobHistoryFieldGuids.ItemsWithErrors)) };
+				query.Condition = new TextCondition(Guid.Parse(JobHistoryFieldGuids.BatchInstance), TextConditionEnum.EqualTo, taskParameters.BatchInstance.ToString());
+				var result = _service.JobHistoryLibrary.Query(query).First();
+				JobHistory = result;
+			}
+			return JobHistory;
 		}
 
 	}

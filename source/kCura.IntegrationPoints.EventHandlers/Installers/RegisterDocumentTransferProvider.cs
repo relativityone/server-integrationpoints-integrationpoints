@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.DocumentTransferProvider.Shared;
 using kCura.IntegrationPoints.SourceProviderInstaller;
+using SourceProvider = kCura.IntegrationPoints.SourceProviderInstaller.SourceProvider;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
@@ -12,7 +14,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	public class RegisterDocumentTransferProvider : IntegrationPointSourceProviderInstaller
 	{
 		/// <summary>
-		/// Define guid with source provider to allow intergration core to be used for source provider installation.
+		/// Define guid with source provider to allow integration core to be used for source provider installation.
 		/// </summary>
 		/// <returns>a Dictionary with mapped Guid and Relativity source provider</returns>
 		public override IDictionary<Guid, SourceProvider> GetSourceProviders()
@@ -25,7 +27,20 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 					{
 						Name = Constants.RELATIVITY_PROVIDER_NAME,
 						Url = String.Format("/%applicationpath%/CustomPages/{0}/IntegrationPoints/{1}/",  Constants.RELATIVITY_CUSTOMPAGE_GUID, Constants.RELATIVITY_PROVIDER_CONFIGURATION),
-						ViewDataUrl = String.Format("/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/%appId%/api/relativity/view")
+						ViewDataUrl = String.Format("/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/%appId%/api/relativity/view"),
+						Configuration = new SourceProviderConfiguration()
+						{
+							AlwaysImportNativeFiles = true,
+							CompatibleRdoTypes = new List<Guid>()
+							{
+								new Guid(Constants.DOC_OBJ_GUID)
+							},
+							AvailableImportSettings = new ImportSettingVisibility()
+							{
+								AllowUserToMapNativeFileField = false
+							},
+							GetDataProvideAllFieldsRequired = true
+						}
 					}
 				}
 			};

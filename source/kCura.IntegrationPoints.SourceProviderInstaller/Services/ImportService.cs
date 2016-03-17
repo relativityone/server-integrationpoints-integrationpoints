@@ -123,7 +123,8 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 						ApplicationIdentifier = p.ApplicationGUID.ToString(),
 						Identifier = p.GUID.ToString(),
 						SourceConfigurationUrl = p.Url,
-						ViewConfigurationUrl = p.ViewDataUrl
+						ViewConfigurationUrl = p.ViewDataUrl,
+						Config = p.Configuration
 					};
 				AddNewProviders(newProviders);
 			}

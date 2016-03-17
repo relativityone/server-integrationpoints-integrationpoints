@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
-using kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers;
+using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
@@ -15,7 +14,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 	[TestFixture]
 	public class DocumentArtifactIdDataReaderTests
 	{
-		private IRelativityClientAdaptor _relativityClientAdaptor;
+		private ISavedSearchManager _savedSearchManager;
 		private IDataReader _instance;
 		private const int SAVED_SEARCH_ID = 123;
 		private Query<Document> _expectedQuery;
@@ -23,7 +22,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_relativityClientAdaptor = NSubstitute.Substitute.For<IRelativityClientAdaptor>();
+			_savedSearchManager = NSubstitute.Substitute.For<ISavedSearchManager>();
 
 			_expectedQuery = new Query<Document>
 			{
@@ -31,26 +30,21 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				Fields = FieldValue.NoFields // we only want the ArtifactId
 			};
 
-			_instance = new DocumentArtifactIdDataReader(_relativityClientAdaptor, SAVED_SEARCH_ID);
+			_instance = new DocumentArtifactIdDataReader(_savedSearchManager);
 		}
 
 		#region Read
+
 		[Test]
 		public void Read_FirstRead_RunsSavedSearch_ReturnsTrue()
 		{
-			// Arrange	
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			// Arrange
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(1)}
-				}
+				new ArtifactDTO(1, 10, new ArtifactFieldDTO[0])
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
 
 			// Act
 			bool result = _instance.Read();
@@ -58,21 +52,18 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Assert
 			Assert.IsTrue(result, "There are records to read, result should be true");
 			Assert.IsFalse(_instance.IsClosed, "The reader should be open");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
 		public void Read_FirstRead_RunsSavedSearch_NoResults_ReturnsFalse()
 		{
-			// Arrange	
-			ResultSet<Document> resultSet = new ResultSet<Document>
-			{
-				Success = true,
-				Results = new List<Result<Document>>()
-			};
+			// Arrange
+			var documents = new ArtifactDTO[] { };
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchManager.AllDocumentsRetrieved().Returns(true);
 
 			// Act
 			bool result = _instance.Read();
@@ -80,43 +71,16 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Assert
 			Assert.IsFalse(result, "There are no records to read, result should be false");
 			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
-		}
-
-		[Test]
-		public void Read_FirstRead_RunsSavedSearch_RequestFails_ReturnsFalse()
-		{
-			// Arrange	
-			ResultSet<Document> resultSet = new ResultSet<Document>
-			{
-				Success = false,
-				Results = new List<Result<Document>>()
-			};
-
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
-
-			// Act
-			bool result = _instance.Read();
-
-			// Assert
-			Assert.IsFalse(result, "There are no records to read, result should be false");
-			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(1).AllDocumentsRetrieved();
 		}
 
 		[Test]
 		public void Read_FirstRead_RunsSavedSearch_RequestFailsWithException_ReturnsFalse()
 		{
-			// Arrange	
-			ResultSet<Document> resultSet = new ResultSet<Document>
-			{
-				Success = false,
-				Results = new List<Result<Document>>()
-			};
-
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Throws(new Exception());
+			// Arrange
+			_savedSearchManager.RetrieveNext().Throws(new Exception());
+			_savedSearchManager.AllDocumentsRetrieved().Returns(true);
 
 			// Act
 			bool result = _instance.Read();
@@ -124,25 +88,22 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Assert
 			Assert.IsFalse(result, "There are no records to read, result should be false");
 			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(1).AllDocumentsRetrieved();
 		}
 
 		[Test]
 		public void Read_ReadAllResults_GoldFlow()
 		{
-			// Arrange	
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			// Arrange
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(1)},
-					new Result<Document>() {Artifact = new Document(2)}
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchManager.AllDocumentsRetrieved().Returns(true);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -154,25 +115,22 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			Assert.IsTrue(result2, "There are records to read, result should be true");
 			Assert.IsFalse(result3, "There are no records to read, result should be false");
 			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(1).RetrieveNext();
 		}
 
 		[Test]
 		public void Read_ReadSomeResultsThenClose_GoldFlow()
 		{
-			// Arrange	
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			// Arrange
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(1)},
-					new Result<Document>() {Artifact = new Document(2)}
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchManager.AllDocumentsRetrieved().Returns(true);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -183,29 +141,26 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			Assert.IsTrue(result1, "There are records to read, result should be true");
 			Assert.IsFalse(result2, "There are no records to read, result should be false");
 			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(1).RetrieveNext();
 		}
-		#endregion
+
+		#endregion Read
 
 		#region DataReaderTests
+
 		[Test]
 		public void ThisNameAccessor_GoldFlow()
 		{
 			// Arrange
-			const int documentArtifactId1 = 123423;
-			const int documentArtifactId2 = 123890;
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(documentArtifactId1)},
-					new Result<Document>() {Artifact = new Document(documentArtifactId2)},
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchManager.AllDocumentsRetrieved().Returns(true);
 
 			// Act
 			bool readResult1 = _instance.Read();
@@ -218,40 +173,36 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			Assert.IsTrue(readResult1, "There are records to read, result should be true");
 			Assert.IsTrue(readResult2, "There are records to read, result should be true");
 			Assert.IsFalse(readResult3, "There are no records to read, result should be false");
-			Assert.AreEqual(documentArtifactId1, Convert.ToInt32(accessorResult1));
-			Assert.AreEqual(documentArtifactId2, Convert.ToInt32(accessorResult2));
 			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(1).RetrieveNext();
 		}
 
 		[Test]
 		public void ThisNameAccessor_InvalidColumnName_ThrowsIndexOutOfRangeException()
 		{
 			// Arrange
-			const int documentArtifactId = 123423;
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
 
 			// Act
 			bool readResult = _instance.Read();
 			// Act
 			bool correctExceptionThrown = false;
+			string exceptionMessage = String.Empty;
 			try
 			{
 				object accessorResult = _instance["WRONG_COLUMN"];
 			}
-			catch (IndexOutOfRangeException)
+			catch (IndexOutOfRangeException e)
 			{
 				correctExceptionThrown = true;
+				exceptionMessage = e.Message;
 			}
 			catch
 			{
@@ -261,25 +212,21 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Assert
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
 			Assert.IsTrue(correctExceptionThrown, "An IndexOutOfRangeException should have been thrown");
+			Assert.AreEqual("'WRONG_COLUMN' is not a valid column", exceptionMessage, "The exception message should be as expected");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
 		public void ThisIndexAccessor_GoldFlow()
 		{
 			// Arrange
-			const int documentArtifactId = 123423;
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -287,26 +234,21 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Assert
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
-			Assert.AreEqual(documentArtifactId, Convert.ToInt32(accessorResult));
+			Assert.AreEqual(documents[0].ArtifactId, Convert.ToInt32(accessorResult));
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
 		public void ThisIndexAccessor_InvalidColumnIndex_ThrowsIndexOutOfRangeException()
 		{
 			// Arrange
-			const int documentArtifactId = 123423;
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -328,6 +270,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Assert
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
 			Assert.IsTrue(correctExceptionThrown, "An IndexOutOfRangeException should have been thrown");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
@@ -430,19 +374,12 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void GetString_ReturnsString()
 		{
 			// Act
-			const int documentArtifactId = 123423;
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -450,26 +387,21 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Assert
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
-			Assert.AreEqual(Convert.ToString(documentArtifactId), getResult, "The result should be the documentArtifactId as a string");
+			Assert.AreEqual(Convert.ToString(documents[0].ArtifactId), getResult, "The result should be the documentArtifactId as a string");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
 		public void GetInt32_ReturnsInt32Value()
 		{
 			// Arrange
-			const int documentArtifactId = 123423;
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -477,26 +409,21 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Assert
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
-			Assert.AreEqual(documentArtifactId, getResult, "The result should be the documentArtifactId");
+			Assert.AreEqual(documents[0].ArtifactId, getResult, "The result should be the documentArtifactId");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
 		public void IsDBNull_ResultNotNull_ReturnsFalse()
 		{
 			// Arrange
-			const int documentArtifactId = 123423;
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -505,6 +432,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			// Assert
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
 			Assert.IsFalse(isDbNull, "The result should not be DBNull");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
@@ -531,26 +460,19 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				exceptionThrown = true;
 			}
 
-			Assert.IsFalse(exceptionThrown, "Dispose() should not except");	
+			Assert.IsFalse(exceptionThrown, "Dispose() should not except");
 		}
 
 		[Test]
 		public void Dispose_WhileReaderIsOpen_DoesNotExcept()
 		{
 			// Arrange
-			const int documentArtifactId = 123423;
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_relativityClientAdaptor.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-				x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
 
 			// Act
 			_instance.Read();
@@ -566,26 +488,20 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Assert
 			Assert.IsFalse(exceptionThrown, "No exception should be thrown");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
 		public void Close_ReaderIsClosed()
 		{
 			// Arrange
-			const int documentArtifactId = 123423;
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-					x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
 
 			// Act
 			_instance.Read();
@@ -594,26 +510,19 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Assert
 			Assert.IsTrue(isClosed, "The reader should be closed");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
 		public void Close_ReadThenCloseThenRead_ReaderIsClosed()
 		{
 			// Arrange
-			const int documentArtifactId = 123423;
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
-
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-					x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
 
 			// Act
 			_instance.Read();
@@ -622,26 +531,20 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Assert
 			Assert.IsFalse(result, "The reader should be closed");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
 		public void Close_ReadThenCloseThenRead_QueryIsNotRerun()
 		{
 			// Arrange
-			const int documentArtifactId = 123423;
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-					x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
 
 			// Act
 			_instance.Read();
@@ -649,31 +552,20 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			_instance.Read();
 
 			// Assert
-			_relativityClientAdaptor
-				.Received(1)
-				.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-					x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)));
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(0).AllDocumentsRetrieved();
 		}
-
 
 		[Test]
 		public void Close_ReadThenClose_CannotAccessDocument()
 		{
 			// Arrange
-			const int documentArtifactId = 123423;
-			ResultSet<Document> resultSet = new ResultSet<Document>
+			var documents = new ArtifactDTO[]
 			{
-				Success = true,
-				Results = new List<Result<Document>>()
-				{
-					new Result<Document>() {Artifact = new Document(documentArtifactId)},
-				}
+				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_relativityClientAdaptor
-				.ExecuteDocumentQuery(Arg.Is<Query<Document>>(
-					x => ArgumentMatcher.DocumentSearchProviderQueriesMatch(_expectedQuery, x)))
-				.Returns(resultSet);
+			_savedSearchManager.RetrieveNext().Returns(documents);
 
 			// Act
 			_instance.Read();
@@ -695,12 +587,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Assert
 			Assert.IsTrue(correctExceptionThrown, "Reading after running Close() should nullify the current result");
+			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchManager.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
 		public void Depth_ReturnsZero()
 		{
-			// Act	
+			// Act
 			int result = _instance.Depth;
 
 			// Assert
@@ -727,334 +621,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			Assert.AreEqual(-1, result, "RecordsAffected should return -1");
 		}
 
-
-		#region NotImplemented Methods
-
-		[Test]
-		public void GetValues_ThrowsNotImplementedException()
-		{
-			// Act
-			bool notImplementedExceptionThrown = false;
-			try
-			{
-				_instance.GetValues(new object[1]);
-			}
-			catch (NotImplementedException)
-			{
-				notImplementedExceptionThrown = true;
-			}
-
-			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
-		}
-
-		[Test]
-		public void GetInt64_ThrowsNotImplementedException()
-		{
-			// Act
-			bool notImplementedExceptionThrown = false;
-			try
-			{
-				_instance.GetInt64(0);
-			}
-			catch (NotImplementedException)
-			{
-				notImplementedExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
-		}
-
-		[Test]
-		public void GetInt16_ThrowsNotImplementedException()
-		{
-			// Act
-			bool notImplementedExceptionThrown = false;
-			try
-			{
-				_instance.GetInt16(0);
-			}
-			catch (NotImplementedException)
-			{
-				notImplementedExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
-		}
-
-		[Test]
-		public void GetDateTime_ThrowsNotImplementedException()
-		{
-			// Act
-			bool notImplementedExceptionThrown = false;
-			try
-			{
-				_instance.GetDateTime(0);
-			}
-			catch (NotImplementedException)
-			{
-				notImplementedExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
-		}
-
-		[Test]
-		public void GetData_ThrowsNotImplementedException()
-		{
-			// Act
-			bool notImplementedExceptionThrown = false;
-			try
-			{
-				_instance.GetData(0);
-			}
-			catch (NotImplementedException)
-			{
-				notImplementedExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
-		}
-
-		[Test]
-		public void GetChars_ThrowsNotImplementedException()
-		{
-			// Act
-			bool notImplementedExceptionThrown = false;
-			try
-			{
-				_instance.GetChars(0, 0, new char[0], 0, 0);
-			}
-			catch (NotImplementedException)
-			{
-				notImplementedExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
-		}
-
-		[Test]
-		public void GetChar_ThrowsNotImplementedException()
-		{
-			// Act
-			bool notImplementedExceptionThrown = false;
-			try
-			{
-				_instance.GetChar(0);
-			}
-			catch (NotImplementedException)
-			{
-				notImplementedExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
-		}
-
-		[Test]
-		public void GetBytes_ThrowsNotImplementedException()
-		{
-			// Act
-			bool notImplementedExceptionThrown = false;
-			try
-			{
-				_instance.GetBytes(0, 0, new byte[0], 0, 0);
-			}
-			catch (NotImplementedException)
-			{
-				notImplementedExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
-		}
-
-		[Test]
-		public void GetByte_ThrowsNotImplementedException()
-		{
-			// Act
-			bool notImplementedExceptionThrown = false;
-			try
-			{
-				_instance.GetByte(0);
-			}
-			catch (NotImplementedException)
-			{
-				notImplementedExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
-		}
-
-		[Test]
-		public void GetBoolean_ThrowsNotImplementedException()
-		{
-			// Act
-			bool notImplementedExceptionThrown = false;
-			try
-			{
-				_instance.GetBoolean(0);
-			}
-			catch (NotImplementedException)
-			{
-				notImplementedExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			Assert.IsTrue(notImplementedExceptionThrown, "Correct exception should have been thrown");
-		}
-
-		[Test]
-		public void GetSchemaTable_ThrowsNotImplementedException()
-		{
-			// Act
-			bool correctExceptionThrown = false;
-			try
-			{
-				_instance.GetSchemaTable();
-			}
-			catch (NotImplementedException)
-			{
-				correctExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			// Assert
-			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
-		}
-
-		[Test]
-		public void GetDataTypeName_ThrowsNotImplementedException()
-		{
-			// Act
-			bool correctExceptionThrown = false;
-			try
-			{
-				_instance.GetDataTypeName(0);
-			}
-			catch (NotImplementedException)
-			{
-				correctExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			// Assert
-			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
-		}
-
-		[Test]
-		public void GetDecimal_ThrowsNotImplementedException()
-		{
-			// Act
-			bool correctExceptionThrown = false;
-			try
-			{
-				_instance.GetDecimal(0);
-			}
-			catch (NotImplementedException)
-			{
-				correctExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			// Assert
-			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
-		}
-
-		[Test]
-		public void GetDouble_ThrowsNotImplementedException()
-		{
-			// Act
-			bool correctExceptionThrown = false;
-			try
-			{
-				_instance.GetDouble(0);
-			}
-			catch (NotImplementedException)
-			{
-				correctExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			// Assert
-			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
-		}
-
-		[Test]
-		public void GetFloat_ThrowsNotImplementedException()
-		{
-			// Act
-			bool correctExceptionThrown = false;
-			try
-			{
-				_instance.GetFloat(0);
-			}
-			catch (NotImplementedException)
-			{
-				correctExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			// Assert
-			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
-		}
-
-
-		[Test]
-		public void GetGuid_ThrowsNotImplementedException()
-		{
-			// Act
-			bool correctExceptionThrown = false;
-			try
-			{
-				_instance.GetGuid(0);
-			}
-			catch (NotImplementedException)
-			{
-				correctExceptionThrown = true;
-			}
-			catch
-			{
-			}
-
-			// Assert
-			Assert.IsTrue(correctExceptionThrown, "The correct exception type should have been thrown");
-		}
-		#endregion
-
-		#endregion
+		#endregion DataReaderTests
 	}
 }
