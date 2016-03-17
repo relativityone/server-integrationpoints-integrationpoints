@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Xml.Serialization;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Queries;
 using Newtonsoft.Json;
+using Relativity;
 using Relativity.Core;
 using Relativity.Core.Authentication;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
@@ -18,6 +22,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly Export.InitializationResults _exportJobInfo;
 		private readonly int _retrievedDataCount;
 
+		private readonly HashSet<int> _singleChioceFieldsArtifactIds;
+		private readonly HashSet<int> _multipleObjectFieldArtifactIds;
+		 
 		private readonly FieldMap[] _mappedFields;
 		private readonly int[] _fieldArtifactIds;
 		private readonly int[] _avfIds;
@@ -30,13 +37,16 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			string config,
 			DirectSqlCallHelper helper)
 		{
-			ExportUsingSavedSearchSettings settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
+			_singleChioceFieldsArtifactIds = new HashSet<int>();
+			_multipleObjectFieldArtifactIds = new HashSet<int>();
 
+			ExportUsingSavedSearchSettings settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
 			BaseServiceContext context = ClaimsPrincipal.Current.GetNewServiceContext(settings.SourceWorkspaceArtifactId);
 			_exporter = new global::Relativity.Core.Api.Shared.Manager.Export.Exporter
 			{
 				CurrentServiceContext = context,
 				DynamicallyLoadedDllPaths = global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths,
+				UserAclMatrix = new UserPermissionsMatrix(context),
 				MultiValueDeimiter = IntegrationPoints.Contracts.Constants.MULTI_VALUE_DEIMITER,
 				NestedValueDelimiter = IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER
 			};
@@ -49,8 +59,19 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
 			{
 				int artifactId = Convert.ToInt32(source.FieldIdentifier);
-				fieldsReferences[artifactId] = fieldLookupHelper.GetFieldByArtifactID(artifactId).AvfId;
+				ViewFieldInfo fieldInfo = fieldLookupHelper.GetFieldByArtifactID(artifactId);
+
+				fieldsReferences[artifactId] = fieldInfo.AvfId;
+				if (fieldInfo.FieldType == FieldTypeHelper.FieldType.Objects)
+				{
+					_multipleObjectFieldArtifactIds.Add(artifactId);
+				}
+				else if (fieldInfo.FieldType == FieldTypeHelper.FieldType.Code)
+				{
+					_singleChioceFieldsArtifactIds.Add(artifactId);
+				}
 			}
+
 			_avfIds = _fieldArtifactIds.Select(artifactId => fieldsReferences[artifactId]).ToArray(); // need to make sure that this is in order
 
 			_exportJobInfo = _exporter.InitializeSearchExport(settings.SavedSearchArtifactId, _avfIds, startAt);
@@ -81,17 +102,40 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					object[] fieldsValue = (object[])data;
 					for (int index = 0; index < _avfIds.Length; index++)
 					{
+						int artifactId = _fieldArtifactIds[index];
+						object value = fieldsValue[index];
+
+						if (_multipleObjectFieldArtifactIds.Contains(artifactId))
+						{
+							value = ExportApiDataHelper.SanitizeMultiObjectField(value);
+						}
+						else if (_singleChioceFieldsArtifactIds.Contains(artifactId))
+						{
+							value = SanitizeSingleChoiceField(value);
+						}
+
 						fields[index] = new ArtifactFieldDTO()
 						{
 							Name = _exportJobInfo.ColumnNames[index],
-							ArtifactId = _fieldArtifactIds[index],
-							Value = fieldsValue[index]
+							ArtifactId = artifactId,
+							Value = value
 						};
 					}
 					result.Add(new ArtifactDTO(Convert.ToInt32(fieldsValue[_avfIds.Length]), artifactType, fields));
 				}
 			}
 			return result.ToArray();
+		}
+
+		private string SanitizeSingleChoiceField(object rawValue)
+		{
+			string value = rawValue as string;
+			if (String.IsNullOrEmpty(value) == false)
+			{
+				value = value.Replace((char)11,  (char)0);
+				value = value.Replace("&#x0B;", String.Empty);
+			}
+			return value ?? String.Empty;
 		}
 
 		public bool HasDataToRetrieve
