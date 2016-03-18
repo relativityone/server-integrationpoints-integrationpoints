@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Data;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
-using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
+using kCura.IntegrationPoints.Data.Managers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
+namespace kCura.IntegrationPoints.Data.Tests.Unit
 {
 	[TestFixture]
 	public class DocumentArtifactIdDataReaderTests

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Readers;
-using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
+using kCura.IntegrationPoints.Data.Managers;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 			_nativeFileLocation = _nativeFileLocation ?? new Dictionary<int, string>();
 		}
 
-		/// TEMP constructure, we will need to create kelper service to get the file locations.
+		/// TEMP constructor, we will need to create kelper service to get the file locations.
 		public DocumentTransferDataReader(
 			IDocumentManager documentManager,
 			IEnumerable<int> documentArtifactIds,

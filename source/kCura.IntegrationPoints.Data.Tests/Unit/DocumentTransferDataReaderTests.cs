@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Data.Managers;
+using kCura.IntegrationPoints.Data.Tests.Unit.Helpers;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
-using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
-using kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
+namespace kCura.IntegrationPoints.Data.Tests.Unit
 {
 	[TestFixture]
 	public class DocumentTransferDataReaderTests
@@ -452,7 +451,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				{
 					new FieldEntry()
 					{
-						DisplayName = _FIELD_NAME + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT,
+						DisplayName = _FIELD_NAME +  Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT,
 						FieldIdentifier = _FIELD_IDENTIFIER.ToString()
 					}
 				},
@@ -493,7 +492,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				{
 					new FieldEntry()
 					{
-						DisplayName = _FIELD_NAME + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT,
+						DisplayName = _FIELD_NAME + Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT,
 						FieldIdentifier = _FIELD_IDENTIFIER.ToString()
 					}
 				},
@@ -529,7 +528,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				{
 					new FieldEntry()
 					{
-						DisplayName = _FIELD_NAME + Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT,
+						DisplayName = _FIELD_NAME + Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT,
 						FieldIdentifier = _FIELD_IDENTIFIER.ToString()
 					}
 				},
@@ -850,7 +849,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				_templateFieldEntries,
 				new int[0]);
 
-			var expectedResult = new DataTable() { Columns = { new DataColumn(_FIELD_IDENTIFIER.ToString()), new DataColumn(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) } };
+			var expectedResult = new DataTable() { Columns = { new DataColumn(_FIELD_IDENTIFIER.ToString()), new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) } };
 
 			// Act
 			DataTable result = _instance.GetSchemaTable();
@@ -875,7 +874,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			var expectedResult = new DataTable()
 			{
-				Columns = { new DataColumn("123"), new DataColumn("456"), new DataColumn(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) }
+				Columns = { new DataColumn("123"), new DataColumn("456"), new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) }
 			};
 
 			// Act
@@ -895,7 +894,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				new FieldEntry[0],
 				new int[0]);
 
-			var expectedResult = new DataTable() { Columns = { new DataColumn(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) } };
+			var expectedResult = new DataTable() { Columns = { new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) } };
 
 			// Act
 			DataTable result = _instance.GetSchemaTable();
@@ -914,7 +913,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				new FieldEntry[0],
 				new int[0]);
 
-			var expectedResult = new DataTable() { Columns = { new DataColumn(Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) } };
+			var expectedResult = new DataTable() { Columns = { new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) } };
 
 			// Act
 			DataTable result = _instance.GetSchemaTable();
@@ -1523,7 +1522,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
 			List<FieldEntry> fieldEntries = _templateFieldEntries.ToList();
-			fieldEntries.Add(new FieldEntry() {FieldIdentifier = longTextFieldIdentifier.ToString(), DisplayName = longTextFieldName});
+			fieldEntries.Add(new FieldEntry() { FieldIdentifier = longTextFieldIdentifier.ToString(), DisplayName = longTextFieldName });
 
 			_instance = new DocumentTransferDataReader(
 				_documentManager,

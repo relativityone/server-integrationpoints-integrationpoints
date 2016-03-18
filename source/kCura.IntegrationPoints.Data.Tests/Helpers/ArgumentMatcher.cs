@@ -3,7 +3,7 @@ using System.Data;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 
-namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Helpers
+namespace kCura.IntegrationPoints.Data.Tests.Unit.Helpers
 {
 	public class ArgumentMatcher
 	{
