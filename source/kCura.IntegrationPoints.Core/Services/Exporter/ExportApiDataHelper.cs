@@ -101,10 +101,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					strBuilder  = new StringBuilder((int)stream.Length);
 					byte[] buffer = new byte[bufferSize];
 					int offset = 0;
-					int read;
-					while ((read = stream.Read(buffer, offset, buffer.Length)) != 0)
+					while (stream.Read(buffer, offset, buffer.Length) != 0)
 					{
-						offset += read;
 						strBuilder.Append(Encoding.UTF8.GetString(buffer));
 						buffer = new byte[bufferSize];
 					}
