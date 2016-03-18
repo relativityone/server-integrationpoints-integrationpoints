@@ -1,8 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
+using kCura.EDDS.DocumentCompareGateway;
+using Relativity.Core;
+using Relativity.Core.Service;
+using Relativity.Data;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
@@ -83,6 +88,29 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			[XmlElement("object")]
 			public String[] Object { get; set; }
+		}
+
+		public static async Task<string> RetrieveLongTextFieldAsync(BaseServiceContext context, DataGridContext dgContext, int documentArtifactId, int caseId, int fieldArtifactId)
+		{
+			const int bufferSize = 4016;
+			return await Task.Run(() =>
+			{
+				StringBuilder strBuilder = null;
+				using (ILongTextStream stream = new LongTextStream(context, documentArtifactId, caseId, dgContext, fieldArtifactId))
+				{
+					strBuilder  = new StringBuilder((int)stream.Length);
+					byte[] buffer = new byte[bufferSize];
+					int offset = 0;
+					int read;
+					while ((read = stream.Read(buffer, offset, buffer.Length)) != 0)
+					{
+						offset += read;
+						strBuilder.Append(Encoding.UTF8.GetString(buffer));
+						buffer = new byte[bufferSize];
+					}
+				}
+				return strBuilder.ToString();
+			});
 		}
 	}
 }
