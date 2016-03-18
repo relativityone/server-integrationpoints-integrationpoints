@@ -230,7 +230,7 @@ namespace kCura.IntegrationPoints.Contracts.Readers
 			}
 			catch (Exception ex)
 			{
-				// TODO: Handle errors -- biedrzycki: Jan 13, 2015
+				// TODO: Handle errors -- biedrzycki: Jan 13, 2015.
 				ReaderOpen = false;
 			}
 		}
