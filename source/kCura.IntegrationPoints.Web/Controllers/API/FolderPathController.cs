@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Web.Http;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.DataStructures;
@@ -36,12 +35,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IRSAPIClient _client;
 		private readonly IImportApiFactory _importApiFactory;
 		private readonly IConfig _config;
+		private readonly IGenericLibrary<IntegrationPoint> _integrationPointLibrary;
 
-		public FolderPathController(IRSAPIClient client, IImportApiFactory importApiFactory, IConfig config)
+		public FolderPathController(IRSAPIClient client,
+			IImportApiFactory importApiFactory,
+			IConfig config,
+			IGenericLibrary<IntegrationPoint> integrationPointLibrary)
 		{
 			_client = client;
 			_importApiFactory = importApiFactory;
 			_config = config;
+			_integrationPointLibrary = integrationPointLibrary;
 		}
 
 		[HttpGet]
@@ -61,8 +65,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpGet]
 		public HttpResponseMessage GetFolderCount(int integrationPointArtifactId)
 		{
-			IRSAPIService rsapiService = ServiceContextFactory.CreateRSAPIService(_client);
-			IntegrationPoint integrationPoint = rsapiService.IntegrationPointLibrary.Read(Convert.ToInt32(integrationPointArtifactId));
+			IntegrationPoint integrationPoint = _integrationPointLibrary.Read(Convert.ToInt32(integrationPointArtifactId));
 			IntegrationPointSourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<IntegrationPointSourceConfiguration>(integrationPoint.SourceConfiguration);
 			IntegrationPointDestinationConfiguration destinationConfiguration = JsonConvert.DeserializeObject<IntegrationPointDestinationConfiguration>(integrationPoint.DestinationConfiguration);
 

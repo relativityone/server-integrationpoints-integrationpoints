@@ -5,6 +5,7 @@ using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Hosting;
 using System.Web.Http.Routing;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.IntegrationPoints.Web.Controllers.API;
@@ -20,6 +21,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		private IRSAPIClient _client;
 		private IImportApiFactory _importApiFactory;
 		private IConfig _config;
+		private IGenericLibrary<IntegrationPoint> _integrationPointLibrary;
+
 		private HttpConfiguration _configuration;
 		private FolderPathController _instance;
 
@@ -29,6 +32,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_client = NSubstitute.Substitute.For<IRSAPIClient>();
 			_importApiFactory = NSubstitute.Substitute.For<IImportApiFactory>();
 			_config = NSubstitute.Substitute.For<IConfig>();
+			_integrationPointLibrary = NSubstitute.Substitute.For<IGenericLibrary<IntegrationPoint>>();
+
 			_configuration = NSubstitute.Substitute.For<HttpConfiguration>();
 
 			HttpConfiguration config = new HttpConfiguration();
@@ -36,7 +41,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			IHttpRoute route = config.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}");
 			HttpRouteData routeData = new HttpRouteData(route, new HttpRouteValueDictionary { { "controller", "GetFolderPathFieldsController" } });
 
-			_instance = new FolderPathController(_client, _importApiFactory, _config)
+			_instance = new FolderPathController(_client, _importApiFactory, _config, _integrationPointLibrary)
 			{
 				ControllerContext = new HttpControllerContext(config, routeData, request),
 				Request = request
@@ -90,6 +95,34 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 				.Returns(result);
 
 			_instance.GetFields();
+		}
+
+		[Test]
+		public void GetFolderCount_UseFolderInformationPath_False()
+		{
+			// ARRANGE
+			int integrationPointArtifactId = 1;
+			int expectedFolderCount = -1;
+			IntegrationPoint integrationPoint = new IntegrationPoint
+			{
+				SourceConfiguration = "{SavedSearchArtifactId: 123}",
+				DestinationConfiguration = "{UseFolderPathInformation: false}"
+			};
+
+			_integrationPointLibrary.Read(Convert.ToInt32(integrationPointArtifactId))
+				.Returns(integrationPoint);
+
+			// ACT
+			HttpResponseMessage response = _instance.GetFolderCount(integrationPointArtifactId);
+
+			// ASSERT
+			Assert.IsTrue(response.IsSuccessStatusCode);
+			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+			int folderCount = Int32.MinValue;
+			response.TryGetContentValue(out folderCount);
+			Assert.AreEqual(expectedFolderCount, folderCount);
+
+			_integrationPointLibrary.Received(1).Read(Convert.ToInt32(integrationPointArtifactId));
 		}
 	}
 }

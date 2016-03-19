@@ -18,6 +18,10 @@ namespace kCura.IntegrationPoints.Web.DataStructures
 			get { return _treeView.GetNodeCount(true); }
 		}
 
+		/// <summary>
+		/// http://stackoverflow.com/questions/1155977/populate-treeview-from-a-list-of-path
+		/// </summary>
+		/// <param name="path"></param>
 		public void AddNode(string path)
 		{
 			if (String.IsNullOrEmpty(path) || path == @"\")
@@ -31,21 +35,21 @@ namespace kCura.IntegrationPoints.Web.DataStructures
 
 			TreeNode lastNode = null;
 			char pathSeparator = '\\';
-			var subPathAgg = string.Empty;
+			var subPathAggregate = string.Empty;
 
 			foreach (string subPath in sanitizedFolderPath.Split(pathSeparator))
 			{
-				subPathAgg += subPath + pathSeparator;
-				TreeNode[] nodes = _treeView.Nodes.Find(subPathAgg, true);
+				subPathAggregate += subPath + pathSeparator;
+				TreeNode[] nodes = _treeView.Nodes.Find(subPathAggregate, true);
 				if (nodes.Length == 0)
 				{
 					if (lastNode == null)
 					{
-						lastNode = _treeView.Nodes.Add(subPathAgg, subPath);
+						lastNode = _treeView.Nodes.Add(subPathAggregate, subPath);
 					}
 					else
 					{
-						lastNode = lastNode.Nodes.Add(subPathAgg, subPath);
+						lastNode = lastNode.Nodes.Add(subPathAggregate, subPath);
 					}
 				}
 				else
