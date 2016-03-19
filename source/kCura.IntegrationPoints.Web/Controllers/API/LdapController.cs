@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_manager = manager;
 		}
 
-
 		[HttpPost]
 		public IHttpActionResult Encrypt([FromBody] object message)
 		{

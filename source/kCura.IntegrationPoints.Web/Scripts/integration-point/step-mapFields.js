@@ -190,6 +190,12 @@ ko.validation.insertValidationMessage = function (element) {
 		self.OverwriteOptions = this.OverwriteOptions;
 
 		this.SelectedOverwrite = ko.observable(model.SelectedOverwrite || 'Append Only');
+		this.SelectedOverwrite.subscribe(function (newValue) {
+			if (newValue != 'Append Only') {
+				self.UseFolderPathInformation("false");
+				self.FolderPathSourceField(null);
+			}
+		});
 
 		this.UseFolderPathInformation = ko.observable(model.UseFolderPathInformation || "false");
 		this.FolderPathSourceField = ko.observable().extend(
@@ -203,7 +209,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.FolderPathFields = ko.observableArray([]);
 		if (self.FolderPathFields.length === 0) {
-			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetFolderPathFields') }).then(function (result) {
+			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('FolderPath', 'GetFields') }).then(function (result) {
 				// GetFolderPathFields only returns fixed-length text and long text fields
 				self.FolderPathFields(result);
 				self.FolderPathSourceField(model.FolderPathSourceField);

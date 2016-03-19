@@ -38,8 +38,8 @@ namespace kCura.IntegrationPoints.Data.Managers.Implementations
 						x.ArtifactId,
 						x.ArtifactTypeId,
 						x.Fields.Select(
-							y => new ArtifactFieldDTO() { ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value }))
-				).FirstOrDefault();
+							y => new ArtifactFieldDTO() {ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value}))
+					).FirstOrDefault();
 
 				return document;
 			}
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Data.Managers.Implementations
 						x.ArtifactId,
 						x.ArtifactTypeId,
 						x.Fields.Select(
-							y => new ArtifactFieldDTO() { ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value }))
+							y => new ArtifactFieldDTO() {ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value}))
 					).ToArray();
 
 				return documents;
