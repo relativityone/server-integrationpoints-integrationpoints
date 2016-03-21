@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Readers;
 using kCura.IntegrationPoints.Data.Managers;
+using kCura.IntegrationPoints.Data.Queries;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;

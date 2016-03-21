@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 	/// <summary>
 	/// IMPORTANT : 
 	/// This is a temporary class that is used to query data of which no relativity api is supported.
-	/// To fix this, we will need to introduce/modify kelper service(s) functionalities to aquire this data.
+	/// To fix this, we will need to introduce/modify kepler service(s) functionalities to acquire this data.
 	/// </summary>
 	public class DirectSqlCallHelper
 	{

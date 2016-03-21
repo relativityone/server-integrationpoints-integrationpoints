@@ -13,8 +13,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public static class ExportApiDataHelper
 	{
-		private const String MultiObjectParsingError = "Encounter error while processing multi-object field, this may due to out-of-date version of the software. Please contact administrator for more information.";
+		private const String MultiObjectParsingError = "Encountered an error while processing multi-object field, this may due to out-of-date version of the software. Please contact administrator for more information.";
 		private static readonly Lazy<XmlSerializer> MultiObjectFieldSerializer = new Lazy<XmlSerializer>(() => new XmlSerializer(typeof(XmlSerializerRoot)));
+		private const string TempRootGuid = "e7913be0-cd0a-4833-a432-f2d67a2f1349";
 
 		/// <summary>
 		/// Sanitize single choice string that comes from export api.
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		/// Sanitize multi-object string that comes from export api.
 		/// </summary>
 		/// <param name="rawValue">an untyped object from export api</param>
-		/// <returns>a string contains the text identifier represent multi-object data, seperating object by ';'</returns>
+		/// <returns>a string contains the text identifier represent multi-object data, separating object by ';'</returns>
 		public static object SanitizeMultiObjectField(object rawValue)
 		{
 			try
@@ -54,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				string value = rawValue as string;
 				if (String.IsNullOrEmpty(value) == false)
 				{
-					string tempValue = "<e7913be0-cd0a-4833-a432-f2d67a2f1349>" + value + "</e7913be0-cd0a-4833-a432-f2d67a2f1349>";
+					string tempValue = String.Format("<{0}>{1}</{0}>", TempRootGuid, value);
 
 					using (XmlReader reader = XmlReader.Create(new StringReader(tempValue)))
 					{
@@ -70,10 +71,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					}
 					return value;
 				}
-				else
-				{
-					return rawValue;
-				}
+				return rawValue;
 			}
 			catch (Exception exception)
 			{
@@ -82,8 +80,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		// used to formatize multi object field data
-		[XmlRoot("e7913be0-cd0a-4833-a432-f2d67a2f1349")]
+		// used to format multi object field data
+		[XmlRoot(TempRootGuid)]
 		public class XmlSerializerRoot
 		{
 			[XmlElement("object")]
