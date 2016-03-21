@@ -25,18 +25,14 @@ namespace kCura.IntegrationPoints.Data.Queries
 			if (docArtifactIds.Length > 0)
 			{
 				string param = String.Join(",", docArtifactIds);
-				String query = String.Format(@"SELECT [DocumentArtifactId], [Location] FROM [EDDSDBO].[FILE] WHERE [DocumentArtifactId] IN ({0})", param);
+				String query = String.Format(@"SELECT [DocumentArtifactId], [Location] FROM [EDDSDBO].[FILE] WHERE [Type] = 0 AND [DocumentArtifactId] IN ({0})", param);
 				using (IDataReader reader = _context.ExecuteSQLStatementAsReader(query))
 				{
 					while (reader.Read())
 					{
 						int artifactId = reader.GetInt32(0);
 						string location = reader.GetString(1);
-
-						if (String.IsNullOrEmpty(location) == false)
-						{
-							result[artifactId] = location;
-						}
+						result[artifactId] = location;
 					}
 				}
 			}

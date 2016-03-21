@@ -20,7 +20,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	{
 		private readonly int[] _avfIds;
 		private readonly BaseServiceContext _baseContext;
-		private readonly global::Relativity.Core.Api.Shared.Manager.Export.Exporter _exporter;
+		private readonly DataGridContext _dataGridContext;
+		private readonly global::Relativity.Core.Api.Shared.Manager.Export.IExporter _exporter;
 		private readonly Export.InitializationResults _exportJobInfo;
 		private readonly int[] _fieldArtifactIds;
 		private readonly DirectSqlCallHelper _helper;
@@ -31,7 +32,29 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly ExportUsingSavedSearchSettings _settings;
 		private readonly HashSet<int> _singleChoiceFieldsArtifactIds;
 		private IDataReader _reader;
-		private DataGridContext _dataGridContext;
+
+		private RelativityExporterService()
+		{
+			_singleChoiceFieldsArtifactIds = new HashSet<int>();
+			_multipleObjectFieldArtifactIds = new HashSet<int>();
+			_longTextFieldArtifactIds = new HashSet<int>();
+			_dataGridContext = new DataGridContext(true);
+		}
+
+		/// <summary>
+		/// Testing only
+		/// </summary>
+		/// <param name="exporter"></param>
+		public RelativityExporterService(
+			global::Relativity.Core.Api.Shared.Manager.Export.IExporter exporter, 
+			int[] avfIds,
+			int[] fieldArtifactIds) : this()
+		{
+			_exporter = exporter;
+			_avfIds = avfIds;
+			_exportJobInfo = _exporter.InitializeExport(0, null, 0);
+			_fieldArtifactIds = fieldArtifactIds;
+		}
 
 		public RelativityExporterService(
 			FieldMap[] mappedFields,
@@ -39,26 +62,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			string config,
 			DirectSqlCallHelper helper)
 		{
-			_singleChoiceFieldsArtifactIds = new HashSet<int>();
-			_multipleObjectFieldArtifactIds = new HashSet<int>();
-			_longTextFieldArtifactIds = new HashSet<int>();
-			_dataGridContext = new DataGridContext(true);
-
 			_settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
 			_baseContext = ClaimsPrincipal.Current.GetNewServiceContext(_settings.SourceWorkspaceArtifactId);
-			_exporter = new global::Relativity.Core.Api.Shared.Manager.Export.Exporter
-			{
-				CurrentServiceContext = _baseContext,
-				DynamicallyLoadedDllPaths = global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths,
-				UserAclMatrix = new UserPermissionsMatrix(_baseContext),
-				MultiValueDeimiter = IntegrationPoints.Contracts.Constants.MULTI_VALUE_DEIMITER,
-				NestedValueDelimiter = IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER
-			};
 
 			_mappedFields = mappedFields;
 			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
 
-			QueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int)ArtifactType.Document);
+			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int)ArtifactType.Document);
 			Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
 			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
 			{
@@ -82,7 +92,16 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 			_avfIds = _fieldArtifactIds.Select(artifactId => fieldsReferences[artifactId]).ToArray(); // need to make sure that this is in order
 
-			_exportJobInfo = _exporter.InitializeSearchExport(_settings.SavedSearchArtifactId, _avfIds, startAt);
+			_exporter = new global::Relativity.Core.Api.Shared.Manager.Export.SavedSearchExporter
+			(
+					_baseContext,
+					new UserPermissionsMatrix(_baseContext),
+					global::Relativity.ArtifactType.Document,
+					IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER,
+					IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER,
+					global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
+			);
+			_exportJobInfo = _exporter.InitializeExport(_settings.SavedSearchArtifactId, _avfIds, startAt);
 			_retrievedDataCount = 0;
 			_helper = helper;
 		}
@@ -128,7 +147,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			if (retrievedData != null)
 			{
 				int artifactType = (int)ArtifactType.Document;
-				foreach (var data in retrievedData)
+				foreach (object data in retrievedData)
 				{
 					ArtifactFieldDTO[] fields = new ArtifactFieldDTO[_avfIds.Length];
 

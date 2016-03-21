@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			ImportAuditLevel = ImportAuditLevelEnum.FullAudit;
 			ExtractedTextFieldContainsFilePath = false;
-			MultiValueDelimiter = IntegrationPoints.Contracts.Constants.MULTI_VALUE_DEIMITER;
+			MultiValueDelimiter = IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER;
 			ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles;
 			NestedValueDelimiter = IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER;
 			ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly;
