@@ -97,7 +97,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			this._identifier = taskParameters.BatchInstance;
 
 			// Load integrationPoint data
-			if (IntegrationPointDto != null) return;
+			if (IntegrationPointDto != null)
+			{
+				return;
+			}
 
 			int integrationPointId = job.RelatedObjectArtifactID;
 			this.IntegrationPointDto = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
@@ -128,27 +131,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		internal void PostExecute(Job job)
 		{
-			try
+			foreach (IBatchStatus completedItem in _batchStatus)
 			{
-				foreach (var completedItem in _batchStatus)
+				try
 				{
-					try
-					{
-						completedItem.JobComplete(job);
-					}
-					catch (Exception e)
-					{
-						_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
-					}
+					completedItem.JobComplete(job);
 				}
-			}
-			catch (Exception e)
-			{
-				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
-			}
-			finally
-			{
-				_jobHistoryErrorService.CommitErrors();
+				catch (Exception e)
+				{
+					_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+				}
+				finally
+				{
+					_jobHistoryErrorService.CommitErrors();
+				}
 			}
 		}
 
@@ -157,7 +153,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			// if you want to create add another synchronizer aka exporter, you may add it here.
 			// RDO synchronizer
 			Guid providerGuid = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
-			var factory = _synchronizerFactory as GeneralWithCustodianRdoSynchronizerFactory;
+			GeneralWithCustodianRdoSynchronizerFactory factory = _synchronizerFactory as GeneralWithCustodianRdoSynchronizerFactory;
 			if (factory != null)
 			{
 				factory.SourceProvider = SourceProvider;

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Managers;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
-using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
+namespace kCura.IntegrationPoints.Data.Tests.Unit
 {
 	[TestFixture]
 	public class DocumentArtifactIdDataReaderTests
@@ -164,9 +164,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 
 			// Act
 			bool readResult1 = _instance.Read();
-			object accessorResult1 = _instance[Shared.Constants.ARTIFACT_ID_FIELD_NAME];
+			object accessorResult1 = _instance[DocumentTransferProvider.Shared.Constants.ARTIFACT_ID_FIELD_NAME];
 			bool readResult2 = _instance.Read();
-			object accessorResult2 = _instance[Shared.Constants.ARTIFACT_ID_FIELD_NAME];
+			object accessorResult2 = _instance[DocumentTransferProvider.Shared.Constants.ARTIFACT_ID_FIELD_NAME];
 			bool readResult3 = _instance.Read();
 
 			// Assert
@@ -281,7 +281,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 			string result = _instance.GetName(0);
 
 			// Assert
-			Assert.AreEqual(Shared.Constants.ARTIFACT_ID_FIELD_NAME, result, "The result should be correct");
+			Assert.AreEqual(DocumentTransferProvider.Shared.Constants.ARTIFACT_ID_FIELD_NAME, result, "The result should be correct");
 		}
 
 		[Test]
@@ -310,7 +310,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		public void GetOrdinal_ValidIndex_ReturnsName()
 		{
 			// Act
-			int result = _instance.GetOrdinal(Shared.Constants.ARTIFACT_ID_FIELD_NAME);
+			int result = _instance.GetOrdinal(DocumentTransferProvider.Shared.Constants.ARTIFACT_ID_FIELD_NAME);
 
 			// Assert
 			Assert.AreEqual(0, result, "The result should be correct");
