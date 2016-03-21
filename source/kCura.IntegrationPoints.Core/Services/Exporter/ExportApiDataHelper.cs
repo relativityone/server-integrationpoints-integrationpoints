@@ -98,11 +98,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				StringBuilder strBuilder = null;
 				using (ILongTextStream stream = new LongTextStream(context, documentArtifactId, caseId, dgContext, fieldArtifactId))
 				{
+					Encoding encoding = stream.IsUnicode ? Encoding.Unicode : Encoding.ASCII;
 					strBuilder  = new StringBuilder((int)stream.Length);
 					byte[] buffer = new byte[bufferSize];
 					while (stream.Read(buffer, 0, buffer.Length) != 0)
 					{
-						strBuilder.Append(Encoding.UTF8.GetString(buffer));
+						strBuilder.Append(encoding.GetString(buffer));
 						buffer = new byte[bufferSize];
 					}
 				}
