@@ -38,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_singleChoiceFieldsArtifactIds = new HashSet<int>();
 			_multipleObjectFieldArtifactIds = new HashSet<int>();
 			_longTextFieldArtifactIds = new HashSet<int>();
-			_dataGridContext = new DataGridContext(true);
 		}
 
 		/// <summary>
@@ -62,6 +61,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			string config,
 			DirectSqlCallHelper helper)
 		{
+			_dataGridContext = new DataGridContext(true);
 			_settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
 			_baseContext = ClaimsPrincipal.Current.GetNewServiceContext(_settings.SourceWorkspaceArtifactId);
 
