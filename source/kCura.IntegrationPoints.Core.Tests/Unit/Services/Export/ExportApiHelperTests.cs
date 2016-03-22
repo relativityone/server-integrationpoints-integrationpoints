@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 	[TestFixture]
 	public class ExportApiHelperTests
 	{
-		private const String MultiObjectParsingError = "Encounter error while processing multi-object field, this may due to out-of-date version of the software. Please contact administrator for more information.";
+		private const String MultiObjectParsingError = "Encountered an error while processing multi-object field, this may due to out-of-date version of the software. Please contact administrator for more information.";
 
 		[TestCase("<object>Abc</object>", Result = "Abc")]
 		[TestCase("<object>abc</object><object>def</object>", Result = "abc;def")]
