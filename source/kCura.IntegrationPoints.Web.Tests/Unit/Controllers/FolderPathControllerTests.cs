@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		{
 			// ARRANGE
 			int integrationPointArtifactId = 1;
-			int expectedFolderCount = -1;
+			int expectedFolderCount = 0;
 			IntegrationPoint integrationPoint = new IntegrationPoint
 			{
 				SourceConfiguration = "{SavedSearchArtifactId: 123}",

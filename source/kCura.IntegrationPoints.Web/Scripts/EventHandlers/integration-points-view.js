@@ -19,11 +19,7 @@
 					folderCount = result;
 				}
 			});
-			if (folderCount === -1) {
-				selectedMessage = "TODO: Please fill this in";
-			} else {
 			selectedMessage = appendOnlyMessageStart + folderCount + appendOnlyMessageEnd;
-			}
 		} else if (overwriteOption === "Overlay Only") {
 			selectedMessage = overlayOnlyMessage;
 		} else if (overwriteOption === "Append/Overlay") {
