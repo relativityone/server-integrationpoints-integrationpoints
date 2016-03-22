@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			FieldMap[] mappedFields,
 			int startAt,
 			string config,
-			DirectSqlCallHelper helper)
+			DirectSqlCallHelper helper) : this()
 		{
 			_dataGridContext = new DataGridContext(true);
 			_settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
