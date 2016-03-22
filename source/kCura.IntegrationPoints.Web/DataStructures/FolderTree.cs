@@ -47,29 +47,29 @@ namespace kCura.IntegrationPoints.Web.DataStructures
 
 			if (begIndex < folderPath.Length)
 			{
-				var endIndex = folderPath.IndexOf(_pathSeparator, begIndex);
+				int endIndex = folderPath.IndexOf(_pathSeparator, begIndex);
 				if (endIndex == -1)
 				{
 					endIndex = folderPath.Length;
 				}
 
-				var folderName = folderPath.Substring(begIndex, endIndex - begIndex).ToLower();
+				string folderName = folderPath.Substring(begIndex, endIndex - begIndex).ToLower();
 				if (!string.IsNullOrEmpty(folderName))
 				{
-					Folder oItem;
+					Folder folder;
 
 					if (ContainsKey(folderName))
 					{
-						oItem = this[folderName];
+						folder = this[folderName];
 					}
 					else
 					{
 						count++;
-						oItem = new Folder { Name = folderName };
-						Add(folderName, oItem);
+						folder = new Folder { Name = folderName };
+						Add(folderName, folder);
 					}
 					// Now add the rest to the new item's children
-					count += oItem.Children.AddEntry(folderPath, endIndex + 1);
+					count += folder.Children.AddEntry(folderPath, endIndex + 1);
 				}
 			}
 			return count;
