@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
 using kCura.IntegrationPoints.Web.DataStructures;
 using NUnit.Framework;
 
@@ -20,6 +23,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.DataStructures
 		[TestCase(new [] { @"\a\" }, 1)]
 		[TestCase(new [] { @"\\a" }, 1)]
 		[TestCase(new [] { @"a\\" }, 1)]
+		[TestCase(new [] { @"\a", @"\A" }, 1)]
 		[TestCase(new [] { @"\\a\\" }, 1)]
 		[TestCase(new [] { @"a\b" }, 2)]
 		[TestCase(new [] { @"\a\b" }, 2)]
@@ -37,16 +41,58 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.DataStructures
 		[TestCase(new [] { @"\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a" }, 15)]
 		[TestCase(new [] { @"\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a", @"\a\a\a\a\a\a\a\a\a\a\a\a\a\b\a" }, 17)]
 		[TestCase(new [] { @"\a\a\a\a\a\a\a\a\a\a\a\a\a\a\a", @"\a\a\a\a\a\a\a\a\a\a\a\a\a\a" }, 15)]
-		public void Test(IEnumerable<string> folderPaths, int expectedFolderCount)
+		public void FolderTree_CountFoldersCorrectly(IEnumerable<string> folderPaths, int expectedFolderCount)
 		{
 			// ACT
 			foreach (string folderPath in folderPaths)
 			{
-				_folderTree.AddNode(folderPath);
+				_folderTree.AddEntry(folderPath);
 			}
 
 			// ASSERT
 			Assert.AreEqual(expectedFolderCount, _folderTree.FolderCount);
+		}
+
+		/// <summary>
+		/// Creates a random path containing maxFolderDepth folders. This is just used to quickly
+		/// see the high level performance of the FolderTree implementation.
+		/// </summary>
+		/// <param name="maxFolderDepth"></param>
+		[TestCase(5)]
+		[TestCase(10)]
+		[TestCase(25)]
+		[TestCase(50)]
+		[TestCase(100)]
+		[Ignore]
+		public void FolderTree_StressTest(int maxFolderDepth)
+		{
+			// ARRANGE
+			int numDocuments = 1000;
+			Random random = new Random();
+
+			string[] uniqueFolders = new string[numDocuments];
+			for (int i = 0; i < numDocuments; i++)
+			{
+				StringBuilder uniquePath = new StringBuilder();
+				for (int j = 0; j < maxFolderDepth; j++)
+				{
+					char letter = (char)('a' + random.Next(0, 26));
+					uniquePath.Append(@"\" + letter);
+				}
+				uniqueFolders[i] = uniquePath.ToString();
+			}
+
+			// ACT
+			FolderTree folderTree = new FolderTree();
+			Stopwatch watch1 = Stopwatch.StartNew();
+			foreach (string folderPath in uniqueFolders)
+			{
+				folderTree.AddEntry(folderPath);
+			}
+			watch1.Stop();
+			long elapsedMilliseconds1 = watch1.ElapsedMilliseconds;
+
+			Console.WriteLine(String.Format("Milliseconds elapsed {0}", elapsedMilliseconds1));
 		}
 	}
 }
