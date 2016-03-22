@@ -1,63 +1,92 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
 namespace kCura.IntegrationPoints.Web.DataStructures
 {
 	public class FolderTree
 	{
-		private readonly TreeView _treeView;
+		private string _pathSeparatorString = @"\";
+		private char _pathSeparatorChar = '\\';
 
-		public FolderTree()
-		{
-			_treeView = new TreeView { PathSeparator = @"\" };
-		}
+		private readonly FolderTreeCollection _root;
+		private int _count;
 
 		public int FolderCount
 		{
-			get { return _treeView.GetNodeCount(true); }
+			get { return _count; }
 		}
 
-		/// <summary>
-		/// http://stackoverflow.com/questions/1155977/populate-treeview-from-a-list-of-path
-		/// </summary>
-		/// <param name="path"></param>
-		public void AddNode(string path)
+		public FolderTree()
 		{
-			if (String.IsNullOrEmpty(path) || path == @"\")
-			{
-				return;
-			}
+			_root = new FolderTreeCollection();
+		}
 
-			string trimmedFolderPath = path.Trim('\\');
+		public void AddEntry(string folderPath)
+		{
+			string sanitizedPath = SanitizePath(folderPath);
+			_count += _root.AddEntry(sanitizedPath, 0);
+		}
+
+		private string SanitizePath(string path)
+		{
+			string trimmedPath = path.Trim(_pathSeparatorChar);
 			Regex regex = new Regex("(\\\\){2,}");
-			string sanitizedFolderPath = regex.Replace(trimmedFolderPath, @"\");
+			string sanitizedPath = regex.Replace(trimmedPath, _pathSeparatorString);
+			return sanitizedPath;
+		}
+	}
 
-			TreeNode lastNode = null;
-			char pathSeparator = '\\';
-			var subPathAggregate = string.Empty;
+	#region FolderTreeCollection
+	internal class FolderTreeCollection : Dictionary<string, Folder>
+	{
+		private string _pathSeparator = @"\";
 
-			foreach (string subPath in sanitizedFolderPath.Split(pathSeparator))
+		public int AddEntry(string folderPath, int begIndex)
+		{
+			int count = 0;
+
+			if (begIndex < folderPath.Length)
 			{
-				subPathAggregate += subPath + pathSeparator;
-				TreeNode[] nodes = _treeView.Nodes.Find(subPathAggregate, true);
-				if (nodes.Length == 0)
+				var endIndex = folderPath.IndexOf(_pathSeparator, begIndex);
+				if (endIndex == -1)
 				{
-					if (lastNode == null)
+					endIndex = folderPath.Length;
+				}
+
+				var folderName = folderPath.Substring(begIndex, endIndex - begIndex).ToLower();
+				if (!string.IsNullOrEmpty(folderName))
+				{
+					Folder oItem;
+
+					if (ContainsKey(folderName))
 					{
-						lastNode = _treeView.Nodes.Add(subPathAggregate, subPath);
+						oItem = this[folderName];
 					}
 					else
 					{
-						lastNode = lastNode.Nodes.Add(subPathAggregate, subPath);
+						count++;
+						oItem = new Folder { Name = folderName };
+						Add(folderName, oItem);
 					}
-				}
-				else
-				{
-					lastNode = nodes[0];
+					// Now add the rest to the new item's children
+					count += oItem.Children.AddEntry(folderPath, endIndex + 1);
 				}
 			}
-			lastNode = null; // This is the place code was changed
+			return count;
 		}
 	}
+	#endregion
+
+	#region Folder
+	internal class Folder
+	{
+		public string Name { get; set; }
+		public FolderTreeCollection Children { get; set; }
+
+		public Folder()
+		{
+			Children = new FolderTreeCollection();
+		}
+	}
+	#endregion
 }

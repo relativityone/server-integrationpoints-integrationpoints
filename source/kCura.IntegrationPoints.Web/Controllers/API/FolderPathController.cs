@@ -120,10 +120,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 				if (!String.IsNullOrEmpty(folderPath) && folderPath != @"\")
 				{
-					string trimmedFolderPath = folderPath.Trim('\\');
-					Regex regex = new Regex("(\\\\){2,}");
-					string sanitizedFolderPath = regex.Replace(trimmedFolderPath, @"\");
-					folderTree.AddNode(sanitizedFolderPath);
+					folderTree.AddEntry(folderPath);
 				}
 			}
 			return folderTree.FolderCount;
