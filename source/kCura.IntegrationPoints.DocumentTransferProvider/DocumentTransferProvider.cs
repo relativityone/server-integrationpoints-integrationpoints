@@ -164,13 +164,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 			IDBContext dbContext = _helper.GetDBContext(settings.SourceWorkspaceArtifactId);
 
-			ArtifactFieldDTO[] longTextfields = fieldManager.RetrieveLongTextFieldsAsync(documentTypeId).ConfigureAwait(false).GetAwaiter().GetResult();
+			ArtifactFieldDTO[] longTextFields = fieldManager.RetrieveLongTextFieldsAsync(documentTypeId).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			IDataReader dataReader = new DocumentTransferDataReader(
 				documentManager,
 				entryIds.Select(x => Convert.ToInt32(x)),
 				fields,
-				longTextfields.Select(x => x.ArtifactId),
+				longTextFields.Select(x => x.ArtifactId),
 				dbContext);
 
 			return dataReader;
