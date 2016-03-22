@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			if (!destinationConfiguration.UseFolderPathInformation)
 			{
-				return Request.CreateResponse(HttpStatusCode.OK, -1, Configuration.Formatters.JsonFormatter);
+				return Request.CreateResponse(HttpStatusCode.OK, 0, Configuration.Formatters.JsonFormatter);
 			}
 
 			ArtifactDTO[] documentDtos = GetDocumentDtos(sourceConfiguration, destinationConfiguration);
