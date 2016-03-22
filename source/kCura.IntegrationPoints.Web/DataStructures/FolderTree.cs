@@ -68,7 +68,6 @@ namespace kCura.IntegrationPoints.Web.DataStructures
 						folder = new Folder { Name = folderName };
 						Add(folderName, folder);
 					}
-					// Now add the rest to the new item's children
 					count += folder.Children.AddEntry(folderPath, endIndex + 1);
 				}
 			}
