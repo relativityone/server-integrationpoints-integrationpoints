@@ -118,7 +118,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		}
 
 		[Test]
-		public void Read_FirstRead_RunsSavedSearch_RequestFailsWithException_ReturnsFalse()
+		public void Read_FirstRead_RunsSavedSearch_RequestFailsWithException()
 		{
 			// Arrange
 			_documentManager.RetrieveDocumentsAsync(
@@ -132,12 +132,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_templateFieldEntries,
 				new int[0]);
 
-			// Act
-			bool result = _instance.Read();
-
-			// Assert
-			Assert.IsFalse(result, "There are no records to read, result should be false");
-			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
+			// Act & Assert
+			Assert.Throws<Exception>(() => _instance.Read());
 		}
 
 		[Test]
