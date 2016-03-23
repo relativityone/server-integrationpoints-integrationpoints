@@ -395,6 +395,7 @@
     <Compile Include="FileObjects\ExportFile.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FileObjects\ExportFileDefBuilder.vb" />
     <Compile Include="FileObjects\ExportFileSerializer.vb" />
     <Compile Include="FileObjects\ImageLoadFile.vb">
       <SubType>Code</SubType>
@@ -675,12 +676,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="API\" />
-    <Folder Include="Event\" />
-    <Folder Include="FieldMapping\" />
     <Folder Include="Importers\CodeValidator\" />
-    <Folder Include="ProxyClasses\" />
-    <Folder Include="SettingsFactories\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
 </Project>
