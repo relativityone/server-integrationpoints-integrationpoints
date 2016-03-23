@@ -369,6 +369,7 @@
     <Compile Include="FileObjects\ExportFile.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FileObjects\ExportFileDefBuilder.cs" />
     <Compile Include="FileObjects\ExportFileSerializer.cs" />
     <Compile Include="FileObjects\ImageLoadFile.cs">
       <SubType>Code</SubType>
