@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<discovery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/disco/">
+  <contractRef ref="http://localhost/RelativityWebApi/SearchManager.asmx?wsdl" docRef="http://localhost/RelativityWebApi/SearchManager.asmx" xmlns="http://schemas.xmlsoap.org/disco/scl/" />
+  <soap address="http://localhost/RelativityWebApi/SearchManager.asmx" xmlns:q1="http://www.kCura.com/EDDS/SearchManager" binding="q1:SearchManagerSoap" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
+  <soap address="http://localhost/RelativityWebApi/SearchManager.asmx" xmlns:q2="http://www.kCura.com/EDDS/SearchManager" binding="q2:SearchManagerSoap12" xmlns="http://schemas.xmlsoap.org/disco/soap/" />
+</discovery>
