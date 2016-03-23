@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/FileManager" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/FileManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/FileManager">
+      <s:element name="BeginFill">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="b" type="s:base64Binary" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentDirectory" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="fileGuid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="BeginFillResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="BeginFillResult" type="tns:IoResponse" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="IoResponse">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="Success" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="Filename" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ErrorMessage" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ErrorText" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="FileFill">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentDirectory" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="fileName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="b" type="s:base64Binary" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="FileFillResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="FileFillResult" type="tns:IoResponse" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RemoveFill">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="documentDirectory" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="fileName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RemoveFillResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="RemoveTempFile">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+            <s:element minOccurs="0" maxOccurs="1" name="fileName" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RemoveTempFileResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="ReadFileAsString">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="path" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReadFileAsStringResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReadFileAsStringResult" type="s:base64Binary" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetBcpSharePath">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetBcpSharePathResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetBcpSharePathResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ValidateBcpShare">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ValidateBcpShareResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ValidateBcpShareResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetBcpShareSpaceReport">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetBcpShareSpaceReportResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetBcpShareSpaceReportResult" type="tns:ArrayOfArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ArrayOfString" nillable="true" type="tns:ArrayOfString" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetDefaultRepositorySpaceReport">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetDefaultRepositorySpaceReportResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetDefaultRepositorySpaceReportResult" type="tns:ArrayOfArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RepositoryVolumeMax">
+        <s:complexType />
+      </s:element>
+      <s:element name="RepositoryVolumeMaxResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="RepositoryVolumeMaxResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="BeginFillSoapIn">
+    <wsdl:part name="parameters" element="tns:BeginFill" />
+  </wsdl:message>
+  <wsdl:message name="BeginFillSoapOut">
+    <wsdl:part name="parameters" element="tns:BeginFillResponse" />
+  </wsdl:message>
+  <wsdl:message name="FileFillSoapIn">
+    <wsdl:part name="parameters" element="tns:FileFill" />
+  </wsdl:message>
+  <wsdl:message name="FileFillSoapOut">
+    <wsdl:part name="parameters" element="tns:FileFillResponse" />
+  </wsdl:message>
+  <wsdl:message name="RemoveFillSoapIn">
+    <wsdl:part name="parameters" element="tns:RemoveFill" />
+  </wsdl:message>
+  <wsdl:message name="RemoveFillSoapOut">
+    <wsdl:part name="parameters" element="tns:RemoveFillResponse" />
+  </wsdl:message>
+  <wsdl:message name="RemoveTempFileSoapIn">
+    <wsdl:part name="parameters" element="tns:RemoveTempFile" />
+  </wsdl:message>
+  <wsdl:message name="RemoveTempFileSoapOut">
+    <wsdl:part name="parameters" element="tns:RemoveTempFileResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReadFileAsStringSoapIn">
+    <wsdl:part name="parameters" element="tns:ReadFileAsString" />
+  </wsdl:message>
+  <wsdl:message name="ReadFileAsStringSoapOut">
+    <wsdl:part name="parameters" element="tns:ReadFileAsStringResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetBcpSharePathSoapIn">
+    <wsdl:part name="parameters" element="tns:GetBcpSharePath" />
+  </wsdl:message>
+  <wsdl:message name="GetBcpSharePathSoapOut">
+    <wsdl:part name="parameters" element="tns:GetBcpSharePathResponse" />
+  </wsdl:message>
+  <wsdl:message name="ValidateBcpShareSoapIn">
+    <wsdl:part name="parameters" element="tns:ValidateBcpShare" />
+  </wsdl:message>
+  <wsdl:message name="ValidateBcpShareSoapOut">
+    <wsdl:part name="parameters" element="tns:ValidateBcpShareResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetBcpShareSpaceReportSoapIn">
+    <wsdl:part name="parameters" element="tns:GetBcpShareSpaceReport" />
+  </wsdl:message>
+  <wsdl:message name="GetBcpShareSpaceReportSoapOut">
+    <wsdl:part name="parameters" element="tns:GetBcpShareSpaceReportResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetDefaultRepositorySpaceReportSoapIn">
+    <wsdl:part name="parameters" element="tns:GetDefaultRepositorySpaceReport" />
+  </wsdl:message>
+  <wsdl:message name="GetDefaultRepositorySpaceReportSoapOut">
+    <wsdl:part name="parameters" element="tns:GetDefaultRepositorySpaceReportResponse" />
+  </wsdl:message>
+  <wsdl:message name="RepositoryVolumeMaxSoapIn">
+    <wsdl:part name="parameters" element="tns:RepositoryVolumeMax" />
+  </wsdl:message>
+  <wsdl:message name="RepositoryVolumeMaxSoapOut">
+    <wsdl:part name="parameters" element="tns:RepositoryVolumeMaxResponse" />
+  </wsdl:message>
+  <wsdl:portType name="FileIOSoap">
+    <wsdl:operation name="BeginFill">
+      <wsdl:input message="tns:BeginFillSoapIn" />
+      <wsdl:output message="tns:BeginFillSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="FileFill">
+      <wsdl:input message="tns:FileFillSoapIn" />
+      <wsdl:output message="tns:FileFillSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveFill">
+      <wsdl:input message="tns:RemoveFillSoapIn" />
+      <wsdl:output message="tns:RemoveFillSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveTempFile">
+      <wsdl:input message="tns:RemoveTempFileSoapIn" />
+      <wsdl:output message="tns:RemoveTempFileSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ReadFileAsString">
+      <wsdl:input message="tns:ReadFileAsStringSoapIn" />
+      <wsdl:output message="tns:ReadFileAsStringSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpSharePath">
+      <wsdl:input message="tns:GetBcpSharePathSoapIn" />
+      <wsdl:output message="tns:GetBcpSharePathSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ValidateBcpShare">
+      <wsdl:input message="tns:ValidateBcpShareSoapIn" />
+      <wsdl:output message="tns:ValidateBcpShareSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpShareSpaceReport">
+      <wsdl:input message="tns:GetBcpShareSpaceReportSoapIn" />
+      <wsdl:output message="tns:GetBcpShareSpaceReportSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDefaultRepositorySpaceReport">
+      <wsdl:input message="tns:GetDefaultRepositorySpaceReportSoapIn" />
+      <wsdl:output message="tns:GetDefaultRepositorySpaceReportSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RepositoryVolumeMax">
+      <wsdl:input message="tns:RepositoryVolumeMaxSoapIn" />
+      <wsdl:output message="tns:RepositoryVolumeMaxSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="FileIOSoap" type="tns:FileIOSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="BeginFill">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/BeginFill" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FileFill">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/FileFill" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveFill">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/RemoveFill" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveTempFile">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/RemoveTempFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReadFileAsString">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/ReadFileAsString" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpSharePath">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetBcpSharePath" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateBcpShare">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/ValidateBcpShare" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpShareSpaceReport">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetBcpShareSpaceReport" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDefaultRepositorySpaceReport">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetDefaultRepositorySpaceReport" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RepositoryVolumeMax">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/FileManager/RepositoryVolumeMax" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="FileIOSoap12" type="tns:FileIOSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="BeginFill">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/BeginFill" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="FileFill">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/FileFill" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveFill">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/RemoveFill" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RemoveTempFile">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/RemoveTempFile" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ReadFileAsString">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/ReadFileAsString" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpSharePath">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetBcpSharePath" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ValidateBcpShare">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/ValidateBcpShare" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetBcpShareSpaceReport">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetBcpShareSpaceReport" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDefaultRepositorySpaceReport">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/GetDefaultRepositorySpaceReport" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RepositoryVolumeMax">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/FileManager/RepositoryVolumeMax" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="FileIO">
+    <wsdl:port name="FileIOSoap" binding="tns:FileIOSoap">
+      <soap:address location="http://localhost/RelativityWebApi/FileIO.asmx" />
+    </wsdl:port>
+    <wsdl:port name="FileIOSoap12" binding="tns:FileIOSoap12">
+      <soap12:address location="http://localhost/RelativityWebApi/FileIO.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
