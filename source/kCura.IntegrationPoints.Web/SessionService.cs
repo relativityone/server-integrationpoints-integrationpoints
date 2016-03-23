@@ -13,13 +13,18 @@ namespace kCura.IntegrationPoints.Web
 		{
 			get
 			{
-				var session = HttpContext.Current.Session[SESSION_KEY] as ISessionService;
-				if (session == null)
+				ISessionService sessionService = null;
+				var sessionState = HttpContext.Current.Session;
+				if (sessionState != null)
 				{
-					session = new SessionService();
-					HttpContext.Current.Session[SESSION_KEY] = session;
+					sessionService = HttpContext.Current.Session[SESSION_KEY] as ISessionService;
 				}
-				return session;
+				if (sessionService == null)
+				{
+					sessionService = new SessionService();
+					HttpContext.Current.Session[SESSION_KEY] = sessionService;
+				}
+				return sessionService;
 			}
 		}
 

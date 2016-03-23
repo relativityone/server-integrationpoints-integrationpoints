@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			//This is hack untill we introduce installation of Destination Providers
 			if (applicationGuid == new Guid(Application.GUID))
 			{
-				new Core.Services.Synchronizer.RdoSynchronizerProvider(_caseContext).CreateOrUpdateLdapSourceType();
+				new Core.Services.Synchronizer.RdoSynchronizerProvider(_caseContext).CreateOrUpdateDestinationProviders();
 			}
 		}
 
