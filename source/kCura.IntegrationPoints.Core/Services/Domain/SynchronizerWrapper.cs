@@ -40,16 +40,16 @@ namespace kCura.IntegrationPoints.Core.Domain
 			}
 		}
 
-		public void SyncData(IEnumerable<string> entryIds, IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
-		{
-			try
-			{
-				_synchronizer.SyncData(entryIds, data, fieldMap, options);
-			}
-			catch (Exception e)
-			{
-				throw Utils.GetNonCustomException(e);
-			}
-		}
+	    public void SyncData(IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
+	    {
+            try
+            {
+                _synchronizer.SyncData(data, fieldMap, options);
+            }
+            catch (Exception e)
+            {
+                throw Utils.GetNonCustomException(e);
+            }
+        }
 	}
 }

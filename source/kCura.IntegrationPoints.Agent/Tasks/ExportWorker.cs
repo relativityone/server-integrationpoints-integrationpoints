@@ -36,5 +36,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IDataSynchronizer sourceProvider = _appDomainRdoSynchronizerFactoryFactory.CreateSynchronizer(providerGuid, configuration);
 			return sourceProvider;
 		}
-    }
+
+	    internal override void ExecuteImport(IEnumerable<FieldMap> fieldMap, string sourceConfiguration, string destinationConfiguration, List<string> entryIDs,
+	        SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
+	    {	        
+	    }
+	}
 }

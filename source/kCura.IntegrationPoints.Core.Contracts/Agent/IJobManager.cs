@@ -12,6 +12,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 		SendEmailManager,
 		SendEmailWorker,
 		ExportService,
+        ExportManager,
 		ExportWorker
 	}
 

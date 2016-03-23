@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			FinalizeSyncData(data, fieldMap, this.ImportSettings);
 		}
 
-		public void SyncData(IEnumerable<string> entryIds, IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
+	    public void SyncData(IDataReader data, IEnumerable<FieldMap> fieldMap, string options)
 		{
 			IntializeImportJob(fieldMap, options);
 

@@ -249,7 +249,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			if (SourceProvider.Config.GetDataProvideAllFieldsRequired)
 			{
-				dataSynchronizer.SyncData(entryIDs, sourceDataReader, fieldMaps, destinationConfiguration);
+				dataSynchronizer.SyncData(sourceDataReader, fieldMaps, destinationConfiguration);
 			}
 			else
 			{

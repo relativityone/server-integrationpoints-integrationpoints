@@ -84,7 +84,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					return Container.Resolve<SendEmailWorker>();
 				case TaskType.ExportService:
 					return Container.Resolve<ExportServiceManager>();
-				case TaskType.ExportWorker:
+                case TaskType.ExportManager:
+                    return Container.Resolve<ExportManager>();
+                case TaskType.ExportWorker:
 					return Container.Resolve<ExportWorker>();
 				default:
 					return null;

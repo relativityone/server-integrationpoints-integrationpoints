@@ -128,11 +128,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				BatchInstance = this.BatchInstance,
 				BatchParameters = batchIDs
 			};
-			_jobManager.CreateJobWithTracker(job, taskParameters, TaskType.SyncWorker, this.BatchInstance.ToString());
+			_jobManager.CreateJobWithTracker(job, taskParameters, GetTaskType(), this.BatchInstance.ToString());
 			BatchJobCount++;
 		}
+		
+	    protected virtual TaskType GetTaskType()
+	    {
+	        return TaskType.SyncWorker;
+	    }
 
-		private class ReaderEnumerable : IEnumerable<string>
+        private class ReaderEnumerable : IEnumerable<string>
 		{
 			private IDataReader _reader;
 			public ReaderEnumerable(IDataReader reader)

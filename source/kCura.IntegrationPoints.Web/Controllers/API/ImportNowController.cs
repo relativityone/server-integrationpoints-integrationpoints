@@ -2,9 +2,12 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -40,8 +43,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_jobHistoryService.CreateRdo(integrationPoint, batchInstance, null);
 		  	var sourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value);
 
-			// if relativity provider is selected, we will create an export task
-			if (sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+            var json = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+            if (json.DestinationProviderType != null && json.DestinationProviderType.ToLower() == "fileshare")
+		    {
+                _jobManager.CreateJob(jobDetails, TaskType.ExportManager, workspaceID, relatedObjectArtifactID);
+            }
+            // if relativity provider is selected, we will create an export task
+            else if (sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
 			{
 				_jobManager.CreateJob(jobDetails, TaskType.ExportService, workspaceID, relatedObjectArtifactID);
 			}
