@@ -1,5 +1,6 @@
 @echo off
 
+SET LDAPSync=C:\SourceCode\IntegrationPoints\source
 SET BUILDCONFIG=Debug
 SET BUILDACTION=build
 SET BUILDPROJECT=Build.build
