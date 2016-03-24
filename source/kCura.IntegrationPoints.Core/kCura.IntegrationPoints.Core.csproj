@@ -67,6 +67,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Crypto.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Data, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\kCura.Data.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.EDDS.DocumentCompareGateway, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
