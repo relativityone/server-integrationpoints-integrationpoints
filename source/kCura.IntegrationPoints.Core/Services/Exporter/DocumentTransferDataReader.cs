@@ -4,26 +4,34 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Readers;
-using kCura.IntegrationPoints.Data.Queries;
+using Relativity.Core;
+using Relativity.Core.Service;
 using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class DocumentTransferDataReader : RelativityReaderBase
 	{
+		private static string DocumentArtifactId = "DocumentArtifactId";
+		private static string FileLocation = "Location";
+		private static string Separator = ",";
+
 		private readonly IExporterService _relativityExporterService;
-		private Dictionary<int, string> _nativeFileLocation;
-		private readonly DirectSqlCallHelper _sqlHelper;
+		private readonly Dictionary<int, string> _nativeFileLocation;
+		private readonly ICoreContext _context;
+
+		/// used to store the reference of the current artifacts array.
+		private object _readingArtifactIdsReference;
 
 		public DocumentTransferDataReader(
 			IExporterService relativityExportService,
 			IEnumerable<FieldEntry> fieldEntries,
-			DirectSqlCallHelper helper) :
+			ICoreContext context) :
 			base(GenerateDataColumnsFromFieldEntries(fieldEntries))
 		{
+			_context = context;
 			_relativityExporterService = relativityExportService;
-			_nativeFileLocation = _nativeFileLocation ?? new Dictionary<int, string>();
-			_sqlHelper = helper;
+			_nativeFileLocation = new Dictionary<int, string>();
 		}
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
@@ -81,11 +89,26 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)
 			{
-				if (_nativeFileLocation.ContainsKey(CurrentArtifact.ArtifactId) == false)
+				if (_readingArtifactIdsReference != ReadingArtifactIDs)
 				{
-					_nativeFileLocation = _sqlHelper.GetFileLocation(ReadingArtifactIDs);
+					_readingArtifactIdsReference = ReadingArtifactIDs;
+					string documentArtifactIds = String.Join(Separator, ReadingArtifactIDs);
+					kCura.Data.DataView dataView = FileQuery.RetrieveNativesForDocuments(_context, documentArtifactIds);
+
+					for (int index = 0; index < dataView.Table.Rows.Count; index++)
+					{
+						DataRow row = dataView.Table.Rows[index];
+						int id = (int)row[DocumentArtifactId];
+						string location = (string)row[FileLocation];
+						_nativeFileLocation.Add(id, location);
+					}
 				}
-				result = _nativeFileLocation[CurrentArtifact.ArtifactId];
+
+				if (_nativeFileLocation.ContainsKey(CurrentArtifact.ArtifactId))
+				{
+					result = _nativeFileLocation[CurrentArtifact.ArtifactId];
+					_nativeFileLocation.Remove(CurrentArtifact.ArtifactId);
+				}
 			}
 			return result;
 		}

@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			if (_reader == null)
 			{
 				IEnumerable<FieldEntry> sources = _mappedFields.Select(map => map.SourceField);
-				_reader = new DocumentTransferDataReader(this, sources, _helper);
+				_reader = new DocumentTransferDataReader(this, sources, _baseContext);
 			}
 			return _reader;
 		}
