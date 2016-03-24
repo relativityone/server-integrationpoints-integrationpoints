@@ -1,5 +1,5 @@
-﻿$destinationDir = "S:\SourceCode\IntegrationPoints\source\Dependencies\kCura"
-$mainlineLibDir = "S:\SourceCode\Relativity\lib"
+﻿$destinationDir = $env:LDAPSync + "\Dependencies\kCura"
+$mainlineLibDir = $env:trunk + "\lib"
 
 $dependencies = Get-ChildItem -Path $destinationDir
 
