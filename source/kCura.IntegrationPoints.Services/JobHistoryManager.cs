@@ -8,6 +8,9 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Services
 {
+	/// <summary>
+	/// This class is using direct sql because kepler does not provide the ability to aggregate data.
+	/// </summary>
 	public class JobHistoryManager : IJobHistoryManager
 	{
 		private const string _ASCENDING_SORT = "ASC";
