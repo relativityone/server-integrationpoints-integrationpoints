@@ -49,6 +49,7 @@ namespace kCura.IntegrationPoints.Services
 
 				int sumItemsImported = GetSumItemsImported(dbContext);
 
+				// TODO: We need to retrieve WorkspaceUserArtifactID but this currently does not work - Dan Nelson 3/25/2016
 				IAuthenticationMgr authenticationManager = Relativity.API.Services.Helper.GetAuthenticationManager();
 				IEnumerable<int> accessControlListIds = GetAccessControlListIds(dbContext, authenticationManager.UserInfo.ArtifactID);
 				reader = GetJobHistoryReader(dbContext, sortColumn, request.SortDirection, accessControlListIds);
