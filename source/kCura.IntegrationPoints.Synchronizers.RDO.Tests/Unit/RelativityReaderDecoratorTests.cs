@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 		private const string _Column1Name = "546";
 		private const string _Column2Name = "789";
 		private const string _Column3Name = "987";
-		private const string _Column4Name = "000";
 		private const string _DestinationColumn0Name = "Id";
 		private const string _DestinationColumn1Name = "The first second field";
 		private const string _DestinationColumn2Name = "The first third field";
@@ -27,7 +26,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 		public void Setup()
 		{
 			DataTable table = new DataTable();
-			table.Columns.AddRange(new[] { new DataColumn(_Column0Name, typeof(int)), new DataColumn(_Column1Name), new DataColumn(_Column2Name), new DataColumn(_Column3Name), new DataColumn(_Column4Name) });
+			table.Columns.AddRange(new[] { new DataColumn(_Column0Name, typeof(int)),
+				new DataColumn(_Column1Name),
+				new DataColumn(_Column2Name),
+				new DataColumn(_Column3Name),
+				new DataColumn(Contracts.Constants.SPECIAL_FOLDERPATH_FIELD) });
 			table.Rows.Add(1, "ABC", "EFG", _ExpectNativeFilePath, _ExpectFolderInformationPath);
 			table.Rows.Add(2, "Name", "DataTable");
 			table.Rows.Add(3, "9", "Testing");
@@ -107,8 +110,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 					FieldMapType = FieldMapTypeEnum.FolderPathInformation,
 					SourceField = new FieldEntry()
 					{
-						DisplayName = "Folder Information Path",
-						FieldIdentifier = _Column4Name,
+						DisplayName = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME,
+						FieldIdentifier = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD,
 						FieldType = FieldType.String,
 						IsIdentifier = false
 					}

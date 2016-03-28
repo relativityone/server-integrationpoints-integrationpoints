@@ -19,19 +19,26 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly IExporterService _relativityExporterService;
 		private readonly Dictionary<int, string> _nativeFileLocation;
 		private readonly ICoreContext _context;
+		private readonly int _folderPathFieldSourceArtifactId;
 
 		/// used to store the reference of the current artifacts array.
 		private object _readingArtifactIdsReference;
 
 		public DocumentTransferDataReader(
 			IExporterService relativityExportService,
-			IEnumerable<FieldEntry> fieldEntries,
+			FieldMap[] mappingFields,
 			ICoreContext context) :
-			base(GenerateDataColumnsFromFieldEntries(fieldEntries))
+			base(GenerateDataColumnsFromFieldEntries(mappingFields))
 		{
 			_context = context;
 			_relativityExporterService = relativityExportService;
 			_nativeFileLocation = new Dictionary<int, string>();
+
+			FieldMap folderPathInformationField = mappingFields.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
+			if (folderPathInformationField != null)
+			{
+				_folderPathFieldSourceArtifactId = Int32.Parse(folderPathInformationField.SourceField.FieldIdentifier);
+			}
 		}
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
@@ -44,16 +51,35 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			return _relativityExporterService.HasDataToRetrieve == false;
 		}
 
-		private static DataColumn[] GenerateDataColumnsFromFieldEntries(IEnumerable<FieldEntry> fieldEntries)
+		private static DataColumn[] GenerateDataColumnsFromFieldEntries(FieldMap[] mappingFields)
 		{
+			
+			List<FieldEntry> fields = mappingFields.Select(field => field.SourceField).ToList();
+
 			// we will always import this native file location
-			List<FieldEntry> fields = fieldEntries.ToList();
 			fields.Add(new FieldEntry()
 			{
 				DisplayName = IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME,
-				FieldIdentifier = kCura.IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
+				FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
 				FieldType = FieldType.String
 			});
+
+			// in case we found folder path info
+			FieldMap folderPathInformationField = mappingFields.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
+			if (folderPathInformationField != null)
+			{
+				if (folderPathInformationField.DestinationField.FieldIdentifier == null)
+				{
+					fields.Remove(folderPathInformationField.SourceField);
+				}
+
+				fields.Add(new FieldEntry()
+				{
+					DisplayName = IntegrationPoints.Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME,
+					FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_FOLDERPATH_FIELD,
+					FieldType = FieldType.String
+				});
+			}
 
 			return fields.Select(x => new DataColumn(x.FieldIdentifier)).ToArray();
 		}
@@ -86,6 +112,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			if (success)
 			{
 				result = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId).Value;
+			}
+			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_FOLDERPATH_FIELD)
+			{
+				result = CurrentArtifact.GetFieldForIdentifier(_folderPathFieldSourceArtifactId).Value;
 			}
 			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)
 			{

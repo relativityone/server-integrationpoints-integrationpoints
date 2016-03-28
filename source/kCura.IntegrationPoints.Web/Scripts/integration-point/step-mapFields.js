@@ -615,27 +615,42 @@ ko.validation.insertValidationMessage = function (element) {
 							});
 						}
 					}
+
 					if (this.model.UseFolderPathInformation() == "true") {
 						var folderPathField = "";
 						var folderPathFields = this.model.FolderPathFields();
 						for (var i = 0; i < folderPathFields.length; i++) {
 							if (folderPathFields[i].fieldIdentifier === this.model.FolderPathSourceField()) {
 								folderPathField = folderPathFields[i];
+								break;
 							}
 						}
-						var entry =
-						{
-							displayName: folderPathField.actualName,
-							isIdentifier: "false",
-							fieldIdentifier: folderPathField.fieldIdentifier,
-							isRequired: "false"
+
+						// update fieldMapType if folderPath is in mapping field
+						var containsFolderPathInMapping = false;
+						for (var index = 0; index < map.length; index++) {
+							if (map[index].sourceField.fieldIdentifier === folderPathField.fieldIdentifier) {
+								map[index].fieldMapType = "FolderPathInformation";
+								containsFolderPathInMapping = true;
+								break;
+							}
 						}
 
-						map.push({
-							sourceField: entry,
-							destinationField: {},
-							fieldMapType: "FolderPathInformation"
-						});
+						// create folder path entry if it is not in the field
+						if (containsFolderPathInMapping === false) {
+							var entry =
+							{
+								displayName: folderPathField.actualName,
+								isIdentifier: "false",
+								fieldIdentifier: folderPathField.fieldIdentifier,
+								isRequired: "false"
+							}
+							map.push({
+								sourceField: entry,
+								destinationField: {},
+								fieldMapType: "FolderPathInformation"
+							});
+						}
 					}
 
 					_destination.ImportOverwriteMode = ko.toJS(this.model.SelectedOverwrite).replace('/', '').replace(' ', '');
