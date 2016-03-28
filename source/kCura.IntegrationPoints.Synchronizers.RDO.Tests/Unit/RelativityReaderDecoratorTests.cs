@@ -96,6 +96,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				},
 				new FieldMap()
 				{
+					DestinationField = new FieldEntry(),
 					FieldMapType = FieldMapTypeEnum.NativeFilePath,
 					SourceField = new FieldEntry()
 					{
@@ -107,6 +108,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				},
 				new FieldMap()
 				{
+					DestinationField = new FieldEntry(),
 					FieldMapType = FieldMapTypeEnum.FolderPathInformation,
 					SourceField = new FieldEntry()
 					{
