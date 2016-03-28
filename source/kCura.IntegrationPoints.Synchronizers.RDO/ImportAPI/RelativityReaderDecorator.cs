@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
@@ -21,24 +22,14 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		{
 			_targetNameToSourceIdentifier = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			_sourceIdentifierToTargetName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
 			_identifiers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
 			_source = sourceReader;
 			// current assumption is that source reader use fieldIdentifier as its column name
 			for (int i = 0; i < mappingFields.Length; i++)
 			{
 				FieldMap map = mappingFields[i];
-				if (map.FieldMapType == FieldMapTypeEnum.NativeFilePath)
-				{
-					_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME] = map.SourceField.FieldIdentifier;
-					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME;
-				}
-				else if (map.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
-				{
-					_targetNameToSourceIdentifier[map.SourceField.ActualName] = map.SourceField.FieldIdentifier;
-					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = map.SourceField.ActualName;
-				}
-				else if (map.DestinationField != null && map.SourceField != null)
+				if (map.DestinationField.FieldIdentifier != null && map.SourceField.FieldIdentifier != null)
 				{
 					_targetNameToSourceIdentifier[map.DestinationField.ActualName] = map.SourceField.FieldIdentifier;
 					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = map.DestinationField.ActualName;
@@ -49,16 +40,35 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 						_identifiers.Add(map.DestinationField.ActualName);
 					}
 				}
+				else
+				{
+					if (map.FieldMapType == FieldMapTypeEnum.NativeFilePath)
+					{
+						_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME] = map.SourceField.FieldIdentifier;
+						_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME;
+					}
+					else if (map.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
+					{
+						_targetNameToSourceIdentifier[map.SourceField.ActualName] = map.SourceField.FieldIdentifier;
+						_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = map.SourceField.ActualName;
+					}
+				}
 			}
 
 			// if the data reader contains the special fields native file path location field,
 			// then we will use this as a way to map native file path location
 			// this is only used when the reader is associate with native fields.
-			var schemaTable = sourceReader.GetSchemaTable();
-			if (schemaTable != null && schemaTable.Columns.Contains(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD))
+			var columns = Enumerable.Range(0, sourceReader.FieldCount).Select(sourceReader.GetName).ToList();			
+			if (columns.Contains(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD))
 			{
 				_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME] = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
 				_sourceIdentifierToTargetName[Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD] = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME;
+			}
+
+			if (columns.Contains(Contracts.Constants.SPECIAL_FOLDERPATH_FIELD))
+			{
+				_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME] = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD;
+				_sourceIdentifierToTargetName[Contracts.Constants.SPECIAL_FOLDERPATH_FIELD] = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
 			}
 		}
 

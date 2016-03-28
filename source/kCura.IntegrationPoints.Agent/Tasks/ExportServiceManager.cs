@@ -61,14 +61,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				InitializeExportService(job);
 
 				string destinationConfig = IntegrationPointDto.DestinationConfiguration;
-				DirectSqlCallHelper helper = new DirectSqlCallHelper(_caseServiceContext.SqlContext);
-
 				IDataSynchronizer synchronizer = GetRdoDestinationProvider(destinationConfig);
 
 				SetupSubscriptions(synchronizer, job);
 
 				// Initialize Exporter
-				IExporterService exporter = ExporterFactory.BuildExporter(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, helper);
+				IExporterService exporter = ExporterFactory.BuildExporter(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration);
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 

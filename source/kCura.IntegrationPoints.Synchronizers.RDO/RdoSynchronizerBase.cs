@@ -294,7 +294,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
 			{
-				settings.FolderPathSourceFieldName = fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation).SourceField.ActualName;
+				// NOTE :: if you expect to import folder path, expect import api to request this specifiable field
+				// this is to avoid the field being mapped and use as a folder path at the same time.
+				settings.FolderPathSourceFieldName = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
 			}
 			return settings;
 		}
@@ -302,11 +304,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		protected virtual Dictionary<string, int> GetSyncDataImportFieldMap(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
 		{
 			Dictionary<string, int> importFieldMap = null;
-
 			try
 			{
-				importFieldMap = fieldMap.Where(x => IncludeFieldInImport(x))
-					.ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
+				importFieldMap = fieldMap.Where(IncludeFieldInImport).ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
 			}
 			catch (Exception ex)
 			{
@@ -343,13 +343,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		protected bool IncludeFieldInImport(FieldMap fieldMap)
 		{
-			return (
-				fieldMap.FieldMapType != FieldMapTypeEnum.Parent
-				&&
-				fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath
-				&&
-				fieldMap.FieldMapType != FieldMapTypeEnum.FolderPathInformation
-				);
+			bool toInclude = fieldMap.FieldMapType != FieldMapTypeEnum.Parent &&
+			                 fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath;
+			if (toInclude && fieldMap.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
+			{
+				toInclude = fieldMap.DestinationField != null && fieldMap.DestinationField.FieldIdentifier != null;
+			}
+			return toInclude;
 		}
 
 		private void Finish(DateTime startTime, DateTime endTime, int totalRows, int errorRowCount)

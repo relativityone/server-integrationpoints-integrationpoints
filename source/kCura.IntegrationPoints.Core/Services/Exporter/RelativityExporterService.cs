@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data.Queries;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.Core;
@@ -24,7 +23,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly global::Relativity.Core.Api.Shared.Manager.Export.IExporter _exporter;
 		private readonly Export.InitializationResults _exportJobInfo;
 		private readonly int[] _fieldArtifactIds;
-		private readonly DirectSqlCallHelper _helper;
 		private readonly HashSet<int> _longTextFieldArtifactIds;
 		private readonly FieldMap[] _mappedFields;
 		private readonly HashSet<int> _multipleObjectFieldArtifactIds;
@@ -45,9 +43,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		/// </summary>
 		/// <param name="exporter"></param>
 		public RelativityExporterService(
-			global::Relativity.Core.Api.Shared.Manager.Export.IExporter exporter, 
+			global::Relativity.Core.Api.Shared.Manager.Export.IExporter exporter,
 			int[] avfIds,
-			int[] fieldArtifactIds) : this()
+			int[] fieldArtifactIds)
+			: this()
 		{
 			_exporter = exporter;
 			_avfIds = avfIds;
@@ -58,8 +57,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		public RelativityExporterService(
 			FieldMap[] mappedFields,
 			int startAt,
-			string config,
-			DirectSqlCallHelper helper) : this()
+			string config)
+			: this()
 		{
 			_dataGridContext = new DataGridContext(true);
 			_settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
@@ -103,7 +102,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			);
 			_exportJobInfo = _exporter.InitializeExport(_settings.SavedSearchArtifactId, _avfIds, startAt);
 			_retrievedDataCount = 0;
-			_helper = helper;
 		}
 
 		public bool HasDataToRetrieve
@@ -134,8 +132,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			if (_reader == null)
 			{
-				IEnumerable<FieldEntry> sources = _mappedFields.Select(map => map.SourceField);
-				_reader = new DocumentTransferDataReader(this, sources, _baseContext);
+				_reader = new DocumentTransferDataReader(this, _mappedFields, _baseContext);
 			}
 			return _reader;
 		}

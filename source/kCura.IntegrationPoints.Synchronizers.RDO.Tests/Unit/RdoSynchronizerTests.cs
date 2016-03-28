@@ -288,7 +288,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
 
 			//ASSERT
-			Assert.AreEqual("SourceFld4", result.FolderPathSourceFieldName);
+			Assert.AreEqual(Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME, result.FolderPathSourceFieldName);
 			Assert.AreEqual(0, result.DestinationFolderArtifactID);
 		}
 
@@ -377,12 +377,32 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 		}
 
 		[Test]
-		public void IncludeFieldInImport_FieldMapTypeIsFolderPathInformation_False()
+		public void IncludeFieldInImport_FieldMapTypeIsFolderPathInformationWhenThereIsADestination_True()
 		{
 			//ARRANGE
 			FieldMap fieldMap = new FieldMap()
 			{
 				DestinationField = new FieldEntry() { FieldIdentifier = "4000001" },
+				FieldMapType = FieldMapTypeEnum.FolderPathInformation,
+				SourceField = new FieldEntry() { FieldIdentifier = "SourceFld1" }
+			};
+			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
+
+			//ACT
+			bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
+
+
+			//ASSERT
+			Assert.IsTrue(result);
+		}
+
+		[Test]
+		public void IncludeFieldInImport_FieldMapTypeIsFolderPathInformationWhenThereIsNoDestinationSet_False()
+		{
+			//ARRANGE
+			FieldMap fieldMap = new FieldMap()
+			{
+				DestinationField = null,
 				FieldMapType = FieldMapTypeEnum.FolderPathInformation,
 				SourceField = new FieldEntry() { FieldIdentifier = "SourceFld1" }
 			};
