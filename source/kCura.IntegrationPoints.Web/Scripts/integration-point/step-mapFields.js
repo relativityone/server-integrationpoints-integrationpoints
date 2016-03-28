@@ -187,13 +187,19 @@ ko.validation.insertValidationMessage = function (element) {
 		this.SourceProviderConfiguration = ko.observable(model.SourceProviderConfiguration);
 
 		this.OverwriteOptions = ko.observableArray(['Append Only', 'Overlay Only', 'Append/Overlay']);
+		this.MutiSelectFieldOverlayBehaviors = ko.observableArray(['Merge Values', 'Replace Values', 'Use Field Settings']);
+		this.FieldOverlayBehavior = ko.observable(model.FieldOverlayBehavior || 'Use Field Settings');
+
 		self.OverwriteOptions = this.OverwriteOptions;
+		self.FieldOverlayBehavior = this.FieldOverlayBehavior;
 
 		this.SelectedOverwrite = ko.observable(model.SelectedOverwrite || 'Append Only');
 		this.SelectedOverwrite.subscribe(function (newValue) {
 			if (newValue != 'Append Only') {
 				self.UseFolderPathInformation("false");
 				self.FolderPathSourceField(null);
+			} else {
+				self.FieldOverlayBehavior('Use Field Settings');
 			}
 		});
 
@@ -473,6 +479,7 @@ ko.validation.insertValidationMessage = function (element) {
 				nativeFilePathValue: model.nativeFilePathValue,
 				UseFolderPathInformation: model.UseFolderPathInformation,
 				SelectedOverwrite: model.SelectedOverwrite,
+				FieldOverlayBehavior : model.FieldOverlayBehavior,
 				FolderPathSourceField: model.FolderPathSourceField,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
 				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
@@ -676,6 +683,7 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 				this.returnModel.SelectedOverwrite = this.model.SelectedOverwrite();
 				_destination.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
+				_destination.FieldOverlayBehavior = this.model.FieldOverlayBehavior();
 				this.returnModel.destination = JSON.stringify(_destination);
 				d.resolve(this.returnModel);
 			} else {

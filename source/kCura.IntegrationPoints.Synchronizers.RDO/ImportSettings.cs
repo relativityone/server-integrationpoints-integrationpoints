@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles;
 			NestedValueDelimiter = Contracts.Constants.NESTED_VALUE_DELIMITER;
 			ImportOverwriteMode = ImportOverwriteModeEnum.AppendOnly;
-			ImportOverlayBehavior = ImportOverlayBehaviorEnum.UseRelativityDefaults;
 		}
 		#endregion
 
@@ -55,6 +54,37 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		/// </summary>
 		public bool ImportNativeFile { get; set; }
 
+		/// <summary>
+		/// indicates user preferences of field overlay behavior.
+		/// </summary>
+		/// <remarks>
+		/// possible values : 'Merge Values', 'Replace Values', 'Use Field Settings'
+		/// value is assigned in step-mapFields.js
+		/// </remarks>
+		public string FieldOverlayBehavior { get; set; }
+		public ImportOverlayBehaviorEnum ImportOverlayBehavior
+		{
+			get
+			{
+				if (String.IsNullOrEmpty(FieldOverlayBehavior) || FieldOverlayBehavior == "Use Field Settings")
+				{
+					return ImportOverlayBehaviorEnum.UseRelativityDefaults;
+				}
+				else if (FieldOverlayBehavior == "Merge Values")
+				{
+					return ImportOverlayBehaviorEnum.MergeAll;
+				}
+				else if (FieldOverlayBehavior == "Replace Values")
+				{
+					return ImportOverlayBehaviorEnum.ReplaceAll;
+				}
+				else
+				{
+					throw new Exception(String.Format("Unable to determined Import Overlay Behavior : {0}", FieldOverlayBehavior));
+				}
+			}
+		}
+
 		public bool ExtractedTextFieldContainsFilePath { get; set; }
 		public int IdentityFieldId { get; set; }
 		public int MaximumErrorCount { get; set; }
@@ -67,7 +97,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public string WebServiceURL { get; set; }
 		public int StartRecordNumber { get; set; }
 		public IList<int> ObjectFieldIdListContainsArtifactId { get; set; }
-		public ImportOverlayBehaviorEnum ImportOverlayBehavior { get; set; }
+
 		public bool CustodianManagerFieldContainsLink{ get; set; }
 		#endregion
 
