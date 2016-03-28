@@ -6,7 +6,6 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Readers;
 using Relativity.Core;
 using Relativity.Core.Service;
-using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {

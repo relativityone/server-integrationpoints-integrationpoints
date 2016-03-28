@@ -50,12 +50,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public String ExtractedTextFileEncoding { get; set; }
 
 		/// <summary>
-		/// indicates user preferences of importing native files.
+		/// Indicates user preferences of importing native files.
 		/// </summary>
 		public bool ImportNativeFile { get; set; }
 
 		/// <summary>
-		/// indicates user preferences of field overlay behavior.
+		/// Indicates user preferences of field overlay behavior.
 		/// </summary>
 		/// <remarks>
 		/// possible values : 'Merge Values', 'Replace Values', 'Use Field Settings'
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				}
 				else
 				{
-					throw new Exception(String.Format("Unable to determined Import Overlay Behavior : {0}", FieldOverlayBehavior));
+					throw new Exception(String.Format("Unable to determine Import Overlay Behavior : {0}", FieldOverlayBehavior));
 				}
 			}
 		}
