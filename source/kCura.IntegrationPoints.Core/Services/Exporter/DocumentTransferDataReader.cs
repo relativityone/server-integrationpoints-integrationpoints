@@ -11,6 +11,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class DocumentTransferDataReader : RelativityReaderBase
 	{
+		public const int FETCH_ARTIFACTDTOS_BATCH_SIZE = 50;
 		private static string DocumentArtifactId = "DocumentArtifactId";
 		private static string FileLocation = "Location";
 		private static string Separator = ",";
@@ -20,20 +21,20 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly ICoreContext _context;
 		private readonly int _folderPathFieldSourceArtifactId;
 
-		/// used as a flag to store the reference of the current artifacts array. 
+		/// used as a flag to store the reference of the current artifacts array.
 		private object _readingArtifactIdsReference;
 
 		public DocumentTransferDataReader(
 			IExporterService relativityExportService,
-			FieldMap[] mappingFields,
+			FieldMap[] fieldMappings,
 			ICoreContext context) :
-			base(GenerateDataColumnsFromFieldEntries(mappingFields))
+			base(GenerateDataColumnsFromFieldEntries(fieldMappings))
 		{
 			_context = context;
 			_relativityExporterService = relativityExportService;
 			_nativeFileLocation = new Dictionary<int, string>();
 
-			FieldMap folderPathInformationField = mappingFields.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
+			FieldMap folderPathInformationField = fieldMappings.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
 			if (folderPathInformationField != null)
 			{
 				_folderPathFieldSourceArtifactId = Int32.Parse(folderPathInformationField.SourceField.FieldIdentifier);
@@ -42,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
-			return _relativityExporterService.RetrieveData(50);
+			return _relativityExporterService.RetrieveData(FETCH_ARTIFACTDTOS_BATCH_SIZE);
 		}
 
 		protected override bool AllArtifactsFetched()
@@ -52,7 +53,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		private static DataColumn[] GenerateDataColumnsFromFieldEntries(FieldMap[] mappingFields)
 		{
-			
 			List<FieldEntry> fields = mappingFields.Select(field => field.SourceField).ToList();
 
 			// we will always import this native file location

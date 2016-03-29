@@ -114,10 +114,6 @@
       <Project>{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
-      <Project>{a1ae667b-1b6e-4bb9-af1d-912620292283}</Project>
-      <Name>kCura.IntegrationPoints.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
@@ -132,7 +128,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config.cs" />
-    <Compile Include="Helpers\ArgumentMatcher.cs" />
     <Compile Include="IntegrationTestAttribute.cs" />
     <Compile Include="Integration\IntegrationPointQueryTest.cs" />
     <Compile Include="Integration\PermissionServiceIntegrationTest.cs" />
@@ -142,7 +137,6 @@
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />
     <Compile Include="Unit\BaseRdoTests.cs" />
     <Compile Include="MockDBContext.cs" />
-    <Compile Include="Unit\DocumentTransferDataReaderTests.cs" />
     <Compile Include="Unit\PermissionServiceTest.cs" />
     <Compile Include="Unit\RdoGetterTest.cs" />
     <Compile Include="Unit\RelativityReaderBaseTests.cs" />

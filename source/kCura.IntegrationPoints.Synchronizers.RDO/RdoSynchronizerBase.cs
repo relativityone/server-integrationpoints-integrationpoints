@@ -294,8 +294,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
 			{
-				// NOTE :: if you expect to import folder path, expect import api to request this specifiable field
-				// this is to avoid the field being mapped and use as a folder path at the same time.
+				// NOTE :: If you expect to import the folder path, the import API will expect this field to be specified upon import. This is to avoid the field being both mapped and used as a folder path.
 				settings.FolderPathSourceFieldName = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
 			}
 			return settings;

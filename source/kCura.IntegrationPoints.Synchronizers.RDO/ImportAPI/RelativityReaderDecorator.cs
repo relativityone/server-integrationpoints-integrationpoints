@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			// if the data reader contains the special fields native file path location field,
 			// then we will use this as a way to map native file path location
 			// this is only used when the reader is associate with native fields.
-			var columns = Enumerable.Range(0, sourceReader.FieldCount).Select(sourceReader.GetName).ToList();			
+			HashSet<string> columns = new HashSet<string>(Enumerable.Range(0, sourceReader.FieldCount).Select(sourceReader.GetName));
 			if (columns.Contains(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD))
 			{
 				_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME] = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;

@@ -99,7 +99,6 @@
     <Compile Include="Managers\Implementations\KeplerFieldManager.cs" />
     <Compile Include="Managers\Implementations\RSAPISavedSearchManager.cs" />
     <Compile Include="Managers\ISavedSearchManager.cs" />
-    <Compile Include="Queries\DirectSqlCallHelper.cs" />
     <Compile Include="Queries\GetSavedSearchesQuery.cs" />
     <Compile Include="Queries\GetWorkspacesQuery.cs" />
     <Compile Include="RelativityVersion.cs" />

@@ -253,4 +253,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			Assert.AreEqual(_ExpectFolderInformationPath, folderInformationPath);
 		}
 	}
+
+
 }
