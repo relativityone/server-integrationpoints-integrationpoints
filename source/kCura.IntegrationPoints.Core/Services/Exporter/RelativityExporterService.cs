@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			get
 			{
-				return TotalRecordsToImport > _retrievedDataCount;
+				return TotalRecordsFound > _retrievedDataCount;
 			}
 		}
 
@@ -117,14 +117,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			get
 			{
 				return (int)_exportJobInfo.RowCount;
-			}
-		}
-
-		public int TotalRecordsToImport
-		{
-			get
-			{
-				return TotalRecordsFound;
 			}
 		}
 
@@ -168,11 +160,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						else if (_longTextFieldArtifactIds.Contains(artifactId)
 							&& global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN.Equals(value))
 						{
-							value = ExportApiDataHelper.RetrieveLongTextFieldAsync(_baseContext,
+							ExportApiDataHelper.RelativityLongTextStreamFactory factory = new ExportApiDataHelper.RelativityLongTextStreamFactory(_baseContext,
 								_dataGridContext,
 								documentArtifactId,
 								_settings.SourceWorkspaceArtifactId,
-								artifactId).ConfigureAwait(false).GetAwaiter().GetResult();
+								artifactId);
+							value = ExportApiDataHelper.RetrieveLongTextFieldAsync(factory).ConfigureAwait(false).GetAwaiter().GetResult();
 						}
 
 						fields[index] = new ArtifactFieldDTO()

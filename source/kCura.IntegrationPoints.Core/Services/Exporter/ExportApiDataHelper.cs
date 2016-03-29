@@ -88,20 +88,44 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			public String[] Object { get; set; }
 		}
 
-		public static async Task<string> RetrieveLongTextFieldAsync(BaseServiceContext context, DataGridContext dgContext, int documentArtifactId, int caseId, int fieldArtifactId)
+		public class RelativityLongTextStreamFactory : IILongTextStreamFactory
+		{
+			private readonly BaseServiceContext _context;
+			private readonly DataGridContext _dataGridContext;
+			private readonly int _documentArtifactId;
+			private readonly int _caseId;
+			private readonly int _fieldArtifactId;
+
+			public RelativityLongTextStreamFactory(BaseServiceContext context, DataGridContext dgContext, int documentArtifactId, int caseId, int fieldArtifactId)
+			{
+				_context = context;
+				_dataGridContext = dgContext;
+				_documentArtifactId = documentArtifactId;
+				_caseId = caseId;
+				_fieldArtifactId = fieldArtifactId;
+			}
+
+			public ILongTextStream CreateLongTextStream()
+			{
+				return new LongTextStream(_context, _documentArtifactId, _caseId, _dataGridContext, _fieldArtifactId);
+			}
+		}
+
+		public static async Task<string> RetrieveLongTextFieldAsync(IILongTextStreamFactory longTextStreamFactory)
 		{
 			const int bufferSize = 4016;
 			return await Task.Run(() =>
 			{
 				StringBuilder strBuilder = null;
-				using (ILongTextStream stream = new LongTextStream(context, documentArtifactId, caseId, dgContext, fieldArtifactId))
+				using (ILongTextStream stream = longTextStreamFactory.CreateLongTextStream())
 				{
 					Encoding encoding = stream.IsUnicode ? Encoding.Unicode : Encoding.ASCII;
 					strBuilder  = new StringBuilder((int)stream.Length);
 					byte[] buffer = new byte[bufferSize];
-					while (stream.Read(buffer, 0, buffer.Length) != 0)
+					int read;
+					while ((read = stream.Read(buffer, 0, buffer.Length)) != 0)
 					{
-						strBuilder.Append(encoding.GetString(buffer));
+						strBuilder.Append(encoding.GetString(buffer, 0, read));
 						buffer = new byte[bufferSize];
 					}
 				}

@@ -186,6 +186,7 @@
     <Compile Include="Services\Exporter\ExportApiDataHelper.cs" />
     <Compile Include="Services\Exporter\ExporterFactory.cs" />
     <Compile Include="Services\Exporter\IExporterService.cs" />
+    <Compile Include="Services\Exporter\ILongTextStreamFactory.cs" />
     <Compile Include="Services\Exporter\RelativityExporterService.cs" />
     <Compile Include="Services\Guid\GuidService.cs" />
     <Compile Include="Services\Guid\IGuidService.cs" />
