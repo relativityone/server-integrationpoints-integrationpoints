@@ -285,19 +285,23 @@ ko.validation.insertValidationMessage = function (element) {
 		}).fail(function (error) {
 			IP.message.error.raise("No attributes were returned from the source provider.");
 		});
-		var mappedSourcePromise;
-
-		if (typeof (model.map) === "undefined") {
-			mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap', artifactId) });
-		} else {
-			mappedSourcePromise = jQuery.parseJSON(model.map);
-		}
 
 		var destination = JSON.parse(model.destination);
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('rdometa', destination.artifactTypeID) }).then(function (result) {
 			self.hasParent(result.hasParent);
-
 		});
+
+		var mappedSourcePromise;
+		if (destination.DoNotUseFieldsMapCache) {
+			mappedSourcePromise = [];
+		} else {
+			if (typeof (model.map) === "undefined") {
+				mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap', artifactId) });
+			} else {
+				mappedSourcePromise = jQuery.parseJSON(model.map);
+			}
+		}
+
 		var promises = [workspaceFieldPromise, sourceFieldPromise, mappedSourcePromise];
 
 		var mapTypes = {
