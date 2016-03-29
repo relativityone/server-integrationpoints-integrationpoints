@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly ICoreContext _context;
 		private readonly int _folderPathFieldSourceArtifactId;
 
-		/// used to store the reference of the current artifacts array.
+		/// used as a flag to store the reference of the current artifacts array. 
 		private object _readingArtifactIdsReference;
 
 		public DocumentTransferDataReader(
@@ -118,6 +118,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)
 			{
+				// we will have to go and get native file locations when the reader fetch a new collection of documents.
 				if (_readingArtifactIdsReference != ReadingArtifactIDs)
 				{
 					_readingArtifactIdsReference = ReadingArtifactIDs;
