@@ -5,11 +5,18 @@ $dependencies = Get-ChildItem -Path $destinationDir
 
 foreach($dependency in $dependencies)
 {
-    $fileExists = Test-Path "$mainlineLibDir\$dependency"
+    $items = Get-ChildItem -Path $mainlineLibDir -Filter $dependency -Recurse
+
+    $fileExists = $items.Length -gt 0
     if ($fileExists) 
     {
-        Write-Host "Updating $dependency.Name ..."
-        Copy-Item -Path "$mainlineLibDir\$dependency" -Destination $destinationDir
+        $name = $items[0].FullName
+        Write-Host "Copying $name ..."
+        Copy-Item -Path $items[0].FullName -Destination $destinationDir
+    }
+    else
+    {
+        Write-Host "Missing: $dependency" -ForegroundColor Red
     }
 }
 
