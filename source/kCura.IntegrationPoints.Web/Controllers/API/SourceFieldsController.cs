@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			Data.SourceProvider providerRdo = _sourceProviderIdentifier.Execute(data.Type);
 			Guid applicationGuid = new Guid(providerRdo.ApplicationIdentifier);
 			var provider = _factory.GetDataProvider(applicationGuid, data.Type, _helper);
-			var fields = provider.GetFields(data.Options.ToString()).ToList();
+			var fields = provider.GetFields(data.Options.ToString()).OrderBy(x => x.DisplayName).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, fields, Configuration.Formatters.JsonFormatter);
 		}
 	}
