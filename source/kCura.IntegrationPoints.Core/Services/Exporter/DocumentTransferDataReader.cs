@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Readers;
+using kCura.IntegrationPoints.Core.Managers;
 using Relativity.Core;
 using Relativity.Core.Service;
 
@@ -17,6 +18,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private static string Separator = ",";
 
 		private readonly IExporterService _relativityExporterService;
+		private readonly IFieldManager _fieldManager;
+		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
 		private readonly Dictionary<int, string> _nativeFileLocation;
 		private readonly ICoreContext _context;
 		private readonly int _folderPathFieldSourceArtifactId;
@@ -26,12 +29,16 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		public DocumentTransferDataReader(
 			IExporterService relativityExportService,
+			IFieldManager fieldManager,
+			ISourceWorkspaceManager sourceWorkspaceManager,
 			FieldMap[] fieldMappings,
 			ICoreContext context) :
 			base(GenerateDataColumnsFromFieldEntries(fieldMappings))
 		{
 			_context = context;
 			_relativityExporterService = relativityExportService;
+			_fieldManager = fieldManager;
+			_sourceWorkspaceManager = sourceWorkspaceManager;
 			_nativeFileLocation = new Dictionary<int, string>();
 
 			FieldMap folderPathInformationField = fieldMappings.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);

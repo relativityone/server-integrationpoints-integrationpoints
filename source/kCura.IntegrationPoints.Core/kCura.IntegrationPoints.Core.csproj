@@ -150,9 +150,14 @@
     <Compile Include="Application.cs" />
     <Compile Include="BatchEmail.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Factories\IExporterFactory.cs" />
     <Compile Include="Installers\KeywordInstaller.cs" />
     <Compile Include="JobHistoryStatus.cs" />
     <Compile Include="IBatchStatus.cs" />
+    <Compile Include="Managers\IFieldManager.cs" />
+    <Compile Include="Managers\Implementations\FieldManager.cs" />
+    <Compile Include="Managers\Implementations\SourceWorkspaceManager.cs" />
+    <Compile Include="Managers\ISourceWorkspaceManager.cs" />
     <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Properties\JobStatusMessages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -184,7 +189,7 @@
     <Compile Include="Services\Domain\RelativityFeaturePathService.cs" />
     <Compile Include="Services\Exporter\DocumentTransferDataReader.cs" />
     <Compile Include="Services\Exporter\ExportApiDataHelper.cs" />
-    <Compile Include="Services\Exporter\ExporterFactory.cs" />
+    <Compile Include="Factories\Implementations\ExporterFactory.cs" />
     <Compile Include="Services\Exporter\IExporterService.cs" />
     <Compile Include="Services\Exporter\ILongTextStreamFactory.cs" />
     <Compile Include="Services\Exporter\RelativityExporterService.cs" />
@@ -249,7 +254,6 @@
     <Compile Include="Services\Domain\SynchronizerWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Managers\Implementations\" />
     <Folder Include="Models\SyncConfiguration\" />
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.Managers;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.Core;
@@ -24,6 +25,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly Export.InitializationResults _exportJobInfo;
 		private readonly int[] _fieldArtifactIds;
 		private readonly HashSet<int> _longTextFieldArtifactIds;
+		private readonly IFieldManager _fieldManager;
+		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
 		private readonly FieldMap[] _mappedFields;
 		private readonly HashSet<int> _multipleObjectFieldArtifactIds;
 		private readonly int _retrievedDataCount;
@@ -55,6 +58,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		}
 
 		public RelativityExporterService(
+			IFieldManager fieldManager,
+			ISourceWorkspaceManager sourceWorkspaceManager,
 			FieldMap[] mappedFields,
 			int startAt,
 			string config)
@@ -64,6 +69,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
 			_baseContext = ClaimsPrincipal.Current.GetNewServiceContext(_settings.SourceWorkspaceArtifactId);
 
+			_fieldManager = fieldManager;
+			_sourceWorkspaceManager = sourceWorkspaceManager;
 			_mappedFields = mappedFields;
 			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
 
@@ -124,7 +131,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			if (_reader == null)
 			{
-				_reader = new DocumentTransferDataReader(this, _mappedFields, _baseContext);
+				_reader = new DocumentTransferDataReader(this, _fieldManager, _sourceWorkspaceManager, _mappedFields, _baseContext);
 			}
 			return _reader;
 		}
