@@ -297,6 +297,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				// NOTE :: If you expect to import the folder path, the import API will expect this field to be specified upon import. This is to avoid the field being both mapped and used as a folder path.
 				settings.FolderPathSourceFieldName = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
 			}
+
+			// So that the destination workspace file icons correctly display, we give the import API the file name of the document
+			settings.FileNameColumn = Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME;
+
 			return settings;
 		}
 

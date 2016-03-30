@@ -70,6 +70,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME] = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD;
 				_sourceIdentifierToTargetName[Contracts.Constants.SPECIAL_FOLDERPATH_FIELD] = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
 			}
+
+			// So that the destination workspace file icons correctly display, we give the import API the file name of the document
+			if (columns.Contains(Contracts.Constants.SPECIAL_FILE_NAME_FIELD))
+			{
+				_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME] = Contracts.Constants.SPECIAL_FILE_NAME_FIELD;
+				_sourceIdentifierToTargetName[Contracts.Constants.SPECIAL_FILE_NAME_FIELD] = Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME;
+			}
 		}
 
 		public object this[string name]

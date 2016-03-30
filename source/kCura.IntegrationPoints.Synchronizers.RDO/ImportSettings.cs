@@ -38,6 +38,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		public string OIFileTypeColumnName { get; set; }
 		public bool FileSizeMapped { get; set; }
 		public string FileSizeColumn { get; set; }
+		public string FileNameColumn { get; set; }
 		public ImportAuditLevelEnum ImportAuditLevel { get; set; }
 		public int CaseArtifactId { get; set; }
 		public bool CopyFilesToDocumentRepository { get; set; }
