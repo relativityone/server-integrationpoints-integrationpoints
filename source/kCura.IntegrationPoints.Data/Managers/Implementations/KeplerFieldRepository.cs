@@ -8,13 +8,13 @@ using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Data.Managers.Implementations
 {
-	public class KeplerFieldManager : IFieldManager
+	public class KeplerFieldRepository : IFieldRepository
 	{
-		private readonly IRDORepository _rdoRepository;
+		private readonly IObjectQueryManagerAdaptor _objectQueryManagerAdaptor;
 
-		public KeplerFieldManager(IRDORepository rdoRepository)
+		public KeplerFieldRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor)
 		{
-			_rdoRepository = rdoRepository;
+			_objectQueryManagerAdaptor = objectQueryManagerAdaptor;
 		}
 
 		public async Task<ArtifactFieldDTO[]> RetrieveLongTextFieldsAsync(int rdoTypeId)
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Data.Managers.Implementations
 				Condition = String.Format("'Object Type Artifact Type ID' == {0} AND 'Field Type' == '{1}'", rdoTypeId, longTextFieldName),
 			};
 
-			ObjectQueryResultSet result = await _rdoRepository.RetrieveAsync(longTextFieldsQuery, String.Empty);
+			ObjectQueryResultSet result = await _objectQueryManagerAdaptor.RetrieveAsync(longTextFieldsQuery, String.Empty);
 
 			if (!result.Success)
 			{
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Data.Managers.Implementations
 				Condition = String.Format("'Object Type Artifact Type ID' == {0}", rdoTypeId)
 			};
 
-			ObjectQueryResultSet result = await _rdoRepository.RetrieveAsync(fieldQuery, String.Empty);
+			ObjectQueryResultSet result = await _objectQueryManagerAdaptor.RetrieveAsync(fieldQuery, String.Empty);
 
 			if (!result.Success)
 			{

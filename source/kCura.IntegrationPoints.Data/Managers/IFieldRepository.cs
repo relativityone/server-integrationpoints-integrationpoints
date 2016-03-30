@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Data.Managers
 {
-	public interface IFieldManager
+	public interface IFieldRepository
 	{
 		/// <summary>
 		/// Retrieves the long text fields for an rdo

@@ -8,24 +8,24 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
 	public class DocumentArtifactIdDataReader : RelativityReaderBase
 	{
-		private readonly ISavedSearchManager _savedSearchManager;
+		private readonly ISavedSearchRepository _savedSearchRepository;
 
-		public DocumentArtifactIdDataReader(ISavedSearchManager savedSearchManager) :
+		public DocumentArtifactIdDataReader(ISavedSearchRepository savedSearchRepository) :
 			base(new[] { new DataColumn(Shared.Constants.ARTIFACT_ID_FIELD_NAME) })
 		{
-			_savedSearchManager = savedSearchManager;
+			_savedSearchRepository = savedSearchRepository;
 		}
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
-			ArtifactDTO[] results = _savedSearchManager.RetrieveNext();
+			ArtifactDTO[] results = _savedSearchRepository.RetrieveNext();
 
 			return results;
 		}
 
 		protected override bool AllArtifactsFetched()
 		{
-			bool allDocumentsRetrieved = _savedSearchManager.AllDocumentsRetrieved();
+			bool allDocumentsRetrieved = _savedSearchRepository.AllDocumentsRetrieved();
 
 			return allDocumentsRetrieved;
 		}

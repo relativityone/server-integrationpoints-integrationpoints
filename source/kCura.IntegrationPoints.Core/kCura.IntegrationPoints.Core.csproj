@@ -249,6 +249,7 @@
     <Compile Include="Services\Domain\SynchronizerWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Managers\Implementations\" />
     <Folder Include="Models\SyncConfiguration\" />
   </ItemGroup>
   <ItemGroup>

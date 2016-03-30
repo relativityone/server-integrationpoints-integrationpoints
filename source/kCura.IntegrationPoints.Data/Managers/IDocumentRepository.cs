@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Data.Managers
 {
-	public interface IDocumentManager
+	public interface IDocumentRepository
 	{
 		/// <summary>
 		/// Retrieves a single document

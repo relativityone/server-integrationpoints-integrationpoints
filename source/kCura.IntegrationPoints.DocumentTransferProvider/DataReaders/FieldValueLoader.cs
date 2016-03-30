@@ -11,19 +11,19 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 	internal class FieldValueLoader
 	{
 		private readonly Dictionary<int, Task<FieldValue>> _cache;
-		private readonly IDocumentManager _documentManager;
+		private readonly IDocumentRepository _documentRepository;
 		private readonly int[] _documentArtifactIds;
 		private readonly int[] _fieldsToQuery;
 		private int _counter;
 
 		internal FieldValueLoader(
-			IDocumentManager documentManager,
+			IDocumentRepository documentRepository,
 			int[] documentArtifactIds,
 			int field)
 		{
 			_counter = 0;
 			_cache = new Dictionary<int, Task<FieldValue>>();
-			_documentManager = documentManager;
+			_documentRepository = documentRepository;
 			_documentArtifactIds = documentArtifactIds;
 			_fieldsToQuery = new[] { field };
 			StartRequestingLongText();
@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 				ArtifactDTO document = null;
 				try
 				{
-					document = await _documentManager.RetrieveDocumentAsync(documentArtifactId, _fieldsToQuery);
+					document = await _documentRepository.RetrieveDocumentAsync(documentArtifactId, _fieldsToQuery);
 				}
 				catch (Exception e)
 				{

@@ -108,8 +108,6 @@
     <Compile Include="Provider\IFieldProvider.cs" />
     <Compile Include="IStartUp.cs" />
     <Compile Include="Provider\ProviderReadDataException.cs" />
-    <Compile Include="RDO\IRDORepository.cs" />
-    <Compile Include="RDO\RDORepository.cs" />
     <Compile Include="Readers\RelativityReaderBase.cs" />
     <Compile Include="Synchronizer\IDataSynchronizer.cs" />
   </ItemGroup>

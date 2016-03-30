@@ -6,7 +6,7 @@ using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Data.Managers.Implementations
 {
-	public class RSAPISavedSearchManager : ISavedSearchManager
+	public class RsapiSavedSearchRepository : ISavedSearchRepository
 	{
 		private readonly IRSAPIClient _rsapiClient;
 		private readonly int _savedSearchId;
@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Data.Managers.Implementations
 		private int _documentsRetrieved = 0;
 		private int _totalDocumentsRetrieved = 0;
 
-		public RSAPISavedSearchManager(IRSAPIClient rsapiClient, int savedSearchId, int pageSize)
+		public RsapiSavedSearchRepository(IRSAPIClient rsapiClient, int savedSearchId, int pageSize)
 		{
 			_rsapiClient = rsapiClient;
 			_savedSearchId = savedSearchId;

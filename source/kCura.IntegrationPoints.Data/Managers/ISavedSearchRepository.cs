@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Data.Managers
 {
-	public interface ISavedSearchManager
+	public interface ISavedSearchRepository
 	{
 		/// <summary>
 		/// Retrieves the next set of documents for the saved search
