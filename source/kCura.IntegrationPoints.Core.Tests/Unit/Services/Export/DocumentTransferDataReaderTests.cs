@@ -498,7 +498,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			int fieldCount = _instance.FieldCount;
 
 			// Assert
-			Assert.AreEqual(2, fieldCount, "There should be 2 fields");
+			Assert.AreEqual(3, fieldCount, "There should be 3 fields");
 		}
 
 		[Test]
@@ -514,7 +514,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			int fieldCount = _instance.FieldCount;
 
 			// Assert
-			Assert.AreEqual(2, fieldCount, "There should be 2 fields");
+			Assert.AreEqual(3, fieldCount, "There should be 3 fields");
 		}
 
 		[Test]
@@ -677,7 +677,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_templateFieldEntries,
 				_context);
 
-			var expectedResult = new DataTable() { Columns = { new DataColumn(_FIELD_IDENTIFIER.ToString()), new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) } };
+			var expectedResult = new DataTable()
+			{
+				Columns =
+				{
+					new DataColumn(_FIELD_IDENTIFIER.ToString()),
+					new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
+					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD)
+				}
+			};
 
 			// Act
 			DataTable result = _instance.GetSchemaTable();
@@ -707,7 +715,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			var expectedResult = new DataTable()
 			{
-				Columns = { new DataColumn("123"), new DataColumn("456"), new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) }
+				Columns =
+				{
+					new DataColumn("123"),
+					new DataColumn("456"),
+					new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
+					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD)
+				}
 			};
 
 			// Act
@@ -726,7 +740,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new FieldMap[0], 
 				_context);
 
-			var expectedResult = new DataTable() { Columns = { new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) } };
+			var expectedResult = new DataTable()
+			{
+				Columns =
+				{
+					new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
+					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD)
+				}
+			};
 
 			// Act
 			DataTable result = _instance.GetSchemaTable();
@@ -744,7 +765,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new FieldMap[0],
 				_context);
 
-			var expectedResult = new DataTable() { Columns = { new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD) } };
+			var expectedResult = new DataTable()
+			{
+				Columns =
+				{
+					new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
+					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD)
+				}
+			};
 
 			// Act
 			DataTable result = _instance.GetSchemaTable();
