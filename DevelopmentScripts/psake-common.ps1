@@ -1,6 +1,6 @@
 properties {
     #directories
-    $root = hg root
+    $root = git rev-parse --show-toplevel
 
     $source_directory = [System.IO.Path]::Combine($root, 'Source')
     $application_directory = [System.IO.Path]::Combine($root, 'Applications')
@@ -18,7 +18,7 @@ properties {
     $version = '1.0.0.0'
     $server_type = 'teambranch'
     $build_type = 'DEV'
-    $branch = hg branch
+    $branch = git rev-parse --abbrev-ref HEAD
     $build_config = "Debug"
     $Injections = 'DisableInjections'
 

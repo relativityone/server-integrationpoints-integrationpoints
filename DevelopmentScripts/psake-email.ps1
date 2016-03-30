@@ -164,21 +164,27 @@ Function GetBuildChanges([Build] $bld) {
         $bld.changesCount++
 
         if ($bld.changesCount -le $changesLimit) {
-            $hg = (hg log -r $node.version --template "{author|user}|{author|email}|{date(date, '%m/%d/%Y %H:%M:%S %z')}|{node}|{join(file_mods, ';')}|{join(file_adds, ';')}|{join(file_dels, ';')}|{firstline(desc)}")
-
+            $hg = (git --no-pager log $node.version -n 1 --pretty=format:"%aN|%aE|%ad|%H|%s" --date=format:"%m/%d/%Y %H:%M:%S" --name-status)
+            
             $chng = New-Object Change
             $chng.id = $node.id
             $chng.user = $hg.split('|')[0]
             $chng.email = $hg.split('|')[1].replace(" + '@kcura.com'", "@kcura.com")
             $chng.date = $hg.split('|')[2]
-            $chng.node = $hg.split('|')[3]
-            $chng.mods = $hg.split('|')[4].split(';', [StringSplitOptions]::RemoveEmptyEntries).count
-            $chng.adds = $hg.split('|')[5].split(';', [StringSplitOptions]::RemoveEmptyEntries).count
-            $chng.dels = $hg.split('|')[6].split(';', [StringSplitOptions]::RemoveEmptyEntries).count
-            $chng.desc = $hg.split('|')[7]
+            $chng.node = $hg.split('|')[3]            
+            $chng.desc = $hg.split('|')[4]
+
+            for($i = 5; $i -lt $hg.split('|').count; $i++){
+                
+                switch -wildcard ($hg.split('|')[$i][0]){
+                    "A*" {$chng.adds++}
+                    "M*" {$chng.mods++}
+                    "D*" {$chng.dels++}
+                }
+            }
         }
         else {
-            $hg = (hg log -r $node.version --template "{author|email}")
+            $hg = (git --no-pager log $node.version -n 1 --pretty=format:"%aE")
 
             $chng = New-Object Change
             $chng.email = $hg.split('|')[0].replace(" + '@kcura.com'", "@kcura.com")       

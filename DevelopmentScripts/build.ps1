@@ -1,5 +1,5 @@
 #requires -version 3
-$root = hg root
+$root = git rev-parse --show-toplevel
 Import-Module $root\Vendor\psake\tools\psake.psm1
 
 $BUILDCONFIG = "Debug"
@@ -156,7 +156,7 @@ if($PACKAGE -and $STATUS){
 
 if($VERSION -ne "1.0.0.0") {
 
-    hg revert $root\Version
+    git revert -- $root\Version
 }
 
 $endTime = Get-Date
