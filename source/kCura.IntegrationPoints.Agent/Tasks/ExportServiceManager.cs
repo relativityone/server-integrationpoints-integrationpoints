@@ -68,8 +68,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 
-				IDataReader exporterReader = exporter.GetDataReader();
-				synchronizer.SyncData(exporterReader, MappedFields, destinationConfig);
+				TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+				string jobDetails = taskParameters.BatchInstance.ToString();
+
+				_jobHistoryErrorService.SetTableSuffix(jobDetails);
+				synchronizer.SyncData(exporter.GetDataReader(jobDetails), MappedFields, destinationConfig);
 			}
 			catch (Exception ex)
 			{
@@ -142,6 +145,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					_jobHistoryErrorService.CommitErrors();
 				}
+			}
+
+			try
+			{
+				IntegrationPointDto.LastRuntimeUTC = DateTime.UtcNow;
+				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPointDto);
+			}
+			catch
+			{
+				// ignored
 			}
 		}
 

@@ -120,11 +120,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		public IDataReader GetDataReader()
+		public IDataReader GetDataReader(string jobDetails)
 		{
 			if (_reader == null)
 			{
-				_reader = new DocumentTransferDataReader(this, _mappedFields, _baseContext);
+				_reader = new DocumentTransferDataReader(this, _mappedFields, _baseContext, jobDetails);
 			}
 			return _reader;
 		}

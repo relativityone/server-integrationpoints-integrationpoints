@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		/// Gets the reader of the exported data.
 		/// </summary>
 		/// <returns>DataReader to read export results</returns>
-		IDataReader GetDataReader();
+		IDataReader GetDataReader(string jobDetails);
 
 		/// <summary>
 		/// Retrieves data from exporter with a give size

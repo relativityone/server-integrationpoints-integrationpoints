@@ -58,6 +58,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			}
 		};
 
+		private string _uniqueTableSuffix = "12345_6789";
+
 		[SetUp]
 		public void SetUp()
 		{
@@ -66,7 +68,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		}
 
 		#region Read
-
 		[Test]
 		public void Read_FirstRead_RetrievesDocuments_ReturnsTrue()
 		{
@@ -76,7 +77,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			bool result = _instance.Read();
@@ -95,7 +97,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			bool result = _instance.Read();
@@ -114,7 +117,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act & Assert
 			Assert.Throws<Exception>(() => _instance.Read());
@@ -135,7 +139,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -164,7 +169,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -187,7 +193,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				new FieldMap[0],
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			bool result = _instance.Read();
@@ -205,7 +212,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			bool result = _instance.Read();
@@ -223,7 +231,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				new FieldMap[0],
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			bool result = _instance.Read();
@@ -248,7 +257,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -270,7 +280,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -291,7 +302,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -308,7 +320,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			bool result = _instance.NextResult();
@@ -324,7 +337,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			int result = _instance.Depth;
@@ -340,7 +354,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			int result = _instance.RecordsAffected;
@@ -356,7 +371,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			string fieldName = _instance.GetName(0);
@@ -382,7 +398,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						}
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			string fieldName = _instance.GetName(0);
@@ -398,7 +415,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			int ordinal = _instance.GetOrdinal(_FIELD_IDENTIFIER.ToString());
@@ -424,7 +442,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						}
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			int ordinal = _instance.GetOrdinal(_FIELD_IDENTIFIER.ToString());
@@ -454,7 +473,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						}
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -475,7 +495,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -492,7 +513,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			int fieldCount = _instance.FieldCount;
@@ -508,7 +530,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			int fieldCount = _instance.FieldCount;
@@ -528,7 +551,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			bool exceptionThrown = false;
@@ -554,7 +578,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			bool exceptionThrown = false;
@@ -581,7 +606,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -602,7 +628,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -623,7 +650,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -644,7 +672,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -675,7 +704,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			var expectedResult = new DataTable()
 			{
@@ -711,7 +741,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = 	new FieldEntry() {FieldIdentifier = "456", DisplayName = "def"}
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			var expectedResult = new DataTable()
 			{
@@ -738,7 +769,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				new FieldMap[0], 
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			var expectedResult = new DataTable()
 			{
@@ -763,7 +795,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				new FieldMap[0],
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			var expectedResult = new DataTable()
 			{
@@ -795,7 +828,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -837,7 +871,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" } 
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -879,7 +914,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -920,7 +956,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -960,7 +997,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -1001,7 +1039,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -1042,7 +1081,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -1083,7 +1123,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -1125,7 +1166,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -1167,7 +1209,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -1209,7 +1252,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
@@ -1251,7 +1295,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_uniqueTableSuffix);
 
 			// Act
 			_instance.Read();
