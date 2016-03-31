@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
@@ -144,6 +145,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					_jobHistoryErrorService.CommitErrors();
 				}
+			}
+
+			try
+			{
+				IntegrationPointDto.LastRuntimeUTC = DateTime.UtcNow;
+				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPointDto);
+			}
+			catch
+			{
+				// ignored
 			}
 		}
 
