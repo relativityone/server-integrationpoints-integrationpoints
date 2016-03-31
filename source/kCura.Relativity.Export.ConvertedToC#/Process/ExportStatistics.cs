@@ -12,9 +12,9 @@ namespace kCura.Relativity.Export.Process
 		{
 			System.Collections.Specialized.HybridDictionary retval = new System.Collections.Specialized.HybridDictionary();
 			if (!(this.FileTime == 0))
-				retval.Add("Average file transfer rate", ToFileSizeSpecification(this.FileBytes / (this.FileTime / 10000000)) + "/sec");
+				retval.Add("Average file transfer rate", ToFileSizeSpecification(this.FileBytes / ((double)this.FileTime / 10000000)) + "/sec");
 			if (!(this.MetadataTime == 0) && !(this.MetadataBytes == 0))
-				retval.Add("Average metadata transfer rate (includes SQL processing)", ToFileSizeSpecification(this.MetadataBytes / (this.MetadataTime / 10000000)) + "/sec");
+				retval.Add("Average metadata transfer rate (includes SQL processing)", ToFileSizeSpecification(this.MetadataBytes / ((double)this.MetadataTime / 10000000)) + "/sec");
 			return retval;
 		}
 	}

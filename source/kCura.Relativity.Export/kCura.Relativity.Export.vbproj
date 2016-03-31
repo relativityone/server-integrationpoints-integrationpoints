@@ -424,6 +424,9 @@
     <Compile Include="Service\AuditManager.vb">
       <SubType>Code</SubType>
     </Compile>
+	<Compile Include="Service\CaseManager.vb">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Service\ExportManager.vb" />
     <Compile Include="Service\FieldManager.vb" />
     <Compile Include="Service\FieldQuery.vb" />
@@ -432,6 +435,9 @@
       <SubType>code</SubType>
     </Compile>
     <Compile Include="Service\SearchManager.vb">
+      <SubType>code</SubType>
+    </Compile>
+	<Compile Include="Service\UserManager.vb">
       <SubType>code</SubType>
     </Compile>
     <Compile Include="Settings.vb" />
@@ -456,6 +462,12 @@
     </Compile>
     <Compile Include="Utility.vb" />
     <Compile Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+	<Compile Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\Reference.vb">
       <DependentUpon>Reference.map</DependentUpon>
       <SubType>code</SubType>
       <DesignTime>True</DesignTime>
@@ -496,11 +508,26 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+	<Compile Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\Reference.vb">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\AuditManager.disco" />
     <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\AuditManager.wsdl">
       <SubType>Designer</SubType>
     </None>
     <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+	<None Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\CaseInfo.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\CaseManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\CaseManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.vb</LastGenOutput>
     </None>
@@ -546,10 +573,29 @@
     </None>
     <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.disco" />
     <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.wsdl" />
+	<None Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.vb</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\UserManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\UserManager.wsdl" />
     <WebReferenceUrl Include="http://localhost/RelativityWebApi/AuditManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.AuditManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
       <UpdateFromURL>http://localhost/RelativityWebApi/AuditManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+	<WebReferenceUrl Include="http://localhost/RelativityWebApi/CaseManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.CaseManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/CaseManager.asmx</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>
@@ -626,6 +672,19 @@
       <RelPath>Web References\kCura.EDDS.WebAPI.SearchManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
       <UpdateFromURL>http://localhost/RelativityWebApi/SearchManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+	<WebReferenceUrl Include="http://localhost/RelativityWebApi/UserManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.UserManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/UserManager.asmx</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>

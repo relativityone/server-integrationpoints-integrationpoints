@@ -37,29 +37,10 @@ namespace kCura.Relativity.Export
 							tempDict = (System.Collections.IDictionary)System.Configuration.ConfigurationManager.GetSection("kCura.WinEDDS");
 							if (tempDict == null)
 								tempDict = new System.Collections.Hashtable();
-							if (!tempDict.Contains("ImportBatchSize"))
-								tempDict.Add("ImportBatchSize", "1000");
 							if (!tempDict.Contains("WebAPIOperationTimeout"))
 								tempDict.Add("WebAPIOperationTimeout", "600000");
-							if (!tempDict.Contains("DynamicBatchResizingOn"))
-								tempDict.Add("DynamicBatchResizingOn", "True");
-							if (!tempDict.Contains("MinimumBatchSize"))
-								tempDict.Add("MinimumBatchSize", "100");
-							if (!tempDict.Contains("ImportBatchMaxVolume"))
-								tempDict.Add("ImportBatchMaxVolume", "10485760");
-							//10(2^20) - don't know what 10MB standard is
 							if (!tempDict.Contains("ExportBatchSize"))
 								tempDict.Add("ExportBatchSize", "1000");
-							if (!tempDict.Contains("EnableSingleModeImport"))
-								tempDict.Add("EnableSingleModeImport", "False");
-							if (!tempDict.Contains("CreateErrorForEmptyNativeFile"))
-								tempDict.Add("CreateErrorForEmptyNativeFile", "False");
-							if (!tempDict.Contains("AuditLevel"))
-								tempDict.Add("AuditLevel", "FullAudit");
-							if (!tempDict.Contains("CreateFoldersInWebAPI"))
-								tempDict.Add("CreateFoldersInWebAPI", "True");
-							if (!tempDict.Contains("ForceWebUpload"))
-								tempDict.Add("ForceWebUpload", "False");
 							_configDictionary = tempDict;
 						}
 					}
@@ -178,28 +159,7 @@ namespace kCura.Relativity.Export
 
 		#endregion
 
-		public static Int32 ImportBatchMaxVolume {
-			//Volume in bytes
-			get {
-				try {
-					return (Int32)ConfigSettings["ImportBatchMaxVolume"];
-				} catch {
-					return 1000000;
-				}
-			}
-		}
-
-		public static Int32 ImportBatchSize {
-			//Number of records
-			get {
-				try {
-					return (Int32)ConfigSettings["ImportBatchSize"];
-				} catch (Exception ex) {
-					return 500;
-				}
-			}
-		}
-
+		
 		public static Int32 WebAPIOperationTimeout {
 			get {
 				try {
@@ -209,103 +169,10 @@ namespace kCura.Relativity.Export
 				}
 			}
 		}
-
-		/// <summary>
-		/// If True, Folders which are created in Append mode are created in the WebAPI.
-		/// If False, Folders which are created in Append mode are created in RDC/ImportAPI.
-		/// If the value is not set in the config file, True is returned.
-		/// </summary>
-		/// <value></value>
-		/// <returns></returns>
-		/// <remarks>This property is part of the fix for Dominus# 1127879</remarks>
-		public static bool CreateFoldersInWebAPI {
-			get {
-				try {
-					return Convert.ToBoolean(ConfigSettings["CreateFoldersInWebAPI"]);
-				} catch (Exception ex) {
-					return true;
-					// Default changed from False to True for Atlas' IAPI Folder changes Oct/Nov 2013
-				}
-			}
-		}
-
-		public static bool DynamicBatchResizingOn {
-			//Allow or not to automatically decrease import batch size while import is in progress
-			get { return Convert.ToBoolean(ConfigSettings["DynamicBatchResizingOn"]); }
-		}
-
-		public static Int32 DefaultMaximumErrorCount {
-			get { return 1000; }
-		}
-
-		public static Int32 MinimumBatchSize {
-			//When AutoBatch is on. This is the lower ceiling up to which batch will decrease
-			get { return (Int32)ConfigSettings["MinimumBatchSize"]; }
-		}
-
+		
 		public static Int32 ExportBatchSize {
 			//Number of records
-			get { return (Int32)ConfigSettings["ExportBatchSize"]; }
-		}
-
-		public static bool DisableImageTypeValidation {
-			get { return Convert.ToBoolean(ConfigSettings["DisableImageTypeValidation"]); }
-		}
-
-		public static bool DisableImageLocationValidation {
-			get { return Convert.ToBoolean(ConfigSettings["DisableImageLocationValidation"]); }
-		}
-
-		public static bool DisableNativeValidation {
-			get { return Convert.ToBoolean(ConfigSettings["DisableNativeValidation"]); }
-		}
-
-		public static bool DisableNativeLocationValidation {
-			get { return Convert.ToBoolean(ConfigSettings["DisableNativeLocationValidation"]); }
-		}
-
-		public static bool CreateErrorForEmptyNativeFile {
-			get { return Convert.ToBoolean(ConfigSettings["CreateErrorForEmptyNativeFile"]); }
-		}
-
-		//Public Shared ReadOnly Property AuditLevel() As kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel
-		//	Get
-		//		Return DirectCast([Enum].Parse(GetType(kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel), CStr(ConfigSettings("AuditLevel"))), kCura.EDDS.WebAPI.BulkImportManagerBase.ImportAuditLevel)
-		//	End Get
-		//End Property
-
-		//This hidden configuration setting makes it easier to test WebUpload.  Testing is important.
-		public static bool ForceWebUpload {
-			get { return Convert.ToBoolean(ConfigSettings["ForceWebUpload"]); }
-		}
-
-		public static bool ForceFolderPreview {
-			get {
-				string registryValue = Config.GetRegistryKeyValue("ForceFolderPreview");
-				if (string.IsNullOrEmpty(registryValue)) {
-					Config.SetRegistryKeyValue("ForceFolderPreview", "true");
-					return true;
-				}
-				return registryValue.ToLower().Equals("true");
-			}
-			set {
-				string registryValue = "false";
-				if (value)
-					registryValue = "true";
-				Config.SetRegistryKeyValue("ForceFolderPreview", registryValue);
-			}
-		}
-
-		public static IList<Int32> ObjectFieldIdListContainsArtifactId {
-			get {
-				string registryValue = Config.GetRegistryKeyValue("ObjectFieldIdListContainsArtifactId");
-				if (string.IsNullOrEmpty(registryValue)) {
-					Config.SetRegistryKeyValue("ObjectFieldIdListContainsArtifactId", "");
-					return new List<Int32>();
-				}
-				return registryValue.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select((string s) => Int32.Parse(s)).ToArray();
-			}
-			set { Config.SetRegistryKeyValue("ObjectFieldIdListContainsArtifactId", string.Join(",", value.Select(x => x.ToString()).ToArray())); }
+			get { return Convert.ToInt32(ConfigSettings["ExportBatchSize"]); }
 		}
 
 		public static string WebServiceURL {
@@ -343,16 +210,6 @@ namespace kCura.Relativity.Export
 		public static string ProgrammaticServiceURL {
 			get { return _programmaticServiceURL; }
 			set { _programmaticServiceURL = value; }
-		}
-
-		public static bool EnableSingleModeImport {
-			get {
-				try {
-					return Convert.ToBoolean(ConfigSettings["EnableSingleModeImport"]);
-				} catch (Exception ex) {
-					return false;
-				}
-			}
 		}
 
 		public static Int32 WebBasedFileDownloadChunkSize {

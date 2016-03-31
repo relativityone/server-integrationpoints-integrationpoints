@@ -99,11 +99,6 @@ namespace kCura.Relativity.Export.FileObjects
 			set { _dataTable = value; }
 		}
 
-		[ReadFromExisting()]
-		public System.Collections.Specialized.HybridDictionary ArtifactAvfLookup {
-			get { return _artifactAvfLookup; }
-			set { _artifactAvfLookup = value; }
-		}
 
 		public char NestedValueDelimiter {
 			get { return _nestedValueDelimiter; }

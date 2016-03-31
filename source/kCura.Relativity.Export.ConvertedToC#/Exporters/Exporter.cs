@@ -20,6 +20,9 @@ namespace kCura.Relativity.Export.Exports
 		public Service.ExportManager ExportManager;
 		private Service.FieldManager _fieldManager;
 		private Service.AuditManager _auditManager;
+		private Service.CaseManager _caseManager;
+		private UserManager _userManager;
+
 		private ExportFile _exportFile;
 		private System.Collections.ArrayList _columns;
 
@@ -121,13 +124,24 @@ namespace kCura.Relativity.Export.Exports
 
 		public Exporter(ExportFile exportFile, kCura.Windows.Process.Controller processController)
 		{
+			_userManager = new UserManager(exportFile.Credential, exportFile.CookieContainer);
+			_userManager.Login(exportFile.Credential.UserName, exportFile.Credential.Password);
+
+			_caseManager = new CaseManager(exportFile.Credential, exportFile.CookieContainer);
 			_searchManager = new SearchManager(exportFile.Credential, exportFile.CookieContainer);
+
+			PopulateSettings(exportFile);
+			
 			_downloadHandler = new FileDownloader(exportFile.Credential, exportFile.CaseInfo.DocumentPath + "\\EDDS" + exportFile.CaseInfo.ArtifactID, exportFile.CaseInfo.DownloadHandlerURL, exportFile.CookieContainer, kCura.Relativity.Export.Settings.AuthenticationToken);
 			FileDownloader.TotalWebTime = 0;
 			_productionManager = new ProductionManager(exportFile.Credential, exportFile.CookieContainer);
 			_auditManager = new AuditManager(exportFile.Credential, exportFile.CookieContainer);
 			_fieldManager = new FieldManager(exportFile.Credential, exportFile.CookieContainer);
+			
+
 			this.ExportManager = new ExportManager(exportFile.Credential, exportFile.CookieContainer);
+
+			
 
 			_halt = false;
 			_processController = processController;
@@ -170,6 +184,21 @@ namespace kCura.Relativity.Export.Exports
 					return v;
 			}
 			throw new System.Exception("Full text field somehow not in all fields");
+		}
+
+		private void PopulateSettings(ExportFile exportFile)
+		{
+			if (string.IsNullOrEmpty(exportFile.CaseInfo.DocumentPath))
+			{
+				var caseInfo = _caseManager.Read(exportFile.CaseInfo.ArtifactID);
+				exportFile.CaseInfo = caseInfo;
+			}
+			
+			exportFile.AllExportableFields = _searchManager.RetrieveAllExportableViewFields(exportFile.CaseInfo.ArtifactID,
+				exportFile.ArtifactTypeID);
+
+			var selectedViewFields = exportFile.AllExportableFields.Where(item => exportFile.SelectedViewFields.Any(selectedItem => selectedItem.FieldArtifactId == item.FieldArtifactId));
+			exportFile.SelectedViewFields = selectedViewFields.ToArray();
 		}
 
 		private bool? Search()
