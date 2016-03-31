@@ -5,7 +5,6 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Readers;
 using Relativity.Core;
-using Relativity.Core.DTO;
 using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
@@ -13,10 +12,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	public class DocumentTransferDataReader : RelativityReaderBase
 	{
 		public const int FETCH_ARTIFACTDTOS_BATCH_SIZE = 50;
+		private static string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
+		private static string _nativeFileNameColumn = "Filename";
+		private static string _nativeLocationColumn = "Location";
 		private static string Separator = ",";
 
 		private readonly IExporterService _relativityExporterService;
-		private readonly Dictionary<int, File> _files;
+		private readonly Dictionary<int, string> _nativeFileLocations;
+		private readonly Dictionary<int, string> _nativeFileNames; 
 		private readonly ICoreContext _context;
 		private readonly int _folderPathFieldSourceArtifactId;
 
@@ -28,7 +31,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			_context = context;
 			_relativityExporterService = relativityExportService;
-			_files = new Dictionary<int, File>();
+			_nativeFileLocations = new Dictionary<int, string>();
+			_nativeFileNames = new Dictionary<int, string>();
 
 			FieldMap folderPathInformationField = fieldMappings.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
 			if (folderPathInformationField != null)
@@ -130,23 +134,30 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					for (int index = 0; index < dataView.Table.Rows.Count; index++)
 					{
 						DataRow row = dataView.Table.Rows[index];
-						File file = new File(row);
-						_files.Add(file.DocumentArtifactID, file);
+						int nativeDocumentArtifactID = (int) row[_nativeDocumentArtifactIdColumn];
+						string nativeFileLocation = (string) row[_nativeLocationColumn];
+						string nativeFileName = (string) row[_nativeFileNameColumn];
+						_nativeFileLocations.Add(nativeDocumentArtifactID, nativeFileLocation);
+						_nativeFileNames.Add(nativeDocumentArtifactID, nativeFileName);
 					}
 				}
 
-				if (_files.ContainsKey(CurrentArtifact.ArtifactId))
+				switch (fieldIdentifier)
 				{
-					File file = _files[CurrentArtifact.ArtifactId];
-
-					if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)
-					{
-						result = file.Location;
-					}
-					else
-					{
-						result = file.Filename;
-					}
+					case IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD:
+						if (_nativeFileLocations.ContainsKey(CurrentArtifact.ArtifactId))
+						{
+							result = _nativeFileLocations[CurrentArtifact.ArtifactId];
+							_nativeFileLocations.Remove(CurrentArtifact.ArtifactId);
+						}
+						break;
+					case IntegrationPoints.Contracts.Constants.SPECIAL_FILE_NAME_FIELD:
+						if (_nativeFileNames.ContainsKey(CurrentArtifact.ArtifactId))
+						{
+							result = _nativeFileNames[CurrentArtifact.ArtifactId];
+							_nativeFileNames.Remove(CurrentArtifact.ArtifactId);
+						}
+						break;
 				}
 			}
 			return result;
