@@ -1,0 +1,23 @@
+@startuml
+title RIP Agent Workflow - ExportServiceManager
+
+partition Initialize_Export_Job {
+	(*) --> "Load Integration Point RDOs"
+	-->"Set Job History Rdo to the JobHistoryErrorService"
+	-->"Sanitize MappedFields"
+	-->"Set StartTime to the Job History Rdo."
+	-->"Notify BatchStatus subscribers that the job is started."
+}
+
+partition Perform_Export {
+	-->"Create Data Synchronizer"
+	-->"Build Exporter"
+	-->"Set Total Items to the Job History Rdo"
+	-->"Create Export Results Reader"
+	-->"Pass the Reader to Data Synchronizer"
+}
+--> "Commit Error if Any"
+--> "Notify BatchStatus subscribers that the job is done."
+--> (*)
+
+@enduml

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -10,9 +11,9 @@ using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class JobHistoryService
+	public class JobHistoryService : IJobHistoryService
 	{
-		private ICaseServiceContext _context;
+		private readonly ICaseServiceContext _context;
 		public JobHistoryService(ICaseServiceContext context)
 		{
 			_context = context;

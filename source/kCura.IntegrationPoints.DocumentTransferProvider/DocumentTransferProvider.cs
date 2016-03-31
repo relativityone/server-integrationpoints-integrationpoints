@@ -5,11 +5,11 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.IntegrationPoints.Data.Managers;
+using kCura.IntegrationPoints.Data.Managers.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
-using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
-using kCura.IntegrationPoints.DocumentTransferProvider.Managers.Implementations;
 using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
@@ -164,16 +164,16 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 			IDBContext dbContext = _helper.GetDBContext(settings.SourceWorkspaceArtifactId);
 
-			ArtifactFieldDTO[] longTextfields = fieldManager.RetrieveLongTextFieldsAsync(documentTypeId).ConfigureAwait(false).GetAwaiter().GetResult(); ;
+			ArtifactFieldDTO[] longTextFields = fieldManager.RetrieveLongTextFieldsAsync(documentTypeId).ConfigureAwait(false).GetAwaiter().GetResult();
 
-			IDataReader dataReader = new DocumentTransferDataReader(
-				documentManager,
-				entryIds.Select(x => Convert.ToInt32(x)),
-				fields,
-				longTextfields.Select(x => x.ArtifactId),
-				dbContext);
+			//IDataReader dataReader = new DocumentTransferDataReader(
+			//	documentManager,
+			//	entryIds.Select(x => Convert.ToInt32(x)),
+			//	fields,
+			//	longTextFields.Select(x => x.ArtifactId),
+			//	dbContext);
 
-			return dataReader;
+			return null;
 		}
 	}
 }

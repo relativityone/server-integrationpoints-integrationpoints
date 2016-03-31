@@ -20,4 +20,8 @@
 		public static string Monthly = "D8E62A6F-7B0D-4F38-881F-1699EF41B4E0";
 	}
 
+	public static class Constants
+	{
+		public const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
+	}
 }

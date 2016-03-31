@@ -4,66 +4,127 @@ using System.Data;
 using System.Linq;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data.Queries;
 using Newtonsoft.Json;
+using Relativity;
 using Relativity.Core;
 using Relativity.Core.Authentication;
+using Relativity.Data;
 using ArtifactType = kCura.Relativity.Client.ArtifactType;
+using QueryFieldLookup = Relativity.Core.QueryFieldLookup;
+using UserPermissionsMatrix = Relativity.Core.UserPermissionsMatrix;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class RelativityExporterService : IExporterService
 	{
-		private readonly global::Relativity.Core.Api.Shared.Manager.Export.Exporter _exporter;
-		private readonly Export.InitializationResults _exportJobInfo;
-		private readonly int _retrievedDataCount;
-
-		private readonly FieldMap[] _mappedFields;
-		private readonly int[] _fieldArtifactIds;
 		private readonly int[] _avfIds;
-		private readonly DirectSqlCallHelper _helper;
+		private readonly BaseServiceContext _baseContext;
+		private readonly DataGridContext _dataGridContext;
+		private readonly global::Relativity.Core.Api.Shared.Manager.Export.IExporter _exporter;
+		private readonly Export.InitializationResults _exportJobInfo;
+		private readonly int[] _fieldArtifactIds;
+		private readonly HashSet<int> _longTextFieldArtifactIds;
+		private readonly FieldMap[] _mappedFields;
+		private readonly HashSet<int> _multipleObjectFieldArtifactIds;
+		private readonly int _retrievedDataCount;
+		private readonly ExportUsingSavedSearchSettings _settings;
+		private readonly HashSet<int> _singleChoiceFieldsArtifactIds;
 		private IDataReader _reader;
+
+		private RelativityExporterService()
+		{
+			_singleChoiceFieldsArtifactIds = new HashSet<int>();
+			_multipleObjectFieldArtifactIds = new HashSet<int>();
+			_longTextFieldArtifactIds = new HashSet<int>();
+		}
+
+		/// <summary>
+		/// Testing only
+		/// </summary>
+		/// <param name="exporter"></param>
+		public RelativityExporterService(
+			global::Relativity.Core.Api.Shared.Manager.Export.IExporter exporter,
+			int[] avfIds,
+			int[] fieldArtifactIds)
+			: this()
+		{
+			_exporter = exporter;
+			_avfIds = avfIds;
+			_exportJobInfo = _exporter.InitializeExport(0, null, 0);
+			_fieldArtifactIds = fieldArtifactIds;
+		}
 
 		public RelativityExporterService(
 			FieldMap[] mappedFields,
 			int startAt,
-			string config,
-			DirectSqlCallHelper helper)
+			string config)
+			: this()
 		{
-			ExportUsingSavedSearchSettings settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
-
-			BaseServiceContext context = ClaimsPrincipal.Current.GetNewServiceContext(settings.SourceWorkspaceArtifactId);
-			_exporter = new global::Relativity.Core.Api.Shared.Manager.Export.Exporter
-			{
-				CurrentServiceContext = context,
-				DynamicallyLoadedDllPaths = global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths,
-				MultiValueDeimiter = IntegrationPoints.Contracts.Constants.MULTI_VALUE_DEIMITER,
-				NestedValueDelimiter = IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER
-			};
+			_dataGridContext = new DataGridContext(true);
+			_settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
+			_baseContext = ClaimsPrincipal.Current.GetNewServiceContext(_settings.SourceWorkspaceArtifactId);
 
 			_mappedFields = mappedFields;
 			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
 
-			QueryFieldLookup fieldLookupHelper = new QueryFieldLookup(context, (int)ArtifactType.Document);
+			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int)ArtifactType.Document);
 			Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
 			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
 			{
 				int artifactId = Convert.ToInt32(source.FieldIdentifier);
-				fieldsReferences[artifactId] = fieldLookupHelper.GetFieldByArtifactID(artifactId).AvfId;
+				ViewFieldInfo fieldInfo = fieldLookupHelper.GetFieldByArtifactID(artifactId);
+
+				fieldsReferences[artifactId] = fieldInfo.AvfId;
+				if (fieldInfo.FieldType == FieldTypeHelper.FieldType.Objects)
+				{
+					_multipleObjectFieldArtifactIds.Add(artifactId);
+				}
+				else if (fieldInfo.FieldType == FieldTypeHelper.FieldType.Code)
+				{
+					_singleChoiceFieldsArtifactIds.Add(artifactId);
+				}
+				else if (fieldInfo.FieldType == FieldTypeHelper.FieldType.Text)
+				{
+					_longTextFieldArtifactIds.Add(artifactId);
+				}
 			}
+
 			_avfIds = _fieldArtifactIds.Select(artifactId => fieldsReferences[artifactId]).ToArray(); // need to make sure that this is in order
 
-			_exportJobInfo = _exporter.InitializeSearchExport(settings.SavedSearchArtifactId, _avfIds, startAt);
+			_exporter = new global::Relativity.Core.Api.Shared.Manager.Export.SavedSearchExporter
+			(
+					_baseContext,
+					new UserPermissionsMatrix(_baseContext),
+					global::Relativity.ArtifactType.Document,
+					IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER,
+					IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER,
+					global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
+			);
+			_exportJobInfo = _exporter.InitializeExport(_settings.SavedSearchArtifactId, _avfIds, startAt);
 			_retrievedDataCount = 0;
-			_helper = helper;
+		}
+
+		public bool HasDataToRetrieve
+		{
+			get
+			{
+				return TotalRecordsFound > _retrievedDataCount;
+			}
+		}
+
+		public int TotalRecordsFound
+		{
+			get
+			{
+				return (int)_exportJobInfo.RowCount;
+			}
 		}
 
 		public IDataReader GetDataReader()
 		{
 			if (_reader == null)
 			{
-				IEnumerable<FieldEntry> sources = _mappedFields.Select(map => map.SourceField);
-				_reader = new DocumentTransferDataReader(this, sources, _helper);
+				_reader = new DocumentTransferDataReader(this, _mappedFields, _baseContext);
 			}
 			return _reader;
 		}
@@ -75,47 +136,49 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			if (retrievedData != null)
 			{
 				int artifactType = (int)ArtifactType.Document;
-				foreach (var data in retrievedData)
+				foreach (object data in retrievedData)
 				{
 					ArtifactFieldDTO[] fields = new ArtifactFieldDTO[_avfIds.Length];
+
 					object[] fieldsValue = (object[])data;
+					int documentArtifactId = Convert.ToInt32(fieldsValue[_avfIds.Length]);
+
 					for (int index = 0; index < _avfIds.Length; index++)
 					{
+						int artifactId = _fieldArtifactIds[index];
+						object value = fieldsValue[index];
+
+						if (_multipleObjectFieldArtifactIds.Contains(artifactId))
+						{
+							value = ExportApiDataHelper.SanitizeMultiObjectField(value);
+						}
+						else if (_singleChoiceFieldsArtifactIds.Contains(artifactId))
+						{
+							value = ExportApiDataHelper.SanitizeSingleChoiceField(value);
+						}
+						// export api will return a string constant represent the state of the string of which is too big. We will have to go and read this our self.
+						else if (_longTextFieldArtifactIds.Contains(artifactId)
+							&& global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN.Equals(value))
+						{
+							ExportApiDataHelper.RelativityLongTextStreamFactory factory = new ExportApiDataHelper.RelativityLongTextStreamFactory(_baseContext,
+								_dataGridContext,
+								documentArtifactId,
+								_settings.SourceWorkspaceArtifactId,
+								artifactId);
+							value = ExportApiDataHelper.RetrieveLongTextFieldAsync(factory).ConfigureAwait(false).GetAwaiter().GetResult();
+						}
+
 						fields[index] = new ArtifactFieldDTO()
 						{
 							Name = _exportJobInfo.ColumnNames[index],
-							ArtifactId = _fieldArtifactIds[index],
-							Value = fieldsValue[index]
+							ArtifactId = artifactId,
+							Value = value
 						};
 					}
-					result.Add(new ArtifactDTO(Convert.ToInt32(fieldsValue[_avfIds.Length]), artifactType, fields));
+					result.Add(new ArtifactDTO(documentArtifactId, artifactType, fields));
 				}
 			}
 			return result.ToArray();
-		}
-
-		public bool HasDataToRetrieve
-		{
-			get
-			{
-				return TotalRecordsToImport > _retrievedDataCount;
-			}
-		}
-
-		public int TotalRecordsToImport
-		{
-			get
-			{
-				return TotalRecordsFound;
-			}
-		}
-
-		public int TotalRecordsFound
-		{
-			get
-			{
-				return (int)_exportJobInfo.RowCount;
-			}
 		}
 	}
 }

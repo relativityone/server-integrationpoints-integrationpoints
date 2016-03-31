@@ -469,6 +469,7 @@ var IP = IP || {};
 		});
 
 		this.SelectedOverwrite = settings.selectedOverwrite;
+		this.FieldOverlayBehavior = settings.FieldOverlayBehavior;
 		this.CustodianManagerFieldContainsLink = JSON.parse(settings.destination || "{}").CustodianManagerFieldContainsLink;
 		this.UseFolderPathInformation = JSON.parse(settings.destination || "{}").UseFolderPathInformation;
 		this.FolderPathSourceField = JSON.parse(settings.destination || "{}").FolderPathSourceField;

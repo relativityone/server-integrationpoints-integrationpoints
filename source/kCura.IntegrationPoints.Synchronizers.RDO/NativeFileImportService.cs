@@ -9,7 +9,7 @@
 		public NativeFileImportService()
 		{
 			ImportNativeFiles = false;
-			DestinationFieldName = "NATIVE_FILE_PATH_001";
+			DestinationFieldName = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME;
 		}
 	}
 }

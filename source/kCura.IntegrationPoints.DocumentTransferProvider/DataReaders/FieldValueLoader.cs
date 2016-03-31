@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.DocumentTransferProvider.Managers;
+using kCura.IntegrationPoints.Data.Managers;
 using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders

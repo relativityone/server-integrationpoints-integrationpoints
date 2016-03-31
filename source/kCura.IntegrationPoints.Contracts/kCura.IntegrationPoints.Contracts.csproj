@@ -64,6 +64,9 @@
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.EDDS.DocumentCompareGateway">
+      <HintPath>..\Dependencies\kCura\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client">
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
     </Reference>
@@ -83,7 +86,7 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssmblyExtension.cs" />
+    <Compile Include="AssemblyExtension.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DataSourceProviderAttribute.cs" />
     <Compile Include="DefaultProviderFactory.cs" />

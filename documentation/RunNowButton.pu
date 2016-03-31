@@ -1,0 +1,17 @@
+@startuml
+
+title "Run Now" Button clicked.
+
+(*) -->[ Recieve Payload - Payload { WorkspaceId, IntegrationPoint ArtifactId }] "Get Integration point RDO"
+--> "Create Job History"
+--> "Get Source Provider"
+if "Source Provider is Relativity Provider" then
+	--> [true] "Create ExportService Job"
+	--> "Return HTTP Response(OK)"
+else
+	--> [false] "Create SyncManager Job"
+	--> "Return HTTP Response(OK)"
+endif
+--> (*)
+
+@enduml

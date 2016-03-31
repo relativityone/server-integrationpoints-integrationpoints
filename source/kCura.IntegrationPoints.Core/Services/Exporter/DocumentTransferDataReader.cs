@@ -4,31 +4,42 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Readers;
-using kCura.IntegrationPoints.Data.Queries;
-using FieldType = kCura.IntegrationPoints.Contracts.Models.FieldType;
+using Relativity.Core;
+using Relativity.Core.DTO;
+using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class DocumentTransferDataReader : RelativityReaderBase
 	{
-		private readonly IExporterService _relativityExporterService;
-		private Dictionary<int, string> _nativeFileLocation;
-		private readonly DirectSqlCallHelper _sqlHelper;
+		public const int FETCH_ARTIFACTDTOS_BATCH_SIZE = 50;
+		private static string Separator = ",";
 
-		public DocumentTransferDataReader(
-			IExporterService relativityExportService,
-			IEnumerable<FieldEntry> fieldEntries,
-			DirectSqlCallHelper helper) :
-			base(GenerateDataColumnsFromFieldEntries(fieldEntries))
+		private readonly IExporterService _relativityExporterService;
+		private readonly Dictionary<int, File> _files;
+		private readonly ICoreContext _context;
+		private readonly int _folderPathFieldSourceArtifactId;
+
+		/// used as a flag to store the reference of the current artifacts array.
+		private object _readingArtifactIdsReference;
+
+		public DocumentTransferDataReader(IExporterService relativityExportService,FieldMap[] fieldMappings,
+			ICoreContext context) : base(GenerateDataColumnsFromFieldEntries(fieldMappings))
 		{
+			_context = context;
 			_relativityExporterService = relativityExportService;
-			_nativeFileLocation = _nativeFileLocation ?? new Dictionary<int, string>();
-			_sqlHelper = helper;
+			_files = new Dictionary<int, File>();
+
+			FieldMap folderPathInformationField = fieldMappings.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
+			if (folderPathInformationField != null)
+			{
+				_folderPathFieldSourceArtifactId = Int32.Parse(folderPathInformationField.SourceField.FieldIdentifier);
+			}
 		}
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
-			return _relativityExporterService.RetrieveData(50);
+			return _relativityExporterService.RetrieveData(FETCH_ARTIFACTDTOS_BATCH_SIZE);
 		}
 
 		protected override bool AllArtifactsFetched()
@@ -36,16 +47,40 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			return _relativityExporterService.HasDataToRetrieve == false;
 		}
 
-		private static DataColumn[] GenerateDataColumnsFromFieldEntries(IEnumerable<FieldEntry> fieldEntries)
+		private static DataColumn[] GenerateDataColumnsFromFieldEntries(FieldMap[] mappingFields)
 		{
+			List<FieldEntry> fields = mappingFields.Select(field => field.SourceField).ToList();
+
 			// we will always import this native file location
-			List<FieldEntry> fields = fieldEntries.ToList();
 			fields.Add(new FieldEntry()
 			{
-				DisplayName = "NATIVE_FILE_LOCATION_01",
-				FieldIdentifier = kCura.IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
+				DisplayName = IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME,
+				FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
 				FieldType = FieldType.String
 			});
+			fields.Add(new FieldEntry
+			{
+				DisplayName = IntegrationPoints.Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME,
+				FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_FILE_NAME_FIELD,
+				FieldType = FieldType.String
+			});
+
+			// in case we found folder path info
+			FieldMap folderPathInformationField = mappingFields.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
+			if (folderPathInformationField != null)
+			{
+				if (folderPathInformationField.DestinationField.FieldIdentifier == null)
+				{
+					fields.Remove(folderPathInformationField.SourceField);
+				}
+
+				fields.Add(new FieldEntry()
+				{
+					DisplayName = IntegrationPoints.Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME,
+					FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_FOLDERPATH_FIELD,
+					FieldType = FieldType.String
+				});
+			}
 
 			return fields.Select(x => new DataColumn(x.FieldIdentifier)).ToArray();
 		}
@@ -79,13 +114,40 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			{
 				result = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId).Value;
 			}
-			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)
+			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_FOLDERPATH_FIELD)
 			{
-				if (_nativeFileLocation.ContainsKey(CurrentArtifact.ArtifactId) == false)
+				result = CurrentArtifact.GetFieldForIdentifier(_folderPathFieldSourceArtifactId).Value;
+			}
+			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD || fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_FILE_NAME_FIELD)
+			{
+				// we will have to go and get native file locations when the reader fetch a new collection of documents.
+				if (_readingArtifactIdsReference != ReadingArtifactIDs)
 				{
-					_nativeFileLocation = _sqlHelper.GetFileLocation(ReadingArtifactIDs);
+					_readingArtifactIdsReference = ReadingArtifactIDs;
+					string documentArtifactIds = String.Join(Separator, ReadingArtifactIDs);
+					kCura.Data.DataView dataView = FileQuery.RetrieveNativesForDocuments(_context, documentArtifactIds);
+
+					for (int index = 0; index < dataView.Table.Rows.Count; index++)
+					{
+						DataRow row = dataView.Table.Rows[index];
+						File file = new File(row);
+						_files.Add(file.DocumentArtifactID, file);
+					}
 				}
-				result = _nativeFileLocation[CurrentArtifact.ArtifactId];
+
+				if (_files.ContainsKey(CurrentArtifact.ArtifactId))
+				{
+					File file = _files[CurrentArtifact.ArtifactId];
+
+					if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)
+					{
+						result = file.Location;
+					}
+					else
+					{
+						result = file.Filename;
+					}
+				}
 			}
 			return result;
 		}
