@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class ImportNowController : ApiController
 	{
-		private const string NO_PERMISSION_TO_IMPORT = "You do not have permissions to the workspace that you are pushing documents to. Please contact your system administrator.";
+		private const string NO_PERMISSION_TO_IMPORT = "You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.";
 		private readonly IJobManager _jobManager;
 		private readonly IPermissionService _permissionService;
 		private readonly IIntegrationPointRdoAdaptor _rdoDependenciesAdaptor;
