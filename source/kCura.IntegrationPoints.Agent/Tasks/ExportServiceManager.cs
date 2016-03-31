@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
@@ -67,7 +68,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 
-				synchronizer.SyncData(exporter.GetDataReader(), MappedFields, destinationConfig);
+				IDataReader exporterReader = exporter.GetDataReader();
+				synchronizer.SyncData(exporterReader, MappedFields, destinationConfig);
 			}
 			catch (Exception ex)
 			{
