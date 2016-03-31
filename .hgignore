@@ -66,3 +66,4 @@ version.txt
 DevelopmentScripts/NUnit*
 BuildLogs
 PDBs
+Applications/*.nuspec
