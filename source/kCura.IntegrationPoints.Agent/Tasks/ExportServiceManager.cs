@@ -67,7 +67,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 
-				synchronizer.SyncData(exporter.GetDataReader(), MappedFields, destinationConfig);
+				TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+				string jobDetails = taskParameters.BatchInstance.ToString();
+
+				_jobHistoryErrorService.SetTableSuffix(jobDetails);
+				synchronizer.SyncData(exporter.GetDataReader(jobDetails), MappedFields, destinationConfig);
 			}
 			catch (Exception ex)
 			{
