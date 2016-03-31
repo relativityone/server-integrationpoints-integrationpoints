@@ -41,7 +41,10 @@
 						"artifactId": artifactId
 					})
 				});
-				ajax.then(function () {
+				ajax.fail(function (value) {
+					IP.message.error.raise("Failed to submit integration job. " + value.responseText, $(".cardContainer"));
+				})
+				ajax.done(function () {
 					IP.message.info.raise("Data will now be imported from the source provider.", $(".cardContainer"));
 				});
 			}

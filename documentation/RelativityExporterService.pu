@@ -1,0 +1,17 @@
+@startuml
+
+title RelativityExporterService
+
+(*) -->[ Recieve { mappedFields, config }] "Initialize DataGrid Context"
+--> "Deserialize Export Setting"
+--> "Create BaseServiceContext from the source workspace id"
+if "Source Provider is Relativity Provider" then
+	--> [true] "Create ExportService Job"
+	--> "Return HTTP Response(OK)"
+else
+	--> [false] "Create SyncManager Job"
+	--> "Return HTTP Response(OK)"
+endif
+--> (*)
+
+@enduml
