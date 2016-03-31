@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 using Relativity.Core;
 
 namespace kCura.IntegrationPoints.Data.Tests.Unit
@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		private string _tableName = "Temp_Doc_Table";
 		private string _tableSuffix = "12345-6789";
 		private ICoreContext _context;
-		private ICaseServiceContext _caseContext;
+		private IDBContext _caseContext;
 
 		private ITempDocumentFactory _factory;
 		private ITempDocTableHelper _instanceForCreation;
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		public void SetUp()
 		{
 			_context = Substitute.For<ICoreContext>();
-			_caseContext = Substitute.For<ICaseServiceContext>();
+			_caseContext = Substitute.For<IDBContext>();
 
 			_factory = new TempDocumentFactory();
 			_instanceForCreation = _factory.GetTableCreationHelper(_context, _tableName, _tableSuffix);
@@ -63,13 +63,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			string sqlDelete = String.Format(@"DELETE FROM EDDSRESOURCE..[{0}] WHERE [ArtifactID] = {1}", _tableName+ "_" +_tableSuffix, docArtifactId);
 			string sqlGetId = String.Format(@"Select [ArtifactId] FROM [Document] WHERE [ControlNumber] = '{0}'", docIdentifier);
 
-			_caseContext.SqlContext.ExecuteSqlStatementAsScalar<int>(sqlGetId).Returns(docArtifactId);
+			_caseContext.ExecuteSqlStatementAsScalar<int>(sqlGetId).Returns(docArtifactId);
 
 			//Act
 			_instanceForDeletion.RemoveErrorDocument(docIdentifier, _tableSuffix);
 
 			//Assert
-			_caseContext.SqlContext.Received().ExecuteNonQuerySQLStatement(sqlDelete);
+			_caseContext.Received().ExecuteNonQuerySQLStatement(sqlDelete);
 		}
 		
 	}

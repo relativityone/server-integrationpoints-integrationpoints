@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using Relativity.API;
 using Relativity.Core;
 
 
@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Data
 	public class TempDocTableHelper : ITempDocTableHelper
 	{
 		private readonly ICoreContext _context;
-		private readonly ICaseServiceContext _caseContext;
+		private readonly IDBContext _caseContext;
 		private readonly string _tableName;
 
 		public TempDocTableHelper(ICoreContext context, string tableName)
@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Data
 			_tableName = tableName;
 		}
 
-		public TempDocTableHelper(ICaseServiceContext caseContext, string tableName)
+		public TempDocTableHelper(IDBContext caseContext, string tableName)
 		{
 			_caseContext = caseContext;
 			_tableName = tableName;
@@ -45,14 +45,14 @@ namespace kCura.IntegrationPoints.Data
 			string fullTableName = _tableName + "_" + tableSuffix;
 			string sql = String.Format(@"DELETE FROM EDDSRESOURCE..[{0}] WHERE [ArtifactID] = {1}", fullTableName, docId);
 
-			_caseContext.SqlContext.ExecuteNonQuerySQLStatement(sql);
+			_caseContext.ExecuteNonQuerySQLStatement(sql);
 		}
 
 		private int GetDocumentId(string controlNumber)
 		{
 			string sql = String.Format(@"Select [ArtifactId] FROM [Document] WHERE [ControlNumber] = '{0}'", controlNumber);
 
-			return _caseContext.SqlContext.ExecuteSqlStatementAsScalar<int>(sql);
+			return _caseContext.ExecuteSqlStatementAsScalar<int>(sql);
 		}
 	}
 }

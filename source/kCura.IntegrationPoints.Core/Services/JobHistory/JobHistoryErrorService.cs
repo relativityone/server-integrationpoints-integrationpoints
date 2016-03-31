@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobHistoryErrorList = new List<JobHistoryError>();
 			//todo: resolve TempDocumentFactory to make it unit testable 
 			_tempDocumentFactory = new TempDocumentFactory();
-			_tempDocHelper = _tempDocumentFactory.GetDeleteFromTableHelper(context,
+			_tempDocHelper = _tempDocumentFactory.GetDeleteFromTableHelper(context.SqlContext,
 				Constants.IntegrationPoints.Temporary_Document_Table_Name);
 		}
 
