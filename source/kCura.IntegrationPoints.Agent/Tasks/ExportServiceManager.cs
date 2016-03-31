@@ -143,6 +143,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					_jobHistoryErrorService.CommitErrors();
 				}
 			}
+
+			try
+			{
+				IntegrationPointDto.LastRuntimeUTC = DateTime.UtcNow;
+				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPointDto);
+			}
+			catch
+			{
+				// ignored
+			}
 		}
 
 		internal IDataSynchronizer GetRdoDestinationProvider(string configuration)
