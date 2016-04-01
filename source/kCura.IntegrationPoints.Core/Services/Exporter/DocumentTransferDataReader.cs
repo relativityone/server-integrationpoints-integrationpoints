@@ -133,7 +133,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			{
 				result = CurrentArtifact.GetFieldForIdentifier(_folderPathFieldSourceArtifactId).Value;
 			}
-			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD || fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_FILE_NAME_FIELD)
+			else
 			{
 				// we will have to go and get native file locations when the reader fetch a new collection of documents.
 				if (_readingArtifactIdsReference != ReadingArtifactIDs)
