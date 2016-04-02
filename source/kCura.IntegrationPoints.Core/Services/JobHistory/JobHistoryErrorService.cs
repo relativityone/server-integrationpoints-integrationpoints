@@ -14,19 +14,16 @@ namespace kCura.IntegrationPoints.Core.Services
 		private ICaseServiceContext _context;
 		private List<JobHistoryError> _jobHistoryErrorList;
 		private readonly ITempDocTableHelper _tempDocHelper;
-		private readonly ITempDocumentFactory _tempDocumentFactory;
-		private string _tableSuffix;
+		private bool _isRelProvider;
 
 		public JobHistoryErrorService(ICaseServiceContext context)
 		{
 			_context = context;
 			_jobHistoryErrorList = new List<JobHistoryError>();
 			//todo: resolve TempDocumentFactory to make it unit testable 
-			_tempDocumentFactory = new TempDocumentFactory();
-
 			if (_context != null)
 			{
-				_tempDocHelper = _tempDocumentFactory.GetDeleteFromTableHelper(_context.SqlContext,
+				_tempDocHelper = new TempDocumentFactory().GetDeleteFromTableHelper(_context.SqlContext,
 					Constants.IntegrationPoints.Temporary_Document_Table_Name);
 			}
 		}
@@ -81,9 +78,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			if (IntegrationPoint.LogErrors.GetValueOrDefault(false))
 			{
 				AddError(ErrorTypeChoices.JobHistoryErrorItem, documentIdentifier, errorMessage, errorMessage);
-				if (!String.IsNullOrEmpty(_tableSuffix)) //todo: maybe find a better way to check if it's our provider
+				if (_isRelProvider) //todo: find a better way to check if it's our provider
 				{
-					_tempDocHelper.RemoveErrorDocument(documentIdentifier, _tableSuffix);
+					_tempDocHelper.RemoveErrorDocument(documentIdentifier);
 				}
 			}
 		}
@@ -129,7 +126,8 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void SetTableSuffix(string suffix)
 		{
-			_tableSuffix = suffix;
+			_isRelProvider = true;
+			_tempDocHelper.SetTableSuffix(suffix);
 		}
 
 		private string GenerateErrorMessage(Exception ex)

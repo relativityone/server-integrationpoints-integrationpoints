@@ -34,8 +34,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_relativityExporterService = relativityExportService;
 			_files = new Dictionary<int, File>();
 			//todo: resolve TempDocumentFactory to make it unit testable 
-			_tempDocumentFactory = new TempDocumentFactory();
-			_tempDocHelper = _tempDocumentFactory.GetTableCreationHelper(context, Constants.IntegrationPoints.Temporary_Document_Table_Name, jobDetails);
+			_tempDocHelper = new TempDocumentFactory().GetTableCreationHelper(context, Constants.IntegrationPoints.Temporary_Document_Table_Name, jobDetails);
 
 			FieldMap folderPathInformationField = fieldMappings.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
 			if (folderPathInformationField != null)

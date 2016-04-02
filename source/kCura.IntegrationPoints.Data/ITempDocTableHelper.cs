@@ -18,7 +18,12 @@ namespace kCura.IntegrationPoints.Data
 		/// Removes document from the temporary table if it has errored out
 		/// </summary>
 		/// <param name="docIdentifier">The document (by Control Number) to remove</param>
-		/// <param name="tableSuffix">The suffix that makes the table unique</param>
-		void RemoveErrorDocument(string docIdentifier, string tableSuffix);
+		void RemoveErrorDocument(string docIdentifier);
+
+		/// <summary>
+		/// Sets the table suffix variable for deleting of an errored Document
+		/// </summary>
+		/// <param name="tableSuffix">The unique suffix to set</param>
+		void SetTableSuffix(string tableSuffix);
 	}
 }

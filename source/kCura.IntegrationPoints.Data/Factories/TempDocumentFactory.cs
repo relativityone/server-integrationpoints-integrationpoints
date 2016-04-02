@@ -7,8 +7,7 @@ namespace kCura.IntegrationPoints.Data.Factories
 	{
 		public ITempDocTableHelper GetTableCreationHelper(ICoreContext context, string tableName, string tableSuffix)
 		{
-			string table = tableName + "_" + tableSuffix;
-			return new TempDocTableHelper(context, table);
+			return new TempDocTableHelper(context, tableName, tableSuffix);
 		}
 
 		public ITempDocTableHelper GetDeleteFromTableHelper(IDBContext context, string tableName)

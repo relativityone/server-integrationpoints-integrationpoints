@@ -42,7 +42,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			artifactIds.Add(56789);
 			string artifactIdList = "(" + String.Join("),(", artifactIds.Select(x => x.ToString())) + ")";
 
-			string sql = String.Format(@"CREATE TABLE [EDDSRESOURCE]..[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED, [ID] [int] IDENTITY(1,1) NOT NULL)
+			string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
+											BEGIN 
+											CREATE TABLE [EDDSRESOURCE]..[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED, [ID] [int] IDENTITY(1,1) NOT NULL)
+											END
 									INSERT INTO [EDDSRESOURCE]..[{0}] ([ArtifactID]) VALUES {1}", _tableName + "_" + _tableSuffix, artifactIdList);
 
 			
@@ -66,7 +69,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_caseContext.ExecuteSqlStatementAsScalar<int>(sqlGetId).Returns(docArtifactId);
 
 			//Act
-			_instanceForDeletion.RemoveErrorDocument(docIdentifier, _tableSuffix);
+			_instanceForDeletion.SetTableSuffix(_tableSuffix);
+			_instanceForDeletion.RemoveErrorDocument(docIdentifier);
 
 			//Assert
 			_caseContext.Received().ExecuteNonQuerySQLStatement(sqlDelete);

@@ -68,11 +68,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 
-				TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-				string jobDetails = taskParameters.BatchInstance.ToString();
-
-				_jobHistoryErrorService.SetTableSuffix(jobDetails);
-				synchronizer.SyncData(exporter.GetDataReader(jobDetails), MappedFields, destinationConfig);
+				synchronizer.SyncData(exporter.GetDataReader(this._identifier.ToString()), MappedFields, destinationConfig);
 			}
 			catch (Exception ex)
 			{
@@ -82,6 +78,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				_jobHistoryErrorService.CommitErrors();
 				PostExecute(job);
+				//do the RSAPI stuff
 			}
 		}
 
@@ -113,6 +110,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			this.JobHistoryDto = _jobHistoryService.GetRdo(this._identifier);
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
 			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPointDto;
+			_jobHistoryErrorService.SetTableSuffix(this._identifier.ToString());
 
 			// Load Mapped Fields & Sanitize them
 			// #unbelievable
