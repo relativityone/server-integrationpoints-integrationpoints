@@ -46,21 +46,26 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return _api ?? (_api = _factory.GetImportAPI(settings));
 		}
 
-		private List<string> IgnoredList
+
+		private HashSet<string> _ignoredList;
+		private HashSet<string> IgnoredList
 		{
 			get
 			{
 				// fields don't have any space in between words 
-				var list = new List<string>
-			    {
-					"Is System Artifact",
-					"System Created By",
-					"System Created On",
-					"System Last Modified By",
-					"System Last Modified On",
-					"Artifact ID"
-			    };
-				return list;
+				if (_ignoredList == null)
+				{
+					_ignoredList = new HashSet<string>
+					{
+						"Is System Artifact",
+						"System Created By",
+						"System Created On",
+						"System Last Modified By",
+						"System Last Modified On",
+						"Artifact ID"
+					};
+				}
+				return _ignoredList;
 			}
 		}
 
@@ -94,7 +99,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 							result.Name += " [Object Identifier]";
 						}
 					}
-					yield return new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier, IsRequired = false };
+					yield return new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier, IsRequired = isIdentifier };
 				}
 			}
 		}
@@ -298,8 +303,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				settings.FolderPathSourceFieldName = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
 			}
 
-			// So that the destination workspace file icons correctly display, we give the import API the file name of the document
-			settings.FileNameColumn = Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME;
+			if (SourceProvider != null && SourceProvider.Config.AlwaysImportNativeFileNames)
+			{
+				// So that the destination workspace file icons correctly display, we give the import API the file name of the document
+				settings.FileNameColumn = Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME;
+			}
 
 			return settings;
 		}

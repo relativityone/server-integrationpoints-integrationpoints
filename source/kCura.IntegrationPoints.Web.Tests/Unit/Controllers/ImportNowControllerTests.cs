@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		[Test]
 		public void UserDoesNotHavePermissionToPushToTheDestinationWorkspace()
 		{
-			const string ExpectedErrorMessage = @"""You do not have permissions to the workspace that you are pushing documents to. Please contact your system administrator.""";
+			const string ExpectedErrorMessage = @"""You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.""";
 
 			_rdoAdaptor.SourceProviderIdentifier.Returns(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID);
 			_rdoAdaptor.SourceConfiguration.Returns("{TargetWorkspaceArtifactId : 123}");

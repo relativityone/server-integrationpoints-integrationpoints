@@ -30,6 +30,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 						Configuration = new SourceProviderConfiguration()
 						{
 							AlwaysImportNativeFiles = true,
+							AlwaysImportNativeFileNames = true,
 							CompatibleRdoTypes = new List<Guid>()
 							{
 								new Guid(DocumentTransferProvider.Shared.Constants.DOC_OBJ_GUID)
