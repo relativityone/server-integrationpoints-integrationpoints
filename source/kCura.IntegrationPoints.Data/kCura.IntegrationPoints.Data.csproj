@@ -93,14 +93,16 @@
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="ImportSettingVisibility.cs" />
-    <Compile Include="Managers\IDocumentRepository.cs" />
-    <Compile Include="Managers\IFieldRepository.cs" />
-    <Compile Include="Managers\Implementations\KeplerDocumentRepository.cs" />
-    <Compile Include="Managers\Implementations\KeplerFieldRepository.cs" />
+    <Compile Include="Repositories\IDocumentRepository.cs" />
+    <Compile Include="Repositories\IFieldRepository.cs" />
+    <Compile Include="Repositories\Implementations\KeplerDocumentRepository.cs" />
+    <Compile Include="Repositories\Implementations\KeplerFieldRepository.cs" />
     <Compile Include="Adaptors\Implementations\ObjectQueryManagerAdaptor.cs" />
-    <Compile Include="Managers\Implementations\RsapiSavedSearchRepository.cs" />
+    <Compile Include="Repositories\Implementations\RsapiSavedSearchRepository.cs" />
     <Compile Include="Adaptors\IObjectQueryManagerAdaptor.cs" />
-    <Compile Include="Managers\ISavedSearchRepository.cs" />
+    <Compile Include="Repositories\Implementations\RsapiSourceWorkspaceRepository.cs" />
+    <Compile Include="Repositories\IObjectTypeRepository.cs" />
+    <Compile Include="Repositories\ISavedSearchRepository.cs" />
     <Compile Include="Queries\GetSavedSearchesQuery.cs" />
     <Compile Include="Queries\GetWorkspacesQuery.cs" />
     <Compile Include="RelativityVersion.cs" />
@@ -144,6 +146,7 @@
     <Compile Include="RdoGetter.cs" />
     <Compile Include="RdoHelper.cs" />
     <Compile Include="RelativityRdoQuery.cs" />
+    <Compile Include="Repositories\ISourceWorkspaceRepository.cs" />
     <Compile Include="Resources\Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

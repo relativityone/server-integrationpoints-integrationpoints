@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Data.Managers;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders

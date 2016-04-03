@@ -2,6 +2,6 @@
 {
 	public interface ISourceWorkspaceManager
 	{
-		 
+		void InititializeWorkspace(int workspaceArtifactId);
 	}
 }

@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private static string Separator = ",";
 
 		private readonly IExporterService _relativityExporterService;
-		private readonly IFieldManager _fieldManager;
 		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
 		private readonly Dictionary<int, string> _nativeFileLocation;
 		private readonly ICoreContext _context;
@@ -28,8 +27,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private object _readingArtifactIdsReference;
 
 		public DocumentTransferDataReader(
+			int destinationWorkspaceArtifactId,
 			IExporterService relativityExportService,
-			IFieldManager fieldManager,
 			ISourceWorkspaceManager sourceWorkspaceManager,
 			FieldMap[] fieldMappings,
 			ICoreContext context) :
@@ -37,7 +36,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			_context = context;
 			_relativityExporterService = relativityExportService;
-			_fieldManager = fieldManager;
 			_sourceWorkspaceManager = sourceWorkspaceManager;
 			_nativeFileLocation = new Dictionary<int, string>();
 
@@ -46,6 +44,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			{
 				_folderPathFieldSourceArtifactId = Int32.Parse(folderPathInformationField.SourceField.FieldIdentifier);
 			}
+
+			// Validate that destination workspace has all object types and fields
+			_sourceWorkspaceManager.InititializeWorkspace(destinationWorkspaceArtifactId);	
 		}
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
