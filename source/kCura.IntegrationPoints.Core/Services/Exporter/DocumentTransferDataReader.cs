@@ -18,10 +18,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private static string Separator = ",";
 
 		private readonly IExporterService _relativityExporterService;
-		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
 		private readonly Dictionary<int, string> _nativeFileLocation;
 		private readonly ICoreContext _context;
-		private readonly SourceWorkspaceFieldMapDTO _sourceWorkspaceFieldMapDto;
+		private readonly SourceWorkspaceDTO _sourceWorkspaceDto;
 		private readonly int _folderPathFieldSourceArtifactId;
 
 		/// used as a flag to store the reference of the current artifacts array.
@@ -38,7 +37,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			_context = context;
 			_relativityExporterService = relativityExportService;
-			_sourceWorkspaceManager = sourceWorkspaceManager;
 			_nativeFileLocation = new Dictionary<int, string>();
 
 			FieldMap folderPathInformationField = fieldMappings.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
@@ -48,7 +46,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 
 			// Validate that destination workspace has all object types and fields
-			_sourceWorkspaceFieldMapDto = _sourceWorkspaceManager.InititializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
+			_sourceWorkspaceDto = sourceWorkspaceManager.InititializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
 		}
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
@@ -92,7 +90,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 			fields.Add(new FieldEntry()
 			{
-				DisplayName	= "Source Workspace",
+				DisplayName	= IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
 				FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD,
 				FieldType = FieldType.String
 			});
@@ -132,7 +130,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD)
 			{
 				// TODO: We should be using the artifact Id -- biedrzycki: April 4th, 2016
-				result = _sourceWorkspaceFieldMapDto.SourceWorkspaceDto.Name;
+				result = _sourceWorkspaceDto.Name;
 			}
 			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_FOLDERPATH_FIELD)
 			{

@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_sourceWorkspaceRepository = sourceWorkspaceRepository;
 		}
 
-		public SourceWorkspaceFieldMapDTO InititializeWorkspace(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
+		public SourceWorkspaceDTO InititializeWorkspace(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
 		{
 			int? sourceWorkspaceArtifactTypeId = _sourceWorkspaceRepository.RetrieveObjectTypeDescriptorArtifactTypeId(destinationWorkspaceArtifactId);
 			if (!sourceWorkspaceArtifactTypeId.HasValue)
@@ -27,14 +27,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				_sourceWorkspaceRepository.CreateObjectTypeFields(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);	
 			}
 
-			int sourceWorkspaceFieldOnDocument = -1;
 			try
 			{
-				sourceWorkspaceFieldOnDocument = _sourceWorkspaceRepository.GetSourceWorkspaceFieldOnDocument(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
+				_sourceWorkspaceRepository.GetSourceWorkspaceFieldOnDocument(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
 			}
 			catch
 			{
-				sourceWorkspaceFieldOnDocument = _sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
+				_sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
 			}
 
 			string destinationWorkspaceName = "THIS IS A TEST"; // TODO: get the workspace name
@@ -55,13 +54,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			// TODO: check if the workspace name has changed and update if so
 
-			var sourceWorkspaceFieldMap = new SourceWorkspaceFieldMapDTO()
-			{
-				SourceWorkspaceDto = sourceWorkspaceDto,
-				SourceWorkspaceDocumentFieldArtifactId = sourceWorkspaceFieldOnDocument
-			};
-
-			return sourceWorkspaceFieldMap;
+			return sourceWorkspaceDto;
 		}
 	}
 }
