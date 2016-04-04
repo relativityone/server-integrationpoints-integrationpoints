@@ -10,9 +10,9 @@ namespace kCura.IntegrationPoints.Data.Factories
 			return new TempDocTableHelper(context, tableName, tableSuffix);
 		}
 
-		public ITempDocTableHelper GetDeleteFromTableHelper(IDBContext context, string tableName)
+		public ITempDocTableHelper GetDocTableHelper(IDBContext context, string tableName, string tableSuffix = "")
 		{
-			return new TempDocTableHelper(context, tableName);
+			return new TempDocTableHelper(context, tableName, tableSuffix);
 		}
 	}
 }

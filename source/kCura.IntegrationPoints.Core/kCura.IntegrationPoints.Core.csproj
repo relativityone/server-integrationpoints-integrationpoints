@@ -150,6 +150,8 @@
     <Compile Include="Application.cs" />
     <Compile Include="BatchEmail.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Managers\Implementations\DestinationWorkspaceManager.cs" />
+    <Compile Include="Managers\IDestinationWorkspaceManager.cs" />
     <Compile Include="Installers\KeywordInstaller.cs" />
     <Compile Include="JobHistoryStatus.cs" />
     <Compile Include="IBatchStatus.cs" />

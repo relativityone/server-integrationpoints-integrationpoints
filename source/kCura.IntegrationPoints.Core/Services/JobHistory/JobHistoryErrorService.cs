@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			//todo: resolve TempDocumentFactory to make it unit testable 
 			if (_context != null)
 			{
-				_tempDocHelper = new TempDocumentFactory().GetDeleteFromTableHelper(_context.SqlContext,
+				_tempDocHelper = new TempDocumentFactory().GetDocTableHelper(_context.SqlContext,
 					Constants.IntegrationPoints.Temporary_Document_Table_Name);
 			}
 		}

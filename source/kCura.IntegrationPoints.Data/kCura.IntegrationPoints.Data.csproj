@@ -108,6 +108,8 @@
     <Compile Include="Managers\Implementations\KeplerFieldManager.cs" />
     <Compile Include="Managers\Implementations\RSAPISavedSearchManager.cs" />
     <Compile Include="Managers\ISavedSearchManager.cs" />
+    <Compile Include="Repositories\IDestinationWorkspaceRepository.cs" />
+    <Compile Include="Repositories\Implementations\DestinationWorkspaceRepository.cs" />
     <Compile Include="TempDocTableHelper.cs" />
     <Compile Include="Queries\GetSavedSearchesQuery.cs" />
     <Compile Include="Queries\GetWorkspacesQuery.cs" />

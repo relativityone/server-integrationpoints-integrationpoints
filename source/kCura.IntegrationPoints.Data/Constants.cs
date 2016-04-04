@@ -24,4 +24,22 @@
 	{
 		public const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
 	}
+
+	public static class DestinationWorkspaceObject
+	{
+		public const string OBJECT_TYPE_GUID = "3F45E490-B4CF-4C7D-8BB6-9CA891C0C198";
+		public const string DESTINATION_WORKSPACE_ARTIFACT_ID = "207E6836-2961-466B-A0D2-29974A4FAD36";
+		public const string DESTINATION_WORKSPACE_NAME = "348D7394-2658-4DA4-87D0-8183824ADF98";
+		public const string DESTINATION_WORKSPACE_DOCUMENTS = "94EE2BD7-76D5-4D17-99E2-04768CCE05E6";
+		public const string DESTINATION_WORKSPACE_INSTANCE_NAME = "155649C0-DB15-4EE7-B449-BFDF2A54B7B5";
+
+		public const int BATCH_SIZE = 1000; //todo: find a better place to put this, where it can be configured
+	}
+
+	public static class DestinationWorkspaceErrors
+	{
+		public const string UPDATE_ERROR = "Unable to update instance of Destination Workspace object";
+		public const string CREATE_ERROR = "Unable to create a new instance of Destination Workspace object";
+		public const string QUERY_ERROR = "Unable to query Destination Workspace RDO";
+	}
 }

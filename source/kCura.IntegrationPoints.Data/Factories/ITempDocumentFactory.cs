@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.Data.Factories
 	public interface ITempDocumentFactory
 	{
 		ITempDocTableHelper GetTableCreationHelper(ICoreContext context, string tableName, string tableSuffix);
-		ITempDocTableHelper GetDeleteFromTableHelper(IDBContext context, string tableName);
+		ITempDocTableHelper GetDocTableHelper(IDBContext context, string tableName, string tableSuffix = "");
 	}
 }
