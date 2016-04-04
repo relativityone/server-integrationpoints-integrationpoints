@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts;
@@ -9,16 +7,16 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Conversion;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.Conversion;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Export.FileObjects;
+using kCura.Relativity.Export.Process;
 using kCura.ScheduleQueue.Core;
+using Newtonsoft.Json;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -29,6 +27,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			: base(caseServiceContext, helper, dataProviderFactory, serializer, appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager, statuses, statisticsService)
 		{
 		}
+
 		internal override IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
 		{
 			Guid providerGuid = new Guid(destinationProviderRdo.Identifier);
@@ -39,7 +38,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 	    internal override void ExecuteImport(IEnumerable<FieldMap> fieldMap, string sourceConfiguration, string destinationConfiguration, List<string> entryIDs,
 	        SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
-	    {	        
-	    }
+		{
+			ExportUsingSavedSearchSettings sourceSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(sourceConfiguration);
+
+			ImportSettings destinationSettings = JsonConvert.DeserializeObject<ImportSettings>(destinationConfiguration);
+			
+			// User & Pwd will be removed as soos we replace code with ExportAPI
+			var exportFileSettings =  ExportFileDefBuilder.CreateDefSetup(sourceSettings.SavedSearchArtifactId, sourceSettings.SourceWorkspaceArtifactId,
+			    "Test1234!", "relativity.admin@kcura.com", destinationSettings.Fileshare, fieldMap.Select(item => int.Parse(item.SourceField.FieldIdentifier)).ToList(),
+				destinationSettings.ArtifactTypeId);
+
+			ExportSearchProcess exportProcess = new ExportSearchProcess();
+
+			exportProcess.ExportFile = exportFileSettings;
+			exportProcess.StartProcess();
+		}
 	}
 }

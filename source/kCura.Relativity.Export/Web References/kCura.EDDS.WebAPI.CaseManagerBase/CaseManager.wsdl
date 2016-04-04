@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://www.kCura.com/EDDS/CaseManager" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.kCura.com/EDDS/CaseManager" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://www.kCura.com/EDDS/CaseManager">
+      <s:element name="RetrieveAll">
+        <s:complexType />
+      </s:element>
+      <s:element name="RetrieveAllResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveAllResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveAllEnabled">
+        <s:complexType />
+      </s:element>
+      <s:element name="RetrieveAllEnabledResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveAllEnabledResult">
+              <s:complexType>
+                <s:sequence>
+                  <s:element ref="s:schema" />
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Create">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="caseInfo" type="tns:CaseInfo" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="CaseInfo">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="MatterArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="StatusCodeArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="EnableDataGrid" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="RootFolderID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="RootArtifactID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="DownloadHandlerURL" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="AsImportAllowed" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="ExportAllowed" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="DocumentPath" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CreateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CreateResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CreateCaseArtifact">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="caseInfo" type="tns:ExtendedCaseInfo" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ExtendedCaseInfo">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ArtifactID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="Name" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ClientArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="MatterArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ResourceGroupArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="StatusCodeArtifactID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="DownloadHandlerApplicationPath" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="DefaultFileLocationCodeArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="DefaultCacheLocationServerArtifactID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="DefaultFileLocationName" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="SqlFullTextLcid" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="ServerID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="MasterDBLocation" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="RootArtifactID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="RootFolderID" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="dtSearchIndexShare" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="SQLServerProductVersion" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Version" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="CreateCaseArtifactResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CreateCaseArtifactResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Delete">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="DeleteResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="DeleteResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Read">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ReadResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReadResult" type="tns:CaseInfo" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdatePostRestore">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="caseInfo" type="tns:ExtendedCaseInfo" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdatePostRestoreResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="RetrieveCaseDownloadURI">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseContextArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RetrieveCaseDownloadURIResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RetrieveCaseDownloadURIResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAllDocumentFolderPathsForCase">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="caseArtifactID" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAllDocumentFolderPathsForCaseResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAllDocumentFolderPathsForCaseResult" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetAllDocumentFolderPaths">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetAllDocumentFolderPathsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAllDocumentFolderPathsResult" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="RetrieveAllSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveAll" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveAllSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveAllResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveAllEnabledSoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveAllEnabled" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveAllEnabledSoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveAllEnabledResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapIn">
+    <wsdl:part name="parameters" element="tns:Create" />
+  </wsdl:message>
+  <wsdl:message name="CreateSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateResponse" />
+  </wsdl:message>
+  <wsdl:message name="CreateCaseArtifactSoapIn">
+    <wsdl:part name="parameters" element="tns:CreateCaseArtifact" />
+  </wsdl:message>
+  <wsdl:message name="CreateCaseArtifactSoapOut">
+    <wsdl:part name="parameters" element="tns:CreateCaseArtifactResponse" />
+  </wsdl:message>
+  <wsdl:message name="DeleteSoapIn">
+    <wsdl:part name="parameters" element="tns:Delete" />
+  </wsdl:message>
+  <wsdl:message name="DeleteSoapOut">
+    <wsdl:part name="parameters" element="tns:DeleteResponse" />
+  </wsdl:message>
+  <wsdl:message name="ReadSoapIn">
+    <wsdl:part name="parameters" element="tns:Read" />
+  </wsdl:message>
+  <wsdl:message name="ReadSoapOut">
+    <wsdl:part name="parameters" element="tns:ReadResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdatePostRestoreSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdatePostRestore" />
+  </wsdl:message>
+  <wsdl:message name="UpdatePostRestoreSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdatePostRestoreResponse" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveCaseDownloadURISoapIn">
+    <wsdl:part name="parameters" element="tns:RetrieveCaseDownloadURI" />
+  </wsdl:message>
+  <wsdl:message name="RetrieveCaseDownloadURISoapOut">
+    <wsdl:part name="parameters" element="tns:RetrieveCaseDownloadURIResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetAllDocumentFolderPathsForCaseSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAllDocumentFolderPathsForCase" />
+  </wsdl:message>
+  <wsdl:message name="GetAllDocumentFolderPathsForCaseSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAllDocumentFolderPathsForCaseResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetAllDocumentFolderPathsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAllDocumentFolderPaths" />
+  </wsdl:message>
+  <wsdl:message name="GetAllDocumentFolderPathsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAllDocumentFolderPathsResponse" />
+  </wsdl:message>
+  <wsdl:portType name="CaseManagerSoap">
+    <wsdl:operation name="RetrieveAll">
+      <wsdl:input message="tns:RetrieveAllSoapIn" />
+      <wsdl:output message="tns:RetrieveAllSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllEnabled">
+      <wsdl:input message="tns:RetrieveAllEnabledSoapIn" />
+      <wsdl:output message="tns:RetrieveAllEnabledSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <wsdl:input message="tns:CreateSoapIn" />
+      <wsdl:output message="tns:CreateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateCaseArtifact">
+      <wsdl:input message="tns:CreateCaseArtifactSoapIn" />
+      <wsdl:output message="tns:CreateCaseArtifactSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <wsdl:input message="tns:DeleteSoapIn" />
+      <wsdl:output message="tns:DeleteSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Read">
+      <wsdl:input message="tns:ReadSoapIn" />
+      <wsdl:output message="tns:ReadSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdatePostRestore">
+      <wsdl:input message="tns:UpdatePostRestoreSoapIn" />
+      <wsdl:output message="tns:UpdatePostRestoreSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveCaseDownloadURI">
+      <wsdl:input message="tns:RetrieveCaseDownloadURISoapIn" />
+      <wsdl:output message="tns:RetrieveCaseDownloadURISoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllDocumentFolderPathsForCase">
+      <wsdl:input message="tns:GetAllDocumentFolderPathsForCaseSoapIn" />
+      <wsdl:output message="tns:GetAllDocumentFolderPathsForCaseSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllDocumentFolderPaths">
+      <wsdl:input message="tns:GetAllDocumentFolderPathsSoapIn" />
+      <wsdl:output message="tns:GetAllDocumentFolderPathsSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="CaseManagerSoap" type="tns:CaseManagerSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RetrieveAll">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/RetrieveAll" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllEnabled">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/RetrieveAllEnabled" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/Create" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCaseArtifact">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/CreateCaseArtifact" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/Delete" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Read">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/Read" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdatePostRestore">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/UpdatePostRestore" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveCaseDownloadURI">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/RetrieveCaseDownloadURI" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllDocumentFolderPathsForCase">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/GetAllDocumentFolderPathsForCase" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllDocumentFolderPaths">
+      <soap:operation soapAction="http://www.kCura.com/EDDS/CaseManager/GetAllDocumentFolderPaths" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="CaseManagerSoap12" type="tns:CaseManagerSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RetrieveAll">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CaseManager/RetrieveAll" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveAllEnabled">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CaseManager/RetrieveAllEnabled" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Create">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CaseManager/Create" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CreateCaseArtifact">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CaseManager/CreateCaseArtifact" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Delete">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CaseManager/Delete" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Read">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CaseManager/Read" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdatePostRestore">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CaseManager/UpdatePostRestore" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RetrieveCaseDownloadURI">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CaseManager/RetrieveCaseDownloadURI" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllDocumentFolderPathsForCase">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CaseManager/GetAllDocumentFolderPathsForCase" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllDocumentFolderPaths">
+      <soap12:operation soapAction="http://www.kCura.com/EDDS/CaseManager/GetAllDocumentFolderPaths" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="CaseManager">
+    <wsdl:port name="CaseManagerSoap" binding="tns:CaseManagerSoap">
+      <soap:address location="http://localhost/RelativityWebApi/CaseManager.asmx" />
+    </wsdl:port>
+    <wsdl:port name="CaseManagerSoap12" binding="tns:CaseManagerSoap12">
+      <soap12:address location="http://localhost/RelativityWebApi/CaseManager.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

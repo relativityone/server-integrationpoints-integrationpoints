@@ -22,7 +22,10 @@ namespace kCura.IntegrationPoints.Web
 				if (sessionService == null)
 				{
 					sessionService = new SessionService();
-					HttpContext.Current.Session[SESSION_KEY] = sessionService;
+					if (sessionState != null)
+					{
+						HttpContext.Current.Session[SESSION_KEY] = sessionService;
+					}
 				}
 				return sessionService;
 			}

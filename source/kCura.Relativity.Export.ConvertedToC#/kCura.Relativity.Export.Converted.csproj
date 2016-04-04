@@ -298,9 +298,6 @@
     <Reference Include="kCura.Utility">
       <HintPath>..\Dependencies\kCura\kCura.Utility.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Windows.Process">
-      <HintPath>..\Dependencies\kCura\kCura.Windows.Process.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Relativity">
       <HintPath>..\Dependencies\kCura\Relativity.dll</HintPath>
@@ -380,12 +377,21 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="MyNamespaceSupportForCSharp.cs" />
+    <Compile Include="Process\Controller.cs" />
+    <Compile Include="Process\ErrorFileReader.cs" />
+    <Compile Include="Process\EventType.cs" />
     <Compile Include="Process\ExportSearchProcess.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Process\ExportStatistics.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Process\IRunable.cs" />
+    <Compile Include="Process\ProcessBase.cs" />
+    <Compile Include="Process\ProcessEvent.cs" />
+    <Compile Include="Process\ProcessEventType.cs" />
+    <Compile Include="Process\ProcessObserver.cs" />
+    <Compile Include="Process\ProcessProgressEvent.cs" />
     <Compile Include="Process\Statistics.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -399,6 +405,9 @@
     <Compile Include="Service\AuditManager.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Service\CaseManager.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Service\ExportManager.cs" />
     <Compile Include="Service\FieldManager.cs" />
     <Compile Include="Service\FieldQuery.cs" />
@@ -409,6 +418,10 @@
     <Compile Include="Service\SearchManager.cs">
       <SubType>code</SubType>
     </Compile>
+    <Compile Include="Service\UserManager.cs">
+      <SubType>code</SubType>
+    </Compile>
+    <Compile Include="Service\WebServiceExtensions.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Types\CoalescedTextViewField.cs" />
     <Compile Include="Types\DocumentField.cs">
@@ -431,6 +444,12 @@
     </Compile>
     <Compile Include="Utility.cs" />
     <Compile Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\Reference.cs">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\Reference.cs">
       <DependentUpon>Reference.map</DependentUpon>
       <SubType>code</SubType>
       <DesignTime>True</DesignTime>
@@ -471,6 +490,12 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\Reference.cs">
+      <DependentUpon>Reference.map</DependentUpon>
+      <SubType>code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -493,6 +518,15 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Web References\kCura.EDDS.WebAPI.AuditManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\CaseInfo.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\CaseManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\CaseManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.CaseManagerBase\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
@@ -544,12 +578,31 @@
     </None>
     <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.disco" />
     <None Include="Web References\kCura.EDDS.WebAPI.SearchManagerBase\SearchManager.wsdl" />
+    <None Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\UserManager.disco" />
+    <None Include="Web References\kCura.EDDS.WebAPI.UserManagerBase\UserManager.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <WebReferenceUrl Include="http://localhost/RelativityWebApi/AuditManager.asmx">
       <RelPath>Web References\kCura.EDDS.WebAPI.AuditManagerBase\</RelPath>
       <UrlBehavior>Static</UrlBehavior>
       <UpdateFromURL>http://localhost/RelativityWebApi/AuditManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/CaseManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.CaseManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/CaseManager.asmx</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
       <CachedDynamicPropName>
@@ -635,6 +688,19 @@
       <CachedSettingsPropName>
       </CachedSettingsPropName>
     </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost/RelativityWebApi/UserManager.asmx">
+      <RelPath>Web References\kCura.EDDS.WebAPI.UserManagerBase\</RelPath>
+      <UrlBehavior>Static</UrlBehavior>
+      <UpdateFromURL>http://localhost/RelativityWebApi/UserManager.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>
+      </CachedAppSettingsObjectName>
+      <CachedSettingsPropName>
+      </CachedSettingsPropName>
+    </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References\" />
@@ -668,4 +734,8 @@
     <Folder Include="SettingsFactories\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>mkdir  "$(SolutionDir)bin\$(Configuration)"
+$(SolutionDir)Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(SolutionDir)bin\$(Configuration)\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)bin\$(Configuration)\$(TargetName).pdb"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
