@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			: this(jobManager, permissionService, new IntegrationPointRdoInitializer(integrationPointService, caseServiceContext, jobHistoryService))
 		{ }
 
-		public ImportNowController(IJobManager jobManager,
+		internal ImportNowController(IJobManager jobManager,
 			IPermissionService permissionService,
 			IIntegrationPointRdoAdaptor rdoAdaptor)
 		{
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return Request.CreateResponse(HttpStatusCode.OK);
 		}
 
-		public class IntegrationPointRdoInitializer : IIntegrationPointRdoAdaptor
+		internal class IntegrationPointRdoInitializer : IIntegrationPointRdoAdaptor
 		{
 			private readonly IntegrationPointService _integrationPointService;
 			private readonly ICaseServiceContext _caseServiceContext;
@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			public string SourceConfiguration { get { return _sourceConfig; } }
 		}
 
-		public interface IIntegrationPointRdoAdaptor
+		internal interface IIntegrationPointRdoAdaptor
 		{
 			void Initialize(int relatedObjectArtifactId, Guid batchInstance);
 
@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			string SourceConfiguration { get; }
 		}
 
-		public class DestinationWorkspace
+		internal class DestinationWorkspace
 		{
 			public int TargetWorkspaceArtifactId;
 		}

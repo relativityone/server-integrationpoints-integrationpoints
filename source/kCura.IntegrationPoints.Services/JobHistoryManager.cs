@@ -35,11 +35,7 @@ namespace kCura.IntegrationPoints.Services
 
 		private JobHistorySummaryModel GetJobHistoryInternal(JobHistoryRequest request)
 		{
-			if (!String.Equals(request.SortDirection, _ASCENDING_SORT, StringComparison.OrdinalIgnoreCase)
-				&& !String.Equals(request.SortDirection, _DESCENDING_SORT, StringComparison.OrdinalIgnoreCase))
-			{
-				throw new Exception("Sort direction should be 'ASC' or 'DESC'");
-			}
+			string sortDirection = request.SortDescending ? _DESCENDING_SORT : _ASCENDING_SORT;
 			string sortColumn = GetSortColumn(request.SortColumnName);
 
 			IDBContext dbContext = Relativity.API.Services.Helper.GetDBContext(request.WorkspaceArtifactId);
@@ -50,7 +46,7 @@ namespace kCura.IntegrationPoints.Services
 			IAuthenticationMgr authenticationManager = Relativity.API.Services.Helper.GetAuthenticationManager();
 			IEnumerable<int> accessControlListIds = GetAccessControlListIds(dbContext, authenticationManager.UserInfo.ArtifactID);
 
-			using (SqlDataReader reader = GetJobHistoryReader(dbContext, sortColumn, request.SortDirection, accessControlListIds))
+			using (SqlDataReader reader = GetJobHistoryReader(dbContext, sortColumn, sortDirection, accessControlListIds))
 			{
 				JobHistoryModel[] jobHistories = GetJobHistories(reader, request.Page, request.PageSize);
 
@@ -96,6 +92,8 @@ namespace kCura.IntegrationPoints.Services
 		private IEnumerable<int> GetAccessControlListIds(IDBContext context, int userArtifactId)
 		{
 			List<int> accessControllListIds = new List<int>();
+			
+			
 
 			SqlParameter userArtifactIdParameter = new SqlParameter("@userArtifactId", userArtifactId);
 			string sql = @"SELECT DISTINCT(AccessControlListID) FROM [EDDSDBO].[GroupUser] as GU
@@ -132,7 +130,7 @@ namespace kCura.IntegrationPoints.Services
 			int start = (page - 1) * pageSize;
 			int end = start + pageSize;
 
-			List<JobHistoryModel> jobHistoryModels = new List<JobHistoryModel>();
+			var jobHistoryModels = new List<JobHistoryModel>();
 			int count = 0;
 			while (reader.Read())
 			{
@@ -140,9 +138,9 @@ namespace kCura.IntegrationPoints.Services
 				{
 					jobHistoryModels.Add(new JobHistoryModel()
 					{
-						Documents = reader.GetInt32(0),
-						Date = reader.GetDateTime(1),
-						WorkspaceName = reader.GetString(2)
+						ItemsImported = reader.GetInt32(0),
+						EndTimeUtc = reader.GetDateTime(1),
+						DestinationWorkspace = reader.GetString(2)
 					});
 				}
 				count++;

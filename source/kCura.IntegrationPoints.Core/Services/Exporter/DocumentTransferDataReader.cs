@@ -14,10 +14,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	public class DocumentTransferDataReader : RelativityReaderBase
 	{
 		public const int FETCH_ARTIFACTDTOS_BATCH_SIZE = 50;
-		private static string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
-		private static string _nativeFileNameColumn = "Filename";
-		private static string _nativeLocationColumn = "Location";
-		private static string Separator = ",";
+
+		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
+		private static readonly string _nativeFileNameColumn = "Filename";
+		private static readonly string _nativeLocationColumn = "Location";
+		private static readonly string _separator = ",";
 
 		private readonly IExporterService _relativityExporterService;
 		private readonly Dictionary<int, string> _nativeFileLocations;
@@ -138,7 +139,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				if (_readingArtifactIdsReference != ReadingArtifactIDs)
 				{
 					_readingArtifactIdsReference = ReadingArtifactIDs;
-					string documentArtifactIds = String.Join(Separator, ReadingArtifactIDs);
+					string documentArtifactIds = String.Join(_separator, ReadingArtifactIDs);
 					kCura.Data.DataView dataView = FileQuery.RetrieveNativesForDocuments(_context, documentArtifactIds);
 
 					for (int index = 0; index < dataView.Table.Rows.Count; index++)
