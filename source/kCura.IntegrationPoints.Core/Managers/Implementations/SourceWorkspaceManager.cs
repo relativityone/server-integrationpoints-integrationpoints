@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 
@@ -22,19 +21,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				sourceWorkspaceArtifactTypeId = _sourceWorkspaceRepository.CreateObjectType(destinationWorkspaceArtifactId);	
 			}
 
-			IDictionary<string, int> fieldNameToArtifactDictionary = null;
-			try
+			if (!_sourceWorkspaceRepository.ObjectTypeFieldExist(destinationWorkspaceArtifactId,
+				sourceWorkspaceArtifactTypeId.Value))
 			{
-				fieldNameToArtifactDictionary = _sourceWorkspaceRepository.GetObjectTypeFieldArtifactIds(destinationWorkspaceArtifactId,
-					sourceWorkspaceArtifactTypeId.Value);
-			}
-			catch
-			{
-				fieldNameToArtifactDictionary = _sourceWorkspaceRepository.CreateObjectTypeFields(destinationWorkspaceArtifactId,
-					sourceWorkspaceArtifactTypeId.Value);
+				_sourceWorkspaceRepository.CreateObjectTypeFields(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);	
 			}
 
-			int sourceWorkspaceFieldOnDocument = 0;
+			int sourceWorkspaceFieldOnDocument = -1;
 			try
 			{
 				sourceWorkspaceFieldOnDocument = _sourceWorkspaceRepository.GetSourceWorkspaceFieldOnDocument(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
@@ -44,21 +37,24 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				sourceWorkspaceFieldOnDocument = _sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
 			}
 
-			SourceWorkspaceDTO sourceWorkspaceDto = _sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId,
-				sourceWorkspaceArtifactId, fieldNameToArtifactDictionary);
-
+			string destinationWorkspaceName = "THIS IS A TEST"; // TODO: get the workspace name
+			SourceWorkspaceDTO sourceWorkspaceDto = _sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
 			if (sourceWorkspaceDto == null)
 			{
 				sourceWorkspaceDto = new SourceWorkspaceDTO()
 				{
 					ArtifactId = -1,
-					Name = "THIS IS A TEST",
-					SourceWorkspaceArtifactId = sourceWorkspaceArtifactId
+					Name = String.Format("{0} - {1}", destinationWorkspaceName, sourceWorkspaceArtifactId),
+					SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
+					SourceWorkspaceName = destinationWorkspaceName
 				};
-				int artifactId = _sourceWorkspaceRepository.Create(sourceWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value, sourceWorkspaceDto, fieldNameToArtifactDictionary);
+				int artifactId = _sourceWorkspaceRepository.Create(sourceWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value, sourceWorkspaceDto);
 
 				sourceWorkspaceDto.ArtifactId = artifactId;
 			}
+
+			// TODO: check if the workspace name has changed and update if so
+
 		}
 	}
 }

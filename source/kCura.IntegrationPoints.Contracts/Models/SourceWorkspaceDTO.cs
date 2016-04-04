@@ -9,5 +9,6 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		public int ArtifactId { get; set; } 
 		public string Name { get; set; }
 		public int SourceWorkspaceArtifactId { get; set; }
+		public string SourceWorkspaceName { get; set; }
 	}
 }

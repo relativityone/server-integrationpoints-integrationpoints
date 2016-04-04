@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return descriptorArtifactTypeId;
 		}
 
-		public IDictionary<string, int> GetObjectTypeFieldArtifactIds(int workspaceArtifactId, int sourceWorkspaceObjectTypeId)
+		public bool ObjectTypeFieldExist(int workspaceArtifactId, int sourceWorkspaceObjectTypeId)
 		{
 			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 
@@ -90,22 +90,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			// TODO: this cannot stay here...
 			IDictionary<string, int> fieldNametoIdDictionary =
 				resultSet.Results
-					//.Where(x => x.Artifact.ArtifactTypeID == sourceWorkspaceObjectTypeId)
 					.ToDictionary(x => x.Artifact.Name, y => y.Artifact.ArtifactID);
 			
 			// Validate that all fields exist
-			foreach (string expectedFieldName in fieldNames)
-			{
-				if (!fieldNametoIdDictionary.ContainsKey(expectedFieldName))
-				{
-					throw new Exception(String.Format("Source Workspace is missing the \"{0}\" field", expectedFieldName));
-				}
-			}
-
-			return fieldNametoIdDictionary;
+			return fieldNames.All(expectedFieldName => fieldNametoIdDictionary.ContainsKey(expectedFieldName));
 		}
 
-		public IDictionary<string, int> CreateObjectTypeFields(int workspaceArtifactId, int sourceWorkspaceObjectTypeId)
+		public void CreateObjectTypeFields(int workspaceArtifactId, int sourceWorkspaceObjectTypeId)
 		{
 			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			var objectType = new ObjectType() { DescriptorArtifactTypeID = sourceWorkspaceObjectTypeId };
@@ -153,10 +144,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				throw new Exception("Unable to create fields for the Source Workspace object type: " + fieldWriteResultSet.Message);
 			}
-
-			IDictionary<string, int> fieldNameToArtifactIdDictionary = this.GetObjectTypeFieldArtifactIds(workspaceArtifactId, sourceWorkspaceObjectTypeId);
-
-			return fieldNameToArtifactIdDictionary;
 		}
 
 		public int CreateSourceWorkspaceFieldOnDocument(int workspaceArtifactId, int sourceWorkspaceObjectTypeId)
@@ -214,17 +201,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return field.Artifact.ArtifactID;
 		}
 
-		public SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int workspaceArtifactId, int sourceWorkspaceArtifactId, int sourceWorkspaceArtifactTypeId, IDictionary<string, int> fieldNameToIdDictionary)
+		public SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int workspaceArtifactId, int sourceWorkspaceArtifactId, int sourceWorkspaceArtifactTypeId)
 		{
 			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
-			List<FieldValue> fields = fieldNameToIdDictionary.Values.Select(x => new FieldValue(x)).ToList();
-			var condition = new WholeNumberCondition()
-			{
-				ArtifactID = fieldNameToIdDictionary["Source Workspace Case Id"],
-				Operator = NumericConditionEnum.EqualTo,
-				Value = new List<int> { sourceWorkspaceArtifactId }
-			};
 
+			var condition = new WholeNumberCondition("Source Workspace Case Id", NumericConditionEnum.EqualTo, sourceWorkspaceArtifactId);
 			var query = new Query<RDO>()
 			{
 				ArtifactTypeID = sourceWorkspaceArtifactTypeId,
@@ -239,22 +220,34 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			var rdo = resultSet.Results.First();
-			var sourceWorkspaceDto = new SourceWorkspaceDTO()
-			{
-			};
-//			sourceWorkspaceDto.ArtifactId = rdo.Artifact.ArtifactID,
-//			sourceWorkspaceDto.Name = rdo.Artifact.Fields.Where(x => x.)
-			//resultSet.Results.First().Artifact
+			var sourceWorkspaceDto = new SourceWorkspaceDTO() { ArtifactId = rdo.Artifact.ArtifactID };
 
-			return null;
+			foreach (FieldValue fieldValue in rdo.Artifact.Fields)
+			{
+				if (fieldValue.Name == "Source Workspace Case Id")
+				{
+					sourceWorkspaceDto.SourceWorkspaceArtifactId = fieldValue.ValueAsWholeNumber.Value;
+				}
+				else if (fieldValue.Name == "Source Workspace Case Name")
+				{
+					sourceWorkspaceDto.SourceWorkspaceName = fieldValue.ValueAsFixedLengthText;
+				}
+				else if (fieldValue.Name == "Name")
+				{
+					sourceWorkspaceDto.Name = fieldValue.ValueAsFixedLengthText;
+				}
+			}
+
+			return sourceWorkspaceDto;
 		}
 
-		public int Create(int workspsaceArtifactId, int sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO sourceWorkspaceDto, IDictionary<string, int> fieldNameToIdDictionary)
+		public int Create(int workspsaceArtifactId, int sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO sourceWorkspaceDto)
 		{
 			var fields = new List<FieldValue>()
 			{
-				new FieldValue() { ArtifactID = fieldNameToIdDictionary["Source Workspace Case Id"], Value = sourceWorkspaceDto.SourceWorkspaceArtifactId},
-				new FieldValue() { ArtifactID = fieldNameToIdDictionary["Source Workspace Case Name"], Value = sourceWorkspaceDto.Name}
+				new FieldValue("Name", sourceWorkspaceDto.Name),
+				new FieldValue("Source Workspace Case Id", sourceWorkspaceDto.SourceWorkspaceArtifactId),
+				new FieldValue("Source Workspace Case Name", sourceWorkspaceDto.SourceWorkspaceName)
 			};
 			var rdo = new RDO()
 			{
