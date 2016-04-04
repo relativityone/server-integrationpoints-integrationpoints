@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public int? RetrieveObjectTypeDescriptorArtifactTypeId(int workspaceArtifactId)
 		{
 			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
-			var criteria = new TextCondition(ObjectTypeFieldNames.Name, TextConditionEnum.EqualTo, "Source Workspace");
+			var criteria = new TextCondition(ObjectTypeFieldNames.Name, TextConditionEnum.EqualTo, Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
 
 			Query<ObjectType> query = new Query<ObjectType>
 			{
@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			var objectType = new ObjectType(SourceWorkspaceDTO.ObjectTypeGuid)
 			{
-				Name = Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD,
+				Name = Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
 				ParentArtifactTypeID = 8,
 				CopyInstancesOnParentCopy = false,
 				CopyInstancesOnWorkspaceCreation = false,
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception("Unable to create new Source Workspce object type: " + resultSet.Message);	
 			}
 
-			// WTF HAVE I DONE
+			// We have to do this because the Descriptor Artifact Type Id isn't returned in the WriteResultSet :( -- biedrzycki: April 4th, 2016
 			int descriptorArtifactTypeId = this.RetrieveObjectTypeDescriptorArtifactTypeId(workspaceArtifactId).Value;
 
 			return descriptorArtifactTypeId;

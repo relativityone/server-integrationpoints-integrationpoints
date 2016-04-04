@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 
 			// Check to see if instance should be updated
-			if (sourceWorkspaceDto.Name != workspaceDto.Name)
+			if (sourceWorkspaceDto.SourceWorkspaceName != workspaceDto.Name)
 			{
 				sourceWorkspaceDto.Name = String.Format("{0} - {1}", workspaceDto.Name, sourceWorkspaceArtifactId);
 				sourceWorkspaceDto.SourceWorkspaceName = workspaceDto.Name;
