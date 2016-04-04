@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class RelativityExporterService : IExporterService
 	{
+		private const string _REQUEST_ORIGINATION = "RequestOrigination";
 		private readonly int[] _avfIds;
 		private readonly BaseServiceContext _baseContext;
 		private readonly DataGridContext _dataGridContext;
@@ -62,10 +64,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			_dataGridContext = new DataGridContext(true);
 			_settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
-			_baseContext = ClaimsPrincipal.Current.GetNewServiceContext(_settings.SourceWorkspaceArtifactId);
-
 			_mappedFields = mappedFields;
 			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
+
+			Identity id = ClaimsPrincipal.Current.GetIdentity();
+			string xml = Utility.XmlHelper.GenerateAuditElement(_REQUEST_ORIGINATION, new Hashtable());
+			_baseContext = new global::Relativity.Core.ServiceContext(id, xml, _settings.SourceWorkspaceArtifactId, false);
 
 			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int)ArtifactType.Document);
 			Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
