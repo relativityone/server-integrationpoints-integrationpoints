@@ -14,10 +14,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	public class DocumentTransferDataReader : RelativityReaderBase
 	{
 		public const int FETCH_ARTIFACTDTOS_BATCH_SIZE = 50;
-		private static string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
-		private static string _nativeFileNameColumn = "Filename";
-		private static string _nativeLocationColumn = "Location";
-		private static string Separator = ",";
+		private const string _NATIVE_DOCUMENT_ARTIFACT_ID_COLUMN = "DocumentArtifactID";
+		private const string _NATIVE_FILE_NAME_COLUMN = "Filename";
+		private const string _NATIVE_LOCATION_COLUMN = "Location";
+		private const string _SEPARATOR = ",";
 
 		private readonly IExporterService _relativityExporterService;
 		private readonly Dictionary<int, string> _nativeFileLocations;
@@ -138,15 +138,15 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				if (_readingArtifactIdsReference != ReadingArtifactIDs)
 				{
 					_readingArtifactIdsReference = ReadingArtifactIDs;
-					string documentArtifactIds = String.Join(Separator, ReadingArtifactIDs);
+					string documentArtifactIds = String.Join(_SEPARATOR, ReadingArtifactIDs);
 					kCura.Data.DataView dataView = FileQuery.RetrieveNativesForDocuments(_context, documentArtifactIds);
 
 					for (int index = 0; index < dataView.Table.Rows.Count; index++)
 					{
 						DataRow row = dataView.Table.Rows[index];
-						int nativeDocumentArtifactID = (int) row[_nativeDocumentArtifactIdColumn];
-						string nativeFileLocation = (string) row[_nativeLocationColumn];
-						string nativeFileName = (string) row[_nativeFileNameColumn];
+						int nativeDocumentArtifactID = (int) row[_NATIVE_DOCUMENT_ARTIFACT_ID_COLUMN];
+						string nativeFileLocation = (string) row[_NATIVE_LOCATION_COLUMN];
+						string nativeFileName = (string) row[_NATIVE_FILE_NAME_COLUMN];
 						_nativeFileLocations.Add(nativeDocumentArtifactID, nativeFileLocation);
 						_nativeFileNames.Add(nativeDocumentArtifactID, nativeFileName);
 					}
