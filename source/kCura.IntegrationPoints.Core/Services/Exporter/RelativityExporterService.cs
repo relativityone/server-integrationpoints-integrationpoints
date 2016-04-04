@@ -67,9 +67,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_mappedFields = mappedFields;
 			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
 
-			Identity id = ClaimsPrincipal.Current.GetIdentity();
-			string xml = Utility.XmlHelper.GenerateAuditElement(_REQUEST_ORIGINATION, new Hashtable());
-			_baseContext = new global::Relativity.Core.ServiceContext(id, xml, _settings.SourceWorkspaceArtifactId, false);
+			_baseContext = ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(_settings.SourceWorkspaceArtifactId);
 
 			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int)ArtifactType.Document);
 			Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
