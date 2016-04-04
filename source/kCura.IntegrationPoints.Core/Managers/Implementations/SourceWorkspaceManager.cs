@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public SourceWorkspaceDTO InititializeWorkspace(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
 		{
+			// Create object type if it does not exist
 			int? sourceWorkspaceArtifactTypeId = _sourceWorkspaceRepository.RetrieveObjectTypeDescriptorArtifactTypeId(destinationWorkspaceArtifactId);
 			if (!sourceWorkspaceArtifactTypeId.HasValue)
 			{
@@ -29,6 +30,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				_sourceWorkspaceRepository.CreateObjectTypeFields(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);	
 			}
 
+			// Create fields if they do not exist
 			try
 			{
 				_sourceWorkspaceRepository.GetSourceWorkspaceFieldOnDocument(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
@@ -38,7 +40,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				_sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
 			}
 
-			WorkspaceDTO workspaceDto = _workspaceRepository.Retrieve(destinationWorkspaceArtifactId);
+			// Get or create instance of Source Workspace object
+			WorkspaceDTO workspaceDto = _workspaceRepository.Retrieve(sourceWorkspaceArtifactId);
 			SourceWorkspaceDTO sourceWorkspaceDto = _sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
 			if (sourceWorkspaceDto == null)
 			{
@@ -54,7 +57,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				sourceWorkspaceDto.ArtifactId = artifactId;
 			}
 
-			// TODO: check if the workspace name has changed and update if so
+			// Check to see if instance should be updated
+			if (sourceWorkspaceDto.Name != workspaceDto.Name)
+			{
+				sourceWorkspaceDto.Name = String.Format("{0} - {1}", workspaceDto.Name, sourceWorkspaceArtifactId);
+				sourceWorkspaceDto.SourceWorkspaceName = workspaceDto.Name;
+				_sourceWorkspaceRepository.Update(destinationWorkspaceArtifactId, sourceWorkspaceDto);
+			}
 
 			return sourceWorkspaceDto;
 		}

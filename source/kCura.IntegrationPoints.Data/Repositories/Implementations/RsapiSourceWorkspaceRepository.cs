@@ -242,7 +242,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return sourceWorkspaceDto;
 		}
 
-		public int Create(int workspsaceArtifactId, int sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO sourceWorkspaceDto)
+		public int Create(int workspaceArtifactId, int sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO sourceWorkspaceDto)
 		{
 			var fields = new List<FieldValue>()
 			{
@@ -265,6 +265,30 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			catch
 			{
 				throw new Exception("Unable to create new instance Source Workspace");
+			}
+		}
+
+		public void Update(int workspaceArtifactId, SourceWorkspaceDTO sourceWorkspaceDto)
+		{
+			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
+			var fields = new List<FieldValue>()
+			{
+				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME, sourceWorkspaceDto.Name, true),
+				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, sourceWorkspaceDto.SourceWorkspaceName, true),
+			};
+			var rdo = new RDO()
+			{
+				ArtifactTypeID = workspaceArtifactId,
+				Fields = fields
+			};
+
+			try
+			{
+				_rsapiClient.Repositories.RDO.UpdateSingle(rdo);
+			}
+			catch
+			{
+				throw new Exception("Unable to update Source Workspace instance");
 			}
 		}
 	}
