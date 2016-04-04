@@ -70,6 +70,12 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME] = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD;
 				_sourceIdentifierToTargetName[Contracts.Constants.SPECIAL_FOLDERPATH_FIELD] = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
 			}
+
+			if (columns.Contains(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD))
+			{
+				_targetNameToSourceIdentifier["Source Workspace"] = Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD;
+				_sourceIdentifierToTargetName[Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD] = "Source Workspace";
+			}
 		}
 
 		public object this[string name]

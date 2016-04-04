@@ -101,6 +101,7 @@
     <Compile Include="Models\FieldEntry.cs" />
     <Compile Include="Models\ObjectTypeDTO.cs" />
     <Compile Include="Models\SourceWorkspaceDTO.cs" />
+    <Compile Include="Models\SourceWorkspaceFieldMapDTO.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

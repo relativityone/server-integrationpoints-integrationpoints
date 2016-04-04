@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_sourceWorkspaceRepository = sourceWorkspaceRepository;
 		}
 
-		public void InititializeWorkspace(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
+		public SourceWorkspaceFieldMapDTO InititializeWorkspace(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
 		{
 			int? sourceWorkspaceArtifactTypeId = _sourceWorkspaceRepository.RetrieveObjectTypeDescriptorArtifactTypeId(destinationWorkspaceArtifactId);
 			if (!sourceWorkspaceArtifactTypeId.HasValue)
@@ -55,6 +55,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			// TODO: check if the workspace name has changed and update if so
 
+			var sourceWorkspaceFieldMap = new SourceWorkspaceFieldMapDTO()
+			{
+				SourceWorkspaceDto = sourceWorkspaceDto,
+				SourceWorkspaceDocumentFieldArtifactId = sourceWorkspaceFieldOnDocument
+			};
+
+			return sourceWorkspaceFieldMap;
 		}
 	}
 }
