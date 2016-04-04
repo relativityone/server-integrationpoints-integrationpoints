@@ -7,10 +7,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	public class SourceWorkspaceManager : ISourceWorkspaceManager
 	{
 		private readonly ISourceWorkspaceRepository _sourceWorkspaceRepository;
+		private readonly IWorkspaceRepository _workspaceRepository;
 
-		public SourceWorkspaceManager(ISourceWorkspaceRepository sourceWorkspaceRepository)
+		public SourceWorkspaceManager(ISourceWorkspaceRepository sourceWorkspaceRepository, IWorkspaceRepository workspaceRepository)
 		{
 			_sourceWorkspaceRepository = sourceWorkspaceRepository;
+			_workspaceRepository = workspaceRepository;
 		}
 
 		public SourceWorkspaceDTO InititializeWorkspace(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
@@ -36,16 +38,16 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				_sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
 			}
 
-			string destinationWorkspaceName = "THIS IS A TEST"; // TODO: get the workspace name
+			WorkspaceDTO workspaceDto = _workspaceRepository.Retrieve(destinationWorkspaceArtifactId);
 			SourceWorkspaceDTO sourceWorkspaceDto = _sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
 			if (sourceWorkspaceDto == null)
 			{
 				sourceWorkspaceDto = new SourceWorkspaceDTO()
 				{
 					ArtifactId = -1,
-					Name = String.Format("{0} - {1}", destinationWorkspaceName, sourceWorkspaceArtifactId),
+					Name = String.Format("{0} - {1}", workspaceDto.Name, sourceWorkspaceArtifactId),
 					SourceWorkspaceArtifactId = sourceWorkspaceArtifactId,
-					SourceWorkspaceName = destinationWorkspaceName
+					SourceWorkspaceName = workspaceDto.Name
 				};
 				int artifactId = _sourceWorkspaceRepository.Create(sourceWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value, sourceWorkspaceDto);
 

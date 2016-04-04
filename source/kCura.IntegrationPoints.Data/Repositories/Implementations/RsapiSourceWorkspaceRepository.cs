@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 
-			string[] fieldNames = new string[] {Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME};
+			string[] fieldNames = new string[] { Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME };
 			var criteria = new TextCondition(FieldFieldNames.Name, TextConditionEnum.In, fieldNames);
 			var query = new Query<kCura.Relativity.Client.DTOs.Field> 
 			{

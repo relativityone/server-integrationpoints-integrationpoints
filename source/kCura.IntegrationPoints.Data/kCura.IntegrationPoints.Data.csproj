@@ -101,6 +101,7 @@
     <Compile Include="Repositories\Implementations\RsapiSavedSearchRepository.cs" />
     <Compile Include="Adaptors\IObjectQueryManagerAdaptor.cs" />
     <Compile Include="Repositories\Implementations\RsapiSourceWorkspaceRepository.cs" />
+    <Compile Include="Repositories\Implementations\RsapiWorkspaceRepository.cs" />
     <Compile Include="Repositories\IObjectTypeRepository.cs" />
     <Compile Include="Repositories\ISavedSearchRepository.cs" />
     <Compile Include="Queries\GetSavedSearchesQuery.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="RdoHelper.cs" />
     <Compile Include="RelativityRdoQuery.cs" />
     <Compile Include="Repositories\ISourceWorkspaceRepository.cs" />
+    <Compile Include="Repositories\IWorkspaceRepository.cs" />
     <Compile Include="Resources\Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
