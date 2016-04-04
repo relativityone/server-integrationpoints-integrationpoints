@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using FieldType = kCura.Relativity.Client.FieldType;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -158,14 +159,112 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return fieldNameToArtifactIdDictionary;
 		}
 
-		public SourceWorkspaceDTO Retrieve(int workspsaceArtifactId)
+		public int CreateSourceWorkspaceFieldOnDocument(int workspaceArtifactId, int sourceWorkspaceObjectTypeId)
 		{
+			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
+			var documentObjectType = new ObjectType() { DescriptorArtifactTypeID = 10 };
+			var sourceWorkspaceObjectType = new ObjectType() { DescriptorArtifactTypeID = sourceWorkspaceObjectTypeId };
+			var fields = new List<kCura.Relativity.Client.DTOs.Field>()
+			{
+				new kCura.Relativity.Client.DTOs.Field()
+				{
+					Name = "Source Workspace",
+					FieldTypeID = FieldType.MultipleObject,
+					ObjectType = documentObjectType,
+					AssociativeObjectType = sourceWorkspaceObjectType,
+					AllowGroupBy = false,
+					AllowPivot = false,
+					AvailableInFieldTree = false,
+					IsRequired = false,
+					Width = "100"
+				}
+			};
+
+			WriteResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Create(fields);
+
+			var field = resultSet.Results.FirstOrDefault();
+			if (!resultSet.Success || field == null)
+			{
+				throw new Exception("Unable to create Source Workspace field on Document: " + resultSet.Message);
+			}
+
+			int newFieldArtifactId = field.Artifact.ArtifactID;
+
+			return newFieldArtifactId;
+		}
+
+		public int GetSourceWorkspaceFieldOnDocument(int workspaceArtifactId, int sourceWorkspaceObjectTypeId)
+		{
+			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
+			var criteria = new TextCondition(FieldFieldNames.Name, TextConditionEnum.EqualTo, "Source Workspace");
+			var query = new Query<kCura.Relativity.Client.DTOs.Field>
+			{
+				Fields = FieldValue.AllFields,
+				Condition = criteria,
+			};
+
+			QueryResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Query(query);
+
+			var field = resultSet.Results.FirstOrDefault();
+			if (!resultSet.Success || field == null)
+			{
+				throw new Exception("Unable to retrieve Document fields: " + resultSet.Message);
+			}
+
+			return field.Artifact.ArtifactID;
+		}
+
+		public SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int workspaceArtifactId, int sourceWorkspaceArtifactId, int sourceWorkspaceArtifactTypeId, IDictionary<string, int> fieldNameToIdDictionary)
+		{
+			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
+			List<FieldValue> fields = fieldNameToIdDictionary.Values.Select(x => new FieldValue(x)).ToList();
+			var condition = new WholeNumberCondition()
+			{
+				ArtifactID = fieldNameToIdDictionary["Source Workspace Case Id"],
+				Operator = NumericConditionEnum.EqualTo,
+				Value = new List<int> { sourceWorkspaceArtifactId }
+			};
+
+			var query = new Query<RDO>()
+			{
+				ArtifactTypeID = sourceWorkspaceArtifactTypeId,
+				Fields  = FieldValue.AllFields,
+				Condition = condition
+			};
+			QueryResultSet<RDO> resultSet = _rsapiClient.Repositories.RDO.Query(query);
+
+			if (!resultSet.Success || !resultSet.Results.Any())
+			{
+				return null;
+			}
+
+			var rdo = resultSet.Results.First();
+			var sourceWorkspaceDto = new SourceWorkspaceDTO()
+			{
+			};
+//			sourceWorkspaceDto.ArtifactId = rdo.Artifact.ArtifactID,
+//			sourceWorkspaceDto.Name = rdo.Artifact.Fields.Where(x => x.)
+			//resultSet.Results.First().Artifact
+
 			return null;
 		}
 
-		public int Create(int workspsaceArtifactId, SourceWorkspaceDTO sourceWorkspaceDto)
+		public int Create(int workspsaceArtifactId, int sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO sourceWorkspaceDto, IDictionary<string, int> fieldNameToIdDictionary)
 		{
-			return 0;
+			var fields = new List<FieldValue>()
+			{
+				new FieldValue() { ArtifactID = fieldNameToIdDictionary["Source Workspace Case Id"], Value = sourceWorkspaceDto.SourceWorkspaceArtifactId},
+				new FieldValue() { ArtifactID = fieldNameToIdDictionary["Source Workspace Case Name"], Value = sourceWorkspaceDto.Name}
+			};
+			var rdo = new RDO()
+			{
+				ArtifactTypeID = sourceWorkspaceArtifactTypeId,
+				Fields = fields
+			};
+
+			int rdoArtifactId = _rsapiClient.Repositories.RDO.CreateSingle(rdo);
+
+			return rdoArtifactId;
 		}
 	}
 }

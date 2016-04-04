@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			if (_reader == null)
 			{
-				_reader = new DocumentTransferDataReader(_settings.TargetWorkspaceArtifactId, this, _sourceWorkspaceManager, _mappedFields, _baseContext);
+				_reader = new DocumentTransferDataReader(_settings.SourceWorkspaceArtifactId, _settings.TargetWorkspaceArtifactId, this, _sourceWorkspaceManager, _mappedFields, _baseContext);
 			}
 			return _reader;
 		}

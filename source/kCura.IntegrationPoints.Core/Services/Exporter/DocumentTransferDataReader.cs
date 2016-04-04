@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private object _readingArtifactIdsReference;
 
 		public DocumentTransferDataReader(
+			int sourceWorkspaceArtifactId,
 			int destinationWorkspaceArtifactId,
 			IExporterService relativityExportService,
 			ISourceWorkspaceManager sourceWorkspaceManager,
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 
 			// Validate that destination workspace has all object types and fields
-			_sourceWorkspaceManager.InititializeWorkspace(destinationWorkspaceArtifactId);	
+			_sourceWorkspaceManager.InititializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);	
 		}
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
