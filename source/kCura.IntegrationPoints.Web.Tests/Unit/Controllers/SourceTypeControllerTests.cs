@@ -71,24 +71,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_instance.ControllerContext = new HttpControllerContext(config, routeData, request);
 			_instance.Request = request;
 			_instance.Request.Properties[HttpPropertyKeys.HttpConfigurationKey] = config;
-			
+
 		}
 
 
-		private class RSAPIRdoQueryTest : RSAPIRdoQuery
-		{
-			private readonly Dictionary<Guid, int> _rdosToTypeArtifactIdMap;
-			public RSAPIRdoQueryTest(IRSAPIClient client, Dictionary<Guid, int> RdosToTypeArtifactIdMap) 
-				: base(client)
-			{
-				_rdosToTypeArtifactIdMap = RdosToTypeArtifactIdMap;
-			}
-
-			public override Dictionary<Guid, int> GetRdoGuidToArtifactIdMap(int userId)
-			{
-				return _rdosToTypeArtifactIdMap;
-			}
-		}
 
 		[Test]
 		public void Get_GoldFlow()
@@ -287,7 +273,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 					ID = kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID,
 					ArtifactID = 123,
 					SourceURL = "url",
-					
+
 				}
 			};
 
@@ -343,4 +329,20 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 				response.Content.ReadAsStringAsync().Result);
 		}
 	}
+
+	public class RSAPIRdoQueryTest : RSAPIRdoQuery
+	{
+		private readonly Dictionary<Guid, int> _rdosToTypeArtifactIdMap;
+		public RSAPIRdoQueryTest(IRSAPIClient client, Dictionary<Guid, int> RdosToTypeArtifactIdMap)
+			: base(client)
+		{
+			_rdosToTypeArtifactIdMap = RdosToTypeArtifactIdMap;
+		}
+
+		public override Dictionary<Guid, int> GetRdoGuidToArtifactIdMap(int userId)
+		{
+			return _rdosToTypeArtifactIdMap;
+		}
+	}
+
 }

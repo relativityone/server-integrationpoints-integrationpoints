@@ -204,6 +204,7 @@
     <Compile Include="Controllers\API\RdoMetaController.cs" />
     <Compile Include="Controllers\API\SavedSearchFinderController.cs" />
     <Compile Include="Controllers\API\SourceFieldsController.cs" />
+    <Compile Include="Controllers\API\DestinationTypeController.cs" />
     <Compile Include="Controllers\API\SourceTypeController.cs" />
     <Compile Include="Controllers\API\RdoFilterController.cs" />
     <Compile Include="Controllers\API\WorkspaceFieldController.cs" />
@@ -231,6 +232,7 @@
     <Compile Include="RequestExtensions.cs" />
     <Compile Include="ServiceContextHelperForWeb.cs" />
     <Compile Include="SessionService.cs" />
+    <Compile Include="Toggles\ShowFileShareDataProviderToggle.cs" />
     <Compile Include="Toggles\ShowRelativityDataProviderToggle.cs" />
     <Compile Include="WebAPICustomPageService.cs" />
     <Compile Include="WebClientFactory.cs" />

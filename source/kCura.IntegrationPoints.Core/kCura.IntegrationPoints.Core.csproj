@@ -156,6 +156,7 @@
     <Compile Include="Services\DeleteHistoryErrorService.cs" />
     <Compile Include="Services\DeleteHistoryService.cs" />
     <Compile Include="Services\DeleteIntegrationPoints.cs" />
+    <Compile Include="Services\DestinationTypes\DestinationTypeFactory.cs" />
     <Compile Include="Services\Domain\AssemblyDomainLoader.cs" />
     <Compile Include="Services\Domain\DataReaderWrapper.cs" />
     <Compile Include="Services\Domain\DomainHelper.cs" />
