@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			ArtifactDTO[] artifacts = _relativityExporterService.RetrieveData(FETCH_ARTIFACTDTOS_BATCH_SIZE);
 			List<int> artifactIds = artifacts.Select(x => x.ArtifactId).ToList();
-	
+			
 			_tempDocHelper.CreateTemporaryDocTable(artifactIds);
 			return artifacts;
 		}

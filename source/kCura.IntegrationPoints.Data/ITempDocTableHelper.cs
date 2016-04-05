@@ -25,5 +25,16 @@ namespace kCura.IntegrationPoints.Data
 		/// </summary>
 		/// <param name="tableSuffix">The unique suffix to set</param>
 		void SetTableSuffix(string tableSuffix);
+
+		/// <summary>
+		/// Gets the list of Document Artifact IDs that were pushed
+		/// </summary>
+		/// <returns>List of Document IDs</returns>
+		List<int> GetDocumentIdsFromTable();
+
+		/// <summary>
+		/// Deletes the temporary table after it is no longer needed
+		/// </summary>
+		void DeleteTable();
 	}
 }

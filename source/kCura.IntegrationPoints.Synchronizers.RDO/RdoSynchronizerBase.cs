@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 							result.Name += " [Object Identifier]";
 						}
 					}
-					yield return new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier, IsRequired = isIdentifier };
+					yield return new FieldEntry() { DisplayName = result.Name, FieldIdentifier = result.ArtifactID.ToString(), IsIdentifier = isIdentifier, IsRequired = false };
 				}
 			}
 		}

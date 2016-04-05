@@ -25,6 +25,7 @@
 				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.DocumentTransferProvider" />
 				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Web" />
 				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Web.Tests" />
+				<attribute type="InternalsVisibleToAttribute" value="DynamicProxyGenAssembly2" />
 			</attributes>
 		</asminfo>
 	</target>

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using kCura.IntegrationPoints.Data.Factories;
 using NSubstitute;
@@ -29,7 +31,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			_factory = new TempDocumentFactory();
 			_instanceForCreation = _factory.GetTableCreationHelper(_context, _tableName, _tableSuffix);
-			_instanceForDeletion = _factory.GetDeleteFromTableHelper(_caseContext, _tableName);
+			_instanceForDeletion = _factory.GetDocTableHelper(_caseContext, _tableName);
 
 		}
 
@@ -75,6 +77,20 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			//Assert
 			_caseContext.Received().ExecuteNonQuerySQLStatement(sqlDelete);
 		}
-		
+
+		[Test]
+		public void DeleteTable_Test()
+		{
+			//Arrange
+			string sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
+										DROP TABLE [EDDSRESOURCE]..[{0}]",_tableName + "_" + _tableSuffix);
+
+			//Act
+			_instanceForDeletion.SetTableSuffix(_tableSuffix);
+			_instanceForDeletion.DeleteTable();
+
+			//Assert
+			_caseContext.Received().ExecuteNonQuerySQLStatement(sql);
+		}
 	}
 }

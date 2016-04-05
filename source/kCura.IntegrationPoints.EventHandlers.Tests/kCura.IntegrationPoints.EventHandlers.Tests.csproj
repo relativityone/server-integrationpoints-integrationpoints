@@ -92,6 +92,7 @@
     <Compile Include="Integration\Installers\RegisterDocumentTransferProviderTests.cs" />
     <Compile Include="Integration\Installers\SourceProvidersMigrationEventHandlerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\PageInteractionHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
