@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Services;
@@ -16,6 +18,7 @@ using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -30,6 +33,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IEnumerable<IBatchStatus> _batchStatus;
 		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private Guid _identifier;
+		private int _destinationWorkspaceId;
+		private readonly IHelper _helper;
+		private SourceConfiguration _sourceConfiguration;
 
 		public ExportServiceManager(
 			ICaseServiceContext caseServiceContext,
@@ -39,7 +45,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 			JobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
-			JobStatisticsService statisticsService)
+			JobStatisticsService statisticsService,
+			IHelper helper)
 		{
 			_synchronizerFactory = synchronizerFactory;
 			_exporterFactory = exporterFactory;
@@ -49,6 +56,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_statisticsService = statisticsService;
 			_batchStatus = statuses ?? new List<IBatchStatus>();
 			_serializer = serializer;
+			_helper = helper;
 		}
 
 		public IntegrationPoint IntegrationPointDto { get; private set; }
@@ -72,7 +80,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 
-				synchronizer.SyncData(exporter.GetDataReader(), MappedFields, destinationConfig);
+				synchronizer.SyncData(exporter.GetDataReader(this._identifier.ToString()), MappedFields, destinationConfig);
 			}
 			catch (Exception ex)
 			{
@@ -82,6 +90,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				_jobHistoryErrorService.CommitErrors();
 				PostExecute(job);
+				new DestinationWorkspaceManager(_caseServiceContext, _helper, job, _sourceConfiguration, this._identifier.ToString()).Execute();
 			}
 		}
 
@@ -95,7 +104,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			this._identifier = taskParameters.BatchInstance;
-
+	
 			// Load integrationPoint data
 			if (IntegrationPointDto != null)
 			{
@@ -113,11 +122,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			this.JobHistoryDto = _jobHistoryService.GetRdo(this._identifier);
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
 			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPointDto;
+			_jobHistoryErrorService.SetTableSuffix(this._identifier.ToString());
 
 			// Load Mapped Fields & Sanitize them
 			// #unbelievable
 			MappedFields = JsonConvert.DeserializeObject<List<FieldMap>>(IntegrationPointDto.FieldMappings);
 			MappedFields.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
+
+			_sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
 
 			SourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
 
@@ -145,6 +157,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					_jobHistoryErrorService.CommitErrors();
 				}
+			}
+
+			try
+			{
+				IntegrationPointDto.LastRuntimeUTC = DateTime.UtcNow;
+				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPointDto);
+			}
+			catch
+			{
+				// ignored
 			}
 		}
 

@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				Message = string.Empty
 			};
 
-			String applicationPath = GetApplicationPath(this.Application.ApplicationUrl);
+			String applicationPath = PageInteractionHelper.GetApplicationPath(this.Application.ApplicationUrl);
 
 			if (base.PageMode == EventHandler.Helper.PageMode.View)
 			{
@@ -115,20 +115,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 			var provider = this.ServiceContext.RsapiService.SourceProviderLibrary.Read(ip.SourceProvider.Value, Guid.Parse(Data.SourceProviderFieldGuids.ViewConfigurationUrl));
 			return provider.ViewConfigurationUrl;
-		}
-
-		/// <summary>
-		/// This function will take the current request URL and get the path to a custom page application so JavaScript and CSS files can be referenced
-		/// </summary>
-		/// <param name="currentUrl">The current http request url</param>
-		/// <returns>Returns the path to the custom page application</returns>
-		private string GetApplicationPath(string currentUrl)
-		{
-			string retVal = null;
-
-			string[] urlSplit = System.Text.RegularExpressions.Regex.Split(currentUrl, "/Case/", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-			retVal = urlSplit[0] + string.Format("/CustomPages/{0}", Core.Application.GUID);
-			return retVal;
 		}
 		
 		public override FieldCollection RequiredFields

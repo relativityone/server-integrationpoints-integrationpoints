@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Services
 		private const string _DESCENDING_SORT = "DESC";
 		private const string _DOCUMENT_COLUMN = "documents";
 		private const string _DATE_COLUMN = "date";
-		private const string _WORKSAPCE_COLUMN = "workspacename";
+		private const string _WORKSPACE_COLUMN = "workspacename";
 
 		private const string _ITEMS_IMPORTED_COLUMN = "ItemsImported";
 		private const string _DESTINATION_WORKSPACE_COLUMN = "DestinationWorkspace";
@@ -35,25 +35,19 @@ namespace kCura.IntegrationPoints.Services
 
 		private JobHistorySummaryModel GetJobHistoryInternal(JobHistoryRequest request)
 		{
-			if (!String.Equals(request.SortDirection, _ASCENDING_SORT, StringComparison.OrdinalIgnoreCase)
-				&& !String.Equals(request.SortDirection, _DESCENDING_SORT, StringComparison.OrdinalIgnoreCase))
+			string sortDirection = request.SortDescending ? _DESCENDING_SORT : _ASCENDING_SORT;
+			string sortColumn = GetSortColumn(request.SortColumnName);
+
+			IDBContext dbContext = Relativity.API.Services.Helper.GetDBContext(request.WorkspaceArtifactId);
+
+			int sumItemsImported = GetSumItemsImported(dbContext);
+
+			// TODO: We need to retrieve WorkspaceUserArtifactID but this currently does not work - Dan Nelson 3/25/2016
+			IAuthenticationMgr authenticationManager = Relativity.API.Services.Helper.GetAuthenticationManager();
+			IEnumerable<int> accessControlListIds = GetAccessControlListIds(dbContext, authenticationManager.UserInfo.ArtifactID);
+
+			using (SqlDataReader reader = GetJobHistoryReader(dbContext, sortColumn, sortDirection, accessControlListIds))
 			{
-				throw new Exception("Sort direction should be 'ASC' or 'DESC'");
-			}
-			string sortColumn =	GetSortColumn(request.SortColumnName);
-
-			SqlDataReader reader = null;
-			try
-			{
-				IDBContext dbContext = Relativity.API.Services.Helper.GetDBContext(request.WorkspaceArtifactId);
-
-				int sumItemsImported = GetSumItemsImported(dbContext);
-
-				// TODO: We need to retrieve WorkspaceUserArtifactID but this currently does not work - Dan Nelson 3/25/2016
-				IAuthenticationMgr authenticationManager = Relativity.API.Services.Helper.GetAuthenticationManager();
-				IEnumerable<int> accessControlListIds = GetAccessControlListIds(dbContext, authenticationManager.UserInfo.ArtifactID);
-				reader = GetJobHistoryReader(dbContext, sortColumn, request.SortDirection, accessControlListIds);
-
 				JobHistoryModel[] jobHistories = GetJobHistories(reader, request.Page, request.PageSize);
 
 				JobHistorySummaryModel jobHistorySummaryModel = new JobHistorySummaryModel
@@ -63,19 +57,13 @@ namespace kCura.IntegrationPoints.Services
 				};
 				return jobHistorySummaryModel;
 			}
-			finally
-			{
-				if (reader != null)
-				{
-					reader.Close();
-				}
-			}
+
 		}
 
-		private string GetSortColumn(string sortColumName)
+		private string GetSortColumn(string sortColumnName)
 		{
 			string realSortColumn;
-			switch (sortColumName.ToLower())
+			switch (sortColumnName.ToLower())
 			{
 				case _DOCUMENT_COLUMN:
 					realSortColumn = _ITEMS_IMPORTED_COLUMN;
@@ -83,11 +71,11 @@ namespace kCura.IntegrationPoints.Services
 				case _DATE_COLUMN:
 					realSortColumn = _END_TIME_UTC_COLUMN;
 					break;
-				case _WORKSAPCE_COLUMN:
+				case _WORKSPACE_COLUMN:
 					realSortColumn = _DESTINATION_WORKSPACE_COLUMN;
 					break;
 				default:
-					throw new Exception(String.Format("Sort column name must be {0}, {1}, or {2}", _DOCUMENT_COLUMN, _DATE_COLUMN, _WORKSAPCE_COLUMN));
+					throw new Exception(String.Format("Sort column name must be {0}, {1}, or {2}", _DOCUMENT_COLUMN, _DATE_COLUMN, _WORKSPACE_COLUMN));
 			}
 			return realSortColumn;
 		}
@@ -104,6 +92,8 @@ namespace kCura.IntegrationPoints.Services
 		private IEnumerable<int> GetAccessControlListIds(IDBContext context, int userArtifactId)
 		{
 			List<int> accessControllListIds = new List<int>();
+			
+			
 
 			SqlParameter userArtifactIdParameter = new SqlParameter("@userArtifactId", userArtifactId);
 			string sql = @"SELECT DISTINCT(AccessControlListID) FROM [EDDSDBO].[GroupUser] as GU
@@ -140,7 +130,7 @@ namespace kCura.IntegrationPoints.Services
 			int start = (page - 1) * pageSize;
 			int end = start + pageSize;
 
-			List<JobHistoryModel> jobHistoryModels = new List<JobHistoryModel>();
+			var jobHistoryModels = new List<JobHistoryModel>();
 			int count = 0;
 			while (reader.Read())
 			{
@@ -148,9 +138,9 @@ namespace kCura.IntegrationPoints.Services
 				{
 					jobHistoryModels.Add(new JobHistoryModel()
 					{
-						Documents = reader.GetInt32(0),
-						Date = reader.GetDateTime(1),
-						WorkspaceName = reader.GetString(2)
+						ItemsImported = reader.GetInt32(0),
+						EndTimeUtc = reader.GetDateTime(1),
+						DestinationWorkspace = reader.GetString(2)
 					});
 				}
 				count++;

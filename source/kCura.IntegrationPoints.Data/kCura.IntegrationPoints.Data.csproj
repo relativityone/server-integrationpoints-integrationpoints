@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.Data</RootNamespace>
     <AssemblyName>kCura.IntegrationPoints.Data</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -52,6 +52,9 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Data.RowDataGateway">
+      <HintPath>..\Dependencies\kCura\kCura.Data.RowDataGateway.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
@@ -66,6 +69,9 @@
     <Reference Include="Relativity.API, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Core">
+      <HintPath>..\Dependencies\kCura\Relativity.Core.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.DataContracts">
       <HintPath>..\Dependencies\kCura\Relativity.Services.DataContracts.dll</HintPath>
@@ -92,6 +98,9 @@
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
+    <Compile Include="Factories\ITempDocumentFactory.cs" />
+    <Compile Include="Factories\TempDocumentFactory.cs" />
+    <Compile Include="ITempDocTableHelper.cs" />
     <Compile Include="ImportSettingVisibility.cs" />
     <Compile Include="Repositories\IDocumentRepository.cs" />
     <Compile Include="Repositories\IFieldRepository.cs" />
@@ -102,6 +111,9 @@
     <Compile Include="Adaptors\IObjectQueryManagerAdaptor.cs" />
     <Compile Include="Repositories\Implementations\RsapiSourceWorkspaceRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiWorkspaceRepository.cs" />
+    <Compile Include="Repositories\IDestinationWorkspaceRepository.cs" />
+    <Compile Include="Repositories\Implementations\DestinationWorkspaceRepository.cs" />
+    <Compile Include="TempDocTableHelper.cs" />
     <Compile Include="Repositories\IObjectTypeRepository.cs" />
     <Compile Include="Repositories\ISavedSearchRepository.cs" />
     <Compile Include="Queries\GetSavedSearchesQuery.cs" />
@@ -237,10 +249,6 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
-      <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
-      <Name>kCura.IntegrationPoints.Core.Contracts</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

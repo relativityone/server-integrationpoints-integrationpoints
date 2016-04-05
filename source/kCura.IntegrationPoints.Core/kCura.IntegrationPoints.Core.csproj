@@ -151,6 +151,8 @@
     <Compile Include="BatchEmail.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Factories\IExporterFactory.cs" />
+    <Compile Include="Managers\Implementations\DestinationWorkspaceManager.cs" />
+    <Compile Include="Managers\IDestinationWorkspaceManager.cs" />
     <Compile Include="Installers\KeywordInstaller.cs" />
     <Compile Include="JobHistoryStatus.cs" />
     <Compile Include="IBatchStatus.cs" />
@@ -197,6 +199,7 @@
     <Compile Include="Services\Guid\IGuidService.cs" />
     <Compile Include="Services\IDeleteHistoryErrorService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />
+    <Compile Include="Services\JobHistory\IJobHistoryService.cs" />
     <Compile Include="Services\JobHistory\JobHistoryErrorService.cs" />
     <Compile Include="Services\JobHistory\JobHistoryService.cs" />
     <Compile Include="Services\JobHistory\JobStatisticsService.cs" />

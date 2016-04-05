@@ -117,6 +117,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				importJob.Settings.ExtractedTextEncoding = Settings.ExtractedTextEncoding;
 			}
 
+			importJob.Settings.FileNameColumn = Settings.FileNameColumn;
 			importJob.Settings.FileSizeColumn = Settings.FileSizeColumn;
 			importJob.Settings.FileSizeMapped = Settings.FileSizeMapped;
 			importJob.Settings.FolderPathSourceFieldName = Settings.FolderPathSourceFieldName;

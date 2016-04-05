@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.Core.Contracts</RootNamespace>
     <AssemblyName>kCura.IntegrationPoints.Core.Contracts</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="Agent\IJobManager.cs" />
     <Compile Include="Agent\ITaskJobSubmitter.cs" />
+    <Compile Include="Agent\SourceConfiguration.cs" />
     <Compile Include="Agent\TaskParameters.cs" />
     <Compile Include="Custodian\CustodianConstants.cs" />
     <Compile Include="BatchReporter\IBatchReporter.cs" />

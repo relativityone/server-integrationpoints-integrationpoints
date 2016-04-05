@@ -5,6 +5,7 @@ using System.Text;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -12,10 +13,19 @@ namespace kCura.IntegrationPoints.Core.Services
 	{
 		private ICaseServiceContext _context;
 		private List<JobHistoryError> _jobHistoryErrorList;
+		private readonly ITempDocTableHelper _tempDocHelper;
+		private bool _isRelProvider;
+
 		public JobHistoryErrorService(ICaseServiceContext context)
 		{
 			_context = context;
 			_jobHistoryErrorList = new List<JobHistoryError>();
+			//todo: resolve TempDocumentFactory to make it unit testable 
+			if (_context != null)
+			{
+				_tempDocHelper = new TempDocumentFactory().GetDocTableHelper(_context.SqlContext,
+					Constants.IntegrationPoints.Temporary_Document_Table_Name);
+			}
 		}
 
 		public Data.JobHistory JobHistory { get; set; }
@@ -68,6 +78,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			if (IntegrationPoint.LogErrors.GetValueOrDefault(false))
 			{
 				AddError(ErrorTypeChoices.JobHistoryErrorItem, documentIdentifier, errorMessage, errorMessage);
+				if (_isRelProvider) //todo: find a better way to check if it's our provider
+				{
+					_tempDocHelper.RemoveErrorDocument(documentIdentifier);
+				}
 			}
 		}
 
@@ -108,6 +122,12 @@ namespace kCura.IntegrationPoints.Core.Services
 					throw new System.Exception(string.Format("Type:{0}  Id:{1}  Error:{2}", errorType.Name, documentIdentifier, errorMessage));
 				}
 			}
+		}
+
+		public void SetTableSuffix(string suffix)
+		{
+			_isRelProvider = true;
+			_tempDocHelper.SetTableSuffix(suffix);
 		}
 
 		private string GenerateErrorMessage(Exception ex)

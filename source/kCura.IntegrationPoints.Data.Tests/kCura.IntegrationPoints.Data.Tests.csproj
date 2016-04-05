@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.Data.Tests</RootNamespace>
     <AssemblyName>kCura.IntegrationPoints.Data.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -56,6 +56,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Data.RowDataGateway, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\kCura.Data.RowDataGateway.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Relativity.Client">
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
     </Reference>
@@ -76,6 +80,10 @@
     <Reference Include="Relativity.API, Version=9.1.87.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Core, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.Core.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler">
       <HintPath>..\Dependencies\kCura\Relativity.Kepler.dll</HintPath>
@@ -141,6 +149,7 @@
     <Compile Include="Unit\RdoGetterTest.cs" />
     <Compile Include="Unit\RelativityReaderBaseTests.cs" />
     <Compile Include="Unit\RSAPIServiceInstallerTests.cs" />
+    <Compile Include="Unit\TempDocTableHelperTests.cs" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

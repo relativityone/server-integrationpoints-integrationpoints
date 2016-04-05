@@ -108,7 +108,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 					DisplayName = fieldName,
 					FieldIdentifier = fieldArtifact.ArtifactId.ToString(),
 					IsIdentifier = isIdentifier,
-					IsRequired = false
+					IsRequired = isIdentifier
 				};
 			}
 		}

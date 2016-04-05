@@ -31,5 +31,13 @@ namespace kCura.IntegrationPoints.Data
 		public List<Guid> CompatibleRdoTypes { set; get; }
 
 		public bool GetDataProvideAllFieldsRequired { set; get; }
+
+		/// <summary>
+		/// Configuration to import the native's file name.
+		/// If true, we will pass to the import API the native's file name.
+		/// If false, we will not pass to the import API the native's file name.
+		/// </summary>
+		/// <remarks>This configuration value only applies to the Document RDO.</remarks>
+		public bool AlwaysImportNativeFileNames { get; set; }
 	}
 }

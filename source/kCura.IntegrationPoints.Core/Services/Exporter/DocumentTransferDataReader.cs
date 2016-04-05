@@ -5,6 +5,8 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Readers;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using Relativity.Core;
 using Relativity.Core.Service;
 
@@ -13,14 +15,19 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	public class DocumentTransferDataReader : RelativityReaderBase
 	{
 		public const int FETCH_ARTIFACTDTOS_BATCH_SIZE = 50;
-		private static string DocumentArtifactId = "DocumentArtifactId";
-		private static string FileLocation = "Location";
-		private static string Separator = ",";
+
+		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
+		private static readonly string _nativeFileNameColumn = "Filename";
+		private static readonly string _nativeLocationColumn = "Location";
+		private static readonly string _separator = ",";
 
 		private readonly IExporterService _relativityExporterService;
-		private readonly Dictionary<int, string> _nativeFileLocation;
+		private readonly Dictionary<int, string> _nativeFileLocations;
+		private readonly Dictionary<int, string> _nativeFileNames; 
 		private readonly ICoreContext _context;
 		private readonly SourceWorkspaceDTO _sourceWorkspaceDto;
+		private readonly ITempDocumentFactory _tempDocumentFactory;
+		private readonly ITempDocTableHelper _tempDocHelper;
 		private readonly int _folderPathFieldSourceArtifactId;
 
 		/// used as a flag to store the reference of the current artifacts array.
@@ -32,12 +39,16 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			IExporterService relativityExportService,
 			ISourceWorkspaceManager sourceWorkspaceManager,
 			FieldMap[] fieldMappings,
-			ICoreContext context) :
+			ICoreContext context,
+			string jobDetails) :
 			base(GenerateDataColumnsFromFieldEntries(fieldMappings))
 		{
 			_context = context;
 			_relativityExporterService = relativityExportService;
-			_nativeFileLocation = new Dictionary<int, string>();
+			_nativeFileLocations = new Dictionary<int, string>();
+			_nativeFileNames = new Dictionary<int, string>();
+			//todo: resolve TempDocumentFactory to make it unit testable 
+			_tempDocHelper = new TempDocumentFactory().GetTableCreationHelper(context, Constants.IntegrationPoints.Temporary_Document_Table_Name, jobDetails);
 
 			FieldMap folderPathInformationField = fieldMappings.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
 			if (folderPathInformationField != null)
@@ -51,7 +62,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
-			return _relativityExporterService.RetrieveData(FETCH_ARTIFACTDTOS_BATCH_SIZE);
+			ArtifactDTO[] artifacts = _relativityExporterService.RetrieveData(FETCH_ARTIFACTDTOS_BATCH_SIZE);
+			List<int> artifactIds = artifacts.Select(x => x.ArtifactId).ToList();
+			
+			_tempDocHelper.CreateTemporaryDocTable(artifactIds);
+			return artifacts;
 		}
 
 		protected override bool AllArtifactsFetched()
@@ -68,6 +83,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			{
 				DisplayName = IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME,
 				FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD,
+				FieldType = FieldType.String
+			});
+			fields.Add(new FieldEntry
+			{
+				DisplayName = IntegrationPoints.Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME,
+				FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_FILE_NAME_FIELD,
 				FieldType = FieldType.String
 			});
 
@@ -136,28 +157,42 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			{
 				result = CurrentArtifact.GetFieldForIdentifier(_folderPathFieldSourceArtifactId).Value;
 			}
-			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD)
+			else
 			{
 				// we will have to go and get native file locations when the reader fetch a new collection of documents.
 				if (_readingArtifactIdsReference != ReadingArtifactIDs)
 				{
 					_readingArtifactIdsReference = ReadingArtifactIDs;
-					string documentArtifactIds = String.Join(Separator, ReadingArtifactIDs);
+					string documentArtifactIds = String.Join(_separator, ReadingArtifactIDs);
 					kCura.Data.DataView dataView = FileQuery.RetrieveNativesForDocuments(_context, documentArtifactIds);
 
 					for (int index = 0; index < dataView.Table.Rows.Count; index++)
 					{
 						DataRow row = dataView.Table.Rows[index];
-						int id = (int)row[DocumentArtifactId];
-						string location = (string)row[FileLocation];
-						_nativeFileLocation.Add(id, location);
+						int nativeDocumentArtifactID = (int) row[_nativeDocumentArtifactIdColumn];
+						string nativeFileLocation = (string) row[_nativeLocationColumn];
+						string nativeFileName = (string) row[_nativeFileNameColumn];
+						_nativeFileLocations.Add(nativeDocumentArtifactID, nativeFileLocation);
+						_nativeFileNames.Add(nativeDocumentArtifactID, nativeFileName);
 					}
 				}
 
-				if (_nativeFileLocation.ContainsKey(CurrentArtifact.ArtifactId))
+				switch (fieldIdentifier)
 				{
-					result = _nativeFileLocation[CurrentArtifact.ArtifactId];
-					_nativeFileLocation.Remove(CurrentArtifact.ArtifactId);
+					case IntegrationPoints.Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD:
+						if (_nativeFileLocations.ContainsKey(CurrentArtifact.ArtifactId))
+						{
+							result = _nativeFileLocations[CurrentArtifact.ArtifactId];
+							_nativeFileLocations.Remove(CurrentArtifact.ArtifactId);
+						}
+						break;
+					case IntegrationPoints.Contracts.Constants.SPECIAL_FILE_NAME_FIELD:
+						if (_nativeFileNames.ContainsKey(CurrentArtifact.ArtifactId))
+						{
+							result = _nativeFileNames[CurrentArtifact.ArtifactId];
+							_nativeFileNames.Remove(CurrentArtifact.ArtifactId);
+						}
+						break;
 				}
 			}
 			return result;
