@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int CreateDestinationWorkspaceRdoInstance(List<int> documentIds)
 		{
-			string destinationWorkspaceName = _workspaceQuery.GetWorkspace(_destinationWorkspaceId).Name;
+			string destinationWorkspaceName = _workspaceQuery.GetWorkspaceName(_destinationWorkspaceId);
 			string instanceName = destinationWorkspaceName + " - " + _destinationWorkspaceId; 
 
 			RDO destinationWorkspaceObject = new RDO();
