@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Services
 		{
 			var jobHistorySummary = new JobHistorySummaryModel
 			{
-				Data = new List<JobHistoryModel>(0),
+				Data = new JobHistoryModel[0],
 				TotalAvailable = 0,
 				TotalDocumentsPushed = 0
 			};
@@ -192,7 +192,7 @@ namespace kCura.IntegrationPoints.Services
 
 			var jobHistorySummary = new JobHistorySummaryModel
 			{
-				Data = jobHistories,
+				Data = jobHistories.ToArray(),
 				TotalAvailable = totalAvailable,
 				TotalDocumentsPushed = totalDocuments
 			};
