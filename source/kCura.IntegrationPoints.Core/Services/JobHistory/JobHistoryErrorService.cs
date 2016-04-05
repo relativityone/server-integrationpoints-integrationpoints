@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.Core.Services
 	{
 		private readonly ICaseServiceContext _context;
 		private readonly List<JobHistoryError> _jobHistoryErrorList;
-		private bool _isRelativityProvider;
 
 		public JobHistoryErrorService(ICaseServiceContext context)
 		{
@@ -22,7 +21,6 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public Data.JobHistory JobHistory { get; set; }
 		public IntegrationPoint IntegrationPoint { get; set; }
-		public ITempDocTableHelper DocTableHelper { get; set; } //MNG: I don't like having this public, if we decouple this class into ExportErrorService we won't have to do this
 		//private IBatchReporter _batchReporter;
 		public void SubscribeToBatchReporterEvents(object batchReporter)
 		{
@@ -71,10 +69,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			if (IntegrationPoint.LogErrors.GetValueOrDefault(false))
 			{
 				AddError(ErrorTypeChoices.JobHistoryErrorItem, documentIdentifier, errorMessage, errorMessage);
-				if (DocTableHelper != null) //todo: find a better way to check if it's our provider
-				{
-					DocTableHelper.RemoveErrorDocument(documentIdentifier);
-				}
 			}
 		}
 
