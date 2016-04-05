@@ -173,10 +173,11 @@ namespace kCura.IntegrationPoints.Services
 				}
 
 				int jobHistoryItemsImported = reader.GetInt32(0);
-				DateTime endTimeUtc = reader.GetDateTime(1);
 
 				if (totalAvailable >= start && totalAvailable < end)
 				{
+					DateTime endTimeUtc = reader.GetDateTime(1);
+
 					var jobHistory = new JobHistoryModel
 					{
 						ItemsImported = jobHistoryItemsImported,
@@ -202,13 +203,20 @@ namespace kCura.IntegrationPoints.Services
 
 		private bool DoesUserHavePermissionToThisDestinationWorkspace(FieldValueList<Workspace> accessibleWorkspaces, string destinationWorkspace)
 		{
-			string substringCheck = "[Id::";
-			int workspaceArtifactIdStartIndex = destinationWorkspace.LastIndexOf(substringCheck, StringComparison.CurrentCulture) + substringCheck.Length;
-			int workspaceArtifactIdEndIndex = destinationWorkspace.LastIndexOf("]", StringComparison.CurrentCulture);
-			string workspaceArtifactIdSubstring = destinationWorkspace.Substring(workspaceArtifactIdStartIndex, workspaceArtifactIdEndIndex-workspaceArtifactIdStartIndex);
-			int workspaceArtifactId = Int32.Parse(workspaceArtifactIdSubstring);
+			try
+			{
+				string substringCheck = "[Id::";
+				int workspaceArtifactIdStartIndex = destinationWorkspace.LastIndexOf(substringCheck, StringComparison.CurrentCulture) + substringCheck.Length;
+				int workspaceArtifactIdEndIndex = destinationWorkspace.LastIndexOf("]", StringComparison.CurrentCulture);
+				string workspaceArtifactIdSubstring = destinationWorkspace.Substring(workspaceArtifactIdStartIndex, workspaceArtifactIdEndIndex - workspaceArtifactIdStartIndex);
+				int workspaceArtifactId = Int32.Parse(workspaceArtifactIdSubstring);
 
-			return accessibleWorkspaces.Any(t => t.ArtifactID == workspaceArtifactId);
+				return accessibleWorkspaces.Any(t => t.ArtifactID == workspaceArtifactId);
+			}
+			catch (Exception e)
+			{
+				throw new Exception("The formatting of the destination workspace information has changed and cannot be parsed.", e);
+			}
 		}
 	}
 }
