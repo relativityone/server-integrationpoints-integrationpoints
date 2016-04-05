@@ -1,21 +1,22 @@
 ﻿using System.Threading.Tasks;
+using kCura.IntegrationPoints.Contracts.RDO;
 using Relativity.Services.ObjectQuery;
 
-namespace kCura.IntegrationPoints.Contracts.RDO
+namespace kCura.IntegrationPoints.Data.Managers.Implementations
 {
-	public class RDORepository : IRDORepository
+	public class ObjectQueryManagerAdaptor : IObjectQueryManagerAdaptor
 	{
 		private readonly IObjectQueryManager _objectQueryManager;
 
 		public int WorkspaceId { set; get; }
 		public int ArtifactTypeId { set; get; }
 
-		public RDORepository(IObjectQueryManager objectQueryManager)
+		public ObjectQueryManagerAdaptor(IObjectQueryManager objectQueryManager)
 		{
 			_objectQueryManager = objectQueryManager;
 		}
 
-		public RDORepository(IObjectQueryManager objectQueryManager, int workspaceId, int artifactTypeId)
+		public ObjectQueryManagerAdaptor(IObjectQueryManager objectQueryManager, int workspaceId, int artifactTypeId)
 		{
 			_objectQueryManager = objectQueryManager;
 			WorkspaceId = workspaceId;

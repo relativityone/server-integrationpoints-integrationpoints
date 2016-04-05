@@ -427,7 +427,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-03-31T13:46:05.2181553Z</ExtractionDate>
+  <ExtractionDate>2016-04-04T22:02:41.0581498Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -3100,7 +3100,7 @@
         <ArtifactId>1038290</ArtifactId>
         <DisplayOrder>0</DisplayOrder>
         <Guid>4a9d9b4c-cec1-4c68-8a6d-c0f22516f032</Guid>
-        <IsDefault>true</IsDefault>
+        <IsDefault>false</IsDefault>
         <Name>Integration Points</Name>
         <ObjectArtifactTypeId>1000054</ObjectArtifactTypeId>
         <ParentArtifactId>1038280</ParentArtifactId>
@@ -5076,9 +5076,10 @@
               <FieldArtifactId>1038314</FieldArtifactId>
               <FieldDisplayTypeId>0</FieldDisplayTypeId>
               <FullTextFieldHeight xsi:nil="true" />
-              <IsReadOnly>false</IsReadOnly>
+              <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038385</LayoutArtifactId>
-              <Order>1</Order>
+              <NameValue />
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn xsi:nil="true" />
               <Row>1</Row>
@@ -5094,10 +5095,10 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038385</LayoutArtifactId>
-              <Order>5</Order>
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>1</Row>
+              <Row>2</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -5111,10 +5112,10 @@
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038385</LayoutArtifactId>
               <NameValue>Status</NameValue>
-              <Order>10</Order>
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>1</Row>
+              <Row>3</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -5127,10 +5128,10 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038385</LayoutArtifactId>
-              <Order>20</Order>
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>1</Row>
+              <Row>4</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -5143,10 +5144,10 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038385</LayoutArtifactId>
-              <Order>30</Order>
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>1</Row>
+              <Row>5</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -5198,7 +5199,7 @@
           <Name>Job Details</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>0.0.0.1</ApplicationVersion>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Job History</Name>
@@ -5215,6 +5216,18 @@
           <Type>GlobalButtonVisibility</Type>
           <Value>&lt;value /&gt;</Value>
           <ApplicationVersion>2.0.0.10</ApplicationVersion>
+        </ObjectRule>
+        <ObjectRule>
+          <Name>Show Tally/Sum/Average only</Name>
+          <Action>&lt;action&gt;&lt;listoptions&gt;&lt;showMassCopy&gt;False&lt;/showMassCopy&gt;&lt;showMassEdit&gt;False&lt;/showMassEdit&gt;&lt;showMassReplace&gt;False&lt;/showMassReplace&gt;&lt;showMassTally&gt;True&lt;/showMassTally&gt;&lt;/listoptions&gt;&lt;/action&gt;</Action>
+          <ArtifactTypeID>1000057</ArtifactTypeID>
+          <FieldArtifactID>0</FieldArtifactID>
+          <Guid>a435ab0d-60e2-491f-a8dc-42bffe43a995</Guid>
+          <ObjectRuleID>1038423</ObjectRuleID>
+          <Operator />
+          <Type>MassActionVisibility</Type>
+          <Value>&lt;value /&gt;</Value>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -5707,7 +5720,19 @@
       <ApplicationVersion>0.0.0.1</ApplicationVersion>
     </Object>
     <Object>
-      <ActiveSyncs />
+      <ActiveSyncs>
+        <ActiveSync>
+          <Id>1038425</Id>
+          <ArtifactTypeId>1000058</ArtifactTypeId>
+          <AssemblyArtifactId>1018550</AssemblyArtifactId>
+          <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.JobHistoryErrorPageInteraction</ClassName>
+          <Description>Removes ability to edit the Job History field on the Job History Error object</Description>
+          <ExecutionType>13</ExecutionType>
+          <Guid>237eab6c-6013-47f5-957b-a03876536ee7</Guid>
+          <SyncDll>kCura.IntegrationPoints</SyncDll>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
+        </ActiveSync>
+      </ActiveSyncs>
       <ArtifactId>1038328</ArtifactId>
       <DescriptorArtifactTypeId>1000058</DescriptorArtifactTypeId>
       <Fields>
@@ -6087,7 +6112,7 @@
       <Notes />
       <ObjectRules>
         <ObjectRule>
-          <Name>Only show delete</Name>
+          <Name>Hide all actions</Name>
           <Action>&lt;action&gt;&lt;listoptions&gt;&lt;showNew&gt;False&lt;/showNew&gt;&lt;showDelete&gt;False&lt;/showDelete&gt;&lt;showLink&gt;False&lt;/showLink&gt;&lt;showUnlink&gt;False&lt;/showUnlink&gt;&lt;/listoptions&gt;&lt;/action&gt;</Action>
           <ArtifactTypeID>1000058</ArtifactTypeID>
           <FieldArtifactID>0</FieldArtifactID>
@@ -6096,7 +6121,19 @@
           <Operator />
           <Type>GlobalButtonVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>0.0.0.1</ApplicationVersion>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
+        </ObjectRule>
+        <ObjectRule>
+          <Name>Show Tally/Sum/Average only</Name>
+          <Action>&lt;action&gt;&lt;listoptions&gt;&lt;showMassCopy&gt;False&lt;/showMassCopy&gt;&lt;showMassEdit&gt;False&lt;/showMassEdit&gt;&lt;showMassReplace&gt;False&lt;/showMassReplace&gt;&lt;showMassTally&gt;True&lt;/showMassTally&gt;&lt;/listoptions&gt;&lt;/action&gt;</Action>
+          <ArtifactTypeID>1000058</ArtifactTypeID>
+          <FieldArtifactID>0</FieldArtifactID>
+          <Guid>cdf703de-a486-4226-ba27-305a4cf8e1b6</Guid>
+          <ObjectRuleID>1038424</ObjectRuleID>
+          <Operator />
+          <Type>MassActionVisibility</Type>
+          <Value>&lt;value /&gt;</Value>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -6823,7 +6860,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.22</ApplicationVersion>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6875,7 +6912,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.22</ApplicationVersion>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6927,7 +6964,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.22</ApplicationVersion>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6979,7 +7016,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.22</ApplicationVersion>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7031,7 +7068,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.22</ApplicationVersion>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7083,7 +7120,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.22</ApplicationVersion>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -7093,8 +7130,8 @@
     </Object>
   </Objects>
   <ParentTabs />
-  <RelativityVersion>9.3.321.1</RelativityVersion>
-  <Version>2.0.0.22</Version>
+  <RelativityVersion>9.3.362.9</RelativityVersion>
+  <Version>2.0.0.23</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>30db7baa-93da-4227-bdb1-e3df9e8edc72</OriginSignature>
   <MasterScripts />
@@ -7124,7 +7161,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.22</ApplicationVersion>
+      <ApplicationVersion>2.0.0.23</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038277</ArtifactId>
@@ -7135,7 +7172,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.22</ApplicationVersion>
+      <ApplicationVersion>2.0.0.23</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038278</ArtifactId>
@@ -7146,7 +7183,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.22</ApplicationVersion>
+      <ApplicationVersion>2.0.0.23</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038279</ArtifactId>
@@ -7157,7 +7194,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.22</ApplicationVersion>
+      <ApplicationVersion>2.0.0.23</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038393</ArtifactId>
@@ -7168,7 +7205,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.22</ApplicationVersion>
+      <ApplicationVersion>2.0.0.23</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />

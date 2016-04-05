@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Readers;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using Relativity.Core;
@@ -25,13 +26,21 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly Dictionary<int, string> _nativeFileNames; 
 		private readonly ICoreContext _context;
 		private readonly ITempDocTableHelper _docTableHelper;
+		private readonly SourceWorkspaceDTO _sourceWorkspaceDto;
 		private readonly int _folderPathFieldSourceArtifactId;
 
 		/// used as a flag to store the reference of the current artifacts array.
 		private object _readingArtifactIdsReference;
 
-		public DocumentTransferDataReader(IExporterService relativityExportService,FieldMap[] fieldMappings,
-			ICoreContext context, ITempDocTableHelper docTableHelper) : base(GenerateDataColumnsFromFieldEntries(fieldMappings))
+		public DocumentTransferDataReader(
+			int sourceWorkspaceArtifactId,
+			int destinationWorkspaceArtifactId,
+			IExporterService relativityExportService,
+			ISourceWorkspaceManager sourceWorkspaceManager,
+			FieldMap[] fieldMappings,
+			ICoreContext context,
+			ITempDocTableHelper docTableHelper) :
+			base(GenerateDataColumnsFromFieldEntries(fieldMappings))
 		{
 			_context = context;
 			_relativityExporterService = relativityExportService;
@@ -44,6 +53,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			{
 				_folderPathFieldSourceArtifactId = Int32.Parse(folderPathInformationField.SourceField.FieldIdentifier);
 			}
+
+			// Validate that destination workspace has all object types and fields
+			_sourceWorkspaceDto = sourceWorkspaceManager.InititializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
 		}
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
@@ -95,6 +107,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				});
 			}
 
+			fields.Add(new FieldEntry()
+			{
+				DisplayName	= IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+				FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD,
+				FieldType = FieldType.String
+			});
+
 			return fields.Select(x => new DataColumn(x.FieldIdentifier)).ToArray();
 		}
 
@@ -126,6 +145,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			if (success)
 			{
 				result = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId).Value;
+			}
+			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD)
+			{
+				// TODO: We should be using the artifact Id -- biedrzycki: April 4th, 2016
+				result = _sourceWorkspaceDto.Name;
 			}
 			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_FOLDERPATH_FIELD)
 			{

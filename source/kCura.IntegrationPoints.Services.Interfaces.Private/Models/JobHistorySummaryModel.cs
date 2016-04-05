@@ -1,9 +1,14 @@
-﻿namespace kCura.IntegrationPoints.Services.Interfaces.Private.Models
+﻿using System;
+using System.Collections.Generic;
+
+namespace kCura.IntegrationPoints.Services.Interfaces.Private.Models
 {
 	public class JobHistorySummaryModel
 	{
-		public int TotalDocumentsPushed { get; set; }
+		public IEnumerable<JobHistoryModel> Data { get; set; }
 
-		public JobHistoryModel[] JobHistories { get; set; }
+		public Int64 TotalAvailable { get; set; }
+
+		public Int64 TotalDocumentsPushed { get; set; }
 	}
 }

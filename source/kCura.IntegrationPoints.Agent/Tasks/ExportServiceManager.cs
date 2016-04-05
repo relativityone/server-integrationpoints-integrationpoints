@@ -8,6 +8,8 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -28,6 +30,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly JobHistoryService _jobHistoryService;
 		private readonly JobHistoryErrorService _jobHistoryErrorService;
 		private readonly ISynchronizerFactory _synchronizerFactory;
+		private readonly IExporterFactory _exporterFactory;
 		private readonly JobStatisticsService _statisticsService;
 		private readonly IEnumerable<IBatchStatus> _batchStatus;
 		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
@@ -39,6 +42,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		public ExportServiceManager(
 			ICaseServiceContext caseServiceContext,
 			ISynchronizerFactory synchronizerFactory,
+			IExporterFactory exporterFactory,
 			IEnumerable<IBatchStatus> statuses,
 			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 			JobHistoryService jobHistoryService,
@@ -47,6 +51,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IHelper helper)
 		{
 			_synchronizerFactory = synchronizerFactory;
+			_exporterFactory = exporterFactory;
 			_caseServiceContext = caseServiceContext;
 			_jobHistoryService = jobHistoryService;
 			_jobHistoryErrorService = jobHistoryErrorService;
@@ -73,7 +78,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				SetupSubscriptions(synchronizer, job);
 
 				// Initialize Exporter
-				IExporterService exporter = ExporterFactory.BuildExporter(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration);
+				IExporterService exporter = _exporterFactory.BuildExporter(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration);
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 

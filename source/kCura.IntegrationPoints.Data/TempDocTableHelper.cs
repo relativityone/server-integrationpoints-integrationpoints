@@ -7,7 +7,10 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Managers;
 using kCura.IntegrationPoints.Data.Managers.Implementations;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
+using kCura.Relativity.Client.Repositories;
 using Relativity.API;
 using Relativity.Services.ObjectQuery;
 
@@ -119,8 +122,8 @@ namespace kCura.IntegrationPoints.Data
 
 		private void SetDocumentIdentifierField(IHelper helper, int sourceWorkspaceId)
 		{
-			IRDORepository rdoRepository = new RDORepository(helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), sourceWorkspaceId, Convert.ToInt32(ArtifactType.Field));
-			IFieldManager fieldManager = new KeplerFieldManager(rdoRepository);
+			IObjectQueryManagerAdaptor rdoRepository = new ObjectQueryManagerAdaptor(helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), sourceWorkspaceId, Convert.ToInt32(ArtifactType.Field));
+			IFieldRepository fieldManager = new KeplerFieldRepository(rdoRepository);
 			ArtifactDTO[] fieldArtifacts = fieldManager.RetrieveFieldsAsync(
 				10,
 				new HashSet<string>(new[]

@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Requests;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using Relativity.API;
+using Relativity.Services.Security;
+using API = Relativity.API;
 
 namespace kCura.IntegrationPoints.Services
 {
@@ -18,7 +24,6 @@ namespace kCura.IntegrationPoints.Services
 		private const string _DOCUMENT_COLUMN = "documents";
 		private const string _DATE_COLUMN = "date";
 		private const string _WORKSPACE_COLUMN = "workspacename";
-
 		private const string _ITEMS_IMPORTED_COLUMN = "ItemsImported";
 		private const string _DESTINATION_WORKSPACE_COLUMN = "DestinationWorkspace";
 		private const string _END_TIME_UTC_COLUMN = "EndTimeUTC";
@@ -33,123 +38,177 @@ namespace kCura.IntegrationPoints.Services
 			return await Task.Run(() => GetJobHistoryInternal(request)).ConfigureAwait(false);
 		}
 
+		public void Dispose() { }
+
 		private JobHistorySummaryModel GetJobHistoryInternal(JobHistoryRequest request)
 		{
+			var jobHistorySummary = new JobHistorySummaryModel
+			{
+				Data = new List<JobHistoryModel>(0),
+				TotalAvailable = 0,
+				TotalDocumentsPushed = 0
+			};
+
+			IAuthenticationMgr authenticationManager = API.Services.Helper.GetAuthenticationManager();
+			int userArtifactId = authenticationManager.UserInfo.ArtifactID;
+			int workspaceUserArtifactId = GetWorkspaceUserArtifactId(request.WorkspaceArtifactId, userArtifactId);
+			IDBContext workspaceContext = API.Services.Helper.GetDBContext(request.WorkspaceArtifactId);
+
+			ArrayList accessControlListIds = GetJobHistoryPermissions(workspaceContext, request.WorkspaceArtifactId, workspaceUserArtifactId);
+			if (accessControlListIds.Count == 0)
+			{
+				return jobHistorySummary;
+			}
+
+			FieldValueList<Workspace> workspaces = GetWorkspacesUserHasPermissionToView(userArtifactId);
+			if (!workspaces.Any())
+			{
+				return jobHistorySummary;
+			}
+
 			string sortDirection = request.SortDescending ? _DESCENDING_SORT : _ASCENDING_SORT;
 			string sortColumn = GetSortColumn(request.SortColumnName);
 
-			IDBContext dbContext = Relativity.API.Services.Helper.GetDBContext(request.WorkspaceArtifactId);
-
-			int sumItemsImported = GetSumItemsImported(dbContext);
-
-			// TODO: We need to retrieve WorkspaceUserArtifactID but this currently does not work - Dan Nelson 3/25/2016
-			IAuthenticationMgr authenticationManager = Relativity.API.Services.Helper.GetAuthenticationManager();
-			IEnumerable<int> accessControlListIds = GetAccessControlListIds(dbContext, authenticationManager.UserInfo.ArtifactID);
-
-			using (SqlDataReader reader = GetJobHistoryReader(dbContext, sortColumn, sortDirection, accessControlListIds))
+			using (SqlDataReader reader = GetJobHistoryReader(workspaceContext, accessControlListIds, sortColumn, sortDirection))
 			{
-				JobHistoryModel[] jobHistories = GetJobHistories(reader, request.Page, request.PageSize);
-
-				JobHistorySummaryModel jobHistorySummaryModel = new JobHistorySummaryModel
-				{
-					JobHistories = jobHistories,
-					TotalDocumentsPushed = sumItemsImported
-				};
-				return jobHistorySummaryModel;
+				jobHistorySummary = GetJobHistorySummary(reader, request.Page, request.PageSize, workspaces);
+				return jobHistorySummary;
 			}
+		}
 
+		private FieldValueList<Workspace> GetWorkspacesUserHasPermissionToView(int userArtifactId)
+		{
+			IRSAPIClient rsapiClient = API.Services.Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
+			Relativity.Client.DTOs.User user = rsapiClient.Repositories.User.ReadSingle(userArtifactId);
+			FieldValueList<Workspace> workspaces = user.Workspaces;
+			return workspaces;
+		}
+
+		private int GetWorkspaceUserArtifactId(int workspaceArtifactId, int masterUserArtifactId)
+		{
+			var workspaceArtifactIdParameter = new SqlParameter("@caseArtifactId", workspaceArtifactId);
+			var masterUserArtifactIdParameter = new SqlParameter("@userArtifactId", masterUserArtifactId);
+			var parameters = new[] { workspaceArtifactIdParameter, masterUserArtifactIdParameter };
+
+			string sql = @"SELECT [CaseUserArtifactID] FROM [UserCaseUser]
+							WHERE [CaseArtifactID] = @caseArtifactId AND [UserArtifactID] = @userArtifactId";
+			
+			IDBContext masterContext = API.Services.Helper.GetDBContext(-1);
+			using (SqlDataReader reader = masterContext.ExecuteParameterizedSQLStatementAsReader(sql, parameters))
+			{
+				if (reader.Read())
+				{
+					int workspaceUserArtifactId = reader.GetInt32(0);
+					return workspaceUserArtifactId;
+				}
+
+				throw new Exception("You do not have permission to access this service.");
+			}
+		}
+
+		private ArrayList GetJobHistoryPermissions(IDBContext workspaceContext, int workspaceArtifactId, int workspaceUserArtifactId)
+		{
+			string artifactTypeIdSql = @"SELECT [ArtifactTypeID] FROM [Artifact] WHERE [ArtifactID] =
+										(SELECT TOP 1 [ArtifactID] FROM [JobHistory])";
+
+			int jobHistoryArtifactTypeId = workspaceContext.ExecuteSqlStatementAsScalar<int>(artifactTypeIdSql);
+
+			IPermissionHelper permissionHelper = API.Services.Helper.GetServicesManager().CreateProxy<IPermissionHelper>(ExecutionIdentity.System);
+			ArrayList jobHistoryObjectPermissions = permissionHelper.GetViewAclList(workspaceUserArtifactId, workspaceArtifactId, jobHistoryArtifactTypeId);
+
+			return jobHistoryObjectPermissions;
 		}
 
 		private string GetSortColumn(string sortColumnName)
 		{
-			string realSortColumn;
+			string realSortColumn = _DESTINATION_WORKSPACE_COLUMN;
+
 			switch (sortColumnName.ToLower())
 			{
-				case _DOCUMENT_COLUMN:
-					realSortColumn = _ITEMS_IMPORTED_COLUMN;
-					break;
 				case _DATE_COLUMN:
 					realSortColumn = _END_TIME_UTC_COLUMN;
+					break;
+				case _DOCUMENT_COLUMN:
+					realSortColumn = _ITEMS_IMPORTED_COLUMN;
 					break;
 				case _WORKSPACE_COLUMN:
 					realSortColumn = _DESTINATION_WORKSPACE_COLUMN;
 					break;
-				default:
-					throw new Exception(String.Format("Sort column name must be {0}, {1}, or {2}", _DOCUMENT_COLUMN, _DATE_COLUMN, _WORKSPACE_COLUMN));
 			}
+
 			return realSortColumn;
 		}
 
-		private int GetSumItemsImported(IDBContext context)
+		private SqlDataReader GetJobHistoryReader(IDBContext workspaceContext, ArrayList accessControlListIds, string sortColumn, string sortDirection)
 		{
-			string sqlItemsSum = @"SELECT SUM([ItemsImported])
-									FROM [EDDSDBO].[JobHistory]";
+			string joinedAclIds = String.Join(",", accessControlListIds.ToArray());
 
-			int sumItemsImported = context.ExecuteSqlStatementAsScalar<int>(sqlItemsSum);
-			return sumItemsImported;
-		}
-
-		private IEnumerable<int> GetAccessControlListIds(IDBContext context, int userArtifactId)
-		{
-			List<int> accessControllListIds = new List<int>();
-			
-			
-
-			SqlParameter userArtifactIdParameter = new SqlParameter("@userArtifactId", userArtifactId);
-			string sql = @"SELECT DISTINCT(AccessControlListID) FROM [EDDSDBO].[GroupUser] as GU
-								INNER JOIN [EDDSDBO].[AccessControlListPermission] as ACLP
-								ON GU.GroupArtifactID = ACLP.GroupID
-								WHERE GU.UserArtifactID = @userArtifactId";
-
-			using (SqlDataReader reader = context.ExecuteParameterizedSQLStatementAsReader(sql, new[] {userArtifactIdParameter}))
-			{
-				while (reader.Read())
-				{
-					accessControllListIds.Add(reader.GetInt32(0));
-				}
-			}
-			return accessControllListIds;
-		}
-
-		// TODO: This needs to only return items the user has permissions for
-		private SqlDataReader GetJobHistoryReader(IDBContext context, string sortColumn, string sortDirection, IEnumerable<int> accessControlListIds)
-		{
 			string sql = String.Format(@"SELECT [ItemsImported], [EndTimeUTC], [DestinationWorkspace]
-											FROM [EDDSDBO].[JobHistory] as JH
-											INNER JOIN [EDDSDBO].Artifact as A
-											ON JH.ArtifactID = A.ArtifactID
-											WHERE A.AccessControlListID in ({2})
-											ORDER BY [{0}] {1}", sortColumn, sortDirection, String.Join(",", accessControlListIds));
+							FROM [EDDSDBO].[JobHistory] as JH
+							INNER JOIN [EDDSDBO].Artifact as A
+							ON JH.ArtifactID = A.ArtifactID
+							WHERE A.AccessControlListID in ({0})
+							ORDER BY [{1}] {2}", joinedAclIds, sortColumn, sortDirection);
 
-			SqlDataReader reader = context.ExecuteSQLStatementAsReader(sql);
+			SqlDataReader reader = workspaceContext.ExecuteSQLStatementAsReader(sql);
 			return reader;
 		}
 
-		private JobHistoryModel[] GetJobHistories(SqlDataReader reader, int page, int pageSize)
+		private JobHistorySummaryModel GetJobHistorySummary(SqlDataReader reader, int page, int pageSize, FieldValueList<Workspace> workspaces)
 		{
 			int start = (page - 1) * pageSize;
 			int end = start + pageSize;
 
-			var jobHistoryModels = new List<JobHistoryModel>();
-			int count = 0;
-			while (reader.Read())
+			IList<JobHistoryModel> jobHistories = new List<JobHistoryModel>(pageSize);
+			Int64 totalAvailable = 0;
+			Int64 totalDocuments = 0;
+
+			while(reader.Read())
 			{
-				if (count >= start && count < end)
+				string destinationWorkspace = reader.GetString(2);
+				bool userHasPermission = DoesUserHavePermissionToThisDestinationWorkspace(workspaces, destinationWorkspace);
+				if (!userHasPermission)
 				{
-					jobHistoryModels.Add(new JobHistoryModel()
-					{
-						ItemsImported = reader.GetInt32(0),
-						EndTimeUtc = reader.GetDateTime(1),
-						DestinationWorkspace = reader.GetString(2)
-					});
+					continue;
 				}
-				count++;
+
+				int jobHistoryItemsImported = reader.GetInt32(0);
+				DateTime endTimeUtc = reader.GetDateTime(1);
+
+				if (totalAvailable >= start && totalAvailable < end)
+				{
+					var jobHistory = new JobHistoryModel
+					{
+						ItemsImported = jobHistoryItemsImported,
+						EndTimeUtc = endTimeUtc,
+						DestinationWorkspace = destinationWorkspace
+					};
+					jobHistories.Add(jobHistory);
+				}
+
+				totalDocuments += jobHistoryItemsImported;
+				totalAvailable++;
 			}
-			return jobHistoryModels.ToArray();
+
+			var jobHistorySummary = new JobHistorySummaryModel
+			{
+				Data = jobHistories,
+				TotalAvailable = totalAvailable,
+				TotalDocumentsPushed = totalDocuments
+			};
+
+			return jobHistorySummary;
 		}
 
-		public void Dispose()
+		private bool DoesUserHavePermissionToThisDestinationWorkspace(FieldValueList<Workspace> accessibleWorkspaces, string destinationWorkspace)
 		{
+			string substringCheck = "[Id::";
+			int workspaceArtifactIdStartIndex = destinationWorkspace.LastIndexOf(substringCheck, StringComparison.CurrentCulture) + substringCheck.Length;
+			int workspaceArtifactIdEndIndex = destinationWorkspace.LastIndexOf("]", StringComparison.CurrentCulture);
+			string workspaceArtifactIdSubstring = destinationWorkspace.Substring(workspaceArtifactIdStartIndex, workspaceArtifactIdEndIndex-workspaceArtifactIdStartIndex);
+			int workspaceArtifactId = Int32.Parse(workspaceArtifactIdSubstring);
+
+			return accessibleWorkspaces.Any(t => t.ArtifactID == workspaceArtifactId);
 		}
 	}
 }
