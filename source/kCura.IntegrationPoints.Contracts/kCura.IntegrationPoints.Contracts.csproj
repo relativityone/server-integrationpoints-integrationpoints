@@ -99,6 +99,10 @@
     <Compile Include="Models\FieldMapTypeEnum.cs" />
     <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Models\FieldEntry.cs" />
+    <Compile Include="Models\ObjectTypeDTO.cs" />
+    <Compile Include="Models\SourceWorkspaceDTO.cs" />
+    <Compile Include="Models\SourceWorkspaceFieldMapDTO.cs" />
+    <Compile Include="Models\WorkspaceDTO.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -108,8 +112,6 @@
     <Compile Include="Provider\IFieldProvider.cs" />
     <Compile Include="IStartUp.cs" />
     <Compile Include="Provider\ProviderReadDataException.cs" />
-    <Compile Include="RDO\IRDORepository.cs" />
-    <Compile Include="RDO\RDORepository.cs" />
     <Compile Include="Readers\RelativityReaderBase.cs" />
     <Compile Include="Synchronizer\IDataSynchronizer.cs" />
   </ItemGroup>

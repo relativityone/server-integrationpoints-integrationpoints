@@ -6,15 +6,15 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using Relativity.Services.ObjectQuery;
 
-namespace kCura.IntegrationPoints.Data.Managers.Implementations
+namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class KeplerDocumentManager : IDocumentManager
+	public class KeplerDocumentRepository : IDocumentRepository
 	{
-		private readonly IRDORepository _rdoRepository;
+		private readonly IObjectQueryManagerAdaptor _objectQueryManagerAdaptor;
 
-		public KeplerDocumentManager(IRDORepository rdoRepository)
+		public KeplerDocumentRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor)
 		{
-			_rdoRepository = rdoRepository;
+			_objectQueryManagerAdaptor = objectQueryManagerAdaptor;
 		}
 
 		public async Task<ArtifactDTO> RetrieveDocumentAsync(int documentId, ICollection<int> fieldIds)
@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Data.Managers.Implementations
 				TruncateTextFields = false
 			};
 
-			ObjectQueryResultSet resultSet = await _rdoRepository.RetrieveAsync(documentsQuery, String.Empty);
+			ObjectQueryResultSet resultSet = await _objectQueryManagerAdaptor.RetrieveAsync(documentsQuery, String.Empty);
 
 			if (resultSet != null && resultSet.Success)
 			{
@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Data.Managers.Implementations
 				TruncateTextFields = false
 			};
 
-			ObjectQueryResultSet resultSet = await _rdoRepository.RetrieveAsync(documentsQuery, String.Empty);
+			ObjectQueryResultSet resultSet = await _objectQueryManagerAdaptor.RetrieveAsync(documentsQuery, String.Empty);
 
 			if (resultSet != null && resultSet.Success)
 			{

@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 
-namespace kCura.IntegrationPoints.Data.Managers
+namespace kCura.IntegrationPoints.Data.Repositories
 {
-	public interface IDocumentManager
+	public interface IDocumentRepository
 	{
 		/// <summary>
 		/// Retrieves a single document

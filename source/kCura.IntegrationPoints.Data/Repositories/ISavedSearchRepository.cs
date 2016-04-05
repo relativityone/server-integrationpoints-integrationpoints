@@ -1,8 +1,8 @@
 ﻿using kCura.IntegrationPoints.Contracts.Models;
 
-namespace kCura.IntegrationPoints.Data.Managers
+namespace kCura.IntegrationPoints.Data.Repositories
 {
-	public interface ISavedSearchManager
+	public interface ISavedSearchRepository
 	{
 		/// <summary>
 		/// Retrieves the next set of documents for the saved search

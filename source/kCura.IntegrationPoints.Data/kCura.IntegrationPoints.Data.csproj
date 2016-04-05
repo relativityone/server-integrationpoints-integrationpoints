@@ -102,15 +102,20 @@
     <Compile Include="Factories\TempDocumentFactory.cs" />
     <Compile Include="ITempDocTableHelper.cs" />
     <Compile Include="ImportSettingVisibility.cs" />
-    <Compile Include="Managers\IDocumentManager.cs" />
-    <Compile Include="Managers\IFieldManager.cs" />
-    <Compile Include="Managers\Implementations\KeplerDocumentManager.cs" />
-    <Compile Include="Managers\Implementations\KeplerFieldManager.cs" />
-    <Compile Include="Managers\Implementations\RSAPISavedSearchManager.cs" />
-    <Compile Include="Managers\ISavedSearchManager.cs" />
+    <Compile Include="Repositories\IDocumentRepository.cs" />
+    <Compile Include="Repositories\IFieldRepository.cs" />
+    <Compile Include="Repositories\Implementations\KeplerDocumentRepository.cs" />
+    <Compile Include="Repositories\Implementations\KeplerFieldRepository.cs" />
+    <Compile Include="Adaptors\Implementations\ObjectQueryManagerAdaptor.cs" />
+    <Compile Include="Repositories\Implementations\RsapiSavedSearchRepository.cs" />
+    <Compile Include="Adaptors\IObjectQueryManagerAdaptor.cs" />
+    <Compile Include="Repositories\Implementations\RsapiSourceWorkspaceRepository.cs" />
+    <Compile Include="Repositories\Implementations\RsapiWorkspaceRepository.cs" />
     <Compile Include="Repositories\IDestinationWorkspaceRepository.cs" />
     <Compile Include="Repositories\Implementations\DestinationWorkspaceRepository.cs" />
     <Compile Include="TempDocTableHelper.cs" />
+    <Compile Include="Repositories\IObjectTypeRepository.cs" />
+    <Compile Include="Repositories\ISavedSearchRepository.cs" />
     <Compile Include="Queries\GetSavedSearchesQuery.cs" />
     <Compile Include="Queries\GetWorkspacesQuery.cs" />
     <Compile Include="RelativityVersion.cs" />
@@ -154,6 +159,8 @@
     <Compile Include="RdoGetter.cs" />
     <Compile Include="RdoHelper.cs" />
     <Compile Include="RelativityRdoQuery.cs" />
+    <Compile Include="Repositories\ISourceWorkspaceRepository.cs" />
+    <Compile Include="Repositories\IWorkspaceRepository.cs" />
     <Compile Include="Resources\Resource.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
