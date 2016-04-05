@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 		int WorkspaceUserID { get; set; }
 		int WorkspaceID { get; set; }
 
-		String GetWorkspaceName(int workspaceId);
+		string GetWorkspaceName(int workspaceId);
 
 		IRSAPIService RsapiService { get; set; }
 		IDBContext SqlContext { get; set; }

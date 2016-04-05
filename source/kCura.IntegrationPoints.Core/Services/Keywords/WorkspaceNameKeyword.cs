@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 		
 		public string Convert()
 		{
-			return _query.GetWorkspace(_context.WorkspaceID).Name;
+			return _query.GetWorkspaceName(_context.WorkspaceID);
 		}
 	}
 }
