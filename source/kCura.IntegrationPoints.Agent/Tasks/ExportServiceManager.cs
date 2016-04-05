@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 
-				synchronizer.SyncData(exporter.GetDataReader(this._identifier.ToString()), MappedFields, destinationConfig);
+				synchronizer.SyncData(exporter.GetDataReader(this._identifier.ToString(), this.JobHistoryDto.ArtifactId), MappedFields, destinationConfig);
 			}
 			catch (Exception ex)
 			{

@@ -12,8 +12,10 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		/// <summary>
 		/// Gets the reader of the exported data.
 		/// </summary>
+		/// <param name="jobDetails">The settings for the job</param>
+		/// <param name="jobHistoryArtifactId">The job history rdo artifact id</param>
 		/// <returns>DataReader to read export results</returns>
-		IDataReader GetDataReader(string jobDetails);
+		IDataReader GetDataReader(string jobDetails, int jobHistoryArtifactId);
 
 		/// <summary>
 		/// Retrieves data from exporter with a give size
