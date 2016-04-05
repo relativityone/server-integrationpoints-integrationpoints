@@ -58,6 +58,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				sourceWorkspaceDto.ArtifactId = artifactId;
 			}
 
+			sourceWorkspaceDto.ArtifactTypeId = sourceWorkspaceArtifactTypeId.Value;
+
 			// Check to see if instance should be updated
 			if (sourceWorkspaceDto.SourceWorkspaceName != workspaceDto.Name)
 			{
@@ -65,8 +67,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				sourceWorkspaceDto.SourceWorkspaceName = workspaceDto.Name;
 				_sourceWorkspaceRepository.Update(destinationWorkspaceArtifactId, sourceWorkspaceDto);
 			}
-
-			sourceWorkspaceDto.ArtifactTypeId = sourceWorkspaceArtifactTypeId.Value;
 
 			return sourceWorkspaceDto;
 		}

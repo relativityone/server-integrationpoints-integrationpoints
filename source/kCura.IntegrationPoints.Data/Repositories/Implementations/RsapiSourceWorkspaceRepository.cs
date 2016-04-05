@@ -276,9 +276,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME, sourceWorkspaceDto.Name, true),
 				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, sourceWorkspaceDto.SourceWorkspaceName, true),
 			};
-			var rdo = new RDO()
+
+			var rdo = new RDO(sourceWorkspaceDto.ArtifactTypeId, sourceWorkspaceDto.ArtifactId)
 			{
-				ArtifactTypeID = workspaceArtifactId,
 				Fields = fields
 			};
 
@@ -286,9 +286,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				_rsapiClient.Repositories.RDO.UpdateSingle(rdo);
 			}
-			catch
+			catch (Exception e)
 			{
-				throw new Exception("Unable to update Source Workspace instance");
+				throw new Exception("Unable to update Source Workspace instance", e);
 			}
 		}
 	}
