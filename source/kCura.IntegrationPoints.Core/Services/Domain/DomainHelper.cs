@@ -134,14 +134,14 @@ namespace kCura.IntegrationPoints.Core.Domain
 			// Get the connection string
 			string connectionString = kCura.Config.Config.ConnectionString;
 			byte[] connectionStringBytes = Encoding.ASCII.GetBytes(connectionString);
-			dataDictionary.Add(Constants.IntegrationPoints.AppDomain_Data_ConnectionString, connectionStringBytes);
+			dataDictionary.Add(Constants.IntegrationPoints.APP_DOMAIN_DATA_CONNECTION_STRING, connectionStringBytes);
 
 			// Marshal the data
 			IAppDomainDataMarshaller dataMarshaller = new SecureAppDomainDataMarshaller();
 			dataMarshaller.MarshalDataToDomain(domain, dataDictionary);
 
 			manager.Init();
-			Bootstrapper.InitAppDomain(Core.Constants.IntegrationPoints.AppDomain_Subsystem_Name, Core.Constants.IntegrationPoints.Application_GuidString, domain);
+			Bootstrapper.InitAppDomain(Core.Constants.IntegrationPoints.APP_DOMAIN_SUBSYSTEM_NAME, Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING, domain);
 
 			return manager;
 		}

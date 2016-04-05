@@ -25,6 +25,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web.Tests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] // NSubsitute requires this to mock internal interfaces
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data.Tests")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 //[assembly: Guid("9808fab4-ae17-49c5-a74a-e34543378422")]

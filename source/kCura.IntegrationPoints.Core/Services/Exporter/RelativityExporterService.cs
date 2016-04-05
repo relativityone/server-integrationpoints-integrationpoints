@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.Core;
@@ -124,11 +125,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		public IDataReader GetDataReader(string jobDetails)
+		public IDataReader GetDataReader(ITempDocTableHelper docTableHelper)
 		{
 			if (_reader == null)
 			{
-				_reader = new DocumentTransferDataReader(this, _mappedFields, _baseContext, jobDetails);
+				_reader = new DocumentTransferDataReader(this, _mappedFields, _baseContext, docTableHelper);
 			}
 			return _reader;
 		}

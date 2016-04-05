@@ -1,37 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using Castle.Core.Internal;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.IntegrationPoints.Data.Managers;
+using kCura.IntegrationPoints.Data.Managers.Implementations;
+using kCura.Relativity.Client;
 using Relativity.API;
-using Relativity.Core;
+using Relativity.Services.ObjectQuery;
 
 
 namespace kCura.IntegrationPoints.Data
 {
 	public class TempDocTableHelper : ITempDocTableHelper
 	{
-		private readonly ICoreContext _context;
 		private readonly IDBContext _caseContext;
+		private readonly IHelper _helper;
 		private readonly string _tableName;
-		private string _tableSuffix;
+		private readonly string _tableSuffix;
+		private string _docIdentifierField;
+		private readonly int _sourceWorkspaceId;
 
-		public TempDocTableHelper(ICoreContext context, string tableName, string tableSuffix)
+		public TempDocTableHelper(IHelper helper, string tableName, string tableSuffix, int sourceWorkspaceId)
 		{
-			_context = context;
+			_sourceWorkspaceId = sourceWorkspaceId;
+			_helper = helper;
+			_caseContext = _helper.GetDBContext(_sourceWorkspaceId);
 			_tableName = tableName;
 			_tableSuffix = tableSuffix;
 		}
 
-		public TempDocTableHelper(IDBContext caseContext, string tableName, string tableSuffix = "")
+		/// <summary>
+		/// For internal testing only
+		/// </summary>
+		/// <param name="helper"></param>
+		/// <param name="tableName"></param>
+		/// <param name="tableSuffix"></param>
+		/// <param name="sourceWorkspaceId"></param>
+		///  <param name="docIdField"></param>
+		internal TempDocTableHelper(IHelper helper, string tableName, string tableSuffix, int sourceWorkspaceId, string docIdField)
 		{
-			_caseContext = caseContext;
+			_sourceWorkspaceId = sourceWorkspaceId;
+			_helper = helper;
+			_caseContext = _helper.GetDBContext(_sourceWorkspaceId);
 			_tableName = tableName;
-			if (!String.IsNullOrEmpty(tableSuffix))
-			{
-				_tableSuffix = tableSuffix;
-			}		
+			_tableSuffix = tableSuffix;
+			_docIdentifierField = docIdField;
 		}
 
 		public void CreateTemporaryDocTable(List<int> artifactIds)
@@ -47,7 +63,7 @@ namespace kCura.IntegrationPoints.Data
 											END
 									INSERT INTO [EDDSRESOURCE]..[{0}] ([ArtifactID]) VALUES {1}", fullTableName, artifactIdList);
 
-				_context.ChicagoContext.DBContext.ExecuteNonQuerySQLStatement(sql);
+				_caseContext.ExecuteNonQuerySQLStatement(sql);
 			}
 		}
 
@@ -88,16 +104,68 @@ namespace kCura.IntegrationPoints.Data
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 		}
 
-		public void SetTableSuffix(string tableSuffix)
+		private int GetDocumentId(string docIdentifier)
 		{
-			_tableSuffix = tableSuffix;
+			if (String.IsNullOrEmpty(_docIdentifierField))
+			{
+				SetDocumentIdentifierField(_helper, _sourceWorkspaceId);
+			}
+
+			string sql = String.Format(@"Select [ArtifactId] FROM [Document] WHERE [{0}] = '{1}'", _docIdentifierField, docIdentifier);
+
+			int documentId = _caseContext.ExecuteSqlStatementAsScalar<int>(sql);
+			return documentId;
 		}
 
-		private int GetDocumentId(string controlNumber)
+		private void SetDocumentIdentifierField(IHelper helper, int sourceWorkspaceId)
 		{
-			string sql = String.Format(@"Select [ArtifactId] FROM [Document] WHERE [ControlNumber] = '{0}'", controlNumber);
+			IRDORepository rdoRepository = new RDORepository(helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), sourceWorkspaceId, Convert.ToInt32(ArtifactType.Field));
+			IFieldManager fieldManager = new KeplerFieldManager(rdoRepository);
+			ArtifactDTO[] fieldArtifacts = fieldManager.RetrieveFieldsAsync(
+				10,
+				new HashSet<string>(new[]
+				{
+					Fields.Name,
+					Fields.IsIdentifier
+				})).ConfigureAwait(false).GetAwaiter().GetResult();
 
-			return _caseContext.ExecuteSqlStatementAsScalar<int>(sql);
+			foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
+			{
+				string fieldName = String.Empty;
+				int isIdentifierFieldValue = 0;
+				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
+				{
+					if (field.Name == Fields.Name)
+					{
+						fieldName = field.Value.ToString();
+					}
+					if (field.Name == Fields.IsIdentifier)
+					{
+						try
+						{
+							isIdentifierFieldValue = Convert.ToInt32(field.Value);
+							if (isIdentifierFieldValue == 1)
+							{
+								_docIdentifierField = fieldName.Replace(" ", string.Empty);
+							}
+						}
+						catch
+						{
+							// suppress error for invalid casts
+						}
+					}	
+				}
+				if (isIdentifierFieldValue == 1)
+				{
+					break;
+				}
+			}
 		}
+
+		internal static class Fields //MNG: similar to class used in DocumentTransferProvider, probably find a better way to reference these
+		{
+			internal static string Name = "Name";
+			internal static string IsIdentifier = "Is Identifier";
+		}	
 	}
 }

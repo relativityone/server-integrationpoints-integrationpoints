@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		private IExporterService _exportService;
 		private IDataReader _instance;
 		private ICoreContext _context;
+		private ITempDocTableHelper _docTableHelper;
 
 		private const int _DOCUMENT_ARTIFACTID = 123423;
 		private const string _FIELD_NAME = "DispName";
@@ -58,13 +59,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			}
 		};
 
-		private string _uniqueTableSuffix = "12345_6789";
-
 		[SetUp]
 		public void SetUp()
 		{
 			_context = Substitute.For<ICoreContext>();
 			_exportService = Substitute.For<IExporterService>();
+			_docTableHelper = Substitute.For<ITempDocTableHelper>();
 		}
 
 		#region Read
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			bool result = _instance.Read();
@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			bool result = _instance.Read();
@@ -118,7 +118,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act & Assert
 			Assert.Throws<Exception>(() => _instance.Read());
@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -170,7 +170,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				new FieldMap[0],
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			bool result = _instance.Read();
@@ -213,7 +213,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			bool result = _instance.Read();
@@ -232,7 +232,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				new FieldMap[0],
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			bool result = _instance.Read();
@@ -258,7 +258,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -281,7 +281,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -303,7 +303,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -321,7 +321,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			bool result = _instance.NextResult();
@@ -338,7 +338,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			int result = _instance.Depth;
@@ -355,7 +355,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			int result = _instance.RecordsAffected;
@@ -372,7 +372,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			string fieldName = _instance.GetName(0);
@@ -399,7 +399,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			string fieldName = _instance.GetName(0);
@@ -416,7 +416,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			int ordinal = _instance.GetOrdinal(_FIELD_IDENTIFIER.ToString());
@@ -443,7 +443,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			int ordinal = _instance.GetOrdinal(_FIELD_IDENTIFIER.ToString());
@@ -474,7 +474,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -496,7 +496,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -514,7 +514,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			int fieldCount = _instance.FieldCount;
@@ -531,7 +531,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			int fieldCount = _instance.FieldCount;
@@ -552,7 +552,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			bool exceptionThrown = false;
@@ -579,7 +579,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			bool exceptionThrown = false;
@@ -607,7 +607,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -629,7 +629,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -651,7 +651,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -673,7 +673,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -705,7 +705,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			var expectedResult = new DataTable()
 			{
@@ -742,7 +742,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			var expectedResult = new DataTable()
 			{
@@ -770,7 +770,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				new FieldMap[0], 
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			var expectedResult = new DataTable()
 			{
@@ -796,7 +796,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				new FieldMap[0],
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			var expectedResult = new DataTable()
 			{
@@ -829,7 +829,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -872,7 +872,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -915,7 +915,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -957,7 +957,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -998,7 +998,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -1040,7 +1040,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -1082,7 +1082,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -1124,7 +1124,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -1167,7 +1167,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -1210,7 +1210,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -1253,7 +1253,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();
@@ -1296,7 +1296,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix);
+				_docTableHelper);
 
 			// Act
 			_instance.Read();

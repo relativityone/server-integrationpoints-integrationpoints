@@ -14,9 +14,11 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
 using Relativity.API;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -30,9 +32,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IEnumerable<IBatchStatus> _batchStatus;
 		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private Guid _identifier;
-		private int _destinationWorkspaceId;
 		private readonly IHelper _helper;
 		private SourceConfiguration _sourceConfiguration;
+		private ITempDocTableHelper _docTableHelper;
 
 		public ExportServiceManager(
 			ICaseServiceContext caseServiceContext,
@@ -75,7 +77,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 
-				synchronizer.SyncData(exporter.GetDataReader(this._identifier.ToString()), MappedFields, destinationConfig);
+				IDataReader dataReader = exporter.GetDataReader(_docTableHelper);
+				synchronizer.SyncData(dataReader, MappedFields, destinationConfig);
 			}
 			catch (Exception ex)
 			{
@@ -114,19 +117,21 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
 			}
 
+			_sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
+
+			SourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
+
+			_docTableHelper = new TempDocumentFactory().GetDocTableHelper(_helper, Constants.IntegrationPoints.TEMPORARY_DOCUMENT_TABLE_NAME, this._identifier.ToString(), _sourceConfiguration.SourceWorkspaceArtifactId);
+
 			this.JobHistoryDto = _jobHistoryService.GetRdo(this._identifier);
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
 			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPointDto;
-			_jobHistoryErrorService.SetTableSuffix(this._identifier.ToString());
+			_jobHistoryErrorService.DocTableHelper = this._docTableHelper;
 
 			// Load Mapped Fields & Sanitize them
 			// #unbelievable
 			MappedFields = JsonConvert.DeserializeObject<List<FieldMap>>(IntegrationPointDto.FieldMappings);
 			MappedFields.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
-
-			_sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
-
-			SourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
 
 			this.JobHistoryDto.StartTimeUTC = DateTime.UtcNow;
 			UpdateJobStatus();
