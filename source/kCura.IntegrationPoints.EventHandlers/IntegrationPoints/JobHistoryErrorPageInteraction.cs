@@ -1,5 +1,4 @@
-﻿using System;
-using kCura.EventHandler;
+﻿using kCura.EventHandler;
 
 // https://platform.kcura.com/9.3/Content/Customizing_workflows/Page_Interaction_event_handlers.htm
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
@@ -12,7 +11,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			Response response = new Response { Success = true };
 
-			String applicationPath = PageInteractionHelper.GetApplicationPath(this.Application.ApplicationUrl);
+			string applicationPath = PageInteractionHelper.GetApplicationPath(this.Application.ApplicationUrl);
 			this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/job-history.js");
 
 			return response;
