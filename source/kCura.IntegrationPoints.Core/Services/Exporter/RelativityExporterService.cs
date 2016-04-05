@@ -18,7 +18,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class RelativityExporterService : IExporterService
 	{
-		private const string _REQUEST_ORIGINATION = "RequestOrigination";
 		private readonly int[] _avfIds;
 		private readonly BaseServiceContext _baseContext;
 		private readonly DataGridContext _dataGridContext;
