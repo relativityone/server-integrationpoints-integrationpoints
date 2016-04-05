@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
-using kCura.Utility.Extensions;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Managers
@@ -21,11 +20,11 @@ namespace kCura.IntegrationPoints.Core.Managers
 		private readonly IRSAPIClient _client;
 		private readonly IDestinationWorkspaceRepository _dwRepository;
 
-		public DestinationWorkspaceManager(ICaseServiceContext context, IHelper helper, Job job, SourceConfiguration sourceConfig, string tableSuffix) //todo: source workspace ID
+		public DestinationWorkspaceManager(ICaseServiceContext context, IHelper helper, Job job, SourceConfiguration sourceConfig, string tableSuffix)
 		{
 			_job = job;
 			_client = new RsapiClientFactory(helper).CreateClientForWorkspace(sourceConfig.SourceWorkspaceArtifactId, ExecutionIdentity.System);
-			_tempDocHelper = new TempDocumentFactory().GetDocTableHelper(context.SqlContext, Constants.IntegrationPoints.Temporary_Document_Table_Name, tableSuffix);
+			_tempDocHelper = new TempDocumentFactory().GetDocTableHelper(helper, Constants.IntegrationPoints.TEMPORARY_DOCUMENT_TABLE_NAME, tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
 			_dwRepository = new DestinationWorkspaceRepository(_client, sourceConfig.TargetWorkspaceArtifactId);
 		}
 		public void Execute()

@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Contracts
 		/// </summary>
 		private void SetUpConnectionString(IAppDomainDataMarshaller dataMarshaller)
 		{
-			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Core.Constants.IntegrationPoints.AppDomain_Data_ConnectionString);
+			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Core.Constants.IntegrationPoints.APP_DOMAIN_DATA_CONNECTION_STRING);
 			if (data != null && data.Length > 0)
 			{
 				string connectionString = System.Text.Encoding.ASCII.GetString(data);
