@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Tests.Unit.Helpers;
@@ -20,6 +18,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		private IExporterService _exportService;
 		private IDataReader _instance;
 		private ICoreContext _context;
+		private ITempDocTableHelper _docTableHelper;
 		private ISourceWorkspaceManager _sourceWorkspaceManager;
 		private ITargetWorkspaceJobHistoryManager _targetWorkspaceJobHistoryManager;
 
@@ -74,13 +73,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			}
 		};
 
-		private string _uniqueTableSuffix = "12345_6789";
-
 		[SetUp]
 		public void SetUp()
 		{
 			_context = Substitute.For<ICoreContext>();
 			_exportService = Substitute.For<IExporterService>();
+			_docTableHelper = Substitute.For<ITempDocTableHelper>();
 			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
 			_targetWorkspaceJobHistoryManager = Substitute.For<ITargetWorkspaceJobHistoryManager>();
 
@@ -100,7 +98,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			bool result = _instance.Read();
@@ -120,7 +118,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			bool result = _instance.Read();
@@ -140,7 +138,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act & Assert
 			Assert.Throws<Exception>(() => _instance.Read());
@@ -162,7 +160,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -192,7 +190,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -216,7 +214,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				new FieldMap[0],
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			bool result = _instance.Read();
@@ -235,7 +233,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			bool result = _instance.Read();
@@ -254,7 +252,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				new FieldMap[0],
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			bool result = _instance.Read();
@@ -280,7 +278,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -303,7 +301,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -325,7 +323,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -343,7 +341,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			bool result = _instance.NextResult();
@@ -360,7 +358,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			int result = _instance.Depth;
@@ -377,7 +375,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			int result = _instance.RecordsAffected;
@@ -394,7 +392,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			string fieldName = _instance.GetName(0);
@@ -421,7 +419,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			string fieldName = _instance.GetName(0);
@@ -438,7 +436,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			int ordinal = _instance.GetOrdinal(_FIELD_IDENTIFIER.ToString());
@@ -465,7 +463,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			int ordinal = _instance.GetOrdinal(_FIELD_IDENTIFIER.ToString());
@@ -496,7 +494,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -518,7 +516,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -536,7 +534,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			int fieldCount = _instance.FieldCount;
@@ -553,7 +551,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			int fieldCount = _instance.FieldCount;
@@ -574,7 +572,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			bool exceptionThrown = false;
@@ -601,7 +599,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			bool exceptionThrown = false;
@@ -629,7 +627,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -651,7 +649,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -673,7 +671,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -695,7 +693,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -727,7 +725,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			var expectedResult = new DataTable()
 			{
@@ -766,7 +764,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			var expectedResult = new DataTable()
 			{
@@ -796,7 +794,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				new FieldMap[0], 
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			var expectedResult = new DataTable()
 			{
@@ -824,7 +822,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				new FieldMap[0],
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			var expectedResult = new DataTable()
 			{
@@ -859,7 +857,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_templateFieldEntries,
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -902,7 +900,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -945,7 +943,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -987,7 +985,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -1028,7 +1026,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -1070,7 +1068,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -1112,7 +1110,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -1154,7 +1152,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -1197,7 +1195,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -1240,7 +1238,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -1283,7 +1281,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();
@@ -1326,7 +1324,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_uniqueTableSuffix, _JOB_HISTORY_ARTIFACTID);
+				_docTableHelper, _JOB_HISTORY_ARTIFACTID);
 
 			// Act
 			_instance.Read();

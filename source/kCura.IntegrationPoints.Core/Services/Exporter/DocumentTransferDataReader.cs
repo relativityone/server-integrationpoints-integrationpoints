@@ -25,10 +25,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly Dictionary<int, string> _nativeFileLocations;
 		private readonly Dictionary<int, string> _nativeFileNames; 
 		private readonly ICoreContext _context;
+		private readonly ITempDocTableHelper _docTableHelper;
 		private readonly SourceWorkspaceDTO _sourceWorkspaceDto;
 		private readonly TargetWorkspaceJobHistoryDTO _targetWorkspaceJobHistoryDto;
-		private readonly ITempDocumentFactory _tempDocumentFactory;
-		private readonly ITempDocTableHelper _tempDocHelper;
 		private readonly int _folderPathFieldSourceArtifactId;
 
 		/// used as a flag to store the reference of the current artifacts array.
@@ -42,7 +41,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			ITargetWorkspaceJobHistoryManager targetWorkspaceJobHistoryManager,
 			FieldMap[] fieldMappings,
 			ICoreContext context,
-			string jobDetails,
+			ITempDocTableHelper docTableHelper,
 			int jobHistoryArtifactId) :
 			base(GenerateDataColumnsFromFieldEntries(fieldMappings))
 		{
@@ -50,8 +49,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_relativityExporterService = relativityExportService;
 			_nativeFileLocations = new Dictionary<int, string>();
 			_nativeFileNames = new Dictionary<int, string>();
-			//todo: resolve TempDocumentFactory to make it unit testable 
-			_tempDocHelper = new TempDocumentFactory().GetTableCreationHelper(context, Constants.IntegrationPoints.Temporary_Document_Table_Name, jobDetails);
+			_docTableHelper = docTableHelper;
 
 			FieldMap folderPathInformationField = fieldMappings.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
 			if (folderPathInformationField != null)
@@ -69,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			ArtifactDTO[] artifacts = _relativityExporterService.RetrieveData(FETCH_ARTIFACTDTOS_BATCH_SIZE);
 			List<int> artifactIds = artifacts.Select(x => x.ArtifactId).ToList();
 			
-			_tempDocHelper.CreateTemporaryDocTable(artifactIds);
+			_docTableHelper.CreateTemporaryDocTable(artifactIds);
 			return artifacts;
 		}
 

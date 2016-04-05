@@ -27,6 +27,5 @@ namespace kCura.IntegrationPoints.Data.Queries
 				_client.APIOptions.WorkspaceID = workspace;
 			}
 		}
-
 	}
 }

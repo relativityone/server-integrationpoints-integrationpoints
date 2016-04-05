@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using kCura.IntegrationPoints.Data.Factories;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Core;
 
 namespace kCura.IntegrationPoints.Data.Tests.Unit
 {
@@ -16,23 +13,21 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 	{
 		private string _tableName = "Temp_Doc_Table";
 		private string _tableSuffix = "12345-6789";
-		private ICoreContext _context;
+		private int _sourceWorkspaceId = 99999;
+		private string _docIdColumn = "ControlNumber";
 		private IDBContext _caseContext;
 
-		private ITempDocumentFactory _factory;
-		private ITempDocTableHelper _instanceForCreation;
-		private ITempDocTableHelper _instanceForDeletion;
+		private ITempDocTableHelper _instance;
+		private IHelper _helper;
 
 		[SetUp]
 		public void SetUp()
 		{
-			_context = Substitute.For<ICoreContext>();
 			_caseContext = Substitute.For<IDBContext>();
+			_helper = Substitute.For<IHelper>();
+			_helper.GetDBContext(_sourceWorkspaceId).Returns(_caseContext);
 
-			_factory = new TempDocumentFactory();
-			_instanceForCreation = _factory.GetTableCreationHelper(_context, _tableName, _tableSuffix);
-			_instanceForDeletion = _factory.GetDocTableHelper(_caseContext, _tableName);
-
+			_instance = new TempDocTableHelper(_helper, _tableName, _tableSuffix, _sourceWorkspaceId, _docIdColumn);
 		}
 
 		[Test]
@@ -52,10 +47,31 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			
 			//Act
-			_instanceForCreation.CreateTemporaryDocTable(artifactIds);
+			_instance.CreateTemporaryDocTable(artifactIds);
 			
 			//Assert
-			_context.ChicagoContext.DBContext.Received().ExecuteNonQuerySQLStatement(Arg.Is(sql));
+			_caseContext.Received().ExecuteNonQuerySQLStatement(Arg.Is(sql));
+		}
+
+		[Test]
+		public void CreateTemporaryDocTable_EmptyList_Test()
+		{
+			//Arrange
+			var artifactIds = new List<int>();
+			string artifactIdList = "(" + String.Join("),(", artifactIds.Select(x => x.ToString())) + ")";
+
+			string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
+											BEGIN 
+											CREATE TABLE [EDDSRESOURCE]..[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED, [ID] [int] IDENTITY(1,1) NOT NULL)
+											END
+									INSERT INTO [EDDSRESOURCE]..[{0}] ([ArtifactID]) VALUES {1}", _tableName + "_" + _tableSuffix, artifactIdList);
+
+
+			//Act
+			_instance.CreateTemporaryDocTable(artifactIds);
+
+			//Assert
+			_caseContext.DidNotReceive().ExecuteNonQuerySQLStatement(Arg.Is(sql));
 		}
 
 		[Test]
@@ -66,13 +82,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			int docArtifactId = 12345;
 
 			string sqlDelete = String.Format(@"DELETE FROM EDDSRESOURCE..[{0}] WHERE [ArtifactID] = {1}", _tableName+ "_" +_tableSuffix, docArtifactId);
-			string sqlGetId = String.Format(@"Select [ArtifactId] FROM [Document] WHERE [ControlNumber] = '{0}'", docIdentifier);
+			string sqlGetId = String.Format(@"Select [ArtifactId] FROM [Document] WHERE [{0}] = '{1}'", _docIdColumn, docIdentifier);
 
 			_caseContext.ExecuteSqlStatementAsScalar<int>(sqlGetId).Returns(docArtifactId);
 
 			//Act
-			_instanceForDeletion.SetTableSuffix(_tableSuffix);
-			_instanceForDeletion.RemoveErrorDocument(docIdentifier);
+			_instance.RemoveErrorDocument(docIdentifier);
 
 			//Assert
 			_caseContext.Received().ExecuteNonQuerySQLStatement(sqlDelete);
@@ -86,8 +101,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 										DROP TABLE [EDDSRESOURCE]..[{0}]",_tableName + "_" + _tableSuffix);
 
 			//Act
-			_instanceForDeletion.SetTableSuffix(_tableSuffix);
-			_instanceForDeletion.DeleteTable();
+			_instance.DeleteTable();
 
 			//Assert
 			_caseContext.Received().ExecuteNonQuerySQLStatement(sql);

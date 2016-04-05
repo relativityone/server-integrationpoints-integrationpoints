@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
@@ -15,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		/// <param name="jobDetails">The settings for the job</param>
 		/// <param name="jobHistoryArtifactId">The job history rdo artifact id</param>
 		/// <returns>DataReader to read export results</returns>
-		IDataReader GetDataReader(string jobDetails, int jobHistoryArtifactId);
+		IDataReader GetDataReader(ITempDocTableHelper docHelper, int jobHistoryArtifactId);
 
 		/// <summary>
 		/// Retrieves data from exporter with a give size

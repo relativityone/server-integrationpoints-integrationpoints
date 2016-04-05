@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Data;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.Core;
@@ -19,7 +20,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class RelativityExporterService : IExporterService
 	{
-		private const string _REQUEST_ORIGINATION = "RequestOrigination";
 		private readonly int[] _avfIds;
 		private readonly BaseServiceContext _baseContext;
 		private readonly DataGridContext _dataGridContext;
@@ -129,11 +129,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		public IDataReader GetDataReader(string jobDetails, int jobHistoryArtifactId)
+		public IDataReader GetDataReader(ITempDocTableHelper docTableHelper, int jobHistoryArtifactId)
 		{
 			if (_reader == null)
 			{
-				_reader = new DocumentTransferDataReader(_settings.SourceWorkspaceArtifactId, _settings.TargetWorkspaceArtifactId, this, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,_mappedFields, _baseContext, jobDetails, jobHistoryArtifactId);
+				_reader = new DocumentTransferDataReader(_settings.SourceWorkspaceArtifactId, _settings.TargetWorkspaceArtifactId, this, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,_mappedFields, _baseContext, docTableHelper, jobHistoryArtifactId);
 			}
 			return _reader;
 		}
