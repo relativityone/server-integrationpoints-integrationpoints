@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -11,13 +9,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly IRSAPIClient _client;
 		private readonly int _destinationWorkspaceId;
-		private readonly WorkspaceQuery _workspaceQuery;
+		private readonly IWorkspaceRepository _workspaceRepository;
 
 		public DestinationWorkspaceRepository(IRSAPIClient client, int destinationWorkspaceId)
 		{
 			_client = client;
 			_destinationWorkspaceId = destinationWorkspaceId;
-			_workspaceQuery = new WorkspaceQuery(client);
+			_workspaceRepository = new RsapiWorkspaceRepository(client);
 		}
 
 		public int QueryDestinationWorkspaceRdoInstance()
@@ -45,7 +43,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int CreateDestinationWorkspaceRdoInstance(List<int> documentIds)
 		{
-			string destinationWorkspaceName = _workspaceQuery.GetWorkspaceName(_destinationWorkspaceId);
+			string destinationWorkspaceName = _workspaceRepository.Retrieve(_destinationWorkspaceId).Name;
 			string instanceName = destinationWorkspaceName + " - " + _destinationWorkspaceId; 
 
 			RDO destinationWorkspaceObject = new RDO();

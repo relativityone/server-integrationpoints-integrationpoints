@@ -185,7 +185,6 @@
     </Compile>
     <Compile Include="SourceProviderConfiguration.cs" />
     <Compile Include="SqlObjectTypeQuery.cs" />
-    <Compile Include="Queries\WorkspaceQuery.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
