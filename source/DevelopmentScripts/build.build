@@ -221,8 +221,6 @@
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Email.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.Shared.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Services.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Services.Interfaces.Private.dll"' />
 			<arg line='"${target.code.directory}\kCura.Relativity.Export.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
@@ -304,6 +302,8 @@
 				<include name="kCura.IntegrationPoints.dll" />
 				<include name="kCura.LDAPProvider.dll" />
 				<include name="kCura.DocumentTransferProvider.dll" />
+				<include name="kCura.IntegrationPoints.Services.dll" />
+				<include name="kCura.IntegrationPoints.Services.Interfaces.Private.dll" />
 			</fileset>
 		</copy>
 	</target>

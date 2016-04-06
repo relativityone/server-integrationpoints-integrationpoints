@@ -187,9 +187,21 @@ ko.validation.insertValidationMessage = function (element) {
 		this.SourceProviderConfiguration = ko.observable(model.SourceProviderConfiguration);
 
 		this.OverwriteOptions = ko.observableArray(['Append Only', 'Overlay Only', 'Append/Overlay']);
+		this.MultiSelectFieldOverlayBehaviors = ko.observableArray(['Merge Values', 'Replace Values', 'Use Field Settings']);
+		this.FieldOverlayBehavior = ko.observable(model.FieldOverlayBehavior || 'Use Field Settings');
+
 		self.OverwriteOptions = this.OverwriteOptions;
+		self.FieldOverlayBehavior = this.FieldOverlayBehavior;
 
 		this.SelectedOverwrite = ko.observable(model.SelectedOverwrite || 'Append Only');
+		this.SelectedOverwrite.subscribe(function (newValue) {
+			if (newValue != 'Append Only') {
+				self.UseFolderPathInformation("false");
+				self.FolderPathSourceField(null);
+			} else {
+				self.FieldOverlayBehavior('Use Field Settings');
+			}
+		});
 
 		this.UseFolderPathInformation = ko.observable(model.UseFolderPathInformation || "false");
 		this.FolderPathSourceField = ko.observable().extend(
@@ -203,7 +215,7 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.FolderPathFields = ko.observableArray([]);
 		if (self.FolderPathFields.length === 0) {
-			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetFolderPathFields') }).then(function (result) {
+			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('FolderPath', 'GetFields') }).then(function (result) {
 				// GetFolderPathFields only returns fixed-length text and long text fields
 				self.FolderPathFields(result);
 				self.FolderPathSourceField(model.FolderPathSourceField);
@@ -273,19 +285,23 @@ ko.validation.insertValidationMessage = function (element) {
 		}).fail(function (error) {
 			IP.message.error.raise("No attributes were returned from the source provider.");
 		});
-		var mappedSourcePromise;
-
-		if (typeof (model.map) === "undefined") {
-			mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap', artifactId) });
-		} else {
-			mappedSourcePromise = jQuery.parseJSON(model.map);
-		}
 
 		var destination = JSON.parse(model.destination);
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('rdometa', destination.artifactTypeID) }).then(function (result) {
 			self.hasParent(result.hasParent);
-
 		});
+
+		var mappedSourcePromise;
+		if (destination.DoNotUseFieldsMapCache) {
+			mappedSourcePromise = [];
+		} else {
+			if (typeof (model.map) === "undefined") {
+				mappedSourcePromise = root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('FieldMap', artifactId) });
+			} else {
+				mappedSourcePromise = jQuery.parseJSON(model.map);
+			}
+		}
+
 		var promises = [workspaceFieldPromise, sourceFieldPromise, mappedSourcePromise];
 
 		var mapTypes = {
@@ -467,6 +483,7 @@ ko.validation.insertValidationMessage = function (element) {
 				nativeFilePathValue: model.nativeFilePathValue,
 				UseFolderPathInformation: model.UseFolderPathInformation,
 				SelectedOverwrite: model.SelectedOverwrite,
+				FieldOverlayBehavior : model.FieldOverlayBehavior,
 				FolderPathSourceField: model.FolderPathSourceField,
 				ExtractedTextFieldContainsFilePath: model.ExtractedTextFieldContainsFilePath,
 				ExtractedTextFileEncoding: model.ExtractedTextFileEncoding
@@ -609,27 +626,42 @@ ko.validation.insertValidationMessage = function (element) {
 							});
 						}
 					}
+
 					if (this.model.UseFolderPathInformation() == "true") {
 						var folderPathField = "";
 						var folderPathFields = this.model.FolderPathFields();
 						for (var i = 0; i < folderPathFields.length; i++) {
 							if (folderPathFields[i].fieldIdentifier === this.model.FolderPathSourceField()) {
 								folderPathField = folderPathFields[i];
+								break;
 							}
 						}
-						var entry =
-						{
-							displayName: folderPathField.actualName,
-							isIdentifier: "false",
-							fieldIdentifier: folderPathField.fieldIdentifier,
-							isRequired: "false"
+
+						// update fieldMapType if folderPath is in mapping field
+						var containsFolderPathInMapping = false;
+						for (var index = 0; index < map.length; index++) {
+							if (map[index].sourceField.fieldIdentifier === folderPathField.fieldIdentifier) {
+								map[index].fieldMapType = "FolderPathInformation";
+								containsFolderPathInMapping = true;
+								break;
+							}
 						}
 
-						map.push({
-							sourceField: entry,
-							destinationField: {},
-							fieldMapType: "FolderPathInformation"
-						});
+						// create folder path entry if it is not in the field
+						if (containsFolderPathInMapping === false) {
+							var entry =
+							{
+								displayName: folderPathField.actualName,
+								isIdentifier: "false",
+								fieldIdentifier: folderPathField.fieldIdentifier,
+								isRequired: "false"
+							}
+							map.push({
+								sourceField: entry,
+								destinationField: {},
+								fieldMapType: "FolderPathInformation"
+							});
+						}
 					}
 
 					_destination.ImportOverwriteMode = ko.toJS(this.model.SelectedOverwrite).replace('/', '').replace(' ', '');
@@ -655,6 +687,7 @@ ko.validation.insertValidationMessage = function (element) {
 				this.returnModel.parentIdentifier = this.model.selectedIdentifier();
 				this.returnModel.SelectedOverwrite = this.model.SelectedOverwrite();
 				_destination.CustodianManagerFieldContainsLink = this.model.CustodianManagerFieldContainsLink();
+				_destination.FieldOverlayBehavior = this.model.FieldOverlayBehavior();
 				this.returnModel.destination = JSON.stringify(_destination);
 				d.resolve(this.returnModel);
 			} else {

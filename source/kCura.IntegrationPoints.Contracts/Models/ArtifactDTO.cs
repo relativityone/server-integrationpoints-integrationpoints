@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		/// <summary>
 		/// Retrieves the ArtifactFieldDTO for the given identifier
 		/// </summary>
-		/// <param name="artifactId">The aritfact id of the field to find</param>
+		/// <param name="artifactId">The artifact id of the field to find</param>
 		/// <returns>The field with the given artifact id</returns>
 		public ArtifactFieldDTO GetFieldForIdentifier(int artifactId)
 		{

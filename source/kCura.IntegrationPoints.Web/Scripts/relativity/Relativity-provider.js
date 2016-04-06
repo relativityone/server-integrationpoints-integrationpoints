@@ -21,6 +21,7 @@
 		var destination = JSON.parse(destinationJson);
 		destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
 		destination.Provider = "relativity";
+		destination.DoNotUseFieldsMapCache = viewModel.WorkspaceHasChanged;
 		destinationJson = JSON.stringify(destination);
 		IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination = destinationJson;
 	});
@@ -54,6 +55,7 @@
 	var Model = function (m) {
 
 		var state = $.extend({}, {}, m);
+		var self = this;
 
 		this.workspaces = ko.observableArray(state.workspaces);
 		this.savedSearches = ko.observableArray(state.savedSearches);
@@ -62,14 +64,20 @@
 			required: true
 		});
 
+
+		this.TargetWorkspaceArtifactId.subscribe(function (value) {
+			if (self.TargetWorkspaceArtifactId !== value) {
+				self.WorkspaceHasChanged = true;
+			}
+		});
+
+
 		this.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId).extend({
 			required: true
 		});
 
-		var self = this;
-
 		if (self.savedSearches.length === 0) {
-			// load savedsearches
+			// load saved searches
 			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('SavedSearchFinder') }).then(function (result) {
 				self.savedSearches(result);
 

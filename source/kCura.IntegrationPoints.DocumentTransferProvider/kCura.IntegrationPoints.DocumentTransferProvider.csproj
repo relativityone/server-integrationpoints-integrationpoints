@@ -80,24 +80,20 @@
   <ItemGroup>
     <Compile Include="Adaptors\Implementations\ConfigAdapter.cs" />
     <Compile Include="Adaptors\IIntegrationPointsConfig.cs" />
-    <Compile Include="DataReaders\DirectSqlCallHelper.cs" />
     <Compile Include="DataReaders\DocumentArtifactIdDataReader.cs" />
-    <Compile Include="DataReaders\DocumentTransferDataReader.cs" />
     <Compile Include="DataReaders\FieldValueLoader.cs" />
     <Compile Include="DocumentTransferProvider.cs" />
     <Compile Include="DocumentTransferSettings.cs" />
-    <Compile Include="Managers\IDocumentManager.cs" />
-    <Compile Include="Managers\IFieldManager.cs" />
-    <Compile Include="Managers\Implementations\KeplerDocumentManager.cs" />
-    <Compile Include="Managers\Implementations\KeplerFieldManager.cs" />
-    <Compile Include="Managers\Implementations\RSAPISavedSearchManager.cs" />
-    <Compile Include="Managers\ISavedSearchManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
+      <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
+      <Name>kCura.IntegrationPoints.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider.Shared\kCura.IntegrationPoints.DocumentTransferProvider.Shared.csproj">
       <Project>{22991306-a168-4d22-80a7-aaa99c9e9fd6}</Project>

@@ -3,30 +3,53 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Web.Http;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.IntegrationPoints.Web.DataStructures;
 using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using kCura.Relativity.ImportAPI;
+using Newtonsoft.Json;
+using Artifact = kCura.Relativity.Client.Artifact;
 using Field = kCura.Relativity.Client.Field;
+using Query = kCura.Relativity.Client.Query;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-	public class GetFolderPathFieldsController : ApiController
+	public class IntegrationPointDestinationConfiguration
+	{
+		public bool UseFolderPathInformation;
+		public int FolderPathSourceField;
+	}
+
+	public class IntegrationPointSourceConfiguration
+	{
+		public int SavedSearchArtifactId;
+	}
+
+	public class FolderPathController : ApiController
 	{
 		private readonly IRSAPIClient _client;
 		private readonly IImportApiFactory _importApiFactory;
 		private readonly IConfig _config;
+		private readonly IGenericLibrary<IntegrationPoint> _integrationPointLibrary;
 
-		public GetFolderPathFieldsController(IRSAPIClient client, IImportApiFactory importApiFactory, IConfig config)
+		public FolderPathController(IRSAPIClient client,
+			IImportApiFactory importApiFactory,
+			IConfig config,
+			IGenericLibrary<IntegrationPoint> integrationPointLibrary)
 		{
 			_client = client;
 			_importApiFactory = importApiFactory;
 			_config = config;
+			_integrationPointLibrary = integrationPointLibrary;
 		}
 
 		[HttpGet]
-		public HttpResponseMessage Get()
+		public HttpResponseMessage GetFields()
 		{
 			ImportSettings settings = new ImportSettings { WebServiceURL = _config.WebApiPath };
 			IImportAPI importApi = _importApiFactory.GetImportAPI(settings);
@@ -37,6 +60,70 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IEnumerable<FieldEntry> textMappableFields = textFields.Where(x => mappableArtifactIds.Contains(Convert.ToInt32(x.FieldIdentifier)));
 
 			return Request.CreateResponse(HttpStatusCode.OK, textMappableFields, Configuration.Formatters.JsonFormatter);
+		}
+
+		[HttpGet]
+		public HttpResponseMessage GetFolderCount(int integrationPointArtifactId)
+		{
+			IntegrationPoint integrationPoint = _integrationPointLibrary.Read(Convert.ToInt32(integrationPointArtifactId));
+			IntegrationPointSourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<IntegrationPointSourceConfiguration>(integrationPoint.SourceConfiguration);
+			IntegrationPointDestinationConfiguration destinationConfiguration = JsonConvert.DeserializeObject<IntegrationPointDestinationConfiguration>(integrationPoint.DestinationConfiguration);
+
+			if (!destinationConfiguration.UseFolderPathInformation)
+			{
+				return Request.CreateResponse(HttpStatusCode.OK, 0, Configuration.Formatters.JsonFormatter);
+			}
+
+			ArtifactDTO[] documentDtos = GetDocumentDtos(sourceConfiguration, destinationConfiguration);
+			int folderCount = GetFolderCount(documentDtos);
+
+			return Request.CreateResponse(HttpStatusCode.OK, folderCount, Configuration.Formatters.JsonFormatter);
+		}
+
+		private ArtifactDTO[] GetDocumentDtos(IntegrationPointSourceConfiguration sourceConfiguration, IntegrationPointDestinationConfiguration destinationConfiguration)
+		{
+			Query<Document> query = new Query<Document>
+			{
+				Condition = new SavedSearchCondition(sourceConfiguration.SavedSearchArtifactId),
+				Fields = new List<FieldValue> { new FieldValue(destinationConfiguration.FolderPathSourceField) }
+			};
+
+			QueryResultSet<Document> resultSet = _client.Repositories.Document.Query(query, 1000);
+
+			ArtifactDTO[] results = {};
+			if (resultSet != null && resultSet.Success)
+			{
+				results = resultSet.Results.Select(
+					x => new ArtifactDTO(
+						x.Artifact.ArtifactID,
+						x.Artifact.ArtifactTypeID.Value,
+						x.Artifact.Fields.Select(
+							y => new ArtifactFieldDTO() { ArtifactId = y.ArtifactID, FieldType = y.FieldType.ToString(), Name = y.Name, Value = y.Value }))
+					).ToArray();
+
+			}
+			return results;
+		}
+
+		private int GetFolderCount(ArtifactDTO[] artifactDtos)
+		{
+			FolderTree folderTree = new FolderTree();
+
+			foreach (ArtifactDTO document in artifactDtos)
+			{
+				ArtifactFieldDTO artifactFieldDto = document.Fields.FirstOrDefault();
+				string folderPath = String.Empty;
+				if (artifactFieldDto != null)
+				{
+					folderPath = artifactFieldDto.Value as string;
+				}
+
+				if (!String.IsNullOrEmpty(folderPath) && folderPath != @"\")
+				{
+					folderTree.AddEntry(folderPath);
+				}
+			}
+			return folderTree.FolderCount;
 		}
 
 		private List<FieldEntry> GetTextFields(int rdoTypeId)

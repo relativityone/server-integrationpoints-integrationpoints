@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
@@ -14,7 +13,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
 
@@ -61,18 +59,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				InitializeExportService(job);
 
 				string destinationConfig = IntegrationPointDto.DestinationConfiguration;
-				DirectSqlCallHelper helper = new DirectSqlCallHelper(_caseServiceContext.SqlContext);
-
 				IDataSynchronizer synchronizer = GetRdoDestinationProvider(destinationConfig);
 
 				SetupSubscriptions(synchronizer, job);
 
 				// Initialize Exporter
-				IExporterService exporter = ExporterFactory.BuildExporter(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, helper);
+				IExporterService exporter = ExporterFactory.BuildExporter(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration);
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 
-				synchronizer.SyncData(exporter.GetDataReader(), MappedFields, destinationConfig);
+				IDataReader exporterReader = exporter.GetDataReader();
+				synchronizer.SyncData(exporterReader, MappedFields, destinationConfig);
 			}
 			catch (Exception ex)
 			{
@@ -97,7 +94,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			this._identifier = taskParameters.BatchInstance;
 
 			// Load integrationPoint data
-			if (IntegrationPointDto != null) return;
+			if (IntegrationPointDto != null)
+			{
+				return;
+			}
 
 			int integrationPointId = job.RelatedObjectArtifactID;
 			this.IntegrationPointDto = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
@@ -111,12 +111,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
 			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPointDto;
 
-			// Load Mapped Fields & Sanatized Them
+			// Load Mapped Fields & Sanitize them
 			// #unbelievable
 			MappedFields = JsonConvert.DeserializeObject<List<FieldMap>>(IntegrationPointDto.FieldMappings);
 			MappedFields.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
 
-			// Load Source Provider, which I think should be named something else.
 			SourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
 
 			this.JobHistoryDto.StartTimeUTC = DateTime.UtcNow;
@@ -129,27 +128,30 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		internal void PostExecute(Job job)
 		{
-			try
+			foreach (IBatchStatus completedItem in _batchStatus)
 			{
-				foreach (var completedItem in _batchStatus)
+				try
 				{
-					try
-					{
-						completedItem.JobComplete(job);
-					}
-					catch (Exception e)
-					{
-						_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
-					}
+					completedItem.JobComplete(job);
+				}
+				catch (Exception e)
+				{
+					_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+				}
+				finally
+				{
+					_jobHistoryErrorService.CommitErrors();
 				}
 			}
-			catch (Exception e)
+
+			try
 			{
-				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+				IntegrationPointDto.LastRuntimeUTC = DateTime.UtcNow;
+				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPointDto);
 			}
-			finally
+			catch
 			{
-				_jobHistoryErrorService.CommitErrors();
+				// ignored
 			}
 		}
 
@@ -158,7 +160,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			// if you want to create add another synchronizer aka exporter, you may add it here.
 			// RDO synchronizer
 			Guid providerGuid = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
-			var factory = _synchronizerFactory as GeneralWithCustodianRdoSynchronizerFactory;
+			GeneralWithCustodianRdoSynchronizerFactory factory = _synchronizerFactory as GeneralWithCustodianRdoSynchronizerFactory;
 			if (factory != null)
 			{
 				factory.SourceProvider = SourceProvider;

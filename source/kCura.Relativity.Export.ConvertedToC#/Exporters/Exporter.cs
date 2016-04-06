@@ -390,7 +390,7 @@ namespace kCura.Relativity.Export.Exports
 					while (tries < maxTries) {
 						tries += 1;
 						try {
-							natives.Table = _searchManager.RetrieveNativesForProduction(this.Settings.CaseArtifactID, productionArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables[0];
+							natives.Table = _searchManager.RetrieveNativesForProduction(this.Settings.CaseArtifactID, productionArtifactID, kCura.Utility.Array.ToCsv(documentArtifactIDs)).Tables[0];
 							break; // TODO: might not be correct. Was : Exit While
 						} catch (System.Exception ex) {
 							if (tries < maxTries && !(ex is System.Web.Services.Protocols.SoapException && ex.ToString().IndexOf("Need To Re Login") != -1)) {
@@ -406,7 +406,7 @@ namespace kCura.Relativity.Export.Exports
 					while (tries < maxTries) {
 						tries += 1;
 						try {
-							natives.Table = _searchManager.RetrieveNativesForSearch(this.Settings.CaseArtifactID, kCura.Utility.Array.IntArrayToCSV(documentArtifactIDs)).Tables[0];
+							natives.Table = _searchManager.RetrieveNativesForSearch(this.Settings.CaseArtifactID, kCura.Utility.Array.ToCsv(documentArtifactIDs)).Tables[0];
 							break; // TODO: might not be correct. Was : Exit While
 						} catch (System.Exception ex) {
 							if (tries < maxTries && !(ex is System.Web.Services.Protocols.SoapException && ex.ToString().IndexOf("Need To Re Login") != -1)) {

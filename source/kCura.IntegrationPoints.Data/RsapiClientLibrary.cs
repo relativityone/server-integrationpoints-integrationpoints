@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data.Attributes;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using kCura.Relativity.Client.Repositories;
-using CollectionExtensions = Castle.Core.Internal.CollectionExtensions;
 
 namespace kCura.IntegrationPoints.Data
 {

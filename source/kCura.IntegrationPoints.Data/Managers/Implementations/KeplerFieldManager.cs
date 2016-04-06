@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using Relativity.Services.ObjectQuery;
@@ -16,7 +17,7 @@ namespace kCura.IntegrationPoints.Data.Managers.Implementations
 			_rdoRepository = rdoRepository;
 		}
 
-		public ArtifactFieldDTO[] RetrieveLongTextFields(int rdoTypeId)
+		public async Task<ArtifactFieldDTO[]> RetrieveLongTextFieldsAsync(int rdoTypeId)
 		{
 			const string longTextFieldName = "Long Text";
 
@@ -25,7 +26,7 @@ namespace kCura.IntegrationPoints.Data.Managers.Implementations
 				Condition = String.Format("'Object Type Artifact Type ID' == {0} AND 'Field Type' == '{1}'", rdoTypeId, longTextFieldName),
 			};
 
-			ObjectQueryResultSet result = _rdoRepository.RetrieveAsync(longTextFieldsQuery, String.Empty).Result;
+			ObjectQueryResultSet result = await _rdoRepository.RetrieveAsync(longTextFieldsQuery, String.Empty);
 
 			if (!result.Success)
 			{
@@ -43,7 +44,7 @@ namespace kCura.IntegrationPoints.Data.Managers.Implementations
 			return fieldDtos;
 		}
 
-		public ArtifactDTO[] RetrieveFields(int rdoTypeId, HashSet<string> fieldFieldsNames)
+		public async Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, HashSet<string> fieldFieldsNames)
 		{
 			var fieldQuery = new Query()
 			{
@@ -51,7 +52,7 @@ namespace kCura.IntegrationPoints.Data.Managers.Implementations
 				Condition = String.Format("'Object Type Artifact Type ID' == {0}", rdoTypeId)
 			};
 
-			ObjectQueryResultSet result = _rdoRepository.RetrieveAsync(fieldQuery, String.Empty).Result;
+			ObjectQueryResultSet result = await _rdoRepository.RetrieveAsync(fieldQuery, String.Empty);
 
 			if (!result.Success)
 			{
