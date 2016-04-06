@@ -1,58 +1,50 @@
 ﻿using Castle.Core;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Queries;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
 	public class CaseServiceContext : ICaseServiceContext
 	{
-		private readonly IServiceContextHelper _helper;
+		private readonly IServiceContextHelper _serviceContextHelper;
+		private int? _eddsUserId;
+		private int? _workspaceUserId;
+		private IRSAPIService _rsapiService;
+		private IDBContext _sqlContext;
 
-		public CaseServiceContext(IServiceContextHelper helper)
+		public CaseServiceContext(IServiceContextHelper serviceContextHelper)
 		{
-			_helper = helper;
-			this.WorkspaceID = helper.WorkspaceID;
-		}
-
-		public string GetWorkspaceName(int workspaceId)
-		{
-			WorkspaceQuery query = new WorkspaceQuery(_helper.GetRsapiClient(ExecutionIdentity.CurrentUser));
-			string workspaceName = query.GetWorkspaceName(workspaceId);
-			return workspaceName;
+			_serviceContextHelper = serviceContextHelper;
+			this.WorkspaceID = serviceContextHelper.WorkspaceID;
 		}
 
 		public int WorkspaceID { get; set; }
 
-		private int? _eddsUserId;
 		public int EddsUserID
 		{
 			get
 			{
 				if (!_eddsUserId.HasValue)
 				{
-					_eddsUserId = _helper.GetEddsUserID();
+					_eddsUserId = _serviceContextHelper.GetEddsUserID();
 				}
 				return _eddsUserId.Value;
 			}
 			set { _eddsUserId = value; }
 		}
 
-		private int? _workspaceUserId;
 		public int WorkspaceUserID
 		{
 			get
 			{
 				if (!_workspaceUserId.HasValue)
 				{
-					_workspaceUserId = _helper.GetWorkspaceUserID();
+					_workspaceUserId = _serviceContextHelper.GetWorkspaceUserID();
 				}
 				return _workspaceUserId.Value;
 			}
 			set { _workspaceUserId = value; }
 		}
-
-		private IRSAPIService _rsapiService;
 
 		[DoNotWire]
 		public IRSAPIService RsapiService
@@ -61,14 +53,13 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 			{
 				if (_rsapiService == null)
 				{
-					_rsapiService = _helper.GetRsapiService();
+					_rsapiService = _serviceContextHelper.GetRsapiService();
 				}
 				return _rsapiService;
 			}
 			set { _rsapiService = value; }
 		}
 
-		private IDBContext _sqlContext;
 		[DoNotWire]
 		public IDBContext SqlContext
 		{
@@ -76,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 			{
 				if (_sqlContext == null)
 				{
-					_sqlContext = _helper.GetDBContext(this.WorkspaceID);
+					_sqlContext = _serviceContextHelper.GetDBContext(this.WorkspaceID);
 				}
 				return _sqlContext;
 			}
