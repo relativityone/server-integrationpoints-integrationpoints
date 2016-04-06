@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.Services.Interfaces.Private.Models
 {
