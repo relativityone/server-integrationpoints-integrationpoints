@@ -106,7 +106,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 				container.Register(Component.For<IObjectQueryManagerAdaptor>().ImplementedBy<ObjectQueryManagerAdaptor>().DependsOn(new { objectQueryManager = queryManager }).LifeStyle.Transient);
 				container.Register(Component.For<IFieldRepository>().ImplementedBy<KeplerFieldRepository>().LifeStyle.Transient);
-				container.Register(Component.For<IFieldManager>().ImplementedBy<FieldManager>().LifestyleTransient());
 				container.Register(Component.For<ISourceWorkspaceRepository>().ImplementedBy<RsapiSourceWorkspaceRepository>().LifestyleTransient());
 				container.Register(Component.For<IWorkspaceRepository>().ImplementedBy<RsapiWorkspaceRepository>().LifestyleTransient());
 				container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());

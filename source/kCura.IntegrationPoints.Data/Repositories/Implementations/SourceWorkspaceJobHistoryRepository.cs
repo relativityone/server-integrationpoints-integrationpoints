@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var sourceWorkspaceJobHistoryDto = new SourceWorkspaceJobHistoryDTO()
 			{
 				ArtifactId = rdo.ArtifactID,
-				Name = rdo.TextIdentifier // TODO: verify this
+				Name = rdo.TextIdentifier
 			};
 
 			return sourceWorkspaceJobHistoryDto;

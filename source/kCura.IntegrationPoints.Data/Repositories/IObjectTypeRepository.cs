@@ -6,6 +6,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 	public interface IObjectTypeRepository
 	{
 		bool GetObjectTypeExists(Guid objectTypeGuid);
-		void Create(ObjectTypeDTO ojectTypeDto);
+		void Create(ObjectTypeDTO objectTypeDto);
 	}
 }

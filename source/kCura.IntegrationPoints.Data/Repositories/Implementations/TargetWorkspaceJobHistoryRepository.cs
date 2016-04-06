@@ -200,7 +200,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			WriteResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Create(fields);
 
-			var field = resultSet.Results.FirstOrDefault();
+			Result<kCura.Relativity.Client.DTOs.Field> field = resultSet.Results.FirstOrDefault();
 			if (!resultSet.Success || field == null)
 			{
 				throw new Exception("Unable to create Job History field on Document: " + resultSet.Message);
@@ -211,7 +211,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return newFieldArtifactId;
 		}
 
-		public int GetJobHistoryFieldOnDocument(int workspaceArtifactId, int jobHistoryArtifactTypeId)
+		public bool JobHistoryFieldExistsOnDocument(int workspaceArtifactId, int jobHistoryArtifactTypeId)
 		{
 			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			var criteria = new TextCondition(FieldFieldNames.Name, TextConditionEnum.EqualTo, Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME);
@@ -223,13 +223,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			QueryResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Query(query);
 
-			var field = resultSet.Results.FirstOrDefault();
-			if (!resultSet.Success || field == null)
+			Result<kCura.Relativity.Client.DTOs.Field> field = resultSet.Results.FirstOrDefault();
+			if (!resultSet.Success)
 			{
 				throw new Exception("Unable to retrieve Document fields: " + resultSet.Message);
 			}
 
-			return field.Artifact.ArtifactID;
+			bool fieldExists = field != null;
+
+			return fieldExists;
 		}
 	}
 }

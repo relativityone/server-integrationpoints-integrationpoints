@@ -40,11 +40,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 
 			// Create fields on document if they do not exist
-			try
-			{
-				_targetWorkspaceJobHistoryRepository.GetJobHistoryFieldOnDocument(destinationWorkspaceArtifactId, jobHistoryArtifactTypeId.Value);
-			}
-			catch
+			if (!_targetWorkspaceJobHistoryRepository.JobHistoryFieldExistsOnDocument(destinationWorkspaceArtifactId, jobHistoryArtifactTypeId.Value))
 			{
 				_targetWorkspaceJobHistoryRepository.CreateJobHistoryFieldOnDocument(destinationWorkspaceArtifactId, jobHistoryArtifactTypeId.Value);
 			}

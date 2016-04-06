@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 
 			// Validate that destination workspace has all object types and fields
-			_sourceWorkspaceDto = sourceWorkspaceManager.InititializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
+			_sourceWorkspaceDto = sourceWorkspaceManager.InitializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
 			_targetWorkspaceJobHistoryDto = targetWorkspaceJobHistoryManager.InitializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId, jobHistoryArtifactId);
 		}
 

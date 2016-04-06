@@ -10,6 +10,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		bool ObjectTypeFieldsExist(int workspaceArtifactId, int jobHistoryArtifactTypeId);
 		void CreateObjectTypeFields(int workspaceArtifactId, int jobHistoryArtifactTypeId);
 		int CreateJobHistoryFieldOnDocument(int workspaceArtifactId, int jobHistoryArtifactTypeId);
-		int GetJobHistoryFieldOnDocument(int workspaceArtifactId, int jobHistoryArtifactTypeId);
+		bool JobHistoryFieldExistsOnDocument(int workspaceArtifactId, int jobHistoryArtifactTypeId);
 	}
 }
