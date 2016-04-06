@@ -16,8 +16,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public WorkspaceDTO Retrieve(int workspaceArtifactId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = -1;
-
 			Workspace workspaceRdo = null;
 			try
 			{

@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface ISourceWorkspaceJobHistoryRepository
 	{
-		SourceWorkspaceJobHistoryDTO Retrieve(int workspaceArtifactId, int jobHistoryArtifactId);
+		SourceWorkspaceJobHistoryDTO Retrieve(int jobHistoryArtifactId);
 	}
 }

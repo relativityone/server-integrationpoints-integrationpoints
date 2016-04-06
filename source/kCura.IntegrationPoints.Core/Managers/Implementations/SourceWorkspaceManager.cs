@@ -1,45 +1,47 @@
 ﻿using System;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class SourceWorkspaceManager : ISourceWorkspaceManager
 	{
-		private readonly ISourceWorkspaceRepository _sourceWorkspaceRepository;
-		private readonly IWorkspaceRepository _workspaceRepository;
+		private readonly IRepositoryFactory _repositoryFactory;
 
-		public SourceWorkspaceManager(ISourceWorkspaceRepository sourceWorkspaceRepository, IWorkspaceRepository workspaceRepository)
+		public SourceWorkspaceManager(IRepositoryFactory repositoryFactory)
 		{
-			_sourceWorkspaceRepository = sourceWorkspaceRepository;
-			_workspaceRepository = workspaceRepository;
+			_repositoryFactory = repositoryFactory;
 		}
 
 		public SourceWorkspaceDTO InitializeWorkspace(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
 		{
+			// Set up repositories
+			ISourceWorkspaceRepository sourceWorkspaceRepository = _repositoryFactory.GetSourceWorkspaceRepository(destinationWorkspaceArtifactId);
+			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetWorkspaceRepository();
+
 			// Create object type if it does not exist
-			int? sourceWorkspaceArtifactTypeId = _sourceWorkspaceRepository.RetrieveObjectTypeDescriptorArtifactTypeId(destinationWorkspaceArtifactId);
+			int? sourceWorkspaceArtifactTypeId = sourceWorkspaceRepository.RetrieveObjectTypeDescriptorArtifactTypeId();
 			if (!sourceWorkspaceArtifactTypeId.HasValue)
 			{
-				sourceWorkspaceArtifactTypeId = _sourceWorkspaceRepository.CreateObjectType(destinationWorkspaceArtifactId);	
+				sourceWorkspaceArtifactTypeId = sourceWorkspaceRepository.CreateObjectType();	
 			}
 
 			// Create Source Workspace fields if they do not exist
-			if (!_sourceWorkspaceRepository.ObjectTypeFieldsExist(destinationWorkspaceArtifactId,
-				sourceWorkspaceArtifactTypeId.Value))
+			if (!sourceWorkspaceRepository.ObjectTypeFieldsExist(sourceWorkspaceArtifactTypeId.Value))
 			{
-				_sourceWorkspaceRepository.CreateObjectTypeFields(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);	
+				sourceWorkspaceRepository.CreateObjectTypeFields(sourceWorkspaceArtifactTypeId.Value);	
 			}
 
 			// Create fields on document if they do not exist
-			if (!_sourceWorkspaceRepository.SourceWorkspaceFieldExistsOnDocument(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value))
+			if (!sourceWorkspaceRepository.SourceWorkspaceFieldExistsOnDocument(sourceWorkspaceArtifactTypeId.Value))
 			{
-				_sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(destinationWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
+				sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(sourceWorkspaceArtifactTypeId.Value);
 			}
 
 			// Get or create instance of Source Workspace object
-			WorkspaceDTO workspaceDto = _workspaceRepository.Retrieve(sourceWorkspaceArtifactId);
-			SourceWorkspaceDTO sourceWorkspaceDto = _sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(destinationWorkspaceArtifactId, sourceWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
+			WorkspaceDTO workspaceDto = workspaceRepository.Retrieve(sourceWorkspaceArtifactId);
+			SourceWorkspaceDTO sourceWorkspaceDto = sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(sourceWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
 			if (sourceWorkspaceDto == null)
 			{
 				sourceWorkspaceDto = new SourceWorkspaceDTO()
@@ -49,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					SourceCaseArtifactId = sourceWorkspaceArtifactId,
 					SourceCaseName = workspaceDto.Name
 				};
-				int artifactId = _sourceWorkspaceRepository.Create(sourceWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value, sourceWorkspaceDto);
+				int artifactId = sourceWorkspaceRepository.Create(sourceWorkspaceArtifactTypeId.Value, sourceWorkspaceDto);
 
 				sourceWorkspaceDto.ArtifactId = artifactId;
 			}
@@ -61,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			{
 				sourceWorkspaceDto.Name = String.Format("{0} - {1}", workspaceDto.Name, sourceWorkspaceArtifactId);
 				sourceWorkspaceDto.SourceCaseName = workspaceDto.Name;
-				_sourceWorkspaceRepository.Update(destinationWorkspaceArtifactId, sourceWorkspaceDto);
+				sourceWorkspaceRepository.Update(sourceWorkspaceDto);
 			}
 
 			return sourceWorkspaceDto;

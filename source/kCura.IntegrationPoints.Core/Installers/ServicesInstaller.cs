@@ -21,6 +21,8 @@ using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Managers;
 using kCura.IntegrationPoints.Data.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
@@ -105,13 +107,10 @@ namespace kCura.IntegrationPoints.Core.Installers
 				IObjectQueryManager queryManager = helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
 
 				container.Register(Component.For<IObjectQueryManagerAdaptor>().ImplementedBy<ObjectQueryManagerAdaptor>().DependsOn(new { objectQueryManager = queryManager }).LifeStyle.Transient);
+				container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
 				container.Register(Component.For<IFieldRepository>().ImplementedBy<KeplerFieldRepository>().LifeStyle.Transient);
-				container.Register(Component.For<ISourceWorkspaceRepository>().ImplementedBy<RsapiSourceWorkspaceRepository>().LifestyleTransient());
-				container.Register(Component.For<IWorkspaceRepository>().ImplementedBy<RsapiWorkspaceRepository>().LifestyleTransient());
 				container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());
-				container.Register(Component.For<ISourceWorkspaceJobHistoryRepository>().ImplementedBy<SourceWorkspaceJobHistoryRepository>().LifestyleTransient());
 				container.Register(Component.For<ITargetWorkspaceJobHistoryManager>().ImplementedBy<TargetWorkspaceJobHistoryManager>().LifestyleTransient());
-				container.Register(Component.For<ITargetWorkspaceJobHistoryRepository>().ImplementedBy<TargetWorkspaceJobHistoryRepository>().LifestyleTransient());
 			}
 		}
 	}
