@@ -223,6 +223,7 @@
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.Shared.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Services.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Services.Interfaces.Private.dll"' />
+			<arg line='"${target.code.directory}\kCura.Relativity.Export.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
 		</exec>
