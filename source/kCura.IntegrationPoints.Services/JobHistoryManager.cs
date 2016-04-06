@@ -37,15 +37,7 @@ namespace kCura.IntegrationPoints.Services
 
 		public async Task<JobHistorySummaryModel> GetJobHistory(JobHistoryRequest request)
 		{
-			// Temporary try catch for Radhika and Patrick
-			try
-			{
-				return await Task.Run(() => GetJobHistoryInternal(request)).ConfigureAwait(false);
-			}
-			catch (Exception e)
-			{
-				throw new Exception("There was an exception caught by the Job History Manager.", e);
-			}
+			return await Task.Run(() => GetJobHistoryInternal(request));
 		}
 
 		public void Dispose() { }
@@ -57,12 +49,7 @@ namespace kCura.IntegrationPoints.Services
 			int userArtifactId = authenticationManager.UserInfo.ArtifactID;
 			int workspaceUserArtifactId = GetWorkspaceUserArtifactId(request.WorkspaceArtifactId, userArtifactId);
 
-			var jobHistorySummary = new JobHistorySummaryModel
-			{
-				Data = new JobHistoryModel[0],
-				TotalAvailable = 0,
-				TotalDocumentsPushed = 0
-			};
+			var jobHistorySummary = new JobHistorySummaryModel();
 
 			IDBContext workspaceContext = API.Services.Helper.GetDBContext(request.WorkspaceArtifactId);
 
@@ -307,32 +294,32 @@ namespace kCura.IntegrationPoints.Services
 
 		private const string _INTEGRATION_POINT_JOB_HISTORY_RELATIONAL_TABLE_INFORMATION_SQL = @"
 			SELECT OFR.[RelationalTableSchemaName], OFR.[RelationalTableFieldColumnName1], OFR.[RelationalTableFieldColumnName2]
-			FROM [ObjectsFieldRelation] AS OFR
-			INNER JOIN [Field] AS F
+			FROM [ObjectsFieldRelation] AS OFR WITH (NOLOCK)
+			INNER JOIN [Field] AS F WITH (NOLOCK)
 			ON F.[ArtifactID] = OFR.[FieldArtifactId1]
-			INNER JOIN [Artifact] AS A
+			INNER JOIN [Artifact] AS A WITH (NOLOCK)
 			ON F.[FieldArtifactTypeID] = A.[ArtifactTypeID]
 			WHERE F.[AssociativeArtifactTypeID] = @fieldAssociativeArtifactTypeID AND A.[ArtifactID] = @artifactID";
 
 		private const string _PROVIDER_INTEGRATION_POINT_ARTIFACT_IDS_SQL = @"
 			SELECT IP.[ArtifactID]
-			FROM [SourceProvider] as SP
-			INNER JOIN [IntegrationPoint] as IP
+			FROM [SourceProvider] AS SP WITH (NOLOCK)
+			INNER JOIN [IntegrationPoint] AS IP WITH (NOLOCK)
 			ON SP.[ArtifactID] = IP.[SourceProvider]
 			WHERE SP.[Identifier] = @sourceProviderIdentifier";
 
 		private const string _USER_WORKSPACE_ARTIFACT_ID_SQL = @"
-			SELECT [CaseUserArtifactID] FROM [UserCaseUser]
+			SELECT [CaseUserArtifactID] FROM [UserCaseUser] WITH (NOLOCK)
 			WHERE [CaseArtifactID] = @caseArtifactId AND [UserArtifactID] = @userArtifactId";
 
 		private const string _JOB_HISTORY_ARTIFACT_TYPE_ID_SQL = @"
-			SELECT[ArtifactTypeID] FROM[Artifact] WHERE[ArtifactID] =
-				(SELECT TOP 1 [ArtifactID] FROM[JobHistory])";
+			SELECT[ArtifactTypeID] FROM[Artifact] WITH (NOLOCK) WHERE[ArtifactID] =
+				(SELECT TOP 1 [ArtifactID] FROM[JobHistory] WITH (NOLOCK))";
 
 		private readonly string _jobHistoriesSql = @"
 			SELECT [ItemsImported], [EndTimeUTC], [DestinationWorkspace]
-			FROM [JobHistory] as JH
-			INNER JOIN [Artifact] as A
+			FROM [JobHistory] AS JH WITH (NOLOCK)
+			INNER JOIN [Artifact] AS A WITH (NOLOCK)
 			ON JH.ArtifactID = A.ArtifactID
 			WHERE A.AccessControlListID in ({0}) AND JH.ArtifactID in ({1})
 			ORDER BY [{2}] {3}";
