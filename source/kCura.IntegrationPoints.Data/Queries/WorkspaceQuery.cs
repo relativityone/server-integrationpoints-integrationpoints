@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Data.Queries
 {
@@ -12,21 +14,28 @@ namespace kCura.IntegrationPoints.Data.Queries
 			_client = client;
 		}
 
-		public Relativity.Client.DTOs.Workspace GetWorkspace(int workspaceID)
+		public string GetWorkspaceName(int workspaceId)
 		{
 			var workspace = _client.APIOptions.WorkspaceID;
 			try
 			{
 				_client.APIOptions.WorkspaceID = -1;
-				var result = _client.Repositories.Workspace.Read(workspaceID);
-				RdoHelper.CheckResult(result);
-				return result.Results.First().Artifact;
+
+				WholeNumberCondition workspaceCondition = new WholeNumberCondition(ArtifactQueryFieldNames.ArtifactID, NumericConditionEnum.EqualTo, workspaceId);
+				Query<Workspace> query = new Query<Workspace>
+				{
+					Condition = workspaceCondition,
+					Fields = new List<FieldValue>() { new FieldValue() { Name = "Name" } }
+				};
+
+				QueryResultSet<Workspace> resultSet = _client.Repositories.Workspace.Query(query);
+				RdoHelper.CheckResult(resultSet);
+				return resultSet.Results.First().Artifact.Name;
 			}
 			finally
 			{
 				_client.APIOptions.WorkspaceID = workspace;
 			}
 		}
-
 	}
 }

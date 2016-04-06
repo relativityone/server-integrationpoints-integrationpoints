@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (!resultSet.Success || !resultSet.Results.Any())
 			{
-				throw new Exception("Unable to create new Source Workspce object type: " + resultSet.Message);	
+				throw new Exception("Unable to create new Source Workspace object type: " + resultSet.Message);	
 			}
 
 			// We have to do this because the Descriptor Artifact Type Id isn't returned in the WriteResultSet :( -- biedrzycki: April 4th, 2016
@@ -264,7 +264,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch
 			{
-				throw new Exception("Unable to create new instance Source Workspace");
+				throw new Exception("Unable to create new instance of Source Workspace");
 			}
 		}
 
@@ -276,9 +276,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME, sourceWorkspaceDto.Name, true),
 				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, sourceWorkspaceDto.SourceWorkspaceName, true),
 			};
-			var rdo = new RDO()
+
+			var rdo = new RDO(sourceWorkspaceDto.ArtifactTypeId, sourceWorkspaceDto.ArtifactId)
 			{
-				ArtifactTypeID = workspaceArtifactId,
 				Fields = fields
 			};
 
@@ -286,9 +286,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				_rsapiClient.Repositories.RDO.UpdateSingle(rdo);
 			}
-			catch
+			catch (Exception e)
 			{
-				throw new Exception("Unable to update Source Workspace instance");
+				throw new Exception("Unable to update Source Workspace instance", e);
 			}
 		}
 	}

@@ -110,6 +110,9 @@ namespace kCura.IntegrationPoints.Core.Installers
 				container.Register(Component.For<ISourceWorkspaceRepository>().ImplementedBy<RsapiSourceWorkspaceRepository>().LifestyleTransient());
 				container.Register(Component.For<IWorkspaceRepository>().ImplementedBy<RsapiWorkspaceRepository>().LifestyleTransient());
 				container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());
+				container.Register(Component.For<ISourceWorkspaceJobHistoryRepository>().ImplementedBy<SourceWorkspaceJobHistoryRepository>().LifestyleTransient());
+				container.Register(Component.For<ITargetWorkspaceJobHistoryManager>().ImplementedBy<TargetWorkspaceJobHistoryManager>().LifestyleTransient());
+				container.Register(Component.For<ITargetWorkspaceJobHistoryRepository>().ImplementedBy<TargetWorkspaceJobHistoryRepository>().LifestyleTransient());
 			}
 		}
 	}

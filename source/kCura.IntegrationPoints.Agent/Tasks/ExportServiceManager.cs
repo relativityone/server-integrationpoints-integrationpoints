@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -29,6 +28,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly JobHistoryService _jobHistoryService;
 		private readonly JobHistoryErrorService _jobHistoryErrorService;
+		private ExportJobErrorService _exportJobErrorService;
 		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly IExporterFactory _exporterFactory;
 		private readonly JobStatisticsService _statisticsService;
@@ -75,6 +75,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				string destinationConfig = IntegrationPointDto.DestinationConfiguration;
 				IDataSynchronizer synchronizer = GetRdoDestinationProvider(destinationConfig);
 
+				_exportJobErrorService = new ExportJobErrorService(_docTableHelper);
 				SetupSubscriptions(synchronizer, job);
 
 				// Initialize Exporter
@@ -82,7 +83,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 
-				IDataReader dataReader = exporter.GetDataReader(_docTableHelper);
+				IDataReader dataReader = exporter.GetDataReader(_docTableHelper, this.JobHistoryDto.ArtifactId);
 				synchronizer.SyncData(dataReader, MappedFields, destinationConfig);
 			}
 			catch (Exception ex)
@@ -101,6 +102,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
 			_jobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
+			_exportJobErrorService.SubscribeToBatchReporterEvents(synchronizer);
 		}
 
 		private void InitializeExportService(Job job)
@@ -131,7 +133,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			this.JobHistoryDto = _jobHistoryService.GetRdo(this._identifier);
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
 			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPointDto;
-			_jobHistoryErrorService.DocTableHelper = this._docTableHelper;
 
 			// Load Mapped Fields & Sanitize them
 			// #unbelievable

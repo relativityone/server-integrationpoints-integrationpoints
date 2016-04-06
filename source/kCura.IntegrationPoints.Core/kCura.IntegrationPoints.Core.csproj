@@ -159,7 +159,9 @@
     <Compile Include="Managers\IFieldManager.cs" />
     <Compile Include="Managers\Implementations\FieldManager.cs" />
     <Compile Include="Managers\Implementations\SourceWorkspaceManager.cs" />
+    <Compile Include="Managers\Implementations\TargetWorkspaceJobHistoryManager.cs" />
     <Compile Include="Managers\ISourceWorkspaceManager.cs" />
+    <Compile Include="Managers\ITargetWorkspaceJobHistoryManager.cs" />
     <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Properties\JobStatusMessages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -199,6 +201,7 @@
     <Compile Include="Services\Guid\IGuidService.cs" />
     <Compile Include="Services\IDeleteHistoryErrorService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />
+    <Compile Include="Services\JobHistory\ExportJobErrorService.cs" />
     <Compile Include="Services\JobHistory\IJobHistoryService.cs" />
     <Compile Include="Services\JobHistory\JobHistoryErrorService.cs" />
     <Compile Include="Services\JobHistory\JobHistoryService.cs" />

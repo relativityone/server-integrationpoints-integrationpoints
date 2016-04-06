@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly ICoreContext _context;
 		private readonly ITempDocTableHelper _docTableHelper;
 		private readonly SourceWorkspaceDTO _sourceWorkspaceDto;
+		private readonly TargetWorkspaceJobHistoryDTO _targetWorkspaceJobHistoryDto;
 		private readonly int _folderPathFieldSourceArtifactId;
 
 		/// used as a flag to store the reference of the current artifacts array.
@@ -37,9 +38,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			int destinationWorkspaceArtifactId,
 			IExporterService relativityExportService,
 			ISourceWorkspaceManager sourceWorkspaceManager,
+			ITargetWorkspaceJobHistoryManager targetWorkspaceJobHistoryManager,
 			FieldMap[] fieldMappings,
 			ICoreContext context,
-			ITempDocTableHelper docTableHelper) :
+			ITempDocTableHelper docTableHelper,
+			int jobHistoryArtifactId) :
 			base(GenerateDataColumnsFromFieldEntries(fieldMappings))
 		{
 			_context = context;
@@ -56,6 +59,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 			// Validate that destination workspace has all object types and fields
 			_sourceWorkspaceDto = sourceWorkspaceManager.InititializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
+			_targetWorkspaceJobHistoryDto = targetWorkspaceJobHistoryManager.InitializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId, jobHistoryArtifactId);
 		}
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
@@ -114,6 +118,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				FieldType = FieldType.String
 			});
 
+			fields.Add(new FieldEntry()
+			{
+				DisplayName	= IntegrationPoints.Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME,
+				FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_JOBHISTORY_FIELD,
+				FieldType = FieldType.String
+			});
+
 			return fields.Select(x => new DataColumn(x.FieldIdentifier)).ToArray();
 		}
 
@@ -150,6 +161,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			{
 				// TODO: We should be using the artifact Id -- biedrzycki: April 4th, 2016
 				result = _sourceWorkspaceDto.Name;
+			}
+			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_JOBHISTORY_FIELD)
+			{
+				// TODO: We should be using the artifact Id -- biedrzycki: April 4th, 2016
+				result = _targetWorkspaceJobHistoryDto.Name;
 			}
 			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_FOLDERPATH_FIELD)
 			{
