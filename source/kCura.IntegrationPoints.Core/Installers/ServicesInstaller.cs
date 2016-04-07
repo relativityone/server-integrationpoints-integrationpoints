@@ -27,6 +27,7 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
@@ -102,11 +103,26 @@ namespace kCura.IntegrationPoints.Core.Installers
 			if (container.Kernel.HasComponent(typeof(IHelper)))
 			{
 				IHelper helper = container.Resolve<IHelper>();
+				// TODO: Investigate; should this be using ExecutionIdentity.CurrentUser? -- biedrzycki: April 6th, 2016
 				IObjectQueryManager queryManager = helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
 
-				container.Register(Component.For<IObjectQueryManagerAdaptor>().ImplementedBy<ObjectQueryManagerAdaptor>().DependsOn(new { objectQueryManager = queryManager }).LifeStyle.Transient);
+				container.Register(
+					Component.For<IObjectQueryManagerAdaptor>()
+						.ImplementedBy<ObjectQueryManagerAdaptor>()
+						.DependsOn(new { objectQueryManager = queryManager })
+						.LifeStyle.Transient);
 				container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
 				container.Register(Component.For<IFieldRepository>().ImplementedBy<KeplerFieldRepository>().LifeStyle.Transient);
+
+				// TODO: This is kind of cruddy, see if we can only use this repository through the RepositoryFactory -- biedrzycki: April 6th, 2016
+				IRSAPIClient workspaceRepositoryRsapiClient = helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
+				workspaceRepositoryRsapiClient.APIOptions.WorkspaceID = -1;
+				container.Register(
+					Component.For<IWorkspaceRepository>()
+						.ImplementedBy<RsapiWorkspaceRepository>()
+						.DependsOn(new { rsapiClient = workspaceRepositoryRsapiClient })
+						.LifestyleTransient());
+
 				container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());
 				container.Register(Component.For<ITargetWorkspaceJobHistoryManager>().ImplementedBy<TargetWorkspaceJobHistoryManager>().LifestyleTransient());
 			}

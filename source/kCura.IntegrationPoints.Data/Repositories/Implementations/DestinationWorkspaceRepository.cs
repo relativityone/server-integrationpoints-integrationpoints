@@ -11,11 +11,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly int _destinationWorkspaceId;
 		private readonly IWorkspaceRepository _workspaceRepository;
 
-		public DestinationWorkspaceRepository(IRSAPIClient client, int destinationWorkspaceId)
+		public DestinationWorkspaceRepository(IRSAPIClient client, IWorkspaceRepository workspaceRepository, int destinationWorkspaceId)
 		{
 			_client = client;
 			_destinationWorkspaceId = destinationWorkspaceId;
-			_workspaceRepository = new RsapiWorkspaceRepository(client);
+			_workspaceRepository = workspaceRepository;
 		}
 
 		public int QueryDestinationWorkspaceRdoInstance()

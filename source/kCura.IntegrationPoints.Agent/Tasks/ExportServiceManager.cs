@@ -31,6 +31,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private ExportJobErrorService _exportJobErrorService;
 		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly IExporterFactory _exporterFactory;
+		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly JobStatisticsService _statisticsService;
 		private readonly IEnumerable<IBatchStatus> _batchStatus;
 		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
@@ -43,6 +44,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ICaseServiceContext caseServiceContext,
 			ISynchronizerFactory synchronizerFactory,
 			IExporterFactory exporterFactory,
+			IRepositoryFactory repositoryFactory,
 			IEnumerable<IBatchStatus> statuses,
 			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 			JobHistoryService jobHistoryService,
@@ -52,6 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_synchronizerFactory = synchronizerFactory;
 			_exporterFactory = exporterFactory;
+			_repositoryFactory = repositoryFactory;
 			_caseServiceContext = caseServiceContext;
 			_jobHistoryService = jobHistoryService;
 			_jobHistoryErrorService = jobHistoryErrorService;
@@ -94,7 +97,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				_jobHistoryErrorService.CommitErrors();
 				PostExecute(job);
-				new DestinationWorkspaceManager(_caseServiceContext, _helper, job, _sourceConfiguration, this._identifier.ToString()).Execute();
+				new DestinationWorkspaceManager(_helper, _repositoryFactory, job, _sourceConfiguration, this._identifier.ToString()).Execute();
 			}
 		}
 
