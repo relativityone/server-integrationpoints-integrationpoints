@@ -25,6 +25,6 @@
 		/// <summary>
 		/// Will sort descending if true, ascending otherwise
 		/// </summary>
-		public bool SortDescending { get; set; }
+		public bool? SortDescending { get; set; }
 	}
 }

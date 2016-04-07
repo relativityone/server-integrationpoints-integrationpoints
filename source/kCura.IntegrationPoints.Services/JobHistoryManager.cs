@@ -71,7 +71,8 @@ namespace kCura.IntegrationPoints.Services
 				return jobHistorySummary;
 			}
 
-			string sortDirection = request.SortDescending ? _DESCENDING_SORT : _ASCENDING_SORT;
+			bool sortDescending = request.SortDescending ?? false;
+			string sortDirection = sortDescending ? _DESCENDING_SORT : _ASCENDING_SORT;
 			string sortColumn = GetSortColumn(request.SortColumnName);
 
 			using (SqlDataReader reader = GetJobHistoryReader(workspaceContext, accessControlListIds, jobHistoryArtifactIds, sortColumn, sortDirection))
