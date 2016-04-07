@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.Services
 			IList<int> integrationPointArtifactIds = GetProviderIntegrationPointArtifactIds(workspaceContext, _RELATIVITY_PROVIDER_GUID);
 			IList<int> jobHistoryArtifactIds = GetJobHistoryArtifactIds(workspaceContext, integrationPointArtifactIds, jobHistoryArtifactTypeId);
 			return jobHistoryArtifactIds;
-		} 
+		}
 
 		private IList<int> GetProviderIntegrationPointArtifactIds(IDBContext workspaceContext, string providerGuid)
 		{
