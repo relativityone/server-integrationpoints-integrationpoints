@@ -21,12 +21,6 @@ namespace kCura.IntegrationPoints.Services
 	{
 		private const string _ASCENDING_SORT = "ASC";
 		private const string _DESCENDING_SORT = "DESC";
-		private const string _DOCUMENT_COLUMN = "documents";
-		private const string _DATE_COLUMN = "date";
-		private const string _WORKSPACE_COLUMN = "workspacename";
-		private const string _ITEMS_IMPORTED_COLUMN = "ItemsImported";
-		private const string _DESTINATION_WORKSPACE_COLUMN = "DestinationWorkspace";
-		private const string _END_TIME_UTC_COLUMN = "EndTimeUTC";
 		private const string _RELATIVITY_PROVIDER_GUID = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 		private const string _NO_ACCESS_EXCEPTION_MESSAGE = "You do not have permission to access this service.";
 
@@ -272,22 +266,11 @@ namespace kCura.IntegrationPoints.Services
 
 		private string GetSortColumn(string sortColumnName)
 		{
-			string realSortColumn = _DESTINATION_WORKSPACE_COLUMN;
+			string sortColumn = String.IsNullOrEmpty(sortColumnName)
+				? nameof(JobHistoryModel.DestinationWorkspace)
+				: sortColumnName;
 
-			switch (sortColumnName?.ToLower())
-			{
-				case _DATE_COLUMN:
-					realSortColumn = _END_TIME_UTC_COLUMN;
-					break;
-				case _DOCUMENT_COLUMN:
-					realSortColumn = _ITEMS_IMPORTED_COLUMN;
-					break;
-				case _WORKSPACE_COLUMN:
-					realSortColumn = _DESTINATION_WORKSPACE_COLUMN;
-					break;
-			}
-
-			return realSortColumn;
+			return sortColumn;
 		}
 
 		#region SQL Queries
