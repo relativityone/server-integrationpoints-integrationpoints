@@ -65,8 +65,9 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IDocumentManager.cs" />
     <Compile Include="IJobHistoryManager.cs" />
-    <Compile Include="IJobHistoryModule.cs" />
+    <Compile Include="IIntegrationPointsModule.cs" />
     <Compile Include="Models\JobHistoryModel.cs" />
     <Compile Include="Models\JobHistorySummaryModel.cs" />
     <Compile Include="Requests\JobHistoryRequest.cs" />

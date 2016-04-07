@@ -68,7 +68,8 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="JobHistoryModule.cs" />
+    <Compile Include="DocumentManager.cs" />
+    <Compile Include="IntegrationPointsModule.cs" />
     <Compile Include="JobHistoryManager.cs" />
   </ItemGroup>
   <ItemGroup>

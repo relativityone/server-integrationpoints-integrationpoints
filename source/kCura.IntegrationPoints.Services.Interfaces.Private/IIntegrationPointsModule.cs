@@ -3,10 +3,10 @@
 namespace kCura.IntegrationPoints.Services
 {
 	/// <summary>
-	/// Job History Manager Interface
+	/// Integration Points Interface
 	/// </summary>
-	[ServiceModule("Job History Module")]
-	public interface IJobHistoryModule
+	[ServiceModule("Integration Points Module")]
+	public interface IIntegrationPointsModule
 	{
 	}
 }
