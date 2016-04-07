@@ -1,75 +1,77 @@
-﻿using System;
-using Castle.Core;
+﻿using Castle.Core;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Queries;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
 	public class CaseServiceContext : ICaseServiceContext
 	{
-		public string GetWorkspaceName(int workspaceId)
+		private readonly IServiceContextHelper _serviceContextHelper;
+		private int? _eddsUserId;
+		private int? _workspaceUserId;
+		private IRSAPIService _rsapiService;
+		private IDBContext _sqlContext;
+
+		public CaseServiceContext(IServiceContextHelper serviceContextHelper)
 		{
-			WorkspaceQuery query = new WorkspaceQuery(helper.GetRsapiClient(ExecutionIdentity.CurrentUser));
-			Workspace workspace = query.GetWorkspace(workspaceId);
-			return workspace.Name;
+			_serviceContextHelper = serviceContextHelper;
+			this.WorkspaceID = serviceContextHelper.WorkspaceID;
 		}
 
 		public int WorkspaceID { get; set; }
 
-		private int? _eddsUserID;
 		public int EddsUserID
 		{
 			get
 			{
-				if (!_eddsUserID.HasValue) _eddsUserID = helper.GetEddsUserID();
-				return _eddsUserID.Value;
+				if (!_eddsUserId.HasValue)
+				{
+					_eddsUserId = _serviceContextHelper.GetEddsUserID();
+				}
+				return _eddsUserId.Value;
 			}
-			set { _eddsUserID = value; }
+			set { _eddsUserId = value; }
 		}
 
-		private int? _workspaceUserID;
 		public int WorkspaceUserID
 		{
 			get
 			{
-				if (!_workspaceUserID.HasValue) _workspaceUserID = helper.GetWorkspaceUserID();
-				return _workspaceUserID.Value;
+				if (!_workspaceUserId.HasValue)
+				{
+					_workspaceUserId = _serviceContextHelper.GetWorkspaceUserID();
+				}
+				return _workspaceUserId.Value;
 			}
-			set { _workspaceUserID = value; }
+			set { _workspaceUserId = value; }
 		}
-
-		private IRSAPIService _rsapiService;
 
 		[DoNotWire]
 		public IRSAPIService RsapiService
 		{
 			get
 			{
-				if (_rsapiService == null) _rsapiService = helper.GetRsapiService();
+				if (_rsapiService == null)
+				{
+					_rsapiService = _serviceContextHelper.GetRsapiService();
+				}
 				return _rsapiService;
 			}
 			set { _rsapiService = value; }
 		}
 
-		private IDBContext _sqlContext;
 		[DoNotWire]
 		public IDBContext SqlContext
 		{
 			get
 			{
-				if (_sqlContext == null) _sqlContext = helper.GetDBContext(this.WorkspaceID);
+				if (_sqlContext == null)
+				{
+					_sqlContext = _serviceContextHelper.GetDBContext(this.WorkspaceID);
+				}
 				return _sqlContext;
 			}
 			set { _sqlContext = value; }
-		}
-
-		private IServiceContextHelper helper { get; set; }
-		public CaseServiceContext(IServiceContextHelper helper)
-		{
-			this.helper = helper;
-			this.WorkspaceID = helper.WorkspaceID;
 		}
 	}
 }

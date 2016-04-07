@@ -32,6 +32,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private ExportJobErrorService _exportJobErrorService;
 		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly IExporterFactory _exporterFactory;
+		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly JobStatisticsService _statisticsService;
 		private readonly List<IBatchStatus> _batchStatus;
 		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
@@ -44,6 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ICaseServiceContext caseServiceContext,
 			ISynchronizerFactory synchronizerFactory,
 			IExporterFactory exporterFactory,
+			IRepositoryFactory repositoryFactory,
 			IEnumerable<IBatchStatus> statuses,
 			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 			JobHistoryService jobHistoryService,
@@ -53,6 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_synchronizerFactory = synchronizerFactory;
 			_exporterFactory = exporterFactory;
+			_repositoryFactory = repositoryFactory;
 			_caseServiceContext = caseServiceContext;
 			_jobHistoryService = jobHistoryService;
 			_jobHistoryErrorService = jobHistoryErrorService;
@@ -84,7 +87,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 
-				IDataReader dataReader = exporter.GetDataReader(_docTableHelper);
+				IDataReader dataReader = exporter.GetDataReader(_docTableHelper, this.JobHistoryDto.ArtifactId);
 				synchronizer.SyncData(dataReader, MappedFields, destinationConfig);
 			}
 			catch (Exception ex)
@@ -95,9 +98,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				_jobHistoryErrorService.CommitErrors();
 
-				_batchStatus.Insert(0, new DestinationWorkspaceManager(_helper, _sourceConfiguration, _identifier.ToString(), JobHistoryDto.ArtifactId));
+				_batchStatus.Insert(0, new DestinationWorkspaceManager(_helper, _repositoryFactory, _sourceConfiguration, _identifier.ToString(), JobHistoryDto.ArtifactId));
 
-				_batchStatus.Insert(0, new JobHistoryManager(_helper, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, _identifier.ToString()));
+				_batchStatus.Insert(0, new JobHistoryManager(_helper, _repositoryFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, _identifier.ToString()));
 
 				PostExecute(job);
 			}

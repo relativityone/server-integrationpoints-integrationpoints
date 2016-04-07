@@ -17,9 +17,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			this._rsapiClient = _rsapiClient;
 		}
 
-		public int? RetrieveObjectTypeDescriptorArtifactTypeId(int workspaceArtifactId)
+		public int? RetrieveObjectTypeDescriptorArtifactTypeId()
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			var criteria = new TextCondition(ObjectTypeFieldNames.Name, TextConditionEnum.EqualTo, Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
 
 			Query<ObjectType> query = new Query<ObjectType>
@@ -39,13 +38,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return objectTypeArtifactId;
 		}
 
-		public int CreateObjectType(int workspaceArtifactId)
+		public int CreateObjectType()
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			var objectType = new ObjectType(SourceWorkspaceDTO.ObjectTypeGuid)
 			{
 				Name = Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-				ParentArtifactTypeID = 8,
+				ParentArtifactTypeID = (int) ArtifactType.Case,
 				CopyInstancesOnParentCopy = false,
 				CopyInstancesOnWorkspaceCreation = false,
 				SnapshotAuditingEnabledOnDelete = false,
@@ -58,19 +56,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (!resultSet.Success || !resultSet.Results.Any())
 			{
-				throw new Exception("Unable to create new Source Workspce object type: " + resultSet.Message);	
+				throw new Exception("Unable to create new Source Workspace object type: " + resultSet.Message);	
 			}
 
 			// We have to do this because the Descriptor Artifact Type Id isn't returned in the WriteResultSet :( -- biedrzycki: April 4th, 2016
-			int descriptorArtifactTypeId = this.RetrieveObjectTypeDescriptorArtifactTypeId(workspaceArtifactId).Value;
+			int descriptorArtifactTypeId = this.RetrieveObjectTypeDescriptorArtifactTypeId().Value;
 
 			return descriptorArtifactTypeId;
 		}
 
-		public bool ObjectTypeFieldExist(int workspaceArtifactId, int sourceWorkspaceObjectTypeId)
+		public bool ObjectTypeFieldsExist(int sourceWorkspaceObjectTypeId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
-
 			string[] fieldNames = new string[] { Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME };
 			var criteria = new TextCondition(FieldFieldNames.Name, TextConditionEnum.In, fieldNames);
 			var query = new Query<kCura.Relativity.Client.DTOs.Field> 
@@ -88,17 +84,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			// TODO: this cannot stay here...
-			IDictionary<string, int> fieldNametoIdDictionary =
+			IDictionary<string, int> fieldNameToIdDictionary =
 				resultSet.Results
 					.ToDictionary(x => x.Artifact.Name, y => y.Artifact.ArtifactID);
 			
 			// Validate that all fields exist
-			return fieldNames.All(expectedFieldName => fieldNametoIdDictionary.ContainsKey(expectedFieldName));
+			return fieldNames.All(expectedFieldName => fieldNameToIdDictionary.ContainsKey(expectedFieldName));
 		}
 
-		public void CreateObjectTypeFields(int workspaceArtifactId, int sourceWorkspaceObjectTypeId)
+		public void CreateObjectTypeFields(int sourceWorkspaceObjectTypeId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			var objectType = new ObjectType() { DescriptorArtifactTypeID = sourceWorkspaceObjectTypeId };
 
 			var sourceWorkspaceFields = new List<kCura.Relativity.Client.DTOs.Field>()
@@ -134,9 +129,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					Wrapping = false,
 					Unicode = false, // TODO: check this
 					Length = 255 // TODO: check this
-				},
-
-				// TODO: add job history field here
+				}
 			};
 
 			WriteResultSet<kCura.Relativity.Client.DTOs.Field> fieldWriteResultSet = _rsapiClient.Repositories.Field.Create(sourceWorkspaceFields);
@@ -146,10 +139,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public int CreateSourceWorkspaceFieldOnDocument(int workspaceArtifactId, int sourceWorkspaceObjectTypeId)
+		public int CreateSourceWorkspaceFieldOnDocument(int sourceWorkspaceObjectTypeId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
-			var documentObjectType = new ObjectType() { DescriptorArtifactTypeID = 10 };
+			var documentObjectType = new ObjectType() { DescriptorArtifactTypeID = (int) ArtifactType.Document };
 			var sourceWorkspaceObjectType = new ObjectType() { DescriptorArtifactTypeID = sourceWorkspaceObjectTypeId };
 			var fields = new List<kCura.Relativity.Client.DTOs.Field>()
 			{
@@ -169,7 +161,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			WriteResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Create(fields);
 
-			var field = resultSet.Results.FirstOrDefault();
+			Result<kCura.Relativity.Client.DTOs.Field> field = resultSet.Results.FirstOrDefault();
 			if (!resultSet.Success || field == null)
 			{
 				throw new Exception("Unable to create Source Workspace field on Document: " + resultSet.Message);
@@ -180,9 +172,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return newFieldArtifactId;
 		}
 
-		public int GetSourceWorkspaceFieldOnDocument(int workspaceArtifactId, int sourceWorkspaceObjectTypeId)
+		public bool SourceWorkspaceFieldExistsOnDocument(int sourceWorkspaceObjectTypeId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			var criteria = new TextCondition(FieldFieldNames.Name, TextConditionEnum.EqualTo, "Source Workspace");
 			var query = new Query<kCura.Relativity.Client.DTOs.Field>
 			{
@@ -192,20 +183,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			QueryResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Query(query);
 
-			var field = resultSet.Results.FirstOrDefault();
-			if (!resultSet.Success || field == null)
+			Result<kCura.Relativity.Client.DTOs.Field> field = resultSet.Results.FirstOrDefault();
+			if (!resultSet.Success)
 			{
 				throw new Exception("Unable to retrieve Document fields: " + resultSet.Message);
 			}
 
-			return field.Artifact.ArtifactID;
+			bool fieldExists = field != null;
+
+			return fieldExists;
 		}
 
-		public SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int workspaceArtifactId, int sourceWorkspaceArtifactId, int sourceWorkspaceArtifactTypeId)
+		public SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int sourceWorkspaceArtifactId, int sourceWorkspaceArtifactTypeId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
-
-			
 			var condition = new WholeNumberCondition(Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, NumericConditionEnum.EqualTo, sourceWorkspaceArtifactId);
 			var query = new Query<RDO>()
 			{
@@ -220,18 +210,18 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return null;
 			}
 
-			var rdo = resultSet.Results.First();
+			Result<RDO> rdo = resultSet.Results.First();
 			var sourceWorkspaceDto = new SourceWorkspaceDTO() { ArtifactId = rdo.Artifact.ArtifactID };
 
 			foreach (FieldValue fieldValue in rdo.Artifact.Fields)
 			{
 				if (fieldValue.Name == Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME)
 				{
-					sourceWorkspaceDto.SourceWorkspaceArtifactId = fieldValue.ValueAsWholeNumber.Value;
+					sourceWorkspaceDto.SourceCaseArtifactId = fieldValue.ValueAsWholeNumber.Value;
 				}
 				else if (fieldValue.Name == Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME)
 				{
-					sourceWorkspaceDto.SourceWorkspaceName = fieldValue.ValueAsFixedLengthText;
+					sourceWorkspaceDto.SourceCaseName = fieldValue.ValueAsFixedLengthText;
 				}
 				else if (fieldValue.Name == Contracts.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME)
 				{
@@ -242,13 +232,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return sourceWorkspaceDto;
 		}
 
-		public int Create(int workspaceArtifactId, int sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO sourceWorkspaceDto)
+		public int Create(int sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO sourceWorkspaceDto)
 		{
 			var fields = new List<FieldValue>()
 			{
 				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME, sourceWorkspaceDto.Name),
-				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, sourceWorkspaceDto.SourceWorkspaceArtifactId),
-				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, sourceWorkspaceDto.SourceWorkspaceName)
+				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, sourceWorkspaceDto.SourceCaseArtifactId),
+				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, sourceWorkspaceDto.SourceCaseName)
 			};
 			var rdo = new RDO()
 			{
@@ -264,21 +254,20 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch
 			{
-				throw new Exception("Unable to create new instance Source Workspace");
+				throw new Exception("Unable to create new instance of Source Workspace");
 			}
 		}
 
-		public void Update(int workspaceArtifactId, SourceWorkspaceDTO sourceWorkspaceDto)
+		public void Update(SourceWorkspaceDTO sourceWorkspaceDto)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			var fields = new List<FieldValue>()
 			{
 				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME, sourceWorkspaceDto.Name, true),
-				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, sourceWorkspaceDto.SourceWorkspaceName, true),
+				new FieldValue(Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME, sourceWorkspaceDto.SourceCaseName, true),
 			};
-			var rdo = new RDO()
+
+			var rdo = new RDO(sourceWorkspaceDto.ArtifactTypeId, sourceWorkspaceDto.ArtifactId)
 			{
-				ArtifactTypeID = workspaceArtifactId,
 				Fields = fields
 			};
 
@@ -286,9 +275,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				_rsapiClient.Repositories.RDO.UpdateSingle(rdo);
 			}
-			catch
+			catch (Exception e)
 			{
-				throw new Exception("Unable to update Source Workspace instance");
+				throw new Exception("Unable to update Source Workspace instance", e);
 			}
 		}
 	}

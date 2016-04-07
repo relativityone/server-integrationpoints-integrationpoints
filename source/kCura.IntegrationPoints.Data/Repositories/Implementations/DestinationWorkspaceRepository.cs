@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Security.Claims;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.Core;
@@ -11,22 +10,21 @@ using Relativity.Core.Process;
 using Relativity.Data;
 using ArtifactType = Relativity.Query.ArtifactType;
 using Field = Relativity.Core.DTO.Field;
-
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class DestinationWorkspaceRepository : IDestinationWorkspaceRepository
 	{
 		private readonly IRSAPIClient _client;
 		private readonly int _destinationWorkspaceId;
-		private readonly WorkspaceQuery _workspaceQuery;
+		private readonly IWorkspaceRepository _workspaceRepository;
 		private static int BATCH_SIZE = 1000;
 		private const string _DESTINATION_WORKSPACE_JOB_HISTORY_LINK = "20A24C4E-55E8-4FC2-ABBE-F75C07FAD91B";
 
-		public DestinationWorkspaceRepository(IRSAPIClient client, int destinationWorkspaceId)
+		public DestinationWorkspaceRepository(IRSAPIClient client, IWorkspaceRepository workspaceRepository, int destinationWorkspaceId)
 		{
 			_client = client;
 			_destinationWorkspaceId = destinationWorkspaceId;
-			_workspaceQuery = new WorkspaceQuery(client);
+			_workspaceRepository = workspaceRepository;
 		}
 
 		public int QueryDestinationWorkspaceRdoInstance()
@@ -54,7 +52,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int CreateDestinationWorkspaceRdoInstance()
 		{
-			string destinationWorkspaceName = _workspaceQuery.GetWorkspace(_destinationWorkspaceId).Name;
+			string destinationWorkspaceName = _workspaceRepository.Retrieve(_destinationWorkspaceId).Name;
 			string instanceName = String.Format("{0} - {1}", destinationWorkspaceName,_destinationWorkspaceId);
 
 			RDO destinationWorkspaceObject = new RDO();

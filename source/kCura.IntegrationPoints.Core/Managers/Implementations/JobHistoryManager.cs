@@ -2,7 +2,6 @@
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
@@ -12,20 +11,19 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	public class JobHistoryManager : IJobHistoryManager, IBatchStatus
 	{
 		private readonly ITempDocTableHelper _tempDocHelper;
-		private readonly IRSAPIClient _client;
 		private readonly IJobHistoryRepository _jobHistoryRepository;
 		private readonly int _jobHistoryInstanceId;
 		private readonly int _sourceWorkspaceArtifactId;
 		private readonly string _uniqueJobId;
 
-		public JobHistoryManager(IHelper helper, int jobHistoryInstanceId, int sourceWorkspaceArtifactId, string uniqueJobId)
+		//todo: remove Helper from constructor - Gonnella
+		public JobHistoryManager(IHelper helper, IRepositoryFactory repositoryFactory, int jobHistoryInstanceId, int sourceWorkspaceArtifactId, string uniqueJobId)
 		{
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
-			_client = new RsapiClientFactory(helper).CreateClientForWorkspace(_sourceWorkspaceArtifactId, ExecutionIdentity.System);
 			_jobHistoryInstanceId = jobHistoryInstanceId;
 			_uniqueJobId = uniqueJobId;
 			_tempDocHelper = new TempDocumentFactory().GetDocTableHelper(helper, _uniqueJobId, _sourceWorkspaceArtifactId);
-			_jobHistoryRepository = new JobHistoryRepository();
+			_jobHistoryRepository = repositoryFactory.GetJobHistoryRepository();
 		}
 
 		/// <summary>

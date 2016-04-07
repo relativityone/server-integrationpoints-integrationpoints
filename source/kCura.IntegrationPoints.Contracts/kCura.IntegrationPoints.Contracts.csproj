@@ -101,7 +101,8 @@
     <Compile Include="Models\FieldEntry.cs" />
     <Compile Include="Models\ObjectTypeDTO.cs" />
     <Compile Include="Models\SourceWorkspaceDTO.cs" />
-    <Compile Include="Models\SourceWorkspaceFieldMapDTO.cs" />
+    <Compile Include="Models\SourceWorkspaceJobHistoryDTO.cs" />
+    <Compile Include="Models\TargetWorkspaceJobHistoryDTO.cs" />
     <Compile Include="Models\WorkspaceDTO.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

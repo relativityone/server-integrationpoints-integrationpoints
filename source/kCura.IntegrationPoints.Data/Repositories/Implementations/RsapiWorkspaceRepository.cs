@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -16,22 +18,30 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public WorkspaceDTO Retrieve(int workspaceArtifactId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = -1;
-
-			Workspace workspaceRdo = null;
+			QueryResultSet<Workspace> resultSet = null;
 			try
 			{
-				workspaceRdo = _rsapiClient.Repositories.Workspace.ReadSingle(workspaceArtifactId);
+				WholeNumberCondition workspaceCondition = new WholeNumberCondition(ArtifactQueryFieldNames.ArtifactID, NumericConditionEnum.EqualTo, workspaceArtifactId);
+				Query<Workspace> query = new Query<Workspace>
+				{
+					Condition = workspaceCondition,
+					Fields = new List<FieldValue>() { new FieldValue() { Name = "Name" } }
+				};
+
+				resultSet = _rsapiClient.Repositories.Workspace.Query(query);
 			}
 			catch (Exception e)
 			{
 				throw new Exception("Unable to retrieve Workspace", e);
 			}
 
+			RdoHelper.CheckResult(resultSet);
+			Workspace workspace = resultSet.Results.First().Artifact;
+
 			var workspaceDto = new WorkspaceDTO()
 			{
-				ArtifactId = workspaceRdo.ArtifactID,
-				Name = workspaceRdo.Name
+				ArtifactId = workspace.ArtifactID,
+				Name = workspace.Name
 			};
 
 			return workspaceDto;

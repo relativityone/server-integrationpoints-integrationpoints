@@ -14,19 +14,20 @@ using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Managers;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
@@ -102,14 +103,28 @@ namespace kCura.IntegrationPoints.Core.Installers
 			if (container.Kernel.HasComponent(typeof(IHelper)))
 			{
 				IHelper helper = container.Resolve<IHelper>();
+				// TODO: Investigate; should this be using ExecutionIdentity.CurrentUser? -- biedrzycki: April 6th, 2016
 				IObjectQueryManager queryManager = helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
 
-				container.Register(Component.For<IObjectQueryManagerAdaptor>().ImplementedBy<ObjectQueryManagerAdaptor>().DependsOn(new { objectQueryManager = queryManager }).LifeStyle.Transient);
+				container.Register(
+					Component.For<IObjectQueryManagerAdaptor>()
+						.ImplementedBy<ObjectQueryManagerAdaptor>()
+						.DependsOn(new { objectQueryManager = queryManager })
+						.LifeStyle.Transient);
+				container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
 				container.Register(Component.For<IFieldRepository>().ImplementedBy<KeplerFieldRepository>().LifeStyle.Transient);
-				container.Register(Component.For<IFieldManager>().ImplementedBy<FieldManager>().LifestyleTransient());
-				container.Register(Component.For<ISourceWorkspaceRepository>().ImplementedBy<RsapiSourceWorkspaceRepository>().LifestyleTransient());
-				container.Register(Component.For<IWorkspaceRepository>().ImplementedBy<RsapiWorkspaceRepository>().LifestyleTransient());
+
+				// TODO: This is kind of cruddy, see if we can only use this repository through the RepositoryFactory -- biedrzycki: April 6th, 2016
+				IRSAPIClient workspaceRepositoryRsapiClient = helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
+				workspaceRepositoryRsapiClient.APIOptions.WorkspaceID = -1;
+				container.Register(
+					Component.For<IWorkspaceRepository>()
+						.ImplementedBy<RsapiWorkspaceRepository>()
+						.DependsOn(new { rsapiClient = workspaceRepositoryRsapiClient })
+						.LifestyleTransient());
+
 				container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());
+				container.Register(Component.For<ITargetWorkspaceJobHistoryManager>().ImplementedBy<TargetWorkspaceJobHistoryManager>().LifestyleTransient());
 			}
 		}
 	}

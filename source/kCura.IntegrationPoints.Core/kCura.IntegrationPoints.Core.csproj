@@ -157,11 +157,11 @@
     <Compile Include="Installers\KeywordInstaller.cs" />
     <Compile Include="JobHistoryStatus.cs" />
     <Compile Include="IBatchStatus.cs" />
-    <Compile Include="Managers\IFieldManager.cs" />
-    <Compile Include="Managers\Implementations\FieldManager.cs" />
     <Compile Include="Managers\Implementations\JobHistoryManager.cs" />
     <Compile Include="Managers\Implementations\SourceWorkspaceManager.cs" />
+    <Compile Include="Managers\Implementations\TargetWorkspaceJobHistoryManager.cs" />
     <Compile Include="Managers\ISourceWorkspaceManager.cs" />
+    <Compile Include="Managers\ITargetWorkspaceJobHistoryManager.cs" />
     <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Properties\JobStatusMessages.Designer.cs">
       <AutoGen>True</AutoGen>

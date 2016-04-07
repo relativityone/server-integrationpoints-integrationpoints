@@ -73,9 +73,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 			if (columns.Contains(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD))
 			{
-				_targetNameToSourceIdentifier["Source Workspace"] = Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD;
-				_sourceIdentifierToTargetName[Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD] = "Source Workspace";
+				_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME] = Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD;
+				_sourceIdentifierToTargetName[Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD] = Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME;
 			}
+
+			if (columns.Contains(Contracts.Constants.SPECIAL_JOBHISTORY_FIELD))
+			{
+				_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME] = Contracts.Constants.SPECIAL_JOBHISTORY_FIELD;
+				_sourceIdentifierToTargetName[Contracts.Constants.SPECIAL_JOBHISTORY_FIELD] = Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME;
+			}
+
 			// So that the destination workspace file icons correctly display, we give the import API the file name of the document
 			if (columns.Contains(Contracts.Constants.SPECIAL_FILE_NAME_FIELD))
 			{

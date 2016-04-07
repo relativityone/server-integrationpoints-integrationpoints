@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.Core.Managers
 {
 	public interface ISourceWorkspaceManager
 	{
-		SourceWorkspaceDTO InititializeWorkspace(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId);
+		SourceWorkspaceDTO InitializeWorkspace(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId);
 	}
 }

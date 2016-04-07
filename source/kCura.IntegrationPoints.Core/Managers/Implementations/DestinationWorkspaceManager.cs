@@ -3,8 +3,6 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 
@@ -18,11 +16,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly int _sourceWorkspaceId;
 		private readonly int _jobHistoryInstanceId;
 
-		public DestinationWorkspaceManager(IHelper helper, SourceConfiguration sourceConfig, string tableSuffix, int jobHistoryInstanceId)
+		// TODO: The IHelper needs to be removed from this constructor -- biedrzycki: April 6th, 2016
+		public DestinationWorkspaceManager(IHelper helper, IRepositoryFactory repositoryFactory, SourceConfiguration sourceConfig, string tableSuffix, int jobHistoryInstanceId)
 		{
-			IRSAPIClient client = new RsapiClientFactory(helper).CreateClientForWorkspace(sourceConfig.SourceWorkspaceArtifactId, ExecutionIdentity.System);
 			_tempDocHelper = new TempDocumentFactory().GetDocTableHelper(helper, tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
-			_destinationWorkspaceRepository = new DestinationWorkspaceRepository(client, sourceConfig.TargetWorkspaceArtifactId);
+			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId, sourceConfig.TargetWorkspaceArtifactId);
 			_tableSuffix = tableSuffix;
 			_sourceWorkspaceId = sourceConfig.SourceWorkspaceArtifactId;
 			_jobHistoryInstanceId = jobHistoryInstanceId;
