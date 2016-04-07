@@ -8,11 +8,10 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <summary>
 		/// Returns an instance of ITempDocTableHelper
 		/// </summary>
-		/// <param name="context">The database context to work with</param>
-		/// <param name="tableName">The name of the scratch table</param>
+		/// <param name="helper"></param>
 		/// <param name="tableSuffix">The unique suffix to append to the table (optional because sometimes it is set outside the constructor)</param>
+		/// <param name="sourceWorkspaceId">The Artifact ID of the source workspace</param>
 		/// <returns></returns>
-		ITempDocTableHelper GetDocTableHelper(IHelper helper, string tableName, string tableSuffix,
-			int sourceWorkspaceId);
+		ITempDocTableHelper GetDocTableHelper(IHelper helper, string tableSuffix, int sourceWorkspaceId);
 	}
 }

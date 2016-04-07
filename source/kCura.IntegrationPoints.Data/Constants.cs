@@ -23,6 +23,8 @@
 	public static class Constants
 	{
 		public const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
+		public const string TEMPORARY_DOC_TABLE_DEST_WS = "TempRIPDocTable_DW";
+		public const string TEMPORARY_DOC_TABLE_JOB_HIST = "TempRIPDocTable_JH";
 	}
 
 	public static class DestinationWorkspaceObject
@@ -32,14 +34,25 @@
 		public const string DESTINATION_WORKSPACE_NAME = "348D7394-2658-4DA4-87D0-8183824ADF98";
 		public const string DESTINATION_WORKSPACE_DOCUMENTS = "94EE2BD7-76D5-4D17-99E2-04768CCE05E6";
 		public const string DESTINATION_WORKSPACE_INSTANCE_NAME = "155649C0-DB15-4EE7-B449-BFDF2A54B7B5";
-
-		public const int BATCH_SIZE = 1000; //todo: find a better place to put this, where it can be configured
 	}
 
-	public static class DestinationWorkspaceErrors
+	public static class DocumentMultiObjectFields
 	{
-		public const string UPDATE_ERROR = "Unable to update instance of Destination Workspace object";
-		public const string CREATE_ERROR = "Unable to create a new instance of Destination Workspace object";
-		public const string QUERY_ERROR = "Unable to query Destination Workspace RDO";
+		public const string DESTINATION_WORKSPACE_FIELD = "	8980C2FA-0D33-4686-9A97-EA9D6F0B4196";
+		public const string JOB_HISTORY_FIELD = "97BC12FA-509B-4C75-8413-6889387D8EF6";
+	}
+
+	public static class RSAPIErrors
+	{
+		public const string UPDATE_DEST_WORKSPACE_ERROR = "Unable to update instance of Destination Workspace object";
+		public const string CREATE_DEST_WORKSPACE_ERROR = "Unable to create a new instance of Destination Workspace object";
+		public const string QUERY_DEST_WORKSPACE_ERROR = "Unable to query Destination Workspace instance";
+		public const string LINK_OBJECT_INSTANCE_ERROR = "Unable to link Destination Workspace object to Job History object";
+	}
+
+	public enum ScratchTables
+	{
+		DestinationWorkspace = 0,
+		JobHistory = 1
 	}
 }

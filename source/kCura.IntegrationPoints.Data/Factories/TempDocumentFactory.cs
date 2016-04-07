@@ -6,10 +6,10 @@ namespace kCura.IntegrationPoints.Data.Factories
 {
 	public class TempDocumentFactory : ITempDocumentFactory
 	{
-		public ITempDocTableHelper GetDocTableHelper(IHelper helper, string tableName, string tableSuffix,
+		public ITempDocTableHelper GetDocTableHelper(IHelper helper, string tableSuffix,
 			int sourceWorkspaceId)
 		{
-			return new TempDocTableHelper(helper, tableName, tableSuffix, sourceWorkspaceId);
+			return new TempDocTableHelper(helper, tableSuffix, sourceWorkspaceId);
 		}
 	}
 }

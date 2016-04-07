@@ -8,7 +8,6 @@
 			public const string APP_DOMAIN_SUBSYSTEM_NAME = "IntegrationPoints";
 			public const string APP_DOMAIN_DATA_SYSTEM_TOKEN_PROVIDER = "SystemToken";
 			public const string APP_DOMAIN_DATA_CONNECTION_STRING = "IntegrationPointsConnectionString";
-			public const string TEMPORARY_DOCUMENT_TABLE_NAME = "TempRIPDocTable";
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
@@ -9,6 +10,7 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -19,7 +21,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
 using Relativity.API;
-using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -32,7 +33,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly IExporterFactory _exporterFactory;
 		private readonly JobStatisticsService _statisticsService;
-		private readonly IEnumerable<IBatchStatus> _batchStatus;
+		private readonly List<IBatchStatus> _batchStatus;
 		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private Guid _identifier;
 		private readonly IHelper _helper;
@@ -56,7 +57,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryService = jobHistoryService;
 			_jobHistoryErrorService = jobHistoryErrorService;
 			_statisticsService = statisticsService;
-			_batchStatus = statuses ?? new List<IBatchStatus>();
+			_batchStatus = statuses.ToList();
 			_serializer = serializer;
 			_helper = helper;
 		}
@@ -93,8 +94,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			finally
 			{
 				_jobHistoryErrorService.CommitErrors();
+
+				_batchStatus.Insert(0, new DestinationWorkspaceManager(_helper, _sourceConfiguration, _identifier.ToString(), JobHistoryDto.ArtifactId));
+
+				_batchStatus.Insert(0, new JobHistoryManager(_helper, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, _identifier.ToString()));
+
 				PostExecute(job);
-				new DestinationWorkspaceManager(_caseServiceContext, _helper, job, _sourceConfiguration, this._identifier.ToString()).Execute();
 			}
 		}
 
@@ -128,7 +133,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			SourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
 
-			_docTableHelper = new TempDocumentFactory().GetDocTableHelper(_helper, Constants.IntegrationPoints.TEMPORARY_DOCUMENT_TABLE_NAME, this._identifier.ToString(), _sourceConfiguration.SourceWorkspaceArtifactId);
+			_docTableHelper = new TempDocumentFactory().GetDocTableHelper(_helper, this._identifier.ToString(), _sourceConfiguration.SourceWorkspaceArtifactId);
 
 			this.JobHistoryDto = _jobHistoryService.GetRdo(this._identifier);
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;

@@ -52,12 +52,20 @@
     <Reference Include="Castle.Windsor">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Data, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\kCura.IntegrationPoints.Core\bin\kCura.Data.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Data.RowDataGateway">
       <HintPath>..\Dependencies\kCura\kCura.Data.RowDataGateway.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Utility.MassAssign, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\kCura.IntegrationPoints.Core\bin\kCura.Utility.MassAssign.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -66,12 +74,20 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\kCura.IntegrationPoints.Core\bin\Relativity.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.API, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Core">
       <HintPath>..\Dependencies\kCura\Relativity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Data, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\kCura.IntegrationPoints.Core\bin\Relativity.Data.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.DataContracts">
       <HintPath>..\Dependencies\kCura\Relativity.Services.DataContracts.dll</HintPath>
@@ -104,6 +120,8 @@
     <Compile Include="ImportSettingVisibility.cs" />
     <Compile Include="Repositories\IDocumentRepository.cs" />
     <Compile Include="Repositories\IFieldRepository.cs" />
+    <Compile Include="Repositories\IJobHistoryRepository.cs" />
+    <Compile Include="Repositories\Implementations\JobHistoryRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerDocumentRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerFieldRepository.cs" />
     <Compile Include="Adaptors\Implementations\ObjectQueryManagerAdaptor.cs" />

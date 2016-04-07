@@ -5,15 +5,12 @@ using System.Linq;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
-using kCura.IntegrationPoints.Data.Managers;
 using kCura.IntegrationPoints.Data.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
-using kCura.Relativity.Client.Repositories;
 using Relativity.API;
 using Relativity.Services.ObjectQuery;
-
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -21,48 +18,48 @@ namespace kCura.IntegrationPoints.Data
 	{
 		private readonly IDBContext _caseContext;
 		private readonly IHelper _helper;
-		private readonly string _tableName;
 		private readonly string _tableSuffix;
 		private string _docIdentifierField;
 		private readonly int _sourceWorkspaceId;
 
-		public TempDocTableHelper(IHelper helper, string tableName, string tableSuffix, int sourceWorkspaceId)
+		public TempDocTableHelper(IHelper helper, string tableSuffix, int sourceWorkspaceId)
 		{
 			_sourceWorkspaceId = sourceWorkspaceId;
 			_helper = helper;
 			_caseContext = _helper.GetDBContext(_sourceWorkspaceId);
-			_tableName = tableName;
 			_tableSuffix = tableSuffix;
 		}
 
 		/// <summary>
 		/// For internal testing only
 		/// </summary>
-		/// <param name="helper"></param>
-		/// <param name="tableName"></param>
-		/// <param name="tableSuffix"></param>
-		/// <param name="sourceWorkspaceId"></param>
-		///  <param name="docIdField"></param>
-		internal TempDocTableHelper(IHelper helper, string tableName, string tableSuffix, int sourceWorkspaceId, string docIdField)
+		internal TempDocTableHelper(IHelper helper, string tableSuffix, int sourceWorkspaceId, string docIdField)
 		{
 			_sourceWorkspaceId = sourceWorkspaceId;
 			_helper = helper;
 			_caseContext = _helper.GetDBContext(_sourceWorkspaceId);
-			_tableName = tableName;
 			_tableSuffix = tableSuffix;
 			_docIdentifierField = docIdField;
 		}
 
-		public void CreateTemporaryDocTable(List<int> artifactIds)
+		public void CreateTemporaryDocTable(List<int> artifactIds, ScratchTables rdoTable)
 		{
 			if (!artifactIds.IsNullOrEmpty())
 			{
+				string fullTableName;
+				if (rdoTable == ScratchTables.DestinationWorkspace)
+				{
+					fullTableName = String.Format("{0}_{1}", Constants.TEMPORARY_DOC_TABLE_DEST_WS, _tableSuffix);
+				}
+				else
+				{
+					fullTableName = String.Format("{0}_{1}", Constants.TEMPORARY_DOC_TABLE_JOB_HIST, _tableSuffix);
+				}
 				string artifactIdList = "(" + String.Join("),(", artifactIds.Select(x => x.ToString())) + ")";
-				string fullTableName = _tableName + "_" + _tableSuffix;
 
-				string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
+				string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
 											BEGIN 
-											CREATE TABLE [EDDSRESOURCE]..[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED, [ID] [int] IDENTITY(1,1) NOT NULL)
+											CREATE TABLE [EDDSRESOURCE]..[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
 											END
 									INSERT INTO [EDDSRESOURCE]..[{0}] ([ArtifactID]) VALUES {1}", fullTableName, artifactIdList);
 
@@ -73,34 +70,52 @@ namespace kCura.IntegrationPoints.Data
 		public void RemoveErrorDocument(string docIdentifier)
 		{
 			int docId = GetDocumentId(docIdentifier);
-			string fullTableName = _tableName + "_" + _tableSuffix;
+			string fullTableName = String.Format("{0}_{1}", Constants.TEMPORARY_DOC_TABLE_DEST_WS, _tableSuffix);
 			string sql = String.Format(@"DELETE FROM EDDSRESOURCE..[{0}] WHERE [ArtifactID] = {1}", fullTableName, docId);
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 		}
 
-		public List<int> GetDocumentIdsFromTable()
+		public List<int> GetDocumentIdsFromTable(ScratchTables rdoTable)
 		{
-			string fullTableName = _tableName + "_" + _tableSuffix;
-			string sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
+			string fullTableName;
+			if (rdoTable == ScratchTables.DestinationWorkspace)
+			{
+				fullTableName = String.Format("{0}_{1}", Constants.TEMPORARY_DOC_TABLE_DEST_WS, _tableSuffix);
+			}
+			else
+			{
+				fullTableName = String.Format("{0}_{1}", Constants.TEMPORARY_DOC_TABLE_JOB_HIST, _tableSuffix);
+			}
+
+			var sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
 										SELECT [ArtifactID] FROM [EDDSRESOURCE]..[{0}]", fullTableName);
+
 			var documentIds = new List<int>();
 
-			SqlDataReader docIdReader = _caseContext.ExecuteSQLStatementAsReader(sql);
-			while (docIdReader.Read())
+			using (SqlDataReader docIdReader = _caseContext.ExecuteSQLStatementAsReader(sql))
 			{
-				int docId = Convert.ToInt32(docIdReader["ArtifactID"]);
-				documentIds.Add(docId);
+				while (docIdReader.Read())
+				{
+					int docId = Convert.ToInt32(docIdReader["ArtifactID"]);
+					documentIds.Add(docId);
+				}
 			}
-	
-			docIdReader.Close();
 
 			return documentIds;
 		}
 
-		public void DeleteTable()
+		public void DeleteTable(ScratchTables rdoTable)
 		{
-			string fullTableName = _tableName + "_" + _tableSuffix;
+			string fullTableName;
+			if (rdoTable == ScratchTables.DestinationWorkspace)
+			{
+				fullTableName = String.Format("{0}_{1}", Constants.TEMPORARY_DOC_TABLE_DEST_WS, _tableSuffix);
+			}
+			else
+			{
+				fullTableName = String.Format("{0}_{1}", Constants.TEMPORARY_DOC_TABLE_JOB_HIST, _tableSuffix);
+			}
 			string sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
 										DROP TABLE [EDDSRESOURCE]..[{0}]", fullTableName);
 

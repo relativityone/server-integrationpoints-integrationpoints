@@ -1,65 +1,68 @@
 using System.Collections.Generic;
-using System.Linq;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Core.Managers
+namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
-	public class DestinationWorkspaceManager : IDestinationWorkspaceManager
+	public class DestinationWorkspaceManager : IBatchStatus
 	{
-		private Job _job;
 		private readonly ITempDocTableHelper _tempDocHelper;
-		private readonly IRSAPIClient _client;
-		private readonly IDestinationWorkspaceRepository _dwRepository;
+		private readonly IDestinationWorkspaceRepository _destinationWorkspaceRepository;
+		private readonly string _tableSuffix;
+		private readonly int _sourceWorkspaceId;
+		private readonly int _jobHistoryInstanceId;
 
-		public DestinationWorkspaceManager(ICaseServiceContext context, IHelper helper, Job job, SourceConfiguration sourceConfig, string tableSuffix)
+		public DestinationWorkspaceManager(IHelper helper, SourceConfiguration sourceConfig, string tableSuffix, int jobHistoryInstanceId)
 		{
-			_job = job;
-			_client = new RsapiClientFactory(helper).CreateClientForWorkspace(sourceConfig.SourceWorkspaceArtifactId, ExecutionIdentity.System);
-			_tempDocHelper = new TempDocumentFactory().GetDocTableHelper(helper, Constants.IntegrationPoints.TEMPORARY_DOCUMENT_TABLE_NAME, tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
-			_dwRepository = new DestinationWorkspaceRepository(_client, sourceConfig.TargetWorkspaceArtifactId);
+			IRSAPIClient client = new RsapiClientFactory(helper).CreateClientForWorkspace(sourceConfig.SourceWorkspaceArtifactId, ExecutionIdentity.System);
+			_tempDocHelper = new TempDocumentFactory().GetDocTableHelper(helper, tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
+			_destinationWorkspaceRepository = new DestinationWorkspaceRepository(client, sourceConfig.TargetWorkspaceArtifactId);
+			_tableSuffix = tableSuffix;
+			_sourceWorkspaceId = sourceConfig.SourceWorkspaceArtifactId;
+			_jobHistoryInstanceId = jobHistoryInstanceId;
 		}
-		public void Execute()
+
+		/// <summary>
+		/// Internal unit testing only
+		/// </summary>
+		internal DestinationWorkspaceManager(ITempDocTableHelper tempDocHelper, IDestinationWorkspaceRepository destinationWorkspaceRepository,
+			int jobHistoryInstanceId, string tableSuffix, int sourceWorkspaceId)
 		{
-			List<int> documentIds = _tempDocHelper.GetDocumentIdsFromTable(); 
+			_tempDocHelper = tempDocHelper;
+			_destinationWorkspaceRepository = destinationWorkspaceRepository;
+			_jobHistoryInstanceId = jobHistoryInstanceId;
+			_tableSuffix = tableSuffix;
+			_sourceWorkspaceId = sourceWorkspaceId;
+		}
+
+		public void JobStarted(Job job) { }
+
+		public void JobComplete(Job job)
+		{
+			List<int> documentIds = _tempDocHelper.GetDocumentIdsFromTable(ScratchTables.DestinationWorkspace);
 			int documentCount = documentIds.Count;
-			int batchSize = DestinationWorkspaceObject.BATCH_SIZE;
+
+			int destinationWorkspaceRdoId = _destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance();
+			if (destinationWorkspaceRdoId == -1)
+			{
+				destinationWorkspaceRdoId = _destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance();
+			}
+
+			_destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(destinationWorkspaceRdoId, _jobHistoryInstanceId);
+
 			if (documentCount == 0)
 			{
-				_tempDocHelper.DeleteTable();
+				_tempDocHelper.DeleteTable(ScratchTables.DestinationWorkspace);
 				return;
 			}
 
-			int destinationWorkspaceRdoId = _dwRepository.QueryDestinationWorkspaceRdoInstance();
-			FieldValueList<Relativity.Client.DTOs.Artifact> existingMultiObjectLinks = null;
-
-			int numberOfBatches = (documentCount + batchSize - 1) / batchSize;
-			bool firstUpdateDone = false;
-			for (int batchSet = 0; batchSet < numberOfBatches; batchSet++)
-			{
-				IEnumerable<int> batchedDocIds = documentIds.Skip(batchSet * batchSize).Take(batchSize);
-				if (destinationWorkspaceRdoId == -1)
-				{
-					destinationWorkspaceRdoId = _dwRepository.CreateDestinationWorkspaceRdoInstance(batchedDocIds.ToList());
-				}
-				else
-				{
-					_dwRepository.UpdateDestinationWorkspaceRdoInstance(batchedDocIds.ToList(), destinationWorkspaceRdoId, ref existingMultiObjectLinks, firstUpdateDone);
-					firstUpdateDone = true;
-				}
-			}
-
-			//todo: link to JobHistoryRDO as well
-			_tempDocHelper.DeleteTable();
-				
+			_destinationWorkspaceRepository.TagDocsWithDestinationWorkspace(documentCount, destinationWorkspaceRdoId, _tableSuffix, _sourceWorkspaceId);
 		}
 	}
 }
