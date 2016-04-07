@@ -37,8 +37,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			ArtifactId = 409303,
 			ArtifactTypeId = 4444,
 			Name = String.Format("{0} - {1}", _SOURCE_WORKSPACE_NAME, _SOURCE_WORKSPACE_ARTIFACTID),
-			SourceWorkspaceName = _SOURCE_WORKSPACE_NAME,
-			SourceWorkspaceArtifactId = _SOURCE_WORKSPACE_ARTIFACTID
+			SourceCaseName = _SOURCE_WORKSPACE_NAME,
+			SourceCaseArtifactId = _SOURCE_WORKSPACE_ARTIFACTID
 		};
 
 		private static readonly ArtifactDTO _templateArtifactDto = new ArtifactDTO(
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
 			_targetWorkspaceJobHistoryManager = Substitute.For<ITargetWorkspaceJobHistoryManager>();
 
-			_sourceWorkspaceManager.InititializeWorkspace(_SOURCE_WORKSPACE_ARTIFACTID, _TARGET_WORKSPACE_ARTIFACTID)
+			_sourceWorkspaceManager.InitializeWorkspace(_SOURCE_WORKSPACE_ARTIFACTID, _TARGET_WORKSPACE_ARTIFACTID)
 				.Returns(_sourceWorkspaceDto);
 			_targetWorkspaceJobHistoryManager.InitializeWorkspace(_SOURCE_WORKSPACE_ARTIFACTID, _TARGET_WORKSPACE_ARTIFACTID, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId,_JOB_HISTORY_ARTIFACTID);
 		}

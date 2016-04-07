@@ -15,17 +15,18 @@ namespace kCura.IntegrationPoints.Core.Managers
 {
 	public class DestinationWorkspaceManager : IDestinationWorkspaceManager
 	{
+		private readonly IRepositoryFactory _repositoryFactory;
 		private Job _job;
 		private readonly ITempDocTableHelper _tempDocHelper;
-		private readonly IRSAPIClient _client;
-		private readonly IDestinationWorkspaceRepository _dwRepository;
+		private readonly IDestinationWorkspaceRepository _destinationWorkspaceRepository;
 
-		public DestinationWorkspaceManager(ICaseServiceContext context, IHelper helper, Job job, SourceConfiguration sourceConfig, string tableSuffix)
+		// TODO: The IHelper needs to be removed from this constructor -- biedrzycki: April 6th, 2016
+		public DestinationWorkspaceManager(IHelper helper, IRepositoryFactory repositoryFactory, Job job, SourceConfiguration sourceConfig, string tableSuffix)
 		{
+			_repositoryFactory = repositoryFactory;
 			_job = job;
-			_client = new RsapiClientFactory(helper).CreateClientForWorkspace(sourceConfig.SourceWorkspaceArtifactId, ExecutionIdentity.System);
 			_tempDocHelper = new TempDocumentFactory().GetDocTableHelper(helper, Constants.IntegrationPoints.TEMPORARY_DOCUMENT_TABLE_NAME, tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
-			_dwRepository = new DestinationWorkspaceRepository(_client, sourceConfig.TargetWorkspaceArtifactId);
+			_destinationWorkspaceRepository = _repositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId, sourceConfig.TargetWorkspaceArtifactId);
 		}
 		public void Execute()
 		{
@@ -38,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 				return;
 			}
 
-			int destinationWorkspaceRdoId = _dwRepository.QueryDestinationWorkspaceRdoInstance();
+			int destinationWorkspaceRdoId = _destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance();
 			FieldValueList<Relativity.Client.DTOs.Artifact> existingMultiObjectLinks = null;
 
 			int numberOfBatches = (documentCount + batchSize - 1) / batchSize;
@@ -48,11 +49,11 @@ namespace kCura.IntegrationPoints.Core.Managers
 				IEnumerable<int> batchedDocIds = documentIds.Skip(batchSet * batchSize).Take(batchSize);
 				if (destinationWorkspaceRdoId == -1)
 				{
-					destinationWorkspaceRdoId = _dwRepository.CreateDestinationWorkspaceRdoInstance(batchedDocIds.ToList());
+					destinationWorkspaceRdoId = _destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance(batchedDocIds.ToList());
 				}
 				else
 				{
-					_dwRepository.UpdateDestinationWorkspaceRdoInstance(batchedDocIds.ToList(), destinationWorkspaceRdoId, ref existingMultiObjectLinks, firstUpdateDone);
+					_destinationWorkspaceRepository.UpdateDestinationWorkspaceRdoInstance(batchedDocIds.ToList(), destinationWorkspaceRdoId, ref existingMultiObjectLinks, firstUpdateDone);
 					firstUpdateDone = true;
 				}
 			}

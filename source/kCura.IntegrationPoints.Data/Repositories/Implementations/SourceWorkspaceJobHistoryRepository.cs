@@ -14,10 +14,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_rsapiClient = rsapiClient;
 		}
 
-		public SourceWorkspaceJobHistoryDTO Retrieve(int workspaceArtifactId, int jobHistoryArtifactId)
+		public SourceWorkspaceJobHistoryDTO Retrieve(int jobHistoryArtifactId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
-
 			RDO rdo = null;
 			try
 			{
@@ -31,7 +29,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var sourceWorkspaceJobHistoryDto = new SourceWorkspaceJobHistoryDTO()
 			{
 				ArtifactId = rdo.ArtifactID,
-				Name = rdo.TextIdentifier // TODO: verify this
+				Name = rdo.TextIdentifier
 			};
 
 			return sourceWorkspaceJobHistoryDto;

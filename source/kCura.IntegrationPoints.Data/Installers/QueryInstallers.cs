@@ -2,8 +2,6 @@
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 
 namespace kCura.IntegrationPoints.Data.Installers
 {
@@ -18,7 +16,6 @@ namespace kCura.IntegrationPoints.Data.Installers
 			container.Register(Component.For<JobHistoryError>().ImplementedBy<JobHistoryError>().LifeStyle.Transient);
 			container.Register(Component.For<JobResoureTracker>().ImplementedBy<JobResoureTracker>().LifeStyle.Transient);
 			container.Register(Component.For<JobStatisticsQuery>().ImplementedBy<JobStatisticsQuery>().LifeStyle.Transient);
-			container.Register(Component.For<IWorkspaceRepository>().ImplementedBy<RsapiWorkspaceRepository>().LifeStyle.Transient);
 		}
 	}
 }

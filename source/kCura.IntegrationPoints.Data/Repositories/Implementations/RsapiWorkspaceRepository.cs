@@ -14,7 +14,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public RsapiWorkspaceRepository(IRSAPIClient rsapiClient)
 		{
 			_rsapiClient = rsapiClient;
-			_rsapiClient.APIOptions.WorkspaceID = -1;
 		}
 
 		public WorkspaceDTO Retrieve(int workspaceArtifactId)

@@ -18,9 +18,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_rsapiClient = rsapiClient;
 		}
 
-		public int? RetrieveObjectTypeDescriptorArtifactTypeId(int workspaceArtifactId)
+		public int? RetrieveObjectTypeDescriptorArtifactTypeId()
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			var criteria = new TextCondition(ObjectTypeFieldNames.Name, TextConditionEnum.EqualTo, Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME);
 
 			Query<ObjectType> query = new Query<ObjectType>
@@ -40,9 +39,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return objectTypeArtifactId;
 		}
 
-		public int CreateObjectType(int workspaceArtifactId, int sourceWorkspaceArtifactTypeId)
+		public int CreateObjectType(int sourceWorkspaceArtifactTypeId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			var objectType = new ObjectType(SourceWorkspaceDTO.ObjectTypeGuid)
 			{
 				Name = Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME,
@@ -63,12 +61,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			// We have to do this because the Descriptor Artifact Type Id isn't returned in the WriteResultSet :( -- biedrzycki: April 4th, 2016
-			int descriptorArtifactTypeId = this.RetrieveObjectTypeDescriptorArtifactTypeId(workspaceArtifactId).Value;
+			int descriptorArtifactTypeId = this.RetrieveObjectTypeDescriptorArtifactTypeId().Value;
 
 			return descriptorArtifactTypeId;
 		}
 
-		public int Create(int workspaceArtifactId, int jobHistoryArtifactTypeId,
+		public int Create(int jobHistoryArtifactTypeId,
 			TargetWorkspaceJobHistoryDTO targetWorkspaceJobHistoryDto)
 		{
 			var fields = new List<FieldValue>()
@@ -98,9 +96,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public bool ObjectTypeFieldsExist(int workspaceArtifactId, int jobHistoryArtifactTypeId)
+		public bool ObjectTypeFieldsExist(int jobHistoryArtifactTypeId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 
 			string[] fieldNames = new string[]
 			{Contracts.Constants.JOBHISTORY_JOBHISTORYID_FIELD_NAME, Contracts.Constants.JOBHISTORY_JOBHISTORYNAME_FIELD_NAME};
@@ -129,9 +126,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return fieldNames.All(expectedFieldName => fieldNametoIdDictionary.ContainsKey(expectedFieldName));
 		}
 
-		public void CreateObjectTypeFields(int workspaceArtifactId, int jobHistoryArtifactTypeId)
+		public void CreateObjectTypeFields(int jobHistoryArtifactTypeId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			var objectType = new ObjectType() { DescriptorArtifactTypeID = jobHistoryArtifactTypeId };
 
 			var sourceWorkspaceFields = new List<kCura.Relativity.Client.DTOs.Field>()
@@ -177,9 +173,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public int CreateJobHistoryFieldOnDocument(int workspaceArtifactId, int jobHistoryArtifactTypeId)
+		public int CreateJobHistoryFieldOnDocument(int jobHistoryArtifactTypeId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			var documentObjectType = new ObjectType() { DescriptorArtifactTypeID = 10 };
 			var jobHistoryObjectType = new ObjectType() { DescriptorArtifactTypeID = jobHistoryArtifactTypeId };
 			var fields = new List<kCura.Relativity.Client.DTOs.Field>()
@@ -200,7 +195,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			WriteResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Create(fields);
 
-			var field = resultSet.Results.FirstOrDefault();
+			Result<kCura.Relativity.Client.DTOs.Field> field = resultSet.Results.FirstOrDefault();
 			if (!resultSet.Success || field == null)
 			{
 				throw new Exception("Unable to create Job History field on Document: " + resultSet.Message);
@@ -211,9 +206,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return newFieldArtifactId;
 		}
 
-		public int GetJobHistoryFieldOnDocument(int workspaceArtifactId, int jobHistoryArtifactTypeId)
+		public bool JobHistoryFieldExistsOnDocument(int jobHistoryArtifactTypeId)
 		{
-			_rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
 			var criteria = new TextCondition(FieldFieldNames.Name, TextConditionEnum.EqualTo, Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME);
 			var query = new Query<kCura.Relativity.Client.DTOs.Field>
 			{
@@ -223,13 +217,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			QueryResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Query(query);
 
-			var field = resultSet.Results.FirstOrDefault();
-			if (!resultSet.Success || field == null)
+			Result<kCura.Relativity.Client.DTOs.Field> field = resultSet.Results.FirstOrDefault();
+			if (!resultSet.Success)
 			{
 				throw new Exception("Unable to retrieve Document fields: " + resultSet.Message);
 			}
 
-			return field.Artifact.ArtifactID;
+			bool fieldExists = field != null;
+
+			return fieldExists;
 		}
 	}
 }
