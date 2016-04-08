@@ -263,9 +263,9 @@ namespace kCura.IntegrationPoints.Services
 		{
 			try
 			{
-				string substringCheck = "[Id:: ";
+				string substringCheck = "-";
 				int workspaceArtifactIdStartIndex = destinationWorkspace.LastIndexOf(substringCheck, StringComparison.CurrentCulture) + substringCheck.Length;
-				int workspaceArtifactIdEndIndex = destinationWorkspace.LastIndexOf("]", StringComparison.CurrentCulture);
+				int workspaceArtifactIdEndIndex = destinationWorkspace.Length;
 				string workspaceArtifactIdSubstring = destinationWorkspace.Substring(workspaceArtifactIdStartIndex, workspaceArtifactIdEndIndex - workspaceArtifactIdStartIndex);
 				int workspaceArtifactId = Int32.Parse(workspaceArtifactIdSubstring);
 
