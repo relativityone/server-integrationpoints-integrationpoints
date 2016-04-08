@@ -39,28 +39,28 @@ namespace kCura.IntegrationPoints.Services
 			string destinationWorkspacedisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_GUID);
 
 			IObjectQueryManager objectQueryManager = API.Services.Helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
-			Query query1 = new Query();
-			Query query2 = new Query
+			Query totalDocumentsQuery = new Query();
+			Query totalDocumentsPushedToReviewQuery = new Query
 			{
 				Condition = $"'{destinationWorkspacedisplayName}' ISSET",
-				Fields = new string[] { destinationWorkspacedisplayName }
+				Fields = new[] { destinationWorkspacedisplayName }
 			};
 
 			int[] permissions = { 1 };
-			ObjectQueryResultSet resultSet1 = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, query1, 1, 1, permissions, string.Empty);
-			ObjectQueryResultSet resultSet2 = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, query2, 1, 1, permissions, string.Empty);
+			ObjectQueryResultSet totalDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, totalDocumentsQuery, 1, 1, permissions, string.Empty);
+			ObjectQueryResultSet totalDocumentsPushedToReviewResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, totalDocumentsPushedToReviewQuery, 1, 1, permissions, string.Empty);
 
 			int totalDocuments = 0;
 			int totalDocumentsPushedToReview = 0;
 
-			if (resultSet1.Success)
+			if (totalDocumentsResultSet.Success)
 			{
-				totalDocuments = resultSet1.Data.TotalResultCount;
+				totalDocuments = totalDocumentsResultSet.Data.TotalResultCount;
 			}
 
-			if (resultSet2.Success)
+			if (totalDocumentsPushedToReviewResultSet.Success)
 			{
-				totalDocumentsPushedToReview = resultSet2.Data.TotalResultCount;
+				totalDocumentsPushedToReview = totalDocumentsPushedToReviewResultSet.Data.TotalResultCount;
 			}
 
 			PercentagePushedToReviewModel model = new PercentagePushedToReviewModel
@@ -78,56 +78,56 @@ namespace kCura.IntegrationPoints.Services
 			string destinationWorkspacedisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_GUID);
 
 			IObjectQueryManager objectQueryManager = API.Services.Helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
-			Query query1 = new Query
+			Query totalUntaggedDocumentsQuery = new Query
 			{
 				Condition = $"NOT '{promotedisplayName}' ISSET",
 				Fields = new[] { promotedisplayName }
 			};
-			Query query2 = new Query
+			Query totalIncludedDocumentsQuery = new Query
 			{
 				Condition = $"'{promotedisplayName}' == CHOICE {_INCLUDE_GUID}",
 				Fields = new[] { promotedisplayName }
 			};
-			Query query3 = new Query
+			Query totalExcludedDocumentsQuery = new Query
 			{
 				Condition = $"'{promotedisplayName}' == CHOICE {_EXCLUDE_GUID}",
 				Fields = new[] { promotedisplayName }
 			};
-			Query query4 = new Query
+			Query totalPushedToReviewDocumentsQuery = new Query
 			{
 				Condition = $"'{destinationWorkspacedisplayName}' ISSET",
-				Fields = new string[] { destinationWorkspacedisplayName }
+				Fields = new[] { destinationWorkspacedisplayName }
 			};
 
 			int[] permissions = { 1 };
-			ObjectQueryResultSet resultSet1 = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, query1, 1, 1, permissions, string.Empty);
-			ObjectQueryResultSet resultSet2 = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, query2, 1, 1, permissions, string.Empty);
-			ObjectQueryResultSet resultSet3 = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, query3, 1, 1, permissions, string.Empty);
-			ObjectQueryResultSet resultSet4 = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, query4, 1, 1, permissions, string.Empty);
+			ObjectQueryResultSet totalUntaggedDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, totalUntaggedDocumentsQuery, 1, 1, permissions, string.Empty);
+			ObjectQueryResultSet totalIncludedDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, totalIncludedDocumentsQuery, 1, 1, permissions, string.Empty);
+			ObjectQueryResultSet totalExcludedDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, totalExcludedDocumentsQuery, 1, 1, permissions, string.Empty);
+			ObjectQueryResultSet totalPushedToReviewDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, totalPushedToReviewDocumentsQuery, 1, 1, permissions, string.Empty);
 
 			int totalUntaggedDocuments = 0;
 			int totalIncludedDocuments = 0;
 			int totalExcludedDocuments = 0;
 			int totalPushedToReviewDocuments = 0;
 
-			if (resultSet1.Success)
+			if (totalUntaggedDocumentsResultSet.Success)
 			{
-				totalUntaggedDocuments = resultSet1.Data.TotalResultCount;
+				totalUntaggedDocuments = totalUntaggedDocumentsResultSet.Data.TotalResultCount;
 			}
 
-			if (resultSet2.Success)
+			if (totalIncludedDocumentsResultSet.Success)
 			{
-				totalIncludedDocuments = resultSet2.Data.TotalResultCount;
+				totalIncludedDocuments = totalIncludedDocumentsResultSet.Data.TotalResultCount;
 			}
 
-			if (resultSet3.Success)
+			if (totalExcludedDocumentsResultSet.Success)
 			{
-				totalExcludedDocuments = resultSet3.Data.TotalResultCount;
+				totalExcludedDocuments = totalExcludedDocumentsResultSet.Data.TotalResultCount;
 			}
 
-			if (resultSet4.Success)
+			if (totalPushedToReviewDocumentsResultSet.Success)
 			{
-				totalPushedToReviewDocuments = resultSet4.Data.TotalResultCount;
+				totalPushedToReviewDocuments = totalPushedToReviewDocumentsResultSet.Data.TotalResultCount;
 			}
 
 			CurrentSnapshotModel model = new CurrentSnapshotModel
@@ -145,8 +145,8 @@ namespace kCura.IntegrationPoints.Services
 
 		private string GetDisplayName(int workspaceArtifactId, string artifactGuid)
 		{
-			var workspaceArtifactIdParameter = new SqlParameter("@artifactGuid", artifactGuid);
-			var sqlParameters = new[] { workspaceArtifactIdParameter };
+			var artifatGuidParameter = new SqlParameter("@artifactGuid", artifactGuid);
+			var sqlParameters = new[] { artifatGuidParameter };
 
 			IDBContext workspaceContext = API.Services.Helper.GetDBContext(workspaceArtifactId);
 			string displayName = workspaceContext.ExecuteSqlStatementAsScalar<string>(_DISPLAY_NAME_SQL, sqlParameters);
