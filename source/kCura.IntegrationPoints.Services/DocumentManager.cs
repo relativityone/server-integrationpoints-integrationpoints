@@ -1,4 +1,8 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Requests;
@@ -32,6 +36,11 @@ namespace kCura.IntegrationPoints.Services
 		public async Task<CurrentSnapshotModel> GetCurrentSnapshot(CurrentSnapshotRequest request)
 		{
 			return await Task.Run(() => GetCurrentShapshotInternal(request)).ConfigureAwait(false);
+		}
+
+		public async Task<DocumentVolumeSummaryModel> GetDocumentVolume(DocumentVolumeRequest request)
+		{
+			return await Task.Run(() => GetDocumentVolumeInternal(request)).ConfigureAwait(false);
 		}
 
 		private async Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewInternal(PercentagePushedToReviewRequest request)
@@ -141,12 +150,65 @@ namespace kCura.IntegrationPoints.Services
 			return model;
 		}
 
+		private async Task<DocumentVolumeSummaryModel> GetDocumentVolumeInternal(DocumentVolumeRequest request)
+		{
+			DocumentVolumeModel currentDocumentVolume = await GetCurrentDocumentModel(request.WorkspaceArtifactId);
+			IEnumerable<DocumentVolumeModel> historicalDocumentVolume = await GetHistoricalDocumentModel(request.WorkspaceArtifactId);
+
+			DocumentVolumeModel[] documentVolume = historicalDocumentVolume.Concat(new[] {currentDocumentVolume}).ToArray();
+
+			DocumentVolumeSummaryModel model = new DocumentVolumeSummaryModel
+			{
+				DocumentVolume = documentVolume
+			};
+			return model;
+		}
+
+		private async Task<DocumentVolumeModel> GetCurrentDocumentModel(int workspaceId)
+		{
+			DateTime now = DateTime.UtcNow;
+
+			CurrentSnapshotRequest request = new CurrentSnapshotRequest() {WorkspaceArtifactId = workspaceId};
+			CurrentSnapshotModel currentSnapshot = await GetCurrentShapshotInternal(request);
+
+			DocumentVolumeModel model = new DocumentVolumeModel()
+			{
+				Date = DateTime.UtcNow,
+				TotalDocumentsIncluded = currentSnapshot.TotalDocumentsIncluded,
+				TotalDocumentsExcluded = currentSnapshot.TotalDocumentsExcluded,
+				TotalDocumentsUntagged = currentSnapshot.TotalDocumentsUntagged
+			};
+			return model;
+		}
+
+		private async Task<List<DocumentVolumeModel>> GetHistoricalDocumentModel(int workspaceId)
+		{
+			IDBContext workspaceContext = API.Services.Helper.GetDBContext(workspaceId);
+
+			List<DocumentVolumeModel> historicalModels = new List<DocumentVolumeModel>();
+			using (SqlDataReader reader = workspaceContext.ExecuteSQLStatementAsReader(_DOCUMENT_VOLUME_SQL))
+			{
+				while (await reader.ReadAsync())
+				{
+					DocumentVolumeModel historicalModel = new DocumentVolumeModel
+					{
+						Date = reader.GetDateTime(0),
+						TotalDocumentsIncluded = reader.GetInt32(1),
+						TotalDocumentsExcluded = reader.GetInt32(2),
+						TotalDocumentsUntagged = reader.GetInt32(3)
+					};
+					historicalModels.Add(historicalModel);
+				}
+			}
+			return historicalModels;
+		}
+
 		public void Dispose() { }
 
 		private string GetDisplayName(int workspaceArtifactId, string artifactGuid)
 		{
-			var artifatGuidParameter = new SqlParameter("@artifactGuid", artifactGuid);
-			var sqlParameters = new[] { artifatGuidParameter };
+			SqlParameter artifatGuidParameter = new SqlParameter("@artifactGuid", artifactGuid);
+			SqlParameter[] sqlParameters = { artifatGuidParameter };
 
 			IDBContext workspaceContext = API.Services.Helper.GetDBContext(workspaceArtifactId);
 			string displayName = workspaceContext.ExecuteSqlStatementAsScalar<string>(_DISPLAY_NAME_SQL, sqlParameters);
@@ -162,6 +224,9 @@ namespace kCura.IntegrationPoints.Services
 			INNER JOIN Field AS F
 			ON F.ArtifactID = A.ArtifactID
 			WHERE ArtifactGuid = @artifactGuid";
+
+		private const string _DOCUMENT_VOLUME_SQL = @"
+			SELECT * FROM [DocumentVolume]";
 
 		#endregion
 	}
