@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 
 		public string KeywordName { get { return "\\[WORKSPACE.NAME]"; } }
 
+		// TODO: Resolve workspaceId instead of ICaseServiceContext
 		public WorkspaceNameKeyword(ICaseServiceContext context, IWorkspaceRepository workspaceRepository)
 		{
 			_context = context;
