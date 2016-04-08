@@ -87,8 +87,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 				UpdateJobStatus();
 
-				IDataReader dataReader = exporter.GetDataReader(_docTableHelper, this.JobHistoryDto.ArtifactId);
-				synchronizer.SyncData(dataReader, MappedFields, destinationConfig);
+				if (exporter.TotalRecordsFound > 0)
+				{
+					IDataReader dataReader = exporter.GetDataReader(_docTableHelper, this.JobHistoryDto.ArtifactId);
+					synchronizer.SyncData(dataReader, MappedFields, destinationConfig);
+				}
 			}
 			catch (Exception ex)
 			{

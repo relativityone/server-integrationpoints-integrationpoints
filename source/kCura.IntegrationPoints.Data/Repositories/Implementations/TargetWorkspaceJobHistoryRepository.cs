@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Helpers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using Artifact = kCura.Relativity.Client.DTOs.Artifact;
 using FieldType = kCura.Relativity.Client.FieldType;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -12,10 +12,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	public class TargetWorkspaceJobHistoryRepository : ITargetWorkspaceJobHistoryRepository
 	{
 		private readonly IRSAPIClient _rsapiClient;
+		private readonly IFieldHelper _fieldHelper;
 
-		public TargetWorkspaceJobHistoryRepository(IRSAPIClient rsapiClient)
+		public TargetWorkspaceJobHistoryRepository(IRSAPIClient rsapiClient, IFieldHelper fieldHelper)
 		{
 			_rsapiClient = rsapiClient;
+			_fieldHelper = fieldHelper;
 		}
 
 		public int? RetrieveObjectTypeDescriptorArtifactTypeId()
@@ -98,9 +100,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public bool ObjectTypeFieldsExist(int jobHistoryArtifactTypeId)
 		{
-
-			string[] fieldNames = new string[]
-			{Contracts.Constants.JOBHISTORY_JOBHISTORYID_FIELD_NAME, Contracts.Constants.JOBHISTORY_JOBHISTORYNAME_FIELD_NAME};
+			string[] fieldNames = new string[] { Contracts.Constants.JOBHISTORY_JOBHISTORYID_FIELD_NAME, Contracts.Constants.JOBHISTORY_JOBHISTORYNAME_FIELD_NAME };
 
 			var criteria = new TextCondition(FieldFieldNames.Name, TextConditionEnum.In, fieldNames);
 			var query = new Query<kCura.Relativity.Client.DTOs.Field>
@@ -189,7 +189,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					AllowPivot = false,
 					AvailableInFieldTree = false,
 					IsRequired = false,
-					Width = "100"
+					Width = "100",
 				}
 			};
 
@@ -202,6 +202,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			int newFieldArtifactId = field.Artifact.ArtifactID;
+
+			try
+			{
+				_fieldHelper.SetOverlayBehavior(newFieldArtifactId, true);
+			}
+			catch (Exception)
+			{
+				_rsapiClient.Repositories.Field.Delete(fields);
+				throw new Exception("Unable to create Job History field on Document: Failed to set the default field overlay behavior.");
+			}
 
 			return newFieldArtifactId;
 		}
