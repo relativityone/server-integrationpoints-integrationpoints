@@ -55,6 +55,9 @@
     <Reference Include="Relativity.API">
       <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Services.Interfaces">
+      <HintPath>..\Dependencies\kCura\Relativity.Services.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -68,7 +71,8 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="JobHistoryModule.cs" />
+    <Compile Include="DocumentManager.cs" />
+    <Compile Include="IntegrationPointsModule.cs" />
     <Compile Include="JobHistoryManager.cs" />
   </ItemGroup>
   <ItemGroup>

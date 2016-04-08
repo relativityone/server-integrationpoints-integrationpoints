@@ -65,10 +65,15 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IDocumentManager.cs" />
     <Compile Include="IJobHistoryManager.cs" />
-    <Compile Include="IJobHistoryModule.cs" />
+    <Compile Include="IIntegrationPointsModule.cs" />
+    <Compile Include="Models\CurrentSnapshotModel.cs" />
+    <Compile Include="Models\PercentagePushedToReviewModel.cs" />
     <Compile Include="Models\JobHistoryModel.cs" />
     <Compile Include="Models\JobHistorySummaryModel.cs" />
+    <Compile Include="Requests\CurrentSnapshotRequest.cs" />
+    <Compile Include="Requests\PercentagePushedToReviewRequest.cs" />
     <Compile Include="Requests\JobHistoryRequest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

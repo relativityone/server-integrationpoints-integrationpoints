@@ -103,8 +103,20 @@ namespace kCura.IntegrationPoints.Services
 		
 		private int GetJobHistoryArtifactTypeId(IDBContext workspaceContext)
 		{
-			int artifactTypeId = workspaceContext.ExecuteSqlStatementAsScalar<int>(_JOB_HISTORY_ARTIFACT_TYPE_ID_SQL);
-			return artifactTypeId;
+			try
+			{
+				int artifactTypeId = workspaceContext.ExecuteSqlStatementAsScalar<int>(_JOB_HISTORY_ARTIFACT_TYPE_ID_SQL);
+				return artifactTypeId;
+			}
+			catch (Exception sqlException)
+			{
+				if (sqlException.InnerException.Message.Equals("Invalid object name 'JobHistory'."))
+				{
+					return 0;
+				}
+
+				throw;
+			}
 		}
 
 		private ArrayList GetArtifactTypePermissions(int workspaceArtifactId, int workspaceUserArtifactId, int artifactTypeId)
@@ -128,7 +140,7 @@ namespace kCura.IntegrationPoints.Services
 			IList<int> integrationPointArtifactIds = GetProviderIntegrationPointArtifactIds(workspaceContext, _RELATIVITY_PROVIDER_GUID);
 			IList<int> jobHistoryArtifactIds = GetJobHistoryArtifactIds(workspaceContext, integrationPointArtifactIds, jobHistoryArtifactTypeId);
 			return jobHistoryArtifactIds;
-		} 
+		}
 
 		private IList<int> GetProviderIntegrationPointArtifactIds(IDBContext workspaceContext, string providerGuid)
 		{
@@ -251,9 +263,9 @@ namespace kCura.IntegrationPoints.Services
 		{
 			try
 			{
-				string substringCheck = "[Id::";
+				string substringCheck = "-";
 				int workspaceArtifactIdStartIndex = destinationWorkspace.LastIndexOf(substringCheck, StringComparison.CurrentCulture) + substringCheck.Length;
-				int workspaceArtifactIdEndIndex = destinationWorkspace.LastIndexOf("]", StringComparison.CurrentCulture);
+				int workspaceArtifactIdEndIndex = destinationWorkspace.Length;
 				string workspaceArtifactIdSubstring = destinationWorkspace.Substring(workspaceArtifactIdStartIndex, workspaceArtifactIdEndIndex - workspaceArtifactIdStartIndex);
 				int workspaceArtifactId = Int32.Parse(workspaceArtifactIdSubstring);
 
