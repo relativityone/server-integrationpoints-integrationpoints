@@ -8,9 +8,9 @@
 		public const string SPECIAL_SOURCEWORKSPACE_FIELD = "036DB373-5724-4C72-A073-375106DE5E73";
 		public const string SPECIAL_SOURCEWORKSPACE_FIELD_NAME = "Source Workspace";
 		public const string SPECIAL_JOBHISTORY_FIELD = "4F632A3F-68CF-400E-BD29-FD364A5EBE58";
-		public const string SPECIAL_JOBHISTORY_FIELD_NAME = "Job History";
-		public const string SOURCEWORKSPACE_CASEID_FIELD_NAME = "Source Workspace Case Id";
-		public const string SOURCEWORKSPACE_CASENAME_FIELD_NAME = "Source Workspace Case Name";
+		public const string SPECIAL_JOBHISTORY_FIELD_NAME = "Source Job";
+		public const string SOURCEWORKSPACE_CASEID_FIELD_NAME = "Source Workspace Artifact ID";
+		public const string SOURCEWORKSPACE_CASENAME_FIELD_NAME = "Source Workspace Name";
 		public const string SOURCEWORKSPACE_NAME_FIELD_NAME = "Name";
 		public const string JOBHISTORY_NAME_FIELD_NAME = "Name";
 		public const string JOBHISTORY_JOBHISTORYID_FIELD_NAME = "Job History Artifact ID";
