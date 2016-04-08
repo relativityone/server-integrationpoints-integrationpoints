@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					_jobManager.CreateJob(jobDetails, TaskType.ExportManager, workspaceID, relatedObjectArtifactID);
 				}
 				// if relativity provider is selected, we will create an export task
-				if (_rdoDependenciesAdaptor.SourceProviderIdentifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+				else if (_rdoDependenciesAdaptor.SourceProviderIdentifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
 				{
 					DestinationWorkspace destinationWorkspace = JsonConvert.DeserializeObject<DestinationWorkspace>(_rdoDependenciesAdaptor.SourceConfiguration);
 					if (_permissionService.UserCanImport(destinationWorkspace.TargetWorkspaceArtifactId) == false)

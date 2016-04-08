@@ -67,10 +67,10 @@
             Destination Provider:
         </div>
         <div class="field-value">
-            <select id="destinationProviderType" data-bind="options: destinationTypes, optionsText: 'displayName', optionsValue: 'displayName', value: selectedDestinationType, optionsCaption: 'Select Destination...', select2: {}"></select>
+            <select id="destinationProviderType" data-bind="options: destinationTypes, optionsText: 'displayName', optionsValue: 'value', value: selectedDestinationType, optionsCaption: 'Select Destination...', select2: {}"></select>
         </div>
     </div>
-    <div class="field-row" data-bind="visible: selectedDestinationType() == 'Fileshare' ">
+    <div class="field-row" >
         <div class="field-label required">
            Fileshare:
         </div>
@@ -79,7 +79,7 @@
         </div>
     </div>
 
-    <div class="field-row" data-bind="visible: selectedDestinationType() == 'Relativity' ">
+    <div class="field-row" >
         <div class="field-label required">
             Destination RDO:
         </div>

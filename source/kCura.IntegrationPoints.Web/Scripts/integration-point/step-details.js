@@ -193,23 +193,28 @@ var IP = IP || {};
 		this.allRdoTypes = ko.observableArray();
 		this.rdoTypes = ko.observableArray();
 
-	   
-
-		this.destinationTypes = ko.observableArray([
-           new Choice("Relativity", 0),
-           new Choice("Fileshare", 1)
-		]);
-
+		this.destinationTypes = ko.observableArray();
 		this.selectedDestinationType = ko.observable().extend({ required: true });
-		$.each(self.destinationTypes(), function () {
 
-		    if (this.displayName === settings.destinationProviderType) {
-		        self.selectedDestinationType(settings.destinationProviderType);
-		    }
+		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('DestinationType') }).then(function (result) {
+		    var types = $.map(result, function (entry) {
+		        var c = new Choice(entry.name, entry.id, entry.artifactID, entry);
+		        c.href = entry.url;
+		        return c;
+		    });
+		    self.destinationTypes(types);
+		    $.each(self.destinationTypes(), function () {
+
+		        if (this.value === settings.destinationProviderType && settings.destinationProviderType !== undefined) {
+		            self.selectedDestinationType(this.value);
+		        }
+		    });
 		});
 
+
 		this.isEnabled = function (type) {
-		    return self.selectedDestinationType() === type;
+		    //return self.selectedDestinationType() === type;
+		    return true;
 		};
 		this.selectedDestinationPath = ko.observable(settings.fileshare).extend({
 		    required: {
@@ -229,15 +234,15 @@ var IP = IP || {};
 		    }
             });
 
-		this.selectedDestinationType.subscribe(function (selectedValue) {
-		    if (selectedValue === "Fileshare") {
-		        self.artifactTypeID(10);
-		    }
-		    else {
-		        self.artifactTypeID(settings.artifactTypeID);
-		    }
+		//this.selectedDestinationType.subscribe(function (selectedValue) {
+		//    if (selectedValue === "Fileshare") {
+		//        self.artifactTypeID(10);
+		//    }
+		//    else {
+		//        self.artifactTypeID(settings.artifactTypeID);
+		//    }
 
-		});
+		//});
 		//CaseArtifactId
 		//ParentObjectIdSourceFieldName
 
