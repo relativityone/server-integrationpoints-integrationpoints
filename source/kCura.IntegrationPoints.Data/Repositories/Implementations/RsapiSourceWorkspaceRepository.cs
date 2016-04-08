@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Helpers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using FieldType = kCura.Relativity.Client.FieldType;
@@ -11,10 +12,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	public class RsapiSourceWorkspaceRepository : ISourceWorkspaceRepository
 	{
 		private readonly IRSAPIClient _rsapiClient;
+		private readonly IFieldHelper _fieldHelper;
 
-		public RsapiSourceWorkspaceRepository(IRSAPIClient _rsapiClient)
+		public RsapiSourceWorkspaceRepository(IRSAPIClient rsapiClient, IFieldHelper fieldHelper)
 		{
-			this._rsapiClient = _rsapiClient;
+			this._rsapiClient = rsapiClient;
+			this._fieldHelper = fieldHelper;
 		}
 
 		public int? RetrieveObjectTypeDescriptorArtifactTypeId()
@@ -43,7 +46,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var objectType = new ObjectType(SourceWorkspaceDTO.ObjectTypeGuid)
 			{
 				Name = Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-				ParentArtifactTypeID = (int) ArtifactType.Case,
+				ParentArtifactTypeID = (int)ArtifactType.Case,
 				CopyInstancesOnParentCopy = false,
 				CopyInstancesOnWorkspaceCreation = false,
 				SnapshotAuditingEnabledOnDelete = false,
@@ -52,11 +55,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				PersistentLists = false,
 			};
 
-			WriteResultSet<ObjectType> resultSet = _rsapiClient.Repositories.ObjectType.Create(new [] { objectType });
+			WriteResultSet<ObjectType> resultSet = _rsapiClient.Repositories.ObjectType.Create(new[] { objectType });
 
 			if (!resultSet.Success || !resultSet.Results.Any())
 			{
-				throw new Exception("Unable to create new Source Workspace object type: " + resultSet.Message);	
+				throw new Exception("Unable to create new Source Workspace object type: " + resultSet.Message);
 			}
 
 			// We have to do this because the Descriptor Artifact Type Id isn't returned in the WriteResultSet :( -- biedrzycki: April 4th, 2016
@@ -69,7 +72,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			string[] fieldNames = new string[] { Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME };
 			var criteria = new TextCondition(FieldFieldNames.Name, TextConditionEnum.In, fieldNames);
-			var query = new Query<kCura.Relativity.Client.DTOs.Field> 
+			var query = new Query<kCura.Relativity.Client.DTOs.Field>
 			{
 				Fields = FieldValue.AllFields,
 				Condition = criteria
@@ -87,7 +90,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			IDictionary<string, int> fieldNameToIdDictionary =
 				resultSet.Results
 					.ToDictionary(x => x.Artifact.Name, y => y.Artifact.ArtifactID);
-			
+
 			// Validate that all fields exist
 			return fieldNames.All(expectedFieldName => fieldNameToIdDictionary.ContainsKey(expectedFieldName));
 		}
@@ -141,7 +144,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int CreateSourceWorkspaceFieldOnDocument(int sourceWorkspaceObjectTypeId)
 		{
-			var documentObjectType = new ObjectType() { DescriptorArtifactTypeID = (int) ArtifactType.Document };
+			var documentObjectType = new ObjectType() { DescriptorArtifactTypeID = (int)ArtifactType.Document };
 			var sourceWorkspaceObjectType = new ObjectType() { DescriptorArtifactTypeID = sourceWorkspaceObjectTypeId };
 			var fields = new List<kCura.Relativity.Client.DTOs.Field>()
 			{
@@ -160,7 +163,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			WriteResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Create(fields);
-
 			Result<kCura.Relativity.Client.DTOs.Field> field = resultSet.Results.FirstOrDefault();
 			if (!resultSet.Success || field == null)
 			{
@@ -168,6 +170,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			int newFieldArtifactId = field.Artifact.ArtifactID;
+
+			try
+			{
+				_fieldHelper.SetOverlayBehavior(newFieldArtifactId, true);
+			}
+			catch (Exception)
+			{
+				_rsapiClient.Repositories.Field.Delete(fields);
+				throw new Exception("Unable to create Source Workspace field on Document: Failed to set the default field overlay behavior.");
+			}
 
 			return newFieldArtifactId;
 		}
@@ -200,7 +212,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var query = new Query<RDO>()
 			{
 				ArtifactTypeID = sourceWorkspaceArtifactTypeId,
-				Fields  = FieldValue.AllFields,
+				Fields = FieldValue.AllFields,
 				Condition = condition
 			};
 			QueryResultSet<RDO> resultSet = _rsapiClient.Repositories.RDO.Query(query);

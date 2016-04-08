@@ -114,10 +114,12 @@
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
+    <Compile Include="Helpers\Implementations\FieldHelper.cs" />
     <Compile Include="Factories\Implementations\RepositoryFactory.cs" />
     <Compile Include="Factories\IRepositoryFactory.cs" />
     <Compile Include="Factories\ITempDocumentFactory.cs" />
     <Compile Include="Factories\TempDocumentFactory.cs" />
+    <Compile Include="Helpers\IFieldHelper.cs" />
     <Compile Include="ITempDocTableHelper.cs" />
     <Compile Include="ImportSettingVisibility.cs" />
     <Compile Include="Repositories\IDocumentRepository.cs" />
