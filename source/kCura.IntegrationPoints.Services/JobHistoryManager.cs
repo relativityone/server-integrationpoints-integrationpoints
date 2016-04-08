@@ -263,7 +263,7 @@ namespace kCura.IntegrationPoints.Services
 		{
 			try
 			{
-				string substringCheck = "[Id::";
+				string substringCheck = "[Id:: ";
 				int workspaceArtifactIdStartIndex = destinationWorkspace.LastIndexOf(substringCheck, StringComparison.CurrentCulture) + substringCheck.Length;
 				int workspaceArtifactIdEndIndex = destinationWorkspace.LastIndexOf("]", StringComparison.CurrentCulture);
 				string workspaceArtifactIdSubstring = destinationWorkspace.Substring(workspaceArtifactIdStartIndex, workspaceArtifactIdEndIndex - workspaceArtifactIdStartIndex);
