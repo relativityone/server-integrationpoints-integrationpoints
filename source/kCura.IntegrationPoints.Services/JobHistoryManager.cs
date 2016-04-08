@@ -103,8 +103,20 @@ namespace kCura.IntegrationPoints.Services
 		
 		private int GetJobHistoryArtifactTypeId(IDBContext workspaceContext)
 		{
-			int artifactTypeId = workspaceContext.ExecuteSqlStatementAsScalar<int>(_JOB_HISTORY_ARTIFACT_TYPE_ID_SQL);
-			return artifactTypeId;
+			try
+			{
+				int artifactTypeId = workspaceContext.ExecuteSqlStatementAsScalar<int>(_JOB_HISTORY_ARTIFACT_TYPE_ID_SQL);
+				return artifactTypeId;
+			}
+			catch (Exception sqlException)
+			{
+				if (sqlException.InnerException.Message.Equals("Invalid object name 'JobHistory'."))
+				{
+					return 0;
+				}
+
+				throw;
+			}
 		}
 
 		private ArrayList GetArtifactTypePermissions(int workspaceArtifactId, int workspaceUserArtifactId, int artifactTypeId)
