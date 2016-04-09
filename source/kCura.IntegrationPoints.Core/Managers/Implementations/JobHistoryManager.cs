@@ -2,9 +2,7 @@
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -16,27 +14,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly int _sourceWorkspaceArtifactId;
 		private readonly string _uniqueJobId;
 
-		//todo: remove Helper from constructor - Gonnella
-		public JobHistoryManager(IHelper helper, IRepositoryFactory repositoryFactory, int jobHistoryInstanceId, int sourceWorkspaceArtifactId, string uniqueJobId)
+		public JobHistoryManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory, int jobHistoryInstanceId, int sourceWorkspaceArtifactId, string uniqueJobId)
 		{
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_jobHistoryInstanceId = jobHistoryInstanceId;
 			_uniqueJobId = uniqueJobId;
-			_tempDocHelper = new TempDocumentFactory().GetDocTableHelper(helper, _uniqueJobId, _sourceWorkspaceArtifactId);
+			_tempDocHelper = tempDocumentTableFactory.GetDocTableHelper(_uniqueJobId, _sourceWorkspaceArtifactId);
 			_jobHistoryRepository = repositoryFactory.GetJobHistoryRepository();
-		}
-
-		/// <summary>
-		/// For internal unit testing
-		/// </summary>
-		internal JobHistoryManager(ITempDocTableHelper tempDocHelper, IJobHistoryRepository jobHistoryRepository, 
-			int jobHistoryInstanceId, int sourceWorkspaceArtifactId, string uniqueJobId)
-		{
-			_tempDocHelper = tempDocHelper;
-			_jobHistoryRepository = jobHistoryRepository;
-			_jobHistoryInstanceId = jobHistoryInstanceId;
-			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
-			_uniqueJobId = uniqueJobId;	
 		}
 
 		public void JobStarted(Job job) { }

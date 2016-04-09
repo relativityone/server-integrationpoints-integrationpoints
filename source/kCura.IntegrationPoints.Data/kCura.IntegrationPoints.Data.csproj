@@ -116,8 +116,8 @@
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="Factories\Implementations\RepositoryFactory.cs" />
     <Compile Include="Factories\IRepositoryFactory.cs" />
-    <Compile Include="Factories\ITempDocumentFactory.cs" />
-    <Compile Include="Factories\TempDocumentFactory.cs" />
+    <Compile Include="Factories\ITempDocumentTableFactory.cs" />
+    <Compile Include="Factories\TempDocumentTableFactory.cs" />
     <Compile Include="ITempDocTableHelper.cs" />
     <Compile Include="ImportSettingVisibility.cs" />
     <Compile Include="Repositories\IDocumentRepository.cs" />

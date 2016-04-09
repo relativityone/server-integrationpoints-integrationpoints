@@ -4,7 +4,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -16,27 +15,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly int _sourceWorkspaceId;
 		private readonly int _jobHistoryInstanceId;
 
-		// TODO: The IHelper needs to be removed from this constructor -- biedrzycki: April 6th, 2016
-		public DestinationWorkspaceManager(IHelper helper, IRepositoryFactory repositoryFactory, SourceConfiguration sourceConfig, string tableSuffix, int jobHistoryInstanceId)
+		public DestinationWorkspaceManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory, SourceConfiguration sourceConfig, string tableSuffix, int jobHistoryInstanceId)
 		{
-			_tempDocHelper = new TempDocumentFactory().GetDocTableHelper(helper, tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
+			_tempDocHelper = tempDocumentTableFactory.GetDocTableHelper(tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
 			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId, sourceConfig.TargetWorkspaceArtifactId);
 			_tableSuffix = tableSuffix;
 			_sourceWorkspaceId = sourceConfig.SourceWorkspaceArtifactId;
 			_jobHistoryInstanceId = jobHistoryInstanceId;
-		}
-
-		/// <summary>
-		/// Internal unit testing only
-		/// </summary>
-		internal DestinationWorkspaceManager(ITempDocTableHelper tempDocHelper, IDestinationWorkspaceRepository destinationWorkspaceRepository,
-			int jobHistoryInstanceId, string tableSuffix, int sourceWorkspaceId)
-		{
-			_tempDocHelper = tempDocHelper;
-			_destinationWorkspaceRepository = destinationWorkspaceRepository;
-			_jobHistoryInstanceId = jobHistoryInstanceId;
-			_tableSuffix = tableSuffix;
-			_sourceWorkspaceId = sourceWorkspaceId;
 		}
 
 		public void JobStarted(Job job) { }
@@ -46,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			List<int> documentIds = _tempDocHelper.GetDocumentIdsFromTable(ScratchTables.DestinationWorkspace);
 			int documentCount = documentIds.Count;
 
-			int destinationWorkspaceRdoId = _destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance();
+			int? destinationWorkspaceRdoId = _destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance();
 			if (destinationWorkspaceRdoId == -1)
 			{
 				destinationWorkspaceRdoId = _destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance();

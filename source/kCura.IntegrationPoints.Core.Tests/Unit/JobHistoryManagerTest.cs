@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
@@ -12,6 +13,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 	public class JobHistoryManagerTest
 	{
 		private ITempDocTableHelper _tempDocHelper;
+		private ITempDocumentTableFactory _docTableFactory;
+		private IRepositoryFactory _repositoryFactory;
 		private IBatchStatus _instance;
 		private IJobHistoryRepository _jobHistoryRepository;
 		private readonly int _jobHistoryRdoId = 12345;
@@ -24,8 +27,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		{
 			_tempDocHelper = Substitute.For<ITempDocTableHelper>();
 			_jobHistoryRepository = Substitute.For<IJobHistoryRepository>();
+			_docTableFactory = Substitute.For<ITempDocumentTableFactory>();
+			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 
-			_instance = new JobHistoryManager(_tempDocHelper, _jobHistoryRepository, _jobHistoryRdoId, _sourceWorkspaceId, _uniqueJobId);
+			_repositoryFactory.GetJobHistoryRepository().Returns(_jobHistoryRepository);
+			_docTableFactory.GetDocTableHelper(_uniqueJobId, _sourceWorkspaceId).Returns(_tempDocHelper);
+
+			_instance = new JobHistoryManager(_docTableFactory, _repositoryFactory, _jobHistoryRdoId, _sourceWorkspaceId, _uniqueJobId);
 		}
 
 		[Test]

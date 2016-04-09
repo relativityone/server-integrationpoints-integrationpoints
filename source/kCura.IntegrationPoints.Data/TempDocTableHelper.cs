@@ -49,13 +49,14 @@ namespace kCura.IntegrationPoints.Data
 				string fullTableName;
 				if (rdoTable == ScratchTables.DestinationWorkspace)
 				{
-					fullTableName = String.Format("{0}_{1}", Constants.TEMPORARY_DOC_TABLE_DEST_WS, _tableSuffix);
+					fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_DEST_WS}_{_tableSuffix}";
 				}
 				else
 				{
-					fullTableName = String.Format("{0}_{1}", Constants.TEMPORARY_DOC_TABLE_JOB_HIST, _tableSuffix);
+					fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_JOB_HIST}_{_tableSuffix}";
 				}
-				string artifactIdList = "(" + String.Join("),(", artifactIds.Select(x => x.ToString())) + ")";
+				string artifactIdList = String.Join("),(", artifactIds.Select(x => x.ToString()));
+				artifactIdList = $"({artifactIdList})";
 
 				string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
 											BEGIN 
@@ -70,7 +71,7 @@ namespace kCura.IntegrationPoints.Data
 		public void RemoveErrorDocument(string docIdentifier)
 		{
 			int docId = GetDocumentId(docIdentifier);
-			string fullTableName = String.Format("{0}_{1}", Constants.TEMPORARY_DOC_TABLE_DEST_WS, _tableSuffix);
+			string fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_DEST_WS}_{_tableSuffix}";
 			string sql = String.Format(@"DELETE FROM EDDSRESOURCE..[{0}] WHERE [ArtifactID] = {1}", fullTableName, docId);
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
@@ -81,11 +82,11 @@ namespace kCura.IntegrationPoints.Data
 			string fullTableName;
 			if (rdoTable == ScratchTables.DestinationWorkspace)
 			{
-				fullTableName = String.Format("{0}_{1}", Constants.TEMPORARY_DOC_TABLE_DEST_WS, _tableSuffix);
+				fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_DEST_WS}_{_tableSuffix}";
 			}
 			else
 			{
-				fullTableName = String.Format("{0}_{1}", Constants.TEMPORARY_DOC_TABLE_JOB_HIST, _tableSuffix);
+				fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_JOB_HIST}_{_tableSuffix}";
 			}
 
 			var sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
@@ -110,11 +111,11 @@ namespace kCura.IntegrationPoints.Data
 			string fullTableName;
 			if (rdoTable == ScratchTables.DestinationWorkspace)
 			{
-				fullTableName = String.Format("{0}_{1}", Constants.TEMPORARY_DOC_TABLE_DEST_WS, _tableSuffix);
+				fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_DEST_WS}_{_tableSuffix}";
 			}
 			else
 			{
-				fullTableName = String.Format("{0}_{1}", Constants.TEMPORARY_DOC_TABLE_JOB_HIST, _tableSuffix);
+				fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_JOB_HIST}_{_tableSuffix}";
 			}
 			string sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
 										DROP TABLE [EDDSRESOURCE]..[{0}]", fullTableName);

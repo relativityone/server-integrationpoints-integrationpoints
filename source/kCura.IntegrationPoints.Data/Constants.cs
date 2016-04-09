@@ -38,7 +38,7 @@
 
 	public static class DocumentMultiObjectFields
 	{
-		public const string DESTINATION_WORKSPACE_FIELD = "	8980C2FA-0D33-4686-9A97-EA9D6F0B4196";
+		public const string DESTINATION_WORKSPACE_FIELD = "8980C2FA-0D33-4686-9A97-EA9D6F0B4196";
 		public const string JOB_HISTORY_FIELD = "97BC12FA-509B-4C75-8413-6889387D8EF6";
 	}
 
@@ -48,6 +48,16 @@
 		public const string CREATE_DEST_WORKSPACE_ERROR = "Unable to create a new instance of Destination Workspace object";
 		public const string QUERY_DEST_WORKSPACE_ERROR = "Unable to query Destination Workspace instance";
 		public const string LINK_OBJECT_INSTANCE_ERROR = "Unable to link Destination Workspace object to Job History object";
+	}
+
+	public static class MassEditErrors
+	{
+		public const string DEST_WORKSPACE_MO_QUERY_ERROR = "Unable to query for multi-object field on Document associated with DestinationWorkspace object.";
+		public const string DEST_WORKSPACE_MO_EXISTENCE_ERROR = "Multi-object field on Document associated with Destination Workspace object does not exist.";
+		public const string DEST_WORKSPACE_MASS_EDIT_FAILURE = "Tagging Documents with DestinationWorkspace object failed - Mass Edit failure.";
+		public const string JOB_HISTORY_MO_QUERY_ERROR = "Unable to query for multi-object field on Document associated with JobHistory object.";
+		public const string JOB_HISTORY_MO_EXISTENCE_ERROR = "Multi-object field on Document associated with JobHistory object does not exist.";
+		public const string JOB_HISTORY_MASS_EDIT_FAILURE = "Tagging Documents with JobHistory object failed - Mass Edit failure.";
 	}
 
 	public enum ScratchTables
