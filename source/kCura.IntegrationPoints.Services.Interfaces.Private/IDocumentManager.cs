@@ -31,5 +31,12 @@ namespace kCura.IntegrationPoints.Services
 		/// </summary>
 		/// <returns></returns>
 		Task<CurrentSnapshotModel> GetCurrentSnapshot(CurrentSnapshotRequest request);
+
+		/// <summary>
+		/// Gets that number of documents for each choice of the promote field as well as the number
+		/// that have been pushed to other workspaces.
+		/// </summary>
+		/// <returns></returns>
+		Task<DocumentVolumeSummaryModel> GetDocumentVolume(DocumentVolumeRequest request);
 	}
 }

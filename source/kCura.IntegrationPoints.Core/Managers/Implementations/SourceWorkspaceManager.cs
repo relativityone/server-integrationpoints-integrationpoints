@@ -24,7 +24,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			int? sourceWorkspaceArtifactTypeId = sourceWorkspaceRepository.RetrieveObjectTypeDescriptorArtifactTypeId();
 			if (!sourceWorkspaceArtifactTypeId.HasValue)
 			{
-				sourceWorkspaceArtifactTypeId = sourceWorkspaceRepository.CreateObjectType();	
+				sourceWorkspaceArtifactTypeId = sourceWorkspaceRepository.CreateObjectType();
+
+				// Delete the tab if it exists (it should always exist since we're creating the object type one line above)
+				int? sourceWorkspaceTabId = sourceWorkspaceRepository.RetrieveTabArtifactId(sourceWorkspaceArtifactTypeId.Value);
+				if (sourceWorkspaceTabId.HasValue)
+				{
+					sourceWorkspaceRepository.DeleteTab(sourceWorkspaceTabId.Value);
+				}
 			}
 
 			// Create Source Workspace fields if they do not exist

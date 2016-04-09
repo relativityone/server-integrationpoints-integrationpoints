@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Data.Helpers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
@@ -20,8 +21,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public ISourceWorkspaceRepository GetSourceWorkspaceRepository(int workspaceArtifactId)
 		{
 			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
-			ISourceWorkspaceRepository repository = new RsapiSourceWorkspaceRepository(rsapiClient);
-
+			IFieldHelper fieldHelper = new FieldHelper(workspaceArtifactId);
+			ISourceWorkspaceRepository repository = new RsapiSourceWorkspaceRepository(rsapiClient, fieldHelper);
 			return repository;
 		}
 
@@ -36,8 +37,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public ITargetWorkspaceJobHistoryRepository GetTargetWorkspaceJobHistoryRepository(int workspaceArtifactId)
 		{
 			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
-			ITargetWorkspaceJobHistoryRepository repository = new TargetWorkspaceJobHistoryRepository(rsapiClient);
-
+			IFieldHelper fieldHelper = new FieldHelper(workspaceArtifactId);
+			ITargetWorkspaceJobHistoryRepository repository = new TargetWorkspaceJobHistoryRepository(rsapiClient, fieldHelper);
 			return repository;
 		}
 
