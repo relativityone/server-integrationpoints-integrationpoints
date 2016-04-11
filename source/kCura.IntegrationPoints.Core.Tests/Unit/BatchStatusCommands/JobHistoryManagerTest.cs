@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		private ITempDocTableHelper _tempDocHelper;
 		private ITempDocumentTableFactory _docTableFactory;
 		private IRepositoryFactory _repositoryFactory;
-		private IBatchStatus _instance;
+		private IConsumeScratchTableBatchStatus _instance;
 		private IJobHistoryRepository _jobHistoryRepository;
 		private readonly int _jobHistoryRdoId = 12345;
 		private readonly string _uniqueJobId = "12-25-96";
@@ -58,6 +58,32 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			//Assert
 			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST));
 			_jobHistoryRepository.Received().TagDocsWithJobHistory(Arg.Any<int>(), _jobHistoryRdoId, _sourceWorkspaceId, _uniqueJobId);
+		}
+
+		[Test]
+		public void GetStratchTableRepo_AlwaysGivesTheSameObject()
+		{
+			//Act
+			IScratchTableRepository repository = _instance.ScratchTableRepository;
+			IScratchTableRepository repository2 = _instance.ScratchTableRepository;
+
+			//Assert
+			Assert.AreSame(repository, repository2);
+		}
+
+		[Test]
+		public void GetStratchTableRepo_UsingTheCorrectPrefix()
+		{
+			//Arrange
+			string expected = Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST;
+			_tempDocHelper.GetTempTableName(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST).Returns(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST);
+
+			//Act
+			IScratchTableRepository repository = _instance.ScratchTableRepository;
+			string name = repository.GetTempTableName();
+
+			//Assert
+			Assert.AreSame(expected, name);
 		}
 	}
 }
