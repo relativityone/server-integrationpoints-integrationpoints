@@ -11,5 +11,6 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IDestinationWorkspaceRepository GetDestinationWorkspaceRepository(int sourceWorkspaceArtifactId, int targetWorkspaceArtifactId);
 		IJobHistoryRepository GetJobHistoryRepository();
 		IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId);
+		IFieldRepository GetFieldRepository(int workspaceArtifactId);
 	}
 }

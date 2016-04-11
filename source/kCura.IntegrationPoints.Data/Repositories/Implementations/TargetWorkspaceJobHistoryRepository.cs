@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data.Helpers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using FieldType = kCura.Relativity.Client.FieldType;
@@ -12,25 +11,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	public class TargetWorkspaceJobHistoryRepository : ITargetWorkspaceJobHistoryRepository
 	{
 		private readonly IRSAPIClient _rsapiClient;
-		private readonly IFieldHelper _fieldHelper;
 
-		public TargetWorkspaceJobHistoryRepository(IRSAPIClient rsapiClient, IFieldHelper fieldHelper)
+		public TargetWorkspaceJobHistoryRepository(IRSAPIClient rsapiClient)
 		{
 			_rsapiClient = rsapiClient;
-			_fieldHelper = fieldHelper;
 		}
 
 		public int? RetrieveObjectTypeDescriptorArtifactTypeId()
 		{
-			var criteria = new TextCondition(ObjectTypeFieldNames.Name, TextConditionEnum.EqualTo, Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME);
-
-			Query<ObjectType> query = new Query<ObjectType>
-			{
-				Condition = criteria,
-				Fields = FieldValue.AllFields
-			};
-
-			QueryResultSet<ObjectType> resultSet = _rsapiClient.Repositories.ObjectType.Query(query);
+			var objectType = new ObjectType(TargetWorkspaceJobHistoryDTO.ObjectTypeGuid) { Fields = FieldValue.AllFields };
+			ResultSet<ObjectType> resultSet = _rsapiClient.Repositories.ObjectType.Read(new[] { objectType });
 
 			int? objectTypeArtifactId = null;
 			if (resultSet.Success && resultSet.Results.Any())
@@ -43,7 +33,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int CreateObjectType(int sourceWorkspaceArtifactTypeId)
 		{
-			var objectType = new ObjectType(SourceWorkspaceDTO.ObjectTypeGuid)
+			var objectType = new ObjectType(TargetWorkspaceJobHistoryDTO.ObjectTypeGuid)
 			{
 				Name = Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME,
 				ParentArtifactTypeID = sourceWorkspaceArtifactTypeId,
@@ -62,10 +52,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception("Unable to create new Job History object type: " + resultSet.Message);
 			}
 
-			// We have to do this because the Descriptor Artifact Type Id isn't returned in the WriteResultSet :( -- biedrzycki: April 4th, 2016
-			int descriptorArtifactTypeId = this.RetrieveObjectTypeDescriptorArtifactTypeId().Value;
-
-			return descriptorArtifactTypeId;
+			return resultSet.Results.First().Artifact.ArtifactID;
 		}
 
 		public int Create(int jobHistoryArtifactTypeId,
@@ -126,15 +113,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return fieldNames.All(expectedFieldName => fieldNametoIdDictionary.ContainsKey(expectedFieldName));
 		}
 
-		public void CreateObjectTypeFields(int jobHistoryArtifactTypeId)
+		public IDictionary<Guid, int> CreateObjectTypeFields(int jobHistoryArtifactTypeId, IEnumerable<Guid> fieldGuids)
 		{
 			var objectType = new ObjectType() { DescriptorArtifactTypeID = jobHistoryArtifactTypeId };
 
-			var sourceWorkspaceFields = new List<kCura.Relativity.Client.DTOs.Field>()
+			var jobHistoryFields = new List<kCura.Relativity.Client.DTOs.Field>()
 			{
 				new kCura.Relativity.Client.DTOs.Field()
 				{
 					Name = Contracts.Constants.JOBHISTORY_JOBHISTORYID_FIELD_NAME,
+					Guids = new List<Guid>() { TargetWorkspaceJobHistoryDTO.Fields.JobHistoryIdFieldGuid },
 					FieldTypeID = kCura.Relativity.Client.FieldType.WholeNumber,
 					ObjectType = objectType,
 					IsRequired = true,
@@ -149,6 +137,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				new kCura.Relativity.Client.DTOs.Field()
 				{
 					Name = Contracts.Constants.JOBHISTORY_JOBHISTORYNAME_FIELD_NAME,
+					Guids = new List<Guid>() { TargetWorkspaceJobHistoryDTO.Fields.JobHistoryNameFieldGuid },
 					FieldTypeID = kCura.Relativity.Client.FieldType.FixedLengthText,
 					ObjectType = objectType,
 					IsRequired = true,
@@ -166,11 +155,43 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 			};
 
-			WriteResultSet<kCura.Relativity.Client.DTOs.Field> fieldWriteResultSet = _rsapiClient.Repositories.Field.Create(sourceWorkspaceFields);
+			kCura.Relativity.Client.DTOs.Field[] fieldsToCreate =
+				jobHistoryFields.Where(x => fieldGuids.Contains(x.Guids.First())).ToArray();
+
+			WriteResultSet<kCura.Relativity.Client.DTOs.Field> fieldWriteResultSet = _rsapiClient.Repositories.Field.Create(fieldsToCreate);
 			if (!fieldWriteResultSet.Success)
 			{
 				throw new Exception("Unable to create fields for the Source Workspace object type: " + fieldWriteResultSet.Message);
 			}
+
+			int[] newFieldIds = fieldWriteResultSet.Results.Select(x => x.Artifact.ArtifactID).ToArray();
+
+			ResultSet<kCura.Relativity.Client.DTOs.Field> newFieldResultSet = _rsapiClient.Repositories.Field.Read(newFieldIds);
+
+			if (!newFieldResultSet.Success)
+			{
+				_rsapiClient.Repositories.Field.Delete(fieldsToCreate);
+				throw new Exception("Unable to create fields for the Source Workspace object type: Failed to retrieve after creation: " + newFieldResultSet.Message);
+			}
+
+			IDictionary<Guid, int> guidToIdDictionary = newFieldResultSet.Results.ToDictionary(
+				x =>
+				{
+					switch (x.Artifact.Name)
+					{
+						case Contracts.Constants.JOBHISTORY_JOBHISTORYID_FIELD_NAME:
+							return TargetWorkspaceJobHistoryDTO.Fields.JobHistoryIdFieldGuid;
+
+						case Contracts.Constants.JOBHISTORY_JOBHISTORYNAME_FIELD_NAME:
+							return TargetWorkspaceJobHistoryDTO.Fields.JobHistoryNameFieldGuid;
+
+						default:
+							throw new Exception("Unexpected fields returned");
+					}
+				},
+				y => y.Artifact.ArtifactID);
+
+			return guidToIdDictionary;
 		}
 
 		public int CreateJobHistoryFieldOnDocument(int jobHistoryArtifactTypeId)
@@ -202,16 +223,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			int newFieldArtifactId = field.Artifact.ArtifactID;
-
-			try
-			{
-				_fieldHelper.SetOverlayBehavior(newFieldArtifactId, true);
-			}
-			catch (Exception)
-			{
-				_rsapiClient.Repositories.Field.Delete(fields);
-				throw new Exception("Unable to create Job History field on Document: Failed to set the default field overlay behavior.");
-			}
 
 			return newFieldArtifactId;
 		}

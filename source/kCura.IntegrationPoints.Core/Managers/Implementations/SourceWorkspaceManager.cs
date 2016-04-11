@@ -30,6 +30,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				int sourceWorkspaceArtifactTypeId = sourceWorkspaceRepository.CreateObjectType();
 
 				// Insert entry to the ArtifactGuid table for new object type
+				// TODO: add try catch and delete on failure
 				artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO.ObjectTypeGuid);
 
 				// Get descriptor id
@@ -52,6 +53,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			if (missingFieldGuids.Any())
 			{
 				IDictionary<Guid, int> guidToIdDictionary = sourceWorkspaceRepository.CreateObjectTypeFields(sourceWorkspaceDescriptorArtifactTypeId.Value, missingFieldGuids);	
+				// TODO: add try catch and delete on failure
 				artifactGuidRepository.InsertArtifactGuidsForArtifactIds(guidToIdDictionary);
 			}
 
@@ -60,8 +62,29 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				artifactGuidRepository.GuidExists(SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid);
 			if (!sourceWorkspaceFieldOnDocumentExists)
 			{
+				IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
 				int fieldArtifactId = sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(sourceWorkspaceDescriptorArtifactTypeId.Value);
-				artifactGuidRepository.InsertArtifactGuidForArtifactId(fieldArtifactId, SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid);
+
+				try
+				{
+					artifactGuidRepository.InsertArtifactGuidForArtifactId(fieldArtifactId,
+						SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid);
+				}
+				catch (Exception e)
+				{
+					fieldRepository.Delete(new[] { fieldArtifactId });
+					throw new Exception("Unable to create Source Workspace multi-object field on Document: Unable to associate new Artifact Guids", e);
+				}
+
+				try
+				{
+					fieldRepository.SetOverlayBehavior(fieldArtifactId, true);
+				}
+				catch (Exception e)
+				{
+					fieldRepository.Delete(new[] { fieldArtifactId });
+					throw new Exception("Unable to create Source Workspace multi-object field on Document: Unable to set the default Overlay Behavior", e);
+				}
 			}
 
 			// Get or create instance of Source Workspace object

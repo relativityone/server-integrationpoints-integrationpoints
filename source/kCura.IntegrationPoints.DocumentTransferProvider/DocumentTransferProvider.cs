@@ -5,6 +5,8 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Managers;
 using kCura.IntegrationPoints.Data.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -50,8 +52,9 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 		private ArtifactDTO[] GetRelativityFields(int workspaceId, int rdoTypeId)
 		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), workspaceId, Convert.ToInt32(ArtifactType.Field));
-			IFieldRepository fieldRepository = new KeplerFieldRepository(objectQueryManagerAdaptor);
+			IRepositoryFactory repositoryFactory = new RepositoryFactory(_helper);
+			IFieldRepository fieldRepository = repositoryFactory.GetFieldRepository(workspaceId);
+
 			ArtifactDTO[] fieldArtifacts = fieldRepository.RetrieveFieldsAsync(
 				rdoTypeId,
 				new HashSet<string>(new[]
@@ -162,7 +165,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 //
 //			int fieldTypeArtifactId = Convert.ToInt32(ArtifactType.Field);
 //			IObjectQueryManagerAdaptor fieldRepository = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, fieldTypeArtifactId);
-//			IFieldRepository fieldRepository = new KeplerFieldRepository(fieldRepository);
+//			IFieldRepository fieldRepository = new FieldRepository(fieldRepository);
 //
 //			IDBContext dbContext = _helper.GetDBContext(settings.SourceWorkspaceArtifactId);
 //

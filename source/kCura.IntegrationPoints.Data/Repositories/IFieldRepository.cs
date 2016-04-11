@@ -20,5 +20,18 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="fieldFieldsNames">The names of the fields to retrieve for the field artifact</param>
 		/// <returns>An array of ArtifactDTO with populated fields for the given rdo type</returns>
 		Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, HashSet<string> fieldFieldsNames);
+
+		/// <summary>
+		/// Sets the overlay behavior for a field
+		/// </summary>
+		/// <param name="fieldArtifactId">The artifact id of the field</param>
+		/// <param name="value">The value for overlay behavior</param>
+		void SetOverlayBehavior(int fieldArtifactId, bool value);
+
+		/// <summary>
+		/// Deletes the specified fields
+		/// </summary>
+		/// <param name="artifactIds">The artifact ids of the fields to delete</param>
+		void Delete(IEnumerable<int> artifactIds);
 	}
 }

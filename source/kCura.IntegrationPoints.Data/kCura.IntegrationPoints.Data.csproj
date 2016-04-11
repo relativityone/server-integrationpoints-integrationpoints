@@ -115,12 +115,10 @@
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
-    <Compile Include="Helpers\Implementations\FieldHelper.cs" />
     <Compile Include="Factories\Implementations\RepositoryFactory.cs" />
     <Compile Include="Factories\IRepositoryFactory.cs" />
     <Compile Include="Factories\ITempDocumentFactory.cs" />
     <Compile Include="Factories\TempDocumentFactory.cs" />
-    <Compile Include="Helpers\IFieldHelper.cs" />
     <Compile Include="Repositories\Implementations\SqlArtifactGuidRepository.cs" />
     <Compile Include="ITempDocTableHelper.cs" />
     <Compile Include="ImportSettingVisibility.cs" />
@@ -129,7 +127,7 @@
     <Compile Include="Repositories\IJobHistoryRepository.cs" />
     <Compile Include="Repositories\Implementations\JobHistoryRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerDocumentRepository.cs" />
-    <Compile Include="Repositories\Implementations\KeplerFieldRepository.cs" />
+    <Compile Include="Repositories\Implementations\FieldRepository.cs" />
     <Compile Include="Adaptors\Implementations\ObjectQueryManagerAdaptor.cs" />
     <Compile Include="Repositories\Implementations\RsapiSavedSearchRepository.cs" />
     <Compile Include="Adaptors\IObjectQueryManagerAdaptor.cs" />

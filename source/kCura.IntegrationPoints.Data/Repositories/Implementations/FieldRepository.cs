@@ -4,17 +4,32 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.Relativity.Client;
+using Relativity.Core;
+using Relativity.Core.Service;
 using Relativity.Services.ObjectQuery;
+using Field = Relativity.Core.DTO.Field;
+using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class KeplerFieldRepository : IFieldRepository
+	public class FieldRepository : IFieldRepository
 	{
 		private readonly IObjectQueryManagerAdaptor _objectQueryManagerAdaptor;
+		private readonly BaseServiceContext _serviceContext;
+		private readonly IRSAPIClient _rsapiClient;
+		private readonly Lazy<IFieldManagerImplementation> _fieldManager;
+		private IFieldManagerImplementation FieldManager => _fieldManager.Value;
 
-		public KeplerFieldRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor)
+		public FieldRepository(
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor, 
+			BaseServiceContext serviceContext, 
+			IRSAPIClient rsapiClient)
 		{
 			_objectQueryManagerAdaptor = objectQueryManagerAdaptor;
+			_serviceContext = serviceContext;
+			_rsapiClient = rsapiClient;
+			_fieldManager = new Lazy<IFieldManagerImplementation>(() => new FieldManagerImplementation());
 		}
 
 		public async Task<ArtifactFieldDTO[]> RetrieveLongTextFieldsAsync(int rdoTypeId)
@@ -49,7 +64,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var fieldQuery = new Query()
 			{
 				Fields = fieldFieldsNames.ToArray(),
-				Condition = String.Format("'Object Type Artifact Type ID' == {0}", rdoTypeId)
+				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId}"
 			};
 
 			ObjectQueryResultSet result = await _objectQueryManagerAdaptor.RetrieveAsync(fieldQuery, String.Empty);
@@ -68,6 +83,18 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			).ToArray();
 
 			return fieldArtifacts;
+		}
+
+		public void SetOverlayBehavior(int fieldArtifactId, bool value)
+		{
+			Field fieldDto = FieldManager.Read(_serviceContext, fieldArtifactId);
+			fieldDto.OverlayBehavior = value;
+			FieldManager.Update(_serviceContext, fieldDto, fieldDto.DisplayName, fieldDto.IsArtifactBaseField);
+		}
+
+		public void Delete(IEnumerable<int> artifactIds)
+		{
+			_rsapiClient.Repositories.Field.Delete(artifactIds.ToArray());
 		}
 	}
 }

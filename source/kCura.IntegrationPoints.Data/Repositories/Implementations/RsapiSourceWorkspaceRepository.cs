@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data.Helpers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using FieldType = kCura.Relativity.Client.FieldType;
@@ -12,14 +11,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	public class RsapiSourceWorkspaceRepository : ISourceWorkspaceRepository
 	{
 		private readonly IRSAPIClient _rsapiClient;
-		private readonly IFieldHelper _fieldHelper;
 
 		public RsapiSourceWorkspaceRepository(
-			IRSAPIClient rsapiClient, 
-			IFieldHelper fieldHelper)
+			IRSAPIClient rsapiClient)
 		{
 			this._rsapiClient = rsapiClient;
-			this._fieldHelper = fieldHelper;
 		}
 
 		public int? RetrieveObjectTypeDescriptorArtifactTypeId()
@@ -169,16 +165,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			int newFieldArtifactId = field.Artifact.ArtifactID;
-
-			try
-			{
-				_fieldHelper.SetOverlayBehavior(newFieldArtifactId, true);
-			}
-			catch (Exception)
-			{
-				_rsapiClient.Repositories.Field.Delete(fields);
-				throw new Exception("Unable to create Source Workspace field on Document: Failed to set the default field overlay behavior.");
-			}
 
 			return newFieldArtifactId;
 		}

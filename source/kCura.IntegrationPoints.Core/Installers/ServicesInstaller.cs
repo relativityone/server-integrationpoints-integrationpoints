@@ -110,7 +110,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 						.DependsOn(new { objectQueryManager = queryManager })
 						.LifeStyle.Transient);
 				container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
-				container.Register(Component.For<IFieldRepository>().ImplementedBy<KeplerFieldRepository>().LifeStyle.Transient);
+				container.Register(Component.For<IFieldRepository>().ImplementedBy<FieldRepository>().LifeStyle.Transient);
 
 				// TODO: This is kind of cruddy, see if we can only use this repository through the RepositoryFactory -- biedrzycki: April 6th, 2016
 				IRepositoryFactory repositoryFactory = container.Resolve<IRepositoryFactory>();

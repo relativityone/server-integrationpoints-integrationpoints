@@ -1,4 +1,6 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
+﻿using System;
+using System.Collections.Generic;
+using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -8,8 +10,8 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		int CreateObjectType(int sourceWorkspaceArtifactTypeId);
 		int Create(int jobHistoryArtifactTypeId, TargetWorkspaceJobHistoryDTO targetWorkspaceJobHistoryDto);
 		bool ObjectTypeFieldsExist(int jobHistoryArtifactTypeId);
-		void CreateObjectTypeFields(int jobHistoryArtifactTypeId);
 		int CreateJobHistoryFieldOnDocument(int jobHistoryArtifactTypeId);
 		bool JobHistoryFieldExistsOnDocument(int jobHistoryArtifactTypeId);
+		IDictionary<Guid, int> CreateObjectTypeFields(int jobHistoryArtifactTypeId, IEnumerable<Guid> fieldGuids);
 	}
 }
