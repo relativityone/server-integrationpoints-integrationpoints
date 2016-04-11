@@ -60,28 +60,13 @@ namespace kCura.IntegrationPoints.Data
 			}
 		}
 
-		public void RemoveErrorDocument(string docIdentifier)
+		public void RemoveErrorDocument(string tablePrefix, string docIdentifier)
 		{
 			int docId = GetDocumentId(docIdentifier);
-			string fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_DEST_WS}_{_tableSuffix}";
+			string fullTableName = GetTempTableName(tablePrefix);
 			string sql = String.Format(@"DELETE FROM EDDSRESOURCE..[{0}] WHERE [ArtifactID] = {1}", fullTableName, docId);
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
-		}
-
-		public List<int> GetDocumentIdsFromTable(string tablePrefix)
-		{
-			var documentIds = new List<int>();
-
-			using (IDataReader docIdReader = GetDocumentIdsDataReaderFromTable(tablePrefix))
-			{
-				while (docIdReader.Read())
-				{
-					int docId = Convert.ToInt32(docIdReader["ArtifactID"]);
-					documentIds.Add(docId);
-				}
-			}
-			return documentIds;
 		}
 
 		public IDataReader GetDocumentIdsDataReaderFromTable(string tablePrefix)
@@ -115,7 +100,7 @@ namespace kCura.IntegrationPoints.Data
 				SetDocumentIdentifierField(_helper, _sourceWorkspaceId);
 			}
 
-			string sql = String.Format(@"Select [ArtifactId] FROM [Document] WHERE [{0}] = '{1}'", _docIdentifierField, docIdentifier);
+			string sql = String.Format(@"Select [ArtifactId] FROM [Document] WITH (NOLOCK) WHERE [{0}] = '{1}'", _docIdentifierField, docIdentifier);
 
 			int documentId = _caseContext.ExecuteSqlStatementAsScalar<int>(sql);
 			return documentId;

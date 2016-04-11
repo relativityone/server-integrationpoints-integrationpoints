@@ -99,12 +99,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			int docArtifactId = 12345;
 
 			string sqlDelete = String.Format(@"DELETE FROM EDDSRESOURCE..[{0}] WHERE [ArtifactID] = {1}", tableNameDestWorkspace + "_" +_tableSuffix, docArtifactId);
-			string sqlGetId = String.Format(@"Select [ArtifactId] FROM [Document] WHERE [{0}] = '{1}'", _docIdColumn, docIdentifier);
+			string sqlGetId = String.Format(@"Select [ArtifactId] FROM [Document] WITH (NOLOCK) WHERE [{0}] = '{1}'", _docIdColumn, docIdentifier);
 
 			_caseContext.ExecuteSqlStatementAsScalar<int>(sqlGetId).Returns(docArtifactId);
 
 			//Act
-			_instance.RemoveErrorDocument(docIdentifier);
+			_instance.RemoveErrorDocument(tableNameDestWorkspace, docIdentifier);
 
 			//Assert
 			_caseContext.Received().ExecuteNonQuerySQLStatement(sqlDelete);

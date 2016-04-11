@@ -9,6 +9,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly string _name;
 		private readonly ITempDocTableHelper _tempHelper;
 		private IDataReader _reader;
+		private int _count;
+
 		public ScratchTableRepository(string name,
 			ITempDocTableHelper tempHelper)
 		{
@@ -16,14 +18,23 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_tempHelper = tempHelper;
 		}
 
+		public int Count
+		{
+			get
+			{
+				return _count;
+			}
+		}
+
 		public void AddArtifactIdsIntoTempTable(List<int> artifactIds)
 		{
+			_count += artifactIds.Count;
 			_tempHelper.AddArtifactIdsIntoTempTable(artifactIds, _name);
 		}
 
 		public void RemoveErrorDocument(string docIdentifier)
 		{
-			_tempHelper.RemoveErrorDocument(docIdentifier);
+			_tempHelper.RemoveErrorDocument(_name, docIdentifier);
 		}
 
 		public IDataReader GetDocumentIdsDataReaderFromTable()
@@ -33,11 +44,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				_reader = _tempHelper.GetDocumentIdsDataReaderFromTable(_name);
 			}
 			return _reader;
-		}
-
-		public List<int> GetDocumentIdsFromTable()
-		{
-			return _tempHelper.GetDocumentIdsFromTable(_name);
 		}
 
 		public void DeleteTable()

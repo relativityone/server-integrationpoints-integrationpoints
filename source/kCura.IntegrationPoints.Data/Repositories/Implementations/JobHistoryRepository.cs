@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
 using Relativity.Core;
 using Relativity.Core.Authentication;
-using Relativity.Core.Process;
 using Relativity.Data;
-using ArtifactType = Relativity.Query.ArtifactType;
 using Field = Relativity.Core.DTO.Field;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -35,13 +32,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			Field multiObjectField = new Field(baseService, fieldRows[0]);
-			multiObjectField.Value = GetMultiObjectListUpdate(jobHistoryInstanceArtifactId);
-			var document = new ArtifactType(global::Relativity.ArtifactType.Document);
-
 			string fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_JOB_HIST}_{tableSuffix}";
 			try
 			{
-				base.TagDocumentsWithRdo(baseService, multiObjectField, numberOfDocs, jobHistoryInstanceArtifactId, Constants.TEMPORARY_DOC_TABLE_JOB_HIST + "_" + tableSuffix);
+				base.TagDocumentsWithRdo(baseService, multiObjectField, numberOfDocs, jobHistoryInstanceArtifactId, fullTableName);
 			}
 			catch (Exception e)
 			{

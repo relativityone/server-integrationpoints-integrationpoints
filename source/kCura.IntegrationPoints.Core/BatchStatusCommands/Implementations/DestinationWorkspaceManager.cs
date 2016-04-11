@@ -1,11 +1,9 @@
-using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.ScheduleQueue.Core;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
@@ -17,8 +15,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly int _sourceWorkspaceId;
 		private readonly int _jobHistoryInstanceId;
 		private IScratchTableRepository _scratchTableRepository;
+		private int? _destinationWorkspaceRdoId;
 
-		// TODO: The IHelper needs to be removed from this constructor -- biedrzycki: April 6th, 2016
 		public DestinationWorkspaceManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory, SourceConfiguration sourceConfig, string tableSuffix, int jobHistoryInstanceId)
 		{
 			_tempDocHelper = tempDocumentTableFactory.GetDocTableHelper(tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
@@ -28,42 +26,24 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_jobHistoryInstanceId = jobHistoryInstanceId;
 		}
 
-		/// <summary>
-		/// Internal unit testing only
-		/// </summary>
-		internal DestinationWorkspaceManager(ITempDocTableHelper tempDocHelper,
-			IDestinationWorkspaceRepository destinationWorkspaceRepository,
-			int jobHistoryInstanceId, string tableSuffix, int sourceWorkspaceId)
-		{
-			_tempDocHelper = tempDocHelper;
-			_destinationWorkspaceRepository = destinationWorkspaceRepository;
-			_jobHistoryInstanceId = jobHistoryInstanceId;
-			_tableSuffix = tableSuffix;
-			_sourceWorkspaceId = sourceWorkspaceId;
-		}
-
 		public void JobStarted(Job job)
 		{
+			_destinationWorkspaceRdoId = _destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance();
+			if (_destinationWorkspaceRdoId == -1)
+			{
+				_destinationWorkspaceRdoId = _destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance();
+			}
+
+			_destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceRdoId,
+				_jobHistoryInstanceId);
 		}
 
 		public void JobComplete(Job job)
 		{
 			try
 			{
-				List<int> documentIds = ScratchTableRepository.GetDocumentIdsFromTable();
-				int documentCount = documentIds.Count;
-
-				int? destinationWorkspaceRdoId = _destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance();
-				if (destinationWorkspaceRdoId == -1)
-				{
-					destinationWorkspaceRdoId = _destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance();
-				}
-
-				_destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(destinationWorkspaceRdoId,
-					_jobHistoryInstanceId);
-
-				_destinationWorkspaceRepository.TagDocsWithDestinationWorkspace(documentCount, destinationWorkspaceRdoId,
-					_tableSuffix, _sourceWorkspaceId);
+				int documentCount = ScratchTableRepository.Count;
+				_destinationWorkspaceRepository.TagDocsWithDestinationWorkspace(documentCount, _destinationWorkspaceRdoId, _tableSuffix, _sourceWorkspaceId);
 			}
 			finally
 			{

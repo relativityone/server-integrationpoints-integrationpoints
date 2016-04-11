@@ -6,11 +6,11 @@ namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface IScratchTableRepository : IDisposable
 	{
+		int Count { get; }
+
 		void AddArtifactIdsIntoTempTable(List<int> artifactIds);
 
 		void RemoveErrorDocument(string docIdentifier);
-
-		List<int> GetDocumentIdsFromTable();
 
 		IDataReader GetDocumentIdsDataReaderFromTable();
 

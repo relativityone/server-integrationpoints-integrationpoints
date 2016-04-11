@@ -16,7 +16,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly IRSAPIClient _client;
 		private readonly int _destinationWorkspaceId;
 		private readonly IWorkspaceRepository _workspaceRepository;
-		private static int BATCH_SIZE = 1000;
 		private const string _DESTINATION_WORKSPACE_JOB_HISTORY_LINK = "20A24C4E-55E8-4FC2-ABBE-F75C07FAD91B";
 
 		public DestinationWorkspaceRepository(IRSAPIClient client, IWorkspaceRepository workspaceRepository, int destinationWorkspaceId)
@@ -130,9 +129,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			Field multiObjectField = new Field(baseService, fieldRows[0]);
+			string fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_DEST_WS}_{tableSuffix}";
+
 			try
 			{
-				base.TagDocumentsWithRdo(baseService, multiObjectField, numberOfDocs, destinationWorkspaceInstanceId.Value, Constants.TEMPORARY_DOC_TABLE_DEST_WS + "_" + tableSuffix);
+				base.TagDocumentsWithRdo(baseService, multiObjectField, numberOfDocs, destinationWorkspaceInstanceId.Value, fullTableName);
 			}
 			catch (Exception e)
 			{

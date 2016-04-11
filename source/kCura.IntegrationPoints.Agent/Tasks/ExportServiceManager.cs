@@ -44,7 +44,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly List<IBatchStatus> _batchStatus;
 		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private Guid _identifier;
-		private readonly IHelper _helper;
 		private SourceConfiguration _sourceConfiguration;
 		private ITempDocTableHelper _docTableHelper;
 		private List<IConsumeScratchTableBatchStatus> _parallizableBatch;
@@ -62,8 +61,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 			JobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
-			JobStatisticsService statisticsService,
-			IHelper helper)
+			JobStatisticsService statisticsService)
 		{
 			_synchronizerFactory = synchronizerFactory;
 			_exporterFactory = exporterFactory;
@@ -78,7 +76,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_statisticsService = statisticsService;
 			_batchStatus = statuses.ToList();
 			_serializer = serializer;
-			_helper = helper;
 		}
 
 		public IntegrationPoint IntegrationPointDto { get; private set; }

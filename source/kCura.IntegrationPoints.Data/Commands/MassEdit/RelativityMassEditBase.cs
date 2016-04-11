@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 	public abstract class RelativityMassEditBase
 	{
 		private const int _BATCH_SIZE = 1000;
-		private readonly ArtifactType _artifactType = new ArtifactType(10 , "Document");
+		private readonly ArtifactType _artifactType = new ArtifactType(global::Relativity.ArtifactType.Document);
 
 		protected void TagDocumentsWithRdo(BaseServiceContext context, Field fieldToUpdate, int numberOfDocuments, int rdoArtifactId, string tempTableName)
 		{

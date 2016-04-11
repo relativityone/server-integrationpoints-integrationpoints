@@ -16,14 +16,7 @@ namespace kCura.IntegrationPoints.Data
 		/// Removes a document from the temporary table if it has errored out
 		/// </summary>
 		/// <param name="docIdentifier">The document to remove</param>
-		void RemoveErrorDocument(string docIdentifier);
-
-		/// <summary>
-		/// Gets the list of Document Artifact IDs that were pushed
-		/// </summary>
-		/// <param name="tablePrefix">the scratch table's prefix to retrieve documents artifact ids from</param>
-		/// <returns>List of Document IDs</returns>
-		List<int> GetDocumentIdsFromTable(string tablePrefix);
+		void RemoveErrorDocument(string tablePrefix, string docIdentifier);
 
 		/// <summary>
 		/// Deletes the temporary table after it is no longer needed
