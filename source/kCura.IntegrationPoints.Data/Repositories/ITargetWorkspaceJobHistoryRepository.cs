@@ -6,7 +6,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface ITargetWorkspaceJobHistoryRepository
 	{
-		int? RetrieveObjectTypeDescriptorArtifactTypeId();
 		int CreateObjectType(int sourceWorkspaceArtifactTypeId);
 		int Create(int jobHistoryArtifactTypeId, TargetWorkspaceJobHistoryDTO targetWorkspaceJobHistoryDto);
 		int CreateJobHistoryFieldOnDocument(int jobHistoryArtifactTypeId);

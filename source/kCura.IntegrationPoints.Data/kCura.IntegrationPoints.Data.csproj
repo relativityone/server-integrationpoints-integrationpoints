@@ -123,6 +123,7 @@
     <Compile Include="Factories\IRepositoryFactory.cs" />
     <Compile Include="Factories\ITempDocumentTableFactory.cs" />
     <Compile Include="Factories\TempDocumentTableFactory.cs" />
+    <Compile Include="Repositories\Implementations\RsapiObjectTypeRepository.cs" />
     <Compile Include="Repositories\Implementations\SqlArtifactGuidRepository.cs" />
     <Compile Include="ITempDocTableHelper.cs" />
     <Compile Include="ImportSettingVisibility.cs" />

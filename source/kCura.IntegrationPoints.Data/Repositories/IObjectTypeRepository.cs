@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface IObjectTypeRepository
 	{
-		bool GetObjectTypeExists(Guid objectTypeGuid);
-		void Create(ObjectTypeDTO objectTypeDto);
+		int? RetrieveObjectTypeDescriptorArtifactTypeId(Guid objectTypeGuid);
+		void Delete(int artifactId);
 	}
 }

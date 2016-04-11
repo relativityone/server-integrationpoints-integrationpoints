@@ -17,20 +17,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_rsapiClient = rsapiClient;
 		}
 
-		public int? RetrieveObjectTypeDescriptorArtifactTypeId()
-		{
-			var objectType = new ObjectType(TargetWorkspaceJobHistoryDTO.ObjectTypeGuid) { Fields = FieldValue.AllFields };
-			ResultSet<ObjectType> resultSet = _rsapiClient.Repositories.ObjectType.Read(new[] { objectType });
-
-			int? objectTypeArtifactId = null;
-			if (resultSet.Success && resultSet.Results.Any())
-			{
-				objectTypeArtifactId = resultSet.Results.First().Artifact.DescriptorArtifactTypeID;
-			}
-
-			return objectTypeArtifactId;
-		}
-
 		public int CreateObjectType(int sourceWorkspaceArtifactTypeId)
 		{
 			var objectType = new ObjectType(TargetWorkspaceJobHistoryDTO.ObjectTypeGuid)

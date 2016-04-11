@@ -18,20 +18,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			this._rsapiClient = rsapiClient;
 		}
 
-		public int? RetrieveObjectTypeDescriptorArtifactTypeId()
-		{
-			var objectType = new ObjectType(SourceWorkspaceDTO.ObjectTypeGuid) { Fields = FieldValue.AllFields };
-			ResultSet<ObjectType> resultSet = _rsapiClient.Repositories.ObjectType.Read(new[] { objectType });
-
-			int? objectTypeArtifactId = null;
-			if (resultSet.Success && resultSet.Results.Any())
-			{
-				objectTypeArtifactId = resultSet.Results.First().Artifact.DescriptorArtifactTypeID;
-			}
-
-			return objectTypeArtifactId;
-		}
-
 		public int CreateObjectType()
 		{
 			var objectType = new ObjectType(SourceWorkspaceDTO.ObjectTypeGuid)

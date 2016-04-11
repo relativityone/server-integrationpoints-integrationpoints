@@ -27,6 +27,14 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		}
 
+		public IObjectTypeRepository GetObjectTypeRepository(int workspaceArtifactId)
+		{
+			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
+			IObjectTypeRepository repository = new RsapiObjectTypeRepository(rsapiClient);
+
+			return repository;
+		}
+
 		public ISourceWorkspaceRepository GetSourceWorkspaceRepository(int workspaceArtifactId)
 		{
 			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);

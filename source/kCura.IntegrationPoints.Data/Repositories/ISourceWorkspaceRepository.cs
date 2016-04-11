@@ -6,7 +6,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface ISourceWorkspaceRepository
 	{
-		int? RetrieveObjectTypeDescriptorArtifactTypeId();
 		int CreateObjectType();
 
 		SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int sourceWorkspaceArtifactId);
