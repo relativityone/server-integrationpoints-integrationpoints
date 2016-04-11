@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -19,6 +21,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			// Set up repositories
 			ISourceWorkspaceRepository sourceWorkspaceRepository = _repositoryFactory.GetSourceWorkspaceRepository(destinationWorkspaceArtifactId);
 			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetWorkspaceRepository();
+			IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
 
 			// Create object type if it does not exist
 			int? sourceWorkspaceDescriptorArtifactTypeId = sourceWorkspaceRepository.RetrieveObjectTypeDescriptorArtifactTypeId();
@@ -27,7 +30,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				int sourceWorkspaceArtifactTypeId = sourceWorkspaceRepository.CreateObjectType();
 
 				// Insert entry to the ArtifactGuid table for new object type
-				IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
 				artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO.ObjectTypeGuid);
 
 				// Get descriptor id
@@ -42,26 +44,35 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 
 			// Create Source Workspace fields if they do not exist
-			if (!sourceWorkspaceRepository.ObjectTypeFieldsExist(sourceWorkspaceDescriptorArtifactTypeId.Value))
+			IDictionary<Guid, bool> objectTypeFields = artifactGuidRepository.GuidsExist(new []
 			{
-				sourceWorkspaceRepository.CreateObjectTypeFields(sourceWorkspaceDescriptorArtifactTypeId.Value);	
+				SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid, SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid
+			});
+			IList<Guid> missingFieldGuids = objectTypeFields.Where(x => x.Value == false).Select(y => y.Key).ToList();
+			if (missingFieldGuids.Any())
+			{
+				IDictionary<Guid, int> guidToIdDictionary = sourceWorkspaceRepository.CreateObjectTypeFields(sourceWorkspaceDescriptorArtifactTypeId.Value, missingFieldGuids);	
+				artifactGuidRepository.InsertArtifactGuidsForArtifactIds(guidToIdDictionary);
 			}
 
 			// Create fields on document if they do not exist
-			if (!sourceWorkspaceRepository.SourceWorkspaceFieldExistsOnDocument(sourceWorkspaceDescriptorArtifactTypeId.Value))
+			bool sourceWorkspaceFieldOnDocumentExists =
+				artifactGuidRepository.GuidExists(SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid);
+			if (!sourceWorkspaceFieldOnDocumentExists)
 			{
-				sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(sourceWorkspaceDescriptorArtifactTypeId.Value);
+				int fieldArtifactId = sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(sourceWorkspaceDescriptorArtifactTypeId.Value);
+				artifactGuidRepository.InsertArtifactGuidForArtifactId(fieldArtifactId, SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid);
 			}
 
 			// Get or create instance of Source Workspace object
 			WorkspaceDTO workspaceDto = workspaceRepository.Retrieve(sourceWorkspaceArtifactId);
-			SourceWorkspaceDTO sourceWorkspaceDto = sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(sourceWorkspaceArtifactId, sourceWorkspaceDescriptorArtifactTypeId.Value);
+			SourceWorkspaceDTO sourceWorkspaceDto = sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(sourceWorkspaceArtifactId);
 			if (sourceWorkspaceDto == null)
 			{
 				sourceWorkspaceDto = new SourceWorkspaceDTO()
 				{
 					ArtifactId = -1,
-					Name = String.Format("{0} - {1}", workspaceDto.Name, sourceWorkspaceArtifactId),
+					Name = $"{workspaceDto.Name} - {sourceWorkspaceArtifactId}",
 					SourceCaseArtifactId = sourceWorkspaceArtifactId,
 					SourceCaseName = workspaceDto.Name
 				};
@@ -75,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			// Check to see if instance should be updated
 			if (sourceWorkspaceDto.SourceCaseName != workspaceDto.Name)
 			{
-				sourceWorkspaceDto.Name = String.Format("{0} - {1}", workspaceDto.Name, sourceWorkspaceArtifactId);
+				sourceWorkspaceDto.Name = $"{workspaceDto.Name} - {sourceWorkspaceArtifactId}";
 				sourceWorkspaceDto.SourceCaseName = workspaceDto.Name;
 				sourceWorkspaceRepository.Update(sourceWorkspaceDto);
 			}

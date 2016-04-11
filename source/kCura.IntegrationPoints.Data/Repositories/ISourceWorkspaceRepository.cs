@@ -1,4 +1,6 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
+﻿using System;
+using System.Collections.Generic;
+using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -7,11 +9,10 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		int? RetrieveObjectTypeDescriptorArtifactTypeId();
 		int CreateObjectType();
 
-		SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int sourceWorkspaceArtifactId, int sourceWorkspaceArtifactTypeId);
+		SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int sourceWorkspaceArtifactId);
 		int Create(int sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO sourceWorkspaceDto);
 
-		bool ObjectTypeFieldsExist(int sourceWorkspaceObjectTypeId);
-		void CreateObjectTypeFields(int sourceWorkspaceObjectTypeId);
+		IDictionary<Guid, int> CreateObjectTypeFields(int sourceWorkspaceObjectTypeId, IEnumerable<Guid> fieldGuids);
 
 		int CreateSourceWorkspaceFieldOnDocument(int sourceWorkspaceObjectTypeId);
 		bool SourceWorkspaceFieldExistsOnDocument(int sourceWorkspaceObjectTypeId);

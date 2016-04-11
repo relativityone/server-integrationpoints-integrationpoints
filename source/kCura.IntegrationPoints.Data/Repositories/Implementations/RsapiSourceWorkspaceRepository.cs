@@ -60,34 +60,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return resultSet.Results.First().Artifact.ArtifactID;
 		}
 
-		public bool ObjectTypeFieldsExist(int sourceWorkspaceObjectTypeId)
-		{
-			string[] fieldNames = new string[] { Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME };
-			var criteria = new TextCondition(FieldFieldNames.Name, TextConditionEnum.In, fieldNames);
-			var query = new Query<kCura.Relativity.Client.DTOs.Field>
-			{
-				Fields = FieldValue.AllFields,
-				Condition = criteria
-				//ArtifactTypeID = sourceWorkspaceObjectTypeId this doesn't work
-			};
-
-			QueryResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Query(query);
-
-			if (!resultSet.Success)
-			{
-				throw new Exception("Unable to retrieve Source Workspace fields: " + resultSet.Message);
-			}
-
-			// TODO: this cannot stay here...
-			IDictionary<string, int> fieldNameToIdDictionary =
-				resultSet.Results
-					.ToDictionary(x => x.Artifact.Name, y => y.Artifact.ArtifactID);
-
-			// Validate that all fields exist
-			return fieldNames.All(expectedFieldName => fieldNameToIdDictionary.ContainsKey(expectedFieldName));
-		}
-
-		public void CreateObjectTypeFields(int sourceWorkspaceObjectTypeId)
+		public IDictionary<Guid, int> CreateObjectTypeFields(int sourceWorkspaceObjectTypeId, IEnumerable<Guid> fieldGuids)
 		{
 			var objectType = new ObjectType() { DescriptorArtifactTypeID = sourceWorkspaceObjectTypeId };
 
@@ -96,6 +69,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				new kCura.Relativity.Client.DTOs.Field()
 				{
 					Name = Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
+					Guids = new List<Guid>() { SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid },
 					FieldTypeID = kCura.Relativity.Client.FieldType.WholeNumber,
 					ObjectType = objectType,
 					IsRequired = true,
@@ -110,6 +84,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				new kCura.Relativity.Client.DTOs.Field()
 				{
 					Name = Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
+					Guids = new List<Guid>() { SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid },
 					FieldTypeID = kCura.Relativity.Client.FieldType.FixedLengthText,
 					ObjectType = objectType,
 					IsRequired = true,
@@ -127,11 +102,43 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 			};
 
-			WriteResultSet<kCura.Relativity.Client.DTOs.Field> fieldWriteResultSet = _rsapiClient.Repositories.Field.Create(sourceWorkspaceFields);
+			kCura.Relativity.Client.DTOs.Field[] fieldsToCreate =
+				sourceWorkspaceFields.Where(x => fieldGuids.Contains(x.Guids.First())).ToArray();
+
+			WriteResultSet<kCura.Relativity.Client.DTOs.Field> fieldWriteResultSet = _rsapiClient.Repositories.Field.Create(fieldsToCreate);
 			if (!fieldWriteResultSet.Success)
 			{
 				throw new Exception("Unable to create fields for the Source Workspace object type: " + fieldWriteResultSet.Message);
 			}
+
+			int[] newFieldIds = fieldWriteResultSet.Results.Select(x => x.Artifact.ArtifactID).ToArray();
+
+			ResultSet<kCura.Relativity.Client.DTOs.Field> newFieldResultSet = _rsapiClient.Repositories.Field.Read(newFieldIds);
+
+			if (!newFieldResultSet.Success)
+			{
+				_rsapiClient.Repositories.Field.Delete(fieldsToCreate);
+				throw new Exception("Unable to create fields for the Source Workspace object type: Failed to retrieve after creation: " + newFieldResultSet.Message);
+			}
+
+			IDictionary<Guid, int> guidToIdDictionary = newFieldResultSet.Results.ToDictionary(
+				x =>
+				{
+					switch (x.Artifact.Name)
+					{
+						case Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME:
+							return SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid;
+
+						case Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME:
+							return SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid;
+
+						default:
+							throw new Exception("Unexpected fields returned");
+					}
+				},
+				y => y.Artifact.ArtifactID);
+
+			return guidToIdDictionary;
 		}
 
 		public int CreateSourceWorkspaceFieldOnDocument(int sourceWorkspaceObjectTypeId)
@@ -198,12 +205,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return fieldExists;
 		}
 
-		public SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int sourceWorkspaceArtifactId, int sourceWorkspaceArtifactTypeId)
+		public SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int sourceWorkspaceArtifactId)
 		{
 			var condition = new WholeNumberCondition(Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, NumericConditionEnum.EqualTo, sourceWorkspaceArtifactId);
 			var query = new Query<RDO>()
 			{
-				ArtifactTypeID = sourceWorkspaceArtifactTypeId,
+				ArtifactTypeGuid = SourceWorkspaceDTO.ObjectTypeGuid,
 				Fields = FieldValue.AllFields,
 				Condition = condition
 			};
