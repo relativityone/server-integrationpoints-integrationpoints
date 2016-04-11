@@ -1,3 +1,4 @@
+using System;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -16,6 +17,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly int _jobHistoryInstanceId;
 		private IScratchTableRepository _scratchTableRepository;
 		private int? _destinationWorkspaceRdoId;
+		private bool _errorOccurDuringJobStart;
 
 		public DestinationWorkspaceManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory, SourceConfiguration sourceConfig, string tableSuffix, int jobHistoryInstanceId)
 		{
@@ -28,22 +30,33 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		public void JobStarted(Job job)
 		{
-			_destinationWorkspaceRdoId = _destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance();
-			if (_destinationWorkspaceRdoId == -1)
+			try
 			{
-				_destinationWorkspaceRdoId = _destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance();
-			}
+				_destinationWorkspaceRdoId = _destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance();
+				if (_destinationWorkspaceRdoId == -1)
+				{
+					_destinationWorkspaceRdoId = _destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance();
+				}
 
-			_destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceRdoId,
-				_jobHistoryInstanceId);
+				_destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceRdoId,
+					_jobHistoryInstanceId);
+			}
+			catch (Exception)
+			{
+				_errorOccurDuringJobStart = true;
+				throw;
+			}
 		}
 
 		public void JobComplete(Job job)
 		{
 			try
 			{
-				int documentCount = ScratchTableRepository.Count;
-				_destinationWorkspaceRepository.TagDocsWithDestinationWorkspace(documentCount, _destinationWorkspaceRdoId, _tableSuffix, _sourceWorkspaceId);
+				if (!_errorOccurDuringJobStart)
+				{
+					int documentCount = ScratchTableRepository.Count;
+					_destinationWorkspaceRepository.TagDocsWithDestinationWorkspace(documentCount, _destinationWorkspaceRdoId, _tableSuffix, _sourceWorkspaceId);
+				}
 			}
 			finally
 			{
