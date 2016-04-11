@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		void CreateObjectTypeFields(int sourceWorkspaceObjectTypeId);
 
 		int CreateSourceWorkspaceFieldOnDocument(int sourceWorkspaceObjectTypeId);
-		bool SourceWorkspaceFieldExistsOnDocument(int sourceWorkspaceObjectTypeId);
+		bool SourceWorkspaceFieldExistsOnDocument(int sourceWorkspaceObjectTypeId, out int fieldArtifactId);
 		void Update(SourceWorkspaceDTO sourceWorkspaceDto);
 		int? RetrieveTabArtifactId(int sourceWorkspaceArtifactTypeId);
 		void DeleteTab(int tabArtifactId);

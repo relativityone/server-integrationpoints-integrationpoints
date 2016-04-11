@@ -113,6 +113,9 @@
     <Compile Include="Provider\IFieldProvider.cs" />
     <Compile Include="IStartUp.cs" />
     <Compile Include="Provider\ProviderReadDataException.cs" />
+    <Compile Include="Readers\DataColumnWithValue.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Readers\RelativityReaderBase.cs" />
     <Compile Include="Synchronizer\IDataSynchronizer.cs" />
   </ItemGroup>

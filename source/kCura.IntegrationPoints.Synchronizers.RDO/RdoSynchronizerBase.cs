@@ -254,7 +254,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				importService.OnDocumentError += OnDocumentError;
 			}
-
 			importService.Initialize();
 
 			return importService;

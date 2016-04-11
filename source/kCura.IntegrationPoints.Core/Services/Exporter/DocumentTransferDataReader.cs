@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Readers;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.Core;
 using Relativity.Core.Service;
 
@@ -23,52 +22,41 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 		private readonly IExporterService _relativityExporterService;
 		private readonly Dictionary<int, string> _nativeFileLocations;
-		private readonly Dictionary<int, string> _nativeFileNames; 
+		private readonly Dictionary<int, string> _nativeFileNames;
 		private readonly ICoreContext _context;
-		private readonly ITempDocTableHelper _docTableHelper;
-		private readonly SourceWorkspaceDTO _sourceWorkspaceDto;
-		private readonly TargetWorkspaceJobHistoryDTO _targetWorkspaceJobHistoryDto;
+		private readonly IScratchTableRepository[] _scratchTableRepositories;
 		private readonly int _folderPathFieldSourceArtifactId;
 
 		/// used as a flag to store the reference of the current artifacts array.
 		private object _readingArtifactIdsReference;
 
 		public DocumentTransferDataReader(
-			int sourceWorkspaceArtifactId,
-			int destinationWorkspaceArtifactId,
 			IExporterService relativityExportService,
-			ISourceWorkspaceManager sourceWorkspaceManager,
-			ITargetWorkspaceJobHistoryManager targetWorkspaceJobHistoryManager,
 			FieldMap[] fieldMappings,
 			ICoreContext context,
-			ITempDocTableHelper docTableHelper,
-			int jobHistoryArtifactId) :
+			IScratchTableRepository[] scratchTableRepositories) :
 			base(GenerateDataColumnsFromFieldEntries(fieldMappings))
 		{
 			_context = context;
+			_scratchTableRepositories = scratchTableRepositories;
 			_relativityExporterService = relativityExportService;
 			_nativeFileLocations = new Dictionary<int, string>();
 			_nativeFileNames = new Dictionary<int, string>();
-			_docTableHelper = docTableHelper;
 
 			FieldMap folderPathInformationField = fieldMappings.FirstOrDefault(mappedField => mappedField.FieldMapType == FieldMapTypeEnum.FolderPathInformation);
 			if (folderPathInformationField != null)
 			{
 				_folderPathFieldSourceArtifactId = Int32.Parse(folderPathInformationField.SourceField.FieldIdentifier);
 			}
-
-			// Validate that destination workspace has all object types and fields
-			_sourceWorkspaceDto = sourceWorkspaceManager.InitializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId);
-			_targetWorkspaceJobHistoryDto = targetWorkspaceJobHistoryManager.InitializeWorkspace(sourceWorkspaceArtifactId, destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId, jobHistoryArtifactId);
 		}
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
 			ArtifactDTO[] artifacts = _relativityExporterService.RetrieveData(FETCH_ARTIFACTDTOS_BATCH_SIZE);
 			List<int> artifactIds = artifacts.Select(x => x.ArtifactId).ToList();
-			
-			_docTableHelper.CreateTemporaryDocTable(artifactIds, ScratchTables.DestinationWorkspace);
-			_docTableHelper.CreateTemporaryDocTable(artifactIds, ScratchTables.JobHistory);
+
+			_scratchTableRepositories.ForEach(repo => repo.AddArtifactIdsIntoTempTable(artifactIds));
+
 			return artifacts;
 		}
 
@@ -112,20 +100,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				});
 			}
 
-			fields.Add(new FieldEntry()
-			{
-				DisplayName	= IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-				FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD,
-				FieldType = FieldType.String
-			});
-
-			fields.Add(new FieldEntry()
-			{
-				DisplayName	= IntegrationPoints.Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME,
-				FieldIdentifier = IntegrationPoints.Contracts.Constants.SPECIAL_JOBHISTORY_FIELD,
-				FieldType = FieldType.String
-			});
-
 			return fields.Select(x => new DataColumn(x.FieldIdentifier)).ToArray();
 		}
 
@@ -158,16 +132,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			{
 				result = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId).Value;
 			}
-			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD)
-			{
-				// TODO: We should be using the artifact Id -- biedrzycki: April 4th, 2016
-				result = _sourceWorkspaceDto.Name;
-			}
-			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_JOBHISTORY_FIELD)
-			{
-				// TODO: We should be using the artifact Id -- biedrzycki: April 4th, 2016
-				result = _targetWorkspaceJobHistoryDto.Name;
-			}
 			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_FOLDERPATH_FIELD)
 			{
 				result = CurrentArtifact.GetFieldForIdentifier(_folderPathFieldSourceArtifactId).Value;
@@ -184,9 +148,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					for (int index = 0; index < dataView.Table.Rows.Count; index++)
 					{
 						DataRow row = dataView.Table.Rows[index];
-						int nativeDocumentArtifactID = (int) row[_nativeDocumentArtifactIdColumn];
-						string nativeFileLocation = (string) row[_nativeLocationColumn];
-						string nativeFileName = (string) row[_nativeFileNameColumn];
+						int nativeDocumentArtifactID = (int)row[_nativeDocumentArtifactIdColumn];
+						string nativeFileLocation = (string)row[_nativeLocationColumn];
+						string nativeFileName = (string)row[_nativeFileNameColumn];
 						_nativeFileLocations.Add(nativeDocumentArtifactID, nativeFileLocation);
 						_nativeFileNames.Add(nativeDocumentArtifactID, nativeFileName);
 					}
@@ -201,6 +165,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 							_nativeFileLocations.Remove(CurrentArtifact.ArtifactId);
 						}
 						break;
+
 					case IntegrationPoints.Contracts.Constants.SPECIAL_FILE_NAME_FIELD:
 						if (_nativeFileNames.ContainsKey(CurrentArtifact.ArtifactId))
 						{

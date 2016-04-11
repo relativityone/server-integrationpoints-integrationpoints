@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			var documentIds = new List<int>();
 			int destinationWorkspaceInstanceId = 0401;
 
-			_tempDocHelper.GetDocumentIdsFromTable(ScratchTables.DestinationWorkspace).Returns(documentIds);
+			_tempDocHelper.GetDocumentIdsFromTable(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS).Returns(documentIds);
 			_destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance().Returns(destinationWorkspaceInstanceId);
 			
 			//Act
@@ -43,10 +44,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 			//Assert
 			_destinationWorkspaceRepository.Received().LinkDestinationWorkspaceToJobHistory(destinationWorkspaceInstanceId, _jobHistoryRdoId);
-			_tempDocHelper.Received().DeleteTable(Arg.Is(ScratchTables.DestinationWorkspace));
+			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS));
 
 			_destinationWorkspaceRepository.DidNotReceive().CreateDestinationWorkspaceRdoInstance();
-			_destinationWorkspaceRepository.DidNotReceive().TagDocsWithDestinationWorkspace(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>(), Arg.Any<int>());
+			_destinationWorkspaceRepository.Received().TagDocsWithDestinationWorkspace(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>(), Arg.Any<int>());
 		}
 
 		[Test]
@@ -60,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			documentIds.Add(2);
 			documentIds.Add(3);
 
-			_tempDocHelper.GetDocumentIdsFromTable(ScratchTables.DestinationWorkspace).Returns(documentIds);
+			_tempDocHelper.GetDocumentIdsFromTable(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS).Returns(documentIds);
 			_destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance().Returns(-1);
 			_destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance().Returns(destinationWorkspaceInstanceId);
 
@@ -73,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			_destinationWorkspaceRepository.Received().CreateDestinationWorkspaceRdoInstance();
 			_destinationWorkspaceRepository.Received().TagDocsWithDestinationWorkspace(documentIds.Count, destinationWorkspaceInstanceId, _tableSuffix, _sourceWorkspaceId);
 
-			_tempDocHelper.DidNotReceive().DeleteTable(Arg.Is(ScratchTables.DestinationWorkspace));
+			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS));
 		}
 	}
 }

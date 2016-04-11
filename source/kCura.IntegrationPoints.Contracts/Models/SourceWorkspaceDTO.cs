@@ -11,5 +11,7 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		public string Name { get; set; }
 		public int SourceCaseArtifactId { get; set; }
 		public string SourceCaseName { get; set; }
+
+		public int SourceWorkspaceFieldArtifactId { get; set; }
 	}
 }

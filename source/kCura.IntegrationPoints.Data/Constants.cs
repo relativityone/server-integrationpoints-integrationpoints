@@ -20,11 +20,12 @@
 		public static string Monthly = "D8E62A6F-7B0D-4F38-881F-1699EF41B4E0";
 	}
 
-	public static class Constants
+	public class Constants
 	{
 		public const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
 		public const string TEMPORARY_DOC_TABLE_DEST_WS = "TempRIPDocTable_DW";
 		public const string TEMPORARY_DOC_TABLE_JOB_HIST = "TempRIPDocTable_JH";
+		public const string TEMPORARY_DOC_TABLE_SOURCEWORKSPACE = "TempRIPDocTable_SourceWorkspace";
 	}
 
 	public static class DestinationWorkspaceObject
@@ -48,11 +49,5 @@
 		public const string CREATE_DEST_WORKSPACE_ERROR = "Unable to create a new instance of Destination Workspace object";
 		public const string QUERY_DEST_WORKSPACE_ERROR = "Unable to query Destination Workspace instance";
 		public const string LINK_OBJECT_INSTANCE_ERROR = "Unable to link Destination Workspace object to Job History object";
-	}
-
-	public enum ScratchTables
-	{
-		DestinationWorkspace = 0,
-		JobHistory = 1
 	}
 }

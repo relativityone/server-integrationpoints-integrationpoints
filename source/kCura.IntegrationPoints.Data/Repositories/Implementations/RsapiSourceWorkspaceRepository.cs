@@ -184,7 +184,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return newFieldArtifactId;
 		}
 
-		public bool SourceWorkspaceFieldExistsOnDocument(int sourceWorkspaceObjectTypeId)
+		public bool SourceWorkspaceFieldExistsOnDocument(int sourceWorkspaceObjectTypeId, out int fieldArtifactId)
 		{
 			var criteria = new TextCondition(FieldFieldNames.Name, TextConditionEnum.EqualTo, "Source Workspace");
 			var query = new Query<kCura.Relativity.Client.DTOs.Field>
@@ -200,9 +200,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				throw new Exception("Unable to retrieve Document fields: " + resultSet.Message);
 			}
-
 			bool fieldExists = field != null;
 
+			if (fieldExists)
+			{
+				fieldArtifactId = field.Artifact.ArtifactID;
+			}
+			else
+			{
+				fieldArtifactId = -1;
+			}
 			return fieldExists;
 		}
 

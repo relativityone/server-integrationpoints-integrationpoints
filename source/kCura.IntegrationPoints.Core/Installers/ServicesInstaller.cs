@@ -101,16 +101,18 @@ namespace kCura.IntegrationPoints.Core.Installers
 			if (container.Kernel.HasComponent(typeof(IHelper)))
 			{
 				IHelper helper = container.Resolve<IHelper>();
+
 				// TODO: Investigate; should this be using ExecutionIdentity.CurrentUser? -- biedrzycki: April 6th, 2016
 				IObjectQueryManager queryManager = helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
-
+			
 				container.Register(
 					Component.For<IObjectQueryManagerAdaptor>()
 						.ImplementedBy<ObjectQueryManagerAdaptor>()
-						.DependsOn(new { objectQueryManager = queryManager })
+						.DependsOn(new { objectQueryManager = queryManager})
 						.LifeStyle.Transient);
 				container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
 				container.Register(Component.For<IFieldRepository>().ImplementedBy<KeplerFieldRepository>().LifeStyle.Transient);
+				container.Register(Component.For<IDocumentRepository>().ImplementedBy<KeplerDocumentRepository>().LifeStyle.Transient);
 
 				// TODO: This is kind of cruddy, see if we can only use this repository through the RepositoryFactory -- biedrzycki: April 6th, 2016
 				IRepositoryFactory repositoryFactory = container.Resolve<IRepositoryFactory>();
@@ -119,7 +121,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 						.ImplementedBy<RsapiWorkspaceRepository>()
 						.DependsOn(repositoryFactory.GetWorkspaceRepository())
 						.LifestyleTransient());
-
 				container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());
 				container.Register(Component.For<ITargetWorkspaceJobHistoryManager>().ImplementedBy<TargetWorkspaceJobHistoryManager>().LifestyleTransient());
 			}

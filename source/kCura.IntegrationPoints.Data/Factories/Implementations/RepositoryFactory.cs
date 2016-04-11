@@ -4,6 +4,8 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using Relativity.API;
+using Relativity.Core;
+using FieldHelper = kCura.IntegrationPoints.Data.Helpers.FieldHelper;
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
 {
@@ -12,10 +14,13 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		private readonly IHelper _helper;
 		private IDictionary<int, IRSAPIClient> RsapiClientCache { get; }
 
+		private readonly BaseServiceContext _baseContext;
+
 		public RepositoryFactory(IHelper _helper)
 		{
 			this._helper = _helper;
 			RsapiClientCache = new Dictionary<int, IRSAPIClient>();
+
 		}
 
 		public ISourceWorkspaceRepository GetSourceWorkspaceRepository(int workspaceArtifactId)
