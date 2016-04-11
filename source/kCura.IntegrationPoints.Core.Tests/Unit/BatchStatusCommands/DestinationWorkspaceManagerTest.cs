@@ -1,10 +1,12 @@
-﻿using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
+﻿using System;
+using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit
@@ -130,5 +132,74 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			//Assert
 			Assert.AreSame(expected, name);
 		}
+
+		[Test]
+		public void ErrorOccurDuringJobStart_OnQueryDestinationWorkspaceRdoInstance()
+		{
+			//Arrange
+			_destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance().Throws(new Exception());
+			
+			//Act
+			try
+			{
+				_instance.JobStarted(_job);
+			}
+			catch
+			{
+			}
+
+			_instance.JobComplete(_job);
+
+			//Assert
+			_destinationWorkspaceRepository.DidNotReceive().TagDocsWithDestinationWorkspace(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<String>(), Arg.Any<int>());
+		}
+
+		[Test]
+		public void ErrorOccurDuringJobStart_OnCreateDestinationWorkspaceRdoInstance()
+		{
+			//Arrange
+			_destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance().Returns(-1);
+			_destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance().Throws(new Exception());
+
+			//Act
+			try
+			{
+				_instance.JobStarted(_job);
+			}
+			catch
+			{
+			}
+
+			_instance.JobComplete(_job);
+
+			//Assert
+			_destinationWorkspaceRepository.DidNotReceive().TagDocsWithDestinationWorkspace(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<String>(), Arg.Any<int>());
+		}
+
+
+		[Test]
+		public void ErrorOccurDuringJobStart_LinkDestinationWorkspaceToJobHistory()
+		{
+			//Arrange
+			int rdo = 111;
+			_destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance().Returns(rdo);
+			_destinationWorkspaceRepository.When( x => x.LinkDestinationWorkspaceToJobHistory(rdo, _jobHistoryRdoId)).Do(
+				x => { throw new Exception(); });
+
+			//Act
+			try
+			{
+				_instance.JobStarted(_job);
+			}
+			catch
+			{
+			}
+
+			_instance.JobComplete(_job);
+
+			//Assert
+			_destinationWorkspaceRepository.DidNotReceiveWithAnyArgs().TagDocsWithDestinationWorkspace(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<String>(), Arg.Any<int>());
+		}
+
 	}
 }
