@@ -41,9 +41,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 
 			// Create fields on document if they do not exist
-			if (!sourceWorkspaceRepository.SourceWorkspaceFieldExistsOnDocument(sourceWorkspaceArtifactTypeId.Value))
+			int documentSourceWorkspaceFieldArtifactId = -1;
+			if (!sourceWorkspaceRepository.SourceWorkspaceFieldExistsOnDocument(sourceWorkspaceArtifactTypeId.Value, out documentSourceWorkspaceFieldArtifactId))
 			{
-				sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(sourceWorkspaceArtifactTypeId.Value);
+				documentSourceWorkspaceFieldArtifactId = sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(sourceWorkspaceArtifactTypeId.Value);
 			}
 
 			// Get or create instance of Source Workspace object
@@ -62,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 				sourceWorkspaceDto.ArtifactId = artifactId;
 			}
-
+			sourceWorkspaceDto.SourceWorkspaceFieldArtifactId = documentSourceWorkspaceFieldArtifactId;
 			sourceWorkspaceDto.ArtifactTypeId = sourceWorkspaceArtifactTypeId.Value;
 
 			// Check to see if instance should be updated

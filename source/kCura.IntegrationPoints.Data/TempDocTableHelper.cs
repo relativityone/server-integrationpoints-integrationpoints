@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using System.Data;
 using System.Linq;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -42,24 +42,16 @@ namespace kCura.IntegrationPoints.Data
 			_docIdentifierField = docIdField;
 		}
 
-		public void CreateTemporaryDocTable(List<int> artifactIds, ScratchTables rdoTable)
+		public void AddArtifactIdsIntoTempTable(List<int> artifactIds, string tablePrefix)
 		{
 			if (!artifactIds.IsNullOrEmpty())
 			{
-				string fullTableName;
-				if (rdoTable == ScratchTables.DestinationWorkspace)
-				{
-					fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_DEST_WS}_{_tableSuffix}";
-				}
-				else
-				{
-					fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_JOB_HIST}_{_tableSuffix}";
-				}
+				string fullTableName = GetTempTableName(tablePrefix);
 				string artifactIdList = String.Join("),(", artifactIds.Select(x => x.ToString()));
 				artifactIdList = $"({artifactIdList})";
 
 				string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
-											BEGIN 
+											BEGIN
 											CREATE TABLE [EDDSRESOURCE]..[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
 											END
 									INSERT INTO [EDDSRESOURCE]..[{0}] ([ArtifactID]) VALUES {1}", fullTableName, artifactIdList);
@@ -77,24 +69,11 @@ namespace kCura.IntegrationPoints.Data
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 		}
 
-		public List<int> GetDocumentIdsFromTable(ScratchTables rdoTable)
+		public List<int> GetDocumentIdsFromTable(string tablePrefix)
 		{
-			string fullTableName;
-			if (rdoTable == ScratchTables.DestinationWorkspace)
-			{
-				fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_DEST_WS}_{_tableSuffix}";
-			}
-			else
-			{
-				fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_JOB_HIST}_{_tableSuffix}";
-			}
-
-			var sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
-										SELECT [ArtifactID] FROM [EDDSRESOURCE]..[{0}]", fullTableName);
-
 			var documentIds = new List<int>();
 
-			using (SqlDataReader docIdReader = _caseContext.ExecuteSQLStatementAsReader(sql))
+			using (IDataReader docIdReader = GetDocumentIdsDataReaderFromTable(tablePrefix))
 			{
 				while (docIdReader.Read())
 				{
@@ -102,25 +81,31 @@ namespace kCura.IntegrationPoints.Data
 					documentIds.Add(docId);
 				}
 			}
-
 			return documentIds;
 		}
 
-		public void DeleteTable(ScratchTables rdoTable)
+		public IDataReader GetDocumentIdsDataReaderFromTable(string tablePrefix)
 		{
-			string fullTableName;
-			if (rdoTable == ScratchTables.DestinationWorkspace)
-			{
-				fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_DEST_WS}_{_tableSuffix}";
-			}
-			else
-			{
-				fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_JOB_HIST}_{_tableSuffix}";
-			}
+			string fullTableName = GetTempTableName(tablePrefix);
+
+			var sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
+										SELECT [ArtifactID] FROM [EDDSRESOURCE]..[{0}]", fullTableName);
+
+			return _caseContext.ExecuteSQLStatementAsReader(sql);
+		}
+
+		public void DeleteTable(string tablePrefix)
+		{
+			string fullTableName = GetTempTableName(tablePrefix);
 			string sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
 										DROP TABLE [EDDSRESOURCE]..[{0}]", fullTableName);
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
+		}
+
+		public string GetTempTableName(string tablePrefix)
+		{
+			return $"{tablePrefix}_{_tableSuffix}";
 		}
 
 		private int GetDocumentId(string docIdentifier)
@@ -172,7 +157,7 @@ namespace kCura.IntegrationPoints.Data
 						{
 							// suppress error for invalid casts
 						}
-					}	
+					}
 				}
 				if (isIdentifierFieldValue == 1)
 				{
@@ -185,6 +170,6 @@ namespace kCura.IntegrationPoints.Data
 		{
 			internal static string Name = "Name";
 			internal static string IsIdentifier = "Is Identifier";
-		}	
+		}
 	}
 }

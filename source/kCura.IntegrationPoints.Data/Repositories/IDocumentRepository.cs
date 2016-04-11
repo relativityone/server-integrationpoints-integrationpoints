@@ -6,6 +6,8 @@ namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface IDocumentRepository
 	{
+		int WorkspaceArtifactId { get; set; }
+
 		/// <summary>
 		/// Retrieves a single document
 		/// </summary>

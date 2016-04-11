@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -41,14 +41,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		{
 			//Arrange
 			var documentIds = new List<int>();
-			_tempDocHelper.GetDocumentIdsFromTable(ScratchTables.JobHistory).Returns(documentIds);
+			_tempDocHelper.GetDocumentIdsFromTable(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST).Returns(documentIds);
 
 			//Act
 			_instance.JobComplete(_job);
-			
+
 			//Assert
-			_tempDocHelper.Received().DeleteTable(Arg.Is(ScratchTables.JobHistory));
-			_jobHistoryRepository.DidNotReceive().TagDocsWithJobHistory(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>());
+			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST));
+			_jobHistoryRepository.Received().TagDocsWithJobHistory(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>());
 		}
 
 		[Test]
@@ -60,13 +60,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			documentIds.Add(2);
 			documentIds.Add(3);
 
-			_tempDocHelper.GetDocumentIdsFromTable(ScratchTables.JobHistory).Returns(documentIds);
+			_tempDocHelper.GetDocumentIdsFromTable(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST).Returns(documentIds);
 
 			//Act
 			_instance.JobComplete(_job);
 
 			//Assert
-			_tempDocHelper.DidNotReceive().DeleteTable(Arg.Is(ScratchTables.JobHistory));
+			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST));
 			_jobHistoryRepository.Received().TagDocsWithJobHistory(documentIds.Count, _jobHistoryRdoId, _sourceWorkspaceId, _uniqueJobId);
 		}
 	}

@@ -4,8 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.Core;
@@ -26,21 +25,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly Export.InitializationResults _exportJobInfo;
 		private readonly int[] _fieldArtifactIds;
 		private readonly HashSet<int> _longTextFieldArtifactIds;
-		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
-		private readonly ITargetWorkspaceJobHistoryManager _targetWorkspaceJobHistoryManager;
 		private readonly FieldMap[] _mappedFields;
 		private readonly HashSet<int> _multipleObjectFieldArtifactIds;
 		private readonly int _retrievedDataCount;
 		private readonly ExportUsingSavedSearchSettings _settings;
 		private readonly HashSet<int> _singleChoiceFieldsArtifactIds;
 		private IDataReader _reader;
-
-		private RelativityExporterService()
-		{
-			_singleChoiceFieldsArtifactIds = new HashSet<int>();
-			_multipleObjectFieldArtifactIds = new HashSet<int>();
-			_longTextFieldArtifactIds = new HashSet<int>();
-		}
 
 		/// <summary>
 		/// Testing only
@@ -59,8 +49,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		}
 
 		public RelativityExporterService(
-			ISourceWorkspaceManager sourceWorkspaceManager,
-			ITargetWorkspaceJobHistoryManager targetWorkspaceJobHistoryManager,
 			FieldMap[] mappedFields,
 			int startAt,
 			string config)
@@ -68,8 +56,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			_dataGridContext = new DataGridContext(true);
 			_settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
-			_sourceWorkspaceManager = sourceWorkspaceManager;
-			_targetWorkspaceJobHistoryManager = targetWorkspaceJobHistoryManager;
 			_mappedFields = mappedFields;
 			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
 
@@ -112,6 +98,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_retrievedDataCount = 0;
 		}
 
+		private RelativityExporterService()
+		{
+			_singleChoiceFieldsArtifactIds = new HashSet<int>();
+			_multipleObjectFieldArtifactIds = new HashSet<int>();
+			_longTextFieldArtifactIds = new HashSet<int>();
+		}
+
 		public bool HasDataToRetrieve
 		{
 			get
@@ -128,11 +121,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		public IDataReader GetDataReader(ITempDocTableHelper docTableHelper, int jobHistoryArtifactId)
+		public IDataReader GetDataReader(IScratchTableRepository[] scratchTableRepositories)
 		{
 			if (_reader == null)
 			{
-				_reader = new DocumentTransferDataReader(_settings.SourceWorkspaceArtifactId, _settings.TargetWorkspaceArtifactId, this, _sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,_mappedFields, _baseContext, docTableHelper, jobHistoryArtifactId);
+				_reader = new DocumentTransferDataReader(this, _mappedFields, _baseContext, scratchTableRepositories);
 			}
 			return _reader;
 		}

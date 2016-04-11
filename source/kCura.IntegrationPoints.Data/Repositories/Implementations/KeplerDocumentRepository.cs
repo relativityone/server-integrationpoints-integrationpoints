@@ -15,6 +15,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public KeplerDocumentRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor)
 		{
 			_objectQueryManagerAdaptor = objectQueryManagerAdaptor;
+			_objectQueryManagerAdaptor.ArtifactTypeId = 10;
+		}
+
+		public int WorkspaceArtifactId
+		{
+			get { return _objectQueryManagerAdaptor.WorkspaceId; }
+			set { _objectQueryManagerAdaptor.WorkspaceId = value; }
 		}
 
 		public async Task<ArtifactDTO> RetrieveDocumentAsync(int documentId, ICollection<int> fieldIds)

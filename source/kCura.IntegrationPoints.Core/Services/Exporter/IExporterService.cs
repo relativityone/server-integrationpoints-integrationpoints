@@ -1,10 +1,9 @@
 ﻿using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
-
 	/// <summary>
 	/// Provides public interface to RdoExporter
 	/// </summary>
@@ -13,10 +12,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		/// <summary>
 		/// Gets the reader of the exported data.
 		/// </summary>
-		/// <param name="jobDetails">The settings for the job</param>
-		/// <param name="jobHistoryArtifactId">The job history rdo artifact id</param>
 		/// <returns>DataReader to read export results</returns>
-		IDataReader GetDataReader(ITempDocTableHelper docHelper, int jobHistoryArtifactId);
+		IDataReader GetDataReader(IScratchTableRepository[] scractchRepositories);
 
 		/// <summary>
 		/// Retrieves data from exporter with a give size
@@ -26,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		ArtifactDTO[] RetrieveData(int size);
 
 		/// <summary>
-		/// Indicates whether exporter still has data to returned 
+		/// Indicates whether exporter still has data to returned
 		/// </summary>
 		bool HasDataToRetrieve { get; }
 

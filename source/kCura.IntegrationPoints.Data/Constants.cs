@@ -20,11 +20,12 @@
 		public static string Monthly = "D8E62A6F-7B0D-4F38-881F-1699EF41B4E0";
 	}
 
-	public static class Constants
+	public class Constants
 	{
 		public const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
 		public const string TEMPORARY_DOC_TABLE_DEST_WS = "TempRIPDocTable_DW";
 		public const string TEMPORARY_DOC_TABLE_JOB_HIST = "TempRIPDocTable_JH";
+		public const string TEMPORARY_DOC_TABLE_SOURCEWORKSPACE = "TempRIPDocTable_SourceWorkspace";
 	}
 
 	public static class DestinationWorkspaceObject
@@ -58,11 +59,5 @@
 		public const string JOB_HISTORY_MO_QUERY_ERROR = "Unable to query for multi-object field on Document associated with JobHistory object.";
 		public const string JOB_HISTORY_MO_EXISTENCE_ERROR = "Multi-object field on Document associated with JobHistory object does not exist.";
 		public const string JOB_HISTORY_MASS_EDIT_FAILURE = "Tagging Documents with JobHistory object failed - Mass Edit failure.";
-	}
-
-	public enum ScratchTables
-	{
-		DestinationWorkspace = 0,
-		JobHistory = 1
 	}
 }

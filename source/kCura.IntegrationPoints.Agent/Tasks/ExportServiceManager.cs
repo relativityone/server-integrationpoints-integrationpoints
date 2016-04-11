@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
-using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Factories;
-using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -18,6 +20,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
 using Relativity.API;
@@ -32,8 +35,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private ExportJobErrorService _exportJobErrorService;
 		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly IExporterFactory _exporterFactory;
+		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
+		private readonly ITargetWorkspaceJobHistoryManager _targetWorkspaceJobHistoryManager;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ITempDocumentTableFactory _tempDocumentTableFactory;
+		private readonly IDocumentRepository _documentRepository;
 		private readonly JobStatisticsService _statisticsService;
 		private readonly List<IBatchStatus> _batchStatus;
 		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
@@ -41,14 +47,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IHelper _helper;
 		private SourceConfiguration _sourceConfiguration;
 		private ITempDocTableHelper _docTableHelper;
+		private List<IConsumeScratchTableBatchStatus> _parallizableBatch;
 
 		public ExportServiceManager(
 			ICaseServiceContext caseServiceContext,
 			ISynchronizerFactory synchronizerFactory,
 			IExporterFactory exporterFactory,
+			ISourceWorkspaceManager sourceWorkspaceManager,
+			ITargetWorkspaceJobHistoryManager targetWorkspaceJobHistoryManager,
 			IRepositoryFactory repositoryFactory,
-			ITempDocumentTableFactory tempDocumentTableFactory,
 			IEnumerable<IBatchStatus> statuses,
+			IDocumentRepository documentRepository,
 			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 			JobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
@@ -57,8 +66,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_synchronizerFactory = synchronizerFactory;
 			_exporterFactory = exporterFactory;
+			_sourceWorkspaceManager = sourceWorkspaceManager;
+			_targetWorkspaceJobHistoryManager = targetWorkspaceJobHistoryManager;
 			_repositoryFactory = repositoryFactory;
 			_tempDocumentTableFactory = tempDocumentTableFactory;
+			_documentRepository = documentRepository;
 			_caseServiceContext = caseServiceContext;
 			_jobHistoryService = jobHistoryService;
 			_jobHistoryErrorService = jobHistoryErrorService;
@@ -82,7 +94,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				string destinationConfig = IntegrationPointDto.DestinationConfiguration;
 				IDataSynchronizer synchronizer = GetRdoDestinationProvider(destinationConfig);
 
-				_exportJobErrorService = new ExportJobErrorService(_docTableHelper);
+				IScratchTableRepository[] scratchTableRepositories = _parallizableBatch.Select(batch => batch.ScratchTableRepository).ToArray();
+
+				_exportJobErrorService = new ExportJobErrorService(scratchTableRepositories);
 				SetupSubscriptions(synchronizer, job);
 
 				// Initialize Exporter
@@ -92,7 +106,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				if (exporter.TotalRecordsFound > 0)
 				{
-					IDataReader dataReader = exporter.GetDataReader(_docTableHelper, this.JobHistoryDto.ArtifactId);
+					IDataReader dataReader = exporter.GetDataReader(scratchTableRepositories);
 					synchronizer.SyncData(dataReader, MappedFields, destinationConfig);
 				}
 			}
@@ -103,10 +117,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			finally
 			{
 				_jobHistoryErrorService.CommitErrors();
-
-				_batchStatus.Insert(0, new DestinationWorkspaceManager(_tempDocumentTableFactory, _repositoryFactory, _sourceConfiguration, _identifier.ToString(), JobHistoryDto.ArtifactId));
-				_batchStatus.Insert(0, new JobHistoryManager(_tempDocumentTableFactory, _repositoryFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, _identifier.ToString()));
-
 				PostExecute(job);
 			}
 		}
@@ -122,7 +132,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			this._identifier = taskParameters.BatchInstance;
-	
+
 			// Load integrationPoint data
 			if (IntegrationPointDto != null)
 			{
@@ -141,7 +151,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			SourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
 
-			_docTableHelper = _tempDocumentTableFactory.GetDocTableHelper(this._identifier.ToString(), _sourceConfiguration.SourceWorkspaceArtifactId);
+			var tempTableFactory = new TempDocumentFactory();
+			_docTableHelper = tempTableFactory.GetDocTableHelper(_helper, this._identifier.ToString(), _sourceConfiguration.SourceWorkspaceArtifactId);
 
 			this.JobHistoryDto = _jobHistoryService.GetRdo(this._identifier);
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
@@ -154,14 +165,65 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			this.JobHistoryDto.StartTimeUTC = DateTime.UtcNow;
 			UpdateJobStatus();
-			foreach (var batchComplete in _batchStatus)
+
+			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_docTableHelper,
+				_sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
+				_documentRepository, _synchronizerFactory, MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, IntegrationPointDto.DestinationConfiguration, JobHistoryDto.ArtifactId);
+
+			IConsumeScratchTableBatchStatus tagger = taggerFactory.BuildDocumentsTagger();
+			IConsumeScratchTableBatchStatus sourceDestinationWorkspaceTagger = new DestinationWorkspaceManager(_helper, _repositoryFactory, _sourceConfiguration, _identifier.ToString(), JobHistoryDto.ArtifactId);
+			IConsumeScratchTableBatchStatus sourceJobHistoryTagger = new JobHistoryManager(_helper, _repositoryFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, _identifier.ToString());
+
+			_parallizableBatch = new List<IConsumeScratchTableBatchStatus>()
 			{
-				batchComplete.JobStarted(job);
+				tagger,
+				sourceDestinationWorkspaceTagger,
+				sourceJobHistoryTagger
+			};
+
+			var exceptions = new ConcurrentQueue<Exception>();
+			Parallel.ForEach(_parallizableBatch, batch =>
+			{
+				try
+				{
+					batch.JobStarted(job);
+				}
+				catch (Exception exception)
+				{
+					exceptions.Enqueue(exception);
+					throw;
+				}
+			});
+
+			if (exceptions.Count > 0)
+			{
+				throw new AggregateException(exceptions);
 			}
+
+			_batchStatus.ForEach(batch => batch.JobStarted(job));
 		}
 
 		internal void PostExecute(Job job)
 		{
+			var exceptions = new ConcurrentQueue<Exception>();
+			Parallel.ForEach(_parallizableBatch, batch =>
+			{
+				try
+				{
+					batch.JobComplete(job);
+				}
+				catch (Exception exception)
+				{
+					exceptions.Enqueue(exception);
+				}
+			});
+
+			if (exceptions.Count > 0)
+			{
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, new AggregateException(exceptions));
+				_jobHistoryErrorService.CommitErrors();
+			}
+
 			foreach (IBatchStatus completedItem in _batchStatus)
 			{
 				try
