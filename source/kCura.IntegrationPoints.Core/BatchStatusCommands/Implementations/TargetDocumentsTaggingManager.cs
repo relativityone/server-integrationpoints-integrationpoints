@@ -71,7 +71,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 					};
 
 					int identifierFieldId = Convert.ToInt32(identifier.SourceField.FieldIdentifier);
-
 					TempTableReader reader = new TempTableReader(_documentRepository, ScratchTableRepository, columns, identifierFieldId);
 					FieldMap[] fieldsToPush = { identifier };
 					if (ScratchTableRepository.Count > 0)
