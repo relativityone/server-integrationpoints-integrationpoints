@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -28,6 +27,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private SourceWorkspaceDTO _sourceWorkspaceDto;
 		private TargetWorkspaceJobHistoryDTO _targetWorkspaceJobHistoryDto;
 		private IScratchTableRepository _scratchTableRepository;
+		private bool _errorOccurDuringJobStart;
 
 		public TargetDocumentsTaggingManager(ITempDocTableHelper tempTableHelper,
 			IDataSynchronizer synchronizer,
@@ -58,23 +58,26 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
-				FieldMap[] identifiers = _fields.Where(f => f.FieldMapType == FieldMapTypeEnum.Identifier).ToArray();
-				FieldMap identifier = identifiers[0];
-
-				DataColumn[] columns = new[]
+				if (!_errorOccurDuringJobStart)
 				{
-					new DataColumn(identifier.SourceField.FieldIdentifier),
-					new DataColumnWithValue(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD, _sourceWorkspaceDto.Name),
-					new DataColumnWithValue(IntegrationPoints.Contracts.Constants.SPECIAL_JOBHISTORY_FIELD , _targetWorkspaceJobHistoryDto.Name)
-				};
+					FieldMap[] identifiers = _fields.Where(f => f.FieldMapType == FieldMapTypeEnum.Identifier).ToArray();
+					FieldMap identifier = identifiers[0];
 
-				int identifierFieldId = Convert.ToInt32(identifier.SourceField.FieldIdentifier);
+					DataColumn[] columns = new[]
+					{
+						new DataColumn(identifier.SourceField.FieldIdentifier),
+						new DataColumnWithValue(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD, _sourceWorkspaceDto.Name),
+						new DataColumnWithValue(IntegrationPoints.Contracts.Constants.SPECIAL_JOBHISTORY_FIELD , _targetWorkspaceJobHistoryDto.Name)
+					};
 
-				TempTableReader reader = new TempTableReader(_documentRepository, ScratchTableRepository, columns, identifierFieldId);
-				FieldMap[] fieldsToPush = { identifier };
-				if (ScratchTableRepository.Count > 0)
-				{
-					_synchronizer.SyncData(reader, fieldsToPush, _importConfig);
+					int identifierFieldId = Convert.ToInt32(identifier.SourceField.FieldIdentifier);
+
+					TempTableReader reader = new TempTableReader(_documentRepository, ScratchTableRepository, columns, identifierFieldId);
+					FieldMap[] fieldsToPush = { identifier };
+					if (ScratchTableRepository.Count > 0)
+					{
+						_synchronizer.SyncData(reader, fieldsToPush, _importConfig);
+					}
 				}
 			}
 			finally
@@ -97,8 +100,16 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		public void JobStarted(Job job)
 		{
-			_sourceWorkspaceDto = _sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId);
-			_targetWorkspaceJobHistoryDto = _targetWorkspaceJobHistoryManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId, _jobHistoryArtifactId);
+			try
+			{
+				_sourceWorkspaceDto = _sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId);
+				_targetWorkspaceJobHistoryDto = _targetWorkspaceJobHistoryManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId, _jobHistoryArtifactId);
+			}
+			catch (Exception)
+			{
+				_errorOccurDuringJobStart = true;
+				throw;
+			}
 		}
 	}
 }
