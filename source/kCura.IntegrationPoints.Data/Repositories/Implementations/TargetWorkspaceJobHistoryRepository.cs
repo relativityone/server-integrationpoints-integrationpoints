@@ -94,34 +94,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public bool ObjectTypeFieldsExist(int jobHistoryArtifactTypeId)
-		{
-			string[] fieldNames = new string[] { Contracts.Constants.JOBHISTORY_JOBHISTORYID_FIELD_NAME, Contracts.Constants.JOBHISTORY_JOBHISTORYNAME_FIELD_NAME };
-
-			var criteria = new TextCondition(FieldFieldNames.Name, TextConditionEnum.In, fieldNames);
-			var query = new Query<kCura.Relativity.Client.DTOs.Field>
-			{
-				Fields = FieldValue.AllFields,
-				Condition = criteria
-				//ArtifactTypeID = jobHistoryArtifactTypeId this doesn't work
-			};
-
-			QueryResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Query(query);
-
-			if (!resultSet.Success)
-			{
-				throw new Exception("Unable to retrieve Job History fields: " + resultSet.Message);
-			}
-
-			// TODO: this cannot stay here...
-			IDictionary<string, int> fieldNametoIdDictionary =
-				resultSet.Results
-					.ToDictionary(x => x.Artifact.Name, y => y.Artifact.ArtifactID);
-
-			// Validate that all fields exist
-			return fieldNames.All(expectedFieldName => fieldNametoIdDictionary.ContainsKey(expectedFieldName));
-		}
-
 		public IDictionary<Guid, int> CreateObjectTypeFields(int jobHistoryArtifactTypeId, IEnumerable<Guid> fieldGuids)
 		{
 			var objectType = new ObjectType() { DescriptorArtifactTypeID = jobHistoryArtifactTypeId };
@@ -234,28 +206,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			int newFieldArtifactId = field.Artifact.ArtifactID;
 
 			return newFieldArtifactId;
-		}
-
-		public bool JobHistoryFieldExistsOnDocument(int jobHistoryArtifactTypeId)
-		{
-			var criteria = new TextCondition(FieldFieldNames.Name, TextConditionEnum.EqualTo, Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME);
-			var query = new Query<kCura.Relativity.Client.DTOs.Field>
-			{
-				Fields = FieldValue.AllFields,
-				Condition = criteria,
-			};
-
-			QueryResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Query(query);
-
-			Result<kCura.Relativity.Client.DTOs.Field> field = resultSet.Results.FirstOrDefault();
-			if (!resultSet.Success)
-			{
-				throw new Exception("Unable to retrieve Document fields: " + resultSet.Message);
-			}
-
-			bool fieldExists = field != null;
-
-			return fieldExists;
 		}
 	}
 }
