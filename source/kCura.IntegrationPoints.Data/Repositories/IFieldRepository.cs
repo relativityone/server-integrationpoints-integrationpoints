@@ -4,6 +4,9 @@ using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
+	/// <summary>
+	/// Responsible for handling Relativity fields
+	/// </summary>
 	public interface IFieldRepository
 	{
 		/// <summary>

@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 	{
 		private readonly ITempDocTableHelper _tempTableHelper;
 		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
-		private readonly ITargetWorkspaceJobHistoryManager _targetWorkspaceJobHistoryManager;
+		private readonly ISourceJobManager _sourceJobManager;
 		private readonly IDocumentRepository _documentRepository;
 		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly FieldMap[] _fields;
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		public TargetDocumentsTaggingManagerFactory(
 			ITempDocTableHelper tempTableHelper,
 			ISourceWorkspaceManager sourceWorkspaceManager,
-			ITargetWorkspaceJobHistoryManager targetWorkspaceJobHistoryManager,
+			ISourceJobManager sourceJobManager,
 			IDocumentRepository documentRepository,
 			ISynchronizerFactory synchronizerFactory,
 			FieldMap[] fields,
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			_tempTableHelper = tempTableHelper;
 			_sourceWorkspaceManager = sourceWorkspaceManager;
-			_targetWorkspaceJobHistoryManager = targetWorkspaceJobHistoryManager;
+			_sourceJobManager = sourceJobManager;
 			_documentRepository = documentRepository;
 			_synchronizerFactory = synchronizerFactory;
 			_fields = fields;
@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				_tempTableHelper,
 				synchronizer,
 				_sourceWorkspaceManager,
-				_targetWorkspaceJobHistoryManager,
+				_sourceJobManager,
 				_documentRepository,
 				_fields.ToArray(),
 				_destinationConfig,

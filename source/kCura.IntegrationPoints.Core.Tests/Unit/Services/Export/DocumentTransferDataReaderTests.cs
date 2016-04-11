@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		private ICoreContext _context;
 		private IScratchTableRepository[] _scracRepositories;
 		private ISourceWorkspaceManager _sourceWorkspaceManager;
-		private ITargetWorkspaceJobHistoryManager _targetWorkspaceJobHistoryManager;
+		private ISourceJobManager _sourceJobManager;
 
 		private const int _DOCUMENT_ARTIFACTID = 123423;
 		private const string _FIELD_NAME = "DispName";
@@ -82,11 +82,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			var scracthTable = Substitute.For<IScratchTableRepository>();
 			_scracRepositories = new[] { scracthTable };
 			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
-			_targetWorkspaceJobHistoryManager = Substitute.For<ITargetWorkspaceJobHistoryManager>();
+			_sourceJobManager = Substitute.For<ISourceJobManager>();
 
 			_sourceWorkspaceManager.InitializeWorkspace(_SOURCE_WORKSPACE_ARTIFACTID, _TARGET_WORKSPACE_ARTIFACTID)
 				.Returns(_sourceWorkspaceDto);
-			_targetWorkspaceJobHistoryManager.InitializeWorkspace(_SOURCE_WORKSPACE_ARTIFACTID, _TARGET_WORKSPACE_ARTIFACTID, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId, _JOB_HISTORY_ARTIFACTID);
+			_sourceJobManager.InitializeWorkspace(_SOURCE_WORKSPACE_ARTIFACTID, _TARGET_WORKSPACE_ARTIFACTID, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId, _JOB_HISTORY_ARTIFACTID);
 		}
 
 		#region Read

@@ -155,35 +155,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return newFieldArtifactId;
 		}
 
-		public bool SourceWorkspaceFieldExistsOnDocument(int sourceWorkspaceObjectTypeId, out int fieldArtifactId)
-		{
-			var criteria = new TextCondition(FieldFieldNames.Name, TextConditionEnum.EqualTo, "Source Workspace");
-			var query = new Query<kCura.Relativity.Client.DTOs.Field>
-			{
-				Fields = FieldValue.AllFields,
-				Condition = criteria,
-			};
-
-			QueryResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Query(query);
-
-			Result<kCura.Relativity.Client.DTOs.Field> field = resultSet.Results.FirstOrDefault();
-			if (!resultSet.Success)
-			{
-				throw new Exception("Unable to retrieve Document fields: " + resultSet.Message);
-			}
-			bool fieldExists = field != null;
-
-			if (fieldExists)
-			{
-				fieldArtifactId = field.Artifact.ArtifactID;
-			}
-			else
-			{
-				fieldArtifactId = -1;
-			}
-			return fieldExists;
-		}
-
 		public SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int sourceWorkspaceArtifactId)
 		{
 			var condition = new WholeNumberCondition(Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, NumericConditionEnum.EqualTo, sourceWorkspaceArtifactId);

@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private ITempDocTableHelper _tempTableHelper;
 		private IDataSynchronizer _synchronizer;
 		private ISourceWorkspaceManager _sourceWorkspaceManager;
-		private ITargetWorkspaceJobHistoryManager _targetWorkspaceJobHistoryManager;
+		private ISourceJobManager _sourceJobManager;
 		private IDocumentRepository _documentRepo;
 		private string _importConfig;
 		private int _sourceWorkspaceArtifactId;
@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_tempTableHelper = NSubstitute.Substitute.For<ITempDocTableHelper>();
 			_synchronizer = NSubstitute.Substitute.For<IDataSynchronizer>();
 			_sourceWorkspaceManager = NSubstitute.Substitute.For<ISourceWorkspaceManager>();
-			_targetWorkspaceJobHistoryManager = NSubstitute.Substitute.For<ITargetWorkspaceJobHistoryManager>();
+			_sourceJobManager = NSubstitute.Substitute.For<ISourceJobManager>();
 			_documentRepo = NSubstitute.Substitute.For<IDocumentRepository>();
 
 			_importConfig = String.Empty;
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 				}
 			};
 			_instance = new TargetDocumentsTaggingManager(_tempTableHelper, _synchronizer, 
-				_sourceWorkspaceManager, _targetWorkspaceJobHistoryManager, 
+				_sourceWorkspaceManager, _sourceJobManager, 
 				_documentRepo, _fieldMaps, _importConfig,
 				_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, 
 				_jobHistoryArtifactId);
@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//assert
 			_sourceWorkspaceManager.Received().InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId);
-			_targetWorkspaceJobHistoryManager.Received().InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
+			_sourceJobManager.Received().InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
 				_sourceWorkspaceDto.ArtifactTypeId,
 				_sourceWorkspaceDto.ArtifactId,
 				_jobHistoryArtifactId);
@@ -114,16 +114,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		public void JobComplete_ImportTaggingFieldsWhenThereAreDocumentsToTag()
 		{
 			//arrange
-			TargetWorkspaceJobHistoryDTO jobHistory = new TargetWorkspaceJobHistoryDTO()
+			SourceJobDTO job = new SourceJobDTO()
 			{
 				Name = "whatever"
 			};
 
 			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId).Returns(_sourceWorkspaceDto);
-			_targetWorkspaceJobHistoryManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
+			_sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
 				_sourceWorkspaceDto.ArtifactTypeId,
 				_sourceWorkspaceDto.ArtifactId,
-				_jobHistoryArtifactId).Returns(jobHistory);
+				_jobHistoryArtifactId).Returns(job);
 
 			_instance.ScratchTableRepository.AddArtifactIdsIntoTempTable(new List<int>() { 1, 2 });
 
@@ -139,16 +139,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		public void JobComplete_DoesNotImportTaggingFieldsWhenThereIsNoDocumentToTag()
 		{
 			//arrange
-			TargetWorkspaceJobHistoryDTO jobHistory = new TargetWorkspaceJobHistoryDTO()
+			SourceJobDTO job = new SourceJobDTO()
 			{
 				Name = "whatever"
 			};
 
 			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId).Returns(_sourceWorkspaceDto);
-			_targetWorkspaceJobHistoryManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
+			_sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId,
 				_sourceWorkspaceDto.ArtifactTypeId,
 				_sourceWorkspaceDto.ArtifactId,
-				_jobHistoryArtifactId).Returns(jobHistory);
+				_jobHistoryArtifactId).Returns(job);
 
 			//act
 			_instance.JobStarted(_job);

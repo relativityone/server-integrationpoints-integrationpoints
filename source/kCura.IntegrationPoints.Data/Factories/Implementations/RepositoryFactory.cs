@@ -59,10 +59,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return repository;
 		}
 
-		public ITargetWorkspaceJobHistoryRepository GetTargetWorkspaceJobHistoryRepository(int workspaceArtifactId)
+		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)
 		{
 			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
-			ITargetWorkspaceJobHistoryRepository repository = new TargetWorkspaceJobHistoryRepository(rsapiClient);
+			ISourceJobRepository repository = new SourceJobRepository(rsapiClient);
 
 			return repository;
 		}

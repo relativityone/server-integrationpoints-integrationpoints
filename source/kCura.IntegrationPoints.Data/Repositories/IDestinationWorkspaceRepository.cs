@@ -1,5 +1,8 @@
 ﻿namespace kCura.IntegrationPoints.Data.Repositories
 {
+	/// <summary>
+	/// Responsible for handling Destination Workspace rdos and their functionality
+	/// </summary>
 	public interface IDestinationWorkspaceRepository
 	{
 		/// <summary>

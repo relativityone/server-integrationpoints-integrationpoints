@@ -8,18 +8,18 @@ using FieldType = kCura.Relativity.Client.FieldType;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class TargetWorkspaceJobHistoryRepository : ITargetWorkspaceJobHistoryRepository
+	public class SourceJobRepository : ISourceJobRepository
 	{
 		private readonly IRSAPIClient _rsapiClient;
 
-		public TargetWorkspaceJobHistoryRepository(IRSAPIClient rsapiClient)
+		public SourceJobRepository(IRSAPIClient rsapiClient)
 		{
 			_rsapiClient = rsapiClient;
 		}
 
 		public int CreateObjectType(int sourceWorkspaceArtifactTypeId)
 		{
-			var objectType = new ObjectType(TargetWorkspaceJobHistoryDTO.ObjectTypeGuid)
+			var objectType = new ObjectType(SourceJobDTO.ObjectTypeGuid)
 			{
 				Name = Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME,
 				ParentArtifactTypeID = sourceWorkspaceArtifactTypeId,
@@ -41,21 +41,20 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return resultSet.Results.First().Artifact.ArtifactID;
 		}
 
-		public int Create(int jobHistoryArtifactTypeId,
-			TargetWorkspaceJobHistoryDTO targetWorkspaceJobHistoryDto)
+		public int Create(int sourceJobArtifactTypeId, SourceJobDTO sourceJobDto)
 		{
 			var fields = new List<FieldValue>()
 			{
-				new FieldValue(Contracts.Constants.JOBHISTORY_NAME_FIELD_NAME, targetWorkspaceJobHistoryDto.Name),
-				new FieldValue(Contracts.Constants.JOBHISTORY_JOBHISTORYID_FIELD_NAME, targetWorkspaceJobHistoryDto.JobHistoryArtifactId),
-				new FieldValue(Contracts.Constants.JOBHISTORY_JOBHISTORYNAME_FIELD_NAME, targetWorkspaceJobHistoryDto.JobHistoryName)
+				new FieldValue(Contracts.Constants.JOBHISTORY_NAME_FIELD_NAME, sourceJobDto.Name),
+				new FieldValue(Contracts.Constants.JOBHISTORY_JOBHISTORYID_FIELD_NAME, sourceJobDto.JobHistoryArtifactId),
+				new FieldValue(Contracts.Constants.JOBHISTORY_JOBHISTORYNAME_FIELD_NAME, sourceJobDto.JobHistoryName)
 			};
 
-			var parentArtifact = new kCura.Relativity.Client.DTOs.Artifact(targetWorkspaceJobHistoryDto.SourceWorkspaceArtifactId);
+			var parentArtifact = new kCura.Relativity.Client.DTOs.Artifact(sourceJobDto.SourceWorkspaceArtifactId);
 			var rdo = new RDO()
 			{
 				ParentArtifact = parentArtifact,
-				ArtifactTypeID = jobHistoryArtifactTypeId,
+				ArtifactTypeID = sourceJobArtifactTypeId,
 				Fields = fields
 			};
 
@@ -80,16 +79,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public IDictionary<Guid, int> CreateObjectTypeFields(int jobHistoryArtifactTypeId, IEnumerable<Guid> fieldGuids)
+		public IDictionary<Guid, int> CreateObjectTypeFields(int sourceJobArtifactTypeId, IEnumerable<Guid> fieldGuids)
 		{
-			var objectType = new ObjectType() { DescriptorArtifactTypeID = jobHistoryArtifactTypeId };
+			var objectType = new ObjectType() { DescriptorArtifactTypeID = sourceJobArtifactTypeId };
 
 			var jobHistoryFields = new List<kCura.Relativity.Client.DTOs.Field>()
 			{
 				new kCura.Relativity.Client.DTOs.Field()
 				{
 					Name = Contracts.Constants.JOBHISTORY_JOBHISTORYID_FIELD_NAME,
-					Guids = new List<Guid>() { TargetWorkspaceJobHistoryDTO.Fields.JobHistoryIdFieldGuid },
+					Guids = new List<Guid>() { SourceJobDTO.Fields.JobHistoryIdFieldGuid },
 					FieldTypeID = kCura.Relativity.Client.FieldType.WholeNumber,
 					ObjectType = objectType,
 					IsRequired = true,
@@ -104,7 +103,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				new kCura.Relativity.Client.DTOs.Field()
 				{
 					Name = Contracts.Constants.JOBHISTORY_JOBHISTORYNAME_FIELD_NAME,
-					Guids = new List<Guid>() { TargetWorkspaceJobHistoryDTO.Fields.JobHistoryNameFieldGuid },
+					Guids = new List<Guid>() { SourceJobDTO.Fields.JobHistoryNameFieldGuid },
 					FieldTypeID = kCura.Relativity.Client.FieldType.FixedLengthText,
 					ObjectType = objectType,
 					IsRequired = true,
@@ -147,10 +146,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					switch (x.Artifact.Name)
 					{
 						case Contracts.Constants.JOBHISTORY_JOBHISTORYID_FIELD_NAME:
-							return TargetWorkspaceJobHistoryDTO.Fields.JobHistoryIdFieldGuid;
+							return SourceJobDTO.Fields.JobHistoryIdFieldGuid;
 
 						case Contracts.Constants.JOBHISTORY_JOBHISTORYNAME_FIELD_NAME:
-							return TargetWorkspaceJobHistoryDTO.Fields.JobHistoryNameFieldGuid;
+							return SourceJobDTO.Fields.JobHistoryNameFieldGuid;
 
 						default:
 							throw new Exception("Unexpected fields returned");
@@ -161,10 +160,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return guidToIdDictionary;
 		}
 
-		public int CreateJobHistoryFieldOnDocument(int jobHistoryArtifactTypeId)
+		public int CreateSourceJobFieldOnDocument(int sourceJobArtifactTypeId)
 		{
 			var documentObjectType = new ObjectType() { DescriptorArtifactTypeID = 10 };
-			var jobHistoryObjectType = new ObjectType() { DescriptorArtifactTypeID = jobHistoryArtifactTypeId };
+			var jobHistoryObjectType = new ObjectType() { DescriptorArtifactTypeID = sourceJobArtifactTypeId };
 			var fields = new List<kCura.Relativity.Client.DTOs.Field>()
 			{
 				new kCura.Relativity.Client.DTOs.Field()

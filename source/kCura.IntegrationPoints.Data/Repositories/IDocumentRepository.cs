@@ -4,6 +4,9 @@ using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
+	/// <summary>
+	/// Responsible for handling Documents
+	/// </summary>
 	public interface IDocumentRepository
 	{
 		int WorkspaceArtifactId { get; set; }
