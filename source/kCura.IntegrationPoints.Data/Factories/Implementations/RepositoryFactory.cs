@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
 			BaseServiceContext baseServiceContext = this.GetBaseServiceContextForWorkspace(workspaceArtifactId);
 			IObjectQueryManager objectQueryManager = _helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser);
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(objectQueryManager);
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(objectQueryManager, workspaceArtifactId, (int)ArtifactType.Field);
 
 			IFieldRepository fieldRepository = new FieldRepository(objectQueryManagerAdaptor, baseServiceContext, rsapiClient);
 
