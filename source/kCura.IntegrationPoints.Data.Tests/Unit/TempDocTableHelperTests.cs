@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -43,14 +41,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			string artifactIdList = "(" + String.Join("),(", artifactIds.Select(x => x.ToString())) + ")";
 
 			string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
-											BEGIN 
+											BEGIN
 											CREATE TABLE [EDDSRESOURCE]..[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
 											END
 									INSERT INTO [EDDSRESOURCE]..[{0}] ([ArtifactID]) VALUES {1}", tableNameDestWorkspace + "_" + _tableSuffix, artifactIdList);
 
 			//Act
 			_instance.AddArtifactIdsIntoTempTable(artifactIds, Constants.TEMPORARY_DOC_TABLE_DEST_WS);
-			
+
 			//Assert
 			_caseContext.Received().ExecuteNonQuerySQLStatement(Arg.Is(sql));
 		}
@@ -66,7 +64,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			string artifactIdList = "(" + String.Join("),(", artifactIds.Select(x => x.ToString())) + ")";
 
 			string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
-											BEGIN 
+											BEGIN
 											CREATE TABLE [EDDSRESOURCE]..[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
 											END
 									INSERT INTO [EDDSRESOURCE]..[{0}] ([ArtifactID]) VALUES {1}", tableNameJobHistory + "_" + _tableSuffix, artifactIdList);
@@ -98,7 +96,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			string docIdentifier = "REL-001";
 			int docArtifactId = 12345;
 
-			string sqlDelete = String.Format(@"DELETE FROM EDDSRESOURCE..[{0}] WHERE [ArtifactID] = {1}", tableNameDestWorkspace + "_" +_tableSuffix, docArtifactId);
+			string sqlDelete = String.Format(@"DELETE FROM EDDSRESOURCE..[{0}] WHERE [ArtifactID] = {1}", tableNameDestWorkspace + "_" + _tableSuffix, docArtifactId);
 			string sqlGetId = String.Format(@"Select [ArtifactId] FROM [Document] WITH (NOLOCK) WHERE [{0}] = '{1}'", _docIdColumn, docIdentifier);
 
 			_caseContext.ExecuteSqlStatementAsScalar<int>(sqlGetId).Returns(docArtifactId);
