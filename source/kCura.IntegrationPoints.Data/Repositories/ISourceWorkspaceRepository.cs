@@ -50,18 +50,5 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// </summary>
 		/// <param name="sourceWorkspaceDto">The Source Workspace to update</param>
 		void Update(SourceWorkspaceDTO sourceWorkspaceDto);
-
-		/// <summary>
-		/// Retrieves the tab for the Source Workspace object type
-		/// </summary>
-		/// <param name="sourceWorkspaceArtifactTypeId">The Source Workspace artifact type id</param>
-		/// <returns>The artifact id of the tab, <code>NULL</code> if it does not exist</returns>
-		int? RetrieveTabArtifactId(int sourceWorkspaceArtifactTypeId);
-
-		/// <summary>
-		/// Deletes the given tab
-		/// </summary>
-		/// <param name="tabArtifactId">The artifact id of the tab to delete</param>
-		void DeleteTab(int tabArtifactId);
 	}
 }

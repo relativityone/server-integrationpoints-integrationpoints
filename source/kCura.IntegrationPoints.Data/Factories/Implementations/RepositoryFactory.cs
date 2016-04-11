@@ -103,6 +103,14 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return fieldRepository;
 		}
 
+		public ITabRepository GetTabRepository(int workspaceArtifactId)
+		{
+			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
+			ITabRepository tabRepository = new RsapiTabRepository(rsapiClient);
+
+			return tabRepository;
+		}
+
 		private IRSAPIClient GetRsapiClientForWorkspace(int workspaceArtifactId)
 		{
 			ContextContainer contexts = this.GetContextsForWorkspace(workspaceArtifactId);

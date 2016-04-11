@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using Relativity.Data.QueryGenerator;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -46,10 +47,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				sourceWorkspaceDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceWorkspaceDTO.ObjectTypeGuid);
 
 				// Delete the tab if it exists (it should always exist since we're creating the object type one line above)
-				int? sourceWorkspaceTabId = sourceWorkspaceRepository.RetrieveTabArtifactId(sourceWorkspaceDescriptorArtifactTypeId.Value);
+				ITabRepository tabRepository = _repositoryFactory.GetTabRepository(destinationWorkspaceArtifactId);
+				int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(sourceWorkspaceDescriptorArtifactTypeId.Value, IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME);
 				if (sourceWorkspaceTabId.HasValue)
 				{
-					sourceWorkspaceRepository.DeleteTab(sourceWorkspaceTabId.Value);
+					tabRepository.Delete(sourceWorkspaceTabId.Value);
 				}
 			}
 
