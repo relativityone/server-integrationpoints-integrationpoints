@@ -14,7 +14,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private readonly IRSAPIClient _rsapiClient;
 		private readonly IFieldHelper _fieldHelper;
 
-		public RsapiSourceWorkspaceRepository(IRSAPIClient rsapiClient, IFieldHelper fieldHelper)
+		public RsapiSourceWorkspaceRepository(
+			IRSAPIClient rsapiClient, 
+			IFieldHelper fieldHelper)
 		{
 			this._rsapiClient = rsapiClient;
 			this._fieldHelper = fieldHelper;
@@ -22,15 +24,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int? RetrieveObjectTypeDescriptorArtifactTypeId()
 		{
-			var criteria = new TextCondition(ObjectTypeFieldNames.Name, TextConditionEnum.EqualTo, Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
-
-			Query<ObjectType> query = new Query<ObjectType>
-			{
-				Condition = criteria,
-				Fields = FieldValue.AllFields
-			};
-
-			QueryResultSet<ObjectType> resultSet = _rsapiClient.Repositories.ObjectType.Query(query);
+			var objectType = new ObjectType(SourceWorkspaceDTO.ObjectTypeGuid) { Fields = FieldValue.AllFields };
+			ResultSet<ObjectType> resultSet = _rsapiClient.Repositories.ObjectType.Read(new[] { objectType });
 
 			int? objectTypeArtifactId = null;
 			if (resultSet.Success && resultSet.Results.Any())
@@ -62,10 +57,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception("Unable to create new Source Workspace object type: " + resultSet.Message);
 			}
 
-			// We have to do this because the Descriptor Artifact Type Id isn't returned in the WriteResultSet :( -- biedrzycki: April 4th, 2016
-			int descriptorArtifactTypeId = this.RetrieveObjectTypeDescriptorArtifactTypeId().Value;
-
-			return descriptorArtifactTypeId;
+			return resultSet.Results.First().Artifact.ArtifactID;
 		}
 
 		public bool ObjectTypeFieldsExist(int sourceWorkspaceObjectTypeId)

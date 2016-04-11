@@ -4,7 +4,7 @@ namespace kCura.IntegrationPoints.Contracts.Models
 {
 	public class SourceWorkspaceDTO
 	{
-		private static readonly Guid _objectTypeGuid = new Guid("604B3C11-CD68-487B-929D-99106C61B562");
+		private static readonly Guid _objectTypeGuid = new Guid("7E03308C-0B58-48CB-AFA4-BB718C3F5CAC");
 		public static Guid ObjectTypeGuid { get { return _objectTypeGuid; } }
 		public int ArtifactTypeId { get; set; } 
 		public int ArtifactId { get; set; } 

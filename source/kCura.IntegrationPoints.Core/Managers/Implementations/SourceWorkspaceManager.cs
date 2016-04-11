@@ -21,13 +21,20 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetWorkspaceRepository();
 
 			// Create object type if it does not exist
-			int? sourceWorkspaceArtifactTypeId = sourceWorkspaceRepository.RetrieveObjectTypeDescriptorArtifactTypeId();
-			if (!sourceWorkspaceArtifactTypeId.HasValue)
+			int? sourceWorkspaceDescriptorArtifactTypeId = sourceWorkspaceRepository.RetrieveObjectTypeDescriptorArtifactTypeId();
+			if (!sourceWorkspaceDescriptorArtifactTypeId.HasValue)
 			{
-				sourceWorkspaceArtifactTypeId = sourceWorkspaceRepository.CreateObjectType();
+				int sourceWorkspaceArtifactTypeId = sourceWorkspaceRepository.CreateObjectType();
+
+				// Insert entry to the ArtifactGuid table for new object type
+				IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
+				artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO.ObjectTypeGuid);
+
+				// Get descriptor id
+				sourceWorkspaceDescriptorArtifactTypeId = sourceWorkspaceRepository.RetrieveObjectTypeDescriptorArtifactTypeId();
 
 				// Delete the tab if it exists (it should always exist since we're creating the object type one line above)
-				int? sourceWorkspaceTabId = sourceWorkspaceRepository.RetrieveTabArtifactId(sourceWorkspaceArtifactTypeId.Value);
+				int? sourceWorkspaceTabId = sourceWorkspaceRepository.RetrieveTabArtifactId(sourceWorkspaceDescriptorArtifactTypeId.Value);
 				if (sourceWorkspaceTabId.HasValue)
 				{
 					sourceWorkspaceRepository.DeleteTab(sourceWorkspaceTabId.Value);
@@ -35,20 +42,20 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 
 			// Create Source Workspace fields if they do not exist
-			if (!sourceWorkspaceRepository.ObjectTypeFieldsExist(sourceWorkspaceArtifactTypeId.Value))
+			if (!sourceWorkspaceRepository.ObjectTypeFieldsExist(sourceWorkspaceDescriptorArtifactTypeId.Value))
 			{
-				sourceWorkspaceRepository.CreateObjectTypeFields(sourceWorkspaceArtifactTypeId.Value);	
+				sourceWorkspaceRepository.CreateObjectTypeFields(sourceWorkspaceDescriptorArtifactTypeId.Value);	
 			}
 
 			// Create fields on document if they do not exist
-			if (!sourceWorkspaceRepository.SourceWorkspaceFieldExistsOnDocument(sourceWorkspaceArtifactTypeId.Value))
+			if (!sourceWorkspaceRepository.SourceWorkspaceFieldExistsOnDocument(sourceWorkspaceDescriptorArtifactTypeId.Value))
 			{
-				sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(sourceWorkspaceArtifactTypeId.Value);
+				sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(sourceWorkspaceDescriptorArtifactTypeId.Value);
 			}
 
 			// Get or create instance of Source Workspace object
 			WorkspaceDTO workspaceDto = workspaceRepository.Retrieve(sourceWorkspaceArtifactId);
-			SourceWorkspaceDTO sourceWorkspaceDto = sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(sourceWorkspaceArtifactId, sourceWorkspaceArtifactTypeId.Value);
+			SourceWorkspaceDTO sourceWorkspaceDto = sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(sourceWorkspaceArtifactId, sourceWorkspaceDescriptorArtifactTypeId.Value);
 			if (sourceWorkspaceDto == null)
 			{
 				sourceWorkspaceDto = new SourceWorkspaceDTO()
@@ -58,12 +65,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					SourceCaseArtifactId = sourceWorkspaceArtifactId,
 					SourceCaseName = workspaceDto.Name
 				};
-				int artifactId = sourceWorkspaceRepository.Create(sourceWorkspaceArtifactTypeId.Value, sourceWorkspaceDto);
+				int artifactId = sourceWorkspaceRepository.Create(sourceWorkspaceDescriptorArtifactTypeId.Value, sourceWorkspaceDto);
 
 				sourceWorkspaceDto.ArtifactId = artifactId;
 			}
 
-			sourceWorkspaceDto.ArtifactTypeId = sourceWorkspaceArtifactTypeId.Value;
+			sourceWorkspaceDto.ArtifactTypeId = sourceWorkspaceDescriptorArtifactTypeId.Value;
 
 			// Check to see if instance should be updated
 			if (sourceWorkspaceDto.SourceCaseName != workspaceDto.Name)
