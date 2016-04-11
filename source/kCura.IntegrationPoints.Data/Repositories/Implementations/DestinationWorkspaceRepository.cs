@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Security.Claims;
+using kCura.IntegrationPoints.Data.Commands.MassEdit;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.Core;
 using Relativity.Core.Authentication;
-using Relativity.Core.Process;
 using Relativity.Data;
-using ArtifactType = Relativity.Query.ArtifactType;
 using Field = Relativity.Core.DTO.Field;
+
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class DestinationWorkspaceRepository : IDestinationWorkspaceRepository
+	public class DestinationWorkspaceRepository : RelativityMassEditBase, IDestinationWorkspaceRepository
 	{
 		private readonly IRSAPIClient _client;
 		private readonly int _destinationWorkspaceId;
 		private readonly IWorkspaceRepository _workspaceRepository;
-		private static int BATCH_SIZE = 1000;
 		private const string _DESTINATION_WORKSPACE_JOB_HISTORY_LINK = "20A24C4E-55E8-4FC2-ABBE-F75C07FAD91B";
 
 		public DestinationWorkspaceRepository(IRSAPIClient client, IWorkspaceRepository workspaceRepository, int destinationWorkspaceId)
@@ -27,17 +25,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_workspaceRepository = workspaceRepository;
 		}
 
-		public int QueryDestinationWorkspaceRdoInstance()
+		public int? QueryDestinationWorkspaceRdoInstance()
 		{
-			 Query<RDO> query = new Query<RDO>();
-			 query.ArtifactTypeGuid = new Guid(DestinationWorkspaceObject.OBJECT_TYPE_GUID);
-			 query.Condition = new ObjectCondition(new Guid(DestinationWorkspaceObject.DESTINATION_WORKSPACE_ARTIFACT_ID), ObjectConditionEnum.EqualTo, _destinationWorkspaceId);
+			Query<RDO> query = new Query<RDO>();
+			query.ArtifactTypeGuid = new Guid(DestinationWorkspaceObject.OBJECT_TYPE_GUID);
+			query.Condition = new ObjectCondition(new Guid(DestinationWorkspaceObject.DESTINATION_WORKSPACE_ARTIFACT_ID), ObjectConditionEnum.EqualTo, _destinationWorkspaceId);
 
 			try
 			{
 				ResultSet<RDO> results = _client.Repositories.RDO.Query(query);
 
-				if (results.Results.Count > 0 && results.Success)
+				if (results.Success && results.Results.Count > 0)
 				{
 					return results.Results[0].Artifact.ArtifactID;
 				}
@@ -50,10 +48,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public int CreateDestinationWorkspaceRdoInstance()
+		public int? CreateDestinationWorkspaceRdoInstance()
 		{
 			string destinationWorkspaceName = _workspaceRepository.Retrieve(_destinationWorkspaceId).Name;
-			string instanceName = String.Format("{0} - {1}", destinationWorkspaceName,_destinationWorkspaceId);
+			string instanceName = $"{destinationWorkspaceName} - {_destinationWorkspaceId}";
 
 			RDO destinationWorkspaceObject = new RDO();
 
@@ -72,22 +70,21 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception(RSAPIErrors.CREATE_DEST_WORKSPACE_ERROR, e);
 			}
 
-			if (results.Results.Count > 0 && results.Success)
+			if (results.Success && results.Results.Count > 0)
 			{
 				return results.Results[0].Artifact.ArtifactID;
-				
 			}
 
 			throw new Exception(RSAPIErrors.CREATE_DEST_WORKSPACE_ERROR);
 		}
 
-		public void LinkDestinationWorkspaceToJobHistory(int destinationWorkspaceInstanceId, int jobHistoryInstanceId)
+		public void LinkDestinationWorkspaceToJobHistory(int? destinationWorkspaceInstanceId, int jobHistoryInstanceId)
 		{
 			RDO jobHistoryObject = new RDO(jobHistoryInstanceId);
 			jobHistoryObject.ArtifactTypeGuids.Add(new Guid(ObjectTypeGuids.JobHistory));
-		
+
 			FieldValueList<Relativity.Client.DTOs.Artifact> objectToLink = new FieldValueList<Relativity.Client.DTOs.Artifact>();
-			objectToLink.Add(new Relativity.Client.DTOs.Artifact(destinationWorkspaceInstanceId));
+			objectToLink.Add(new Relativity.Client.DTOs.Artifact(destinationWorkspaceInstanceId ?? default(int)));
 			jobHistoryObject.Fields.Add(new FieldValue(new Guid(_DESTINATION_WORKSPACE_JOB_HISTORY_LINK), objectToLink));
 
 			WriteResultSet<RDO> results;
@@ -106,11 +103,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public void TagDocsWithDestinationWorkspace(int numberOfDocs, int destinationWorkspaceInstanceId, string tableSuffix, int sourceWorkspaceId)
+		public void TagDocsWithDestinationWorkspace(int numberOfDocs, int? destinationWorkspaceInstanceId, string tableSuffix, int sourceWorkspaceId)
 		{
-			BaseServiceContext baseService  = ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(sourceWorkspaceId);
-			
-			Guid[] guids = {new Guid(DocumentMultiObjectFields.DESTINATION_WORKSPACE_FIELD)};
+			if (numberOfDocs <= 0)
+			{
+				return;
+			}
+
+			BaseServiceContext baseService = ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(sourceWorkspaceId);
+
+			Guid[] guids = { new Guid(DocumentMultiObjectFields.DESTINATION_WORKSPACE_FIELD) };
 			DataRowCollection fieldRows;
 			try
 			{
@@ -118,49 +120,25 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("Unable to query for multi-object field on Document associated with DestinationWorkspace object.", ex);
+				throw new Exception(MassEditErrors.DEST_WORKSPACE_MO_QUERY_ERROR, ex);
 			}
-			
+
 			if (fieldRows.Count == 0)
 			{
-				throw new Exception("Multi-object field on Document associated with Destination Workspace object does not exist.");
+				throw new Exception(MassEditErrors.DEST_WORKSPACE_MO_EXISTENCE_ERROR);
 			}
-			
+
 			Field multiObjectField = new Field(baseService, fieldRows[0]);
-			multiObjectField.Value = GetMultiObjectListUpdate(destinationWorkspaceInstanceId);
-			var document = new ArtifactType(10, "Document");
+			string fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_DEST_WS}_{tableSuffix}";
 
-			MassProcessHelper.MassProcessInitArgs initArgs = new MassProcessHelper.MassProcessInitArgs(Constants.TEMPORARY_DOC_TABLE_DEST_WS + "_" + tableSuffix , numberOfDocs, false);
-			SqlMassProcessBatch batch = new SqlMassProcessBatch(baseService, initArgs, BATCH_SIZE);
-	
-			Field[] fields =
-			{
-				multiObjectField
-			};
-
-			Edit massEdit = new Edit(baseService, batch, fields, BATCH_SIZE, String.Empty, true, true, false, document);
 			try
 			{
-				massEdit.Execute(true);
+				base.TagDocumentsWithRdo(baseService, multiObjectField, numberOfDocs, destinationWorkspaceInstanceId.Value, fullTableName);
 			}
 			catch (Exception e)
 			{
-				throw new Exception("Tagging Documents with DestinationWorkspace object failed - Mass Edit failure", e);
+				throw new Exception(MassEditErrors.DEST_WORKSPACE_MASS_EDIT_FAILURE, e);
 			}
-		}
-
-		internal MultiObjectListUpdate GetMultiObjectListUpdate(int destinationWorkspaceInstanceId)
-		{
-			var objectstoUpdate = new MultiObjectListUpdate();
-			var instances = new List<int>()
-			{
-				destinationWorkspaceInstanceId
-			};
-
-			objectstoUpdate.tristate = true; 
-			objectstoUpdate.Selected = instances;
-
-			return objectstoUpdate;
 		}
 	}
 }

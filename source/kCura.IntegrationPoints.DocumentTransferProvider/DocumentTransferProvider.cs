@@ -5,6 +5,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Managers;
@@ -65,10 +66,18 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 					Shared.Constants.Fields.FieldType,
 					Shared.Constants.Fields.FieldTypeId,
 					Shared.Constants.Fields.IsIdentifier,
-					Shared.Constants.Fields.FieldTypeName
+					Shared.Constants.Fields.FieldTypeName,
 				})).ConfigureAwait(false).GetAwaiter().GetResult();
 
-			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportAPI().GetWorkspaceFields(workspaceId, rdoTypeId).Select(x => x.ArtifactID));
+			HashSet<string> ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+			{
+				Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+				Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME,
+				//JobHistoryFields.DestinationWorkspace,
+				//IntegrationPointFields.JobHistory
+			};
+
+			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportAPI().GetWorkspaceFields(workspaceId, rdoTypeId).Where(f => !ignoreFields.Contains(f.Name)).Select(x => x.ArtifactID));
 
 			// Contains is 0(1) https://msdn.microsoft.com/en-us/library/kw5aaea4.aspx
 			return fieldArtifacts.Where(x => mappableArtifactIds.Contains(x.ArtifactId)).ToArray();

@@ -18,10 +18,13 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		private readonly IHelper _helper;
 		private IDictionary<int, ContextContainer> ContextCache { get; }
 
+		private readonly BaseServiceContext _baseContext;
+
 		public RepositoryFactory(IHelper _helper)
 		{
 			this._helper = _helper;
 			ContextCache = new Dictionary<int, ContextContainer>();
+
 		}
 
 		public ISourceWorkspaceRepository GetSourceWorkspaceRepository(int workspaceArtifactId)

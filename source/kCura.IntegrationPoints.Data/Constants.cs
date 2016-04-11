@@ -20,11 +20,12 @@
 		public static string Monthly = "D8E62A6F-7B0D-4F38-881F-1699EF41B4E0";
 	}
 
-	public static class Constants
+	public class Constants
 	{
 		public const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
 		public const string TEMPORARY_DOC_TABLE_DEST_WS = "TempRIPDocTable_DW";
 		public const string TEMPORARY_DOC_TABLE_JOB_HIST = "TempRIPDocTable_JH";
+		public const string TEMPORARY_DOC_TABLE_SOURCEWORKSPACE = "TempRIPDocTable_SourceWorkspace";
 	}
 
 	public static class DestinationWorkspaceObject
@@ -38,7 +39,7 @@
 
 	public static class DocumentMultiObjectFields
 	{
-		public const string DESTINATION_WORKSPACE_FIELD = "	8980C2FA-0D33-4686-9A97-EA9D6F0B4196";
+		public const string DESTINATION_WORKSPACE_FIELD = "8980C2FA-0D33-4686-9A97-EA9D6F0B4196";
 		public const string JOB_HISTORY_FIELD = "97BC12FA-509B-4C75-8413-6889387D8EF6";
 	}
 
@@ -50,9 +51,13 @@
 		public const string LINK_OBJECT_INSTANCE_ERROR = "Unable to link Destination Workspace object to Job History object";
 	}
 
-	public enum ScratchTables
+	public static class MassEditErrors
 	{
-		DestinationWorkspace = 0,
-		JobHistory = 1
+		public const string DEST_WORKSPACE_MO_QUERY_ERROR = "Unable to query for multi-object field on Document associated with DestinationWorkspace object.";
+		public const string DEST_WORKSPACE_MO_EXISTENCE_ERROR = "Multi-object field on Document associated with Destination Workspace object does not exist.";
+		public const string DEST_WORKSPACE_MASS_EDIT_FAILURE = "Tagging Documents with DestinationWorkspace object failed - Mass Edit failure.";
+		public const string JOB_HISTORY_MO_QUERY_ERROR = "Unable to query for multi-object field on Document associated with JobHistory object.";
+		public const string JOB_HISTORY_MO_EXISTENCE_ERROR = "Multi-object field on Document associated with JobHistory object does not exist.";
+		public const string JOB_HISTORY_MASS_EDIT_FAILURE = "Tagging Documents with JobHistory object failed - Mass Edit failure.";
 	}
 }

@@ -12,6 +12,8 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		public int SourceCaseArtifactId { get; set; }
 		public string SourceCaseName { get; set; }
 
+		public int SourceWorkspaceFieldArtifactId { get; set; }
+		
 		public static class Fields
 		{
 			private static readonly Guid _caseIdFieldNameGuid = new Guid("90c3472c-3592-4c5a-af01-51e23e7f89a5");

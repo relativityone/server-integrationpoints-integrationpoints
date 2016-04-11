@@ -75,7 +75,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				int rdoArtifactId = _rsapiClient.Repositories.RDO.CreateSingle(rdo);
+				int rdoArtifactId = 0;
+				ResultSet<RDO> existingRdo = _rsapiClient.Repositories.RDO.Read(rdo);
+				if (!existingRdo.Success || existingRdo.Results.Count == 0)
+				{
+					rdoArtifactId = _rsapiClient.Repositories.RDO.CreateSingle(rdo);
+				}
+				else
+				{
+					rdoArtifactId = existingRdo.Results[0].Artifact.ArtifactID;
+				}
 
 				return rdoArtifactId;
 			}

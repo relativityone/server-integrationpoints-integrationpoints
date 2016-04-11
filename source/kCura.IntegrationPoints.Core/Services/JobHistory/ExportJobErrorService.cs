@@ -1,15 +1,15 @@
 ﻿using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Services.JobHistory
 {
 	public class ExportJobErrorService
 	{
-		private readonly ITempDocTableHelper _docTableHelper;
+		private readonly IScratchTableRepository[] _scratchTable;
 
-		public ExportJobErrorService(ITempDocTableHelper docTableHelper)
+		public ExportJobErrorService(IScratchTableRepository[] scratchTable)
 		{
-			_docTableHelper = docTableHelper;
+			_scratchTable = scratchTable;
 		}
 
 		public void SubscribeToBatchReporterEvents(object batchReporter)
@@ -22,7 +22,10 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		private void OnRowError(string documentIdentifier, string errorMessage)
 		{
-			_docTableHelper.RemoveErrorDocument(documentIdentifier);
+			foreach (IScratchTableRepository table in _scratchTable)
+			{
+				table.RemoveErrorDocument(documentIdentifier);
+			}
 		}
 	}
 }
