@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public class DocumentTransferDataReader : RelativityReaderBase
 	{
-		public const int FETCH_ARTIFACTDTOS_BATCH_SIZE = 50;
+		public const int FETCH_ARTIFACTDTOS_BATCH_SIZE = 200;
 
 		private static readonly string _nativeDocumentArtifactIdColumn = "DocumentArtifactID";
 		private static readonly string _nativeFileNameColumn = "Filename";

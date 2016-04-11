@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -34,6 +33,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public void RemoveErrorDocument(string docIdentifier)
 		{
+			_count -= 1;
 			_tempHelper.RemoveErrorDocument(_name, docIdentifier);
 		}
 

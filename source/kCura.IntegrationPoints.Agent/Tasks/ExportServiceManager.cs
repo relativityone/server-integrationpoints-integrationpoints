@@ -47,6 +47,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private SourceConfiguration _sourceConfiguration;
 		private ITempDocTableHelper _docTableHelper;
 		private List<IConsumeScratchTableBatchStatus> _parallizableBatch;
+		private IConsumeScratchTableBatchStatus _destinationFieldsTagger;
+		private IConsumeScratchTableBatchStatus _sourceDestinationWorkspaceTagger;
+		private JobHistoryManager _sourceJobHistoryTagger;
 
 		public ExportServiceManager(
 			ICaseServiceContext caseServiceContext,
@@ -92,8 +95,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				string destinationConfig = IntegrationPointDto.DestinationConfiguration;
 				IDataSynchronizer synchronizer = GetRdoDestinationProvider(destinationConfig);
 
-				IScratchTableRepository[] scratchTableRepositories = _parallizableBatch.Select(batch => batch.ScratchTableRepository).ToArray();
-
+				IScratchTableRepository[] scratchTableRepositories = new[]
+				{
+					_destinationFieldsTagger.ScratchTableRepository,
+					_sourceDestinationWorkspaceTagger.ScratchTableRepository
+				};
 				_exportJobErrorService = new ExportJobErrorService(scratchTableRepositories);
 				SetupSubscriptions(synchronizer, job);
 
@@ -104,7 +110,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				if (exporter.TotalRecordsFound > 0)
 				{
-					IDataReader dataReader = exporter.GetDataReader(scratchTableRepositories);
+
+					IScratchTableRepository[] scratchTables = new[]
+					{
+						_destinationFieldsTagger.ScratchTableRepository,
+						_sourceJobHistoryTagger.ScratchTableRepository,
+						_sourceDestinationWorkspaceTagger.ScratchTableRepository
+					};
+					IDataReader dataReader = exporter.GetDataReader(scratchTables);
 					synchronizer.SyncData(dataReader, MappedFields, destinationConfig);
 				}
 			}
@@ -167,15 +180,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
 				_documentRepository, _synchronizerFactory, MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, IntegrationPointDto.DestinationConfiguration, JobHistoryDto.ArtifactId);
 
-			IConsumeScratchTableBatchStatus tagger = taggerFactory.BuildDocumentsTagger();
-			IConsumeScratchTableBatchStatus sourceDestinationWorkspaceTagger = new DestinationWorkspaceManager(_tempDocumentTableFactory, _repositoryFactory, _sourceConfiguration, _identifier.ToString(), JobHistoryDto.ArtifactId);
-			IConsumeScratchTableBatchStatus sourceJobHistoryTagger = new JobHistoryManager(_tempDocumentTableFactory, _repositoryFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, _identifier.ToString());
+			_destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
+			_sourceDestinationWorkspaceTagger = new DestinationWorkspaceManager(_tempDocumentTableFactory, _repositoryFactory, _sourceConfiguration, _identifier.ToString(), JobHistoryDto.ArtifactId);
+			_sourceJobHistoryTagger = new JobHistoryManager(_tempDocumentTableFactory, _repositoryFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, _identifier.ToString());
 
 			_parallizableBatch = new List<IConsumeScratchTableBatchStatus>()
 			{
-				tagger,
-				sourceDestinationWorkspaceTagger,
-				sourceJobHistoryTagger
+				_destinationFieldsTagger,
+				_sourceDestinationWorkspaceTagger,
+				_sourceJobHistoryTagger
 			};
 
 			var exceptions = new ConcurrentQueue<Exception>();

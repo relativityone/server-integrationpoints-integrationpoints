@@ -72,7 +72,10 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 				TempTableReader reader = new TempTableReader(_documentRepository, ScratchTableRepository, columns, identifierFieldId);
 				FieldMap[] fieldsToPush = { identifier };
-				_synchronizer.SyncData(reader, fieldsToPush, _importConfig);
+				if (ScratchTableRepository.Count > 0)
+				{
+					_synchronizer.SyncData(reader, fieldsToPush, _importConfig);
+				}
 			}
 			finally
 			{
