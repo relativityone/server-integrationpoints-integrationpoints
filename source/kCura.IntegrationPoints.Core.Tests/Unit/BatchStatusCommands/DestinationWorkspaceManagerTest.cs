@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
+﻿using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -16,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		private ITempDocTableHelper _tempDocHelper;
 		private ITempDocumentTableFactory _docTableFactory;
 		private IRepositoryFactory _repositoryFactory;
-		private IBatchStatus _instance;
+		private IConsumeScratchTableBatchStatus _instance;
 		private IDestinationWorkspaceRepository _destinationWorkspaceRepository;
 		private readonly int _jobHistoryRdoId = 12345;
 		private readonly string _tableSuffix = "12-25-96";
@@ -41,6 +40,41 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 			_instance = new DestinationWorkspaceManager(_docTableFactory, _repositoryFactory, _sourceConfig,
 				_tableSuffix, _jobHistoryRdoId);
+		}
+
+		[Test]
+		public void JobStart_CreateWorkspaceRdoAndLinkToJobHistory()
+		{
+
+			// Arrange
+			int destinationRdo = 789;
+			_destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance().Returns(-1);
+			_destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance().Returns(destinationRdo);
+
+			// Act
+			_instance.JobStarted(_job);
+
+			// Assert
+			_destinationWorkspaceRepository.Received().CreateDestinationWorkspaceRdoInstance();
+			_destinationWorkspaceRepository.Received().LinkDestinationWorkspaceToJobHistory(destinationRdo, _jobHistoryRdoId);
+		}
+
+		[Test]
+		public void JobStart_DoesntCreateWorkspaceRdoWhenItAlreadyExists()
+		{
+
+			// Arrange
+			int destinationRdo = 789;
+			int someOtherRdo = 879;
+			_destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance().Returns(destinationRdo);
+			_destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance().Returns(someOtherRdo);
+
+			// Act
+			_instance.JobStarted(_job);
+
+			// Assert
+			_destinationWorkspaceRepository.DidNotReceive().CreateDestinationWorkspaceRdoInstance();
+			_destinationWorkspaceRepository.Received().LinkDestinationWorkspaceToJobHistory(destinationRdo, _jobHistoryRdoId);
 		}
 
 		[Test]
@@ -69,6 +103,32 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			_destinationWorkspaceRepository.Received().TagDocsWithDestinationWorkspace(Arg.Any<int>(), null, _tableSuffix, _sourceConfig.SourceWorkspaceArtifactId);
 
 			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS));
+		}
+
+		[Test]
+		public void GetStratchTableRepo_AlwaysGivesTheSameObject()
+		{
+			//Act
+			IScratchTableRepository repository = _instance.ScratchTableRepository;
+			IScratchTableRepository repository2 = _instance.ScratchTableRepository;
+
+			//Assert
+			Assert.AreSame(repository, repository2);
+		}
+
+		[Test]
+		public void GetStratchTableRepo_UsingTheCorrectPrefix()
+		{
+			//Arrange
+			string expected = Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS;
+			_tempDocHelper.GetTempTableName(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS).Returns(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS);
+
+			//Act
+			IScratchTableRepository repository = _instance.ScratchTableRepository;
+			string name = repository.GetTempTableName();
+
+			//Assert
+			Assert.AreSame(expected, name);
 		}
 	}
 }
