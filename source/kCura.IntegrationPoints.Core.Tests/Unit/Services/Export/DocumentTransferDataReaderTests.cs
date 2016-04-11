@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		private const string _FIELD_NAME = "DispName";
 		private const int _FIELD_IDENTIFIER = 123;
 		private const string _CONTROL_NUMBER = "WEB000123";
-		private const int _FETCH_ARTIFACTDTOS_BATCH_SIZE = 50;
+		private const int _FETCH_ARTIFACTDTOS_BATCH_SIZE = 200;
 		private const int _SOURCE_WORKSPACE_ARTIFACTID = 93020;
 		private const int _TARGET_WORKSPACE_ARTIFACTID = 930233;
 		private const int _JOB_HISTORY_ARTIFACTID = 94903;
@@ -79,8 +79,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			_context = Substitute.For<ICoreContext>();
 			_exportService = Substitute.For<IExporterService>();
-			var scract1 = Substitute.For<IScratchTableRepository>();
-			_scracRepositories = new[] {scract1};
+			var scracthTable = Substitute.For<IScratchTableRepository>();
+			_scracRepositories = new[] { scracthTable };
 			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
 			_targetWorkspaceJobHistoryManager = Substitute.For<ITargetWorkspaceJobHistoryManager>();
 
