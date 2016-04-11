@@ -130,13 +130,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			Field multiObjectField = new Field(baseService, fieldRows[0]);
-			var document = new ArtifactType(global::Relativity.ArtifactType.Document);
-			string fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_DEST_WS}_{tableSuffix}";
-			MassProcessHelper.MassProcessInitArgs initArgs = new MassProcessHelper.MassProcessInitArgs(fullTableName, numberOfDocs, false);
-
 			try
 			{
-				base.TagDocumentsWithRdo(baseService, multiObjectField, numberOfDocs, destinationWorkspaceInstanceId, Constants.TEMPORARY_DOC_TABLE_DEST_WS + "_" + tableSuffix);
+				base.TagDocumentsWithRdo(baseService, multiObjectField, numberOfDocs, destinationWorkspaceInstanceId.Value, Constants.TEMPORARY_DOC_TABLE_DEST_WS + "_" + tableSuffix);
 			}
 			catch (Exception e)
 			{

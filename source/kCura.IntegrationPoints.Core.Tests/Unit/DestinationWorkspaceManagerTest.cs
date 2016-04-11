@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
-using kCura.IntegrationPoints.Core.Managers.Implementations;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		private IBatchStatus _instance;
 		private IDestinationWorkspaceRepository _destinationWorkspaceRepository;
 		private readonly int _jobHistoryRdoId = 12345;
-		private readonly string _tableSuffix= "12-25-96";
+		private readonly string _tableSuffix = "12-25-96";
 		private SourceConfiguration _sourceConfig;
 		private readonly Job _job;
 
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 			_tempDocHelper.GetDocumentIdsFromTable(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS).Returns(documentIds);
 			_destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance().Returns(destinationWorkspaceInstanceId);
-			
+
 			//Act
 			_instance.JobComplete(_job);
 

@@ -55,6 +55,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IExporterFactory exporterFactory,
 			ISourceWorkspaceManager sourceWorkspaceManager,
 			ITargetWorkspaceJobHistoryManager targetWorkspaceJobHistoryManager,
+			ITempDocumentTableFactory tempDocumentTableFactory,
 			IRepositoryFactory repositoryFactory,
 			IEnumerable<IBatchStatus> statuses,
 			IDocumentRepository documentRepository,
@@ -151,8 +152,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			SourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
 
-			var tempTableFactory = new TempDocumentFactory();
-			_docTableHelper = tempTableFactory.GetDocTableHelper(_helper, this._identifier.ToString(), _sourceConfiguration.SourceWorkspaceArtifactId);
+			_docTableHelper = _tempDocumentTableFactory.GetDocTableHelper(this._identifier.ToString(), _sourceConfiguration.SourceWorkspaceArtifactId);
 
 			this.JobHistoryDto = _jobHistoryService.GetRdo(this._identifier);
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
@@ -171,8 +171,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_documentRepository, _synchronizerFactory, MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, IntegrationPointDto.DestinationConfiguration, JobHistoryDto.ArtifactId);
 
 			IConsumeScratchTableBatchStatus tagger = taggerFactory.BuildDocumentsTagger();
-			IConsumeScratchTableBatchStatus sourceDestinationWorkspaceTagger = new DestinationWorkspaceManager(_helper, _repositoryFactory, _sourceConfiguration, _identifier.ToString(), JobHistoryDto.ArtifactId);
-			IConsumeScratchTableBatchStatus sourceJobHistoryTagger = new JobHistoryManager(_helper, _repositoryFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, _identifier.ToString());
+			IConsumeScratchTableBatchStatus sourceDestinationWorkspaceTagger = new DestinationWorkspaceManager(_tempDocumentTableFactory, _repositoryFactory, _sourceConfiguration, _identifier.ToString(), JobHistoryDto.ArtifactId);
+			IConsumeScratchTableBatchStatus sourceJobHistoryTagger = new JobHistoryManager(_tempDocumentTableFactory, _repositoryFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, _identifier.ToString());
 
 			_parallizableBatch = new List<IConsumeScratchTableBatchStatus>()
 			{

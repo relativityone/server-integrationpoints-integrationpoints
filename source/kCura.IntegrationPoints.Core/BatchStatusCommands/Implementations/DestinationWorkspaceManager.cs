@@ -19,9 +19,9 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private IScratchTableRepository _scratchTableRepository;
 
 		// TODO: The IHelper needs to be removed from this constructor -- biedrzycki: April 6th, 2016
-		public DestinationWorkspaceManager(IHelper helper, IRepositoryFactory repositoryFactory, SourceConfiguration sourceConfig, string tableSuffix, int jobHistoryInstanceId)
+		public DestinationWorkspaceManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory, SourceConfiguration sourceConfig, string tableSuffix, int jobHistoryInstanceId)
 		{
-			_tempDocHelper = new TempDocumentFactory().GetDocTableHelper(helper, tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
+			_tempDocHelper = tempDocumentTableFactory.GetDocTableHelper(tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
 			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId, sourceConfig.TargetWorkspaceArtifactId);
 			_tableSuffix = tableSuffix;
 			_sourceWorkspaceId = sourceConfig.SourceWorkspaceArtifactId;
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				List<int> documentIds = ScratchTableRepository.GetDocumentIdsFromTable();
 				int documentCount = documentIds.Count;
 
-				int destinationWorkspaceRdoId = _destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance();
+				int? destinationWorkspaceRdoId = _destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance();
 				if (destinationWorkspaceRdoId == -1)
 				{
 					destinationWorkspaceRdoId = _destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance();

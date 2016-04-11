@@ -19,12 +19,12 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private ScratchTableRepository _scratchTable;
 
 		//todo: remove Helper from constructor - Gonnella
-		public JobHistoryManager(IHelper helper, IRepositoryFactory repositoryFactory, int jobHistoryInstanceId, int sourceWorkspaceArtifactId, string uniqueJobId)
+		public JobHistoryManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory, int jobHistoryInstanceId, int sourceWorkspaceArtifactId, string uniqueJobId)
 		{
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_jobHistoryInstanceId = jobHistoryInstanceId;
 			_uniqueJobId = uniqueJobId;
-			_tempDocHelper = new TempDocumentFactory().GetDocTableHelper(helper, _uniqueJobId, _sourceWorkspaceArtifactId);
+			_tempDocHelper = tempDocumentTableFactory.GetDocTableHelper(_uniqueJobId, _sourceWorkspaceArtifactId);
 			_jobHistoryRepository = repositoryFactory.GetJobHistoryRepository();
 		}
 
