@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 				sourceWorkspaceDto.ArtifactId = artifactId;
 			}
-			sourceWorkspaceDto.SourceWorkspaceFieldArtifactId = documentSourceWorkspaceFieldArtifactId;
+
 			sourceWorkspaceDto.ArtifactTypeId = sourceWorkspaceDescriptorArtifactTypeId.Value;
 
 			// Check to see if instance should be updated

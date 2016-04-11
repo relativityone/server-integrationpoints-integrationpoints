@@ -10,6 +10,8 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using Relativity.API;
+using Relativity.Core;
+using Relativity.Core.Authentication;
 using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Data
@@ -109,7 +111,9 @@ namespace kCura.IntegrationPoints.Data
 		private void SetDocumentIdentifierField(IHelper helper, int sourceWorkspaceId)
 		{
 			IObjectQueryManagerAdaptor rdoRepository = new ObjectQueryManagerAdaptor(helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), sourceWorkspaceId, Convert.ToInt32(ArtifactType.Field));
-			IFieldRepository fieldManager = new KeplerFieldRepository(rdoRepository);
+			BaseServiceContext baseServiceContext = System.Security.Claims.ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(sourceWorkspaceId);
+			IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
+			IFieldRepository fieldManager = new FieldRepository(rdoRepository, baseServiceContext, rsapiClient);
 			ArtifactDTO[] fieldArtifacts = fieldManager.RetrieveFieldsAsync(
 				10,
 				new HashSet<string>(new[]
