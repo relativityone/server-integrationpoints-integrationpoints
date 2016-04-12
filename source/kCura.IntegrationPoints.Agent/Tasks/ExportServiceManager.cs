@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
@@ -204,9 +205,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 			});
 
-			if (exceptions.Count > 0)
+			Exception ex = ConstructNewExceptionIfAny(exceptions);
+			if (ex != null)
 			{
-				throw new AggregateException(exceptions);
+				throw ex;
 			}
 
 			_batchStatus.ForEach(batch => batch.JobStarted(job));
@@ -227,9 +229,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 			});
 
-			if (exceptions.Count > 0)
+			Exception ex = ConstructNewExceptionIfAny(exceptions);
+			if (ex != null)
 			{
-				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, new AggregateException(exceptions));
+				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 				_jobHistoryErrorService.CommitErrors();
 			}
 
@@ -277,6 +280,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void UpdateJobStatus()
 		{
 			_jobHistoryService.UpdateRdo(JobHistoryDto);
+		}
+
+		private Exception ConstructNewExceptionIfAny(IEnumerable<Exception> exceptions)
+		{
+			Exception ex = null;
+			Exception[] enumerable = exceptions as Exception[] ?? exceptions.ToArray();
+			if (!enumerable.IsNullOrEmpty())
+			{
+				int counter = 0;
+				string message = String.Join(Environment.NewLine, enumerable.Select(exception => $"{++counter}. {exception.Message}"));
+				ex = new Exception(message);
+			}
+			return ex;
 		}
 	}
 }
