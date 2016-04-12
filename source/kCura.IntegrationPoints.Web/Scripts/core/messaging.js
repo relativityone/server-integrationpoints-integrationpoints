@@ -57,7 +57,6 @@
 				} else if (error.toString) {
 					result = error.toString();
 				} else {
-					//umm... what the heck is this thing?
 					result = DEFAULT_ERROR;
 				}
 			} else if (typeof error === "string") {
