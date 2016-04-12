@@ -201,7 +201,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				catch (Exception exception)
 				{
 					exceptions.Enqueue(exception);
-					throw;
 				}
 			});
 
