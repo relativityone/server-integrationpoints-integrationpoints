@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 
@@ -7,7 +8,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	/// <summary>
 	/// Provides public interface to RdoExporter
 	/// </summary>
-	public interface IExporterService
+	public interface IExporterService : IDisposable
 	{
 		/// <summary>
 		/// Gets the reader of the exported data.

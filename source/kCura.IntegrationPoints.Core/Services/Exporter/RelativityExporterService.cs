@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -20,7 +21,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	{
 		private readonly int[] _avfIds;
 		private readonly BaseServiceContext _baseContext;
-		private readonly DataGridContext _dataGridContext;
 		private readonly global::Relativity.Core.Api.Shared.Manager.Export.IExporter _exporter;
 		private readonly Export.InitializationResults _exportJobInfo;
 		private readonly int[] _fieldArtifactIds;
@@ -31,6 +31,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly ExportUsingSavedSearchSettings _settings;
 		private readonly HashSet<int> _singleChoiceFieldsArtifactIds;
 		private IDataReader _reader;
+		private DataGridContext _dataGridContext;
 
 		/// <summary>
 		/// Testing only
@@ -54,7 +55,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			string config)
 			: this()
 		{
-			_dataGridContext = new DataGridContext(true);
 			_settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
 			_mappedFields = mappedFields;
 			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
@@ -63,6 +63,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int)ArtifactType.Document);
 			Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
+			bool useDataGrid = false;
 			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
 			{
 				int artifactId = Convert.ToInt32(source.FieldIdentifier);
@@ -80,6 +81,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				else if (fieldInfo.FieldType == FieldTypeHelper.FieldType.Text)
 				{
 					_longTextFieldArtifactIds.Add(artifactId);
+				}
+
+				if (fieldInfo.EnableDataGrid && _dataGridContext == null)
+				{
+					_dataGridContext = new DataGridContext(true);
 				}
 			}
 
@@ -180,6 +186,27 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				}
 			}
 			return result.ToArray();
+		}
+
+		public void Dispose()
+		{
+			if (_reader != null)
+			{
+				_reader.Dispose();
+				_reader = null;
+			}
+
+			if (_dataGridContext != null)
+			{
+				// dispose and cleanup won't do
+				_dataGridContext.BaseDataGridContext.BufferPool.BufferPoolBaseCollection.Clear();
+				_dataGridContext.BaseDataGridContext.Cleanup();
+				_dataGridContext.BaseDataGridContext.Dispose();
+				_dataGridContext = null;
+			}
+
+			GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+			GC.Collect();
 		}
 	}
 }
