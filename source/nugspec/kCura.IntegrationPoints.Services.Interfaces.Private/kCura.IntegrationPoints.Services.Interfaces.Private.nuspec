@@ -8,7 +8,7 @@
         <licenseUrl>https://www.kcura.com/terms-of-use/</licenseUrl>
         <projectUrl>https://platform.kcura.com/index.html</projectUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
-        <description>kCura IntegrationPoints Services & Contracts</description>
+        <description>Provides the services and contracts needed to interact with Integration Points.</description>
         <copyright>Copyright 2016</copyright>
         <tags>kCura IntegrationPoints Services Interfaces Private</tags>
         <dependencies>
