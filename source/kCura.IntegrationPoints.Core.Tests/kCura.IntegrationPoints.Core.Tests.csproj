@@ -126,6 +126,7 @@
     <Compile Include="Unit\AgentJobManagerTest.cs" />
     <Compile Include="Unit\BatchStatusCommands\DestinationWorkspaceManagerTest.cs" />
     <Compile Include="Unit\BatchStatusCommands\TargetDocumentsTaggingManagerTests.cs" />
+    <Compile Include="Unit\BatchStatusCommands\TempTableReaderTests.cs" />
     <Compile Include="Unit\JobHistoryErrorServiceTest.cs" />
     <Compile Include="Unit\DeleteHistoryServiceTest.cs" />
     <Compile Include="Unit\BatchStatusCommands\JobHistoryManagerTest.cs" />
