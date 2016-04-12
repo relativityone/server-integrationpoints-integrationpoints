@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 				// Delete the tab if it exists (it should always exist since we're creating the object type one line above)
 				ITabRepository tabRepository = _repositoryFactory.GetTabRepository(destinationWorkspaceArtifactId);
-				int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(sourceWorkspaceDescriptorArtifactTypeId.Value, IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME);
+				int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(sourceWorkspaceDescriptorArtifactTypeId.Value, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
 				if (sourceWorkspaceTabId.HasValue)
 				{
 					tabRepository.Delete(sourceWorkspaceTabId.Value);
