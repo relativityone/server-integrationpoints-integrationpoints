@@ -19,15 +19,16 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 			fieldToUpdate.Value = GetMultiObjectListUpdate(rdoArtifactId);
 
 			MassProcessHelper.MassProcessInitArgs initArgs = new MassProcessHelper.MassProcessInitArgs(tempTableName, numberOfDocuments, false);
-			SqlMassProcessBatch batch = new SqlMassProcessBatch(context, initArgs, _BATCH_SIZE);
-
-			Field[] fields =
+			using (SqlMassProcessBatch batch = new SqlMassProcessBatch(context, initArgs, _BATCH_SIZE))
 			{
-				fieldToUpdate
-			};
+				Field[] fields =
+				{
+					fieldToUpdate
+				};
 
-			Edit massEdit = new Edit(context, batch, fields, _BATCH_SIZE, String.Empty, true, true, false, _artifactType);
-			massEdit.Execute(true);
+				Edit massEdit = new Edit(context, batch, fields, _BATCH_SIZE, String.Empty, true, true, false, _artifactType);
+				massEdit.Execute(true);
+			}
 		}
 
 		internal MultiObjectListUpdate GetMultiObjectListUpdate(int destinationWorkspaceInstanceId)
