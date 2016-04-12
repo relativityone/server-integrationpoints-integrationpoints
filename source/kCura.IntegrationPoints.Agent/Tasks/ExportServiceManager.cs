@@ -24,7 +24,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
-using Relativity.API;
+using Constants = kCura.IntegrationPoints.Data.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -105,21 +105,23 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				SetupSubscriptions(synchronizer, job);
 
 				// Initialize Exporter
-				IExporterService exporter = _exporterFactory.BuildExporter(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration);
-				JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
-				UpdateJobStatus();
-
-				if (exporter.TotalRecordsFound > 0)
+				using (IExporterService exporter = _exporterFactory.BuildExporter(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration))
 				{
+					JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
+					UpdateJobStatus();
 
-					IScratchTableRepository[] scratchTables = new[]
+					if (exporter.TotalRecordsFound > 0)
 					{
-						_destinationFieldsTagger.ScratchTableRepository,
-						_sourceJobHistoryTagger.ScratchTableRepository,
-						_sourceDestinationWorkspaceTagger.ScratchTableRepository
-					};
-					IDataReader dataReader = exporter.GetDataReader(scratchTables);
-					synchronizer.SyncData(dataReader, MappedFields, destinationConfig);
+						IScratchTableRepository[] scratchTables = new[]
+						{
+							_destinationFieldsTagger.ScratchTableRepository,
+							_sourceJobHistoryTagger.ScratchTableRepository,
+							_sourceDestinationWorkspaceTagger.ScratchTableRepository
+						};
+
+						IDataReader dataReader = exporter.GetDataReader(scratchTables);
+						synchronizer.SyncData(dataReader, MappedFields, destinationConfig);
+					}
 				}
 			}
 			catch (Exception ex)
@@ -267,13 +269,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			// if you want to create add another synchronizer aka exporter, you may add it here.
 			// RDO synchronizer
-			Guid providerGuid = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
 			GeneralWithCustodianRdoSynchronizerFactory factory = _synchronizerFactory as GeneralWithCustodianRdoSynchronizerFactory;
 			if (factory != null)
 			{
 				factory.SourceProvider = SourceProvider;
 			}
-			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(providerGuid, configuration);
+			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration);
 			return synchronizer;
 		}
 

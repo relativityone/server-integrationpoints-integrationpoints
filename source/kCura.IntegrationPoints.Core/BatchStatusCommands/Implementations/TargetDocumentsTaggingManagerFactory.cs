@@ -78,8 +78,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		internal IDataSynchronizer GetSynchronizerForDocumentTagging(string configuration)
 		{
-			Guid providerGuid = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
-			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(providerGuid, _destinationConfig);
+			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, _destinationConfig);
 			return synchronizer;
 		}
 	}

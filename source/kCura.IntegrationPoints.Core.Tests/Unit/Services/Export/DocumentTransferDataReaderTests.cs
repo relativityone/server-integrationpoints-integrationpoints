@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		private IExporterService _exportService;
 		private IDataReader _instance;
 		private ICoreContext _context;
-		private IScratchTableRepository[] _scracRepositories;
+		private IScratchTableRepository[] _scratchRepositories;
 		private ISourceWorkspaceManager _sourceWorkspaceManager;
 		private ISourceJobManager _sourceJobManager;
 
@@ -79,8 +79,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			_context = Substitute.For<ICoreContext>();
 			_exportService = Substitute.For<IExporterService>();
-			var scracthTable = Substitute.For<IScratchTableRepository>();
-			_scracRepositories = new[] { scracthTable };
+			var scratchTable = Substitute.For<IScratchTableRepository>();
+			_scratchRepositories = new[] { scratchTable };
 			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
 			_sourceJobManager = Substitute.For<ISourceJobManager>();
 
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService,
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			bool result = _instance.Read();
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			bool result = _instance.Read();
@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act & Assert
 			Assert.Throws<Exception>(() => _instance.Read());
@@ -162,7 +162,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -192,7 +192,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -216,7 +216,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				new FieldMap[0],
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			bool result = _instance.Read();
@@ -235,7 +235,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			bool result = _instance.Read();
@@ -254,7 +254,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				new FieldMap[0],
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			bool result = _instance.Read();
@@ -280,7 +280,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -303,7 +303,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -325,7 +325,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -343,7 +343,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			bool result = _instance.NextResult();
@@ -360,7 +360,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			int result = _instance.Depth;
@@ -377,7 +377,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			int result = _instance.RecordsAffected;
@@ -394,7 +394,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			string fieldName = _instance.GetName(0);
@@ -421,7 +421,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			string fieldName = _instance.GetName(0);
@@ -438,7 +438,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			int ordinal = _instance.GetOrdinal(_FIELD_IDENTIFIER.ToString());
@@ -465,7 +465,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			int ordinal = _instance.GetOrdinal(_FIELD_IDENTIFIER.ToString());
@@ -496,7 +496,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -518,7 +518,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -536,7 +536,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			int fieldCount = _instance.FieldCount;
@@ -553,7 +553,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			int fieldCount = _instance.FieldCount;
@@ -574,7 +574,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			bool exceptionThrown = false;
@@ -601,7 +601,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			bool exceptionThrown = false;
@@ -629,7 +629,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -651,7 +651,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -673,7 +673,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -695,7 +695,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -727,7 +727,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			var expectedResult = new DataTable()
 			{
@@ -766,7 +766,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			var expectedResult = new DataTable()
 			{
@@ -796,7 +796,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				new FieldMap[0], 
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			var expectedResult = new DataTable()
 			{
@@ -824,7 +824,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				new FieldMap[0],
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			var expectedResult = new DataTable()
 			{
@@ -859,7 +859,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				_exportService, 
 				_templateFieldEntries,
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -902,7 +902,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -945,7 +945,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -987,7 +987,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -1028,7 +1028,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -1070,7 +1070,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -1112,7 +1112,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -1154,7 +1154,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -1197,7 +1197,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -1240,7 +1240,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -1283,7 +1283,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -1326,7 +1326,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					}
 				},
 				_context,
-				_scracRepositories);
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
