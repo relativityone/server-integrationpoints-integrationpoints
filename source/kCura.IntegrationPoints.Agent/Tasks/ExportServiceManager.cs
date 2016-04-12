@@ -51,7 +51,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IConsumeScratchTableBatchStatus _destinationFieldsTagger;
 		private IConsumeScratchTableBatchStatus _sourceDestinationWorkspaceTagger;
 		private JobHistoryManager _sourceJobHistoryTagger;
-		private ConcurrentQueue<Exception> _exceptions;
 
 		public ExportServiceManager(
 			ICaseServiceContext caseServiceContext,
@@ -81,7 +80,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_statisticsService = statisticsService;
 			_batchStatus = statuses.ToList();
 			_serializer = serializer;
-			_exceptions = new ConcurrentQueue<Exception>();
 		}
 
 		public IntegrationPoint IntegrationPointDto { get; private set; }
