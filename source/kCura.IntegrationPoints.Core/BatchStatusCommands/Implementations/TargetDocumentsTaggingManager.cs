@@ -60,8 +60,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			{
 				if (!_errorOccurDuringJobStart)
 				{
-					FieldMap[] identifiers = _fields.Where(f => f.FieldMapType == FieldMapTypeEnum.Identifier).ToArray();
-					FieldMap identifier = identifiers[0];
+					FieldMap identifier = _fields.First(f => f.FieldMapType == FieldMapTypeEnum.Identifier);
 
 					DataColumn[] columns = new[]
 					{
