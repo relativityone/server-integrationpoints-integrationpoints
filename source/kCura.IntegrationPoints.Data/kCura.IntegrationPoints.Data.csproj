@@ -116,7 +116,6 @@
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
     <Compile Include="Commands\MassEdit\IMassEditCommand.cs" />
-    <Compile Include="Commands\MassEdit\MassEditCommandFactory.cs" />
     <Compile Include="Commands\MassEdit\RelativityMassEditBase.cs" />
     <Compile Include="Commands\MassEdit\RelativityMassEdit.cs" />
     <Compile Include="Factories\Implementations\RepositoryFactory.cs" />

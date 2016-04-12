@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		}
 
 		[Test]
-		[Ignore("Nsubstitute add * in expected resutls ")]
+		[Ignore("Nsubstitute add * in expected results ")]
 		public void CreateTemporaryDocTable_JobHistory_GoldFlow()
 		{
 			//Arrange

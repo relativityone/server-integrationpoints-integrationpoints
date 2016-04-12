@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Managers.Implementations;
@@ -18,13 +17,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		private readonly IHelper _helper;
 		private IDictionary<int, ContextContainer> ContextCache { get; }
 
-		private readonly BaseServiceContext _baseContext;
-
 		public RepositoryFactory(IHelper _helper)
 		{
 			this._helper = _helper;
 			ContextCache = new Dictionary<int, ContextContainer>();
-
 		}
 
 		public IObjectTypeRepository GetObjectTypeRepository(int workspaceArtifactId)
@@ -122,6 +118,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			ContextContainer contexts = this.GetContextsForWorkspace(workspaceArtifactId);
 			return contexts.BaseContext;
 		}
+
 		private BaseServiceContext GetBaseServiceContextForWorkspace(int workspaceArtifactId)
 		{
 			ContextContainer contexts = this.GetContextsForWorkspace(workspaceArtifactId);
@@ -169,7 +166,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		private class ContextContainer
 		{
-			public IRSAPIClient RsapiClient { get; set; }	
+			public IRSAPIClient RsapiClient { get; set; }
 			public BaseServiceContext BaseServiceContext { get; set; }
 			public BaseContext BaseContext { get; set; }
 		}

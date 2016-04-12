@@ -157,7 +157,6 @@
     <Compile Include="Factories\IExporterFactory.cs" />
     <Compile Include="Managers\IJobHistoryManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\DestinationWorkspaceManager.cs" />
-    <Compile Include="Managers\IDestinationWorkspaceManager.cs" />
     <Compile Include="Installers\KeywordInstaller.cs" />
     <Compile Include="JobHistoryStatus.cs" />
     <Compile Include="BatchStatusCommands\IBatchStatus.cs" />
