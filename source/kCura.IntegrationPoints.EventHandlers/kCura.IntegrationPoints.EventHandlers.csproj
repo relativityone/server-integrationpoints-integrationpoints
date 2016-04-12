@@ -83,7 +83,6 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ConsoleEventHandlerBase.cs" />
-    <Compile Include="AddDocumentVolumeTable.cs" />
     <Compile Include="Installers\RegisterDocumentTransferProvider.cs" />
     <Compile Include="Installers\RunEveryTimeInstaller.cs" />
     <Compile Include="Installers\Uninstaller.cs" />

@@ -19,9 +19,9 @@ namespace kCura.IntegrationPoints.Services
 	public class DocumentManager : IDocumentManager
 	{
 		private const string _DESTINATION_WORKSPACE_GUID = "8980C2FA-0D33-4686-9A97-EA9D6F0B4196";
-		private const string _PROMOTE_GUID = "A7F4F47E-EA97-4CC6-9B6D-CBEE6F81C26C"; // TODO: Add this field to tt-img-app-9-3 and replace guid here
-		private const string _INCLUDE_GUID = "523284A7-121A-481B-8C03-EE0C36A46EF4"; // TODO: Add this choice to tt-img-app-9-3 and replace guid here
-		private const string _EXCLUDE_GUID = "227DB189-9A4F-427E-A72E-5ED069BE84C4"; // TODO: Add this choice to tt-img-app-9-3 and replace guid here
+		private const string _PROMOTE_GUID = "4E418A56-90C5-4E59-A1C5-C43C11A3CCFF";
+		private const string _INCLUDE_GUID = "6884BAC4-DD8F-4087-9C17-B4BCE99815D5";
+		private const string _EXCLUDE_GUID = "DB110A00-AC87-4C40-96E2-827BF9B18909";
 
 		public async Task<bool> PingAsync()
 		{
