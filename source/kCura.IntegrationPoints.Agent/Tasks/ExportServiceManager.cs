@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly IExporterFactory _exporterFactory;
 		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
-		private readonly ITargetWorkspaceJobHistoryManager _targetWorkspaceJobHistoryManager;
+		private readonly ISourceJobManager _sourceJobManager;
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ITempDocumentTableFactory _tempDocumentTableFactory;
 		private readonly IDocumentRepository _documentRepository;
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ISynchronizerFactory synchronizerFactory,
 			IExporterFactory exporterFactory,
 			ISourceWorkspaceManager sourceWorkspaceManager,
-			ITargetWorkspaceJobHistoryManager targetWorkspaceJobHistoryManager,
+			ISourceJobManager sourceJobManager,
 			ITempDocumentTableFactory tempDocumentTableFactory,
 			IRepositoryFactory repositoryFactory,
 			IEnumerable<IBatchStatus> statuses,
@@ -69,7 +69,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_synchronizerFactory = synchronizerFactory;
 			_exporterFactory = exporterFactory;
 			_sourceWorkspaceManager = sourceWorkspaceManager;
-			_targetWorkspaceJobHistoryManager = targetWorkspaceJobHistoryManager;
+			_sourceJobManager = sourceJobManager;
 			_repositoryFactory = repositoryFactory;
 			_tempDocumentTableFactory = tempDocumentTableFactory;
 			_documentRepository = documentRepository;
@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			UpdateJobStatus();
 
 			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_docTableHelper,
-				_sourceWorkspaceManager, _targetWorkspaceJobHistoryManager,
+				_sourceWorkspaceManager, _sourceJobManager,
 				_documentRepository, _synchronizerFactory, MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, IntegrationPointDto.DestinationConfiguration, JobHistoryDto.ArtifactId);
 
 			_destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();

@@ -123,6 +123,8 @@
     <Compile Include="Factories\IRepositoryFactory.cs" />
     <Compile Include="Factories\ITempDocumentTableFactory.cs" />
     <Compile Include="Factories\TempDocumentTableFactory.cs" />
+    <Compile Include="Repositories\Implementations\RsapiObjectTypeRepository.cs" />
+    <Compile Include="Repositories\Implementations\RsapiTabRepository.cs" />
     <Compile Include="Repositories\Implementations\SqlArtifactGuidRepository.cs" />
     <Compile Include="ITempDocTableHelper.cs" />
     <Compile Include="ImportSettingVisibility.cs" />
@@ -141,10 +143,11 @@
     <Compile Include="Repositories\Implementations\DestinationWorkspaceRepository.cs" />
     <Compile Include="Repositories\Implementations\ScratchTableRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceWorkspaceJobHistoryRepository.cs" />
-    <Compile Include="Repositories\Implementations\TargetWorkspaceJobHistoryRepository.cs" />
+    <Compile Include="Repositories\Implementations\SourceJobRepository.cs" />
     <Compile Include="Repositories\IScratchTableRepository.cs" />
     <Compile Include="Repositories\ISourceWorkspaceJobHistoryRepository.cs" />
-    <Compile Include="Repositories\ITargetWorkspaceJobHistoryRepository.cs" />
+    <Compile Include="Repositories\ISourceJobRepository.cs" />
+    <Compile Include="Repositories\ITabRepository.cs" />
     <Compile Include="TempDocTableHelper.cs" />
     <Compile Include="Repositories\IObjectTypeRepository.cs" />
     <Compile Include="Repositories\ISavedSearchRepository.cs" />

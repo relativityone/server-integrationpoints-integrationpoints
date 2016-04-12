@@ -7,16 +7,16 @@ using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
-	public class TargetWorkspaceJobHistoryManager : ITargetWorkspaceJobHistoryManager
+	public class SourceJobManager : ISourceJobManager
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
 
-		public TargetWorkspaceJobHistoryManager(IRepositoryFactory repositoryFactory)
+		public SourceJobManager(IRepositoryFactory repositoryFactory)
 		{
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public TargetWorkspaceJobHistoryDTO InitializeWorkspace(
+		public SourceJobDTO InitializeWorkspace(
 			int sourceWorkspaceArtifactId,
 			int destinationWorkspaceArtifactId,
 			int sourceWorkspaceArtifactTypeId,
@@ -24,48 +24,65 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			int jobHistoryArtifactId)
 		{
 			// Set up repositories
-			ITargetWorkspaceJobHistoryRepository targetWorkspaceJobHistoryRepository = _repositoryFactory.GetTargetWorkspaceJobHistoryRepository(destinationWorkspaceArtifactId);
+			ISourceJobRepository sourceJobRepository = _repositoryFactory.GetSourceJobRepository(destinationWorkspaceArtifactId);
 			ISourceWorkspaceJobHistoryRepository sourceWorkspaceJobHistoryRepository = _repositoryFactory.GetSourceWorkspaceJobHistoryRepository(sourceWorkspaceArtifactId);
 			IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
+			IObjectTypeRepository objectTypeRepository = _repositoryFactory.GetObjectTypeRepository(destinationWorkspaceArtifactId);
+			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
 
 			// Create object type if it does not exist
-			int? jobHistoryDescriptorArtifactTypeId = targetWorkspaceJobHistoryRepository.RetrieveObjectTypeDescriptorArtifactTypeId();
-			if (!jobHistoryDescriptorArtifactTypeId.HasValue)
+			int? sourceJobDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceJobDTO.ObjectTypeGuid);
+			if (!sourceJobDescriptorArtifactTypeId.HasValue)
 			{
-				int jobHistoryArtifactTypeId = targetWorkspaceJobHistoryRepository.CreateObjectType(sourceWorkspaceArtifactTypeId);
+				int sourceJobArtifactTypeId = sourceJobRepository.CreateObjectType(sourceWorkspaceArtifactTypeId);
 
-				// TODO: add try catch and delete on failure
-				artifactGuidRepository.InsertArtifactGuidForArtifactId(jobHistoryArtifactTypeId, TargetWorkspaceJobHistoryDTO.ObjectTypeGuid);
+				// Insert entry to the ArtifactGuid table for new object type
+				try
+				{
+					artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceJobArtifactTypeId, SourceJobDTO.ObjectTypeGuid);
+				}
+				catch (Exception e)
+				{
+					objectTypeRepository.Delete(sourceJobArtifactTypeId);
+					throw new Exception("Unable to create Source Job object type: Unable to associate new object type with Artifact Guid", e);	
+				}
 
 				// Get the descriptor id
-				jobHistoryDescriptorArtifactTypeId = targetWorkspaceJobHistoryRepository.RetrieveObjectTypeDescriptorArtifactTypeId();
+				sourceJobDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceJobDTO.ObjectTypeGuid);
 			}
 
 			// Create Job History fields if they do not exist
 			IDictionary<Guid, bool> objectTypeFields = artifactGuidRepository.GuidsExist(new[]
 			{
-				TargetWorkspaceJobHistoryDTO.Fields.JobHistoryIdFieldGuid, TargetWorkspaceJobHistoryDTO.Fields.JobHistoryNameFieldGuid
+				SourceJobDTO.Fields.JobHistoryIdFieldGuid, SourceJobDTO.Fields.JobHistoryNameFieldGuid
 			});
 			IList<Guid> missingFieldGuids = objectTypeFields.Where(x => x.Value == false).Select(y => y.Key).ToList();
 			if (missingFieldGuids.Any())
 			{
 				IDictionary<Guid, int> guidToIdDictionary =
-					targetWorkspaceJobHistoryRepository.CreateObjectTypeFields(jobHistoryDescriptorArtifactTypeId.Value, missingFieldGuids);
-				// TODO: add try catch and delete on failure
-				artifactGuidRepository.InsertArtifactGuidsForArtifactIds(guidToIdDictionary);
+					sourceJobRepository.CreateObjectTypeFields(sourceJobDescriptorArtifactTypeId.Value, missingFieldGuids);
+
+				try
+				{
+					artifactGuidRepository.InsertArtifactGuidsForArtifactIds(guidToIdDictionary);
+				}
+				catch (Exception e)
+				{
+					fieldRepository.Delete(guidToIdDictionary.Values);
+					throw new Exception("Unable to create Source Job fields: Unable to associate new fields with Artifact Guids", e);
+				}
 			}
 
 			// Create fields on document if they do not exist
 			bool jobHistoryFieldOnDocumentExists =
-				artifactGuidRepository.GuidExists(TargetWorkspaceJobHistoryDTO.Fields.JobHistoryFieldOnDocumentGuid);
+				artifactGuidRepository.GuidExists(SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid);
 			if (!jobHistoryFieldOnDocumentExists)
 			{
-				IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
-				int fieldArtifactId = targetWorkspaceJobHistoryRepository.CreateJobHistoryFieldOnDocument(jobHistoryDescriptorArtifactTypeId.Value);
+				int fieldArtifactId = sourceJobRepository.CreateSourceJobFieldOnDocument(sourceJobDescriptorArtifactTypeId.Value);
 
 				try
 				{
-					artifactGuidRepository.InsertArtifactGuidForArtifactId(fieldArtifactId, TargetWorkspaceJobHistoryDTO.Fields.JobHistoryFieldOnDocumentGuid);
+					artifactGuidRepository.InsertArtifactGuidForArtifactId(fieldArtifactId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid);
 				}
 				catch (Exception e)
 				{
@@ -86,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			// Create instance of Job History object
 			SourceWorkspaceJobHistoryDTO sourceWorkspaceJobHistoryDto = sourceWorkspaceJobHistoryRepository.Retrieve(jobHistoryArtifactId);
-			var jobHistoryDto = new TargetWorkspaceJobHistoryDTO()
+			var jobHistoryDto = new SourceJobDTO()
 			{
 				Name = $"{sourceWorkspaceJobHistoryDto.Name} - {jobHistoryArtifactId}",
 				SourceWorkspaceArtifactId = sourceWorkspaceRDOInstanceArtifactId,
@@ -94,7 +111,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				JobHistoryName = sourceWorkspaceJobHistoryDto.Name,
 			};
 
-			int artifactId = targetWorkspaceJobHistoryRepository.Create(jobHistoryDescriptorArtifactTypeId.Value,
+			int artifactId = sourceJobRepository.Create(sourceJobDescriptorArtifactTypeId.Value,
 				jobHistoryDto);
 
 			jobHistoryDto.ArtifactId = artifactId;

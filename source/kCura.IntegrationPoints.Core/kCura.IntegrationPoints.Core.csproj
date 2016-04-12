@@ -163,9 +163,9 @@
     <Compile Include="BatchStatusCommands\IBatchStatus.cs" />
     <Compile Include="BatchStatusCommands\Implementations\JobHistoryManager.cs" />
     <Compile Include="Managers\Implementations\SourceWorkspaceManager.cs" />
-    <Compile Include="Managers\Implementations\TargetWorkspaceJobHistoryManager.cs" />
+    <Compile Include="Managers\Implementations\SourceJobManager.cs" />
     <Compile Include="Managers\ISourceWorkspaceManager.cs" />
-    <Compile Include="Managers\ITargetWorkspaceJobHistoryManager.cs" />
+    <Compile Include="Managers\ISourceJobManager.cs" />
     <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Properties\JobStatusMessages.Designer.cs">
       <AutoGen>True</AutoGen>

@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Contracts.Models
 {
-	public class TargetWorkspaceJobHistoryDTO
+	public class SourceJobDTO
 	{
 		private static readonly Guid _objectTypeGuid = new Guid("6f4dd346-d398-4e76-8174-f0cd8236cbe7");
 		public static Guid ObjectTypeGuid => _objectTypeGuid;

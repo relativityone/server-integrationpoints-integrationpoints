@@ -27,6 +27,14 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		}
 
+		public IObjectTypeRepository GetObjectTypeRepository(int workspaceArtifactId)
+		{
+			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
+			IObjectTypeRepository repository = new RsapiObjectTypeRepository(rsapiClient);
+
+			return repository;
+		}
+
 		public ISourceWorkspaceRepository GetSourceWorkspaceRepository(int workspaceArtifactId)
 		{
 			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
@@ -51,10 +59,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return repository;
 		}
 
-		public ITargetWorkspaceJobHistoryRepository GetTargetWorkspaceJobHistoryRepository(int workspaceArtifactId)
+		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)
 		{
 			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
-			ITargetWorkspaceJobHistoryRepository repository = new TargetWorkspaceJobHistoryRepository(rsapiClient);
+			ISourceJobRepository repository = new SourceJobRepository(rsapiClient);
 
 			return repository;
 		}
@@ -93,6 +101,14 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IFieldRepository fieldRepository = new FieldRepository(objectQueryManagerAdaptor, baseServiceContext, rsapiClient);
 
 			return fieldRepository;
+		}
+
+		public ITabRepository GetTabRepository(int workspaceArtifactId)
+		{
+			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
+			ITabRepository tabRepository = new RsapiTabRepository(rsapiClient);
+
+			return tabRepository;
 		}
 
 		private IRSAPIClient GetRsapiClientForWorkspace(int workspaceArtifactId)

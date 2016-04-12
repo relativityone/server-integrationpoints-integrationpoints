@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 						.DependsOn(repositoryFactory.GetWorkspaceRepository())
 						.LifestyleTransient());
 				container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());
-				container.Register(Component.For<ITargetWorkspaceJobHistoryManager>().ImplementedBy<TargetWorkspaceJobHistoryManager>().LifestyleTransient());
+				container.Register(Component.For<ISourceJobManager>().ImplementedBy<SourceJobManager>().LifestyleTransient());
 				container.Register(Component.For<ITempDocumentTableFactory>().ImplementedBy<TempDocumentTableFactory>().LifestyleSingleton());
 			}
 		}

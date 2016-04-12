@@ -4,6 +4,9 @@ using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
+	/// <summary>
+	/// Responsible for handling Relativity fields
+	/// </summary>
 	public interface IFieldRepository
 	{
 		/// <summary>
@@ -25,7 +28,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// Sets the overlay behavior for a field
 		/// </summary>
 		/// <param name="fieldArtifactId">The artifact id of the field</param>
-		/// <param name="value">The value for overlay behavior</param>
+		/// <param name="value">The value for overlay behavior. <code>TRUE</code> for MERGE, <code>FALSE</code> for Overlay</param>
 		void SetOverlayBehavior(int fieldArtifactId, bool value);
 
 		/// <summary>

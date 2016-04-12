@@ -18,20 +18,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			this._rsapiClient = rsapiClient;
 		}
 
-		public int? RetrieveObjectTypeDescriptorArtifactTypeId()
-		{
-			var objectType = new ObjectType(SourceWorkspaceDTO.ObjectTypeGuid) { Fields = FieldValue.AllFields };
-			ResultSet<ObjectType> resultSet = _rsapiClient.Repositories.ObjectType.Read(new[] { objectType });
-
-			int? objectTypeArtifactId = null;
-			if (resultSet.Success && resultSet.Results.Any())
-			{
-				objectTypeArtifactId = resultSet.Results.First().Artifact.DescriptorArtifactTypeID;
-			}
-
-			return objectTypeArtifactId;
-		}
-
 		public int CreateObjectType()
 		{
 			var objectType = new ObjectType(SourceWorkspaceDTO.ObjectTypeGuid)
@@ -169,35 +155,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return newFieldArtifactId;
 		}
 
-		public bool SourceWorkspaceFieldExistsOnDocument(int sourceWorkspaceObjectTypeId, out int fieldArtifactId)
-		{
-			var criteria = new TextCondition(FieldFieldNames.Name, TextConditionEnum.EqualTo, "Source Workspace");
-			var query = new Query<kCura.Relativity.Client.DTOs.Field>
-			{
-				Fields = FieldValue.AllFields,
-				Condition = criteria,
-			};
-
-			QueryResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Query(query);
-
-			Result<kCura.Relativity.Client.DTOs.Field> field = resultSet.Results.FirstOrDefault();
-			if (!resultSet.Success)
-			{
-				throw new Exception("Unable to retrieve Document fields: " + resultSet.Message);
-			}
-			bool fieldExists = field != null;
-
-			if (fieldExists)
-			{
-				fieldArtifactId = field.Artifact.ArtifactID;
-			}
-			else
-			{
-				fieldArtifactId = -1;
-			}
-			return fieldExists;
-		}
-
 		public SourceWorkspaceDTO RetrieveForSourceWorkspaceId(int sourceWorkspaceArtifactId)
 		{
 			var condition = new WholeNumberCondition(Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME, NumericConditionEnum.EqualTo, sourceWorkspaceArtifactId);
@@ -282,46 +239,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			catch (Exception e)
 			{
 				throw new Exception("Unable to update Source Workspace instance", e);
-			}
-		}
-
-		public int? RetrieveTabArtifactId(int sourceWorkspaceArtifactTypeId)
-		{
-			// Get the tab
-			var tabNameCondition = new TextCondition(FieldFieldNames.Name, TextConditionEnum.EqualTo, Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
-			var objectTypeCondition = new WholeNumberCondition(FieldFieldNames.ObjectType, NumericConditionEnum.EqualTo, sourceWorkspaceArtifactTypeId);
-			var compositeCondition = new CompositeCondition(tabNameCondition, CompositeConditionEnum.And, objectTypeCondition);
-
-			var tabQuery = new Query<Tab>()
-			{
-				Fields = FieldValue.AllFields,
-				Condition = compositeCondition
-			};
-
-			QueryResultSet<Tab> resultSet = _rsapiClient.Repositories.Tab.Query(tabQuery);
-
-			if (!resultSet.Success)
-			{
-				throw new Exception("Unable to retrieve the Source Workspace tab: " + resultSet.Message);
-			}
-
-			Result<Tab> tab = resultSet.Results.FirstOrDefault();
-
-			return tab?.Artifact.ArtifactID;
-		}
-
-		public void DeleteTab(int tabArtifactId)
-		{
-			var artifactRequest = new List<ArtifactRequest>()
-			{
-				new ArtifactRequest((int)ArtifactType.Tab, tabArtifactId)
-			};
-
-			ResultSet resultSet = _rsapiClient.Delete(_rsapiClient.APIOptions, artifactRequest);
-
-			if (!resultSet.Success)
-			{
-				throw new Exception("Unable to delete Source Workspace tab: " + resultSet.Message);
 			}
 		}
 	}

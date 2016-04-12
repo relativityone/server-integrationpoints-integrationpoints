@@ -37,7 +37,11 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		public override Type GetFieldType(int i)
 		{
-			return typeof(string);
+			if (i < _columns.Length)
+			{
+				return typeof(string);
+			}
+			throw new IndexOutOfRangeException();
 		}
 
 		public override object GetValue(int i)
@@ -53,7 +57,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
 			List<int> documents = new List<int>();
-			while ((_containsData = _scratchTableReader.Read()) || documents.Count > _BATCH_SIZE)
+			while ((_containsData = _scratchTableReader.Read()) && documents.Count <_BATCH_SIZE)
 			{
 				int artifactId = _scratchTableReader.GetInt32(0);
 				documents.Add(artifactId);

@@ -22,17 +22,17 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly int _sourceWorkspaceArtifactId;
 		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
 		private readonly IDataSynchronizer _synchronizer;
-		private readonly ITargetWorkspaceJobHistoryManager _targetWorkspaceJobHistoryManager;
+		private readonly ISourceJobManager _sourceJobManager;
 		private readonly ITempDocTableHelper _tempTableHelper;
 		private SourceWorkspaceDTO _sourceWorkspaceDto;
-		private TargetWorkspaceJobHistoryDTO _targetWorkspaceJobHistoryDto;
+		private SourceJobDTO _sourceJobDto;
 		private IScratchTableRepository _scratchTableRepository;
 		private bool _errorOccurDuringJobStart;
 
 		public TargetDocumentsTaggingManager(ITempDocTableHelper tempTableHelper,
 			IDataSynchronizer synchronizer,
 			ISourceWorkspaceManager sourceWorkspaceManager,
-			ITargetWorkspaceJobHistoryManager targetWorkspaceJobHistoryManager,
+			ISourceJobManager sourceJobManager,
 			IDocumentRepository documentRepository,
 			FieldMap[] fields,
 			string importConfig,
@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_tempTableHelper = tempTableHelper;
 			_synchronizer = synchronizer;
 			_sourceWorkspaceManager = sourceWorkspaceManager;
-			_targetWorkspaceJobHistoryManager = targetWorkspaceJobHistoryManager;
+			_sourceJobManager = sourceJobManager;
 			_documentRepository = documentRepository;
 			_documentRepository.WorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_fields = fields;
@@ -60,14 +60,13 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			{
 				if (!_errorOccurDuringJobStart)
 				{
-					FieldMap[] identifiers = _fields.Where(f => f.FieldMapType == FieldMapTypeEnum.Identifier).ToArray();
-					FieldMap identifier = identifiers[0];
+					FieldMap identifier = _fields.First(f => f.FieldMapType == FieldMapTypeEnum.Identifier);
 
 					DataColumn[] columns = new[]
 					{
 						new DataColumn(identifier.SourceField.FieldIdentifier),
 						new DataColumnWithValue(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD, _sourceWorkspaceDto.Name),
-						new DataColumnWithValue(IntegrationPoints.Contracts.Constants.SPECIAL_JOBHISTORY_FIELD , _targetWorkspaceJobHistoryDto.Name)
+						new DataColumnWithValue(IntegrationPoints.Contracts.Constants.SPECIAL_JOBHISTORY_FIELD , _sourceJobDto.Name)
 					};
 
 					int identifierFieldId = Convert.ToInt32(identifier.SourceField.FieldIdentifier);
@@ -102,7 +101,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			try
 			{
 				_sourceWorkspaceDto = _sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId);
-				_targetWorkspaceJobHistoryDto = _targetWorkspaceJobHistoryManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId, _jobHistoryArtifactId);
+				_sourceJobDto = _sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId, _jobHistoryArtifactId);
 			}
 			catch (Exception)
 			{

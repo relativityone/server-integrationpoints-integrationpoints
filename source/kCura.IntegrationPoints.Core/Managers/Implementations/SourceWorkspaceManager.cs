@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using Relativity.Data.QueryGenerator;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -22,25 +23,35 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			ISourceWorkspaceRepository sourceWorkspaceRepository = _repositoryFactory.GetSourceWorkspaceRepository(destinationWorkspaceArtifactId);
 			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetWorkspaceRepository();
 			IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
+			IObjectTypeRepository objectTypeRepository = _repositoryFactory.GetObjectTypeRepository(destinationWorkspaceArtifactId);
+			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
 
 			// Create object type if it does not exist
-			int? sourceWorkspaceDescriptorArtifactTypeId = sourceWorkspaceRepository.RetrieveObjectTypeDescriptorArtifactTypeId();
+			int? sourceWorkspaceDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceWorkspaceDTO.ObjectTypeGuid);
 			if (!sourceWorkspaceDescriptorArtifactTypeId.HasValue)
 			{
 				int sourceWorkspaceArtifactTypeId = sourceWorkspaceRepository.CreateObjectType();
 
 				// Insert entry to the ArtifactGuid table for new object type
-				// TODO: add try catch and delete on failure
-				artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO.ObjectTypeGuid);
+				try
+				{
+					artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO.ObjectTypeGuid);
+				}
+				catch (Exception e)
+				{
+					objectTypeRepository.Delete(sourceWorkspaceArtifactTypeId);
+					throw new Exception("Unable to create Source Workspace object type: Unable to associate new object type with Artifact Guid", e);	
+				}
 
 				// Get descriptor id
-				sourceWorkspaceDescriptorArtifactTypeId = sourceWorkspaceRepository.RetrieveObjectTypeDescriptorArtifactTypeId();
+				sourceWorkspaceDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceWorkspaceDTO.ObjectTypeGuid);
 
 				// Delete the tab if it exists (it should always exist since we're creating the object type one line above)
-				int? sourceWorkspaceTabId = sourceWorkspaceRepository.RetrieveTabArtifactId(sourceWorkspaceDescriptorArtifactTypeId.Value);
+				ITabRepository tabRepository = _repositoryFactory.GetTabRepository(destinationWorkspaceArtifactId);
+				int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(sourceWorkspaceDescriptorArtifactTypeId.Value, IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_NAME_FIELD_NAME);
 				if (sourceWorkspaceTabId.HasValue)
 				{
-					sourceWorkspaceRepository.DeleteTab(sourceWorkspaceTabId.Value);
+					tabRepository.Delete(sourceWorkspaceTabId.Value);
 				}
 			}
 
@@ -53,8 +64,16 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			if (missingFieldGuids.Any())
 			{
 				IDictionary<Guid, int> guidToIdDictionary = sourceWorkspaceRepository.CreateObjectTypeFields(sourceWorkspaceDescriptorArtifactTypeId.Value, missingFieldGuids);	
-				// TODO: add try catch and delete on failure
-				artifactGuidRepository.InsertArtifactGuidsForArtifactIds(guidToIdDictionary);
+
+				try
+				{
+					artifactGuidRepository.InsertArtifactGuidsForArtifactIds(guidToIdDictionary);
+				}
+				catch (Exception e)
+				{
+					fieldRepository.Delete(guidToIdDictionary.Values);
+					throw new Exception("Unable to create Source Workspace fields: Unable to associate new fields with Artifact Guids", e);	
+				}
 			}
 
 			// Create fields on document if they do not exist
@@ -62,7 +81,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				artifactGuidRepository.GuidExists(SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid);
 			if (!sourceWorkspaceFieldOnDocumentExists)
 			{
-				IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
 				int fieldArtifactId = sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(sourceWorkspaceDescriptorArtifactTypeId.Value);
 
 				try
