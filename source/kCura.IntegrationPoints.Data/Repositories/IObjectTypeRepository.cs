@@ -1,10 +1,9 @@
 ﻿using System;
-using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
 	/// <summary>
-	/// Responsible for handing Object Types
+	/// Responsible for handling Object Types
 	/// </summary>
 	public interface IObjectTypeRepository
 	{
