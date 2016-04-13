@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
@@ -64,7 +65,7 @@ namespace kCura.IntegrationPoints.Data
 
 		public void RemoveErrorDocument(string tablePrefix, string docIdentifier)
 		{
-			int docId = GetDocumentId(docIdentifier);
+			int docId = GetErroredDocumentId(docIdentifier);
 			string fullTableName = GetTempTableName(tablePrefix);
 			string sql = String.Format(@"DELETE FROM EDDSRESOURCE..[{0}] WHERE [ArtifactID] = {1}", fullTableName, docId);
 
@@ -95,23 +96,21 @@ namespace kCura.IntegrationPoints.Data
 			return $"{tablePrefix}_{_tableSuffix}";
 		}
 
-		private int GetDocumentId(string docIdentifier)
+		private int GetErroredDocumentId(string docIdentifier)
 		{
 			if (String.IsNullOrEmpty(_docIdentifierField))
 			{
-				SetDocumentIdentifierField(_helper, _sourceWorkspaceId);
+				SetDocumentIdentifierField();
 			}
 
-			string sql = String.Format(@"Select [ArtifactId] FROM [Document] WITH (NOLOCK) WHERE [{0}] = '{1}'", _docIdentifierField, docIdentifier);
-
-			int documentId = _caseContext.ExecuteSqlStatementAsScalar<int>(sql);
+			int documentId = QueryForDocumentArtifactId(docIdentifier);
 			return documentId;
 		}
 
-		private void SetDocumentIdentifierField(IHelper helper, int sourceWorkspaceId)
+		private void SetDocumentIdentifierField()
 		{
-			IObjectQueryManagerAdaptor rdoRepository = new ObjectQueryManagerAdaptor(helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), sourceWorkspaceId, Convert.ToInt32(ArtifactType.Field));
-			BaseServiceContext baseServiceContext = System.Security.Claims.ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(sourceWorkspaceId);
+			IObjectQueryManagerAdaptor rdoRepository = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), _sourceWorkspaceId, Convert.ToInt32(ArtifactType.Field));
+			BaseServiceContext baseServiceContext = System.Security.Claims.ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(_sourceWorkspaceId);
 			IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
 			IFieldRepository fieldManager = new FieldRepository(rdoRepository, baseServiceContext, rsapiClient);
 			ArtifactDTO[] fieldArtifacts = fieldManager.RetrieveFieldsAsync(
@@ -122,6 +121,7 @@ namespace kCura.IntegrationPoints.Data
 					Fields.IsIdentifier
 				})).ConfigureAwait(false).GetAwaiter().GetResult();
 
+			
 			foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
 			{
 				string fieldName = String.Empty;
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.Data
 							isIdentifierFieldValue = Convert.ToInt32(field.Value);
 							if (isIdentifierFieldValue == 1)
 							{
-								_docIdentifierField = fieldName.Replace(" ", string.Empty);
+								_docIdentifierField = fieldName;
 							}
 						}
 						catch
@@ -153,6 +153,27 @@ namespace kCura.IntegrationPoints.Data
 					break;
 				}
 			}
+		}
+
+		private int QueryForDocumentArtifactId(string docIdentifier)
+		{
+			IObjectQueryManagerAdaptor rdoRepository = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), _sourceWorkspaceId, Convert.ToInt32(ArtifactType.Document));
+			IDocumentRepository documentRepository = new KeplerDocumentRepository(rdoRepository);
+
+			ArtifactDTO document;
+			try
+			{
+				Task<ArtifactDTO> documentResult = documentRepository.RetrieveDocumentAsync(_docIdentifierField, docIdentifier);
+				document = documentResult.ConfigureAwait(false).GetAwaiter().GetResult();
+			}
+			catch (Exception ex)
+			{
+				
+				throw new Exception("Unable to retrieve Document Artifact ID. Object Query failed.", ex);
+			}
+			
+
+			return document.ArtifactId;
 		}
 
 		internal static class Fields //MNG: similar to class used in DocumentTransferProvider, probably find a better way to reference these
