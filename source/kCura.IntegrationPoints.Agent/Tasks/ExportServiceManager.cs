@@ -24,7 +24,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
-using Constants = kCura.IntegrationPoints.Data.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -274,7 +273,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				factory.SourceProvider = SourceProvider;
 			}
-			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration);
+			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration);
 			return synchronizer;
 		}
 
