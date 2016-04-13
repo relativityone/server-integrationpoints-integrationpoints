@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// Creates the Source Job multi-object field on the Document object
 		/// </summary>
 		/// <param name="sourceJobArtifactTypeId">The Source Job artifact type id</param>
-		/// <returns></returns>
+		/// <returns>The artifact id of the newly created field</returns>
 		int CreateSourceJobFieldOnDocument(int sourceJobArtifactTypeId);
 
 		/// <summary>

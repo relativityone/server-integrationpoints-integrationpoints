@@ -6,7 +6,7 @@
 	public interface ITabRepository
 	{
 		/// <summary>
-		/// Retireves the tab artifact id for the given object type artifact id and tab name
+		/// Retrieves the tab artifact id for the given object type artifact id and tab name
 		/// </summary>
 		/// <param name="objectTypeArtifactId">The object type artifact id</param>
 		/// <param name="tabName">The name of the tab</param>
