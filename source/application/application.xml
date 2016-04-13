@@ -2,6 +2,241 @@
 <Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ArtifactViewFields>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1001009</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AnalyticsIndex</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000195</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ArtifactID</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000422</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Batch</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000424</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>BatchAssignedTo</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000423</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>BatchBatchSet</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000425</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>BatchStatus</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000186</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ControlNumber</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001624</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>DestinationWorkspace</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001611</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>DestinationWorkspaceObsolete</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000183</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Edit</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000187</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ExtractedText</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001576</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ExtractedTextLocation</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000184</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>FileIcon</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000196</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>FolderName</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000190</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>GroupIdentifier</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000191</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>HasImages</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000420</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>HasInlineTags</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000192</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>HasNative</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001038</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ImageQCStatus</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001010</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ImagingSet</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001626</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>JobHistory</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001023</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Lists</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000343</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>MarkupSetPrimary</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000188</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>MD5Hash</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000615</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>OCRResults</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001138</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Production</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000290</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProductionErrors</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001224</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProductionBeginAttachment</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001220</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProductionBeginBates</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001226</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProductionEndAttachment</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001222</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProductionEndBates</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001228</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProductionHasRedactions</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001235</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProductionProductionName</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001230</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProductionProductionType</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001232</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProductionSortOrder</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001628</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Promote</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000470</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>RelativityCompare</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000439</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>RelativityImageCount</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000417</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>RelativityNativeTimeZoneOffset</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000349</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>RelativityNativeType</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000185</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>AccessControlListIsInherited</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000348</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>SupportedByViewer</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000198</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>SystemCreatedBy</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000197</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>SystemCreatedOn</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000200</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>SystemLastModifiedBy</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000199</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>SystemLastModifiedOn</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1000915</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>TimeZoneField</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001539</ArtifactViewFieldId>
       <ArtifactTypeId>1000054</ArtifactTypeId>
       <ColumnName>ArtifactID</ColumnName>
@@ -386,6 +621,66 @@
       <ArtifactTypeId>1000058</ArtifactTypeId>
       <ColumnName>TimestampUTC</ColumnName>
     </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001616</ArtifactViewFieldId>
+      <ArtifactTypeId>1000059</ArtifactTypeId>
+      <ColumnName>ArtifactID</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001622</ArtifactViewFieldId>
+      <ArtifactTypeId>1000059</ArtifactTypeId>
+      <ColumnName>DestinationWorkspaceArtifactID</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001623</ArtifactViewFieldId>
+      <ArtifactTypeId>1000059</ArtifactTypeId>
+      <ColumnName>DestinationWorkspaceName</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001625</ArtifactViewFieldId>
+      <ArtifactTypeId>1000059</ArtifactTypeId>
+      <ColumnName>Documents</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001617</ArtifactViewFieldId>
+      <ArtifactTypeId>1000059</ArtifactTypeId>
+      <ColumnName>Edit</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001620</ArtifactViewFieldId>
+      <ArtifactTypeId>1000059</ArtifactTypeId>
+      <ColumnName>JobHistory</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001619</ArtifactViewFieldId>
+      <ArtifactTypeId>1000059</ArtifactTypeId>
+      <ColumnName>Name</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001618</ArtifactViewFieldId>
+      <ArtifactTypeId>1000059</ArtifactTypeId>
+      <ColumnName>AccessControlListIsInherited</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001614</ArtifactViewFieldId>
+      <ArtifactTypeId>1000059</ArtifactTypeId>
+      <ColumnName>SystemCreatedBy</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001612</ArtifactViewFieldId>
+      <ArtifactTypeId>1000059</ArtifactTypeId>
+      <ColumnName>SystemCreatedOn</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001615</ArtifactViewFieldId>
+      <ArtifactTypeId>1000059</ArtifactTypeId>
+      <ColumnName>SystemLastModifiedBy</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001613</ArtifactViewFieldId>
+      <ArtifactTypeId>1000059</ArtifactTypeId>
+      <ColumnName>SystemLastModifiedOn</ColumnName>
+    </ArtifactViewField>
   </ArtifactViewFields>
   <Assemblies>
     <Assembly>
@@ -427,7 +722,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-03-31T13:46:05.2181553Z</ExtractionDate>
+  <ExtractionDate>2016-04-12T14:24:53.3432338Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -436,58 +731,6 @@
       <ArtifactId>1035231</ArtifactId>
       <DescriptorArtifactTypeId>10</DescriptorArtifactTypeId>
       <Fields>
-        <Field>
-          <AllowHTML>false</AllowHTML>
-          <ArtifactId>1038335</ArtifactId>
-          <ArtifactViewFieldId>1001576</ArtifactViewFieldId>
-          <AssociativeArtifactTypeId xsi:nil="true" />
-          <Codes />
-          <CodeTypeId xsi:nil="true" />
-          <ConnectorFieldArtifactId xsi:nil="true" />
-          <DisplayName>Extracted Text Location</DisplayName>
-          <DisplayValueFalse />
-          <DisplayValueTrue />
-          <FieldArtifactTypeId>10</FieldArtifactTypeId>
-          <FieldCategoryId>0</FieldCategoryId>
-          <FieldTypeId>0</FieldTypeId>
-          <FilterType>Search</FilterType>
-          <FormatString />
-          <FriendlyName />
-          <Guids>038487c5-876c-418b-88ba-c1a5318d0513</Guids>
-          <Guid>038487c5-876c-418b-88ba-c1a5318d0513</Guid>
-          <ImportBehavior xsi:nil="true" />
-          <EnableDataGrid>false</EnableDataGrid>
-          <OverlayBehavior xsi:nil="true" />
-          <IsAdditionalFileField>false</IsAdditionalFileField>
-          <IsArtifactBaseField>false</IsArtifactBaseField>
-          <IsAvailableInChoiceTree>false</IsAvailableInChoiceTree>
-          <IsAvailableToAssociativeObjects>false</IsAvailableToAssociativeObjects>
-          <IsEditable>true</IsEditable>
-          <IsGroupByEnabled>false</IsGroupByEnabled>
-          <IsIndexEnabled>false</IsIndexEnabled>
-          <IsLinked>false</IsLinked>
-          <IsRemovable>true</IsRemovable>
-          <IsRequired>false</IsRequired>
-          <IsSortable>true</IsSortable>
-          <IsVisible>true</IsVisible>
-          <Keywords />
-          <LinkType>false</LinkType>
-          <MaxLength>400</MaxLength>
-          <Notes />
-          <RelationalIndexViewArtifactID xsi:nil="true" />
-          <SourceFieldArtifactId xsi:nil="true" />
-          <UseUnicodeEncoding>true</UseUnicodeEncoding>
-          <Width />
-          <Wrapping>true</Wrapping>
-          <AllowPivot>false</AllowPivot>
-          <AllowGroupBy>false</AllowGroupBy>
-          <AvailableInViewer>false</AvailableInViewer>
-          <PopupPickerView xsi:nil="true" />
-          <FieldTreeView xsi:nil="true" />
-          <SiblingFieldArtifactID xsi:nil="true" />
-          <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.1</ApplicationVersion>
-        </Field>
         <Field>
           <AllowHTML>false</AllowHTML>
           <ArtifactId>1038419</ArtifactId>
@@ -1748,7 +1991,71 @@
         </SystemLayout>
       </SystemLayouts>
       <SystemViews />
-      <Views />
+      <Views>
+        <View>
+          <ArtifactId>1038428</ArtifactId>
+          <ArtifactTypeId>10</ArtifactTypeId>
+          <AvailableInObjectTab>false</AvailableInObjectTab>
+          <Guid>c18d034d-e911-4401-a370-827aa303bdd8</Guid>
+          <IsRelationalIndexView>false</IsRelationalIndexView>
+          <IsReport>false</IsReport>
+          <IsVisible>true</IsVisible>
+          <IsManualRerun>false</IsManualRerun>
+          <Keywords />
+          <Name>Documents (Destination Workspace)</Name>
+          <Notes />
+          <Order>9999</Order>
+          <QueryHint />
+          <RenderLinks>true</RenderLinks>
+          <Type>Admin Update/Delete</Type>
+          <ViewByFamily>0</ViewByFamily>
+          <ViewCriteria />
+          <ViewFields>
+            <ViewField>
+              <ArtifactViewFieldId>1000183</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>0</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1000185</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>1</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1000195</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>2</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1000184</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>3</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1000186</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>4</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001624</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>5</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001626</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>6</Order>
+            </ViewField>
+          </ViewFields>
+          <ViewOrders />
+          <VisualizationType>0</VisualizationType>
+          <ThreadMethod xsi:nil="true" />
+          <PayloadArtifactViewFieldId xsi:nil="true" />
+          <DisplayArtifactViewFieldId xsi:nil="true" />
+          <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
+          <ApplicationVersion>2.0.0.24</ApplicationVersion>
+        </View>
+      </Views>
       <ApplicationVersion>2.0.0.0</ApplicationVersion>
     </Object>
     <Object>
@@ -2771,7 +3078,20 @@
       </Layouts>
       <Name>Integration Point</Name>
       <Notes />
-      <ObjectRules />
+      <ObjectRules>
+        <ObjectRule>
+          <Name>Mass Action Visibility</Name>
+          <Action>&lt;action&gt;&lt;listoptions&gt;&lt;showMassCopy&gt;False&lt;/showMassCopy&gt;&lt;showMassEdit&gt;False&lt;/showMassEdit&gt;&lt;showMassReplace&gt;False&lt;/showMassReplace&gt;&lt;showMassTally&gt;True&lt;/showMassTally&gt;&lt;/listoptions&gt;&lt;/action&gt;</Action>
+          <ArtifactTypeID>1000054</ArtifactTypeID>
+          <FieldArtifactID>0</FieldArtifactID>
+          <Guid>1c7dabcf-0c54-4896-9ff9-cfc12149d8de</Guid>
+          <ObjectRuleID>1038429</ObjectRuleID>
+          <Operator />
+          <Type>MassActionVisibility</Type>
+          <Value>&lt;value /&gt;</Value>
+          <ApplicationVersion>2.0.0.28</ApplicationVersion>
+        </ObjectRule>
+      </ObjectRules>
       <MassOperations />
       <ParentArtifactTypeId>8</ParentArtifactTypeId>
       <EnableShapshotAuditing>true</EnableShapshotAuditing>
@@ -3100,7 +3420,7 @@
         <ArtifactId>1038290</ArtifactId>
         <DisplayOrder>0</DisplayOrder>
         <Guid>4a9d9b4c-cec1-4c68-8a6d-c0f22516f032</Guid>
-        <IsDefault>true</IsDefault>
+        <IsDefault>false</IsDefault>
         <Name>Integration Points</Name>
         <ObjectArtifactTypeId>1000054</ObjectArtifactTypeId>
         <ParentArtifactId>1038280</ParentArtifactId>
@@ -5076,9 +5396,10 @@
               <FieldArtifactId>1038314</FieldArtifactId>
               <FieldDisplayTypeId>0</FieldDisplayTypeId>
               <FullTextFieldHeight xsi:nil="true" />
-              <IsReadOnly>false</IsReadOnly>
+              <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038385</LayoutArtifactId>
-              <Order>1</Order>
+              <NameValue />
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn xsi:nil="true" />
               <Row>1</Row>
@@ -5094,10 +5415,10 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038385</LayoutArtifactId>
-              <Order>5</Order>
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>1</Row>
+              <Row>2</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -5111,10 +5432,10 @@
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038385</LayoutArtifactId>
               <NameValue>Status</NameValue>
-              <Order>10</Order>
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>1</Row>
+              <Row>3</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -5127,10 +5448,10 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038385</LayoutArtifactId>
-              <Order>20</Order>
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>1</Row>
+              <Row>4</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -5143,10 +5464,10 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038385</LayoutArtifactId>
-              <Order>30</Order>
+              <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>1</Row>
+              <Row>5</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -5198,7 +5519,7 @@
           <Name>Job Details</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>0.0.0.1</ApplicationVersion>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Job History</Name>
@@ -5215,6 +5536,18 @@
           <Type>GlobalButtonVisibility</Type>
           <Value>&lt;value /&gt;</Value>
           <ApplicationVersion>2.0.0.10</ApplicationVersion>
+        </ObjectRule>
+        <ObjectRule>
+          <Name>Show Tally/Sum/Average only</Name>
+          <Action>&lt;action&gt;&lt;listoptions&gt;&lt;showMassCopy&gt;False&lt;/showMassCopy&gt;&lt;showMassEdit&gt;False&lt;/showMassEdit&gt;&lt;showMassReplace&gt;False&lt;/showMassReplace&gt;&lt;showMassTally&gt;True&lt;/showMassTally&gt;&lt;/listoptions&gt;&lt;/action&gt;</Action>
+          <ArtifactTypeID>1000057</ArtifactTypeID>
+          <FieldArtifactID>0</FieldArtifactID>
+          <Guid>a435ab0d-60e2-491f-a8dc-42bffe43a995</Guid>
+          <ObjectRuleID>1038423</ObjectRuleID>
+          <Operator />
+          <Type>MassActionVisibility</Type>
+          <Value>&lt;value /&gt;</Value>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -5707,7 +6040,19 @@
       <ApplicationVersion>0.0.0.1</ApplicationVersion>
     </Object>
     <Object>
-      <ActiveSyncs />
+      <ActiveSyncs>
+        <ActiveSync>
+          <Id>1038425</Id>
+          <ArtifactTypeId>1000058</ArtifactTypeId>
+          <AssemblyArtifactId>1018550</AssemblyArtifactId>
+          <ClassName>kCura.IntegrationPoints.EventHandlers.IntegrationPoints.JobHistoryErrorPageInteraction</ClassName>
+          <Description>Removes ability to edit the Job History field on the Job History Error object</Description>
+          <ExecutionType>13</ExecutionType>
+          <Guid>237eab6c-6013-47f5-957b-a03876536ee7</Guid>
+          <SyncDll>kCura.IntegrationPoints</SyncDll>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
+        </ActiveSync>
+      </ActiveSyncs>
       <ArtifactId>1038328</ArtifactId>
       <DescriptorArtifactTypeId>1000058</DescriptorArtifactTypeId>
       <Fields>
@@ -6087,7 +6432,7 @@
       <Notes />
       <ObjectRules>
         <ObjectRule>
-          <Name>Only show delete</Name>
+          <Name>Hide all actions</Name>
           <Action>&lt;action&gt;&lt;listoptions&gt;&lt;showNew&gt;False&lt;/showNew&gt;&lt;showDelete&gt;False&lt;/showDelete&gt;&lt;showLink&gt;False&lt;/showLink&gt;&lt;showUnlink&gt;False&lt;/showUnlink&gt;&lt;/listoptions&gt;&lt;/action&gt;</Action>
           <ArtifactTypeID>1000058</ArtifactTypeID>
           <FieldArtifactID>0</FieldArtifactID>
@@ -6096,7 +6441,19 @@
           <Operator />
           <Type>GlobalButtonVisibility</Type>
           <Value>&lt;value /&gt;</Value>
-          <ApplicationVersion>0.0.0.1</ApplicationVersion>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
+        </ObjectRule>
+        <ObjectRule>
+          <Name>Show Tally/Sum/Average only</Name>
+          <Action>&lt;action&gt;&lt;listoptions&gt;&lt;showMassCopy&gt;False&lt;/showMassCopy&gt;&lt;showMassEdit&gt;False&lt;/showMassEdit&gt;&lt;showMassReplace&gt;False&lt;/showMassReplace&gt;&lt;showMassTally&gt;True&lt;/showMassTally&gt;&lt;/listoptions&gt;&lt;/action&gt;</Action>
+          <ArtifactTypeID>1000058</ArtifactTypeID>
+          <FieldArtifactID>0</FieldArtifactID>
+          <Guid>cdf703de-a486-4226-ba27-305a4cf8e1b6</Guid>
+          <ObjectRuleID>1038424</ObjectRuleID>
+          <Operator />
+          <Type>MassActionVisibility</Type>
+          <Value>&lt;value /&gt;</Value>
+          <ApplicationVersion>2.0.0.23</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -6760,10 +7117,92 @@
       </Fields>
       <Guid>3f45e490-b4cf-4c7d-8bb6-9ca891c0c198</Guid>
       <KeyWords />
-      <Layouts />
+      <Layouts>
+        <Layout>
+          <OverwriteProtection>true</OverwriteProtection>
+          <ArtifactId>1038412</ArtifactId>
+          <Categories>
+            <Category>
+              <CategoryId>1000424</CategoryId>
+              <LayoutArtifactId>1038412</LayoutArtifactId>
+              <Order>0</Order>
+              <Title>Destination Workspace</Title>
+              <ContextualHelp />
+              <Collapsible>false</Collapsible>
+              <DefaultCollapsed>false</DefaultCollapsed>
+              <TabbedDisplay>0</TabbedDisplay>
+              <ParentCategory xsi:nil="true" />
+              <Type>0</Type>
+            </Category>
+          </Categories>
+          <Guid>ed0da23b-191d-40b3-8171-fcdf57342436</Guid>
+          <Keywords />
+          <LayoutArtifactTypeId>1000059</LayoutArtifactTypeId>
+          <LayoutFields>
+            <LayoutField>
+              <CategoryId>1000424</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>1</Column>
+              <FieldArtifactId>1038410</FieldArtifactId>
+              <FieldDisplayTypeId>0</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>true</IsReadOnly>
+              <LayoutArtifactId>1038412</LayoutArtifactId>
+              <NameValue />
+              <Order>1</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>1</Row>
+              <Rows>1</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+          </LayoutFields>
+          <LayoutTexts />
+          <LayoutViews>
+            <LayoutView>
+              <ConnectorFieldArtifactId>1038419</ConnectorFieldArtifactId>
+              <LayoutArtifactId>1038412</LayoutArtifactId>
+              <LinkViewArtifactId>1038428</LinkViewArtifactId>
+              <Order>1</Order>
+              <RenderLinksInPopup>false</RenderLinksInPopup>
+              <ViewArtifactId>1038428</ViewArtifactId>
+              <CategoryID xsi:nil="true" />
+            </LayoutView>
+          </LayoutViews>
+          <Name>Destination Workspace Layout</Name>
+          <Notes />
+          <Order>0</Order>
+          <ApplicationVersion>2.0.0.27</ApplicationVersion>
+        </Layout>
+      </Layouts>
       <Name>Destination Workspace</Name>
       <Notes />
-      <ObjectRules />
+      <ObjectRules>
+        <ObjectRule>
+          <Name>Hide all actions</Name>
+          <Action>&lt;action&gt;&lt;listoptions&gt;&lt;showNew&gt;False&lt;/showNew&gt;&lt;showDelete&gt;False&lt;/showDelete&gt;&lt;showLink&gt;False&lt;/showLink&gt;&lt;showUnlink&gt;False&lt;/showUnlink&gt;&lt;/listoptions&gt;&lt;/action&gt;</Action>
+          <ArtifactTypeID>1000059</ArtifactTypeID>
+          <FieldArtifactID>0</FieldArtifactID>
+          <Guid>1ff0b5ce-3f78-4a11-a331-da4b4155f2b6</Guid>
+          <ObjectRuleID>1038426</ObjectRuleID>
+          <Operator />
+          <Type>GlobalButtonVisibility</Type>
+          <Value>&lt;value /&gt;</Value>
+          <ApplicationVersion>2.0.0.26</ApplicationVersion>
+        </ObjectRule>
+        <ObjectRule>
+          <Name>Show Tally/Sum/Average only</Name>
+          <Action>&lt;action&gt;&lt;listoptions&gt;&lt;showMassCopy&gt;False&lt;/showMassCopy&gt;&lt;showMassEdit&gt;False&lt;/showMassEdit&gt;&lt;showMassReplace&gt;False&lt;/showMassReplace&gt;&lt;showMassTally&gt;True&lt;/showMassTally&gt;&lt;/listoptions&gt;&lt;/action&gt;</Action>
+          <ArtifactTypeID>1000059</ArtifactTypeID>
+          <FieldArtifactID>0</FieldArtifactID>
+          <Guid>b2a3f1cd-0c3c-44c1-ad0c-8cad20a91ec1</Guid>
+          <ObjectRuleID>1038427</ObjectRuleID>
+          <Operator />
+          <Type>MassActionVisibility</Type>
+          <Value>&lt;value /&gt;</Value>
+          <ApplicationVersion>2.0.0.26</ApplicationVersion>
+        </ObjectRule>
+      </ObjectRules>
       <MassOperations />
       <ParentArtifactTypeId>8</ParentArtifactTypeId>
       <EnableShapshotAuditing>true</EnableShapshotAuditing>
@@ -6823,7 +7262,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.22</ApplicationVersion>
+          <ApplicationVersion>2.0.0.30</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6875,7 +7314,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.22</ApplicationVersion>
+          <ApplicationVersion>2.0.0.30</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6927,7 +7366,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.22</ApplicationVersion>
+          <ApplicationVersion>2.0.0.30</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -6979,7 +7418,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.22</ApplicationVersion>
+          <ApplicationVersion>2.0.0.30</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7031,7 +7470,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.22</ApplicationVersion>
+          <ApplicationVersion>2.0.0.30</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7083,18 +7522,84 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.22</ApplicationVersion>
+          <ApplicationVersion>2.0.0.30</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
       <SystemViews />
-      <Views />
-      <ApplicationVersion>2.0.0.17</ApplicationVersion>
+      <Tab>
+        <ArtifactId>1038414</ArtifactId>
+        <DisplayOrder>30</DisplayOrder>
+        <Guid>d04fc871-7a46-47a2-bbe5-83318b2d641e</Guid>
+        <IsDefault>false</IsDefault>
+        <Name>Destination Workspaces</Name>
+        <ObjectArtifactTypeId>1000059</ObjectArtifactTypeId>
+        <ParentArtifactId>1038280</ParentArtifactId>
+        <TabDisplay>0</TabDisplay>
+        <Visible>true</Visible>
+        <ApplicationVersion>2.0.0.24</ApplicationVersion>
+      </Tab>
+      <Views>
+        <View>
+          <ArtifactId>1038411</ArtifactId>
+          <ArtifactTypeId>1000059</ArtifactTypeId>
+          <AvailableInObjectTab>true</AvailableInObjectTab>
+          <Guid>a74341a4-08c7-4671-883f-59bdd12780a7</Guid>
+          <IsRelationalIndexView>false</IsRelationalIndexView>
+          <IsReport>false</IsReport>
+          <IsVisible>true</IsVisible>
+          <IsManualRerun>false</IsManualRerun>
+          <Keywords />
+          <Name>All Destination Workspaces</Name>
+          <Notes />
+          <Order>1</Order>
+          <QueryHint />
+          <RenderLinks>true</RenderLinks>
+          <Type>Admin Update</Type>
+          <ViewByFamily>0</ViewByFamily>
+          <ViewCriteria />
+          <ViewFields>
+            <ViewField>
+              <ArtifactViewFieldId>1001616</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>0</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001619</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>1</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001623</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>2</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001622</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>3</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001620</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>4</Order>
+            </ViewField>
+          </ViewFields>
+          <ViewOrders />
+          <VisualizationType>0</VisualizationType>
+          <ThreadMethod xsi:nil="true" />
+          <PayloadArtifactViewFieldId xsi:nil="true" />
+          <DisplayArtifactViewFieldId xsi:nil="true" />
+          <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
+          <ApplicationVersion>2.0.0.24</ApplicationVersion>
+        </View>
+      </Views>
+      <ApplicationVersion>2.0.0.25</ApplicationVersion>
     </Object>
   </Objects>
   <ParentTabs />
-  <RelativityVersion>9.3.321.1</RelativityVersion>
-  <Version>2.0.0.22</Version>
+  <RelativityVersion>9.3.362.9</RelativityVersion>
+  <Version>2.0.0.30</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>30db7baa-93da-4227-bdb1-e3df9e8edc72</OriginSignature>
   <MasterScripts />
@@ -7124,7 +7629,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.22</ApplicationVersion>
+      <ApplicationVersion>2.0.0.30</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038277</ArtifactId>
@@ -7135,7 +7640,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.22</ApplicationVersion>
+      <ApplicationVersion>2.0.0.30</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038278</ArtifactId>
@@ -7146,7 +7651,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.22</ApplicationVersion>
+      <ApplicationVersion>2.0.0.30</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038279</ArtifactId>
@@ -7157,7 +7662,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.22</ApplicationVersion>
+      <ApplicationVersion>2.0.0.30</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038393</ArtifactId>
@@ -7168,7 +7673,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.22</ApplicationVersion>
+      <ApplicationVersion>2.0.0.30</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />
@@ -7187,6 +7692,8 @@
     <Id>1038379</Id>
     <Id>1038380</Id>
     <Id>1038381</Id>
+    <Id>1038411</Id>
+    <Id>1038428</Id>
   </ViewIds>
   <LayoutIds>
     <Id>1038382</Id>
@@ -7194,6 +7701,7 @@
     <Id>1038384</Id>
     <Id>1038385</Id>
     <Id>1038386</Id>
+    <Id>1038412</Id>
   </LayoutIds>
   <FieldIds>
     <Id>1038281</Id>
@@ -7227,7 +7735,6 @@
     <Id>1038323</Id>
     <Id>1038324</Id>
     <Id>1038325</Id>
-    <Id>1038335</Id>
     <Id>1038336</Id>
     <Id>1038337</Id>
     <Id>1038338</Id>
@@ -7302,6 +7809,7 @@
     <Id>1038290</Id>
     <Id>1038318</Id>
     <Id>1038329</Id>
+    <Id>1038414</Id>
   </TabIds>
   <CustomPageIds>
     <Id>1038389</Id>

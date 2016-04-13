@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.Services</RootNamespace>
     <AssemblyName>kCura.IntegrationPoints.Services</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -49,8 +49,14 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="kCura.Relativity.Client">
+      <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.API">
       <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.Interfaces">
+      <HintPath>..\Dependencies\kCura\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -65,7 +71,8 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="JobHistoryModule.cs" />
+    <Compile Include="DocumentManager.cs" />
+    <Compile Include="IntegrationPointsModule.cs" />
     <Compile Include="JobHistoryManager.cs" />
   </ItemGroup>
   <ItemGroup>

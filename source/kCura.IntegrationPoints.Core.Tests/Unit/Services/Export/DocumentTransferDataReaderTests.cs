@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Tests.Unit.Helpers;
+using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
@@ -19,12 +19,28 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		private IExporterService _exportService;
 		private IDataReader _instance;
 		private ICoreContext _context;
+		private IScratchTableRepository[] _scratchRepositories;
+		private ISourceWorkspaceManager _sourceWorkspaceManager;
+		private ISourceJobManager _sourceJobManager;
 
 		private const int _DOCUMENT_ARTIFACTID = 123423;
 		private const string _FIELD_NAME = "DispName";
 		private const int _FIELD_IDENTIFIER = 123;
 		private const string _CONTROL_NUMBER = "WEB000123";
-		private const int _FETCH_ARTIFACTDTOS_BATCH_SIZE = 50;
+		private const int _FETCH_ARTIFACTDTOS_BATCH_SIZE = 200;
+		private const int _SOURCE_WORKSPACE_ARTIFACTID = 93020;
+		private const int _TARGET_WORKSPACE_ARTIFACTID = 930233;
+		private const int _JOB_HISTORY_ARTIFACTID = 94903;
+		private const string _SOURCE_WORKSPACE_NAME = "Source Workspace";
+
+		private readonly SourceWorkspaceDTO _sourceWorkspaceDto = new SourceWorkspaceDTO
+		{
+			ArtifactId = 409303,
+			ArtifactTypeId = 4444,
+			Name = String.Format("{0} - {1}", _SOURCE_WORKSPACE_NAME, _SOURCE_WORKSPACE_ARTIFACTID),
+			SourceCaseName = _SOURCE_WORKSPACE_NAME,
+			SourceCaseArtifactId = _SOURCE_WORKSPACE_ARTIFACTID
+		};
 
 		private static readonly ArtifactDTO _templateArtifactDto = new ArtifactDTO(
 			_DOCUMENT_ARTIFACTID,
@@ -63,10 +79,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			_context = Substitute.For<ICoreContext>();
 			_exportService = Substitute.For<IExporterService>();
+			var scratchTable = Substitute.For<IScratchTableRepository>();
+			_scratchRepositories = new[] { scratchTable };
+			_sourceWorkspaceManager = Substitute.For<ISourceWorkspaceManager>();
+			_sourceJobManager = Substitute.For<ISourceJobManager>();
+
+			_sourceWorkspaceManager.InitializeWorkspace(_SOURCE_WORKSPACE_ARTIFACTID, _TARGET_WORKSPACE_ARTIFACTID)
+				.Returns(_sourceWorkspaceDto);
+			_sourceJobManager.InitializeWorkspace(_SOURCE_WORKSPACE_ARTIFACTID, _TARGET_WORKSPACE_ARTIFACTID, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId, _JOB_HISTORY_ARTIFACTID);
 		}
 
 		#region Read
-
 		[Test]
 		public void Read_FirstRead_RetrievesDocuments_ReturnsTrue()
 		{
@@ -76,7 +99,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance = new DocumentTransferDataReader(
 				_exportService,
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			bool result = _instance.Read();
@@ -93,9 +117,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(new ArtifactDTO[0]);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			bool result = _instance.Read();
@@ -112,9 +137,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Throws<Exception>();
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act & Assert
 			Assert.Throws<Exception>(() => _instance.Read());
@@ -133,9 +159,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				});
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -162,9 +189,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				});
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -185,9 +213,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					.Returns(_templateArtifactDtos);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[0],
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			bool result = _instance.Read();
@@ -203,9 +232,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns(new ArtifactDTO[0]);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			bool result = _instance.Read();
@@ -221,9 +251,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns(new ArtifactDTO[0]);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[0],
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			bool result = _instance.Read();
@@ -246,9 +277,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -268,9 +300,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -289,9 +322,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -306,9 +340,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			// Arrange
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			bool result = _instance.NextResult();
@@ -322,9 +357,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			// Arrange
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			int result = _instance.Depth;
@@ -338,9 +374,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			// Arrange
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			int result = _instance.RecordsAffected;
@@ -354,9 +391,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			// Arrange
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			string fieldName = _instance.GetName(0);
@@ -370,7 +408,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			// Arrange
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[]
 				{
 					new FieldMap()
@@ -382,7 +420,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						}
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			string fieldName = _instance.GetName(0);
@@ -396,9 +435,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			// Arrange
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			int ordinal = _instance.GetOrdinal(_FIELD_IDENTIFIER.ToString());
@@ -412,7 +452,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			// Arrange
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[]
 				{
 					new FieldMap()
@@ -424,7 +464,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						}
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			int ordinal = _instance.GetOrdinal(_FIELD_IDENTIFIER.ToString());
@@ -442,7 +483,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[]
 				{
 					new FieldMap()
@@ -454,7 +495,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						}
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -473,9 +515,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -490,9 +533,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			// Arrange
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			int fieldCount = _instance.FieldCount;
@@ -506,9 +550,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			// Arrange
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			int fieldCount = _instance.FieldCount;
@@ -526,9 +571,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			bool exceptionThrown = false;
@@ -552,9 +598,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			bool exceptionThrown = false;
@@ -579,9 +626,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -600,9 +648,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -621,9 +670,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -642,9 +692,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE).Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -673,9 +724,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			// Arrange
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			var expectedResult = new DataTable()
 			{
@@ -683,7 +735,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				{
 					new DataColumn(_FIELD_IDENTIFIER.ToString()),
 					new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
-					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD)
+					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD),
+					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
+					//new DataColumn(Contracts.Constants.SPECIAL_JOBHISTORY_FIELD)
 				}
 			};
 
@@ -699,7 +753,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			// Arrange
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[] 
 				{
 					new FieldMap()
@@ -711,7 +765,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = 	new FieldEntry() {FieldIdentifier = "456", DisplayName = "def"}
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			var expectedResult = new DataTable()
 			{
@@ -720,7 +775,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					new DataColumn("123"),
 					new DataColumn("456"),
 					new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
-					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD)
+					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD),
+					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
+					//new DataColumn(Contracts.Constants.SPECIAL_JOBHISTORY_FIELD)
 				}
 			};
 
@@ -736,16 +793,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			// Arrange
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[0], 
-				_context);
+				_context,
+				_scratchRepositories);
 
 			var expectedResult = new DataTable()
 			{
 				Columns =
 				{
 					new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
-					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD)
+					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD),
+					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
+					//new DataColumn(Contracts.Constants.SPECIAL_JOBHISTORY_FIELD)
 				}
 			};
 
@@ -761,16 +821,19 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		{
 			// Arrange
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[0],
-				_context);
+				_context,
+				_scratchRepositories);
 
 			var expectedResult = new DataTable()
 			{
 				Columns =
 				{
 					new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
-					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD)
+					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD),
+					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
+					//new DataColumn(Contracts.Constants.SPECIAL_JOBHISTORY_FIELD)
 				}
 			};
 
@@ -793,9 +856,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				.Returns<ArtifactDTO[]>(_templateArtifactDtos);
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				_templateFieldEntries,
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -829,7 +893,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				});
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[]
 				{
 					new FieldMap()
@@ -837,7 +901,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" } 
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -871,7 +936,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				});
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[]
 				{
 					new FieldMap()
@@ -879,7 +944,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -912,7 +978,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				});
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[]
 				{
 					new FieldMap()
@@ -920,7 +986,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -952,7 +1019,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				});
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[]
 				{
 					new FieldMap()
@@ -960,7 +1027,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -993,7 +1061,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				});
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[]
 				{
 					new FieldMap()
@@ -1001,7 +1069,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -1034,7 +1103,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				});
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[]
 				{
 					new FieldMap()
@@ -1042,7 +1111,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -1075,7 +1145,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				});
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[]
 				{
 					new FieldMap()
@@ -1083,7 +1153,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -1117,7 +1188,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				});
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[]
 				{
 					new FieldMap()
@@ -1125,7 +1196,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -1159,7 +1231,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				});
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[]
 				{
 					new FieldMap()
@@ -1167,7 +1239,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -1201,7 +1274,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				});
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[]
 				{
 					new FieldMap()
@@ -1209,7 +1282,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();
@@ -1243,7 +1317,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				});
 
 			_instance = new DocumentTransferDataReader(
-				_exportService,
+				_exportService, 
 				new FieldMap[]
 				{
 					new FieldMap()
@@ -1251,7 +1325,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 						SourceField = new FieldEntry() { FieldIdentifier = "123", DisplayName = "Some Number" }, 
 					}
 				},
-				_context);
+				_context,
+				_scratchRepositories);
 
 			// Act
 			_instance.Read();

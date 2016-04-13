@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Web.Http;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
@@ -12,10 +11,8 @@ using kCura.IntegrationPoints.Web.DataStructures;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using kCura.Relativity.ImportAPI;
+using kCura.Relativity.ImportAPI.Enumeration;
 using Newtonsoft.Json;
-using Artifact = kCura.Relativity.Client.Artifact;
-using Field = kCura.Relativity.Client.Field;
-using Query = kCura.Relativity.Client.Query;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -56,9 +53,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			List<FieldEntry> textFields = GetTextFields(Convert.ToInt32(ArtifactType.Document));
 			IEnumerable<Relativity.ImportAPI.Data.Field> workspaceFields = importApi.GetWorkspaceFields(_client.APIOptions.WorkspaceID, Convert.ToInt32(ArtifactType.Document));
-			HashSet<int> mappableArtifactIds = new HashSet<int>(workspaceFields.Select(x => x.ArtifactID));
+			HashSet<int> mappableArtifactIds = new HashSet<int>(workspaceFields.Where(y => y.FieldCategory != FieldCategoryEnum.Identifier).Select(x => x.ArtifactID));
 			IEnumerable<FieldEntry> textMappableFields = textFields.Where(x => mappableArtifactIds.Contains(Convert.ToInt32(x.FieldIdentifier)));
-
 			return Request.CreateResponse(HttpStatusCode.OK, textMappableFields, Configuration.Formatters.JsonFormatter);
 		}
 
@@ -152,7 +148,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			Query query = new Query
 			{
 				ArtifactTypeName = "Field",
-				Fields = new List<Field>(),
+				Fields = new List<kCura.Relativity.Client.Field>(),
 				Sorts = new List<Sort>()
 				{
 					new Sort()
@@ -176,13 +172,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return fieldEntries;
 		}
 
-		private List<FieldEntry> ConvertToFieldEntries(List<Artifact> artifacts)
+		private List<FieldEntry> ConvertToFieldEntries(List<kCura.Relativity.Client.Artifact> artifacts)
 		{
 			List<FieldEntry> fieldEntries = new List<FieldEntry>();
 
-			foreach (Artifact artifact in artifacts)
+			foreach (kCura.Relativity.Client.Artifact artifact in artifacts)
 			{
-				foreach (Field field in artifact.Fields)
+				foreach (kCura.Relativity.Client.Field field in artifact.Fields)
 				{
 					if (field.Name == "Name")
 					{

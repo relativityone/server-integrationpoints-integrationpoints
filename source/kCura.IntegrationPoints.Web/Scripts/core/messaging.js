@@ -57,7 +57,6 @@
 				} else if (error.toString) {
 					result = error.toString();
 				} else {
-					//umm... what the heck is this thing?
 					result = DEFAULT_ERROR;
 				}
 			} else if (typeof error === "string") {
@@ -81,6 +80,7 @@
 						$error = $('<div class="page-message page-error"/>').append('<span class="legal-hold icon-error"></span>').append($('<div/>').append(messageBody)).hide();
 
 				clearError($el);
+				message.info.clear($container);
 
 				if ($.isFunction($container)) {
 					$error.show();
@@ -107,6 +107,7 @@
 						$error = $('<div class="page-message page-info"/>').append('<span class="legal-hold icon-step-complete"></span>').append($('<div/>').append(messageBody)).hide();
 
 				clearInfo($el);
+				message.error.clear($container);
 
 				$error.prependTo($el).show({
 					effect: settings.SHOW_ANIMATION
