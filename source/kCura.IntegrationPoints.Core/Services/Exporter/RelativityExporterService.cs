@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		/// <summary>
 		/// Testing only
 		/// </summary>
-		/// <param name="exporter"></param>
 		public RelativityExporterService(
 			global::Relativity.Core.Api.Shared.Manager.Export.IExporter exporter,
 			int[] avfIds,
@@ -63,7 +62,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int)ArtifactType.Document);
 			Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
-			bool useDataGrid = false;
 			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
 			{
 				int artifactId = Convert.ToInt32(source.FieldIdentifier);
