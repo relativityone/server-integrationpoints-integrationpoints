@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Requests;
+using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Services.ObjectQuery;
 using API = Relativity.API;
+using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.Services
 {
@@ -18,89 +19,86 @@ namespace kCura.IntegrationPoints.Services
 	/// </summary>
 	public class DocumentManager : IDocumentManager
 	{
-		private const string _DESTINATION_WORKSPACE_GUID = "8980C2FA-0D33-4686-9A97-EA9D6F0B4196";
+		private const string _DESTINATION_WORKSPACE_FIELD_GUID = "8980C2FA-0D33-4686-9A97-EA9D6F0B4196";
 		private const string _PROMOTE_GUID = "4E418A56-90C5-4E59-A1C5-C43C11A3CCFF";
 		private const string _INCLUDE_GUID = "6884BAC4-DD8F-4087-9C17-B4BCE99815D5";
 		private const string _EXCLUDE_GUID = "DB110A00-AC87-4C40-96E2-827BF9B18909";
+
+		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
+		private static readonly int[] _viewPermission = { 1 };
 
 		public async Task<bool> PingAsync()
 		{
 			return await Task.Run(() => true).ConfigureAwait(false);
 		}
 
-		public async Task<PercentagePushedToReviewModel> GetPercentagePushedToReview(PercentagePushedToReviewRequest request)
+		public async Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request)
 		{
-			return await Task.Run(() => GetPercentagePushedToReviewInternal(request)).ConfigureAwait(false);
+			return await Task.Run(() => GetPercentagePushedToReviewInternalAsync(request)).ConfigureAwait(false);
 		}
 
-		public async Task<CurrentSnapshotModel> GetCurrentSnapshot(CurrentSnapshotRequest request)
+		public async Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request)
 		{
-			return await Task.Run(() => GetCurrentShapshotInternal(request)).ConfigureAwait(false);
+			return await Task.Run(() => GetCurrentPromotionStatusInternalAsync(request)).ConfigureAwait(false);
 		}
 
-		public async Task<DocumentVolumeSummaryModel> GetDocumentVolume(DocumentVolumeRequest request)
+		public async Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request)
 		{
-			return await Task.Run(() => GetDocumentVolumeInternal(request)).ConfigureAwait(false);
+			return await Task.Run(() => GetHistoricalPromotionStatusInternalAsync(request)).ConfigureAwait(false);
 		}
 
-		private async Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewInternal(PercentagePushedToReviewRequest request)
+		private async Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewInternalAsync(PercentagePushedToReviewRequest request)
 		{
-			string destinationWorkspacedisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_GUID);
+			string destinationWorkspaceDisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_FIELD_GUID);
 
 			IObjectQueryManager objectQueryManager = API.Services.Helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
 			Query totalDocumentsQuery = new Query();
 			Query totalDocumentsPushedToReviewQuery = new Query
 			{
-				Condition = $"'{destinationWorkspacedisplayName}' ISSET",
-				Fields = new[] { destinationWorkspacedisplayName }
+				Condition = $"'{destinationWorkspaceDisplayName}' ISSET",
+				Fields = new[] { destinationWorkspaceDisplayName }
 			};
 
-			int[] permissions = { 1 };
-			ObjectQueryResultSet totalDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, totalDocumentsQuery, 1, 1, permissions, string.Empty);
-			ObjectQueryResultSet totalDocumentsPushedToReviewResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, totalDocumentsPushedToReviewQuery, 1, 1, permissions, string.Empty);
+			ObjectQueryResultSet totalDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalDocumentsQuery, 1, 1, _viewPermission, string.Empty);
+			ObjectQueryResultSet totalDocumentsPushedToReviewResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalDocumentsPushedToReviewQuery, 1, 1, _viewPermission, string.Empty);
 
-			int totalDocuments = 0;
-			int totalDocumentsPushedToReview = 0;
-
-			if (totalDocumentsResultSet.Success)
+			if (!totalDocumentsResultSet.Success)
 			{
-				totalDocuments = totalDocumentsResultSet.Data.TotalResultCount;
+				throw new Exception(totalDocumentsResultSet.Message);
 			}
-
-			if (totalDocumentsPushedToReviewResultSet.Success)
+			if (!totalDocumentsPushedToReviewResultSet.Success)
 			{
-				totalDocumentsPushedToReview = totalDocumentsPushedToReviewResultSet.Data.TotalResultCount;
+				throw new Exception(totalDocumentsPushedToReviewResultSet.Message);
 			}
 
 			PercentagePushedToReviewModel model = new PercentagePushedToReviewModel
 			{
-				TotalDocuments = totalDocuments,
-				TotalDocumentsPushedToReview = totalDocumentsPushedToReview
-
+				TotalDocuments = totalDocumentsResultSet.Data.TotalResultCount,
+				TotalDocumentsPushedToReview = totalDocumentsPushedToReviewResultSet.Data.TotalResultCount
 			};
 			return model;
 		}
 
-		private async Task<CurrentSnapshotModel> GetCurrentShapshotInternal(CurrentSnapshotRequest request)
+		private async Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusInternalAsync(CurrentPromotionStatusRequest request)
 		{
-			string promotedisplayName = GetDisplayName(request.WorkspaceArtifactId, _PROMOTE_GUID);
-			string destinationWorkspacedisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_GUID);
+			string promotedDisplayName = GetDisplayName(request.WorkspaceArtifactId, _PROMOTE_GUID);
+			string destinationWorkspacedisplayName = GetDisplayName(request.WorkspaceArtifactId, _DESTINATION_WORKSPACE_FIELD_GUID);
 
 			IObjectQueryManager objectQueryManager = API.Services.Helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
 			Query totalUntaggedDocumentsQuery = new Query
 			{
-				Condition = $"NOT '{promotedisplayName}' ISSET",
-				Fields = new[] { promotedisplayName }
+				Condition = $"NOT '{promotedDisplayName}' ISSET",
+				Fields = new[] { promotedDisplayName }
 			};
 			Query totalIncludedDocumentsQuery = new Query
 			{
-				Condition = $"'{promotedisplayName}' == CHOICE {_INCLUDE_GUID}",
-				Fields = new[] { promotedisplayName }
+				Condition = $"'{promotedDisplayName}' == CHOICE {_INCLUDE_GUID}",
+				Fields = new[] { promotedDisplayName }
 			};
 			Query totalExcludedDocumentsQuery = new Query
 			{
-				Condition = $"'{promotedisplayName}' == CHOICE {_EXCLUDE_GUID}",
-				Fields = new[] { promotedisplayName }
+				Condition = $"'{promotedDisplayName}' == CHOICE {_EXCLUDE_GUID}",
+				Fields = new[] { promotedDisplayName }
 			};
 			Query totalPushedToReviewDocumentsQuery = new Query
 			{
@@ -108,89 +106,81 @@ namespace kCura.IntegrationPoints.Services
 				Fields = new[] { destinationWorkspacedisplayName }
 			};
 
-			int[] permissions = { 1 };
-			ObjectQueryResultSet totalUntaggedDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, totalUntaggedDocumentsQuery, 1, 1, permissions, string.Empty);
-			ObjectQueryResultSet totalIncludedDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, totalIncludedDocumentsQuery, 1, 1, permissions, string.Empty);
-			ObjectQueryResultSet totalExcludedDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, totalExcludedDocumentsQuery, 1, 1, permissions, string.Empty);
-			ObjectQueryResultSet totalPushedToReviewDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, 10, totalPushedToReviewDocumentsQuery, 1, 1, permissions, string.Empty);
+			ObjectQueryResultSet totalUntaggedDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalUntaggedDocumentsQuery, 1, 1, _viewPermission, string.Empty);
+			ObjectQueryResultSet totalIncludedDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalIncludedDocumentsQuery, 1, 1, _viewPermission, string.Empty);
+			ObjectQueryResultSet totalExcludedDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalExcludedDocumentsQuery, 1, 1, _viewPermission, string.Empty);
+			ObjectQueryResultSet totalPushedToReviewDocumentsResultSet = await objectQueryManager.QueryAsync(request.WorkspaceArtifactId, _DOCUMENT_ARTIFACT_TYPE_ID, totalPushedToReviewDocumentsQuery, 1, 1, _viewPermission, string.Empty);
 
-			int totalUntaggedDocuments = 0;
-			int totalIncludedDocuments = 0;
-			int totalExcludedDocuments = 0;
-			int totalPushedToReviewDocuments = 0;
-
-			if (totalUntaggedDocumentsResultSet.Success)
+			if (!totalUntaggedDocumentsResultSet.Success)
 			{
-				totalUntaggedDocuments = totalUntaggedDocumentsResultSet.Data.TotalResultCount;
+				throw new Exception(totalUntaggedDocumentsResultSet.Message);
 			}
 
-			if (totalIncludedDocumentsResultSet.Success)
+			if (!totalIncludedDocumentsResultSet.Success)
 			{
-				totalIncludedDocuments = totalIncludedDocumentsResultSet.Data.TotalResultCount;
+				throw new Exception(totalIncludedDocumentsResultSet.Message);
 			}
 
-			if (totalExcludedDocumentsResultSet.Success)
+			if (!totalExcludedDocumentsResultSet.Success)
 			{
-				totalExcludedDocuments = totalExcludedDocumentsResultSet.Data.TotalResultCount;
+				throw new Exception(totalExcludedDocumentsResultSet.Message);
 			}
 
-			if (totalPushedToReviewDocumentsResultSet.Success)
+			if (!totalPushedToReviewDocumentsResultSet.Success)
 			{
-				totalPushedToReviewDocuments = totalPushedToReviewDocumentsResultSet.Data.TotalResultCount;
+				throw new Exception(totalPushedToReviewDocumentsResultSet.Message);
 			}
 
-			CurrentSnapshotModel model = new CurrentSnapshotModel
+			CurrentPromotionStatusModel model = new CurrentPromotionStatusModel
 			{
-				TotalDocumentsUntagged = totalUntaggedDocuments,
-				TotalDocumentsIncluded = totalIncludedDocuments,
-				TotalDocumentsExcluded = totalExcludedDocuments,
-				TotalDocumentsPushedToReview = totalPushedToReviewDocuments
+				TotalDocumentsUntagged = totalUntaggedDocumentsResultSet.Data.TotalResultCount,
+				TotalDocumentsIncluded = totalIncludedDocumentsResultSet.Data.TotalResultCount,
+				TotalDocumentsExcluded = totalExcludedDocumentsResultSet.Data.TotalResultCount,
+				TotalDocumentsPushedToReview = totalPushedToReviewDocumentsResultSet.Data.TotalResultCount
 
 			};
 			return model;
 		}
 
-		private async Task<DocumentVolumeSummaryModel> GetDocumentVolumeInternal(DocumentVolumeRequest request)
+		private async Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusInternalAsync(HistoricalPromotionStatusRequest request)
 		{
-			DocumentVolumeModel currentDocumentVolume = await GetCurrentDocumentModel(request.WorkspaceArtifactId);
-			IEnumerable<DocumentVolumeModel> historicalDocumentVolume = await GetHistoricalDocumentModel(request.WorkspaceArtifactId);
+			HistoricalPromotionStatusModel currentHistoricalPromotionStatus = await GetCurrentDocumentModelAsync(request.WorkspaceArtifactId);
+			IEnumerable<HistoricalPromotionStatusModel> historicalDocumentVolume = await GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId);
 
-			DocumentVolumeModel[] documentVolume = historicalDocumentVolume.Concat(new[] {currentDocumentVolume}).ToArray();
+			HistoricalPromotionStatusModel[] historicalPromotionStatus = historicalDocumentVolume.Concat(new[] {currentHistoricalPromotionStatus}).ToArray();
 
-			DocumentVolumeSummaryModel model = new DocumentVolumeSummaryModel
+			HistoricalPromotionStatusSummaryModel model = new HistoricalPromotionStatusSummaryModel
 			{
-				DocumentVolume = documentVolume
+				HistoricalPromotionStatus = historicalPromotionStatus
 			};
 			return model;
 		}
 
-		private async Task<DocumentVolumeModel> GetCurrentDocumentModel(int workspaceId)
+		private async Task<HistoricalPromotionStatusModel> GetCurrentDocumentModelAsync(int workspaceId)
 		{
-			DateTime now = DateTime.UtcNow;
+			CurrentPromotionStatusRequest request = new CurrentPromotionStatusRequest {WorkspaceArtifactId = workspaceId};
+			CurrentPromotionStatusModel currentPromotionStatus = await GetCurrentPromotionStatusInternalAsync(request);
 
-			CurrentSnapshotRequest request = new CurrentSnapshotRequest() {WorkspaceArtifactId = workspaceId};
-			CurrentSnapshotModel currentSnapshot = await GetCurrentShapshotInternal(request);
-
-			DocumentVolumeModel model = new DocumentVolumeModel()
+			HistoricalPromotionStatusModel model = new HistoricalPromotionStatusModel
 			{
 				Date = DateTime.UtcNow,
-				TotalDocumentsIncluded = currentSnapshot.TotalDocumentsIncluded,
-				TotalDocumentsExcluded = currentSnapshot.TotalDocumentsExcluded,
-				TotalDocumentsUntagged = currentSnapshot.TotalDocumentsUntagged
+				TotalDocumentsIncluded = currentPromotionStatus.TotalDocumentsIncluded,
+				TotalDocumentsExcluded = currentPromotionStatus.TotalDocumentsExcluded,
+				TotalDocumentsUntagged = currentPromotionStatus.TotalDocumentsUntagged
 			};
 			return model;
 		}
 
-		private async Task<List<DocumentVolumeModel>> GetHistoricalDocumentModel(int workspaceId)
+		private async Task<List<HistoricalPromotionStatusModel>> GetHistoricalDocumentModelAsync(int workspaceId)
 		{
 			IDBContext workspaceContext = API.Services.Helper.GetDBContext(workspaceId);
 
-			List<DocumentVolumeModel> historicalModels = new List<DocumentVolumeModel>();
+			List<HistoricalPromotionStatusModel> historicalModels = new List<HistoricalPromotionStatusModel>();
 			using (SqlDataReader reader = workspaceContext.ExecuteSQLStatementAsReader(_DOCUMENT_VOLUME_SQL))
 			{
 				while (await reader.ReadAsync())
 				{
-					DocumentVolumeModel historicalModel = new DocumentVolumeModel
+					HistoricalPromotionStatusModel historicalModel = new HistoricalPromotionStatusModel
 					{
 						Date = reader.GetDateTime(0),
 						TotalDocumentsIncluded = reader.GetInt32(1),
@@ -207,8 +197,8 @@ namespace kCura.IntegrationPoints.Services
 
 		private string GetDisplayName(int workspaceArtifactId, string artifactGuid)
 		{
-			SqlParameter artifatGuidParameter = new SqlParameter("@artifactGuid", artifactGuid);
-			SqlParameter[] sqlParameters = { artifatGuidParameter };
+			SqlParameter artifactGuidParameter = new SqlParameter("@artifactGuid", artifactGuid);
+			SqlParameter[] sqlParameters = { artifactGuidParameter };
 
 			IDBContext workspaceContext = API.Services.Helper.GetDBContext(workspaceArtifactId);
 			string displayName = workspaceContext.ExecuteSqlStatementAsScalar<string>(_DISPLAY_NAME_SQL, sqlParameters);

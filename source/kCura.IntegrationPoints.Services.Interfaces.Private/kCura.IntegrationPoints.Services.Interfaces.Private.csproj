@@ -68,14 +68,14 @@
     <Compile Include="IDocumentManager.cs" />
     <Compile Include="IJobHistoryManager.cs" />
     <Compile Include="IIntegrationPointsModule.cs" />
-    <Compile Include="Models\DocumentVolumeModel.cs" />
-    <Compile Include="Models\DocumentVolumeSummaryModel.cs" />
-    <Compile Include="Models\CurrentSnapshotModel.cs" />
+    <Compile Include="Models\HistoricalPromotionStatusModel.cs" />
+    <Compile Include="Models\HistoricalPromotionStatusSummaryModel.cs" />
+    <Compile Include="Models\CurrentPromotionStatusModel.cs" />
     <Compile Include="Models\PercentagePushedToReviewModel.cs" />
     <Compile Include="Models\JobHistoryModel.cs" />
     <Compile Include="Models\JobHistorySummaryModel.cs" />
-    <Compile Include="Requests\DocumentVolumeRequest.cs" />
-    <Compile Include="Requests\CurrentSnapshotRequest.cs" />
+    <Compile Include="Requests\HistoricalPromotionStatusRequest.cs" />
+    <Compile Include="Requests\CurrentPromotionStatusRequest.cs" />
     <Compile Include="Requests\PercentagePushedToReviewRequest.cs" />
     <Compile Include="Requests\JobHistoryRequest.cs" />
   </ItemGroup>
