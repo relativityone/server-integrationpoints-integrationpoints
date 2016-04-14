@@ -112,8 +112,9 @@ namespace kCura.IntegrationPoints.Data
 		{
 			IObjectQueryManagerAdaptor rdoRepository = new ObjectQueryManagerAdaptor(helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), sourceWorkspaceId, Convert.ToInt32(ArtifactType.Field));
 			BaseServiceContext baseServiceContext = System.Security.Claims.ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(sourceWorkspaceId);
+			BaseContext baseContext = baseServiceContext.ThreadSafeChicagoContext;
 			IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
-			IFieldRepository fieldManager = new FieldRepository(rdoRepository, baseServiceContext, rsapiClient);
+			IFieldRepository fieldManager = new FieldRepository(rdoRepository, baseServiceContext, baseContext, rsapiClient);
 			ArtifactDTO[] fieldArtifacts = fieldManager.RetrieveFieldsAsync(
 				10,
 				new HashSet<string>(new[]
