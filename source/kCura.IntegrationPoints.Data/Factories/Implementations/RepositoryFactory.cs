@@ -108,6 +108,16 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return tabRepository;
 		}
 
+		public IDocumentRepository GetDocumentRepository(int workspaceArtifactId)
+		{
+			IObjectQueryManager objectQueryManager = _helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser);
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(objectQueryManager, workspaceArtifactId, (int)ArtifactType.Document);
+
+			IDocumentRepository documentRepository = new KeplerDocumentRepository(objectQueryManagerAdaptor);
+
+			return documentRepository;
+		}
+
 		private IRSAPIClient GetRsapiClientForWorkspace(int workspaceArtifactId)
 		{
 			ContextContainer contexts = this.GetContextsForWorkspace(workspaceArtifactId);

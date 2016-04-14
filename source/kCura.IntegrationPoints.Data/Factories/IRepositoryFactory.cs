@@ -75,5 +75,12 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <param name="workspaceArtifactId">The workspace artifact id</param>
 		/// <returns>A class implementing the ITabRepository interface</returns>
 		ITabRepository GetTabRepository(int workspaceArtifactId);
+
+		/// <summary>
+		/// Returns a class implementing the IDocumentRepository interface
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id</param>
+		/// <returns></returns>
+		IDocumentRepository GetDocumentRepository(int workspaceArtifactId);
 	}
 }
