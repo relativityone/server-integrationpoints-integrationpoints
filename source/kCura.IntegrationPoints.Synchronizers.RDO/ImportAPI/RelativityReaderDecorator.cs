@@ -65,18 +65,18 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME, Contracts.Constants.SPECIAL_JOBHISTORY_FIELD);
 		}
 
-		private void RegisterSpecialField(HashSet<string> columns, string targetName, string sourceIdentifer)
+		private void RegisterSpecialField(HashSet<string> columns, string targetName, string sourceIdentifier)
 		{
-			if (columns.Contains(sourceIdentifer))
+			if (columns.Contains(sourceIdentifier))
 			{
-				RegisterField(targetName, sourceIdentifer);
+				RegisterField(targetName, sourceIdentifier);
 			}
 		}
 
-		private void RegisterField(string targetName, string sourceIdentifer)
+		private void RegisterField(string targetName, string sourceIdentifier)
 		{
-			_targetNameToSourceIdentifier[targetName] = sourceIdentifer;
-			_sourceIdentifierToTargetName[sourceIdentifer] = targetName;
+			_targetNameToSourceIdentifier[targetName] = sourceIdentifier;
+			_sourceIdentifierToTargetName[sourceIdentifier] = targetName;
 		}
 
 		public object this[string name]
