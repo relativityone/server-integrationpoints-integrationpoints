@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using Relativity.Core;
 using Relativity.Core.Process;
-using Relativity.Data;
-using Field = Relativity.Core.DTO.Field;
 using ArtifactType = Relativity.Query.ArtifactType;
+using Field = Relativity.Core.DTO.Field;
 
 namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 {
@@ -33,16 +31,16 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 
 		internal MultiObjectListUpdate GetMultiObjectListUpdate(int destinationWorkspaceInstanceId)
 		{
-			var objectstoUpdate = new MultiObjectListUpdate();
+			var objectsToUpdate = new MultiObjectListUpdate();
 			var instances = new List<int>()
 			{
 				destinationWorkspaceInstanceId
 			};
 
-			objectstoUpdate.tristate = true;
-			objectstoUpdate.Selected = instances;
+			objectsToUpdate.tristate = true;
+			objectsToUpdate.Selected = instances;
 
-			return objectstoUpdate;
+			return objectsToUpdate;
 		}
 	}
 }

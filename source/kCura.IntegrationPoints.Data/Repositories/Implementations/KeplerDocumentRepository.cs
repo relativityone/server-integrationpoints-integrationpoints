@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.Relativity.Client;
 using Relativity.Services.ObjectQuery;
+using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -15,7 +17,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public KeplerDocumentRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor)
 		{
 			_objectQueryManagerAdaptor = objectQueryManagerAdaptor;
-			_objectQueryManagerAdaptor.ArtifactTypeId = 10;
+			_objectQueryManagerAdaptor.ArtifactTypeId = (int)ArtifactType.Document;
 		}
 
 		public int WorkspaceArtifactId

@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// Retrieves the artifact view field id for the given field
 		/// </summary>
 		/// <param name="fieldArtifactId">The artifact id of the field</param>
-		/// <returns>The artifact view filed id if found, <code>NULL</code> otherwise</returns>
+		/// <returns>The artifact view field id if found, <code>NULL</code> otherwise</returns>
 		int? RetrieveArtifactViewFieldId(int fieldArtifactId);
 
 		/// <summary>

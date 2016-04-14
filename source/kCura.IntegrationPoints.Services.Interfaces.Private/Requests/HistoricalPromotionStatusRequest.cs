@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Services.Interfaces.Private.Requests
+﻿namespace kCura.IntegrationPoints.Services
 {
 	public class HistoricalPromotionStatusRequest
 	{
