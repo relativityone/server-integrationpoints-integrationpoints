@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Requests;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;

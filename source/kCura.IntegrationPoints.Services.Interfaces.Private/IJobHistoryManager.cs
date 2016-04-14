@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Requests;
 using Relativity.Kepler.Services;
 
 namespace kCura.IntegrationPoints.Services

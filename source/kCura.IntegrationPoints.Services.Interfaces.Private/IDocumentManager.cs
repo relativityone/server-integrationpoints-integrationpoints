@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Requests;
 using Relativity.Kepler.Services;
 
 namespace kCura.IntegrationPoints.Services
@@ -33,7 +31,7 @@ namespace kCura.IntegrationPoints.Services
 		Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request);
 
 		/// <summary>
-		/// Gets the number of documents for each choice of the promote field for each day that 
+		/// Gets the number of documents for each choice of the promote field for each day
 		/// </summary>
 		/// <returns></returns>
 		Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request);
