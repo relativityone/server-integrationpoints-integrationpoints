@@ -63,14 +63,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			const string artifactGuidParamName = "@ArtifactGuid";
 			string guidCheckSql = $@"
-			SELECT COUNT([ArtifactID])
-			FROM [EDDSDBO].[ArtifactGuid]
-			WHERE [ArtifactGuid] = {artifactGuidParamName}";
+			SELECT CASE WHEN EXISTS (
+				SELECT [ArtifactID]
+				FROM [EDDSDBO].[ArtifactGuid] WITH (NOLOCK)
+				WHERE [ArtifactGuid] = {artifactGuidParamName})
+			THEN 1
+			ELSE 0
+			END as Result";
 
 			var guidParameter = new SqlParameter(artifactGuidParamName, SqlDbType.UniqueIdentifier) { Value = guid };
-			int artifactCount = _context.DBContext.ExecuteSqlStatementAsScalar<int>(guidCheckSql, new[] { guidParameter });
-
-			bool guidExists = artifactCount > 0;
+			bool guidExists = _context.DBContext.ExecuteSqlStatementAsScalar<bool>(guidCheckSql, new[] { guidParameter });
 
 			return guidExists;
 		}
@@ -81,7 +83,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string guidCSV = String.Join(",", guidList.Select(x => $"'{x}'"));
 			string guidCheckSql = $@"
 			SELECT [ArtifactGuid], [ArtifactID]
-			FROM [EDDSDBO].[ArtifactGuid]
+			FROM [EDDSDBO].[ArtifactGuid] WITH (NOLOCK)
 			WHERE [ArtifactGuid] in ({guidCSV})";
 
 			IDictionary<Guid, bool> guidDictionary = guidList.ToDictionary(x => x, y => false);

@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int? RetrieveTabArtifactId(int objectTypeArtifactId, string tabName)
 		{
-			// Get the tab
 			var tabNameCondition = new TextCondition(FieldFieldNames.Name, TextConditionEnum.EqualTo, tabName);
 			var objectTypeCondition = new WholeNumberCondition(FieldFieldNames.ObjectType, NumericConditionEnum.EqualTo, objectTypeArtifactId);
 			var compositeCondition = new CompositeCondition(tabNameCondition, CompositeConditionEnum.And, objectTypeCondition);

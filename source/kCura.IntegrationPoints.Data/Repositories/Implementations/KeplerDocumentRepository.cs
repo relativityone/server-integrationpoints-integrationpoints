@@ -55,6 +55,36 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			throw new Exception(resultSet.Message);
 		}
 
+		public async Task<ArtifactDTO> RetrieveDocumentAsync(string docIdentifierField, string docIdentifierValue)
+		{
+			var documentsQuery = new Query()
+			{
+				Condition = String.Format(@"'{0}' == '{1}'", docIdentifierField, docIdentifierValue),
+				IncludeIdWindow = false,
+				SampleParameters = null,
+				RelationalField = null,
+				SearchProviderCondition = null,
+				TruncateTextFields = false
+			};
+
+			ObjectQueryResultSet resultSet = await _objectQueryManagerAdaptor.RetrieveAsync(documentsQuery, String.Empty);
+
+			if (resultSet != null && resultSet.Success)
+			{
+				ArtifactDTO document = resultSet.Data.DataResults.Select(
+					x => new ArtifactDTO(
+						x.ArtifactId,
+						x.ArtifactTypeId,
+						x.Fields.Select(
+							y => new ArtifactFieldDTO() { ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value }))
+					).FirstOrDefault();
+
+				return document;
+			}
+
+			throw new Exception(resultSet.Message);
+		}
+
 		public async Task<ArtifactDTO[]> RetrieveDocumentsAsync(IEnumerable<int> documentIds, HashSet<int> fieldIds)
 		{
 			var documentsQuery = new Query()

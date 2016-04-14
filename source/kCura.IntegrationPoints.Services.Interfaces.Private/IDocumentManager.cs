@@ -23,20 +23,19 @@ namespace kCura.IntegrationPoints.Services
 		/// been pushed to other workspaces.
 		/// </summary>
 		/// <returns></returns>
-		Task<PercentagePushedToReviewModel> GetPercentagePushedToReview(PercentagePushedToReviewRequest request);
+		Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request);
 
 		/// <summary>
-		/// Gets that number of documents for each choice of the promote field as well as the number
+		/// Gets the number of documents for each choice of the promote field as well as the number
 		/// that have been pushed to other workspaces.
 		/// </summary>
 		/// <returns></returns>
-		Task<CurrentSnapshotModel> GetCurrentSnapshot(CurrentSnapshotRequest request);
+		Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request);
 
 		/// <summary>
-		/// Gets that number of documents for each choice of the promote field as well as the number
-		/// that have been pushed to other workspaces.
+		/// Gets the number of documents for each choice of the promote field for each day that 
 		/// </summary>
 		/// <returns></returns>
-		Task<DocumentVolumeSummaryModel> GetDocumentVolume(DocumentVolumeRequest request);
+		Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusAsync(HistoricalPromotionStatusRequest request);
 	}
 }

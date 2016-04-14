@@ -24,7 +24,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
-using Constants = kCura.IntegrationPoints.Data.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -99,12 +98,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				IScratchTableRepository[] scratchTableRepositories = new[]
 				{
 					_destinationFieldsTagger.ScratchTableRepository,
-					_sourceDestinationWorkspaceTagger.ScratchTableRepository
 				};
+
 				_exportJobErrorService = new ExportJobErrorService(scratchTableRepositories);
 				SetupSubscriptions(synchronizer, job);
 
-				// Initialize Exporter
+				// Push documents
 				using (IExporterService exporter = _exporterFactory.BuildExporter(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration))
 				{
 					JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
@@ -123,6 +122,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						synchronizer.SyncData(dataReader, MappedFields, destinationConfig);
 					}
 				}
+
+				TagDocuments(job);
 			}
 			catch (Exception ex)
 			{
@@ -140,6 +141,28 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
 			_jobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
 			_exportJobErrorService.SubscribeToBatchReporterEvents(synchronizer);
+		}
+
+		private void TagDocuments(Job job)
+		{
+			var exceptions = new ConcurrentQueue<Exception>();
+			Parallel.ForEach(_parallizableBatch, batch =>
+			{
+				try
+				{
+					batch.JobComplete(job);
+				}
+				catch (Exception exception)
+				{
+					exceptions.Enqueue(exception);
+				}
+			});
+
+			Exception ex = ConstructNewExceptionIfAny(exceptions);
+			if (ex != null)
+			{
+				throw ex;
+			}
 		}
 
 		private void InitializeExportService(Job job)
@@ -218,26 +241,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		internal void PostExecute(Job job)
 		{
-			var exceptions = new ConcurrentQueue<Exception>();
-			Parallel.ForEach(_parallizableBatch, batch =>
-			{
-				try
-				{
-					batch.JobComplete(job);
-				}
-				catch (Exception exception)
-				{
-					exceptions.Enqueue(exception);
-				}
-			});
-
-			Exception ex = ConstructNewExceptionIfAny(exceptions);
-			if (ex != null)
-			{
-				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
-				_jobHistoryErrorService.CommitErrors();
-			}
-
 			foreach (IBatchStatus completedItem in _batchStatus)
 			{
 				try
@@ -274,7 +277,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				factory.SourceProvider = SourceProvider;
 			}
-			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration);
+			IDataSynchronizer synchronizer = _synchronizerFactory.CreateSynchronizer(Data.Constants.RELATIVITY_SOURCEPROVIDER_GUID, configuration);
 			return synchronizer;
 		}
 

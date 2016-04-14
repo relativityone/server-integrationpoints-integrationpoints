@@ -4,7 +4,6 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using Relativity.Data.QueryGenerator;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -83,6 +82,35 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			{
 				int fieldArtifactId = sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(sourceWorkspaceDescriptorArtifactTypeId.Value);
 
+				// Set the filter type
+				try
+				{
+					int? retrieveArtifactViewFieldId = fieldRepository.RetrieveArtifactViewFieldId(fieldArtifactId);
+					if (!retrieveArtifactViewFieldId.HasValue)
+					{
+						throw new Exception("Unable to retrieve artifact view field id for field");
+					}
+
+					fieldRepository.UpdateFilterType(retrieveArtifactViewFieldId.Value, "Popup");
+				}
+				catch (Exception e)
+				{
+					fieldRepository.Delete(new[] { fieldArtifactId });
+					throw new Exception("Unable to create Source Workspace multi-object field on Document" + e);
+				}
+
+				// Set the overlay behavior
+				try
+				{
+					fieldRepository.SetOverlayBehavior(fieldArtifactId, true);
+				}
+				catch (Exception e)
+				{
+					fieldRepository.Delete(new[] { fieldArtifactId });
+					throw new Exception("Unable to create Source Workspace multi-object field on Document: Unable to set the default Overlay Behavior", e);
+				}
+
+				// Set the field artifact guid
 				try
 				{
 					artifactGuidRepository.InsertArtifactGuidForArtifactId(fieldArtifactId,
@@ -92,16 +120,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				{
 					fieldRepository.Delete(new[] { fieldArtifactId });
 					throw new Exception("Unable to create Source Workspace multi-object field on Document: Unable to associate new Artifact Guids", e);
-				}
-
-				try
-				{
-					fieldRepository.SetOverlayBehavior(fieldArtifactId, true);
-				}
-				catch (Exception e)
-				{
-					fieldRepository.Delete(new[] { fieldArtifactId });
-					throw new Exception("Unable to create Source Workspace multi-object field on Document: Unable to set the default Overlay Behavior", e);
 				}
 			}
 
