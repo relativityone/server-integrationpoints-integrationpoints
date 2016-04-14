@@ -82,12 +82,18 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 				try
 				{
-					artifactGuidRepository.InsertArtifactGuidForArtifactId(fieldArtifactId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid);
+					int? retrieveArtifactViewFieldId = fieldRepository.RetrieveArtifactViewFieldId(fieldArtifactId);
+					if (!retrieveArtifactViewFieldId.HasValue)
+					{
+						throw new Exception("Unable to retrieve artifact view field id for field");
+					}
+
+					fieldRepository.UpdateFilterType(retrieveArtifactViewFieldId.Value, "Popup");
 				}
 				catch (Exception e)
 				{
 					fieldRepository.Delete(new[] { fieldArtifactId });
-					throw new Exception("Unable to create Source Job multi-object field on Document: Unable to associate new Artifact Guids", e);
+					throw new Exception("Unable to create Source Job multi-object field on Document" + e);	
 				}
 
 				try
@@ -98,6 +104,16 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				{
 					fieldRepository.Delete(new[] { fieldArtifactId });
 					throw new Exception("Unable to create Source Job multi-object field on Document: Unable to set the default Overlay Behavior", e);
+				}
+
+				try
+				{
+					artifactGuidRepository.InsertArtifactGuidForArtifactId(fieldArtifactId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid);
+				}
+				catch (Exception e)
+				{
+					fieldRepository.Delete(new[] { fieldArtifactId });
+					throw new Exception("Unable to create Source Job multi-object field on Document: Unable to associate new Artifact Guids", e);
 				}
 			}
 

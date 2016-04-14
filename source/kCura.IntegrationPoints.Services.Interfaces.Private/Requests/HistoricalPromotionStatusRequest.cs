@@ -1,6 +1,6 @@
 ﻿namespace kCura.IntegrationPoints.Services.Interfaces.Private.Requests
 {
-	public class DocumentVolumeRequest
+	public class HistoricalPromotionStatusRequest
 	{
 		/// <summary>
 		/// The workspace to retrieve the information from

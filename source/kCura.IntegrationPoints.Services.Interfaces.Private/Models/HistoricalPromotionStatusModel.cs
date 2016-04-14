@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Services.Interfaces.Private.Models
 {
-	public class DocumentVolumeModel
+	public class HistoricalPromotionStatusModel
 	{
 		public DateTime Date { get; set; }
 		public int TotalDocumentsIncluded { get; set; }

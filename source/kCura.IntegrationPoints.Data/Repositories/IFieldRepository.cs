@@ -36,5 +36,19 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// </summary>
 		/// <param name="artifactIds">The artifact ids of the fields to delete</param>
 		void Delete(IEnumerable<int> artifactIds);
+
+		/// <summary>
+		/// Retrieves the artifact view field id for the given field
+		/// </summary>
+		/// <param name="fieldArtifactId">The artifact id of the field</param>
+		/// <returns>The artifact view filed id if found, <code>NULL</code> otherwise</returns>
+		int? RetrieveArtifactViewFieldId(int fieldArtifactId);
+
+		/// <summary>
+		/// Updates the field's filter type
+		/// </summary>
+		/// <param name="artifactViewFieldId">The artifact view field id of the field</param>
+		/// <param name="filterType">The filter type to set</param>
+		void UpdateFilterType(int artifactViewFieldId, string filterType);
 	}
 }

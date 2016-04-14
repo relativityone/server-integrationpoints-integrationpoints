@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Services
 			return await Task.Run(() => true).ConfigureAwait(false);
 		}
 
-		public async Task<JobHistorySummaryModel> GetJobHistory(JobHistoryRequest request)
+		public async Task<JobHistorySummaryModel> GetJobHistoryAsync(JobHistoryRequest request)
 		{
 			return await Task.Run(() => GetJobHistoryInternal(request));
 		}
