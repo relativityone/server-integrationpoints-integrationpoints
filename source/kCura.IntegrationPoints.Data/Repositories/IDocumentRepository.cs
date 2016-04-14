@@ -26,5 +26,13 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="fieldIds">The artifact Ids of the fields to retrieve</param>
 		/// <returns>An array of document ArtifactDTOs</returns>
 		Task<ArtifactDTO[]> RetrieveDocumentsAsync(IEnumerable<int> documentIds, HashSet<int> fieldIds);
+		
+		/// <summary>
+		/// Retrieve a single document via its identifier
+		/// </summary>
+		/// <param name="docIdentifierField">The field that is designated as the Document Identifier</param>
+		/// <param name="docIdentifierValue">The value of the given identifier that represents the Document we want to retrieve</param>
+		/// <returns></returns>
+		Task<ArtifactDTO> RetrieveDocumentAsync(string docIdentifierField, string docIdentifierValue);
 	}
 }
