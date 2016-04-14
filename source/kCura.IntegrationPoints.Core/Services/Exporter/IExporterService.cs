@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		/// Gets the reader of the exported data.
 		/// </summary>
 		/// <returns>DataReader to read export results</returns>
-		IDataReader GetDataReader(IScratchTableRepository[] scractchRepositories);
+		IDataReader GetDataReader(IScratchTableRepository[] scratchRepositories);
 
 		/// <summary>
 		/// Retrieves data from exporter with a give size

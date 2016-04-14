@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private Guid _identifier;
 		private SourceConfiguration _sourceConfiguration;
 		private ITempDocTableHelper _docTableHelper;
-		private List<IConsumeScratchTableBatchStatus> _parallizableBatch;
+		private List<IBatchStatus> _parallelizableBatch;
 		private IConsumeScratchTableBatchStatus _destinationFieldsTagger;
 		private IConsumeScratchTableBatchStatus _sourceDestinationWorkspaceTagger;
 		private JobHistoryManager _sourceJobHistoryTagger;
@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void TagDocuments(Job job)
 		{
 			var exceptions = new ConcurrentQueue<Exception>();
-			Parallel.ForEach(_parallizableBatch, batch =>
+			Parallel.ForEach(_parallelizableBatch, batch =>
 			{
 				try
 				{
@@ -210,7 +210,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_sourceDestinationWorkspaceTagger = new DestinationWorkspaceManager(_tempDocumentTableFactory, _repositoryFactory, _sourceConfiguration, _identifier.ToString(), JobHistoryDto.ArtifactId);
 			_sourceJobHistoryTagger = new JobHistoryManager(_tempDocumentTableFactory, _repositoryFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, _identifier.ToString());
 
-			_parallizableBatch = new List<IConsumeScratchTableBatchStatus>()
+			_parallelizableBatch = new List<IBatchStatus>()
 			{
 				_destinationFieldsTagger,
 				_sourceDestinationWorkspaceTagger,
@@ -218,7 +218,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			};
 
 			var exceptions = new ConcurrentQueue<Exception>();
-			Parallel.ForEach(_parallizableBatch, batch =>
+			Parallel.ForEach(_parallelizableBatch, batch =>
 			{
 				try
 				{
