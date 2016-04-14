@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				IScratchTableRepository[] scratchTableRepositories = new[]
 				{
-					_destinationFieldsTagger.ScratchTableRepository,
+					_sourceDestinationWorkspaceTagger.ScratchTableRepository
 				};
 
 				_exportJobErrorService = new ExportJobErrorService(scratchTableRepositories);

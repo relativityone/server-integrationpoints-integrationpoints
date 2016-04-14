@@ -150,7 +150,6 @@ namespace kCura.IntegrationPoints.Data
 			}
 			catch (Exception ex)
 			{
-				
 				throw new Exception("Unable to retrieve Document Artifact ID. Object Query failed.", ex);
 			}
 			
