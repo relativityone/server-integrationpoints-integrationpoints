@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Requests;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Services.ObjectQuery;
@@ -137,7 +135,6 @@ namespace kCura.IntegrationPoints.Services
 				TotalDocumentsIncluded = totalIncludedDocumentsResultSet.Data.TotalResultCount,
 				TotalDocumentsExcluded = totalExcludedDocumentsResultSet.Data.TotalResultCount,
 				TotalDocumentsPushedToReview = totalPushedToReviewDocumentsResultSet.Data.TotalResultCount
-
 			};
 			return model;
 		}
