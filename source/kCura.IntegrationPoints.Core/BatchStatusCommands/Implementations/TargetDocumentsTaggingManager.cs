@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 					{
 						new DataColumn(identifier.SourceField.FieldIdentifier),
 						new DataColumnWithValue(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD, _sourceWorkspaceDto.Name),
-						new DataColumnWithValue(IntegrationPoints.Contracts.Constants.SPECIAL_JOBHISTORY_FIELD , _sourceJobDto.Name)
+						new DataColumnWithValue(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD , _sourceJobDto.Name)
 					};
 
 					int identifierFieldId = Convert.ToInt32(identifier.SourceField.FieldIdentifier);

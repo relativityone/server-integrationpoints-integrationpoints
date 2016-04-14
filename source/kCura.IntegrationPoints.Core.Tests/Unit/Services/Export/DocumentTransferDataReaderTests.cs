@@ -737,7 +737,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
 					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
-					//new DataColumn(Contracts.Constants.SPECIAL_JOBHISTORY_FIELD)
+					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
 				}
 			};
 
@@ -777,7 +777,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
 					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
-					//new DataColumn(Contracts.Constants.SPECIAL_JOBHISTORY_FIELD)
+					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
 				}
 			};
 
@@ -805,7 +805,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
 					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
-					//new DataColumn(Contracts.Constants.SPECIAL_JOBHISTORY_FIELD)
+					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
 				}
 			};
 
@@ -833,7 +833,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 					new DataColumn(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD),
 					new DataColumn(Contracts.Constants.SPECIAL_FILE_NAME_FIELD),
 					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD),
-					//new DataColumn(Contracts.Constants.SPECIAL_JOBHISTORY_FIELD)
+					//new DataColumn(Contracts.Constants.SPECIAL_SOURCEJOB_FIELD)
 				}
 			};
 

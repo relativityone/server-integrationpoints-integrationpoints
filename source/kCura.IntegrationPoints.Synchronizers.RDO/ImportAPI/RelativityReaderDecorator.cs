@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			// So that the destination workspace file icons correctly display, we give the import API the file name of the document
 			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME, Contracts.Constants.SPECIAL_FILE_NAME_FIELD);
 			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD);
-			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME, Contracts.Constants.SPECIAL_JOBHISTORY_FIELD);
+			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, Contracts.Constants.SPECIAL_SOURCEJOB_FIELD);
 		}
 
 		private void RegisterSpecialField(HashSet<string> columns, string targetName, string sourceIdentifer)
