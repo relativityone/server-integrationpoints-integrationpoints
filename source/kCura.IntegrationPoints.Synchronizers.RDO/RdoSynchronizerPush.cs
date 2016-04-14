@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			HashSet<string> ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 			{
 				Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-				Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME,
+				Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
 				JobHistoryFields.DestinationWorkspace,
 				IntegrationPointFields.JobHistory
 			};

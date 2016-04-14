@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var objectType = new ObjectType(SourceJobDTO.ObjectTypeGuid)
 			{
-				Name = Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME,
+				Name = Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
 				ParentArtifactTypeID = sourceWorkspaceArtifactTypeId,
 				CopyInstancesOnParentCopy = false,
 				CopyInstancesOnWorkspaceCreation = false,
@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (!resultSet.Success || !resultSet.Results.Any())
 			{
-				throw new Exception("Unable to create new Job History object type: " + resultSet.Message);
+				throw new Exception("Unable to create new Source Job object type: " + resultSet.Message);
 			}
 
 			return resultSet.Results.First().Artifact.ArtifactID;
@@ -45,9 +45,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var fields = new List<FieldValue>()
 			{
-				new FieldValue(Contracts.Constants.JOBHISTORY_NAME_FIELD_NAME, sourceJobDto.Name),
-				new FieldValue(Contracts.Constants.JOBHISTORY_JOBHISTORYID_FIELD_NAME, sourceJobDto.JobHistoryArtifactId),
-				new FieldValue(Contracts.Constants.JOBHISTORY_JOBHISTORYNAME_FIELD_NAME, sourceJobDto.JobHistoryName)
+				new FieldValue(Contracts.Constants.SOURCEJOB_NAME_FIELD_NAME, sourceJobDto.Name),
+				new FieldValue(Contracts.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME, sourceJobDto.JobHistoryArtifactId),
+				new FieldValue(Contracts.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME, sourceJobDto.JobHistoryName)
 			};
 
 			var parentArtifact = new kCura.Relativity.Client.DTOs.Artifact(sourceJobDto.SourceWorkspaceArtifactId);
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception e)
 			{
-				throw new Exception("Unable to create new instance of Job History", e);
+				throw new Exception("Unable to create new instance of Source Job", e);
 			}
 		}
 
@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				new kCura.Relativity.Client.DTOs.Field()
 				{
-					Name = Contracts.Constants.JOBHISTORY_JOBHISTORYID_FIELD_NAME,
+					Name = Contracts.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME,
 					Guids = new List<Guid>() { SourceJobDTO.Fields.JobHistoryIdFieldGuid },
 					FieldTypeID = kCura.Relativity.Client.FieldType.WholeNumber,
 					ObjectType = objectType,
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				},
 				new kCura.Relativity.Client.DTOs.Field()
 				{
-					Name = Contracts.Constants.JOBHISTORY_JOBHISTORYNAME_FIELD_NAME,
+					Name = Contracts.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME,
 					Guids = new List<Guid>() { SourceJobDTO.Fields.JobHistoryNameFieldGuid },
 					FieldTypeID = kCura.Relativity.Client.FieldType.FixedLengthText,
 					ObjectType = objectType,
@@ -118,7 +118,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			WriteResultSet<kCura.Relativity.Client.DTOs.Field> fieldWriteResultSet = _rsapiClient.Repositories.Field.Create(fieldsToCreate);
 			if (!fieldWriteResultSet.Success)
 			{
-				throw new Exception("Unable to create fields for the Source Workspace object type: " + fieldWriteResultSet.Message);
+				throw new Exception("Unable to create fields for the Source Job object type: " + fieldWriteResultSet.Message);
 			}
 
 			int[] newFieldIds = fieldWriteResultSet.Results.Select(x => x.Artifact.ArtifactID).ToArray();
@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			if (!newFieldResultSet.Success)
 			{
 				_rsapiClient.Repositories.Field.Delete(fieldsToCreate);
-				throw new Exception("Unable to create fields for the Source Workspace object type: Failed to retrieve after creation: " + newFieldResultSet.Message);
+				throw new Exception("Unable to create fields for the Source Job object type: Failed to retrieve after creation: " + newFieldResultSet.Message);
 			}
 
 			IDictionary<Guid, int> guidToIdDictionary = newFieldResultSet.Results.ToDictionary(
@@ -136,10 +136,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				{
 					switch (x.Artifact.Name)
 					{
-						case Contracts.Constants.JOBHISTORY_JOBHISTORYID_FIELD_NAME:
+						case Contracts.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME:
 							return SourceJobDTO.Fields.JobHistoryIdFieldGuid;
 
-						case Contracts.Constants.JOBHISTORY_JOBHISTORYNAME_FIELD_NAME:
+						case Contracts.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME:
 							return SourceJobDTO.Fields.JobHistoryNameFieldGuid;
 
 						default:
@@ -159,7 +159,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				new kCura.Relativity.Client.DTOs.Field()
 				{
-					Name = Contracts.Constants.SPECIAL_JOBHISTORY_FIELD_NAME,
+					Name = Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
 					FieldTypeID = FieldType.MultipleObject,
 					ObjectType = documentObjectType,
 					AssociativeObjectType = jobHistoryObjectType,
@@ -176,7 +176,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			Result<kCura.Relativity.Client.DTOs.Field> field = resultSet.Results.FirstOrDefault();
 			if (!resultSet.Success || field == null)
 			{
-				throw new Exception("Unable to create Job History field on Document: " + resultSet.Message);
+				throw new Exception("Unable to create Source Job field on Document: " + resultSet.Message);
 			}
 
 			int newFieldArtifactId = field.Artifact.ArtifactID;
