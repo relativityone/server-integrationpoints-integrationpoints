@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -16,8 +19,13 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		private int _sourceWorkspaceId = 99999;
 		private string _docIdColumn = "ControlNumber";
 		private IDBContext _caseContext;
+		private IFieldRepository _fieldRepository;
+		private IDocumentRepository _documentRepository;
+		private Task<ArtifactDTO[]> _successFieldTask;
+		private Task<ArtifactDTO> _successDocumentTask;
+		private Task<ArtifactDTO> _failedDocumentTask;
 
-		private ITempDocTableHelper _instance;
+		private TempDocTableHelper _instance;
 		private IHelper _helper;
 
 		[SetUp]
@@ -26,12 +34,23 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_caseContext = Substitute.For<IDBContext>();
 			_helper = Substitute.For<IHelper>();
 			_helper.GetDBContext(_sourceWorkspaceId).Returns(_caseContext);
+			_fieldRepository = Substitute.For<IFieldRepository>();
+			_documentRepository = Substitute.For<IDocumentRepository>();
 
-			_instance = new TempDocTableHelper(_helper, _tableSuffix, _sourceWorkspaceId, _docIdColumn);
+			_instance = new TempDocTableHelper(_helper, _tableSuffix, _sourceWorkspaceId, _docIdColumn, _fieldRepository,
+				_documentRepository);
+
+
+			ArtifactDTO[] fieldArtifacts = CreateArtifactDTOs();
+			ArtifactDTO document = new ArtifactDTO(12345, 10, new ArtifactFieldDTO[] { });
+
+			_successFieldTask = Task<ArtifactDTO[]>.FromResult(fieldArtifacts);
+			_successDocumentTask = Task<ArtifactDTO>.FromResult(document);
+			_failedDocumentTask = null;
+
 		}
 
 		[Test]
-		[Ignore("Nsubstitute add * in expected results ")]
 		public void CreateTemporaryDocTable_DestWorkspace_GoldFlow()
 		{
 			//Arrange
@@ -54,7 +73,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		}
 
 		[Test]
-		[Ignore("Nsubstitute add * in expected results ")]
 		public void CreateTemporaryDocTable_JobHistory_GoldFlow()
 		{
 			//Arrange
@@ -90,24 +108,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		}
 
 		[Test]
-		[Ignore("The source method needs to be made unit testable")]
-		public void RemoveErrorDocument_GoldFlow()
-		{
-			//Arrange
-			string docIdentifier = "REL-001";
-			int docArtifactId = 12345;
-
-			string sqlDelete = String.Format(@"DELETE FROM EDDSRESOURCE..[{0}] WHERE [ArtifactID] = {1}", tableNameDestWorkspace + "_" + _tableSuffix, docArtifactId);
-
-
-			//Act
-			_instance.RemoveErrorDocument(tableNameDestWorkspace, docIdentifier);
-
-			//Assert
-			_caseContext.Received().ExecuteNonQuerySQLStatement(sqlDelete);
-		}
-
-		[Test]
 		public void DeleteTable_DestinationWorkspace_GoldFlow()
 		{
 			//Arrange
@@ -133,6 +133,86 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			//Assert
 			_caseContext.Received().ExecuteNonQuerySQLStatement(sql);
+		}
+
+		[Test]
+		public void SetDocumentIdentifierField_GoldFlow()
+		{
+			//Arrange
+			_fieldRepository.RetrieveFieldsAsync(Arg.Any<int>(), Arg.Any<HashSet<string>>()).Returns(_successFieldTask);
+
+			//Act
+			string docIdField = _instance.GetDocumentIdentifierField();
+
+			//Assert
+			Assert.IsTrue(docIdField == "Control Number X");
+		}
+
+		[Test]
+		public void QueryForDocumentArtifactId_GoldFlow()
+		{
+			//Arrange
+			string docIdentifier = "REL000001";
+			_documentRepository.RetrieveDocumentAsync(_docIdColumn, docIdentifier).Returns(_successDocumentTask);
+
+			//Act
+			int documentId = _instance.QueryForDocumentArtifactId(docIdentifier);
+
+			//Assert
+			Assert.IsTrue(documentId == 12345);
+		}
+
+		[Test]
+		[ExpectedException(typeof(Exception))]
+		public void QueryForDocumentArtifactId_ExceptionThrown()
+		{
+			//Arrange
+			string docIdentifier = "REL000001";
+			_documentRepository.RetrieveDocumentAsync(_docIdColumn, docIdentifier).Returns(_failedDocumentTask);
+
+			//Act
+			_instance.QueryForDocumentArtifactId(docIdentifier);
+		}
+
+		private ArtifactDTO[] CreateArtifactDTOs()
+		{
+			var artifactFieldName = new ArtifactFieldDTO()
+			{
+				ArtifactId = 0,
+				FieldType = "Text",
+				Name = "Name",
+				Value = "Control Number X"
+			};
+			var artifactFieldIdentifier = new ArtifactFieldDTO()
+			{
+				ArtifactId = 0,
+				FieldType = "Text",
+				Name = "Is Identifier",
+				Value = "1"
+			};
+			ArtifactFieldDTO[] fieldDTOs = {artifactFieldName, artifactFieldIdentifier};
+
+			var fieldOne = new ArtifactDTO(1, 10, fieldDTOs);
+
+			var artifactFieldName2 = new ArtifactFieldDTO()
+			{
+				ArtifactId = 0,
+				FieldType = "Text",
+				Name = "Name",
+				Value = "Not Control Number"
+			};
+			var artifactFieldIdentifier2 = new ArtifactFieldDTO()
+			{
+				ArtifactId = 0,
+				FieldType = "Text",
+				Name = "Is Identifier",
+				Value = "0"
+			};
+			ArtifactFieldDTO[] fieldDTOs2 = {artifactFieldName2, artifactFieldIdentifier2};
+
+			var fieldTwo = new ArtifactDTO(2, 10, fieldDTOs2);
+
+			return new ArtifactDTO[] {fieldOne, fieldTwo};
 		}
 	}
 }

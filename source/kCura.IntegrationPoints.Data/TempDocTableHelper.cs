@@ -5,44 +5,37 @@ using System.Linq;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.RDO;
-using kCura.IntegrationPoints.Data.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.Relativity.Client;
 using Relativity.API;
-using Relativity.Core;
-using Relativity.Core.Authentication;
-using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Data
 {
 	public class TempDocTableHelper : ITempDocTableHelper
 	{
 		private readonly IDBContext _caseContext;
-		private readonly IHelper _helper;
+		private readonly IFieldRepository _fieldRepository;
+		private readonly IDocumentRepository _documentRepository;
 		private readonly string _tableSuffix;
 		private string _docIdentifierField;
-		private readonly int _sourceWorkspaceId;
 
-		public TempDocTableHelper(IHelper helper, string tableSuffix, int sourceWorkspaceId)
+		public TempDocTableHelper(IHelper helper, string tableSuffix, int sourceWorkspaceId, IFieldRepository fieldRepository, IDocumentRepository documentRepository)
 		{
-			_sourceWorkspaceId = sourceWorkspaceId;
-			_helper = helper;
-			_caseContext = _helper.GetDBContext(_sourceWorkspaceId);
+			_caseContext = helper.GetDBContext(sourceWorkspaceId);
 			_tableSuffix = tableSuffix;
+			_fieldRepository = fieldRepository;
+			_documentRepository = documentRepository;
 		}
 
 		/// <summary>
 		/// For internal testing only
 		/// </summary>
-		internal TempDocTableHelper(IHelper helper, string tableSuffix, int sourceWorkspaceId, string docIdField)
+		internal TempDocTableHelper(IHelper helper, string tableSuffix, int sourceWorkspaceId, string docIdField, IFieldRepository fieldRepository, IDocumentRepository documentRepository)
 		{
-			_sourceWorkspaceId = sourceWorkspaceId;
-			_helper = helper;
-			_caseContext = _helper.GetDBContext(_sourceWorkspaceId);
+			_caseContext = helper.GetDBContext(sourceWorkspaceId);
 			_tableSuffix = tableSuffix;
 			_docIdentifierField = docIdField;
+			_fieldRepository = fieldRepository;
+			_documentRepository = documentRepository;
 		}
 
 		public void AddArtifactIdsIntoTempTable(List<int> artifactIds, string tablePrefix)
@@ -100,20 +93,16 @@ namespace kCura.IntegrationPoints.Data
 		{
 			if (String.IsNullOrEmpty(_docIdentifierField))
 			{
-				SetDocumentIdentifierField();
+				_docIdentifierField = GetDocumentIdentifierField();
 			}
 
 			int documentId = QueryForDocumentArtifactId(docIdentifier);
 			return documentId;
 		}
 
-		private void SetDocumentIdentifierField()
+		internal string GetDocumentIdentifierField()
 		{
-			IObjectQueryManagerAdaptor rdoRepository = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), _sourceWorkspaceId, Convert.ToInt32(ArtifactType.Field));
-			BaseServiceContext baseServiceContext = System.Security.Claims.ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(_sourceWorkspaceId);
-			IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
-			IFieldRepository fieldManager = new FieldRepository(rdoRepository, baseServiceContext, rsapiClient);
-			ArtifactDTO[] fieldArtifacts = fieldManager.RetrieveFieldsAsync(
+			ArtifactDTO[] fieldArtifacts = _fieldRepository.RetrieveFieldsAsync(
 				10,
 				new HashSet<string>(new[]
 				{
@@ -121,10 +110,9 @@ namespace kCura.IntegrationPoints.Data
 					Fields.IsIdentifier
 				})).ConfigureAwait(false).GetAwaiter().GetResult();
 
-			
+			string fieldName = String.Empty;
 			foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
 			{
-				string fieldName = String.Empty;
 				int isIdentifierFieldValue = 0;
 				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
 				{
@@ -137,10 +125,6 @@ namespace kCura.IntegrationPoints.Data
 						try
 						{
 							isIdentifierFieldValue = Convert.ToInt32(field.Value);
-							if (isIdentifierFieldValue == 1)
-							{
-								_docIdentifierField = fieldName;
-							}
 						}
 						catch
 						{
@@ -153,17 +137,15 @@ namespace kCura.IntegrationPoints.Data
 					break;
 				}
 			}
+			return fieldName;
 		}
 
-		private int QueryForDocumentArtifactId(string docIdentifier)
+		internal int QueryForDocumentArtifactId(string docIdentifier)
 		{
-			IObjectQueryManagerAdaptor rdoRepository = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), _sourceWorkspaceId, Convert.ToInt32(ArtifactType.Document));
-			IDocumentRepository documentRepository = new KeplerDocumentRepository(rdoRepository);
-
 			ArtifactDTO document;
 			try
 			{
-				Task<ArtifactDTO> documentResult = documentRepository.RetrieveDocumentAsync(_docIdentifierField, docIdentifier);
+				Task<ArtifactDTO> documentResult = _documentRepository.RetrieveDocumentAsync(_docIdentifierField, docIdentifier);
 				document = documentResult.ConfigureAwait(false).GetAwaiter().GetResult();
 			}
 			catch (Exception ex)
@@ -172,7 +154,6 @@ namespace kCura.IntegrationPoints.Data
 				throw new Exception("Unable to retrieve Document Artifact ID. Object Query failed.", ex);
 			}
 			
-
 			return document.ArtifactId;
 		}
 
