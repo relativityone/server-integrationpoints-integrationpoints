@@ -23,6 +23,6 @@ namespace kCura.IntegrationPoints.Services
 		/// </summary>
 		/// <param name="request">The job history request information.</param>
 		/// <returns>The job history summary.</returns>
-		Task<JobHistorySummaryModel> GetJobHistory(JobHistoryRequest request);
+		Task<JobHistorySummaryModel> GetJobHistoryAsync(JobHistoryRequest request);
 	}
 }

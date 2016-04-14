@@ -1,6 +1,6 @@
 ﻿namespace kCura.IntegrationPoints.Services.Interfaces.Private.Models
 {
-	public class CurrentSnapshotModel
+	public class CurrentPromotionStatusModel
 	{
 		public int TotalDocumentsIncluded { get; set; }
 		public int TotalDocumentsExcluded { get; set; }
