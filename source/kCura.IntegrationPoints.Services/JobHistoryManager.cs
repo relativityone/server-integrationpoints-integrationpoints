@@ -309,13 +309,13 @@ namespace kCura.IntegrationPoints.Services
 		private const string _JOB_HISTORY_ARTIFACT_TYPE_ID_SQL = @"
 			SELECT[ArtifactTypeID] FROM[Artifact] WITH (NOLOCK) WHERE[ArtifactID] =
 				(SELECT TOP 1 [ArtifactID] FROM[JobHistory] WITH (NOLOCK))";
-
+		
 		private readonly string _jobHistoriesSql = @"
 			SELECT [ItemsImported], [EndTimeUTC], [DestinationWorkspace]
 			FROM [JobHistory] AS JH WITH (NOLOCK)
 			INNER JOIN [Artifact] AS A WITH (NOLOCK)
-			ON JH.ArtifactID = A.ArtifactID
-			WHERE A.AccessControlListID in ({0}) AND JH.ArtifactID in ({1})
+			ON JH.[ArtifactID] = A.[ArtifactID]
+			WHERE A.[AccessControlListID] in ({0}) AND JH.[ArtifactID] in ({1}) AND JH.[EndTimeUTC] IS NOT NULL
 			ORDER BY [{2}] {3}";
 
 		#endregion
