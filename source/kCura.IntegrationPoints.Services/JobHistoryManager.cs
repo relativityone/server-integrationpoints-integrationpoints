@@ -204,7 +204,7 @@ namespace kCura.IntegrationPoints.Services
 		{
 			string joinedAclIds = String.Join(",", accessControlListIds.ToArray());
 			string joinedJobHistoryArtifactIds = String.Join(",", jobHistoryArtifactIds);
-			string formattedJobHistoriesSql = String.Format(_jobHistoriesSql, joinedAclIds, joinedJobHistoryArtifactIds, sortColumn, sortDirection);
+			string formattedJobHistoriesSql = String.Format(_JOB_HISTORIES_COMPLETED_WITH_ITEMS_PUSHED_SQL, joinedAclIds, joinedJobHistoryArtifactIds, sortColumn, sortDirection);
 
 			SqlDataReader reader = workspaceContext.ExecuteSQLStatementAsReader(formattedJobHistoriesSql);
 			return reader;
@@ -310,12 +310,12 @@ namespace kCura.IntegrationPoints.Services
 			SELECT[ArtifactTypeID] FROM[Artifact] WITH (NOLOCK) WHERE[ArtifactID] =
 				(SELECT TOP 1 [ArtifactID] FROM[JobHistory] WITH (NOLOCK))";
 		
-		private readonly string _jobHistoriesSql = @"
+		private const string _JOB_HISTORIES_COMPLETED_WITH_ITEMS_PUSHED_SQL = @"
 			SELECT [ItemsImported], [EndTimeUTC], [DestinationWorkspace]
 			FROM [JobHistory] AS JH WITH (NOLOCK)
 			INNER JOIN [Artifact] AS A WITH (NOLOCK)
 			ON JH.[ArtifactID] = A.[ArtifactID]
-			WHERE A.[AccessControlListID] in ({0}) AND JH.[ArtifactID] in ({1}) AND JH.[EndTimeUTC] IS NOT NULL
+			WHERE A.[AccessControlListID] in ({0}) AND JH.[ArtifactID] in ({1}) AND JH.[EndTimeUTC] IS NOT NULL AND JH.[ItemsImported] > 0
 			ORDER BY [{2}] {3}";
 
 		#endregion
