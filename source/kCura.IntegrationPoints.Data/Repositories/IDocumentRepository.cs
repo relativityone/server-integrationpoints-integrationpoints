@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// </summary>
 		/// <param name="docIdentifierField">The field that is designated as the Document Identifier</param>
 		/// <param name="docIdentifierValue">The value of the given identifier that represents the Document we want to retrieve</param>
-		/// <returns></returns>
+		/// <returns>An ArtifactDTO for the document</returns>
 		Task<ArtifactDTO> RetrieveDocumentAsync(string docIdentifierField, string docIdentifierValue);
 	}
 }

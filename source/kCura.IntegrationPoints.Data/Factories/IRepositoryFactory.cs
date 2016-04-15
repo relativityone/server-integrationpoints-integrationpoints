@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// Returns a class implementing the IDocumentRepository interface
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id</param>
-		/// <returns></returns>
+		/// <returns>A class implementing the IDocumentRepository interface</returns>
 		IDocumentRepository GetDocumentRepository(int workspaceArtifactId);
 	}
 }
