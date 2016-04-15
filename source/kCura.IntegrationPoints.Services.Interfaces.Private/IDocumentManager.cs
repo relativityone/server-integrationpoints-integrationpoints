@@ -4,6 +4,8 @@ using Relativity.Kepler.Services;
 
 namespace kCura.IntegrationPoints.Services
 {
+	// TODO: Promote was renamed to designation. Update all corresponding references to that field
+
 	/// <summary>
 	/// Enables access to information about documents in the eca and investigations application
 	/// </summary>
@@ -25,7 +27,7 @@ namespace kCura.IntegrationPoints.Services
 		Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request);
 
 		/// <summary>
-		/// Gets the number of documents for each choice of the promote field as well as the number
+		/// Gets the number of documents for each choice of the designation field as well as the number
 		/// that have been pushed to other workspaces.
 		/// </summary>
 		/// <param name="request">A <see cref="CurrentPromotionStatusRequest"/></param>
@@ -33,7 +35,7 @@ namespace kCura.IntegrationPoints.Services
 		Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request);
 
 		/// <summary>
-		/// Gets the number of documents for each choice of the promote field for each day
+		/// Gets the number of documents for each choice of the designation field for each day
 		/// </summary>
 		/// <param name="request">A <see cref="HistoricalPromotionStatusRequest"/></param>
 		/// <returns>Returns a <see cref="HistoricalPromotionStatusSummaryModel"/></returns>
