@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private ITempDocTableHelper _docTableHelper;
 		private List<IBatchStatus> _parallelizableBatch;
 		private IConsumeScratchTableBatchStatus _destinationFieldsTagger;
-		private IConsumeScratchTableBatchStatus _sourceDestinationWorkspaceTagger;
+		private IConsumeScratchTableBatchStatus _sourceFieldsTaggerDestinationWorkspace;
 		private JobHistoryManager _sourceJobHistoryTagger;
 
 		public ExportServiceManager(
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				IScratchTableRepository[] scratchTableRepositories = new[]
 				{
-					_sourceDestinationWorkspaceTagger.ScratchTableRepository
+					_sourceFieldsTaggerDestinationWorkspace.ScratchTableRepository
 				};
 
 				_exportJobErrorService = new ExportJobErrorService(scratchTableRepositories);
@@ -115,7 +115,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						{
 							_destinationFieldsTagger.ScratchTableRepository,
 							_sourceJobHistoryTagger.ScratchTableRepository,
-							_sourceDestinationWorkspaceTagger.ScratchTableRepository
+							_sourceFieldsTaggerDestinationWorkspace.ScratchTableRepository
 						};
 
 						IDataReader dataReader = exporter.GetDataReader(scratchTables);
@@ -207,13 +207,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_documentRepository, _synchronizerFactory, MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, IntegrationPointDto.DestinationConfiguration, JobHistoryDto.ArtifactId);
 
 			_destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
-			_sourceDestinationWorkspaceTagger = new DestinationWorkspaceManager(_tempDocumentTableFactory, _repositoryFactory, _sourceConfiguration, _identifier.ToString(), JobHistoryDto.ArtifactId);
+			_sourceFieldsTaggerDestinationWorkspace = new DestinationWorkspaceManager(_tempDocumentTableFactory, _repositoryFactory, _sourceConfiguration, _identifier.ToString(), JobHistoryDto.ArtifactId);
 			_sourceJobHistoryTagger = new JobHistoryManager(_tempDocumentTableFactory, _repositoryFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, _identifier.ToString());
 
 			_parallelizableBatch = new List<IBatchStatus>()
 			{
 				_destinationFieldsTagger,
-				_sourceDestinationWorkspaceTagger,
+				_sourceFieldsTaggerDestinationWorkspace,
 				_sourceJobHistoryTagger
 			};
 
