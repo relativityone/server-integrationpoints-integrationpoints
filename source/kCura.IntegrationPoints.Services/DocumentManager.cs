@@ -142,16 +142,19 @@ namespace kCura.IntegrationPoints.Services
 		private async Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusInternalAsync(HistoricalPromotionStatusRequest request)
 		{
 			HistoricalPromotionStatusModel currentPromotionStatus = await GetCurrentDocumentModelAsync(request.WorkspaceArtifactId);
-			IEnumerable<HistoricalPromotionStatusModel> historicalPromotionStatus = await GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId);
+			IList<HistoricalPromotionStatusModel> historicalPromotionStatus = await GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId);
 
-			DateTime recentHistoricalDate = historicalPromotionStatus.Last().Date;
-			DateTime currentDate = currentPromotionStatus.Date;
-
-			if (recentHistoricalDate.ToString("yyyyMMdd") == currentDate.ToString("yyyyMMdd"))
+			if (historicalPromotionStatus.Any())
 			{
-				historicalPromotionStatus = historicalPromotionStatus.Take(historicalPromotionStatus.Count() - 1);
-			}
+				DateTime recentHistoricalDate = historicalPromotionStatus.Last().Date;
+				DateTime currentDate = currentPromotionStatus.Date;
 
+				string dateFormat = "yyyyMMdd";
+				if (recentHistoricalDate.ToString(dateFormat) == currentDate.ToString(dateFormat))
+				{
+					historicalPromotionStatus.RemoveAt(historicalPromotionStatus.Count - 1);
+				}
+			}
 			HistoricalPromotionStatusModel[] allPromotionStatus = historicalPromotionStatus.Concat(new[] {currentPromotionStatus}).ToArray();
 
 			HistoricalPromotionStatusSummaryModel model = new HistoricalPromotionStatusSummaryModel
@@ -176,7 +179,7 @@ namespace kCura.IntegrationPoints.Services
 			return model;
 		}
 
-		private async Task<List<HistoricalPromotionStatusModel>> GetHistoricalDocumentModelAsync(int workspaceId)
+		private async Task<IList<HistoricalPromotionStatusModel>> GetHistoricalDocumentModelAsync(int workspaceId)
 		{
 			IDBContext workspaceContext = API.Services.Helper.GetDBContext(workspaceId);
 
@@ -221,7 +224,8 @@ namespace kCura.IntegrationPoints.Services
 			WHERE ArtifactGuid = @artifactGuid";
 
 		private const string _DOCUMENT_VOLUME_SQL = @"
-			SELECT * FROM [DocumentVolume]
+			SELECT [Date], [DocumentsIncluded], [DocumentsExcluded], [DocumentsUntagged]
+			FROM [DocumentVolume] WITH (NOLOCK)
 			ORDER BY [Date] ASC";
 
 		#endregion
