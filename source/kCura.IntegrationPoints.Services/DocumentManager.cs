@@ -155,11 +155,11 @@ namespace kCura.IntegrationPoints.Services
 					historicalPromotionStatus.RemoveAt(historicalPromotionStatus.Count - 1);
 				}
 			}
-			HistoricalPromotionStatusModel[] allPromotionStatus = historicalPromotionStatus.Concat(new[] {currentPromotionStatus}).ToArray();
+			historicalPromotionStatus.Add(currentPromotionStatus);
 
 			HistoricalPromotionStatusSummaryModel model = new HistoricalPromotionStatusSummaryModel
 			{
-				HistoricalPromotionStatus = allPromotionStatus
+				HistoricalPromotionStatus = historicalPromotionStatus.ToArray()
 			};
 			return model;
 		}
@@ -217,9 +217,9 @@ namespace kCura.IntegrationPoints.Services
 
 		private const string _DISPLAY_NAME_SQL = @"
 			SELECT F.DisplayName FROM [ArtifactGuid] AS AG
-			INNER JOIN Artifact AS A
+			INNER JOIN Artifact AS A WITH (NOLOCK)
 			ON AG.ArtifactID = A.ArtifactID
-			INNER JOIN Field AS F
+			INNER JOIN Field AS F WITH (NOLOCK)
 			ON F.ArtifactID = A.ArtifactID
 			WHERE ArtifactGuid = @artifactGuid";
 
