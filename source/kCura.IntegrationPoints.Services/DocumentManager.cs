@@ -147,7 +147,8 @@ namespace kCura.IntegrationPoints.Services
 			DateTime recentHistoricalDate = historicalPromotionStatus.Last().Date;
 			DateTime currentDate = currentPromotionStatus.Date;
 
-			if (recentHistoricalDate.ToString("yyyyMMdd") == currentDate.ToString("yyyyMMdd"))
+			string dateFormat = "yyyyMMdd";
+			if (recentHistoricalDate.ToString(dateFormat) == currentDate.ToString(dateFormat))
 			{
 				historicalPromotionStatus = historicalPromotionStatus.Take(historicalPromotionStatus.Count() - 1);
 			}
@@ -176,7 +177,7 @@ namespace kCura.IntegrationPoints.Services
 			return model;
 		}
 
-		private async Task<List<HistoricalPromotionStatusModel>> GetHistoricalDocumentModelAsync(int workspaceId)
+		private async Task<IList<HistoricalPromotionStatusModel>> GetHistoricalDocumentModelAsync(int workspaceId)
 		{
 			IDBContext workspaceContext = API.Services.Helper.GetDBContext(workspaceId);
 
@@ -221,7 +222,8 @@ namespace kCura.IntegrationPoints.Services
 			WHERE ArtifactGuid = @artifactGuid";
 
 		private const string _DOCUMENT_VOLUME_SQL = @"
-			SELECT * FROM [DocumentVolume]
+			SELECT [Date], [DocumentsIncluded], [DocumentsExcluded], [DocumentsUntagged]
+			FROM [DocumentVolume] WITH (NOLOCK)
 			ORDER BY [Date] ASC";
 
 		#endregion
