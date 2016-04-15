@@ -141,14 +141,22 @@ namespace kCura.IntegrationPoints.Services
 
 		private async Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusInternalAsync(HistoricalPromotionStatusRequest request)
 		{
-			HistoricalPromotionStatusModel currentHistoricalPromotionStatus = await GetCurrentDocumentModelAsync(request.WorkspaceArtifactId);
-			IEnumerable<HistoricalPromotionStatusModel> historicalDocumentVolume = await GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId);
+			HistoricalPromotionStatusModel currentPromotionStatus = await GetCurrentDocumentModelAsync(request.WorkspaceArtifactId);
+			IEnumerable<HistoricalPromotionStatusModel> historicalPromotionStatus = await GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId);
 
-			HistoricalPromotionStatusModel[] historicalPromotionStatus = historicalDocumentVolume.Concat(new[] {currentHistoricalPromotionStatus}).ToArray();
+			DateTime recentHistoricalDate = historicalPromotionStatus.Last().Date;
+			DateTime currentDate = currentPromotionStatus.Date;
+
+			if (recentHistoricalDate.ToString("yyyyMMdd") == currentDate.ToString("yyyyMMdd"))
+			{
+				historicalPromotionStatus = historicalPromotionStatus.Take(historicalPromotionStatus.Count() - 1);
+			}
+
+			HistoricalPromotionStatusModel[] allPromotionStatus = historicalPromotionStatus.Concat(new[] {currentPromotionStatus}).ToArray();
 
 			HistoricalPromotionStatusSummaryModel model = new HistoricalPromotionStatusSummaryModel
 			{
-				HistoricalPromotionStatus = historicalPromotionStatus
+				HistoricalPromotionStatus = allPromotionStatus
 			};
 			return model;
 		}
@@ -213,7 +221,8 @@ namespace kCura.IntegrationPoints.Services
 			WHERE ArtifactGuid = @artifactGuid";
 
 		private const string _DOCUMENT_VOLUME_SQL = @"
-			SELECT * FROM [DocumentVolume]";
+			SELECT * FROM [DocumentVolume]
+			ORDER BY [Date] ASC";
 
 		#endregion
 	}
