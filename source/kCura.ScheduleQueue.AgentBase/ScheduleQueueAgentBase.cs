@@ -90,6 +90,9 @@ namespace kCura.ScheduleQueue.AgentBase
 
 				OnRaiseAgentLogEntry(20, LogCategory.Info, "Process jobs");
 				ProcessQueueJobs();
+
+				OnRaiseAgentLogEntry(20, LogCategory.Info, "Cleanup jobs");
+				CleanupQueueJobs();
 			}
 			catch (Exception ex)
 			{
@@ -114,13 +117,12 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		public void ProcessQueueJobs()
 		{
-			var msg = string.Empty;
-
 			Job nextJob = jobService.GetNextQueueJob(base.GetResourceGroupIDs(), base.AgentID);
+
 			while (nextJob != null)
 			{
-				msg = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, nextJob.JobId, nextJob.WorkspaceID, nextJob.TaskType);
-				OnRaiseAgentLogEntry(1, LogCategory.Info, msg);
+				string agentMessage = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, nextJob.JobId, nextJob.WorkspaceID, nextJob.TaskType);
+				OnRaiseAgentLogEntry(1, LogCategory.Info, agentMessage);
 
 				//TODO: 
 				//if (!jobService.IsWorkspaceActive(nextJob.WorkspaceID))
@@ -194,6 +196,11 @@ namespace kCura.ScheduleQueue.AgentBase
 				OnRaiseException(job, ex);
 				OnRaiseJobLogEntry(job, JobLogState.Error, ex);
 			}
+		}
+
+		private void CleanupQueueJobs()
+		{
+			jobService.CleanupJobQueueTable();
 		}
 
 		protected virtual void OnRaiseAgentLogEntry(int level, LogCategory category, string message, string detailmessage = null)
