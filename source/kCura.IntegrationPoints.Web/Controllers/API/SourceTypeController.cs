@@ -44,19 +44,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				Config = new SourceProviderConfigModel(x.Config, rdoTypesCache)
 			}).ToList();
 
-			// TODO: Remove the toggle once the Relativity provider is ready
-			bool isShowRelativityDataProviderToggleEnabled = _toggleProvider.IsEnabled<ShowRelativityDataProviderToggle>();
-			if (!isShowRelativityDataProviderToggleEnabled)
-			{
-				for (int i = 0; i < list.Count; i++)
-				{
-					if (list.ElementAt(i).value == DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
-					{
-						list.RemoveAt(i);
-						break;
-					}
-				}
-			}
 			return Request.CreateResponse(HttpStatusCode.OK, list);
 		}
 	}
