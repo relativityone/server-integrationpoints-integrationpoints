@@ -98,6 +98,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.API, Version=8.2.259.3, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.APIHelper">
       <HintPath>..\Dependencies\kCura\Relativity.APIHelper.dll</HintPath>
     </Reference>
@@ -105,9 +109,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.Authentication.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Core, Version=9.4.59.2, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.Core.9.4.59.2\lib\net45\Relativity.Core.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Relativity.Core, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.Core.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Core.Api, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
