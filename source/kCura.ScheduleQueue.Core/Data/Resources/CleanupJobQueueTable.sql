@@ -8,5 +8,5 @@ WHERE JobID IN (
 	FROM [eddsdbo].[{0}] as SAQ WITH(UPDLOCK, ROWLOCK, READPAST)
 	LEFT JOIN [eddsdbo].[Agent] as A WITH(NOLOCK)
 	ON SAQ.[AgentTypeID] = A.[AgentTypeArtifactID]
-	WHERE SAQ.[LockedByAgentID] NOT IN (A.ArtifactID)
+	WHERE SAQ.[LockedByAgentID] NOT NULL AND SAQ.[LockedByAgentID] NOT IN (A.ArtifactID)
 )
