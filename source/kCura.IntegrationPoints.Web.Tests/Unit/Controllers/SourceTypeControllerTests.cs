@@ -269,6 +269,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		}
 
 		[Test]
+		[Ignore("No longer valid. We removed toggle from the method")]
 		public void Get_ShowRelativityDataProviderToggle_Disabled_RelativityProiderIsNotReturned()
 		{
 			// Arrange
