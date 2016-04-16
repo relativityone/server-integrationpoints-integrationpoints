@@ -188,7 +188,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			SourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
 
-			_docTableHelper = _tempDocumentTableFactory.GetDocTableHelper(this._identifier.ToString(), _sourceConfiguration.SourceWorkspaceArtifactId);
+			string tempTableName = $"{job.JobId}_{_identifier}";
+			_docTableHelper = _tempDocumentTableFactory.GetDocTableHelper(tempTableName, _sourceConfiguration.SourceWorkspaceArtifactId);
 
 			this.JobHistoryDto = _jobHistoryService.GetRdo(this._identifier);
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
@@ -207,8 +208,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_documentRepository, _synchronizerFactory, MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, IntegrationPointDto.DestinationConfiguration, JobHistoryDto.ArtifactId);
 
 			_destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
-			_sourceFieldsTaggerDestinationWorkspace = new DestinationWorkspaceManager(_tempDocumentTableFactory, _repositoryFactory, _sourceConfiguration, _identifier.ToString(), JobHistoryDto.ArtifactId);
-			_sourceJobHistoryTagger = new JobHistoryManager(_tempDocumentTableFactory, _repositoryFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, _identifier.ToString());
+			_sourceFieldsTaggerDestinationWorkspace = new DestinationWorkspaceManager(_tempDocumentTableFactory, _repositoryFactory, _sourceConfiguration, tempTableName, JobHistoryDto.ArtifactId);
+			_sourceJobHistoryTagger = new JobHistoryManager(_tempDocumentTableFactory, _repositoryFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, tempTableName);
 
 			_parallelizableBatch = new List<IBatchStatus>()
 			{
@@ -241,6 +242,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		internal void PostExecute(Job job)
 		{
+			try
+			{
+				_destinationFieldsTagger.ScratchTableRepository.Dispose();
+				_sourceJobHistoryTagger.ScratchTableRepository.Dispose();
+				_sourceFieldsTaggerDestinationWorkspace.ScratchTableRepository.Dispose();
+			}
+			catch(Exception) {  }
+
 			foreach (IBatchStatus completedItem in _batchStatus)
 			{
 				try

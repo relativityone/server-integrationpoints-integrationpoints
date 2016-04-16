@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -58,12 +59,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public void Dispose()
 		{
-			if (_reader != null)
+			try
 			{
-				_reader.Close();
-				_reader = null;
+				if (_reader != null)
+				{
+					_reader.Close();
+					_reader = null;
+				}
+				DeleteTable();
 			}
-			DeleteTable();
+			catch (Exception)
+			{
+				// ignored
+			}
 		}
 	}
 }
