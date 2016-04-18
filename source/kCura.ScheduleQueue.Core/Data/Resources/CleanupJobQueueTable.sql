@@ -14,6 +14,6 @@ UPDATE [eddsdbo].[{0}] WITH(UPDLOCK, READPAST, ROWLOCK)
 SET [LockedByAgentID] = NULL
 FROM [eddsdbo].[{0}] as SAQ WITH(UPDLOCK, READPAST, ROWLOCK)
 WHERE SAQ.[LockedByAgentID] IS NOT NULL AND SAQ.[LockedByAgentID] NOT IN (
-	SELECT *
+	SELECT [ArtifactId]
 	FROM @agentArtifactIds
 )
