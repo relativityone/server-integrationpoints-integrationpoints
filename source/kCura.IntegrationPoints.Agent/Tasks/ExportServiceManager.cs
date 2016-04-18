@@ -248,7 +248,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_sourceJobHistoryTagger.ScratchTableRepository.Dispose();
 				_sourceFieldsTaggerDestinationWorkspace.ScratchTableRepository.Dispose();
 			}
-			catch(Exception) {  }
+			catch(Exception) {
+				// trying to delete temp tables early, don't have worry about failing
+			}
 
 			foreach (IBatchStatus completedItem in _batchStatus)
 			{

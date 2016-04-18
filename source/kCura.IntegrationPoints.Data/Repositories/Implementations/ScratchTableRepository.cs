@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception)
 			{
-				// ignored
+				// trying to delete temp tables early, don't have worry about failing
 			}
 		}
 	}
