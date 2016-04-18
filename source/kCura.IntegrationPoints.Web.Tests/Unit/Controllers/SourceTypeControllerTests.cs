@@ -12,7 +12,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Controllers.API;
-using kCura.IntegrationPoints.Web.Toggles;
 using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
