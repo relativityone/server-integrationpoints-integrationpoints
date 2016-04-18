@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.IntegrationPoints.Data.Extensions;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -19,13 +20,20 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private readonly ChoiceQuery _choiceQuery;
 		private readonly IJobManager _jobService;
+		private readonly IPermissionService _permissionService;
 
-		public IntegrationPointService(ICaseServiceContext context, kCura.Apps.Common.Utils.Serializers.ISerializer serializer, ChoiceQuery choiceQuery, IJobManager jobService)
+		public IntegrationPointService(
+			ICaseServiceContext context,
+			kCura.Apps.Common.Utils.Serializers.ISerializer serializer, 
+			ChoiceQuery choiceQuery,
+			IJobManager jobService,
+			IPermissionService permissionService)
 		{
 			_context = context;
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
 			_jobService = jobService;
+			_permissionService = permissionService;
 		}
 
 		public Data.IntegrationPoint GetRdo(int rdoID)
@@ -74,6 +82,8 @@ namespace kCura.IntegrationPoints.Core.Services
 			return mapping;
 		}
 
+		private const string NO_PERMISSION_TO_IMPORT = "You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.";
+
 		public int SaveIntegration(IntegrationModel model)
 		{
 			var choices = _choiceQuery.GetChoicesOnField(Guid.Parse(Data.IntegrationPointFieldGuids.OverwriteFields));
@@ -92,6 +102,22 @@ namespace kCura.IntegrationPoints.Core.Services
 				rule = null;
 			}
 
+			TaskType task;
+			SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(ip.SourceProvider.Value);
+			if (provider.Identifier.Equals("423b4d43-eae9-4e14-b767-17d629de4bb2"))
+			{
+				DestinationWorkspace destinationWorkspace = JsonConvert.DeserializeObject<DestinationWorkspace>(ip.SourceConfiguration);
+//				if (_permissionService.UserCanImport(destinationWorkspace.TargetWorkspaceArtifactId) == false)
+				//{
+				//	throw new Exception(NO_PERMISSION_TO_IMPORT);
+				//}
+				task = TaskType.ExportService;
+			}
+			else
+			{
+				task = TaskType.SyncManager;
+			}
+
 			//save RDO
 			if (ip.ArtifactId > 0)
 			{
@@ -101,19 +127,25 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				ip.ArtifactId = _context.RsapiService.IntegrationPointLibrary.Create(ip);
 			}
+
 			if (rule != null)
 			{
-				_jobService.CreateJob<object>(null, TaskType.SyncManager, _context.WorkspaceID, ip.ArtifactId, rule);
+				_jobService.CreateJob<object>(null, task, _context.WorkspaceID, ip.ArtifactId, rule);
 			}
 			else
 			{
-				Job job = _jobService.GetJob(_context.WorkspaceID, ip.ArtifactId, TaskType.SyncManager.ToString());
+				Job job = _jobService.GetJob(_context.WorkspaceID, ip.ArtifactId, task.ToString());
 				if (job != null)
 				{
 					_jobService.DeleteJob(job.JobId);
 				}
 			}
 			return ip.ArtifactId;
+		}
+
+		internal class DestinationWorkspace
+		{
+			public int TargetWorkspaceArtifactId;
 		}
 
 		public IEnumerable<string> GetRecipientEmails(int integrationPoint)

@@ -191,7 +191,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			string tempTableName = $"{job.JobId}_{_identifier}";
 			_docTableHelper = _tempDocumentTableFactory.GetDocTableHelper(tempTableName, _sourceConfiguration.SourceWorkspaceArtifactId);
 
-			this.JobHistoryDto = _jobHistoryService.GetRdo(this._identifier);
+			this.JobHistoryDto = _jobHistoryService.CreateRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
 			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPointDto;
 
