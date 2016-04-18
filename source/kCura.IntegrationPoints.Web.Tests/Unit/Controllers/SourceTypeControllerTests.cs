@@ -12,7 +12,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Controllers.API;
-using kCura.IntegrationPoints.Web.Toggles;
 using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
@@ -121,7 +120,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			};
 
 			_sourceTypeFactory.GetSourceTypes().Returns(sourceTypeModels);
-			_toggleProvider.IsEnabled<ShowRelativityDataProviderToggle>().Returns(true);
 
 			// Act
 			HttpResponseMessage response = _instance.Get();
@@ -155,7 +153,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			};
 
 			_sourceTypeFactory.GetSourceTypes().Returns(sourceTypeModels);
-			_toggleProvider.IsEnabled<ShowRelativityDataProviderToggle>().Returns(true);
 
 			// Act
 			HttpResponseMessage response = _instance.Get();
@@ -185,7 +182,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			};
 
 			_sourceTypeFactory.GetSourceTypes().Returns(sourceTypeModels);
-			_toggleProvider.IsEnabled<ShowRelativityDataProviderToggle>().Returns(true);
 
 			// Act
 			HttpResponseMessage response = _instance.Get();
@@ -218,7 +214,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			};
 
 			_sourceTypeFactory.GetSourceTypes().Returns(sourceTypeModels);
-			_toggleProvider.IsEnabled<ShowRelativityDataProviderToggle>().Returns(true);
 
 			// Act
 			HttpResponseMessage response = _instance.Get();
@@ -255,7 +250,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			};
 
 			_sourceTypeFactory.GetSourceTypes().Returns(sourceTypeModels);
-			_toggleProvider.IsEnabled<ShowRelativityDataProviderToggle>().Returns(true);
 
 			// Act
 			HttpResponseMessage response = _instance.Get();
@@ -265,82 +259,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 			StringAssert.AreEqualIgnoringCase(
 				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[10,789456],\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
-				response.Content.ReadAsStringAsync().Result);
-		}
-
-		[Test]
-		[Ignore("No longer valid. We removed toggle from the method")]
-		public void Get_ShowRelativityDataProviderToggle_Disabled_RelativityProiderIsNotReturned()
-		{
-			// Arrange
-			IEnumerable<SourceType> sourceTypeModels = new List<SourceType>()
-			{
-				new SourceType()
-				{
-					Name = "name",
-					ID = "d39d9a5e-e009-4c33-b112-73cc45c2ae2d", // some random guid
-					ArtifactID = 123,
-					SourceURL = "url"
-				},
-				new SourceType()
-				{
-					Name = "name",
-					ID = kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID,
-					ArtifactID = 123,
-					SourceURL = "url",
-					
-				}
-			};
-
-
-			_sourceTypeFactory.GetSourceTypes().Returns(sourceTypeModels);
-			_toggleProvider.IsEnabled<ShowRelativityDataProviderToggle>().Returns(false);
-
-			// Act
-			HttpResponseMessage response = _instance.Get();
-
-			// Assert
-			Assert.IsNotNull(response);
-			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-			StringAssert.AreEqualIgnoringCase(
-				"[{\"name\":\"name\",\"id\":123,\"value\":\"d39d9a5e-e009-4c33-b112-73cc45c2ae2d\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
-				response.Content.ReadAsStringAsync().Result);
-		}
-
-		[Test]
-		public void Get_ShowRelativityDataProviderToggle_DisabledAndRelativityProviderIsNotPresent()
-		{
-			// Arrange
-			IEnumerable<SourceType> sourceTypeModels = new List<SourceType>()
-			{
-				new SourceType()
-				{
-					Name = "name",
-					ID = "d39d9a5e-e009-4c33-b112-73cc45c2ae2d", // some random guid
-					ArtifactID = 123,
-					SourceURL = "url"
-				},
-				new SourceType()
-				{
-					Name = "name",
-					ID = "77795906-04FA-49F6-ADF4-AD1020C32668",
-					ArtifactID = 123,
-					SourceURL = "url"
-				}
-			};
-
-			_sourceTypeFactory.GetSourceTypes().Returns(sourceTypeModels);
-			_toggleProvider.IsEnabled<ShowRelativityDataProviderToggle>().Returns(true);
-
-			// Act
-			HttpResponseMessage response = _instance.Get();
-
-			// Assert
-			Assert.IsNotNull(response);
-			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-			StringAssert.AreEqualIgnoringCase(
-				"[{\"name\":\"name\",\"id\":123,\"value\":\"d39d9a5e-e009-4c33-b112-73cc45c2ae2d\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}" +
-				",{\"name\":\"name\",\"id\":123,\"value\":\"77795906-04FA-49F6-ADF4-AD1020C32668\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
 				response.Content.ReadAsStringAsync().Result);
 		}
 	}
