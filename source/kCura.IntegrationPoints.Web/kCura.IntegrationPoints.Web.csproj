@@ -237,7 +237,6 @@
     <Compile Include="RequestExtensions.cs" />
     <Compile Include="ServiceContextHelperForWeb.cs" />
     <Compile Include="SessionService.cs" />
-    <Compile Include="Toggles\ShowRelativityDataProviderToggle.cs" />
     <Compile Include="WebAPICustomPageService.cs" />
     <Compile Include="WebClientFactory.cs" />
     <Compile Include="WindsorCompositionRoot.cs" />
@@ -528,6 +527,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Toggles\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
