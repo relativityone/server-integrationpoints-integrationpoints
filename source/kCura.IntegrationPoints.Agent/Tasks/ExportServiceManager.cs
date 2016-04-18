@@ -297,14 +297,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private Exception ConstructNewExceptionIfAny(IEnumerable<Exception> exceptions)
 		{
+			if (exceptions == null)
+			{
+				return null;
+			}
+			
 			Exception ex = null;
 			Exception[] enumerable = exceptions as Exception[] ?? exceptions.ToArray();
 			if (!enumerable.IsNullOrEmpty())
 			{
 				int counter = 0;
 				string message = String.Join(Environment.NewLine, enumerable.Select(exception => $"{++counter}. {exception.Message}"));
-				ex = new Exception(message);
+				ex = new AggregateException(message, enumerable);
 			}
+
 			return ex;
 		}
 	}

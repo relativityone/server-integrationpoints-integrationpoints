@@ -115,11 +115,10 @@ namespace kCura.IntegrationPoints.Core.Installers
 				container.Register(Component.For<IDocumentRepository>().ImplementedBy<KeplerDocumentRepository>().LifeStyle.Transient);
 
 				// TODO: This is kind of cruddy, see if we can only use this repository through the RepositoryFactory -- biedrzycki: April 6th, 2016
-				IRepositoryFactory repositoryFactory = container.Resolve<IRepositoryFactory>();
 				container.Register(
 					Component.For<IWorkspaceRepository>()
 						.ImplementedBy<RsapiWorkspaceRepository>()
-						.DependsOn(repositoryFactory.GetWorkspaceRepository())
+						.UsingFactoryMethod((k) => k.Resolve<IRepositoryFactory>().GetWorkspaceRepository())
 						.LifestyleTransient());
 				container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());
 				container.Register(Component.For<ISourceJobManager>().ImplementedBy<SourceJobManager>().LifestyleTransient());
