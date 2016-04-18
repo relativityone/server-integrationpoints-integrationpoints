@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Models;
-using kCura.IntegrationPoints.Web.Toggles;
 using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -16,17 +15,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	public class SourceTypeController : ApiController
 	{
 		private readonly ISourceTypeFactory _factory;
-		private readonly IToggleProvider _toggleProvider;
 		private readonly ICaseServiceContext _serviceContext;
 		private readonly IObjectTypeQuery _rdoQuery;
 
 		public SourceTypeController(ISourceTypeFactory factory,
-			IToggleProvider toggleProvider,
 			ICaseServiceContext serviceContext,
 			RSAPIRdoQuery objectTypeQuery)
 		{
 			_factory = factory;
-			_toggleProvider = toggleProvider;
 			_rdoQuery = objectTypeQuery;
 			_serviceContext = serviceContext;
 		}
