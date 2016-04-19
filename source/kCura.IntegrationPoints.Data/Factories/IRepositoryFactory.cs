@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// Returns a class implementing the ISourceWorkspaceJobHistoryRepository interface 
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id</param>
-		/// <returns>A class impelemnting the ISourceWorkspaceJobHistoryRepository interface</returns>
+		/// <returns>A class implementing the ISourceWorkspaceJobHistoryRepository interface</returns>
 		ISourceWorkspaceJobHistoryRepository GetSourceWorkspaceJobHistoryRepository(int workspaceArtifactId);
 
 		/// <summary>
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// Returns a class implementing the IArtifactGuidRepository interface
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id</param>
-		/// <returns>A class impelementing the IArtifactGuidRepository interface</returns>
+		/// <returns>A class implementing the IArtifactGuidRepository interface</returns>
 		IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId);
 
 		/// <summary>

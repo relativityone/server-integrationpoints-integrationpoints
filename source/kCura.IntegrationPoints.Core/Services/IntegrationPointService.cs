@@ -20,20 +20,17 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private readonly ChoiceQuery _choiceQuery;
 		private readonly IJobManager _jobService;
-		private readonly IPermissionService _permissionService;
 
 		public IntegrationPointService(
 			ICaseServiceContext context,
 			kCura.Apps.Common.Utils.Serializers.ISerializer serializer, 
 			ChoiceQuery choiceQuery,
-			IJobManager jobService,
-			IPermissionService permissionService)
+			IJobManager jobService)
 		{
 			_context = context;
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
 			_jobService = jobService;
-			_permissionService = permissionService;
 		}
 
 		public Data.IntegrationPoint GetRdo(int rdoID)
@@ -82,8 +79,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			return mapping;
 		}
 
-		private const string NO_PERMISSION_TO_IMPORT = "You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.";
-
 		public int SaveIntegration(IntegrationModel model)
 		{
 			var choices = _choiceQuery.GetChoicesOnField(Guid.Parse(Data.IntegrationPointFieldGuids.OverwriteFields));
@@ -103,14 +98,14 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 
 			TaskType task;
+			TaskParameters jobDetails = null;
 			SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(ip.SourceProvider.Value);
 			if (provider.Identifier.Equals("423b4d43-eae9-4e14-b767-17d629de4bb2"))
 			{
-				DestinationWorkspace destinationWorkspace = JsonConvert.DeserializeObject<DestinationWorkspace>(ip.SourceConfiguration);
-//				if (_permissionService.UserCanImport(destinationWorkspace.TargetWorkspaceArtifactId) == false)
-				//{
-				//	throw new Exception(NO_PERMISSION_TO_IMPORT);
-				//}
+				jobDetails = new TaskParameters()
+				{
+					BatchInstance = Guid.NewGuid()
+				};
 				task = TaskType.ExportService;
 			}
 			else
@@ -130,7 +125,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			if (rule != null)
 			{
-				_jobService.CreateJob<object>(null, task, _context.WorkspaceID, ip.ArtifactId, rule);
+				_jobService.CreateJob<object>(jobDetails, task, _context.WorkspaceID, ip.ArtifactId, rule);
 			}
 			else
 			{
