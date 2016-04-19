@@ -23,6 +23,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
+using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
@@ -43,6 +44,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly JobStatisticsService _statisticsService;
 		private readonly List<IBatchStatus> _batchStatus;
 		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
+		private readonly IJobService _jobService;
+		private readonly IScheduleRuleFactory _scheduleRuleFactory;
 		private Guid _identifier;
 		private SourceConfiguration _sourceConfiguration;
 		private ITempDocTableHelper _docTableHelper;
@@ -50,6 +53,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IConsumeScratchTableBatchStatus _destinationFieldsTagger;
 		private IConsumeScratchTableBatchStatus _sourceFieldsTaggerDestinationWorkspace;
 		private JobHistoryManager _sourceJobHistoryTagger;
+		private TaskResult _taskResult;
 
 		public ExportServiceManager(
 			ICaseServiceContext caseServiceContext,
@@ -62,6 +66,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IEnumerable<IBatchStatus> statuses,
 			IDocumentRepository documentRepository,
 			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
+			IJobService jobService,
+			IScheduleRuleFactory scheduleRuleFactory,
 			JobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
 			JobStatisticsService statisticsService)
@@ -79,6 +85,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_statisticsService = statisticsService;
 			_batchStatus = statuses.ToList();
 			_serializer = serializer;
+			_jobService = jobService;
+			_scheduleRuleFactory = scheduleRuleFactory;
+			_taskResult = new TaskResult();
 		}
 
 		public IntegrationPoint IntegrationPointDto { get; private set; }
@@ -127,6 +136,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			catch (Exception ex)
 			{
+				_taskResult.Status = TaskStatusEnum.Fail;
 				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 			}
 			finally
@@ -260,6 +270,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				catch (Exception e)
 				{
+					_taskResult.Status = TaskStatusEnum.Fail;
 					_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
 				}
 				finally
@@ -271,6 +282,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			try
 			{
 				IntegrationPointDto.LastRuntimeUTC = DateTime.UtcNow;
+				if (job.SerializedScheduleRule != null)
+				{
+					if (_taskResult.Status == TaskStatusEnum.None)
+					{
+						_taskResult.Status = TaskStatusEnum.Success;
+					}
+					this.IntegrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory,
+						_taskResult);
+				}
 				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPointDto);
 			}
 			catch
