@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
 	public class TempTableReader : RelativityReaderBase
 	{
-		private const int _BATCH_SIZE = 5000;
+		private const int _BATCH_SIZE = 500;
 		private readonly IDocumentRepository _documentRepository;
 		private IDataReader _scratchTableReader;
 		private readonly DataColumn[] _columns;
