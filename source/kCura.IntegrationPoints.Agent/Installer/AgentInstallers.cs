@@ -4,7 +4,6 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Logging;
 
 namespace kCura.IntegrationPoints.Agent.Installer

@@ -9,7 +9,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using kCura.IntegrationPoints.Data.Extensions;
-using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
