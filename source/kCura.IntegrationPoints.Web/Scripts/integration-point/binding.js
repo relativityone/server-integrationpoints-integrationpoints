@@ -13,7 +13,7 @@ ko.bindingHandlers.select2 = {
 			containerCssClass: "filter-container",
 		});
 
-		if (viewModel.disable && viewModel.disable()) {
+		if (viewModel.disable) {
 			$element.select2('disable');
 		}
 

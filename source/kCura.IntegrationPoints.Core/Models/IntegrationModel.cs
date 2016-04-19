@@ -157,6 +157,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			Scheduler = new Scheduler(ip);
 			this.NotificationEmails = ip.EmailNotificationRecipients ?? string.Empty;
 			this.LogErrors = ip.LogErrors.GetValueOrDefault(false);
+			this.LastRun = ip.LastRuntimeUTC;
 		}
 	}
 }

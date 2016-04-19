@@ -125,7 +125,7 @@ var IP = IP || {};
 		var settings = $.extend({}, s);
 		this.templateID = 'ldapSourceConfig';
 		var self = this;
-		self.disable = parentModel.hasBeenRun;
+		self.disable = parentModel.hasBeenRun();
 
 		this.sourceTypes = ko.observableArray();
 		this.selectedType = ko.observable().extend({ required: true });
@@ -179,7 +179,7 @@ var IP = IP || {};
 		}
 		var settings = $.extend({}, d);
 		var self = this;
-		self.disable = parentModel.hasBeenRun;
+		self.disable = parentModel.hasBeenRun();
 
 		IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter') }).then(function (result) {
 			var types = $.map(result, function (entry) {
@@ -457,8 +457,9 @@ var IP = IP || {};
 
 		this.logErrors = ko.observable(settings.logErrors.toString());
 		this.showErrors = ko.observable(false);
-		// TODO: get value from model (m)
-		this.hasBeenRun = ko.observable(false);
+
+		var hasBeenRun = settings.lastRun != null;
+		this.hasBeenRun = ko.observable(hasBeenRun);
 
 		this.destination = new Destination(settings.destination, self);
 		this.source = new Source(settings.source, self);
