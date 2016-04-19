@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			TaskType task;
 			TaskParameters jobDetails = null;
 			SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(ip.SourceProvider.Value);
-			if (provider.Identifier.Equals("423b4d43-eae9-4e14-b767-17d629de4bb2"))
+			if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
 			{
 				jobDetails = new TaskParameters()
 				{
