@@ -81,6 +81,8 @@
 			<Assembly>bin\kCura.DocumentTransferProvider.dll</Assembly>
 			<Assembly>bin\kCura.IntegrationPoints.Services.dll</Assembly>
 			<Assembly>bin\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
+			<Assembly>bin\kCura.Viewer.Image.dll</Assembly>
+			<Assembly>bin\kCura.Print.dll</Assembly>
 		</Assemblies>
         <ResourceFiles />
         <CustomPages>
