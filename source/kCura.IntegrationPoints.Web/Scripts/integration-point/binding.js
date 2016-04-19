@@ -12,6 +12,11 @@ ko.bindingHandlers.select2 = {
 			dropdownCssClass: "filter-select",
 			containerCssClass: "filter-container",
 		});
+
+		if (viewModel.disable && viewModel.disable()) {
+			$element.select2('disable');
+		}
+
 		$element.parent().find('.filter-container span.select2-arrow').removeClass("select2-arrow").addClass("icon legal-hold icon-chevron-down");
 	},
 	update: function (el, valueAccessor, allBindingsAccessor, viewModel) {
