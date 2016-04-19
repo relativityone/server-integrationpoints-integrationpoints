@@ -136,12 +136,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			return ip.ArtifactId;
 		}
-
-		internal class DestinationWorkspace
-		{
-			public int TargetWorkspaceArtifactId;
-		}
-
 		public IEnumerable<string> GetRecipientEmails(int integrationPoint)
 		{
 			return (this.GetRdo(integrationPoint).EmailNotificationRecipients ?? string.Empty).Split(';').Select(x => x.Trim());
