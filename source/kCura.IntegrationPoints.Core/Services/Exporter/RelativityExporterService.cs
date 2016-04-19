@@ -49,6 +49,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		}
 
 		public RelativityExporterService(
+			ClaimsPrincipal claimsPrincipal,
 			FieldMap[] mappedFields,
 			int startAt,
 			string config)
@@ -58,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_mappedFields = mappedFields;
 			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
 
-			_baseContext = ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(_settings.SourceWorkspaceArtifactId);
+			_baseContext = claimsPrincipal.GetServiceContextUnversionShortTerm(_settings.SourceWorkspaceArtifactId);
 
 			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int)ArtifactType.Document);
 			Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();

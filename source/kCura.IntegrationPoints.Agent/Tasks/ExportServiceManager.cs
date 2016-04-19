@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IConsumeScratchTableBatchStatus _destinationFieldsTagger;
 		private IConsumeScratchTableBatchStatus _sourceFieldsTaggerDestinationWorkspace;
 		private JobHistoryManager _sourceJobHistoryTagger;
-		private TaskResult _taskResult;
+		private readonly TaskResult _taskResult;
 
 		public ExportServiceManager(
 			ICaseServiceContext caseServiceContext,
@@ -65,7 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IRepositoryFactory repositoryFactory,
 			IEnumerable<IBatchStatus> statuses,
 			IDocumentRepository documentRepository,
-			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
+			Apps.Common.Utils.Serializers.ISerializer serializer,
 			IJobService jobService,
 			IScheduleRuleFactory scheduleRuleFactory,
 			JobHistoryService jobHistoryService,
@@ -113,7 +114,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				SetupSubscriptions(synchronizer, job);
 
 				// Push documents
-				using (IExporterService exporter = _exporterFactory.BuildExporter(MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration))
+				using (IExporterService exporter = _exporterFactory.BuildExporter(MappedFields.ToArray(),
+					IntegrationPointDto.SourceConfiguration,
+					job.SubmittedBy))
 				{
 					JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
 					UpdateJobStatus();

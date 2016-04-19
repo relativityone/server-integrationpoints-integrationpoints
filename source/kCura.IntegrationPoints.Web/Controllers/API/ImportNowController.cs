@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
@@ -25,8 +26,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IntegrationPointService integrationPointService,
 			JobHistoryService jobHistoryService,
 			IPermissionService permissionService)
-			: this(jobManager, permissionService, new IntegrationPointRdoInitializer(integrationPointService, caseServiceContext, jobHistoryService))
-		{ }
+			: this(jobManager, permissionService,
+				new IntegrationPointRdoInitializer(integrationPointService, caseServiceContext, jobHistoryService))
+		{
+			var user = this.User as ClaimsPrincipal;
+			foreach (Claim claim in user.Claims)
+			{
+				if ("rel_uai".Equals(claim.Type, StringComparison.OrdinalIgnoreCase))
+				{
+					caseServiceContext.EddsUserID = Convert.ToInt32(claim.Value);
+					break;
+				}
+			}
+		}
 
 		internal ImportNowController(IJobManager jobManager,
 			IPermissionService permissionService,
@@ -60,6 +72,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					{
 						throw new Exception(NO_PERMISSION_TO_IMPORT);
 					}
+				
 					_rdoDependenciesAdaptor.CreateJobHistoryRdo();
 					_jobManager.CreateJob(jobDetails, TaskType.ExportService, workspaceID, relatedObjectArtifactID);
 				}
