@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Security.AccessControl;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit
@@ -24,7 +26,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", "stack trace");
 			List<JobHistoryError> errors = new List<JobHistoryError>();
 			context.RsapiService.JobHistoryErrorLibrary.Create(Arg.Do<IEnumerable<JobHistoryError>>(x => errors.AddRange(x)));
-
+			jobHistoryErrorService.IntegrationPoint = new IntegrationPoint();
+			jobHistoryErrorService.IntegrationPoint.HasErrors = false;
 
 			//ACT
 			jobHistoryErrorService.CommitErrors();
@@ -44,10 +47,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		public void CommitErrors_FailsCommit_ThrowsException()
 		{
 			//ARRANGE
-			JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(null);
+			var context = NSubstitute.Substitute.For<ICaseServiceContext>();
+
+			JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(context);
 			jobHistoryErrorService.JobHistory = new JobHistory() { ArtifactId = 111 };
 			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, "", "Fake job error.", null);
 			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, "MyIdentifier", "Fake item error.", null);
+			context.RsapiService.JobHistoryErrorLibrary.Create(Arg.Any<IEnumerable<JobHistoryError>>()).Throws(new Exception());
+			context.RsapiService.IntegrationPointLibrary.Update(Arg.Any<IntegrationPoint>()).Returns(true);
+			jobHistoryErrorService.IntegrationPoint = new IntegrationPoint();
+			jobHistoryErrorService.IntegrationPoint.HasErrors = false;
 
 
 			//ACT
