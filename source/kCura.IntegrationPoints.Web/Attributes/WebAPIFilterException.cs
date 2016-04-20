@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Web.Attributes
 				creator.Log(new ErrorModel(workspace, exp.Message, exp));
 				_factory.Release(creator);
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				SystemEventLoggingService.WriteErrorEvent("Integration Points", "WebAPIFilterException", context.Exception);
 			}

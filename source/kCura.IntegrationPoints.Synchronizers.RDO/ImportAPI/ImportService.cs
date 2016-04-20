@@ -176,7 +176,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 					_idToFieldDictionary.Add(field.ArtifactID, field);
 				}
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				//LoggedException.PreserveStack(ex);
 				//throw new ConnectionException(RelativityExport.RelativityWorkspaceRead, ex);
