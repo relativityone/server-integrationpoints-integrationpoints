@@ -52,41 +52,43 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		public HttpResponseMessage Update(int workspaceID, IntegrationModel model)
 		{
 			// check that only fields that are allowed to be changed are changed
-			IntegrationModel existingModel = _reader.ReadIntegrationPoint(model.ArtifactID);
 			List<string> invalidProperties = new List<string>();
-			if (existingModel.LastRun.HasValue)
+			if (model.ArtifactID > 0)
 			{
-				if (existingModel.Name != model.Name)
+				IntegrationModel existingModel = _reader.ReadIntegrationPoint(model.ArtifactID);
+				if (existingModel.LastRun.HasValue)
 				{
-					invalidProperties.Add("Name");	
-				}
-				if (existingModel.DestinationProvider != model.DestinationProvider)
-				{
-					invalidProperties.Add("Destination Provider");	
-				}
-				if (existingModel.SourceProvider != model.SourceProvider)
-				{
-					invalidProperties.Add("Source Provider");	
-				}
-				if (existingModel.Destination != model.Destination)
-				{
-					dynamic existingDestination = JsonConvert.DeserializeObject(existingModel.Destination);
-					dynamic newDestination = JsonConvert.DeserializeObject(model.Destination);
-
-					if (existingDestination.artifactTypeID != newDestination.artifactTypeID)
+					if (existingModel.Name != model.Name)
 					{
-						invalidProperties.Add("Destination RDO");
+						invalidProperties.Add("Name");
 					}
-					if (existingDestination.CaseArtifactId != newDestination.CaseArtifactId)
+					if (existingModel.DestinationProvider != model.DestinationProvider)
 					{
-						invalidProperties.Add("Case");	
+						invalidProperties.Add("Destination Provider");
+					}
+					if (existingModel.SourceProvider != model.SourceProvider)
+					{
+						invalidProperties.Add("Source Provider");
+					}
+					if (existingModel.Destination != model.Destination)
+					{
+						dynamic existingDestination = JsonConvert.DeserializeObject(existingModel.Destination);
+						dynamic newDestination = JsonConvert.DeserializeObject(model.Destination);
+
+						if (existingDestination.artifactTypeID != newDestination.artifactTypeID)
+						{
+							invalidProperties.Add("Destination RDO");
+						}
+						if (existingDestination.CaseArtifactId != newDestination.CaseArtifactId)
+						{
+							invalidProperties.Add("Case");
+						}
+					}
+					if (existingModel.SourceConfiguration != model.SourceConfiguration)
+					{
+						invalidProperties.Add("Source Configruation"); // This is the data provider specific settings
 					}
 				}
-				if (existingModel.SourceConfiguration != model.SourceConfiguration)
-				{
-					invalidProperties.Add("Source Configruation"); // This is the data provider specific settings
-				}
-
 			}
 
 			// check permission if we want to push
