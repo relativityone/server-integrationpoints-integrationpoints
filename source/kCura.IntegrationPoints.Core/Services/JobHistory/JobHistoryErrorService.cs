@@ -68,8 +68,8 @@ namespace kCura.IntegrationPoints.Core.Services
 				}
 				finally
 				{
-					_context.RsapiService.IntegrationPointLibrary.Update(IntegrationPoint);
 					_jobHistoryErrorList.Clear();
+					_context.RsapiService.IntegrationPointLibrary.Update(IntegrationPoint);
 				}
 			}
 		}
