@@ -12,11 +12,13 @@ namespace kCura.IntegrationPoints.Core.Services
 	{
 		private readonly ICaseServiceContext _context;
 		private readonly List<JobHistoryError> _jobHistoryErrorList;
+		private bool _errorOccurredDuringJob;
 
 		public JobHistoryErrorService(ICaseServiceContext context)
 		{
 			_context = context;
-			_jobHistoryErrorList = new List<JobHistoryError>();	
+			_jobHistoryErrorList = new List<JobHistoryError>();
+			_errorOccurredDuringJob = false;
 		}
 
 		public Data.JobHistory JobHistory { get; set; }
@@ -40,8 +42,15 @@ namespace kCura.IntegrationPoints.Core.Services
 					if (_jobHistoryErrorList.Any())
 					{
 						kCura.Method.Injection.InjectionManager.Instance.Evaluate("9B9265FB-F63D-44D3-90A2-87C1570F746D");
+						_errorOccurredDuringJob = true;
+						IntegrationPoint.HasErrors = true;
 
 						_context.RsapiService.JobHistoryErrorLibrary.Create(_jobHistoryErrorList);
+					}
+
+					if (!_errorOccurredDuringJob)
+					{
+						IntegrationPoint.HasErrors = false;
 					}
 				}
 				catch (Exception ex)
@@ -59,6 +68,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				}
 				finally
 				{
+					_context.RsapiService.IntegrationPointLibrary.Update(IntegrationPoint);
 					_jobHistoryErrorList.Clear();
 				}
 			}
