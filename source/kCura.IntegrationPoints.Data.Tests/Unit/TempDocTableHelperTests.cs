@@ -136,7 +136,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		}
 
 		[Test]
-		public void SetDocumentIdentifierField_GoldFlow()
+		public void GetDocumentIdentifierField_GoldFlow()
 		{
 			//Arrange
 			_fieldRepository.RetrieveFieldsAsync(Arg.Any<int>(), Arg.Any<HashSet<string>>()).Returns(_successFieldTask);
@@ -146,6 +146,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			//Assert
 			Assert.IsTrue(docIdField == "Control Number X");
+			_fieldRepository.Received().RetrieveFieldsAsync(10, Arg.Any<HashSet<string>>());
 		}
 
 		[Test]
@@ -160,6 +161,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			//Assert
 			Assert.IsTrue(documentId == 12345);
+			_documentRepository.Received().RetrieveDocumentAsync(_docIdColumn, docIdentifier);
 		}
 
 		[Test]
@@ -172,6 +174,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			//Act
 			_instance.QueryForDocumentArtifactId(docIdentifier);
+			_documentRepository.Received().RetrieveDocumentAsync(_docIdColumn, docIdentifier);
 		}
 
 		private ArtifactDTO[] CreateArtifactDTOs()

@@ -180,5 +180,11 @@ namespace kCura.ScheduleQueue.Core.Services
 
 			return job;
 		}
+
+		public void CleanupJobQueueTable()
+		{
+			var cleanupJobQueueTable = new CleanupJobQueueTable(QDBContext);
+			cleanupJobQueueTable.Execute();
+		}
 	}
 }

@@ -20,7 +20,11 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly ChoiceQuery _choiceQuery;
 		private readonly IJobManager _jobService;
 
-		public IntegrationPointService(ICaseServiceContext context, kCura.Apps.Common.Utils.Serializers.ISerializer serializer, ChoiceQuery choiceQuery, IJobManager jobService)
+		public IntegrationPointService(
+			ICaseServiceContext context,
+			kCura.Apps.Common.Utils.Serializers.ISerializer serializer, 
+			ChoiceQuery choiceQuery,
+			IJobManager jobService)
 		{
 			_context = context;
 			_serializer = serializer;
@@ -92,6 +96,22 @@ namespace kCura.IntegrationPoints.Core.Services
 				rule = null;
 			}
 
+			TaskType task;
+			TaskParameters jobDetails = null;
+			SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(ip.SourceProvider.Value);
+			if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+			{
+				jobDetails = new TaskParameters()
+				{
+					BatchInstance = Guid.NewGuid()
+				};
+				task = TaskType.ExportService;
+			}
+			else
+			{
+				task = TaskType.SyncManager;
+			}
+
 			//save RDO
 			if (ip.ArtifactId > 0)
 			{
@@ -101,13 +121,14 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				ip.ArtifactId = _context.RsapiService.IntegrationPointLibrary.Create(ip);
 			}
+
 			if (rule != null)
 			{
-				_jobService.CreateJob<object>(null, TaskType.SyncManager, _context.WorkspaceID, ip.ArtifactId, rule);
+				_jobService.CreateJob<object>(jobDetails, task, _context.WorkspaceID, ip.ArtifactId, rule);
 			}
 			else
 			{
-				Job job = _jobService.GetJob(_context.WorkspaceID, ip.ArtifactId, TaskType.SyncManager.ToString());
+				Job job = _jobService.GetJob(_context.WorkspaceID, ip.ArtifactId, task.ToString());
 				if (job != null)
 				{
 					_jobService.DeleteJob(job.JobId);
@@ -115,7 +136,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			return ip.ArtifactId;
 		}
-
 		public IEnumerable<string> GetRecipientEmails(int integrationPoint)
 		{
 			return (this.GetRdo(integrationPoint).EmailNotificationRecipients ?? string.Empty).Split(';').Select(x => x.Trim());

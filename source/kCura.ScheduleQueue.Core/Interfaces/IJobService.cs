@@ -19,6 +19,11 @@ namespace kCura.ScheduleQueue.Core
 		Job GetJob(long jobID);
 		Job GetScheduledJob(int workspaceID, int relatedObjectArtifactID, string taskName);
 
+		/// <summary>
+		/// Cleans up the scheduled job queue table.
+		/// </summary>
+		void CleanupJobQueueTable();
+
 		//TODO: Implement
 		//bool IsWorkspaceActive(int workspaceID);
 	}

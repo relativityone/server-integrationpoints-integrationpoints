@@ -13,6 +13,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		public void TagDocsWithJobHistory(int numberOfDocs, int jobHistoryInstanceArtifactId, int sourceWorkspaceId, string tableSuffix)
 		{
+			if (numberOfDocs <= 0)
+			{
+				return;
+			}
+
 			BaseServiceContext baseService = ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(sourceWorkspaceId);
 
 			Guid[] guids = { new Guid(DocumentMultiObjectFields.JOB_HISTORY_FIELD) };

@@ -71,17 +71,19 @@
   </TestRunner>
   <RAPBuilder>
     <Applications>
-      <Application name="Relativity.IntegrationPoints">			
+      <Application name="Relativity.IntegrationPoints">
         <Destination>bin\Application\RelativityIntegrationPoints.Auto.rap</Destination>
         <ApplicationSchema>application\application.xml</ApplicationSchema>
         <Assemblies>
-			<Assembly>bin\kCura.IntegrationPoints.Contracts.dll</Assembly>
-			<Assembly>bin\kCura.IntegrationPoints.dll</Assembly>
-			<Assembly>bin\kCura.LDAPProvider.dll</Assembly>
-			<Assembly>bin\kCura.DocumentTransferProvider.dll</Assembly>
-			<Assembly>bin\kCura.IntegrationPoints.Services.dll</Assembly>
-			<Assembly>bin\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
-		</Assemblies>
+          <Assembly>bin\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.dll</Assembly>
+          <Assembly>bin\kCura.LDAPProvider.dll</Assembly>
+          <Assembly>bin\kCura.DocumentTransferProvider.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.Services.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
+          <Assembly>Dependencies\kCura\kCura.Image.Viewer.dll</Assembly>
+          <Assembly>Dependencies\kCura\kCura.Print.dll</Assembly>
+        </Assemblies>
         <ResourceFiles />
         <CustomPages>
           <CustomPage guid="c2c93191-7b15-4a9b-aa56-6a8c2dac5494">publish\web\</CustomPage>

@@ -141,14 +141,25 @@ namespace kCura.IntegrationPoints.Services
 
 		private async Task<HistoricalPromotionStatusSummaryModel> GetHistoricalPromotionStatusInternalAsync(HistoricalPromotionStatusRequest request)
 		{
-			HistoricalPromotionStatusModel currentHistoricalPromotionStatus = await GetCurrentDocumentModelAsync(request.WorkspaceArtifactId);
-			IEnumerable<HistoricalPromotionStatusModel> historicalDocumentVolume = await GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId);
+			HistoricalPromotionStatusModel currentPromotionStatus = await GetCurrentDocumentModelAsync(request.WorkspaceArtifactId);
+			IList<HistoricalPromotionStatusModel> historicalPromotionStatus = await GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId);
 
-			HistoricalPromotionStatusModel[] historicalPromotionStatus = historicalDocumentVolume.Concat(new[] {currentHistoricalPromotionStatus}).ToArray();
+			if (historicalPromotionStatus.Any())
+			{
+				DateTime recentHistoricalDate = historicalPromotionStatus.Last().Date;
+				DateTime currentDate = currentPromotionStatus.Date;
+
+				string dateFormat = "yyyyMMdd";
+				if (recentHistoricalDate.ToString(dateFormat) == currentDate.ToString(dateFormat))
+				{
+					historicalPromotionStatus.RemoveAt(historicalPromotionStatus.Count - 1);
+				}
+			}
+			historicalPromotionStatus.Add(currentPromotionStatus);
 
 			HistoricalPromotionStatusSummaryModel model = new HistoricalPromotionStatusSummaryModel
 			{
-				HistoricalPromotionStatus = historicalPromotionStatus
+				HistoricalPromotionStatus = historicalPromotionStatus.ToArray()
 			};
 			return model;
 		}
@@ -168,7 +179,7 @@ namespace kCura.IntegrationPoints.Services
 			return model;
 		}
 
-		private async Task<List<HistoricalPromotionStatusModel>> GetHistoricalDocumentModelAsync(int workspaceId)
+		private async Task<IList<HistoricalPromotionStatusModel>> GetHistoricalDocumentModelAsync(int workspaceId)
 		{
 			IDBContext workspaceContext = API.Services.Helper.GetDBContext(workspaceId);
 
@@ -206,14 +217,16 @@ namespace kCura.IntegrationPoints.Services
 
 		private const string _DISPLAY_NAME_SQL = @"
 			SELECT F.DisplayName FROM [ArtifactGuid] AS AG
-			INNER JOIN Artifact AS A
+			INNER JOIN Artifact AS A WITH (NOLOCK)
 			ON AG.ArtifactID = A.ArtifactID
-			INNER JOIN Field AS F
+			INNER JOIN Field AS F WITH (NOLOCK)
 			ON F.ArtifactID = A.ArtifactID
 			WHERE ArtifactGuid = @artifactGuid";
 
 		private const string _DOCUMENT_VOLUME_SQL = @"
-			SELECT * FROM [DocumentVolume]";
+			SELECT [Date], [DocumentsIncluded], [DocumentsExcluded], [DocumentsUntagged]
+			FROM [DocumentVolume] WITH (NOLOCK)
+			ORDER BY [Date] ASC";
 
 		#endregion
 	}
