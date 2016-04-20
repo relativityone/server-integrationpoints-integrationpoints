@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
@@ -15,7 +16,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class ImportNowController : ApiController
 	{
+		private const string RELATIVITY_USERID = "rel_uai";
 		internal const string NO_PERMISSION_TO_IMPORT = "You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.";
+		internal const string NO_USERID = "Unable to determine the user id. Please contact your system administrator.";
+
 		private readonly IJobManager _jobManager;
 		private readonly IPermissionService _permissionService;
 		private readonly IIntegrationPointRdoAdaptor _rdoDependenciesAdaptor;
@@ -25,8 +29,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IntegrationPointService integrationPointService,
 			JobHistoryService jobHistoryService,
 			IPermissionService permissionService)
-			: this(jobManager, permissionService, new IntegrationPointRdoInitializer(integrationPointService, caseServiceContext, jobHistoryService))
-		{ }
+			: this(jobManager, permissionService,
+				new IntegrationPointRdoInitializer(integrationPointService, caseServiceContext, jobHistoryService))
+		{
+		}
 
 		internal ImportNowController(IJobManager jobManager,
 			IPermissionService permissionService,
@@ -52,6 +58,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				
 				_rdoDependenciesAdaptor.Initialize(relatedObjectArtifactID, batchInstance);
 
+				int userId = GetUserIdIfExist();
 				// if relativity provider is selected, we will create an export task
 				if (_rdoDependenciesAdaptor.SourceProviderIdentifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
 				{
@@ -60,13 +67,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					{
 						throw new Exception(NO_PERMISSION_TO_IMPORT);
 					}
+
+					if (userId == 0)
+					{
+						throw new Exception(NO_USERID);
+					}
+
 					_rdoDependenciesAdaptor.CreateJobHistoryRdo();
-					_jobManager.CreateJob(jobDetails, TaskType.ExportService, workspaceID, relatedObjectArtifactID);
+					_jobManager.CreateJobOnBehalfOfAUser(jobDetails,  TaskType.ExportService, workspaceID, relatedObjectArtifactID, userId);
 				}
 				else
 				{
 					_rdoDependenciesAdaptor.CreateJobHistoryRdo();
-					_jobManager.CreateJob(jobDetails, TaskType.SyncManager, workspaceID, relatedObjectArtifactID);
+					_jobManager.CreateJobOnBehalfOfAUser(jobDetails, TaskType.SyncManager, workspaceID, relatedObjectArtifactID, userId);
 				}
 			}
 			catch (AggregateException exception)
@@ -79,6 +92,23 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				return Request.CreateResponse(HttpStatusCode.BadRequest, exception.Message);
 			}
 			return Request.CreateResponse(HttpStatusCode.OK);
+		}
+
+
+		private int GetUserIdIfExist()
+		{
+			var user = this.User as ClaimsPrincipal;
+			if (user != null)
+			{
+				foreach (Claim claim in user.Claims)
+				{
+					if (RELATIVITY_USERID.Equals(claim.Type, StringComparison.OrdinalIgnoreCase))
+					{
+						return Convert.ToInt32(claim.Value);
+					}
+				}
+			}
+			return 0;
 		}
 
 		internal class IntegrationPointRdoInitializer : IIntegrationPointRdoAdaptor
