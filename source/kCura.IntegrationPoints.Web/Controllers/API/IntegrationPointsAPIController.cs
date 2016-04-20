@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -49,6 +51,44 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpPost]
 		public HttpResponseMessage Update(int workspaceID, IntegrationModel model)
 		{
+			// check that only fields that are allowed to be changed are changed
+			IntegrationModel existingModel = _reader.ReadIntegrationPoint(model.ArtifactID);
+			List<string> invalidProperties = new List<string>();
+			if (existingModel.LastRun.HasValue)
+			{
+				if (existingModel.Name != model.Name)
+				{
+					invalidProperties.Add("Name");	
+				}
+				if (existingModel.DestinationProvider != model.DestinationProvider)
+				{
+					invalidProperties.Add("Destination Provider");	
+				}
+				if (existingModel.SourceProvider != model.SourceProvider)
+				{
+					invalidProperties.Add("Source Provider");	
+				}
+				if (existingModel.Destination != model.Destination)
+				{
+					dynamic existingDestination = JsonConvert.DeserializeObject(existingModel.Destination);
+					dynamic newDestination = JsonConvert.DeserializeObject(model.Destination);
+
+					if (existingDestination.artifactTypeID != newDestination.artifactTypeID)
+					{
+						invalidProperties.Add("Destination RDO");
+					}
+					if (existingDestination.CaseArtifactId != newDestination.CaseArtifactId)
+					{
+						invalidProperties.Add("Case");	
+					}
+				}
+				if (existingModel.SourceConfiguration != model.SourceConfiguration)
+				{
+					invalidProperties.Add("Source Configruation"); // This is the data provider specific settings
+				}
+
+			}
+
 			// check permission if we want to push
 			// needs to be here because custom page is the only place that has user context
 			SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(model.SourceProvider);
@@ -61,8 +101,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				}
 			}
 
-			var createdId = _reader.SaveIntegration(model);
-			var result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
+			if (invalidProperties.Any())
+			{
+				throw new Exception($"Unable to save Integration Point:{String.Join(",", invalidProperties.Select(x => $" {x}"))} cannot be changed once the Integration Point has been run");
+			}
+
+			int createdId = _reader.SaveIntegration(model);
+			string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
 			return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
 		}
 
