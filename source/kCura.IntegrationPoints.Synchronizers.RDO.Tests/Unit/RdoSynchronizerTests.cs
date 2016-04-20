@@ -262,7 +262,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			//ASSERT
 			Assert.IsNull(result.FolderPathSourceFieldName);
-			Assert.AreEqual(0, result.DestinationFolderArtifactID);
+			Assert.AreEqual(0, result.DestinationFolderArtifactId);
 		}
 
 		[Test]
@@ -286,7 +286,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			//ASSERT
 			Assert.AreEqual(Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME, result.FolderPathSourceFieldName);
-			Assert.AreEqual(0, result.DestinationFolderArtifactID);
+			Assert.AreEqual(0, result.DestinationFolderArtifactId);
 		}
 
 		[Test]

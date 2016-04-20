@@ -20,9 +20,9 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
@@ -131,7 +131,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						};
 
 						IDataReader dataReader = exporter.GetDataReader(scratchTables);
-						synchronizer.SyncData(dataReader, MappedFields, destinationConfig);
+						string newImportApiSettings = GetImportApiSettingsWithOnBehalfUserInformation(job, destinationConfig);
+						synchronizer.SyncData(dataReader, MappedFields, newImportApiSettings);
 					}
 				}
 
@@ -261,7 +262,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_sourceJobHistoryTagger.ScratchTableRepository.Dispose();
 				_sourceFieldsTaggerDestinationWorkspace.ScratchTableRepository.Dispose();
 			}
-			catch(Exception) {
+			catch (Exception)
+			{
 				// trying to delete temp tables early, don't have worry about failing
 			}
 
@@ -326,7 +328,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				return null;
 			}
-			
+
 			Exception ex = null;
 			Exception[] enumerable = exceptions as Exception[] ?? exceptions.ToArray();
 			if (!enumerable.IsNullOrEmpty())
@@ -337,6 +339,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 
 			return ex;
+		}
+
+		private string GetImportApiSettingsWithOnBehalfUserInformation(Job job, string orignialImportApiSettings)
+		{
+			var importSettings = JsonConvert.DeserializeObject<ImportSettings>(orignialImportApiSettings);
+			importSettings.OnBehalfOfUserId = job.SubmittedBy;
+			string jsonString = JsonConvert.SerializeObject(importSettings);
+			return jsonString;
 		}
 	}
 }

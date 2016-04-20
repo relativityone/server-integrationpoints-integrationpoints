@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 {
 	public class ImportService : IImportService, IBatchReporter
 	{
-		private IImportAPI _importApi;
+		private IExtendedImportAPI _importApi;
 		private readonly ImportApiFactory _factory;
 		private readonly BatchManager _batchManager;
 		private Dictionary<int, Field> _idToFieldDictionary;
@@ -96,7 +96,16 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		public virtual void KickOffImport(IDataReader dataReader)
 		{
-			ImportBulkArtifactJob importJob = _importApi.NewObjectImportJob(Settings.ArtifactTypeId);
+			ImportBulkArtifactJob importJob = null;
+			if (Settings.ArtifactTypeId == (int)Relativity.Client.ArtifactType.Document)
+			{
+				importJob = _importApi.NewNativeDocumentImportJob(Settings.OnBehalfOfUserToken);
+			}
+			else
+			{
+				importJob = _importApi.NewObjectImportJob(Settings.ArtifactTypeId);
+			}
+
 			importJob.SourceData.SourceData = dataReader;
 			importJob.Settings.ArtifactTypeId = Settings.ArtifactTypeId;
 			importJob.Settings.AuditLevel = Settings.AuditLevel;
