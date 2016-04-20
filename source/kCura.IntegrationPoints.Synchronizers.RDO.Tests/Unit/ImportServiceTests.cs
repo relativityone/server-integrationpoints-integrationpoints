@@ -159,8 +159,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 		}
 		#endregion
 
-
-
 		#region GenerateImportFields
 		[Test]
 		public void GenerateImportFields_NativeFileImportServiceIsNull_CorrectResult()
@@ -263,7 +261,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			Assert.AreEqual("\\\\Server1\\path1\\file1", result[nativeFileImportService.DestinationFieldName]);
 		}
 		#endregion
-
 
 
 		private Field GetFieldObject(int artifactID, string name, Guid? guid = null)

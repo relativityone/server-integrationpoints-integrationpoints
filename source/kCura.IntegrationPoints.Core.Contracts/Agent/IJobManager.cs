@@ -16,8 +16,9 @@ namespace kCura.IntegrationPoints.Core.Contracts.Agent
 
 	public interface IJobManager
 	{
-		void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null);
-		void CreateJob<T>(T jobDetails, TaskType task, int workspaceID, int integrationPointID, long? rootJobID = null, long? parentJobID = null);
+		void CreateJobOnBehalfOfAUser<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, int userId, long? rootJobId = null, long? parentJobId = null);
+		void CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, IScheduleRule rule, long? rootJobID = null, long? parentJobID = null);
+		void CreateJob<T>(T jobDetails, TaskType task, int workspaceId, int integrationPointId, long? rootJobId = null, long? parentJobId = null);
 		void CreateJob<T>(Job parentJob, T jobDetails, TaskType task);
 		void DeleteJob(long jobID);
 		Job GetJob(int workspaceID, int relatedObjectArtifactID, string taskName);
