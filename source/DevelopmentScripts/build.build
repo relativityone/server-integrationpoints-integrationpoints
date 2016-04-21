@@ -6,6 +6,7 @@
 	<property name="source.code.directory" value="${root}" />
 	<property name="action" value="build" unless="${property::exists('action')}" />
 	<property name="buildconfig" value="release" unless="${property::exists('buildconfig')}" />
+	<property name="buildconfig" value="release" unless="${property::exists('buildconfig')}" />
 	<property name="copyconfig" value="false" unless="${property::exists('copyconfig')}" />
 	<property name="buildsuccessfile" value="${source.code.directory}\.lastbuildsucceeded" readonly="true" />
 	<property name="targetsfile" value="msbuild.targets" readonly="true" />
@@ -303,20 +304,12 @@
 		</copy>
 	</target>
 	
-	<target name="upload_binaries_into_relativity" description="Upload binary files into Relativity">
-		<choose>
-			<when test="${caseId==''}">
-				<echo message="Skip uploading binaries" />
-			</when>
-			<otherwise>
-				<exec program="${ldap.scripts.directory}\UploadLDAPSyncBinariesIntoLocalRelativity.bat" >
-					<arg line='${caseId}' />
-					<environment>
-						<variable name="root" value="${root}" />
-					</environment>
-				</exec>
-			</otherwise>
-		</choose>
+	<target name="upload_binaries_into_relativity" description="Upload binary files into Relativity">		
+		<exec program="${ldap.scripts.directory}\UploadLDAPSyncBinariesIntoLocalRelativity.bat" >
+			<arg line='${caseId}' />
+			<environment>
+				<variable name="root" value="${root}" />
+			</environment>
+		</exec>
 	</target>
-
 </project>
