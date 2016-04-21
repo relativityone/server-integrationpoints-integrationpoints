@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Authentication;
-using System.Xml.Serialization;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils;
@@ -134,7 +132,6 @@ namespace kCura.ScheduleQueue.AgentBase
 				//	continue;
 				//}
 
-				
 				TaskResult taskResult = ExecuteTask(nextJob);
 
 				FinalizeJob(nextJob, taskResult);
@@ -158,7 +155,6 @@ namespace kCura.ScheduleQueue.AgentBase
 				task = GetTask(job);
 				if (task != null)
 				{
-					
 					task.Execute(job);
 
 					OnRaiseJobLogEntry(job, JobLogState.Finished);
