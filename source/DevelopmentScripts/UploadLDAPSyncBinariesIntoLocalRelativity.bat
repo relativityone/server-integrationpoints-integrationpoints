@@ -19,7 +19,7 @@ if not "%1" == "" (
 SET BUILDCONFIGPATH=%BUILDPATH%
 
 pushd "%BUILDCONFIGPATH%"
-call "%dllUploader%" /updatedlls /masterurl:http://localhost/Relativity.Services/ /caseusername:relativity.admin@kcura.com /caseuserpassword:Test1234! /caseid:%CASEID% /applicationguid:DCF6E9D1-22B6-4DA3-98F6-41381E93C30C /assembly:%BUILDCONFIGPATH%\kCura.IntegrationPoints.Contracts.dll /assembly:%BUILDCONFIGPATH%\kCura.IntegrationPoints.dll /assembly:%BUILDCONFIGPATH%\kCura.LDAPProvider.dll /assembly:%BUILDCONFIGPATH%\kCura.DocumentTransferProvider.dll
+call "%dllUploader%" /updatedlls /masterurl:http://localhost/Relativity.Services/ /caseusername:relativity.admin@kcura.com /caseuserpassword:Test1234! /caseid:%CASEID% /applicationguid:DCF6E9D1-22B6-4DA3-98F6-41381E93C30C /assembly:%BUILDCONFIGPATH%\kCura.IntegrationPoints.Contracts.dll /assembly:%BUILDCONFIGPATH%\kCura.IntegrationPoints.dll /assembly:%BUILDCONFIGPATH%\kCura.LDAPProvider.dll /assembly:%BUILDCONFIGPATH%\kCura.DocumentTransferProvider.dll /assembly:%BUILDCONFIGPATH%\kCura.IntegrationPoints.Services.dll /assembly:%BUILDCONFIGPATH%\kCura.IntegrationPoints.Services.Interfaces.Private.dll /assembly:%BUILDCONFIGPATH%\kCura.Image.Viewer.dll /assembly:%BUILDCONFIGPATH%\kCura.Print.dll
 goto end
 
 :help

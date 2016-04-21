@@ -107,6 +107,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 				IScratchTableRepository[] scratchTableRepositories = new[]
 				{
+					_destinationFieldsTagger.ScratchTableRepository,
 					_sourceFieldsTaggerDestinationWorkspace.ScratchTableRepository
 				};
 
