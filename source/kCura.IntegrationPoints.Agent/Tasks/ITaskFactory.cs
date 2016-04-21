@@ -1,4 +1,5 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using Castle.MicroKernel;
+using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
@@ -6,6 +7,7 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Email;
 using kCura.Relativity.Client;
@@ -62,6 +64,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Container.Register(Component.For<ISendable>()
 				.ImplementedBy<SMTP>()
 				.DependsOn(Dependency.OnValue<EmailConfiguration>(new RelativityConfigurationFactory().GetConfiguration())));
+
+			Container.Register(Component.For<IOnBehalfOfUserClaimsPrincipleFactory>()
+					.ImplementedBy<OnBehalfOfUserClaimsPrincipleFactory>()
+					.LifestyleTransient());
 
 		}
 

@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 		{
 			_relativityFieldQuery = NSubstitute.Substitute.For<IRelativityFieldQuery>();
 			_importApiFactory = NSubstitute.Substitute.For<IImportApiFactory>();
-			_importApi = NSubstitute.Substitute.For<IImportAPI>();
+			_importApi = NSubstitute.Substitute.For<IExtendedImportAPI>();
 			_rdoSynchronizerPush = new RdoSynchronizerPush(_relativityFieldQuery, _importApiFactory);
 		}
 

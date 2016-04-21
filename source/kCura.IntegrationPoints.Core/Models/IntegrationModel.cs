@@ -161,6 +161,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			this.NotificationEmails = ip.EmailNotificationRecipients ?? string.Empty;
 			this.LogErrors = ip.LogErrors.GetValueOrDefault(false);
 			this.HasErrors = ip.HasErrors.GetValueOrDefault(false);
+			this.LastRun = ip.LastRuntimeUTC;
 		}
 	}
 }

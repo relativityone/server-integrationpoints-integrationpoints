@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 		public static ImportApiFactory GetMockAPI(RelativityFieldQuery query)
 		{
-			var import = NSubstitute.Substitute.For<Relativity.ImportAPI.IImportAPI>();
+			var import = NSubstitute.Substitute.For<Relativity.ImportAPI.IExtendedImportAPI>();
 			var result = query.GetFieldsForRdo(0);
 			var list = new List<kCura.Relativity.ImportAPI.Data.Field>();
 			var mi = typeof(Relativity.ImportAPI.Data.Field).GetProperty("ArtifactID").GetSetMethod(true);

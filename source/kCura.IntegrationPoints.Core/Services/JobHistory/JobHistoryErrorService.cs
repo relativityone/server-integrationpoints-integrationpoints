@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public Data.JobHistory JobHistory { get; set; }
 		public IntegrationPoint IntegrationPoint { get; set; }
-		//private IBatchReporter _batchReporter;
+
 		public void SubscribeToBatchReporterEvents(object batchReporter)
 		{
 			if (batchReporter is IBatchReporter)

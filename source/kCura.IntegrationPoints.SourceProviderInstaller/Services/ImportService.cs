@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 
 		private void InstallSynchronizerForCoreOnly(Guid applicationGuid)
 		{
-			//This is hack untill we introduce installation of Destination Providers
+			//This is hack until we introduce installation of Destination Providers
 			if (applicationGuid == new Guid(Application.GUID))
 			{
 				new Core.Services.Synchronizer.RdoSynchronizerProvider(_caseContext).CreateOrUpdateLdapSourceType();
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			{
 				//TODO: before deleting SourceProviderRDO, 
 				//TODO: deactivate corresponding IntegrationPointRDO and delete corresponding queue job
-				//TODO: want to use delete event hanler for this case. 
+				//TODO: want to use delete event handler for this case. 
 				_caseContext.RsapiService.SourceProviderLibrary.Delete(providersToBeRemoved);
 			}
 		}

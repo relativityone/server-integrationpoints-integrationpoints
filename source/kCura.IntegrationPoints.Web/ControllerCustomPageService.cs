@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Web
 				return Service.WorkspaceID;
 			}
 			//catch (NullReferenceException e)
-			catch (Exception e)
+			catch (Exception)
 			{
 				return 0;
 			}

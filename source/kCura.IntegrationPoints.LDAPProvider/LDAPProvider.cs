@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.LDAPProvider
 			{
 				options = Newtonsoft.Json.JsonConvert.DeserializeObject<string>(options);
 			}
-			catch (JsonReaderException e) {/*Already a string this is a backwards compatibility issue*/}
+			catch (JsonReaderException) {/*Already a string this is a backwards compatibility issue*/}
 
 			options = _encryptionManager.Decrypt(options);
 			LDAPSettings settings = Newtonsoft.Json.JsonConvert.DeserializeObject<LDAPSettings>(options);
