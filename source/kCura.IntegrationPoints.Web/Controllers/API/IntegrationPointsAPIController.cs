@@ -14,15 +14,15 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class IntegrationPointsAPIController : ApiController
 	{
-		private readonly IntegrationPointService _reader;
-		private readonly RelativityUrlHelper _urlHelper;
-		private readonly Core.Services.Synchronizer.RdoSynchronizerProvider _provider;
+		private readonly IIntegrationPointService _reader;
+		private readonly IRelativityUrlHelper _urlHelper;
+		private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
 		private readonly ICaseServiceContext _context;
 		private readonly IPermissionService _permissionService;
 
-		public IntegrationPointsAPIController(IntegrationPointService reader,
-			RelativityUrlHelper urlHelper,
-			Core.Services.Synchronizer.RdoSynchronizerProvider provider,
+		public IntegrationPointsAPIController(IIntegrationPointService reader,
+			IRelativityUrlHelper urlHelper,
+			Core.Services.Synchronizer.IRdoSynchronizerProvider provider,
 			ICaseServiceContext context,
 			IPermissionService permissionService)
 		{
@@ -32,6 +32,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_context = context;
 			_permissionService = permissionService;
 		}
+
 		[HttpGet]
 		public HttpResponseMessage Get(int id)
 		{

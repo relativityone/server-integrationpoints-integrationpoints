@@ -12,7 +12,7 @@ using kCura.IntegrationPoints.Data.Extensions;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class IntegrationPointService
+	public class IntegrationPointService : IIntegrationPointService
 	{
 		private readonly ICaseServiceContext _context;
 		private Data.IntegrationPoint _rdo;

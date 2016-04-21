@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		public ImportNowController(IJobManager jobManager,
 			ICaseServiceContext caseServiceContext,
-			IntegrationPointService integrationPointService,
+			IIntegrationPointService integrationPointService,
 			JobHistoryService jobHistoryService,
 			IPermissionService permissionService)
 			: this(jobManager, permissionService,
@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		internal class IntegrationPointRdoInitializer : IIntegrationPointRdoAdaptor
 		{
-			private readonly IntegrationPointService _integrationPointService;
+			private readonly IIntegrationPointService _integrationPointService;
 			private readonly ICaseServiceContext _caseServiceContext;
 			private readonly JobHistoryService _jobHistoryService;
 			private IntegrationPoint _integrationPoint;
@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			private string _sourceConfig;
 			private Guid _batchInstance;
 
-			public IntegrationPointRdoInitializer(IntegrationPointService integrationPointService,
+			public IntegrationPointRdoInitializer(IIntegrationPointService integrationPointService,
 					ICaseServiceContext caseServiceContext,
 					JobHistoryService jobHistoryService)
 			{
