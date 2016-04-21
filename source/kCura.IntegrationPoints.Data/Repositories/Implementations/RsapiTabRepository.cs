@@ -39,6 +39,39 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return tab?.Artifact.ArtifactID;
 		}
 
+		public int? RetrieveTabArtifactIdByGuid(string tabGuid)
+		{
+			var tabQuery = new Query<Tab>();
+
+			QueryResultSet<Tab> resultSet;
+			try
+			{
+				resultSet = _rsapiClient.Repositories.Tab.Query(tabQuery);
+			}
+			catch (Exception ex)
+			{
+				
+				throw new Exception("Unable to retrieve tab.", ex);
+			}
+
+			if (!resultSet.Success)
+			{
+				throw new Exception($"Unable to retrieve tab: {resultSet.Message}");
+			}
+
+			int? tabArtifactId = null;
+			foreach (Result<Tab> tab in resultSet.Results)
+			{
+				if (tab.Artifact.Guids.Contains(new Guid(tabGuid)))
+				{
+					tabArtifactId = tab.Artifact.ArtifactID;
+					break;
+				}
+			}
+
+			return tabArtifactId;
+		}
+
 		public void Delete(int artifactId)
 		{
 			var artifactRequest = new List<ArtifactRequest>()
