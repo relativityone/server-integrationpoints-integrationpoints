@@ -669,7 +669,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-04-21T17:59:53.9957519Z</ExtractionDate>
+  <ExtractionDate>2016-04-21T21:36:36.6646978Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -7130,7 +7130,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.37</ApplicationVersion>
+          <ApplicationVersion>2.0.0.38</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7182,7 +7182,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.37</ApplicationVersion>
+          <ApplicationVersion>2.0.0.38</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7234,7 +7234,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.37</ApplicationVersion>
+          <ApplicationVersion>2.0.0.38</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7286,7 +7286,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.37</ApplicationVersion>
+          <ApplicationVersion>2.0.0.38</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7338,7 +7338,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.37</ApplicationVersion>
+          <ApplicationVersion>2.0.0.38</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7390,7 +7390,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.37</ApplicationVersion>
+          <ApplicationVersion>2.0.0.38</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -7467,7 +7467,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.3.362.9</RelativityVersion>
-  <Version>2.0.0.37</Version>
+  <Version>2.0.0.38</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>30db7baa-93da-4227-bdb1-e3df9e8edc72</OriginSignature>
   <MasterScripts />
@@ -7497,7 +7497,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.37</ApplicationVersion>
+      <ApplicationVersion>2.0.0.38</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038277</ArtifactId>
@@ -7508,7 +7508,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.37</ApplicationVersion>
+      <ApplicationVersion>2.0.0.38</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038278</ArtifactId>
@@ -7519,7 +7519,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.37</ApplicationVersion>
+      <ApplicationVersion>2.0.0.38</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038279</ArtifactId>
@@ -7530,7 +7530,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.37</ApplicationVersion>
+      <ApplicationVersion>2.0.0.38</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038393</ArtifactId>
@@ -7541,18 +7541,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.37</ApplicationVersion>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1038466</ArtifactId>
-      <AssemblyArtifactId>1018550</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RemoveJobHistoryErrorTab</Name>
-      <Guid>cfcecb5b-166c-4fba-b7a6-9cba816bcc3c</Guid>
-      <Guids>0792903f-5ea8-421c-8e4f-54c134ab5c53</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>70</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.37</ApplicationVersion>
+      <ApplicationVersion>2.0.0.38</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />

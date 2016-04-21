@@ -41,6 +41,27 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorItem.Name, errors[1].ErrorType.Name);
 			Assert.AreEqual("Fake item error.", errors[1].Error);
 			Assert.AreEqual("stack trace", errors[1].StackTrace);
+			Assert.IsTrue(jobHistoryErrorService.IntegrationPoint.HasErrors.Value);
+		}
+
+		[Test]
+		public void CommitErrors_HasJobHistory_NoErrorsToCommit()
+		{
+			//ARRANGE
+			var context = NSubstitute.Substitute.For<ICaseServiceContext>();
+
+			JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(context);
+			jobHistoryErrorService.JobHistory = new JobHistory() { ArtifactId = 111 };
+			List<JobHistoryError> errors = new List<JobHistoryError>();
+			context.RsapiService.JobHistoryErrorLibrary.Create(Arg.Do<IEnumerable<JobHistoryError>>(x => errors.AddRange(x)));
+			jobHistoryErrorService.IntegrationPoint = new IntegrationPoint();
+			jobHistoryErrorService.IntegrationPoint.HasErrors = true;
+
+			//ACT
+			jobHistoryErrorService.CommitErrors();
+
+			//ASSERT
+			Assert.IsFalse(jobHistoryErrorService.IntegrationPoint.HasErrors.Value);
 		}
 
 		[Test]
