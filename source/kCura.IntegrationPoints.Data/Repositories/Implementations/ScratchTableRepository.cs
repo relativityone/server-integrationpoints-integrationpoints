@@ -12,11 +12,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private int _count;
 
 		public ScratchTableRepository(string name,
-			ITempDocTableHelper tempHelper)
+			ITempDocTableHelper tempHelper,
+			bool ignoreErrorDocuments)
 		{
 			_name = name;
 			_tempHelper = tempHelper;
+			IgnoreErrorDocuments = ignoreErrorDocuments;
 		}
+
+		public bool IgnoreErrorDocuments { get; }
 
 		public int Count
 		{
