@@ -225,6 +225,7 @@
     <Compile Include="GridModelFactory.cs" />
     <Compile Include="IErrorFactory.cs" />
     <Compile Include="Installers\ControllerInstaller.cs" />
+    <Compile Include="IRelativityUrlHelper.cs" />
     <Compile Include="Models\EditPoint.cs" />
     <Compile Include="Models\IpDetailModel.cs" />
     <Compile Include="ISessionService.cs" />

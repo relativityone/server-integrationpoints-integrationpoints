@@ -202,6 +202,7 @@
     <Compile Include="Services\Guid\GuidService.cs" />
     <Compile Include="Services\Guid\IGuidService.cs" />
     <Compile Include="Services\IDeleteHistoryErrorService.cs" />
+    <Compile Include="Services\IIntegrationPointService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />
     <Compile Include="Services\JobHistory\ExportJobErrorService.cs" />
     <Compile Include="Services\JobHistory\IJobHistoryService.cs" />
@@ -254,6 +255,7 @@
     <Compile Include="Services\SourceTypes\LdapSourceTypeCreator.cs" />
     <Compile Include="Services\SourceTypes\SourceTypeFactory.cs" />
     <Compile Include="Services\Synchronizer\GeneralWithCustodianRdoSynchronizerFactory.cs" />
+    <Compile Include="Services\Synchronizer\IRdoSynchronizerProvider.cs" />
     <Compile Include="Services\Synchronizer\RdoSynchronizerProvider.cs" />
     <Compile Include="Services\Tabs\ITabService.cs" />
     <Compile Include="Services\Tabs\RSAPITabService.cs" />

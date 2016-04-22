@@ -14,15 +14,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class IntegrationPointsAPIController : ApiController
 	{
-		private readonly IntegrationPointService _reader;
-		private readonly RelativityUrlHelper _urlHelper;
-		private readonly Core.Services.Synchronizer.RdoSynchronizerProvider _provider;
+		private readonly IIntegrationPointService _reader;
+		private readonly IRelativityUrlHelper _urlHelper;
+		private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
 		private readonly ICaseServiceContext _context;
 		private readonly IPermissionService _permissionService;
 
-		public IntegrationPointsAPIController(IntegrationPointService reader,
-			RelativityUrlHelper urlHelper,
-			Core.Services.Synchronizer.RdoSynchronizerProvider provider,
+		private const string UNABLE_TO_SAVE_FORMAT = "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
+
+		public IntegrationPointsAPIController(IIntegrationPointService reader,
+			IRelativityUrlHelper urlHelper,
+			Core.Services.Synchronizer.IRdoSynchronizerProvider provider,
 			ICaseServiceContext context,
 			IPermissionService permissionService)
 		{
@@ -32,6 +34,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			_context = context;
 			_permissionService = permissionService;
 		}
+
 		[HttpGet]
 		public HttpResponseMessage Get(int id)
 		{
@@ -53,9 +56,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			// check that only fields that are allowed to be changed are changed
 			List<string> invalidProperties = new List<string>();
+			IntegrationModel existingModel = null;
 			if (model.ArtifactID > 0)
 			{
-				IntegrationModel existingModel = _reader.ReadIntegrationPoint(model.ArtifactID);
+				try
+				{
+					existingModel = _reader.ReadIntegrationPoint(model.ArtifactID);
+				}
+				catch (Exception e)
+				{
+					throw new Exception("Unable to save Integration Point: Unable to retrieve Integration Point", e);
+				}
+
 				if (existingModel.LastRun.HasValue)
 				{
 					if (existingModel.Name != model.Name)
@@ -65,10 +77,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					if (existingModel.DestinationProvider != model.DestinationProvider)
 					{
 						invalidProperties.Add("Destination Provider");
-					}
-					if (existingModel.SourceProvider != model.SourceProvider)
-					{
-						invalidProperties.Add("Source Provider");
 					}
 					if (existingModel.Destination != model.Destination)
 					{
@@ -84,16 +92,27 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 							invalidProperties.Add("Case");
 						}
 					}
-					if (existingModel.SourceConfiguration != model.SourceConfiguration)
+					if (existingModel.SourceProvider != model.SourceProvider)
 					{
-						invalidProperties.Add("Source Configruation"); // This is the data provider specific settings
+						// If the source provider has been changed, the code below this exception is invalid
+						invalidProperties.Add("Source Provider");
+						throw new Exception(String.Format(UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
 					}
 				}
 			}
 
 			// check permission if we want to push
 			// needs to be here because custom page is the only place that has user context
-			SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(model.SourceProvider);
+			SourceProvider provider = null;
+			try
+			{
+				provider = _context.RsapiService.SourceProviderLibrary.Read(model.SourceProvider);
+			}
+			catch (Exception e)
+			{
+				throw new Exception("Unable to save Integration Point: Unable to retrieve source provider", e);	
+			}
+
 			if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
 			{
 				ImportNowController.DestinationWorkspace destinationWorkspace = JsonConvert.DeserializeObject<ImportNowController.DestinationWorkspace>(model.SourceConfiguration);
@@ -101,11 +120,16 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				{
 					throw new Exception(ImportNowController.NO_PERMISSION_TO_IMPORT);
 				}
+
+				if (existingModel != null && (existingModel.SourceConfiguration != model.SourceConfiguration))
+				{
+					invalidProperties.Add("Source Configuration");
+				}
 			}
 
 			if (invalidProperties.Any())
 			{
-				throw new Exception($"Unable to save Integration Point:{String.Join(",", invalidProperties.Select(x => $" {x}"))} cannot be changed once the Integration Point has been run");
+				throw new Exception(String.Format(UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
 			}
 
 			int createdId = _reader.SaveIntegration(model);

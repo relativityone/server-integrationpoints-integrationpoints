@@ -13,10 +13,10 @@ namespace kCura.IntegrationPoints.Core
 	{
 		private readonly IJobStatusUpdater _updater;
 		private readonly ISerializer _serializer;
-		private readonly IntegrationPointService _pointService;
+		private readonly IIntegrationPointService _pointService;
 		private readonly IJobManager _manager;
 		private readonly KeywordConverter _converter;
-		public BatchEmail(IJobStatusUpdater jobStatusUpdater, ISerializer serializer, IntegrationPointService pointService, IJobManager manager, KeywordConverter converter)
+		public BatchEmail(IJobStatusUpdater jobStatusUpdater, ISerializer serializer, IIntegrationPointService pointService, IJobManager manager, KeywordConverter converter)
 		{
 			_updater = jobStatusUpdater;
 			_serializer = serializer;
