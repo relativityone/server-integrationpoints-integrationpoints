@@ -245,17 +245,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 		}
 
 		[Test]
-		[TestCase(false, new string[] { "Name" })]
-		[TestCase(false, new string[] { "Destination Provider" })]
-		[TestCase(false, new string[] { "Destination RDO" })]
-		[TestCase(false, new string[] { "Case" })]
-		[TestCase(false, new string[] { "Source Provider" })]
-		[TestCase(false, new string[] { "Name", "Destination Provider", "Destination RDO", "Case" })]
-		[TestCase(false, new string[] { "Name", "Destination Provider", "Destination RDO", "Case", "Source Provider" })]
-		[TestCase(false, new string[] { "Name", "Source Configuration" })] // normal providers will only throw with "Name" in list
-		[TestCase(true, new string[] { "Name", "Destination Provider", "Destination RDO", "Case", "Source Configuration" })]
-		[TestCase(true, new string[] { "Source Configuration" })]
-		public void Update_InvalidProperties_Excepts(bool isRelativityProvider, string[] propertyNames)
+		[TestCase(false, new string[] { "Name" }, true)]
+		[TestCase(false, new string[] { "Destination Provider" }, true)]
+		[TestCase(false, new string[] { "Destination RDO" }, true)]
+		[TestCase(false, new string[] { "Case" }, true)]
+		[TestCase(false, new string[] { "Source Provider" }, true)]
+		[TestCase(false, new string[] { "Name", "Destination Provider", "Destination RDO", "Case" }, true)]
+		[TestCase(false, new string[] { "Name", "Destination Provider", "Destination RDO", "Case", "Source Provider" }, true)]
+		[TestCase(false, new string[] { "Name", "Source Configuration" }, true)] // normal providers will only throw with "Name" in list
+		[TestCase(true, new string[] { "Name", "Destination Provider", "Destination RDO", "Case", "Source Configuration" }, true)]
+		[TestCase(true, new string[] { "Source Configuration" }, true)]
+		[TestCase(true, new string[] { "Name", "Destination Provider", "Destination RDO", "Case", "Source Configuration" }, false)] // If relativity provider and no permissions, throw permissions error first
+		public void Update_InvalidProperties_Excepts(bool isRelativityProvider, string[] propertyNames, bool hasPermissions)
 		{
 			// Arrange
 			var propertyNameHashSet = new HashSet<string>(propertyNames);
@@ -311,7 +312,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 				if (isRelativityProvider)
 				{
 					_permissionService.UserCanImport(Arg.Is(targetWorkspaceArtifactId))
-						.Returns(true);
+						.Returns(hasPermissions);
 				}
 			}
 
@@ -324,12 +325,20 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 			catch (Exception e)
 			{
 				exceptionThrown = true;
-				string filteredNames =
-					String.Join(",", propertyNames.Where(x => isRelativityProvider || x != "Source Configuration").Select(x => $" {x}"));
-				string expectedErrorString =
-					$"Unable to save Integration Point:{filteredNames} cannot be changed once the Integration Point has been run";
+				if (hasPermissions)
+				{
+					string filteredNames =
+						String.Join(",",
+							propertyNames.Where(x => isRelativityProvider || x != "Source Configuration").Select(x => $" {x}"));
+					string expectedErrorString =
+						$"Unable to save Integration Point:{filteredNames} cannot be changed once the Integration Point has been run";
 
-				Assert.AreEqual(expectedErrorString, e.Message);
+					Assert.AreEqual(expectedErrorString, e.Message);
+				}
+				else
+				{
+					Assert.AreEqual(ImportNowController.NO_PERMISSION_TO_IMPORT, e.Message, "The permission error should have been thrown");
+				}
 			}
 
 			// Assert
