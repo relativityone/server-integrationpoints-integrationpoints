@@ -31,30 +31,26 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class ExportServiceManager : ITask
 	{
-		private readonly ICaseServiceContext _caseServiceContext;
-		private readonly JobHistoryService _jobHistoryService;
-		private readonly JobHistoryErrorService _jobHistoryErrorService;
 		private ExportJobErrorService _exportJobErrorService;
-		private readonly ISynchronizerFactory _synchronizerFactory;
-		private readonly IExporterFactory _exporterFactory;
-		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
-		private readonly ISourceJobManager _sourceJobManager;
-		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly ITempDocumentTableFactory _tempDocumentTableFactory;
+		private Guid _identifier;
+		private List<IBatchStatus> _exportServiceJobObservers;
+		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
+		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly IDocumentRepository _documentRepository;
+		private readonly IExporterFactory _exporterFactory;
+		private readonly IJobService _jobService;
+		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IScheduleRuleFactory _scheduleRuleFactory;
+		private readonly ISourceJobManager _sourceJobManager;
+		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
+		private readonly ISynchronizerFactory _synchronizerFactory;
+		private readonly ITempDocumentTableFactory _tempDocumentTableFactory;
+		private readonly JobHistoryErrorService _jobHistoryErrorService;
+		private readonly JobHistoryService _jobHistoryService;
 		private readonly JobStatisticsService _statisticsService;
 		private readonly List<IBatchStatus> _batchStatus;
-		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
-		private readonly IJobService _jobService;
-		private readonly IScheduleRuleFactory _scheduleRuleFactory;
-		private Guid _identifier;
-		private SourceConfiguration _sourceConfiguration;
-		private ITempDocTableHelper _docTableHelper;
-		private List<IBatchStatus> _parallelizableBatch;
-		private IConsumeScratchTableBatchStatus _destinationFieldsTagger;
-		private IConsumeScratchTableBatchStatus _sourceFieldsTaggerDestinationWorkspace;
-		private JobHistoryManager _sourceJobHistoryTagger;
 		private readonly TaskResult _taskResult;
+		private SourceConfiguration _sourceConfiguration;
 
 		public ExportServiceManager(
 			ICaseServiceContext caseServiceContext,
@@ -73,22 +69,22 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistoryErrorService jobHistoryErrorService,
 			JobStatisticsService statisticsService)
 		{
-			_synchronizerFactory = synchronizerFactory;
-			_exporterFactory = exporterFactory;
-			_sourceWorkspaceManager = sourceWorkspaceManager;
-			_sourceJobManager = sourceJobManager;
-			_repositoryFactory = repositoryFactory;
-			_tempDocumentTableFactory = tempDocumentTableFactory;
-			_documentRepository = documentRepository;
-			_caseServiceContext = caseServiceContext;
-			_jobHistoryService = jobHistoryService;
-			_jobHistoryErrorService = jobHistoryErrorService;
-			_statisticsService = statisticsService;
 			_batchStatus = statuses.ToList();
-			_serializer = serializer;
+			_caseServiceContext = caseServiceContext;
+			_documentRepository = documentRepository;
+			_exporterFactory = exporterFactory;
+			_jobHistoryErrorService = jobHistoryErrorService;
+			_jobHistoryService = jobHistoryService;
 			_jobService = jobService;
+			_repositoryFactory = repositoryFactory;
 			_scheduleRuleFactory = scheduleRuleFactory;
+			_serializer = serializer;
+			_sourceJobManager = sourceJobManager;
+			_sourceWorkspaceManager = sourceWorkspaceManager;
+			_statisticsService = statisticsService;
+			_synchronizerFactory = synchronizerFactory;
 			_taskResult = new TaskResult();
+			_tempDocumentTableFactory = tempDocumentTableFactory;
 		}
 
 		public IntegrationPoint IntegrationPointDto { get; private set; }
@@ -102,16 +98,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				InitializeExportService(job);
 
+				InitializeExportServiceObservers(job);
+
 				string destinationConfig = IntegrationPointDto.DestinationConfiguration;
-				IDataSynchronizer synchronizer = GetRdoDestinationProvider(destinationConfig);
+				IDataSynchronizer synchronizer = CreateDestinationProvider(destinationConfig);
 
-				IScratchTableRepository[] scratchTableRepositories = new[]
-				{
-					_destinationFieldsTagger.ScratchTableRepository,
-					_sourceFieldsTaggerDestinationWorkspace.ScratchTableRepository
-				};
-
-				_exportJobErrorService = new ExportJobErrorService(scratchTableRepositories);
 				SetupSubscriptions(synchronizer, job);
 
 				// Push documents
@@ -124,20 +115,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 					if (exporter.TotalRecordsFound > 0)
 					{
-						IScratchTableRepository[] scratchTables = new[]
-						{
-							_destinationFieldsTagger.ScratchTableRepository,
-							_sourceJobHistoryTagger.ScratchTableRepository,
-							_sourceFieldsTaggerDestinationWorkspace.ScratchTableRepository
-						};
-
+						IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IScratchTableRepository>().ToArray();
 						IDataReader dataReader = exporter.GetDataReader(scratchTables);
+
 						string newImportApiSettings = GetImportApiSettingsWithOnBehalfUserInformation(job, destinationConfig);
 						synchronizer.SyncData(dataReader, MappedFields, newImportApiSettings);
 					}
 				}
 
-				TagDocuments(job);
+				// tag documents
+				FinalizeExportServiceObservers(job);
 			}
 			catch (Exception ex)
 			{
@@ -147,21 +134,29 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			finally
 			{
 				_jobHistoryErrorService.CommitErrors();
-				PostExecute(job);
+				FinalizeExportService(job);
 			}
 		}
 
-		protected void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
+		private void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
+
+			IScratchTableRepository[] scratchTableToMonitorItemLevelError = _exportServiceJobObservers.OfType<IScratchTableRepository>()
+				.Where(scratchTable => scratchTable.IgnoreErrorDocuments == false).ToArray();
+
+			_exportJobErrorService = new ExportJobErrorService(scratchTableToMonitorItemLevelError);
+			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
+			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPointDto;
+
 			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
 			_jobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
 			_exportJobErrorService.SubscribeToBatchReporterEvents(synchronizer);
 		}
 
-		private void TagDocuments(Job job)
+		private void FinalizeExportServiceObservers(Job job)
 		{
 			var exceptions = new ConcurrentQueue<Exception>();
-			Parallel.ForEach(_parallelizableBatch, batch =>
+			Parallel.ForEach(_exportServiceJobObservers, batch =>
 			{
 				try
 				{
@@ -172,69 +167,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					exceptions.Enqueue(exception);
 				}
 			});
-
-			Exception ex = ConstructNewExceptionIfAny(exceptions);
-			if (ex != null)
-			{
-				throw ex;
-			}
+			ThrowNewExceptionIfAny(exceptions);
 		}
 
-		private void InitializeExportService(Job job)
+		private void InitializeExportServiceObservers(Job job)
 		{
-			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
-			this._identifier = taskParameters.BatchInstance;
-
-			// Load integrationPoint data
-			if (IntegrationPointDto != null)
-			{
-				return;
-			}
-
-			int integrationPointId = job.RelatedObjectArtifactID;
-			this.IntegrationPointDto = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
-
-			if (this.IntegrationPointDto == null)
-			{
-				throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
-			}
-
-			_sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
-
-			SourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
-
-			string tempTableName = $"{job.JobId}_{_identifier}";
-			_docTableHelper = _tempDocumentTableFactory.GetDocTableHelper(tempTableName, _sourceConfiguration.SourceWorkspaceArtifactId);
-
-			this.JobHistoryDto = _jobHistoryService.CreateRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
-			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
-			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPointDto;
-
-			// Load Mapped Fields & Sanitize them
-			// #unbelievable
-			MappedFields = JsonConvert.DeserializeObject<List<FieldMap>>(IntegrationPointDto.FieldMappings);
-			MappedFields.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
-
-			this.JobHistoryDto.StartTimeUTC = DateTime.UtcNow;
-			UpdateJobStatus();
-
-			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_docTableHelper,
-				_sourceWorkspaceManager, _sourceJobManager,
-				_documentRepository, _synchronizerFactory, MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, IntegrationPointDto.DestinationConfiguration, JobHistoryDto.ArtifactId);
-
-			_destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
-			_sourceFieldsTaggerDestinationWorkspace = new DestinationWorkspaceManager(_tempDocumentTableFactory, _repositoryFactory, _sourceConfiguration, tempTableName, JobHistoryDto.ArtifactId);
-			_sourceJobHistoryTagger = new JobHistoryManager(_tempDocumentTableFactory, _repositoryFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, tempTableName);
-
-			_parallelizableBatch = new List<IBatchStatus>()
-			{
-				_destinationFieldsTagger,
-				_sourceFieldsTaggerDestinationWorkspace,
-				_sourceJobHistoryTagger
-			};
+			_exportServiceJobObservers = InitializeExportServiceJobObservers(job);
 
 			var exceptions = new ConcurrentQueue<Exception>();
-			Parallel.ForEach(_parallelizableBatch, batch =>
+			Parallel.ForEach(_exportServiceJobObservers, batch =>
 			{
 				try
 				{
@@ -246,22 +187,38 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 			});
 
-			Exception ex = ConstructNewExceptionIfAny(exceptions);
-			if (ex != null)
-			{
-				throw ex;
-			}
+			ThrowNewExceptionIfAny(exceptions);
+		}
+
+		private void InitializeExportService(Job job)
+		{
+			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
+			this._identifier = taskParameters.BatchInstance;
+
+			// Load Mapped Fields & Sanitize them
+			// #unbelievable
+			MappedFields = JsonConvert.DeserializeObject<List<FieldMap>>(IntegrationPointDto.FieldMappings);
+			MappedFields.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
+
+			// Load integrationPoint data
+			LoadIntegrationPointDto(job);
+
+			_sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
+
+			SourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
+
+			this.JobHistoryDto = _jobHistoryService.CreateRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
+			this.JobHistoryDto.StartTimeUTC = DateTime.UtcNow;
+			UpdateJobStatus();
 
 			_batchStatus.ForEach(batch => batch.JobStarted(job));
 		}
 
-		internal void PostExecute(Job job)
+		private void FinalizeExportService(Job job)
 		{
 			try
 			{
-				_destinationFieldsTagger.ScratchTableRepository.Dispose();
-				_sourceJobHistoryTagger.ScratchTableRepository.Dispose();
-				_sourceFieldsTaggerDestinationWorkspace.ScratchTableRepository.Dispose();
+				_exportServiceJobObservers.OfType<IScratchTableRepository>().ForEach(observer => observer.Dispose());
 			}
 			catch (Exception)
 			{
@@ -294,8 +251,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					{
 						_taskResult.Status = TaskStatusEnum.Success;
 					}
-					this.IntegrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory,
-						_taskResult);
+					this.IntegrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, _taskResult);
 				}
 				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPointDto);
 			}
@@ -305,7 +261,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		internal IDataSynchronizer GetRdoDestinationProvider(string configuration)
+		private IDataSynchronizer CreateDestinationProvider(string configuration)
 		{
 			// if you want to create add another synchronizer aka exporter, you may add it here.
 			// RDO synchronizer
@@ -323,11 +279,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryService.UpdateRdo(JobHistoryDto);
 		}
 
-		private Exception ConstructNewExceptionIfAny(IEnumerable<Exception> exceptions)
+		private void ThrowNewExceptionIfAny(IEnumerable<Exception> exceptions)
 		{
 			if (exceptions == null)
 			{
-				return null;
+				return;
 			}
 
 			Exception ex = null;
@@ -339,7 +295,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				ex = new AggregateException(message, enumerable);
 			}
 
-			return ex;
+			if (ex != null)
+			{
+				throw ex;
+			}
 		}
 
 		private string GetImportApiSettingsWithOnBehalfUserInformation(Job job, string orignialImportApiSettings)
@@ -348,6 +307,44 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			importSettings.OnBehalfOfUserId = job.SubmittedBy;
 			string jsonString = JsonConvert.SerializeObject(importSettings);
 			return jsonString;
+		}
+
+		private void LoadIntegrationPointDto(Job job)
+		{
+			if (IntegrationPointDto == null)
+			{
+				int integrationPointId = job.RelatedObjectArtifactID;
+				this.IntegrationPointDto = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
+
+				if (this.IntegrationPointDto == null)
+				{
+					throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
+				}
+			}
+		}
+
+		private List<IBatchStatus> InitializeExportServiceJobObservers(Job job)
+		{
+			string tempTableName = $"{job.JobId}_{_identifier}";
+			ITempDocTableHelper docTableHelper = _tempDocumentTableFactory.GetDocTableHelper(tempTableName, _sourceConfiguration.SourceWorkspaceArtifactId);
+
+			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(docTableHelper,
+				_sourceWorkspaceManager, _sourceJobManager,
+				_documentRepository, _synchronizerFactory,
+				MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration,
+				IntegrationPointDto.DestinationConfiguration, JobHistoryDto.ArtifactId);
+
+			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
+			IConsumeScratchTableBatchStatus sourceFieldsTaggerDestinationWorkspace = new DestinationWorkspaceManager(_tempDocumentTableFactory, _repositoryFactory, _sourceConfiguration, tempTableName, JobHistoryDto.ArtifactId);
+			IConsumeScratchTableBatchStatus sourceJobHistoryTagger = new JobHistoryManager(_tempDocumentTableFactory, _repositoryFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, tempTableName);
+
+			var batchStatusCommands = new List<IBatchStatus>()
+			{
+				destinationFieldsTagger,
+				sourceFieldsTaggerDestinationWorkspace,
+				sourceJobHistoryTagger
+			};
+			return batchStatusCommands;
 		}
 	}
 }
