@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			{
 				if (_scratchTableRepository == null)
 				{
-					_scratchTableRepository = new ScratchTableRepository(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS, _tempDocHelper);
+					_scratchTableRepository = new ScratchTableRepository(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS, _tempDocHelper, false);
 				}
 				return _scratchTableRepository;
 			}
