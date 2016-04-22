@@ -195,13 +195,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			this._identifier = taskParameters.BatchInstance;
 
+			// Load integrationPoint data
+			IntegrationPointDto = LoadIntegrationPointDto(job);
+
 			// Load Mapped Fields & Sanitize them
 			// #unbelievable
 			MappedFields = JsonConvert.DeserializeObject<List<FieldMap>>(IntegrationPointDto.FieldMappings);
 			MappedFields.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
-
-			// Load integrationPoint data
-			LoadIntegrationPointDto(job);
 
 			_sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
 
@@ -309,18 +309,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return jsonString;
 		}
 
-		private void LoadIntegrationPointDto(Job job)
+		private IntegrationPoint LoadIntegrationPointDto(Job job)
 		{
-			if (IntegrationPointDto == null)
-			{
-				int integrationPointId = job.RelatedObjectArtifactID;
-				this.IntegrationPointDto = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
+			int integrationPointId = job.RelatedObjectArtifactID;
+			IntegrationPoint integrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
 
-				if (this.IntegrationPointDto == null)
-				{
-					throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
-				}
+			if (integrationPoint == null)
+			{
+				throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
 			}
+			return integrationPoint;
 		}
 
 		private List<IBatchStatus> InitializeExportServiceJobObservers(Job job)
