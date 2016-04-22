@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 
 			//ASSERT
-			Assert.IsTrue(returnedException.Message.Contains("Could not commit Job History Errors. These are uncommited errors:" + Environment.NewLine));
+			Assert.IsTrue(returnedException.Message.Contains("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine));
 			Assert.IsTrue(returnedException.Message.Contains("Type: Job    Error: Fake job error." + Environment.NewLine));
 			Assert.IsTrue(returnedException.Message.Contains("Type: Item    Identifier: MyIdentifier    Error: Fake item error."));
 		}
