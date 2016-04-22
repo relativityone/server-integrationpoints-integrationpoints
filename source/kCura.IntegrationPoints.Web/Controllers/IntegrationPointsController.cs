@@ -10,13 +10,13 @@ namespace kCura.IntegrationPoints.Web.Controllers
 {
 	public class IntegrationPointsController : BaseController
 	{
-		private readonly IntegrationPointService _reader;
+		private readonly IIntegrationPointService _reader;
 		private readonly RSAPIRdoQuery _rdoQuery;
 		private readonly ITabService _tabService;
 		private readonly IPermissionService _permissionService;
 
 		public IntegrationPointsController(
-			IntegrationPointService reader,
+			IIntegrationPointService reader,
 			RSAPIRdoQuery relativityRdoQuery,
 			ITabService tabService,
 			IPermissionService permissionService)
