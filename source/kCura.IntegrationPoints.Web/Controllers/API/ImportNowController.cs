@@ -10,13 +10,14 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class ImportNowController : ApiController
 	{
-		private const string NO_PERMISSION_TO_IMPORT = "You do not have permissions to the workspace that you are pushing documents to. Please contact your system administrator.";
+		internal const string NO_PERMISSION_TO_IMPORT = "You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.";
 		private readonly IJobManager _jobManager;
 		private readonly IPermissionService _permissionService;
 		private readonly IIntegrationPointRdoAdaptor _rdoDependenciesAdaptor;
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			: this(jobManager, permissionService, new IntegrationPointRdoInitializer(integrationPointService, caseServiceContext, jobHistoryService))
 		{ }
 
-		public ImportNowController(IJobManager jobManager,
+		internal ImportNowController(IJobManager jobManager,
 			IPermissionService permissionService,
 			IIntegrationPointRdoAdaptor rdoAdaptor)
 		{
@@ -53,7 +54,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 				_rdoDependenciesAdaptor.Initialize(relatedObjectArtifactID, batchInstance);
 
-				if (_rdoDependenciesAdaptor.DestinationProviderIdentifier.Equals(Core.Services.Synchronizer.RdoSynchronizerProvider.FILES_SYNC_TYPE_GUID))
+                if (_rdoDependenciesAdaptor.DestinationProviderIdentifier.Equals(Core.Services.Synchronizer.RdoSynchronizerProvider.FILES_SYNC_TYPE_GUID))
 				{
 					_jobManager.CreateJob(jobDetails, TaskType.ExportManager, workspaceID, relatedObjectArtifactID);
 				}
@@ -65,10 +66,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					{
 						throw new Exception(NO_PERMISSION_TO_IMPORT);
 					}
+					_rdoDependenciesAdaptor.CreateJobHistoryRdo();
 					_jobManager.CreateJob(jobDetails, TaskType.ExportService, workspaceID, relatedObjectArtifactID);
 				}
 				else
 				{
+					_rdoDependenciesAdaptor.CreateJobHistoryRdo();
 					_jobManager.CreateJob(jobDetails, TaskType.SyncManager, workspaceID, relatedObjectArtifactID);
 				}
 			}
@@ -84,16 +87,20 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return Request.CreateResponse(HttpStatusCode.OK);
 		}
 
-		public class IntegrationPointRdoInitializer : IIntegrationPointRdoAdaptor
+		internal class IntegrationPointRdoInitializer : IIntegrationPointRdoAdaptor
 		{
 			private readonly IntegrationPointService _integrationPointService;
 			private readonly ICaseServiceContext _caseServiceContext;
 			private readonly JobHistoryService _jobHistoryService;
+			private IntegrationPoint _integrationPoint;
 			private string _identifier;
 			private string _sourceConfig;
-			private DestinationProvider _destinationProvider;
+			//private DestinationProvider _destinationProvider;
+			private Guid _batchInstance;
+		    private string _destinationProviderIdentifier;
 
-			public IntegrationPointRdoInitializer(IntegrationPointService integrationPointService,
+
+            public IntegrationPointRdoInitializer(IntegrationPointService integrationPointService,
 					ICaseServiceContext caseServiceContext,
 					JobHistoryService jobHistoryService)
 			{
@@ -104,14 +111,22 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			public void Initialize(int relatedObjectArtifactId, Guid batchInstance)
 			{
-				IntegrationPoint integrationPoint = _integrationPointService.GetRdo(relatedObjectArtifactId);
-				_jobHistoryService.CreateRdo(integrationPoint, batchInstance, null);
-				SourceProvider provider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value);
-				_jobHistoryService.CreateRdo(integrationPoint, batchInstance, null);
-				_destinationProvider = _caseServiceContext.RsapiService.DestinationProviderLibrary.Read(integrationPoint.DestinationProvider.Value);
+				_batchInstance = batchInstance;
+				_integrationPoint = _integrationPointService.GetRdo(relatedObjectArtifactId);
+				SourceProvider provider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(_integrationPoint.SourceProvider.Value);
 
-				_identifier = provider.Identifier;
-				_sourceConfig = integrationPoint.SourceConfiguration;
+                // TO DO replace getting DestinationProvider with the below line when ready
+                //_destinationProvider = _caseServiceContext.RsapiService.DestinationProviderLibrary.Read(_integrationPoint.DestinationProvider.Value);
+                var json = JsonConvert.DeserializeObject<ImportSettings>(_integrationPoint.DestinationConfiguration);
+			    _destinationProviderIdentifier = json.DestinationProviderType;
+
+                _identifier = provider.Identifier;
+				_sourceConfig = _integrationPoint.SourceConfiguration;
+			}
+
+			public void CreateJobHistoryRdo()
+			{
+				_jobHistoryService.CreateRdo(_integrationPoint, _batchInstance, null);
 			}
 
 			public string SourceProviderIdentifier
@@ -121,8 +136,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			public string DestinationProviderIdentifier
 			{
-				get { return _destinationProvider.Identifier; }
-			}
+				//get { return _destinationProvider.Identifier; }
+                get { return _destinationProviderIdentifier; }
+                
+            }
 
 
 			public string SourceConfiguration { get { return _sourceConfig; } }
@@ -130,9 +147,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		}
 
-		public interface IIntegrationPointRdoAdaptor
+		internal interface IIntegrationPointRdoAdaptor
 		{
 			void Initialize(int relatedObjectArtifactId, Guid batchInstance);
+
+			void CreateJobHistoryRdo();
 
 			string SourceProviderIdentifier { get; }
 
@@ -140,7 +159,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			string DestinationProviderIdentifier { get; }
 		}
-		public class DestinationWorkspace
+		internal class DestinationWorkspace
 		{
 			public int TargetWorkspaceArtifactId;
 		}

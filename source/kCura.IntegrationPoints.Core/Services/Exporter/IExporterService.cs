@@ -1,19 +1,20 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
-
 	/// <summary>
 	/// Provides public interface to RdoExporter
 	/// </summary>
-	public interface IExporterService
+	public interface IExporterService : IDisposable
 	{
 		/// <summary>
 		/// Gets the reader of the exported data.
 		/// </summary>
 		/// <returns>DataReader to read export results</returns>
-		IDataReader GetDataReader();
+		IDataReader GetDataReader(IScratchTableRepository[] scratchRepositories);
 
 		/// <summary>
 		/// Retrieves data from exporter with a give size
@@ -23,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		ArtifactDTO[] RetrieveData(int size);
 
 		/// <summary>
-		/// Indicates whether exporter still has data to returned 
+		/// Indicates whether exporter still has data to returned
 		/// </summary>
 		bool HasDataToRetrieve { get; }
 

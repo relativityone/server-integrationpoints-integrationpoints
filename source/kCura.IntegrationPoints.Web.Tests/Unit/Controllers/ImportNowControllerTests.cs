@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -40,9 +39,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		}
 
 		[Test]
-		public void UserDoesNotHaveAPermissionToPushToAnotherWorkspace()
+		public void UserDoesNotHavePermissionToPushToTheDestinationWorkspace()
 		{
-			const string ExpectedErrorMessage = @"""You do not have permissions to the workspace that you are pushing documents to. Please contact your system administrator.""";
+			const string expectedErrorMessage = @"""You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.""";
 
 			_rdoAdaptor.SourceProviderIdentifier.Returns(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID);
 			_rdoAdaptor.SourceConfiguration.Returns("{TargetWorkspaceArtifactId : 123}");
@@ -51,9 +50,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			HttpResponseMessage response = _controller.Post(_payload);
 
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-			Assert.AreEqual(ExpectedErrorMessage, response.Content.ReadAsStringAsync().Result);
+			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().Result);
 		}
-
 
 		[Test]
 		public void UserDoesHaveAPermissionToPushToAnotherWorkspace()
@@ -61,35 +59,36 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_rdoAdaptor.SourceProviderIdentifier.Returns(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID);
 			_rdoAdaptor.SourceConfiguration.Returns("{TargetWorkspaceArtifactId : 123}");
 			_permissionService.UserCanImport(123).Returns(true);
-
+			
 			HttpResponseMessage response = _controller.Post(_payload);
 
+			_jobManager.Received(1).CreateJob(Arg.Any<TaskParameters>(), TaskType.ExportService, _payload.AppId, _payload.ArtifactId);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 
 		[Test]
-		public void SomethingWrongWithRsapiCalls()
+		public void RsapiCallThrowsException()
 		{
-			const string ExpectedErrorMessage = @"""ABC : 123,456""";
+			const string expectedErrorMessage = @"""ABC : 123,456""";
 
 			AggregateException exceptionToBeThrown = new AggregateException("ABC",
-				new [] {new AccessViolationException("123"), new Exception("456")});
+				new[] { new AccessViolationException("123"), new Exception("456") });
 
 			_rdoAdaptor.SourceProviderIdentifier.Throws(exceptionToBeThrown);
 			HttpResponseMessage response = _controller.Post(_payload);
 
-			
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-			Assert.AreEqual(ExpectedErrorMessage, response.Content.ReadAsStringAsync().Result);
+			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().Result);
 		}
 
 		[Test]
 		public void NonRelativityProviderCall()
 		{
-			_rdoAdaptor.SourceProviderIdentifier.Returns( Guid.NewGuid().ToString() );
+			_rdoAdaptor.SourceProviderIdentifier.Returns(Guid.NewGuid().ToString());
 
 			HttpResponseMessage response = _controller.Post(_payload);
 
+			_jobManager.Received(1).CreateJob(Arg.Any<TaskParameters>(), TaskType.SyncManager, _payload.AppId, _payload.ArtifactId);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 	}

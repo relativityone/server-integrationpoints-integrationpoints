@@ -4,32 +4,39 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 {
 	public class EddsServiceContext : IEddsServiceContext
 	{
-		private int? _userID;
+		private readonly IServiceContextHelper _serviceContextHelper;
+		private int? _userId;
+		private IDBContext _sqlContext;
+
+		public EddsServiceContext(IServiceContextHelper serviceContextHelper)
+		{
+			_serviceContextHelper = serviceContextHelper;
+		}
+
 		public int UserID
 		{
 			get
 			{
-				if (!_userID.HasValue) _userID = helper.GetEddsUserID();
-				return _userID.Value;
+				if (!_userId.HasValue)
+				{
+					_userId = _serviceContextHelper.GetEddsUserID();
+				}
+				return _userId.Value;
 			}
-			set { _userID = value; }
+			set { _userId = value; }
 		}
 
-		private IDBContext _sqlContext;
 		public IDBContext SqlContext
 		{
 			get
 			{
-				if (_sqlContext == null) _sqlContext = helper.GetDBContext(-1);
+				if (_sqlContext == null)
+				{
+					_sqlContext = _serviceContextHelper.GetDBContext(-1);
+				}
 				return _sqlContext;
 			}
 			set { _sqlContext = value; }
-		}
-
-		private IServiceContextHelper helper { get; set; }
-		public EddsServiceContext(IServiceContextHelper helper)
-		{
-			this.helper = helper;
 		}
 	}
 }

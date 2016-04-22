@@ -31,8 +31,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				FieldMap map = mappingFields[i];
 				if (map.DestinationField.FieldIdentifier != null && map.SourceField.FieldIdentifier != null)
 				{
-					_targetNameToSourceIdentifier[map.DestinationField.ActualName] = map.SourceField.FieldIdentifier;
-					_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = map.DestinationField.ActualName;
+					RegisterField(map.DestinationField.ActualName, map.SourceField.FieldIdentifier);
 
 					// there should be only one, but the existing model of data structure are allowing multiple identifier fields.
 					if (map.DestinationField.IsIdentifier)
@@ -44,13 +43,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				{
 					if (map.FieldMapType == FieldMapTypeEnum.NativeFilePath)
 					{
-						_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME] = map.SourceField.FieldIdentifier;
-						_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME;
+						RegisterField(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME, map.SourceField.FieldIdentifier);
 					}
 					else if (map.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
 					{
-						_targetNameToSourceIdentifier[map.SourceField.ActualName] = map.SourceField.FieldIdentifier;
-						_sourceIdentifierToTargetName[map.SourceField.FieldIdentifier] = map.SourceField.ActualName;
+						RegisterField(map.SourceField.ActualName, map.SourceField.FieldIdentifier);
 					}
 				}
 			}
@@ -59,24 +56,27 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			// then we will use this as a way to map native file path location
 			// this is only used when the reader is associate with native fields.
 			HashSet<string> columns = new HashSet<string>(Enumerable.Range(0, sourceReader.FieldCount).Select(sourceReader.GetName));
-			if (columns.Contains(Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD))
-			{
-				_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME] = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD;
-				_sourceIdentifierToTargetName[Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD] = Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME;
-			}
-
-			if (columns.Contains(Contracts.Constants.SPECIAL_FOLDERPATH_FIELD))
-			{
-				_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME] = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD;
-				_sourceIdentifierToTargetName[Contracts.Constants.SPECIAL_FOLDERPATH_FIELD] = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
-			}
+			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME, Contracts.Constants.SPECIAL_NATIVE_FILE_LOCATION_FIELD);
+			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME, Contracts.Constants.SPECIAL_FOLDERPATH_FIELD);
 
 			// So that the destination workspace file icons correctly display, we give the import API the file name of the document
-			if (columns.Contains(Contracts.Constants.SPECIAL_FILE_NAME_FIELD))
+			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME, Contracts.Constants.SPECIAL_FILE_NAME_FIELD);
+			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD);
+			RegisterSpecialField(columns, Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME, Contracts.Constants.SPECIAL_SOURCEJOB_FIELD);
+		}
+
+		private void RegisterSpecialField(HashSet<string> columns, string targetName, string sourceIdentifier)
+		{
+			if (columns.Contains(sourceIdentifier))
 			{
-				_targetNameToSourceIdentifier[Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME] = Contracts.Constants.SPECIAL_FILE_NAME_FIELD;
-				_sourceIdentifierToTargetName[Contracts.Constants.SPECIAL_FILE_NAME_FIELD] = Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME;
+				RegisterField(targetName, sourceIdentifier);
 			}
+		}
+
+		private void RegisterField(string targetName, string sourceIdentifier)
+		{
+			_targetNameToSourceIdentifier[targetName] = sourceIdentifier;
+			_sourceIdentifierToTargetName[sourceIdentifier] = targetName;
 		}
 
 		public object this[string name]
@@ -222,8 +222,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			{
 				throw new IndexOutOfRangeException(String.Format("Ordinal [{0}] does not exist in the data table", i));
 			}
+
 			string sourceName =  _source.GetName(i);
-			return _sourceIdentifierToTargetName[sourceName];
+			string targetName = _sourceIdentifierToTargetName[sourceName];
+			return targetName;
 		}
 
 		public int GetOrdinal(string name)

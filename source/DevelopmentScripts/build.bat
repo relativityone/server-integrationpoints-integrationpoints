@@ -1,6 +1,7 @@
 @echo off
 
 SET LDAPSync=C:\SourceCode\IntegrationPoints\source
+SET BUILDTYPE=DEV
 SET BUILDCONFIG=Debug
 SET BUILDACTION=build
 SET BUILDPROJECT=Build.build
@@ -19,13 +20,18 @@ if not "%2" == "" (
 if not "%3" == "" (
 	SET "BUILDACTION=%3"
 )
-if not "%3" == "" (
+if not "%4" == "" (
 	SET "buildType=%4"
 )
 
+echo %CASEID%
+echo %BUILDCONFIG%
+echo %BUILDACTION%
+echo %BUILDTYPE%
+
 SET LDAPSyncRoot=%LDAPSync%
 pushd %LDAPSync%\developmentscripts
-nant build_all -buildfile:"%BUILDPROJECT%" "-D:root=%LDAPSyncRoot%" "-D:buildconfig=%BUILDCONFIG%" "-D:action=%BUILDACTION%" "-D:DevEnv=DEVENV" "-D:signOutput=SIGNOUTPUT" -D:caseId=%CASEID%
+nant build_all -buildfile:"%BUILDPROJECT%" "-D:root=%LDAPSyncRoot%" "-D:buildconfig=%BUILDCONFIG%" "-D:action=%BUILDACTION%" "-D:buildType=%BUILDTYPE%" "-D:signOutput=SIGNOUTPUT" -D:caseId=%CASEID%
 popd
 goto end
 

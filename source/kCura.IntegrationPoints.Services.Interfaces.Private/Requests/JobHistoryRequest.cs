@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Services.Interfaces.Private.Requests
+﻿namespace kCura.IntegrationPoints.Services
 {
 	public class JobHistoryRequest
 	{
@@ -23,8 +23,8 @@
 		public string SortColumnName { get; set; }
 
 		/// <summary>
-		/// The direction to sort (ASC or DESC)
+		/// Will sort descending if true, ascending otherwise
 		/// </summary>
-		public string SortDirection { get; set; }
+		public bool? SortDescending { get; set; }
 	}
 }

@@ -99,6 +99,7 @@
     <Compile Include="BatchProcess\BatchableTaskBase.cs" />
     <Compile Include="Core\AgentTypeInformation.cs" />
     <Compile Include="Data\Interfaces\IQueueDBContext.cs" />
+    <Compile Include="Data\Queries\CleanupJobQueueTable.cs" />
     <Compile Include="Data\Queries\CreateJobLogTable.cs" />
     <Compile Include="Data\Queries\InsertJobLogEntry.cs" />
     <Compile Include="Data\Queries\UnlockScheduledJob.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="TimeMachine\AgentTimeMachineProvider.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\Resources\CleanupJobQueueTable.sql" />
     <Content Include="Data\Resources\InsertJobLogEntry.sql" />
     <Content Include="Data\Resources\CreateJobLogTable.sql" />
     <Content Include="Data\Resources\UnlockScheduledJob.sql" />

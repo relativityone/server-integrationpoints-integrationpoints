@@ -25,6 +25,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						return typeof(SyncCustodianManagerWorker);
 					case TaskType.ExportWorker:
 						return typeof(ExportWorker);
+					case TaskType.ExportService:
+						return typeof(ExportServiceManager);
 					default:
 						return null;
 				}

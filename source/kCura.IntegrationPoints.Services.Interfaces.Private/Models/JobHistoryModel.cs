@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace kCura.IntegrationPoints.Services.Interfaces.Private.Models
+namespace kCura.IntegrationPoints.Services
 {
 	public class JobHistoryModel
 	{
-		public int Documents { get; set; }
+		public int ItemsImported { get; set; }
 
-		public DateTime Date { get; set; }
+		public DateTime EndTimeUtc { get; set; }
 
-		public string WorkspaceName { get; set; }
+		public string DestinationWorkspace { get; set; }
 	}
 }

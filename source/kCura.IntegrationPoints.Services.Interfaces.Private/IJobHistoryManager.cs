@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Models;
-using kCura.IntegrationPoints.Services.Interfaces.Private.Requests;
 using Relativity.Kepler.Services;
 
 namespace kCura.IntegrationPoints.Services
@@ -14,15 +12,15 @@ namespace kCura.IntegrationPoints.Services
 	public interface IJobHistoryManager: IDisposable
 	{
 		/// <summary>
-		/// Pings the service to ensure its up and running
+		/// Pings the service to ensure it is up and running.
 		/// </summary>
 		Task<bool> PingAsync();
 
 		/// <summary>
-		/// 
+		/// Gets the job history information for the requested job.
 		/// </summary>
-		/// <param name="request"></param>
-		/// <returns></returns>
-		Task<JobHistorySummaryModel> GetJobHistory(JobHistoryRequest request);
+		/// <param name="request">The job history request information.</param>
+		/// <returns>The job history summary.</returns>
+		Task<JobHistorySummaryModel> GetJobHistoryAsync(JobHistoryRequest request);
 	}
 }

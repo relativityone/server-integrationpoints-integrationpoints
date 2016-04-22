@@ -2,6 +2,7 @@
 using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Managers;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -14,7 +15,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 	[TestFixture]
 	public class DocumentArtifactIdDataReaderTests
 	{
-		private ISavedSearchManager _savedSearchManager;
+		private ISavedSearchRepository _savedSearchRepository;
 		private IDataReader _instance;
 		private const int SAVED_SEARCH_ID = 123;
 		private Query<Document> _expectedQuery;
@@ -22,7 +23,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		[SetUp]
 		public void SetUp()
 		{
-			_savedSearchManager = NSubstitute.Substitute.For<ISavedSearchManager>();
+			_savedSearchRepository = NSubstitute.Substitute.For<ISavedSearchRepository>();
 
 			_expectedQuery = new Query<Document>
 			{
@@ -30,7 +31,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				Fields = FieldValue.NoFields // we only want the ArtifactId
 			};
 
-			_instance = new DocumentArtifactIdDataReader(_savedSearchManager);
+			_instance = new DocumentArtifactIdDataReader(_savedSearchRepository);
 		}
 
 		#region Read
@@ -44,7 +45,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ArtifactDTO(1, 10, new ArtifactFieldDTO[0])
 			};
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
 
 			// Act
 			bool result = _instance.Read();
@@ -52,8 +53,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Assert
 			Assert.IsTrue(result, "There are records to read, result should be true");
 			Assert.IsFalse(_instance.IsClosed, "The reader should be open");
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(0).AllDocumentsRetrieved();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
@@ -62,8 +63,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[] { };
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
-			_savedSearchManager.AllDocumentsRetrieved().Returns(true);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
+			_savedSearchRepository.AllDocumentsRetrieved().Returns(true);
 
 			// Act
 			bool result = _instance.Read();
@@ -71,16 +72,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Assert
 			Assert.IsFalse(result, "There are no records to read, result should be false");
 			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(1).AllDocumentsRetrieved();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(1).AllDocumentsRetrieved();
 		}
 
 		[Test]
 		public void Read_FirstRead_RunsSavedSearch_RequestFailsWithException()
 		{
 			// Arrange
-			_savedSearchManager.RetrieveNext().Throws(new Exception());
-			_savedSearchManager.AllDocumentsRetrieved().Returns(true);
+			_savedSearchRepository.RetrieveNext().Throws(new Exception());
+			_savedSearchRepository.AllDocumentsRetrieved().Returns(true);
 
 			// Act & Assert
 			Assert.Throws<Exception>(() => _instance.Read());
@@ -96,8 +97,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
 			};
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
-			_savedSearchManager.AllDocumentsRetrieved().Returns(true);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
+			_savedSearchRepository.AllDocumentsRetrieved().Returns(true);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -109,8 +110,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			Assert.IsTrue(result2, "There are records to read, result should be true");
 			Assert.IsFalse(result3, "There are no records to read, result should be false");
 			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(1).RetrieveNext();
 		}
 
 		[Test]
@@ -123,8 +124,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
 			};
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
-			_savedSearchManager.AllDocumentsRetrieved().Returns(true);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
+			_savedSearchRepository.AllDocumentsRetrieved().Returns(true);
 
 			// Act
 			bool result1 = _instance.Read();
@@ -135,8 +136,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			Assert.IsTrue(result1, "There are records to read, result should be true");
 			Assert.IsFalse(result2, "There are no records to read, result should be false");
 			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(1).RetrieveNext();
 		}
 
 		#endregion Read
@@ -153,8 +154,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
 			};
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
-			_savedSearchManager.AllDocumentsRetrieved().Returns(true);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
+			_savedSearchRepository.AllDocumentsRetrieved().Returns(true);
 
 			// Act
 			bool readResult1 = _instance.Read();
@@ -168,8 +169,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			Assert.IsTrue(readResult2, "There are records to read, result should be true");
 			Assert.IsFalse(readResult3, "There are no records to read, result should be false");
 			Assert.IsTrue(_instance.IsClosed, "The reader should be closed");
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(1).RetrieveNext();
 		}
 
 		[Test]
@@ -182,7 +183,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
 			};
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -207,8 +208,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
 			Assert.IsTrue(correctExceptionThrown, "An IndexOutOfRangeException should have been thrown");
 			Assert.AreEqual("'WRONG_COLUMN' is not a valid column", exceptionMessage, "The exception message should be as expected");
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(0).AllDocumentsRetrieved();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
@@ -220,7 +221,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -229,8 +230,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Assert
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
 			Assert.AreEqual(documents[0].ArtifactId, Convert.ToInt32(accessorResult));
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(0).AllDocumentsRetrieved();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
@@ -242,7 +243,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -264,8 +265,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Assert
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
 			Assert.IsTrue(correctExceptionThrown, "An IndexOutOfRangeException should have been thrown");
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(0).AllDocumentsRetrieved();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
@@ -373,7 +374,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -382,8 +383,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Assert
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
 			Assert.AreEqual(Convert.ToString(documents[0].ArtifactId), getResult, "The result should be the documentArtifactId as a string");
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(0).AllDocumentsRetrieved();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
@@ -395,7 +396,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -404,8 +405,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Assert
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
 			Assert.AreEqual(documents[0].ArtifactId, getResult, "The result should be the documentArtifactId");
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(0).AllDocumentsRetrieved();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
@@ -417,7 +418,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
 
 			// Act
 			bool readResult = _instance.Read();
@@ -426,8 +427,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Assert
 			Assert.IsTrue(readResult, "There are records to read, result should be true");
 			Assert.IsFalse(isDbNull, "The result should not be DBNull");
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(0).AllDocumentsRetrieved();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
@@ -466,7 +467,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
 
 			// Act
 			_instance.Read();
@@ -482,8 +483,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			// Assert
 			Assert.IsFalse(exceptionThrown, "No exception should be thrown");
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(0).AllDocumentsRetrieved();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
@@ -495,7 +496,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
 
 			// Act
 			_instance.Read();
@@ -504,8 +505,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			// Assert
 			Assert.IsTrue(isClosed, "The reader should be closed");
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(0).AllDocumentsRetrieved();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
@@ -516,7 +517,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			{
 				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
-			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
 
 			// Act
 			_instance.Read();
@@ -525,8 +526,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			// Assert
 			Assert.IsFalse(result, "The reader should be closed");
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(0).AllDocumentsRetrieved();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
@@ -538,7 +539,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
 
 			// Act
 			_instance.Read();
@@ -546,8 +547,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_instance.Read();
 
 			// Assert
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(0).AllDocumentsRetrieved();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]
@@ -559,7 +560,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
 			};
 
-			_savedSearchManager.RetrieveNext().Returns(documents);
+			_savedSearchRepository.RetrieveNext().Returns(documents);
 
 			// Act
 			_instance.Read();
@@ -581,8 +582,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			// Assert
 			Assert.IsTrue(correctExceptionThrown, "Reading after running Close() should nullify the current result");
-			_savedSearchManager.Received(1).RetrieveNext();
-			_savedSearchManager.Received(0).AllDocumentsRetrieved();
+			_savedSearchRepository.Received(1).RetrieveNext();
+			_savedSearchRepository.Received(0).AllDocumentsRetrieved();
 		}
 
 		[Test]

@@ -39,17 +39,17 @@ ko.validation.rules['uniqueIdIsMapped'] = {
 		if (!rdoIdentifierMapped || !containsIdentifier) {
 			var missingField = "";
 			if (!rdoIdentifierMapped && !containsIdentifier) {
-				if (params[2]() !== params[1]()) {
-					missingField = "The object identifier, " + params[2]() + ", and the unique identifier, " + params[1]();
+				if (params[1]() !== params[0]()) {
+					missingField = "The object identifier, " + params[1]() + ", and the unique identifier, " + params[0]();
 				} else {
-					missingField = "The object identifier, " + params[2]();
+					missingField = "The object identifier, " + params[1]();
 				}
 			}
 			if (!rdoIdentifierMapped && containsIdentifier) {
-				missingField = "The object identifier, " + params[2]();
+				missingField = "The object identifier, " + params[1]();
 			}
 			if (rdoIdentifierMapped && !containsIdentifier) {
-				missingField = "The unique identifier, " + params[1]();
+				missingField = "The unique identifier, " + params[0]();
 			}
 			IP.message.error.raise('<span id="uniquIdMissing"> ' + missingField + ', must be mapped.<span>');
 			return false;
@@ -332,26 +332,23 @@ ko.validation.insertValidationMessage = function (element) {
 				}
 				var sourceMapped = [];
 				var destinationMapped = [];
-				var orphan = [];
 				$.each(fieldMapping, function (item) {
 					var source = this[sourceKey];
-					var _destination = this[destinationKey];
+					var destination = this[destinationKey];
 					var isInSource = _contains(sourceField, source);
-					var isInDestination = _contains(destinationFields, _destination);
-					if (isInSource && isInDestination) {
+					var isInDestination = _contains(destinationFields, destination);
+					if (isInSource) {
 						sourceMapped.push(source);
-						destinationMapped.push(_destination);
 					}
-					else if (!isInSource && isInDestination) {
-						orphan.push(_destination);
+					if (isInDestination) {
+						destinationMapped.push(destination);
 					}
 				});
-				return [destinationMapped.concat(orphan), sourceMapped];
+				return [destinationMapped, sourceMapped];
 			}
 			return {
 				getNotMapped: getNotMapped,
 				getMapped: getMapped,
-
 			};
 
 

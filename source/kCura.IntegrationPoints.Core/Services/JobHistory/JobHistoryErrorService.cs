@@ -10,12 +10,13 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public class JobHistoryErrorService
 	{
-		private ICaseServiceContext _context;
-		private List<JobHistoryError> _jobHistoryErrorList;
+		private readonly ICaseServiceContext _context;
+		private readonly List<JobHistoryError> _jobHistoryErrorList;
+
 		public JobHistoryErrorService(ICaseServiceContext context)
 		{
 			_context = context;
-			_jobHistoryErrorList = new List<JobHistoryError>();
+			_jobHistoryErrorList = new List<JobHistoryError>();	
 		}
 
 		public Data.JobHistory JobHistory { get; set; }
@@ -112,11 +113,29 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private string GenerateErrorMessage(Exception ex)
 		{
-			StringBuilder sb = new StringBuilder();
-			sb.AppendLine(ex.Message);
-			sb.AppendLine(ex.StackTrace);
-			if (ex.InnerException != null) sb.AppendLine(GenerateErrorMessage(ex.InnerException));
-			return sb.ToString();
+			var aggregateException = ex as AggregateException;
+			var stringBuilder = new StringBuilder();
+			bool isAggregateExceptionWithInnerExceptions = aggregateException?.InnerExceptions != null;
+
+			stringBuilder.AppendLine(ex.Message);
+			stringBuilder.AppendLine(ex.StackTrace);
+
+			if (isAggregateExceptionWithInnerExceptions)
+			{
+				for (int i = 0; i < aggregateException.InnerExceptions.Count; i++)
+				{
+					int innerExceptionId = i + 1;
+					stringBuilder.AppendLine($"Inner Exception {innerExceptionId}:");
+					stringBuilder.AppendLine(GenerateErrorMessage(aggregateException.InnerExceptions[i]));
+				}
+			}
+			else if (ex.InnerException != null)
+			{
+				stringBuilder.AppendLine("Inner Exception:");
+				stringBuilder.AppendLine(GenerateErrorMessage(ex.InnerException));
+			}
+
+			return stringBuilder.ToString();
 		}
 	}
 }

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Repositories;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.Core;
@@ -19,7 +21,6 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 	{
 		private readonly int[] _avfIds;
 		private readonly BaseServiceContext _baseContext;
-		private readonly DataGridContext _dataGridContext;
 		private readonly global::Relativity.Core.Api.Shared.Manager.Export.IExporter _exporter;
 		private readonly Export.InitializationResults _exportJobInfo;
 		private readonly int[] _fieldArtifactIds;
@@ -30,18 +31,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly ExportUsingSavedSearchSettings _settings;
 		private readonly HashSet<int> _singleChoiceFieldsArtifactIds;
 		private IDataReader _reader;
-
-		private RelativityExporterService()
-		{
-			_singleChoiceFieldsArtifactIds = new HashSet<int>();
-			_multipleObjectFieldArtifactIds = new HashSet<int>();
-			_longTextFieldArtifactIds = new HashSet<int>();
-		}
+		private DataGridContext _dataGridContext;
 
 		/// <summary>
 		/// Testing only
 		/// </summary>
-		/// <param name="exporter"></param>
 		public RelativityExporterService(
 			global::Relativity.Core.Api.Shared.Manager.Export.IExporter exporter,
 			int[] avfIds,
@@ -60,12 +54,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			string config)
 			: this()
 		{
-			_dataGridContext = new DataGridContext(true);
 			_settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
-			_baseContext = ClaimsPrincipal.Current.GetNewServiceContext(_settings.SourceWorkspaceArtifactId);
-
 			_mappedFields = mappedFields;
 			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
+
+			_baseContext = ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(_settings.SourceWorkspaceArtifactId);
 
 			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int)ArtifactType.Document);
 			Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
@@ -87,6 +80,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				{
 					_longTextFieldArtifactIds.Add(artifactId);
 				}
+
+				if (fieldInfo.EnableDataGrid && _dataGridContext == null)
+				{
+					_dataGridContext = new DataGridContext(true);
+				}
 			}
 
 			_avfIds = _fieldArtifactIds.Select(artifactId => fieldsReferences[artifactId]).ToArray(); // need to make sure that this is in order
@@ -102,6 +100,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			);
 			_exportJobInfo = _exporter.InitializeExport(_settings.SavedSearchArtifactId, _avfIds, startAt);
 			_retrievedDataCount = 0;
+		}
+
+		private RelativityExporterService()
+		{
+			_singleChoiceFieldsArtifactIds = new HashSet<int>();
+			_multipleObjectFieldArtifactIds = new HashSet<int>();
+			_longTextFieldArtifactIds = new HashSet<int>();
 		}
 
 		public bool HasDataToRetrieve
@@ -120,11 +125,11 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		public IDataReader GetDataReader()
+		public IDataReader GetDataReader(IScratchTableRepository[] scratchTableRepositories)
 		{
 			if (_reader == null)
 			{
-				_reader = new DocumentTransferDataReader(this, _mappedFields, _baseContext);
+				_reader = new DocumentTransferDataReader(this, _mappedFields, _baseContext, scratchTableRepositories);
 			}
 			return _reader;
 		}
@@ -179,6 +184,27 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				}
 			}
 			return result.ToArray();
+		}
+
+		public void Dispose()
+		{
+			if (_reader != null)
+			{
+				_reader.Dispose();
+				_reader = null;
+			}
+
+			if (_dataGridContext != null)
+			{
+				// dispose and cleanup won't do
+				_dataGridContext.BaseDataGridContext.BufferPool.BufferPoolBaseCollection.Clear();
+				_dataGridContext.BaseDataGridContext.Cleanup();
+				_dataGridContext.BaseDataGridContext.Dispose();
+				_dataGridContext = null;
+			}
+
+			GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+			GC.Collect();
 		}
 	}
 }

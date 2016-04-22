@@ -517,14 +517,15 @@ var IP = IP || {};
 			}
 		});
 
+		var destinationSettings = JSON.parse(settings.destination || "{}");
 		this.SelectedOverwrite = settings.selectedOverwrite;
-		this.FieldOverlayBehavior = settings.FieldOverlayBehavior;
-		this.CustodianManagerFieldContainsLink = JSON.parse(settings.destination || "{}").CustodianManagerFieldContainsLink;
-		this.UseFolderPathInformation = JSON.parse(settings.destination || "{}").UseFolderPathInformation;
-		this.FolderPathSourceField = JSON.parse(settings.destination || "{}").FolderPathSourceField;
-		this.ExtractedTextFieldContainsFilePath = JSON.parse(settings.destination || "{}").ExtractedTextFieldContainsFilePath;
-		this.ExtractedTextFileEncoding = JSON.parse(settings.destination || "{}").ExtractedTextFileEncoding;
-		this.importNativeFile = JSON.parse(settings.destination || "{}").importNativeFile;
+		this.FieldOverlayBehavior = destinationSettings.FieldOverlayBehavior;
+		this.CustodianManagerFieldContainsLink = destinationSettings.CustodianManagerFieldContainsLink;
+		this.UseFolderPathInformation = destinationSettings.UseFolderPathInformation;
+		this.FolderPathSourceField = destinationSettings.FolderPathSourceField;
+		this.ExtractedTextFieldContainsFilePath = destinationSettings.ExtractedTextFieldContainsFilePath;
+		this.ExtractedTextFileEncoding = destinationSettings.ExtractedTextFileEncoding;
+		this.importNativeFile = destinationSettings.importNativeFile;
 
 		this.scheduler = new Scheduler(settings.scheduler);
 		this.submit = function () {

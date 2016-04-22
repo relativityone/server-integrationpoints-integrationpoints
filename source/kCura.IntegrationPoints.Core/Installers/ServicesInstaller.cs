@@ -7,20 +7,26 @@ using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Domain;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.DestinationTypes;
-using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
-using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Core.Services.Tabs;
+using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Managers;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
@@ -54,7 +60,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IDataSynchronizer>().ImplementedBy<ExportSynchroznizer>().Named(typeof(ExportSynchroznizer).AssemblyQualifiedName).LifeStyle.Transient);
 
 			container.Register(Component.For<RdoSynchronizerProvider>().ImplementedBy<RdoSynchronizerProvider>().LifeStyle.Transient);
-
 
 			container.Register(Component.For<IRelativityFieldQuery>().ImplementedBy<RelativityFieldQuery>().LifestyleTransient());
 			container.Register(Component.For<IntegrationPointService>().ImplementedBy<IntegrationPointService>().LifestyleTransient());
@@ -92,18 +97,38 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<JobTracker>().ImplementedBy<JobTracker>().LifeStyle.Transient);
 			container.Register(Component.For<JobHistoryErrorQuery>().ImplementedBy<JobHistoryErrorQuery>().LifestyleTransient());
 			container.Register(Component.For<TaskParameterHelper>().ImplementedBy<TaskParameterHelper>().LifestyleTransient());
-			
+
 			container.Register(Component.For<IImportApiFactory>().ImplementedBy<ImportApiFactory>().LifeStyle.Transient);
 
 			container.Register(Component.For<RelativityFeaturePathService>().ImplementedBy<RelativityFeaturePathService>().LifeStyle.Transient);
 
+			container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>().LifestyleTransient());
+
 			if (container.Kernel.HasComponent(typeof(IHelper)))
 			{
 				IHelper helper = container.Resolve<IHelper>();
-				IObjectQueryManager queryManager = helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
 
-				container.Register(Component.For<IRDORepository>().ImplementedBy<RDORepository>().DependsOn(new { objectQueryManager = queryManager }).LifeStyle.Transient);
-				container.Register(Component.For<IFieldManager>().ImplementedBy<KeplerFieldManager>().LifeStyle.Transient);
+				// TODO: Investigate; should this be using ExecutionIdentity.CurrentUser? -- biedrzycki: April 6th, 2016
+				IObjectQueryManager queryManager = helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
+			
+				container.Register(
+					Component.For<IObjectQueryManagerAdaptor>()
+						.ImplementedBy<ObjectQueryManagerAdaptor>()
+						.DependsOn(new { objectQueryManager = queryManager})
+						.LifeStyle.Transient);
+				container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
+				container.Register(Component.For<IFieldRepository>().ImplementedBy<FieldRepository>().LifeStyle.Transient);
+				container.Register(Component.For<IDocumentRepository>().ImplementedBy<KeplerDocumentRepository>().LifeStyle.Transient);
+
+				// TODO: This is kind of cruddy, see if we can only use this repository through the RepositoryFactory -- biedrzycki: April 6th, 2016
+				container.Register(
+					Component.For<IWorkspaceRepository>()
+						.ImplementedBy<RsapiWorkspaceRepository>()
+						.UsingFactoryMethod((k) => k.Resolve<IRepositoryFactory>().GetWorkspaceRepository())
+						.LifestyleTransient());
+				container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());
+				container.Register(Component.For<ISourceJobManager>().ImplementedBy<SourceJobManager>().LifestyleTransient());
+				container.Register(Component.For<ITempDocumentTableFactory>().ImplementedBy<TempDocumentTableFactory>().LifestyleSingleton());
 			}
 		}
 	}

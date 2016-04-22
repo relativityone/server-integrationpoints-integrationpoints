@@ -1,9 +1,20 @@
-﻿namespace kCura.IntegrationPoints.Services.Interfaces.Private.Models
+﻿using System;
+
+namespace kCura.IntegrationPoints.Services
 {
 	public class JobHistorySummaryModel
 	{
-		public int TotalDocumentsPushed { get; set; }
+		public JobHistorySummaryModel()
+		{
+			Data = new JobHistoryModel[0];
+			TotalAvailable = 0;
+			TotalDocumentsPushed = 0;
+		}
 
-		public JobHistoryModel[] JobHistories { get; set; }
+		public JobHistoryModel[] Data { get; set; }
+
+		public Int64 TotalAvailable { get; set; }
+
+		public Int64 TotalDocumentsPushed { get; set; }
 	}
 }

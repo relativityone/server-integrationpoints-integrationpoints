@@ -3,6 +3,7 @@
 	public class ExportSettings
 	{
 		public int SourceWorkspaceArtifactId { set; get; }
+		public int TargetWorkspaceArtifactId { get; set; }
 	}
 
 	public class ExportUsingSavedSearchSettings : ExportSettings

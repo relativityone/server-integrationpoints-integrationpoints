@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Web.Models
 			List<WorkspaceModel> result = workspaces.Select(
 				workspace => new WorkspaceModel()
 				{
-					DisplayName = String.Format("{0} [Id:{1}]", workspace.Artifact.Name, workspace.Artifact.ArtifactID),
+					DisplayName = $"{workspace.Artifact.Name} - {workspace.Artifact.ArtifactID}",
 					Value = workspace.Artifact.ArtifactID
 				}).ToList();
 

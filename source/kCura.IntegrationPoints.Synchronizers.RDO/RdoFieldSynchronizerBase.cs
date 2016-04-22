@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
     public abstract class RdoFieldSynchronizerBase : IFieldProvider
     {
-        private string _webAPIPath;
         protected readonly IRelativityFieldQuery FieldQuery;
 
         private Relativity.ImportAPI.IImportAPI _api;
@@ -73,24 +72,29 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             }
         }
 
-        private List<string> IgnoredList
+        private HashSet<string> _ignoredList;
+        private HashSet<string> IgnoredList
         {
             get
             {
                 // fields don't have any space in between words 
-                var list = new List<string>
+                if (_ignoredList == null)
                 {
-                    "Is System Artifact",
-                    "System Created By",
-                    "System Created On",
-                    "System Last Modified By",
-                    "System Last Modified On",
-                    "Artifact ID"
-                };
-                return list;
+                    _ignoredList = new HashSet<string>
+                    {
+                        "Is System Artifact",
+                        "System Created By",
+                        "System Created On",
+                        "System Last Modified By",
+                        "System Last Modified On",
+                        "Artifact ID"
+                    };
+                }
+                return _ignoredList;
             }
         }
 
+        private string _webAPIPath;
         public string WebAPIPath
         {
             get

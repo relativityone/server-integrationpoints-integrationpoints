@@ -149,10 +149,22 @@
   <ItemGroup>
     <Compile Include="Application.cs" />
     <Compile Include="BatchEmail.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\IConsumeScratchTableBatchStatus.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Factories\IExporterFactory.cs" />
+    <Compile Include="Managers\IJobHistoryManager.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\DestinationWorkspaceManager.cs" />
     <Compile Include="Installers\KeywordInstaller.cs" />
     <Compile Include="JobHistoryStatus.cs" />
-    <Compile Include="IBatchStatus.cs" />
+    <Compile Include="BatchStatusCommands\IBatchStatus.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\JobHistoryManager.cs" />
+    <Compile Include="Managers\Implementations\SourceWorkspaceManager.cs" />
+    <Compile Include="Managers\Implementations\SourceJobManager.cs" />
+    <Compile Include="Managers\ISourceWorkspaceManager.cs" />
+    <Compile Include="Managers\ISourceJobManager.cs" />
     <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Properties\JobStatusMessages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -185,7 +197,7 @@
     <Compile Include="Services\Domain\RelativityFeaturePathService.cs" />
     <Compile Include="Services\Exporter\DocumentTransferDataReader.cs" />
     <Compile Include="Services\Exporter\ExportApiDataHelper.cs" />
-    <Compile Include="Services\Exporter\ExporterFactory.cs" />
+    <Compile Include="Factories\Implementations\ExporterFactory.cs" />
     <Compile Include="Services\Exporter\IExporterService.cs" />
     <Compile Include="Services\Exporter\ILongTextStreamFactory.cs" />
     <Compile Include="Services\Exporter\RelativityExporterService.cs" />
@@ -193,6 +205,7 @@
     <Compile Include="Services\Guid\IGuidService.cs" />
     <Compile Include="Services\IDeleteHistoryErrorService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />
+    <Compile Include="Services\JobHistory\ExportJobErrorService.cs" />
     <Compile Include="Services\JobHistory\IJobHistoryService.cs" />
     <Compile Include="Services\JobHistory\JobHistoryErrorService.cs" />
     <Compile Include="Services\JobHistory\JobHistoryService.cs" />
@@ -269,6 +282,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider.Shared\kCura.IntegrationPoints.DocumentTransferProvider.Shared.csproj">
+      <Project>{22991306-a168-4d22-80a7-aaa99c9e9fd6}</Project>
+      <Name>kCura.IntegrationPoints.DocumentTransferProvider.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>

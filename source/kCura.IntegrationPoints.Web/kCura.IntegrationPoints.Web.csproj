@@ -239,7 +239,6 @@
     <Compile Include="ServiceContextHelperForWeb.cs" />
     <Compile Include="SessionService.cs" />
     <Compile Include="Toggles\ShowFileShareDataProviderToggle.cs" />
-    <Compile Include="Toggles\ShowRelativityDataProviderToggle.cs" />
     <Compile Include="WebAPICustomPageService.cs" />
     <Compile Include="WebClientFactory.cs" />
     <Compile Include="WindsorCompositionRoot.cs" />
@@ -328,6 +327,7 @@
     <None Include="Properties\PublishProfiles\deploy.pubxml" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />
     <Content Include="Scripts\core\messaging.js" />
+    <Content Include="Scripts\EventHandlers\job-history.js" />
     <Content Include="Scripts\relativity\Relativity-provider.js" />
     <Content Include="Scripts\dragon\dragon-dialogs.js" />
     <Content Include="Scripts\EventHandlers\integration-points-view-destination.js" />
@@ -529,6 +529,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Toggles\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

@@ -306,6 +306,12 @@
 				<include name="kCura.IntegrationPoints.Services.Interfaces.Private.dll" />
 			</fileset>
 		</copy>
+		<copy todir="${bin.directory}">
+			<fileset basedir="${source.reference.kCura.directory}">
+				<include name="kCura.Image.Viewer.dll" />
+				<include name="kCura.Print.dll" />
+			</fileset>
+		</copy>
 	</target>
 	
 	<target name="upload_binaries_into_relativity" description="Upload binary files into Relativity">

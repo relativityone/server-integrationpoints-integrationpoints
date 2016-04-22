@@ -9,17 +9,21 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
-using IDBContext = Relativity.API.IDBContext;
 using Relativity.CustomPages;
 using Relativity.Toggles;
 using Relativity.Toggles.Providers;
+using IDBContext = Relativity.API.IDBContext;
 
 namespace kCura.IntegrationPoints.Web.Installers
 {
@@ -65,7 +69,6 @@ namespace kCura.IntegrationPoints.Web.Installers
 
 			container.Register(Component.For<GridModelFactory>().ImplementedBy<GridModelFactory>().LifestyleTransient());
 
-
 			container.Register(
 				Component.For<GetApplicationBinaries>()
 					.ImplementedBy<GetApplicationBinaries>().DynamicParameters((k, d) => d["eddsDBcontext"] = ConnectionHelper.Helper().GetDBContext(-1))
@@ -89,11 +92,18 @@ namespace kCura.IntegrationPoints.Web.Installers
 					Task<SqlConnection> task = Task.Run(() =>
 					{
 						SqlConnection connection = ConnectionHelper.Helper().GetDBContext(-1).GetConnection(true);
-						return connection;	
+						return connection;
 					});
 
 					return await task;
 				})).LifestyleTransient());
+
+			container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
+			
+			container.Register(Component.For<IWorkspaceRepository>()
+					.ImplementedBy<RsapiWorkspaceRepository>()
+					.UsingFactoryMethod((k) => k.Resolve<IRepositoryFactory>().GetWorkspaceRepository())
+					.LifestyleTransient());
 		}
 	}
 }
