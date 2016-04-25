@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using kCura.IntegrationPoint.Tests.Core;
+using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration
 {

@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using kCura.Relativity.Client;
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration
@@ -16,6 +15,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 			service.IntegrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(RsapiClient);
 			IntegrationPointQuery ripQuery = new IntegrationPointQuery(service);
 			var value = ripQuery.GetIntegrationPoints(new List<int>() { 1039580 });
+
+			Assert.IsNotNull(value);
 		}
 	}
 }

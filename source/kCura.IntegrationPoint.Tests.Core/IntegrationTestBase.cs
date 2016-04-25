@@ -2,7 +2,7 @@
 using System.Configuration;
 using kCura.Relativity.Client;
 
-namespace kCura.IntegrationPoints.Data.Tests.Integration
+namespace kCura.IntegrationPoint.Tests.Core
 {
 	public abstract class IntegrationTestBase
 	{
