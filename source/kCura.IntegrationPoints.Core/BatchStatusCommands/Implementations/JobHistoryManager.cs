@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			{
 				if (_scratchTable == null)
 				{
-					_scratchTable = new ScratchTableRepository(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST, _tempDocHelper);
+					_scratchTable = new ScratchTableRepository(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST, _tempDocHelper, true);
 				}
 				return _scratchTable;
 			}

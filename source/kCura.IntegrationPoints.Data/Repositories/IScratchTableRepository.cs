@@ -6,6 +6,8 @@ namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface IScratchTableRepository : IDisposable
 	{
+		bool IgnoreErrorDocuments { get; }
+
 		int Count { get; }
 
 		void AddArtifactIdsIntoTempTable(List<int> artifactIds);
