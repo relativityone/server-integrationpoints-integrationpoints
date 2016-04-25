@@ -1,30 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.Relativity.Client;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Queries
 {
 	[Explicit]
 	[TestFixture]
-	public class GetRecentJobHistoryTests
+	public class GetRecentJobHistoryTests : IntegrationTestBase
 	{
-
 		public IRSAPIService Service
 		{
 			get
 			{
-				var client = new RSAPIClient(new Uri("http://localhost/Relativity.Services"), new UsernamePasswordCredentials("a@kcura.com", "Test1234!"))
-				{
-					APIOptions = { WorkspaceID = 1025258 }
-				};
 				var service = new RSAPIService();
-				service.JobHistoryErrorLibrary = new RsapiClientLibrary<JobHistoryError>(client);
+				service.JobHistoryErrorLibrary = new RsapiClientLibrary<JobHistoryError>(RsapiClient);
 				return service;
 			}
 		}
@@ -81,6 +71,5 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Queries
 
 			Assert.IsTrue(result == null);
 		}
-
 	}
 }
