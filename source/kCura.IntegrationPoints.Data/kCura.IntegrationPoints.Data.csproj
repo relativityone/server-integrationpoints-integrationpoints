@@ -122,6 +122,8 @@
     <Compile Include="Factories\IRepositoryFactory.cs" />
     <Compile Include="Factories\ITempDocumentTableFactory.cs" />
     <Compile Include="Factories\TempDocumentTableFactory.cs" />
+    <Compile Include="Repositories\IIntegrationPointRepository.cs" />
+    <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiObjectTypeRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiTabRepository.cs" />
     <Compile Include="Repositories\Implementations\SqlArtifactGuidRepository.cs" />
@@ -215,6 +217,8 @@
     </Compile>
     <Compile Include="SourceProviderConfiguration.cs" />
     <Compile Include="SqlObjectTypeQuery.cs" />
+    <Compile Include="Transformer\Helper.cs" />
+    <Compile Include="Transformer\IntegrationPointTransformer.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

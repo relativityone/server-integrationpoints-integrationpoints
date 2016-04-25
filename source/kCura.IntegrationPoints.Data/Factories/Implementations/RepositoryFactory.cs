@@ -118,6 +118,15 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return documentRepository;
 		}
 
+		public IIntegrationPointRepository GetIntegrationPointRepository(int workspaceArtifactId)
+		{
+			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
+			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(rsapiClient);
+			return integrationPointRepository;
+		}
+
+		#region Helper Methods
+
 		private IRSAPIClient GetRsapiClientForWorkspace(int workspaceArtifactId)
 		{
 			ContextContainer contexts = this.GetContextsForWorkspace(workspaceArtifactId);
@@ -174,6 +183,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 			return contexts;
 		}
+
+		#endregion
 
 		private class ContextContainer
 		{
