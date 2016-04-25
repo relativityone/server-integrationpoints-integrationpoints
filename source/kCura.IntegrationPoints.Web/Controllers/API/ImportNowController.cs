@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -10,17 +9,24 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
+
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
 	public class ImportNowController : ApiController
 	{
+		private const string _INTEGRATIONPOINT_ARTIFACT_ID_GUID = "A992C6FD-B6C2-4B97-AAFB-2CFB3F666F62";
+		private const string _SOURCEPROVIDER_ARTIFACT_ID_GUID = "4A091F69-D750-441C-A4F0-24C990D208AE";
+
 		private const string RELATIVITY_USERID = "rel_uai";
 		internal const string NO_PERMISSION_TO_IMPORT = "You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.";
 		internal const string NO_USERID = "Unable to determine the user id. Please contact your system administrator.";
 
 		private readonly IJobManager _jobManager;
+		private readonly ICaseServiceContext _caseServiceContext;
 		private readonly IPermissionService _permissionService;
 		private readonly IIntegrationPointRdoAdaptor _rdoDependenciesAdaptor;
 
@@ -29,34 +35,77 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			IIntegrationPointService integrationPointService,
 			JobHistoryService jobHistoryService,
 			IPermissionService permissionService)
-			: this(jobManager, permissionService,
+			: this( jobManager, caseServiceContext, permissionService,
 				new IntegrationPointRdoInitializer(integrationPointService, caseServiceContext, jobHistoryService))
 		{
 		}
 
 		internal ImportNowController(IJobManager jobManager,
+			ICaseServiceContext caseServiceContext,
 			IPermissionService permissionService,
 			IIntegrationPointRdoAdaptor rdoAdaptor)
 		{
 			_jobManager = jobManager;
+			_caseServiceContext = caseServiceContext;
 			_permissionService = permissionService;
 			_rdoDependenciesAdaptor = rdoAdaptor;
 		}
 
 		// POST api/importnow
+		[HttpPost]
 		public HttpResponseMessage Post(Payload payload)
+		{
+			HttpResponseMessage httpResponseMessage = Internal(payload.AppId, payload.ArtifactId);
+			return httpResponseMessage;
+		}
+
+		[HttpPost]
+		public bool SubmitLastJob(int workspaceId)
+		{
+			// Get last created integration point
+			Query<RDO> query1 = new Query<RDO>
+			{
+				Fields = new List<FieldValue> { new FieldValue(_SOURCEPROVIDER_ARTIFACT_ID_GUID) },
+				Condition = new TextCondition(Guid.Parse(SourceProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID),
+			};
+			List<SourceProvider> sourceProviders = _caseServiceContext.RsapiService.SourceProviderLibrary.Query(query1);
+			int sourceProviderArtifactId = sourceProviders.First().ArtifactId;
+
+			Query<RDO> query2 = new Query<RDO>
+			{
+				Fields = new List<FieldValue> {new FieldValue(_INTEGRATIONPOINT_ARTIFACT_ID_GUID)},
+				Condition = new WholeNumberCondition(Guid.Parse(IntegrationPointFieldGuids.SourceProvider), NumericConditionEnum.EqualTo, sourceProviderArtifactId),
+				Sorts = new List<Sort>
+				{
+					new Sort
+					{
+						Field = "ArtifactID",
+						Direction = SortEnum.Descending
+					}
+				}
+			};
+
+			List<IntegrationPoint> integrationPoints = _caseServiceContext.RsapiService.IntegrationPointLibrary.Query(query2);
+			if (!integrationPoints.Any())
+			{
+				return false;
+			}
+
+			HttpResponseMessage message = Internal(workspaceId, integrationPoints.First().ArtifactId);
+			return message.IsSuccessStatusCode;
+		}
+
+		private HttpResponseMessage Internal(int workspaceId, int relatedObjectArtifactId)
 		{
 			try
 			{
-				int workspaceID = payload.AppId;
-				int relatedObjectArtifactID = payload.ArtifactId;
 				Guid batchInstance = Guid.NewGuid();
 				var jobDetails = new TaskParameters()
 				{
 					BatchInstance = batchInstance
 				};
 				
-				_rdoDependenciesAdaptor.Initialize(relatedObjectArtifactID, batchInstance);
+				_rdoDependenciesAdaptor.Initialize(relatedObjectArtifactId, batchInstance);
 
 				int userId = GetUserIdIfExist();
 				// if relativity provider is selected, we will create an export task
@@ -74,12 +123,12 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					}
 
 					_rdoDependenciesAdaptor.CreateJobHistoryRdo();
-					_jobManager.CreateJobOnBehalfOfAUser(jobDetails,  TaskType.ExportService, workspaceID, relatedObjectArtifactID, userId);
+					_jobManager.CreateJobOnBehalfOfAUser(jobDetails,  TaskType.ExportService, workspaceId, relatedObjectArtifactId, userId);
 				}
 				else
 				{
 					_rdoDependenciesAdaptor.CreateJobHistoryRdo();
-					_jobManager.CreateJobOnBehalfOfAUser(jobDetails, TaskType.SyncManager, workspaceID, relatedObjectArtifactID, userId);
+					_jobManager.CreateJobOnBehalfOfAUser(jobDetails, TaskType.SyncManager, workspaceId, relatedObjectArtifactId, userId);
 				}
 			}
 			catch (AggregateException exception)
@@ -93,7 +142,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 			return Request.CreateResponse(HttpStatusCode.OK);
 		}
-
 
 		private int GetUserIdIfExist()
 		{

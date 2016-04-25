@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Web.Http;
 using System.Web.Http.Hosting;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
@@ -19,6 +20,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 	{
 		private ImportNowController _controller;
 		private IJobManager _jobManager;
+		private ICaseServiceContext _caseServiceContext;
 		private IPermissionService _permissionService;
 		private ImportNowController.IIntegrationPointRdoAdaptor _rdoAdaptor;
 		private ImportNowController.Payload _payload;
@@ -35,9 +37,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			};
 
 			_jobManager = Substitute.For<IJobManager>();
+			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 			_permissionService = Substitute.For<IPermissionService>();
 			_rdoAdaptor = Substitute.For<ImportNowController.IIntegrationPointRdoAdaptor>();
-			_controller = new ImportNowController(_jobManager, _permissionService, _rdoAdaptor);
+			_controller = new ImportNowController(_jobManager, _caseServiceContext, _permissionService, _rdoAdaptor);
 			_controller.Request = new HttpRequestMessage();
 			_controller.Request.Properties.Add(HttpPropertyKeys.HttpConfigurationKey, new HttpConfiguration());
 		}
