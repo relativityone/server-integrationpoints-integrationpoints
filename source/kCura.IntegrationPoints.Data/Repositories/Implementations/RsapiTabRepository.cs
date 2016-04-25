@@ -58,11 +58,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				throw new Exception($"Unable to retrieve tab: {resultSet.Message}");
 			}
-
+		
 			int? tabArtifactId = null;
+			Guid tabGuidToFind = new Guid(tabGuid);
 			foreach (Result<Tab> tab in resultSet.Results)
 			{
-				if (tab.Artifact.Guids.Contains(new Guid(tabGuid)))
+				if (tab.Artifact.Guids.Contains(tabGuidToFind))
 				{
 					tabArtifactId = tab.Artifact.ArtifactID;
 					break;
