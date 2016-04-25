@@ -34,6 +34,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 
 			//ASSERT
+			context.RsapiService.JobHistoryErrorLibrary.Received().Create(Arg.Do<IEnumerable<JobHistoryError>>(x => errors.AddRange(x)));
 			Assert.AreEqual(2, errors.Count);
 			Assert.AreEqual(ErrorTypeChoices.JobHistoryErrorJob.Name, errors[0].ErrorType.Name);
 			Assert.AreEqual("Fake job error.", errors[0].Error);
@@ -52,8 +53,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 			JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(context);
 			jobHistoryErrorService.JobHistory = new JobHistory() { ArtifactId = 111 };
-			List<JobHistoryError> errors = new List<JobHistoryError>();
-			context.RsapiService.JobHistoryErrorLibrary.Create(Arg.Do<IEnumerable<JobHistoryError>>(x => errors.AddRange(x)));
 			jobHistoryErrorService.IntegrationPoint = new IntegrationPoint();
 			jobHistoryErrorService.IntegrationPoint.HasErrors = true;
 
@@ -61,6 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			jobHistoryErrorService.CommitErrors();
 
 			//ASSERT
+			context.RsapiService.JobHistoryErrorLibrary.DidNotReceive().Create(Arg.Any<IEnumerable<JobHistoryError>>());
 			Assert.IsFalse(jobHistoryErrorService.IntegrationPoint.HasErrors.Value);
 		}
 
@@ -85,6 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 
 			//ASSERT
+			context.RsapiService.IntegrationPointLibrary.Received().Update(Arg.Any<IntegrationPoint>());
 			Assert.IsTrue(returnedException.Message.Contains("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine));
 			Assert.IsTrue(returnedException.Message.Contains("Type: Job    Error: Fake job error." + Environment.NewLine));
 			Assert.IsTrue(returnedException.Message.Contains("Type: Item    Identifier: MyIdentifier    Error: Fake item error."));
@@ -105,6 +106,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 
 			//ASSERT
+			context.RsapiService.IntegrationPointLibrary.DidNotReceive().Update(Arg.Any<IntegrationPoint>());
+			context.RsapiService.JobHistoryErrorLibrary.DidNotReceive().Create(Arg.Any<IEnumerable<JobHistoryError>>());
 			Assert.That(returnedException.Message, Is.EqualTo("Type:Job  Id:  Error:Fake job error."));
 		}
 	}
