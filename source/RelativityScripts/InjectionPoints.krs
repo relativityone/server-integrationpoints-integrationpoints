@@ -40,5 +40,10 @@ EXEC AddInjectionPoint
 		@Description = 'Injecting exception right before committing all existing JobHistoryErrors. This will generate Error tab entry, listing all errors failed to commit.',
 		@Feature = 'RIP:Errors'
 		
+	EXEC AddInjectionPoint
+		@InjectionPointID = '6a620133-011a-4fb8-8b37-758b53a46872',
+		@Description = 'Injecting exception before updating Integration Points RDO with the HasErrors status. This may leave the field out of sync of what it should be.',
+		@Feature = 'RIP:Errors'
+		
 		]]></action>
 </script>
