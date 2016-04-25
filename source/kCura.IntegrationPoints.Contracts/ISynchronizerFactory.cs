@@ -9,9 +9,9 @@ namespace kCura.IntegrationPoints.Contracts
 	public interface ISynchronizerFactory
 	{
 		/// <summary>
-		/// Creates a new synchonizer based on an identifier and the options.
+		/// Creates a new synchronizer based on an identifier and the options.
 		/// </summary>
-		/// <param name="identifier">A GUID identifing the synchronizer.</param>
+		/// <param name="identifier">A GUID identifying the synchronizer.</param>
 		/// <param name="options">The options specific to the current integration point identifier.</param>
 		/// <returns>A new instance of the data synchronizer.</returns>
 		IDataSynchronizer CreateSynchronizer(Guid identifier, string options);

@@ -125,6 +125,7 @@ var IP = IP || {};
 		var settings = $.extend({}, s);
 		this.templateID = 'ldapSourceConfig';
 		var self = this;
+		self.disable = parentModel.hasBeenRun();
 
 		this.sourceTypes = ko.observableArray();
 		this.selectedType = ko.observable().extend({ required: true });
@@ -170,7 +171,7 @@ var IP = IP || {};
 		});
 	};
 
-	var Destination = function (d) {
+	var Destination = function (d, parentModel) {
 		try {
 			d = JSON.parse(d);
 		} catch (e) {
@@ -178,6 +179,7 @@ var IP = IP || {};
 		}
 		var settings = $.extend({}, d);
 		var self = this;
+		self.disable = parentModel.hasBeenRun();
 
 		IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter') }).then(function (result) {
 			var types = $.map(result, function (entry) {
@@ -186,7 +188,7 @@ var IP = IP || {};
 			self.allRdoTypes(types);
 			self.UpdateSelectedItem();
 		}, function () {
-			
+
 		});
 
 		this.templateID = 'ldapDestinationConfig';
@@ -197,7 +199,7 @@ var IP = IP || {};
 		//CaseArtifactId
 		//ParentObjectIdSourceFieldName
 
-		this.UpdateSelectedItem = function() {
+		this.UpdateSelectedItem = function () {
 			self.artifactTypeID(settings.artifactTypeID);
 		}
 	};
@@ -456,7 +458,10 @@ var IP = IP || {};
 		this.logErrors = ko.observable(settings.logErrors.toString());
 		this.showErrors = ko.observable(false);
 
-		this.destination = new Destination(settings.destination);
+		var hasBeenRun = settings.lastRun != null;
+		this.hasBeenRun = ko.observable(hasBeenRun);
+
+		this.destination = new Destination(settings.destination, self);
 		this.source = new Source(settings.source, self);
 
 		this.destinationProvider = settings.destinationProvider;

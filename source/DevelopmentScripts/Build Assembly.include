@@ -28,6 +28,7 @@
 				<attribute type="InternalsVisibleToAttribute" value="DynamicProxyGenAssembly2" />
 				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Data.Tests" />
 				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Core.Tests" />
+				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Synchronizers.RDO.Tests" />
 			</attributes>
 		</asminfo>
 	</target>

@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Core.Models
 		public string SourceConfiguration { get; set; }
 		public string Map { get; set; }
 		public bool LogErrors { get; set; }
-		public bool HasErrors { get; set; }
+		public bool? HasErrors { get; set; }
 		public string NotificationEmails { get; set; }
 
 		public IntegrationModel()
@@ -161,6 +161,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			this.NotificationEmails = ip.EmailNotificationRecipients ?? string.Empty;
 			this.LogErrors = ip.LogErrors.GetValueOrDefault(false);
 			this.HasErrors = ip.HasErrors.GetValueOrDefault(false);
+			this.LastRun = ip.LastRuntimeUTC;
 		}
 	}
 }

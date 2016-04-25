@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public Data.JobHistory JobHistory { get; set; }
 		public IntegrationPoint IntegrationPoint { get; set; }
-		//private IBatchReporter _batchReporter;
+
 		public void SubscribeToBatchReporterEvents(object batchReporter)
 		{
 			if (batchReporter is IBatchReporter)
@@ -64,12 +64,13 @@ namespace kCura.IntegrationPoints.Core.Services
 								x.SourceUniqueID, x.Error))).ToList();
 					allErrors = String.Join(Environment.NewLine, errorList.ToArray());
 					allErrors += string.Format("{0}{0}Reason for exception: {1}", Environment.NewLine, GenerateErrorMessage(ex));
-					throw new Exception("Could not commit Job History Errors. These are uncommited errors:" + Environment.NewLine + allErrors);
+					throw new Exception("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine + allErrors);
 				}
 				finally
 				{
-					_context.RsapiService.IntegrationPointLibrary.Update(IntegrationPoint);
 					_jobHistoryErrorList.Clear();
+					kCura.Method.Injection.InjectionManager.Instance.Evaluate("6a620133-011a-4fb8-8b37-758b53a46872"); 
+					_context.RsapiService.IntegrationPointLibrary.Update(IntegrationPoint);
 				}
 			}
 		}

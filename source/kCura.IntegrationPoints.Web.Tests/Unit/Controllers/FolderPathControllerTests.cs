@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			ImportSettings settings = new ImportSettings { WebServiceURL = webServiceUrl };
 			_client.APIOptions = new APIOptions(workspaceId);
 
-			IImportAPI importApi = NSubstitute.Substitute.For<IImportAPI>();
+			IImportAPI importApi = NSubstitute.Substitute.For<IExtendedImportAPI>();
 
 			_config.WebApiPath
 				.Returns(webServiceUrl);

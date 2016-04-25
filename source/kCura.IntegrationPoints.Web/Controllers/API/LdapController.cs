@@ -39,11 +39,11 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				Newtonsoft.Json.JsonConvert.DeserializeObject<LDAPSettings>(message);
 				decryptedText = message;
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				//already taken care of so we can just decrypt
 				try { message = Newtonsoft.Json.JsonConvert.DeserializeObject<string>(message); }
-				catch (Exception strException) {/*just a regular string so we pass and decrypt it.*/ }
+				catch (Exception) {/*just a regular string so we pass and decrypt it.*/ }
 				decryptedText = _manager.Decrypt(message);
 			}
 			return decryptedText;
