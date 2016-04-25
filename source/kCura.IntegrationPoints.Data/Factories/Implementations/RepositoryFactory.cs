@@ -17,15 +17,15 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		private readonly IHelper _helper;
 		private IDictionary<int, ContextContainer> ContextCache { get; }
 
-		public RepositoryFactory(IHelper _helper)
+		public RepositoryFactory(IHelper helper)
 		{
-			this._helper = _helper;
+			_helper = helper;
 			ContextCache = new Dictionary<int, ContextContainer>();
 		}
 
 		public IObjectTypeRepository GetObjectTypeRepository(int workspaceArtifactId)
 		{
-			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
+			IRSAPIClient rsapiClient = GetRsapiClientForWorkspace(workspaceArtifactId);
 			IObjectTypeRepository repository = new RsapiObjectTypeRepository(rsapiClient);
 
 			return repository;
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ISourceWorkspaceRepository GetSourceWorkspaceRepository(int workspaceArtifactId)
 		{
-			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
+			IRSAPIClient rsapiClient = GetRsapiClientForWorkspace(workspaceArtifactId);
 			ISourceWorkspaceRepository repository = new RsapiSourceWorkspaceRepository(rsapiClient);
 
 			return repository;
@@ -41,7 +41,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId)
 		{
-			BaseContext baseContext = this.GetBaseContextForWorkspace(workspaceArtifactId);
+			BaseContext baseContext = GetBaseContextForWorkspace(workspaceArtifactId);
 			IArtifactGuidRepository artifactGuidRepository = new SqlArtifactGuidRepository(baseContext);
 
 			return artifactGuidRepository;
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ISourceWorkspaceJobHistoryRepository GetSourceWorkspaceJobHistoryRepository(int workspaceArtifactId)
 		{
-			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
+			IRSAPIClient rsapiClient = GetRsapiClientForWorkspace(workspaceArtifactId);
 			ISourceWorkspaceJobHistoryRepository repository = new SourceWorkspaceJobHistoryRepository(rsapiClient);
 
 			return repository;
@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)
 		{
-			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
+			IRSAPIClient rsapiClient = GetRsapiClientForWorkspace(workspaceArtifactId);
 			ISourceJobRepository repository = new SourceJobRepository(rsapiClient);
 
 			return repository;
@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IWorkspaceRepository GetWorkspaceRepository()
 		{
-			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(-1);
+			IRSAPIClient rsapiClient = GetRsapiClientForWorkspace(-1);
 			IWorkspaceRepository repository = new RsapiWorkspaceRepository(rsapiClient);
 
 			return repository;
@@ -73,8 +73,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IDestinationWorkspaceRepository GetDestinationWorkspaceRepository(int sourceWorkspaceArtifactId, int targetWorkspaceArtifactId)
 		{
-			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(sourceWorkspaceArtifactId);
-			IWorkspaceRepository workspaceRepository = this.GetWorkspaceRepository();
+			IRSAPIClient rsapiClient = GetRsapiClientForWorkspace(sourceWorkspaceArtifactId);
+			IWorkspaceRepository workspaceRepository = GetWorkspaceRepository();
 			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(rsapiClient, workspaceRepository, targetWorkspaceArtifactId);
 
 			return destinationWorkspaceRepository;
@@ -89,9 +89,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IFieldRepository GetFieldRepository(int workspaceArtifactId)
 		{
-			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
-			BaseServiceContext baseServiceContext = this.GetBaseServiceContextForWorkspace(workspaceArtifactId);
-			BaseContext baseContext = this.GetBaseContextForWorkspace(workspaceArtifactId);
+			IRSAPIClient rsapiClient = GetRsapiClientForWorkspace(workspaceArtifactId);
+			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
+			BaseContext baseContext = GetBaseContextForWorkspace(workspaceArtifactId);
 			IObjectQueryManager objectQueryManager = _helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser);
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(objectQueryManager, workspaceArtifactId, (int)ArtifactType.Field);
 
@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public ITabRepository GetTabRepository(int workspaceArtifactId)
 		{
-			IRSAPIClient rsapiClient = this.GetRsapiClientForWorkspace(workspaceArtifactId);
+			IRSAPIClient rsapiClient = GetRsapiClientForWorkspace(workspaceArtifactId);
 			ITabRepository tabRepository = new RsapiTabRepository(rsapiClient);
 
 			return tabRepository;
@@ -120,25 +120,25 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		private IRSAPIClient GetRsapiClientForWorkspace(int workspaceArtifactId)
 		{
-			ContextContainer contexts = this.GetContextsForWorkspace(workspaceArtifactId);
+			ContextContainer contexts = GetContextsForWorkspace(workspaceArtifactId);
 			return contexts.RsapiClient;
 		}
 
 		private BaseContext GetBaseContextForWorkspace(int workspaceArtifactId)
 		{
-			ContextContainer contexts = this.GetContextsForWorkspace(workspaceArtifactId);
+			ContextContainer contexts = GetContextsForWorkspace(workspaceArtifactId);
 			return contexts.BaseContext;
 		}
 
 		private BaseServiceContext GetBaseServiceContextForWorkspace(int workspaceArtifactId)
 		{
-			ContextContainer contexts = this.GetContextsForWorkspace(workspaceArtifactId);
+			ContextContainer contexts = GetContextsForWorkspace(workspaceArtifactId);
 			return contexts.BaseServiceContext;
 		}
 
 		private ContextContainer GetContextsForWorkspace(int workspaceArtifactId)
 		{
-			ContextContainer contexts = null;
+			ContextContainer contexts;
 			if (!ContextCache.TryGetValue(workspaceArtifactId, out contexts))
 			{
 				IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser); // TODO: verify that this what we want or use param
