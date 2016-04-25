@@ -45,6 +45,14 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		int? RetrieveArtifactViewFieldId(int fieldArtifactId);
 
 		/// <summary>
+		/// Retrieves the identifier field. NOTE : the returns ArtifactDTO contains name and 'is identifier' fields
+		/// </summary>
+		/// <param name="rdoTypeId"></param>
+		/// <returns>the ArtifactDTO represents the identifier field of the object</returns>
+		/// <remarks>the returns ArtifactDTO contains name and 'is identifier' fields</remarks>
+		ArtifactDTO RetrieveTheIdentifierField(int rdoTypeId);
+
+		/// <summary>
 		/// Updates the field's filter type
 		/// </summary>
 		/// <param name="artifactViewFieldId">The artifact view field id of the field</param>

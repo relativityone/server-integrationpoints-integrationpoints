@@ -82,5 +82,21 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <param name="workspaceArtifactId">The workspace artifact id</param>
 		/// <returns>A class implementing the IDocumentRepository interface</returns>
 		IDocumentRepository GetDocumentRepository(int workspaceArtifactId);
+
+		/// <summary>
+		/// Returns a class implementing the IDocumentRepository interface
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id</param>
+		/// <returns>A class implementing the ICodeRepository interface</returns>
+		ICodeRepository GetCodeRepository(int workspaceArtifactId);
+
+		/// <summary>
+		/// Returns a class implementing the IDocumentRepository interface
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id</param>
+		/// <param name="rdoArtifactId">The artifact type id of the relativity object</param>
+		/// <returns>A class implementing the ICodeRepository interface</returns>
+		IObjectRepository GetObjectRepository(int workspaceArtifactId, int rdoArtifactId);
+
 	}
 }
