@@ -132,9 +132,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IAgentService agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 
 			IJobService jobService = new JobService(agentService, _helper);
-			IJobManager jobmanager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
+			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
 
-			IntegrationPointService integrationPointService = new IntegrationPointService(caseServiceContext, serializer, choiceQuery, jobmanager);
+			IntegrationPointService integrationPointService = new IntegrationPointService(caseServiceContext, serializer, choiceQuery, jobManager);
 			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 			
 			TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
