@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers.Installers
 {
@@ -12,16 +13,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	{
 		public override kCura.EventHandler.Response Execute()
 		{
+			int workspaceId = base.Helper.GetActiveCaseID();
 			IRepositoryFactory repoFactory = new RepositoryFactory(base.Helper);
-			ITabRepository tabRepository = repoFactory.GetTabRepository(base.Helper.GetActiveCaseID());
+			ITabRepository tabRepository = repoFactory.GetTabRepository(workspaceId);
+			IDBContext workspaceDbContext = base.Helper.GetDBContext(workspaceId);
 
 			kCura.EventHandler.Response retVal = new kCura.EventHandler.Response();
 			retVal.Message = "Succesfully removed Job History Error tab";
 			retVal.Success = true;
-
 			try
 			{
-				RemoveJobHistoryErrorTabIfExists(tabRepository);
+				RemoveJobHistoryErrorTabIfExists(tabRepository, workspaceDbContext);
 			}
 			catch (Exception ex)
 			{
@@ -31,7 +33,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			return retVal;
 		}
 
-		private static void RemoveJobHistoryErrorTabIfExists(ITabRepository tabRepository)
+		private static void RemoveJobHistoryErrorTabIfExists(ITabRepository tabRepository, IDBContext workspaceDbContext)
 		{
 			string jobHistoryTabGuid = "FD585DBF-98EA-427B-8CE5-3E09A053DC14";
 
@@ -40,6 +42,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			{
 				return; //tab did not exist, nothing to remove
 			}
+
+			string unlinkApplicationTabSql = $@"DELETE FROM [ApplicationTab] WHERE [TabArtifactID] = {tabArtifactId}";
+			workspaceDbContext.ExecuteNonQuerySQLStatement(unlinkApplicationTabSql);
 
 			tabRepository.Delete(tabArtifactId.Value);
 		}

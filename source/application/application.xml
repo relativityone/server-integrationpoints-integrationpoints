@@ -557,6 +557,76 @@
       <ColumnName>TotalItems</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1001571</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>ArtifactID</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001573</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>Edit</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001604</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>Error</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001606</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>ErrorType</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001572</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>JobHistory</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001575</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>Name</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001574</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>AccessControlListIsInherited</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001603</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>SourceUniqueID</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001607</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>StackTrace</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001569</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>SystemCreatedBy</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001567</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>SystemCreatedOn</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001570</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>SystemLastModifiedBy</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001568</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>SystemLastModifiedOn</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001605</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>TimestampUTC</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001616</ArtifactViewFieldId>
       <ArtifactTypeId>1000059</ArtifactTypeId>
       <ColumnName>ArtifactID</ColumnName>
@@ -669,7 +739,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-04-21T21:36:36.6646978Z</ExtractionDate>
+  <ExtractionDate>2016-04-25T18:30:49.0700868Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -5528,11 +5598,21 @@
             </LayoutField>
           </LayoutFields>
           <LayoutTexts />
-          <LayoutViews />
+          <LayoutViews>
+            <LayoutView>
+              <ConnectorFieldArtifactId>0</ConnectorFieldArtifactId>
+              <LayoutArtifactId>1038385</LayoutArtifactId>
+              <LinkViewArtifactId>1038381</LinkViewArtifactId>
+              <Order>11</Order>
+              <RenderLinksInPopup>false</RenderLinksInPopup>
+              <ViewArtifactId>1038381</ViewArtifactId>
+              <CategoryID xsi:nil="true" />
+            </LayoutView>
+          </LayoutViews>
           <Name>Job Details</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>2.0.0.37</ApplicationVersion>
+          <ApplicationVersion>2.0.0.39</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Job History</Name>
@@ -6766,7 +6846,61 @@
       </SystemFields>
       <SystemLayouts />
       <SystemViews />
-      <Views />
+      <Views>
+        <View>
+          <ArtifactId>1038381</ArtifactId>
+          <ArtifactTypeId>1000058</ArtifactTypeId>
+          <AvailableInObjectTab>true</AvailableInObjectTab>
+          <Guid>c0f2e9de-74f5-44b1-b3bf-335ac4ed50e0</Guid>
+          <IsRelationalIndexView>false</IsRelationalIndexView>
+          <IsReport>false</IsReport>
+          <IsVisible>true</IsVisible>
+          <IsManualRerun>false</IsManualRerun>
+          <Keywords />
+          <Name>All Job History Errors</Name>
+          <Notes />
+          <Order>1</Order>
+          <QueryHint />
+          <RenderLinks>true</RenderLinks>
+          <Type>Admin Update</Type>
+          <ViewByFamily>0</ViewByFamily>
+          <ViewCriteria />
+          <ViewFields>
+            <ViewField>
+              <ArtifactViewFieldId>1001575</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>0</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001572</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>1</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001604</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>2</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001605</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>3</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001606</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>4</Order>
+            </ViewField>
+          </ViewFields>
+          <ViewOrders />
+          <VisualizationType>0</VisualizationType>
+          <ThreadMethod xsi:nil="true" />
+          <PayloadArtifactViewFieldId xsi:nil="true" />
+          <DisplayArtifactViewFieldId xsi:nil="true" />
+          <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
+          <ApplicationVersion>2.0.0.39</ApplicationVersion>
+        </View>
+      </Views>
       <ApplicationVersion>0.0.0.1</ApplicationVersion>
     </Object>
     <Object>
@@ -7130,7 +7264,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.38</ApplicationVersion>
+          <ApplicationVersion>2.0.0.39</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7182,7 +7316,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.38</ApplicationVersion>
+          <ApplicationVersion>2.0.0.39</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7234,7 +7368,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.38</ApplicationVersion>
+          <ApplicationVersion>2.0.0.39</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7286,7 +7420,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.38</ApplicationVersion>
+          <ApplicationVersion>2.0.0.39</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7338,7 +7472,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.38</ApplicationVersion>
+          <ApplicationVersion>2.0.0.39</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7390,7 +7524,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.38</ApplicationVersion>
+          <ApplicationVersion>2.0.0.39</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -7467,7 +7601,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.3.362.9</RelativityVersion>
-  <Version>2.0.0.38</Version>
+  <Version>2.0.0.39</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>30db7baa-93da-4227-bdb1-e3df9e8edc72</OriginSignature>
   <MasterScripts />
@@ -7497,7 +7631,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.38</ApplicationVersion>
+      <ApplicationVersion>2.0.0.39</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038277</ArtifactId>
@@ -7508,7 +7642,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.38</ApplicationVersion>
+      <ApplicationVersion>2.0.0.39</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038278</ArtifactId>
@@ -7519,7 +7653,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.38</ApplicationVersion>
+      <ApplicationVersion>2.0.0.39</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038279</ArtifactId>
@@ -7530,7 +7664,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.38</ApplicationVersion>
+      <ApplicationVersion>2.0.0.39</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038393</ArtifactId>
@@ -7541,7 +7675,18 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.38</ApplicationVersion>
+      <ApplicationVersion>2.0.0.39</ApplicationVersion>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>1038467</ArtifactId>
+      <AssemblyArtifactId>1018550</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RemoveJobHistoryErrorTab</Name>
+      <Guid>cfcecb5b-166c-4fba-b7a6-9cba816bcc3c</Guid>
+      <Guids>66970c0e-2b22-4c9d-ba98-9ab712a7df4a</Guids>
+      <ExecutionType>10</ExecutionType>
+      <Order>70</Order>
+      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
+      <ApplicationVersion>2.0.0.39</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />
@@ -7559,6 +7704,7 @@
     <Id>1038378</Id>
     <Id>1038379</Id>
     <Id>1038380</Id>
+    <Id>1038381</Id>
     <Id>1038411</Id>
     <Id>1038428</Id>
   </ViewIds>
