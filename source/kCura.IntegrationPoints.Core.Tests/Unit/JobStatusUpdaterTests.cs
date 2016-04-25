@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Core.Services;
+﻿using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Queries;
 using NSubstitute;
@@ -27,7 +22,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			var choice = serviceInTest.GenerateStatus(new JobHistory { ItemsWithErrors = 0 });
 			//ASSERT
 			Assert.IsTrue(choice.Name.Equals(Data.JobStatusChoices.JobHistoryCompleted.Name));
-
 		}
 
 		[Test]
@@ -44,7 +38,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 			//ASSERT
 			Assert.IsTrue(choice.Name.Equals(Data.JobStatusChoices.JobHistoryCompletedWithErrors.Name));
-
 		}
 
 		[Test]
@@ -61,8 +54,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 			//ASSERT
 			Assert.IsTrue(choice.Name.Equals(Data.JobStatusChoices.JobHistoryErrorJobFailed.Name));
-
 		}
-
 	}
 }

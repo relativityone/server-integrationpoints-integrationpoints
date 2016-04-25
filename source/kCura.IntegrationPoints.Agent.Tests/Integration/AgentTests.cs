@@ -1,24 +1,17 @@
-﻿using System;
-using kCura.Relativity.Client;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
-using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
-	public class AgentTests
+	public class AgentTests : IntegrationTestBase
 	{
 		[Test]
 		[Explicit]
 		public void CreateJob()
 		{
 			//work in progress
-			var client = new RSAPIClient(new Uri("net.pipe://localhost/Relativity.Services"), new IntegratedAuthCredentials())
-			{
-				APIOptions = { WorkspaceID = 1018513 }
-			};
 
-			IntegrationPoint ip = new IntegrationPoint();
 			//ip.SourceProvider=
 		}
 	}

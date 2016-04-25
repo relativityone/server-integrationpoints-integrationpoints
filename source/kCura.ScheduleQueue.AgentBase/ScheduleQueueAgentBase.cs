@@ -96,6 +96,7 @@ namespace kCura.ScheduleQueue.AgentBase
 			{
 				OnRaiseAgentLogEntry(20, LogCategory.Warn, string.Format("{0} {1}", ex.Message, ex.StackTrace));
 			}
+
 			if (errorRaised)
 			{
 				OnRaiseAgentLogEntry(10, LogCategory.Info, "Completed with errors.");

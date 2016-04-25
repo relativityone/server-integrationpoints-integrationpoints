@@ -142,6 +142,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			JobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
 			JobHistory jobHistory = jobHistoryService.GetRdo(taskParameters.BatchInstance);
 
+			if (integrationPoint == null || jobHistory == null)
+			{
+				throw new NullReferenceException(
+					$"Unable to retrieve the integration point or job history information for the following job batch: {taskParameters.BatchInstance}");
+			}
+
 			JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext)
 			{
 				IntegrationPoint = integrationPoint,
