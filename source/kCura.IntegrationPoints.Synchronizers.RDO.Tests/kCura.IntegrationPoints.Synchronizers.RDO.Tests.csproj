@@ -132,6 +132,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
     <None Include="Integration\RdoSynchronizerTest.cs" />
     <None Include="packages.config" />
   </ItemGroup>

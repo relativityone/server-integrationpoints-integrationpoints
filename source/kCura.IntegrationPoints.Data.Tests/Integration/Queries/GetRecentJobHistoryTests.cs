@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.Relativity.Client;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Queries
@@ -14,7 +9,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Queries
 	[TestFixture]
 	public class GetRecentJobHistoryTests : IntegrationTestBase
 	{
-
 		public IRSAPIService Service
 		{
 			get
@@ -77,6 +71,5 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Queries
 
 			Assert.IsTrue(result == null);
 		}
-
 	}
 }

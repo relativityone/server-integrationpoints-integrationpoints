@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.Relativity.Client;
-using NSubstitute;
-using NUnit.Framework;
-using Relativity.API;
+﻿using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration
 {
