@@ -1,23 +1,19 @@
-﻿using ArtifactType = kCura.Relativity.Client.ArtifactType;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data.Extensions;
-using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Repositories;
-using Newtonsoft.Json;
-using QueryFieldLookup = Relativity.Core.QueryFieldLookup;
-using Regex = System.Text.RegularExpressions.Regex;
-using Relativity.Core.Authentication;
-using Relativity.Core;
-using Relativity.Data;
-using Relativity;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime;
 using System.Security.Claims;
-using System;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
+using Newtonsoft.Json;
+using Relativity;
+using Relativity.Core;
+using Relativity.Core.Authentication;
+using Relativity.Data;
 using System.Text.RegularExpressions;
-using UserPermissionsMatrix = Relativity.Core.UserPermissionsMatrix;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
@@ -66,14 +62,14 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 			_baseContext = claimsPrincipal.GetServiceContextUnversionShortTerm(_settings.SourceWorkspaceArtifactId);
 
-			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int)ArtifactType.Document);
+			IQueryFieldLookup fieldLookupHelper = new global::Relativity.Core.QueryFieldLookup(_baseContext, (int)Relativity.Client.ArtifactType.Document);
 
 			Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
 			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
 			{
 				int artifactId = Convert.ToInt32(source.FieldIdentifier);
 				ViewFieldInfo fieldInfo = fieldLookupHelper.GetFieldByArtifactID(artifactId);
-				
+
 				fieldsReferences[artifactId] = fieldInfo.AvfId;
 				switch (fieldInfo.FieldType)
 				{
@@ -81,9 +77,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						_multipleObjectFieldArtifactIds.Add(artifactId);
 						IFieldRepository fieldRepository = repositoryFactory.GetFieldRepository(_settings.SourceWorkspaceArtifactId);
 						ArtifactDTO identifierField = fieldRepository.RetrieveTheIdentifierField(fieldInfo.AssociativeArtifactTypeID);
-						string identifierFieldName = (string) identifierField.Fields.First(field => field.Name == "Name").Value;
+						string identifierFieldName = (string)identifierField.Fields.First(field => field.Name == "Name").Value;
 						IObjectRepository objectRepository = repositoryFactory.GetObjectRepository(_settings.SourceWorkspaceArtifactId, fieldInfo.AssociativeArtifactTypeID);
-						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new [] {identifierFieldName}).GetResultsWithoutContextSync();
+						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new[] { identifierFieldName }).GetResultsWithoutContextSync();
 						VerifyValidityOfTheNestedOrMultiValuesField(fieldInfo.DisplayName, objects, Constants.IntegrationPoints.InvalidMultiObjectsValueFormat);
 						break;
 
@@ -113,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_exporter = new global::Relativity.Core.Api.Shared.Manager.Export.SavedSearchExporter
 			(
 					_baseContext,
-					new UserPermissionsMatrix(_baseContext),
+					new global::Relativity.Core.UserPermissionsMatrix(_baseContext),
 					global::Relativity.ArtifactType.Document,
 					IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER,
 					IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER,
@@ -140,7 +136,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			if (exceptions.Count > 0)
 			{
 				string message = $"Invalid '{fieldName}' found." +
-				                 $" Please remove invalid character(s) - {kCura.IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER} or {kCura.IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER}, before proceeding further.";
+								 $" Please remove invalid character(s) - {kCura.IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER} or {kCura.IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER}, before proceeding further.";
 				AggregateException exception = new AggregateException(message, exceptions);
 				throw exception;
 			}
@@ -184,7 +180,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			object[] retrievedData = _exporter.RetrieveResults(_exportJobInfo.RunId, _avfIds, size);
 			if (retrievedData != null)
 			{
-				int artifactType = (int)ArtifactType.Document;
+				int artifactType = (int)Relativity.Client.ArtifactType.Document;
 				foreach (object data in retrievedData)
 				{
 					ArtifactFieldDTO[] fields = new ArtifactFieldDTO[_avfIds.Length];
