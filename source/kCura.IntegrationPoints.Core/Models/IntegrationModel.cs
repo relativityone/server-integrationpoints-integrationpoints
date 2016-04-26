@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Core.Models
 		public string SourceConfiguration { get; set; }
 		public string Map { get; set; }
 		public bool LogErrors { get; set; }
-		public bool HasErrors { get; set; }
+		public bool? HasErrors { get; set; }
 		public string NotificationEmails { get; set; }
 
 		public IntegrationModel()

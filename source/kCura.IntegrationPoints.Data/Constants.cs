@@ -4,6 +4,7 @@ namespace kCura.IntegrationPoints.Data
 {
 	public static class GlobalConst
 	{
+		public const string APPLICATION_GUID = "DCF6E9D1-22B6-4DA3-98F6-41381E93C30C";
 		public const string RELATIVITY_INTEGRATION_POINTS_AGENT_GUID = "08C0CE2D-8191-4E8F-B037-899CEAEE493D";
 		public const string Custodian = @"d216472d-a1aa-4965-8b36-367d43d4e64c";
 	}
@@ -25,9 +26,9 @@ namespace kCura.IntegrationPoints.Data
 	public class Constants
 	{
 		public const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
-		public const string TEMPORARY_DOC_TABLE_DEST_WS = "TempRIPDocTable_DW";
-		public const string TEMPORARY_DOC_TABLE_JOB_HIST = "TempRIPDocTable_JH";
-		public const string TEMPORARY_DOC_TABLE_SOURCEWORKSPACE = "TempRIPDocTable_SourceWorkspace";
+		public const string TEMPORARY_DOC_TABLE_DEST_WS = "IntegrationPoint_Relativity_DW";
+		public const string TEMPORARY_DOC_TABLE_JOB_HIST = "IntegrationPoint_Relativity_JH";
+		public const string TEMPORARY_DOC_TABLE_SOURCEWORKSPACE = "IntegrationPoint_Relativity_SourceWorkspace";
 		public static Guid RELATIVITY_SOURCEPROVIDER_GUID = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
 	}
 

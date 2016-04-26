@@ -1,18 +1,22 @@
-﻿using System;
+﻿using ArtifactType = kCura.Relativity.Client.ArtifactType;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
+using Newtonsoft.Json;
+using QueryFieldLookup = Relativity.Core.QueryFieldLookup;
+using Regex = System.Text.RegularExpressions.Regex;
+using Relativity.Core.Authentication;
+using Relativity.Core;
+using Relativity.Data;
+using Relativity;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime;
 using System.Security.Claims;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data.Repositories;
-using Newtonsoft.Json;
-using Relativity;
-using Relativity.Core;
-using Relativity.Core.Authentication;
-using Relativity.Data;
-using ArtifactType = kCura.Relativity.Client.ArtifactType;
-using QueryFieldLookup = Relativity.Core.QueryFieldLookup;
+using System;
+using System.Text.RegularExpressions;
 using UserPermissionsMatrix = Relativity.Core.UserPermissionsMatrix;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
@@ -49,6 +53,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		}
 
 		public RelativityExporterService(
+			IRepositoryFactory repositoryFactory,
 			ClaimsPrincipal claimsPrincipal,
 			FieldMap[] mappedFields,
 			int startAt,
@@ -62,24 +67,39 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_baseContext = claimsPrincipal.GetServiceContextUnversionShortTerm(_settings.SourceWorkspaceArtifactId);
 
 			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int)ArtifactType.Document);
+
 			Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
 			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
 			{
 				int artifactId = Convert.ToInt32(source.FieldIdentifier);
 				ViewFieldInfo fieldInfo = fieldLookupHelper.GetFieldByArtifactID(artifactId);
-
+				
 				fieldsReferences[artifactId] = fieldInfo.AvfId;
-				if (fieldInfo.FieldType == FieldTypeHelper.FieldType.Objects)
+				switch (fieldInfo.FieldType)
 				{
-					_multipleObjectFieldArtifactIds.Add(artifactId);
-				}
-				else if (fieldInfo.FieldType == FieldTypeHelper.FieldType.Code)
-				{
-					_singleChoiceFieldsArtifactIds.Add(artifactId);
-				}
-				else if (fieldInfo.FieldType == FieldTypeHelper.FieldType.Text)
-				{
-					_longTextFieldArtifactIds.Add(artifactId);
+					case FieldTypeHelper.FieldType.Objects:
+						_multipleObjectFieldArtifactIds.Add(artifactId);
+						IFieldRepository fieldRepository = repositoryFactory.GetFieldRepository(_settings.SourceWorkspaceArtifactId);
+						ArtifactDTO identifierField = fieldRepository.RetrieveTheIdentifierField(fieldInfo.AssociativeArtifactTypeID);
+						string identifierFieldName = (string) identifierField.Fields.First(field => field.Name == "Name").Value;
+						IObjectRepository objectRepository = repositoryFactory.GetObjectRepository(_settings.SourceWorkspaceArtifactId, fieldInfo.AssociativeArtifactTypeID);
+						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new [] {identifierFieldName}).GetResultsWithoutContextSync();
+						VerifyValidityOfTheNestedOrMultiValuesField(fieldInfo.DisplayName, objects, Constants.IntegrationPoints.InvalidMultiObjectsValueFormat);
+						break;
+
+					case FieldTypeHelper.FieldType.Code:
+						_singleChoiceFieldsArtifactIds.Add(artifactId);
+						break;
+
+					case FieldTypeHelper.FieldType.Text:
+						_longTextFieldArtifactIds.Add(artifactId);
+						break;
+
+					case FieldTypeHelper.FieldType.MultiCode:
+						ICodeRepository codeRepository = repositoryFactory.GetCodeRepository(_settings.SourceWorkspaceArtifactId);
+						ArtifactDTO[] codes = codeRepository.RetrieveCodeAsync(fieldInfo.DisplayName).GetResultsWithoutContextSync();
+						VerifyValidityOfTheNestedOrMultiValuesField(fieldInfo.DisplayName, codes, Constants.IntegrationPoints.InvalidMultiChoicesValueFormat);
+						break;
 				}
 
 				if (fieldInfo.EnableDataGrid && _dataGridContext == null)
@@ -101,6 +121,29 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			);
 			_exportJobInfo = _exporter.InitializeExport(_settings.SavedSearchArtifactId, _avfIds, startAt);
 			_retrievedDataCount = 0;
+		}
+
+		private void VerifyValidityOfTheNestedOrMultiValuesField(string fieldName, ArtifactDTO[] dtos, Regex invalidPattern)
+		{
+			List<Exception> exceptions = new List<Exception>(dtos.Length);
+			for (int index = 0; index < dtos.Length; index++)
+			{
+				ArtifactDTO dto = dtos[index];
+				string name = (string)dto.Fields[0].Value;
+				if (invalidPattern.IsMatch(name))
+				{
+					Exception exception = new Exception($"Invalid '{fieldName}' : {name}");
+					exceptions.Add(exception);
+				}
+			}
+
+			if (exceptions.Count > 0)
+			{
+				string message = $"Invalid '{fieldName}' found." +
+				                 $" Please remove invalid character(s) - {kCura.IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER} or {kCura.IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER}, before proceeding further.";
+				AggregateException exception = new AggregateException(message, exceptions);
+				throw exception;
+			}
 		}
 
 		private RelativityExporterService()

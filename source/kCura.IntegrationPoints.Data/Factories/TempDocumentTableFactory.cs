@@ -1,6 +1,4 @@
-﻿using kCura.IntegrationPoints.Contracts.RDO;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
+﻿using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Factories
