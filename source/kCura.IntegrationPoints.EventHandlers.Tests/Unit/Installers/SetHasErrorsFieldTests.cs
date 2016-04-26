@@ -74,8 +74,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.Installers
 		public void UpdateIntegrationPointHasErrorsField_HasJobHistories_PendingOrProcessingJobs_HasErrorsFalse_Test()
 		{
 			// Arrange
-			var pendingJob = new JobHistory { ArtifactId = 2, Status = JobStatusChoices.JobHistoryPending, EndTimeUTC = DateTime.MinValue };
-			var processingJob = new JobHistory { ArtifactId = 3, Status = JobStatusChoices.JobHistoryProcessing, EndTimeUTC = DateTime.MinValue };
+			var pendingJob = new JobHistory { ArtifactId = 2, Status = JobStatusChoices.JobHistoryPending, EndTimeUTC = null };
+			var processingJob = new JobHistory { ArtifactId = 3, Status = JobStatusChoices.JobHistoryProcessing, EndTimeUTC = null };
 			var jobHistories = new[] { pendingJob, processingJob };
 
 			UpdateIntegrationPointHasErrorsField_HasJobHistories_TestsHelper(jobHistories, false);
@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.Installers
 		{
 			// Arrange
 			var erroredJob = new JobHistory { ArtifactId = 2, Status = JobStatusChoices.JobHistoryErrorJobFailed, EndTimeUTC = DateTime.MinValue };
-			var completedJob = new JobHistory { ArtifactId = 3, Status = JobStatusChoices.JobHistoryProcessing, EndTimeUTC = DateTime.MaxValue };
+			var completedJob = new JobHistory { ArtifactId = 3, Status = JobStatusChoices.JobHistoryProcessing, EndTimeUTC = null };
 			var jobHistories = new[] { erroredJob, completedJob };
 
 			UpdateIntegrationPointHasErrorsField_HasJobHistories_TestsHelper(jobHistories, true);
@@ -139,7 +139,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.Installers
 		{
 			// Arrange
 			var erroredJob = new JobHistory { ArtifactId = 2, Status = JobStatusChoices.JobHistoryCompletedWithErrors, EndTimeUTC = DateTime.MinValue };
-			var completedJob = new JobHistory { ArtifactId = 3, Status = JobStatusChoices.JobHistoryPending, EndTimeUTC = DateTime.MaxValue };
+			var completedJob = new JobHistory { ArtifactId = 3, Status = JobStatusChoices.JobHistoryPending, EndTimeUTC = null };
 			var jobHistories = new[] { erroredJob, completedJob };
 
 			UpdateIntegrationPointHasErrorsField_HasJobHistories_TestsHelper(jobHistories, true);
@@ -149,7 +149,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.Installers
 		public void ExecuteInstanced_UpdateSuccessful_Test()
 		{
 			// Arrange
-			var completedJob = new JobHistory { ArtifactId = 3, Status = JobStatusChoices.JobHistoryPending, EndTimeUTC = DateTime.MaxValue };
+			var completedJob = new JobHistory { ArtifactId = 3, Status = JobStatusChoices.JobHistoryPending, EndTimeUTC = null };
 			var jobHistories = new[] { completedJob };
 			Data.IntegrationPoint integrationPoint = CreateIntegrationPoint(jobHistories.Select(x => x.ArtifactId).ToArray());
 			IList<Data.IntegrationPoint> integrationPoints = new[] { integrationPoint };

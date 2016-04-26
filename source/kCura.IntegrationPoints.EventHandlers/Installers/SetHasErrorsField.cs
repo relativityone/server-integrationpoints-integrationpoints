@@ -104,8 +104,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				IList<JobHistory> jobHistories = _jobHistoryService.GetJobHistory(integrationPoint.JobHistory);
 
 				JobHistory lastCompletedJob = jobHistories?
-					.Where(jobHistory => jobHistory.Status.Name != JobStatusChoices.JobHistoryPending.Name &&
-						jobHistory.Status.Name != JobStatusChoices.JobHistoryProcessing.Name)
+					.Where(jobHistory => jobHistory.EndTimeUTC != null)
 					.OrderByDescending(jobHistory => jobHistory.EndTimeUTC)
 					.FirstOrDefault();
 
