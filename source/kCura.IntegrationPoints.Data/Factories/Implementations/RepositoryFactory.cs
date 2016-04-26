@@ -92,11 +92,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IRSAPIClient rsapiClient = GetRsapiClientForWorkspace(workspaceArtifactId);
 			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
 			BaseContext baseContext = GetBaseContextForWorkspace(workspaceArtifactId);
-			IObjectQueryManager objectQueryManager = _helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser);
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(objectQueryManager, workspaceArtifactId, (int)ArtifactType.Field);
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Field);
 
 			IFieldRepository fieldRepository = new FieldRepository(objectQueryManagerAdaptor, baseServiceContext, baseContext, rsapiClient);
-
 			return fieldRepository;
 		}
 
@@ -110,12 +108,36 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IDocumentRepository GetDocumentRepository(int workspaceArtifactId)
 		{
-			IObjectQueryManager objectQueryManager = _helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser);
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(objectQueryManager, workspaceArtifactId, (int)ArtifactType.Document);
-
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Document);
 			IDocumentRepository documentRepository = new KeplerDocumentRepository(objectQueryManagerAdaptor);
-
 			return documentRepository;
+		}
+
+		public ICodeRepository GetCodeRepository(int workspaceArtifactId)
+		{
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Code);
+			ICodeRepository repository = new KeplerCodeRepository(objectQueryManagerAdaptor);
+			return repository;
+		}
+
+		public IObjectRepository GetObjectRepository(int workspaceArtifactId, int rdoArtifactId)
+		{
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, rdoArtifactId);
+			IObjectRepository repository = new KelperObjectRepository(objectQueryManagerAdaptor, rdoArtifactId);
+			return repository;
+		}
+
+		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
+		{
+			IObjectQueryManagerAdaptor adaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, (int)artifactType);
+			return adaptor;
+		}
+
+		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, int artifactType)
+		{
+			IObjectQueryManager objectQueryManager = _helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser);
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(objectQueryManager, workspaceArtifactId, artifactType);
+			return objectQueryManagerAdaptor;
 		}
 
 		public IIntegrationPointRepository GetIntegrationPointRepository(int workspaceArtifactId)

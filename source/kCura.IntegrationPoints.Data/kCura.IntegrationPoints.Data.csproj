@@ -123,6 +123,8 @@
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="Contexts\IOnBehalfOfUserClaimsPrincipleFactory.cs" />
     <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipleFactory.cs" />
+    <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
+    <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
     <Compile Include="Commands\MassEdit\IMassEditCommand.cs" />
     <Compile Include="Commands\MassEdit\RelativityMassEditBase.cs" />
@@ -133,6 +135,10 @@
     <Compile Include="Factories\TempDocumentTableFactory.cs" />
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
+    <Compile Include="Repositories\ICodeRepository.cs" />
+    <Compile Include="Repositories\IObjectRepository.cs" />
+    <Compile Include="Repositories\Implementations\KelperObjectRepository.cs" />
+    <Compile Include="Repositories\Implementations\KeplerCodeRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiObjectTypeRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiTabRepository.cs" />
     <Compile Include="Repositories\Implementations\SqlArtifactGuidRepository.cs" />
@@ -158,6 +164,7 @@
     <Compile Include="Repositories\ISourceWorkspaceJobHistoryRepository.cs" />
     <Compile Include="Repositories\ISourceJobRepository.cs" />
     <Compile Include="Repositories\ITabRepository.cs" />
+    <Compile Include="Repositories\KelperServiceBase.cs" />
     <Compile Include="TempDocTableHelper.cs" />
     <Compile Include="Repositories\IObjectTypeRepository.cs" />
     <Compile Include="Repositories\ISavedSearchRepository.cs" />

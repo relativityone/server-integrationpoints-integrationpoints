@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.Relativity.Client;
 using Relativity.Core;
 using Relativity.Core.Service;
@@ -123,6 +124,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			return artifactViewFieldId;
+		}
+
+		public ArtifactDTO RetrieveTheIdentifierField(int rdoTypeId)
+		{
+			HashSet<string> fieldsToRetrieveWhenQueryFields = new HashSet<string>() { "Name", "Is Identifier" };
+			ArtifactDTO[] fieldsDtos = RetrieveFieldsAsync(rdoTypeId, fieldsToRetrieveWhenQueryFields).GetResultsWithoutContextSync();
+			ArtifactDTO identifierField = fieldsDtos.First(field => Convert.ToBoolean(field.Fields[1].Value));
+			return identifierField;
 		}
 
 		public void UpdateFilterType(int artifactViewFieldId, string filterType)
