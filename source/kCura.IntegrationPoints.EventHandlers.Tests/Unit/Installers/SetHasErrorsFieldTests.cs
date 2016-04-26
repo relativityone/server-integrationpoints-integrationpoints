@@ -184,7 +184,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.Installers
 
 			// Assert
 			Assert.IsFalse(response.Success);
-			Assert.AreEqual("Update failed. Exception message: Query failed.", response.Message);
+			Assert.AreEqual("Updating the Has Errors field on the Integration Point object failed. Exception message: Query failed.", response.Message);
 
 			_integrationPointService.Received(1).GetAllIntegrationPoints();
 			_jobHistoryService.Received(0).GetJobHistory(null);

@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			}
 			catch (Exception e)
 			{
-				response.Message = $"Update failed. Exception message: {e.Message}.";
+				response.Message = $"Updating the Has Errors field on the Integration Point object failed. Exception message: {e.Message}.";
 				response.Exception = e;
 				response.Success = false;
 			}
