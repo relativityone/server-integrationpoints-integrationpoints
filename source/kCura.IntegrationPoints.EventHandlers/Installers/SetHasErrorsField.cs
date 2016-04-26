@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			return ExecuteInstanced();
 		}
 
-		private Response ExecuteInstanced()
+		internal Response ExecuteInstanced()
 		{
 			var response = new Response
 			{
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			_jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
 		}
 
-		private void UpdateIntegrationPointHasErrorsField(Data.IntegrationPoint integrationPoint)
+		internal void UpdateIntegrationPointHasErrorsField(Data.IntegrationPoint integrationPoint)
 		{
 			integrationPoint.HasErrors = false;
 
@@ -104,11 +104,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				IList<JobHistory> jobHistories = _jobHistoryService.GetJobHistory(integrationPoint.JobHistory);
 
 				JobHistory lastCompletedJob = jobHistories?
-					.Where(jobHistory => jobHistory.Status != JobStatusChoices.JobHistoryPending && jobHistory.Status != JobStatusChoices.JobHistoryProcessing)
+					.Where(jobHistory => jobHistory.Status.Name != JobStatusChoices.JobHistoryPending.Name &&
+						jobHistory.Status.Name != JobStatusChoices.JobHistoryProcessing.Name)
 					.OrderByDescending(jobHistory => jobHistory.EndTimeUTC)
 					.FirstOrDefault();
 
-				if (lastCompletedJob?.Status != JobStatusChoices.JobHistoryCompleted)
+				if (lastCompletedJob != null && lastCompletedJob.Status.Name != JobStatusChoices.JobHistoryCompleted.Name)
 				{
 					integrationPoint.HasErrors = true;
 				}
@@ -118,7 +119,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			_integrationPointService.SaveIntegration(integrationModel);
 		}
 
-		private IList<Data.IntegrationPoint> GetIntegrationPoints()
+		internal IList<Data.IntegrationPoint> GetIntegrationPoints()
 		{
 			IList<Data.IntegrationPoint> integrationPoints = _integrationPointService.GetAllIntegrationPoints();
 			return integrationPoints;

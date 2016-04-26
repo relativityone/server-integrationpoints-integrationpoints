@@ -92,6 +92,7 @@
     <Compile Include="Integration\Installers\RegisterDocumentTransferProviderTests.cs" />
     <Compile Include="Integration\Installers\SourceProvidersMigrationEventHandlerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\Installers\SetHasErrorsFieldTests.cs" />
     <Compile Include="Unit\IntegrationPoints\ConsoleEventHandlerTests.cs" />
     <Compile Include="Unit\PageInteractionHelperTests.cs" />
   </ItemGroup>

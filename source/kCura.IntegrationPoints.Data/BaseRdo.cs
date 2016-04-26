@@ -66,6 +66,10 @@ namespace kCura.IntegrationPoints.Data
 					{
 						return ((FieldValueList<Artifact>)value).Select(x => x.ArtifactID).ToArray();
 					}
+					if (value is FieldValueList<RDO>)
+					{
+						return ((FieldValueList<RDO>) value).Select(x => x.ArtifactID).ToArray();
+					}
 					return new int[]{};
 				case FieldTypes.SingleObject:
 					var a = value as Artifact;
