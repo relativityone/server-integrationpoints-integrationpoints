@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			if (exceptions.Count > 0)
 			{
 				string message = $"Invalid '{fieldName}' found." +
-				                 $" Please remove invalid character(s) - {kCura.IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER} or {kCura.IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER}, before proceed further.";
+				                 $" Please remove invalid character(s) - {kCura.IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER} or {kCura.IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER}, before proceeding further.";
 				AggregateException exception = new AggregateException(message, exceptions);
 				throw exception;
 			}
