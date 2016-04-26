@@ -201,7 +201,7 @@
     <Compile Include="Migrations\UpdateJobErrorsBlankToNo.cs" />
     <Compile Include="Models\ApplicationBinary.cs" />
     <Compile Include="PermissionService.cs" />
-    <Compile Include="Queries\JobResoureTracker.cs" />
+    <Compile Include="Queries\JobResourceTracker.cs" />
     <Compile Include="Queries\GetJobCustodianManagerLinks.cs" />
     <Compile Include="Queries\CreateCustodianManagerResourceTable.cs" />
     <Compile Include="Queries\GetApplicationBinaries.cs" />

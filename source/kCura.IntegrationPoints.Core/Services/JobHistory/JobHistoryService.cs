@@ -38,11 +38,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			return jobHistory;
 		}
 
-		public IList<Data.JobHistory> GetJobHistory(IList<int> jobHistoryArtifactids)
+		public IList<Data.JobHistory> GetJobHistory(IList<int> jobHistoryArtifactIds)
 		{
 			var condition = new WholeNumberCondition("ArtifactID", NumericConditionEnum.In)
 			{
-				Value = jobHistoryArtifactids.ToList()
+				Value = jobHistoryArtifactIds.ToList()
 			};
 
 			var query = new Query<RDO>

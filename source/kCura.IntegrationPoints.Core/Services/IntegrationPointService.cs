@@ -59,8 +59,9 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public IntegrationModel ReadIntegrationPoint(int artifactId)
 		{
-			var point = GetRdo(artifactId);
-			return new IntegrationModel(point);
+			IntegrationPoint integrationPoint = GetRdo(artifactId);
+			var integrationModel = new IntegrationModel(integrationPoint);
+			return integrationModel;
 		}
 
 		public IEnumerable<FieldMap> GetFieldMap(int artifactId)
@@ -80,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Services
 							.FieldMappings;
 				}
 
-				if (!string.IsNullOrEmpty(fieldmap))
+				if (!String.IsNullOrEmpty(fieldmap))
 				{
 					mapping = _serializer.Deserialize<IEnumerable<FieldMap>>(fieldmap);
 				}

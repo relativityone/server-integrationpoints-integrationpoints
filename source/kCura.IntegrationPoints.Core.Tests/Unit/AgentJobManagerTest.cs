@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		private IJobService _jobService;
 		private ISerializer _serializer;
 		private JobTracker _jobTracker;
-		private JobResoureTracker _jobResource;
+		private JobResourceTracker _jobResource;
 		private IWorkspaceDBContext _workspaceDbContext;
 		private int _workspaceId;
 		private int _integrationPointId;
@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			_jobService = Substitute.For<IJobService>();
 			_serializer = NSubstitute.Substitute.For<ISerializer>();
 			_workspaceDbContext = NSubstitute.Substitute.For<IWorkspaceDBContext>();
-			_jobResource = new JobResoureTracker(_workspaceDbContext);
+			_jobResource = new JobResourceTracker(_workspaceDbContext);
 			_jobTracker = new JobTracker(_jobResource);
 			_manager = new AgentJobManager(_context, _jobService, _serializer, _jobTracker);
 		}

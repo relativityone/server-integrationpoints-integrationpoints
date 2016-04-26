@@ -86,8 +86,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IJobService jobService = new JobService(agentService, Helper);
 			IDBContext dbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
 			IWorkspaceDBContext workspaceDbContext = new WorkspaceContext(dbContext);
-			JobResoureTracker jobResoureTracker = new JobResoureTracker(workspaceDbContext);
-			JobTracker jobTracker = new JobTracker(jobResoureTracker);
+			JobResourceTracker jobResourceTracker = new JobResourceTracker(workspaceDbContext);
+			JobTracker jobTracker = new JobTracker(jobResourceTracker);
 			ISerializer serializer = new JSONSerializer();
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
 
