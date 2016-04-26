@@ -1,20 +1,16 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
-using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class KelperObjectRepository : IObjectRepository
+	public class KelperObjectRepository : KelperServiceBase, IObjectRepository
 	{
-		private readonly IObjectQueryManagerAdaptor _objectQueryManagerAdaptor;
-
 		public KelperObjectRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor, int objectTypeId)
+			: base(objectQueryManagerAdaptor)
 		{
-			_objectQueryManagerAdaptor = objectQueryManagerAdaptor;
-			_objectQueryManagerAdaptor.ArtifactTypeId = objectTypeId;
+			ObjectQueryManagerAdaptor.ArtifactTypeId = objectTypeId;
 		}
 
 		public async Task<ArtifactDTO[]> GetFieldsFromObjects(string[] fields)
@@ -29,9 +25,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				TruncateTextFields = false
 			};
 
-			ObjectQueryResultSet resultSet = await _objectQueryManagerAdaptor.RetrieveAsync(query, String.Empty);
-			ArtifactDTO[] results = resultSet.GetResultsAsArtifactDto();
-			return results;
+			return await RetrieveAllArtifactsAsync(query);
 		}
 	}
 }
