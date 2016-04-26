@@ -115,7 +115,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 					if (exporter.TotalRecordsFound > 0)
 					{
-						IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IScratchTableRepository>().ToArray();
+						IScratchTableRepository[] scratchTables = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
+							.Select(observer => observer.ScratchTableRepository).ToArray();
+
 						IDataReader dataReader = exporter.GetDataReader(scratchTables);
 
 						string newImportApiSettings = GetImportApiSettingsWithOnBehalfUserInformation(job, destinationConfig);
@@ -141,8 +143,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
 
-			IScratchTableRepository[] scratchTableToMonitorItemLevelError = _exportServiceJobObservers.OfType<IScratchTableRepository>()
-				.Where(scratchTable => scratchTable.IgnoreErrorDocuments == false).ToArray();
+			IScratchTableRepository[] scratchTableToMonitorItemLevelError = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
+				.Where(observer => observer.ScratchTableRepository.IgnoreErrorDocuments == false)
+				.Select(observer => observer.ScratchTableRepository).ToArray();
 
 			_exportJobErrorService = new ExportJobErrorService(scratchTableToMonitorItemLevelError);
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
