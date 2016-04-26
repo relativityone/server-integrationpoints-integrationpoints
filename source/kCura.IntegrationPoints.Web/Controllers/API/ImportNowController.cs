@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private const string _INTEGRATIONPOINT_ARTIFACT_ID_GUID = "A992C6FD-B6C2-4B97-AAFB-2CFB3F666F62";
 		private const string _SOURCEPROVIDER_ARTIFACT_ID_GUID = "4A091F69-D750-441C-A4F0-24C990D208AE";
 
-		private const string RELATIVITY_USERID = "rel_uai";
+		private const string _RELATIVITY_USERID = "rel_uai";
 		internal const string NO_PERMISSION_TO_IMPORT = "You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.";
 		internal const string NO_USERID = "Unable to determine the user id. Please contact your system administrator.";
 
@@ -107,7 +107,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				
 				_rdoDependenciesAdaptor.Initialize(relatedObjectArtifactId, batchInstance);
 
-				int userId = GetUserIdIfExist();
+				int userId = GetUserIdIfExists();
 				// if relativity provider is selected, we will create an export task
 				if (_rdoDependenciesAdaptor.SourceProviderIdentifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
 				{
@@ -143,14 +143,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return Request.CreateResponse(HttpStatusCode.OK);
 		}
 
-		private int GetUserIdIfExist()
+		private int GetUserIdIfExists()
 		{
 			var user = this.User as ClaimsPrincipal;
 			if (user != null)
 			{
 				foreach (Claim claim in user.Claims)
 				{
-					if (RELATIVITY_USERID.Equals(claim.Type, StringComparison.OrdinalIgnoreCase))
+					if (_RELATIVITY_USERID.Equals(claim.Type, StringComparison.OrdinalIgnoreCase))
 					{
 						return Convert.ToInt32(claim.Value);
 					}

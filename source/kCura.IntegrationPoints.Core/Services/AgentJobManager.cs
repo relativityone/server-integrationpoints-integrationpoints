@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Services
 	
 		public void CreateJobWithTracker<T>(Job parentJob, T jobDetails, TaskType type, string batchId)
 		{
-			var job = this.CreateJobInternal(jobDetails, type, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, _context.UserID, GetRootJobId(parentJob), parentJob.JobId);
+			Job job = this.CreateJobInternal(jobDetails, type, parentJob.WorkspaceID, parentJob.RelatedObjectArtifactID, _context.UserID, GetRootJobId(parentJob), parentJob.JobId);
 			_tracker.CreateTrackingEntry(job, batchId);
 		}
 
