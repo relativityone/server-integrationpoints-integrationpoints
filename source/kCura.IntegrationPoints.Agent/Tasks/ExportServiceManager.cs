@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 						IDataReader dataReader = exporter.GetDataReader(scratchTables);
 
-						string newImportApiSettings = GetImportApiSettingsWithOnBehalfUserInformation(job, destinationConfig);
+						string newImportApiSettings = GetImportApiSettingsForUser(job, destinationConfig);
 						synchronizer.SyncData(dataReader, MappedFields, newImportApiSettings);
 					}
 				}
@@ -304,9 +304,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		private string GetImportApiSettingsWithOnBehalfUserInformation(Job job, string orignialImportApiSettings)
+		private string GetImportApiSettingsForUser(Job job, string originalImportApiSettings)
 		{
-			var importSettings = JsonConvert.DeserializeObject<ImportSettings>(orignialImportApiSettings);
+			var importSettings = JsonConvert.DeserializeObject<ImportSettings>(originalImportApiSettings);
 			importSettings.OnBehalfOfUserId = job.SubmittedBy;
 			string jsonString = JsonConvert.SerializeObject(importSettings);
 			return jsonString;
