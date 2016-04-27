@@ -7,7 +7,6 @@ using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -30,13 +29,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 	{
 		private IIntegrationPointService _integrationPointService;
 		private IJobHistoryService _jobHistoryService;
+		private ICaseServiceContext _caseServiceContext;
 
 		public SetHasErrorsField() { }
 
-		internal SetHasErrorsField(IIntegrationPointService integrationPointService, IJobHistoryService jobHistoryService)
+		internal SetHasErrorsField(IIntegrationPointService integrationPointService, IJobHistoryService jobHistoryService, ICaseServiceContext caseServiceContext)
 		{
 			_integrationPointService = integrationPointService;
 			_jobHistoryService = jobHistoryService;
+			_caseServiceContext = caseServiceContext;
 		}
 
 		public override Response Execute()
@@ -82,7 +83,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IRSAPIClient rsapiClient = rsapiClientFactory.CreateClientForWorkspace(Helper.GetActiveCaseID(), ExecutionIdentity.System);
 			ChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
-			IAgentService agentService = new AgentService(Helper, Guid.Empty);
+			IAgentService agentService = new AgentService(Helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			IJobService jobService = new JobService(agentService, Helper);
 			IDBContext dbContext = Helper.GetDBContext(Helper.GetActiveCaseID());
 			IWorkspaceDBContext workspaceDbContext = new WorkspaceContext(dbContext);
@@ -91,6 +92,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			ISerializer serializer = new JSONSerializer();
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
 
+			_caseServiceContext = caseServiceContext;
 			_integrationPointService = new IntegrationPointService(caseServiceContext, serializer, choiceQuery, jobManager);
 			_jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
 		}
@@ -114,8 +116,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				}
 			}
 
-			var integrationModel = new IntegrationModel(integrationPoint);
-			_integrationPointService.SaveIntegration(integrationModel);
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(integrationPoint);
 		}
 
 		internal IList<Data.IntegrationPoint> GetIntegrationPoints()

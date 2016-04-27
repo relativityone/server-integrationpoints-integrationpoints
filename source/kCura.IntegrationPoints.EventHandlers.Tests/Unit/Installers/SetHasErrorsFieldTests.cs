@@ -5,6 +5,7 @@ using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.EventHandlers.Installers;
 using NSubstitute;
@@ -20,14 +21,16 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.Installers
 		private IJobHistoryService _jobHistoryService;
 
 		private SetHasErrorsField _instance;
+		private ICaseServiceContext _caseServiceContext;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
+			_caseServiceContext = Substitute.For<ICaseServiceContext>();
 
-			_instance = new SetHasErrorsField(_integrationPointService, _jobHistoryService);
+			_instance = new SetHasErrorsField(_integrationPointService, _jobHistoryService, _caseServiceContext);
 		}
 
 		[Test]
@@ -58,15 +61,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.Installers
 			// Arrange
 			Data.IntegrationPoint integrationPoint = CreateIntegrationPoint(jobHistories);
 			integrationPoint.JobHistory = jobHistories;
-			_integrationPointService.SaveIntegration(Arg.Is<IntegrationModel>(x => x.ArtifactID == integrationPoint.ArtifactId)).Returns(1);
 
 			// Act
 			_instance.UpdateIntegrationPointHasErrorsField(integrationPoint);
 
 			// Assert
-			_integrationPointService.Received(1)
-				.SaveIntegration(
-					Arg.Is<IntegrationModel>(x => x.HasErrors == false && x.ArtifactID == integrationPoint.ArtifactId));
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1)
+				.Update(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == false && x.ArtifactId == integrationPoint.ArtifactId));
+			_integrationPointService.Received(0).SaveIntegration(null);
 			_jobHistoryService.Received(0).GetJobHistory(null);
 		}
 
@@ -149,8 +151,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.Installers
 		public void ExecuteInstanced_UpdateSuccessful_Test()
 		{
 			// Arrange
-			var completedJob = new JobHistory { ArtifactId = 3, Status = JobStatusChoices.JobHistoryPending, EndTimeUTC = null };
-			var jobHistories = new[] { completedJob };
+			var pendingJob = new JobHistory { ArtifactId = 3, Status = JobStatusChoices.JobHistoryPending, EndTimeUTC = null };
+			var jobHistories = new[] { pendingJob };
 			Data.IntegrationPoint integrationPoint = CreateIntegrationPoint(jobHistories.Select(x => x.ArtifactId).ToArray());
 			IList<Data.IntegrationPoint> integrationPoints = new[] { integrationPoint };
 
@@ -167,9 +169,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.Installers
 
 			_integrationPointService.Received(1).GetAllIntegrationPoints();
 			_jobHistoryService.Received(1).GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory)));
-			_integrationPointService.Received(1)
-				.SaveIntegration(
-					Arg.Is<IntegrationModel>(x => x.HasErrors == false && x.ArtifactID == integrationPoint.ArtifactId));
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1)
+				.Update(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == false && x.ArtifactId == integrationPoint.ArtifactId));
 		}
 
 		[Test]
@@ -197,16 +198,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.Installers
 			Data.IntegrationPoint integrationPoint = CreateIntegrationPoint(jobHistories.Select(x => x.ArtifactId).ToArray());
 
 			_jobHistoryService.GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory))).Returns(jobHistories);
-			_integrationPointService.SaveIntegration(Arg.Is<IntegrationModel>(x => x.ArtifactID == integrationPoint.ArtifactId)).Returns(1);
 
 			// Act
 			_instance.UpdateIntegrationPointHasErrorsField(integrationPoint);
 
 			// Assert
 			_jobHistoryService.Received(1).GetJobHistory(Arg.Is<int[]>(x => CompareLists(x, integrationPoint.JobHistory)));
-			_integrationPointService.Received(1)
-				.SaveIntegration(
-					Arg.Is<IntegrationModel>(x => x.HasErrors == hasErrorsExpectation && x.ArtifactID == integrationPoint.ArtifactId));
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Received(1)
+				.Update(Arg.Is<Data.IntegrationPoint>(x => x.HasErrors.Value == hasErrorsExpectation && x.ArtifactId == integrationPoint.ArtifactId));
+			_integrationPointService.Received(0).SaveIntegration(null);
 		}
 
 		private bool CompareLists(int[] actualValues, int[] expectedValues)
