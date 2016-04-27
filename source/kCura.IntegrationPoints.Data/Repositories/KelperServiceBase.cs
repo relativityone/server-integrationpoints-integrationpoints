@@ -20,17 +20,20 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		protected async Task<ArtifactDTO[]> RetrieveAllArtifactsAsync(Query query)
 		{
 			List<ArtifactDTO> results = new List<ArtifactDTO>();
-			ObjectQueryResultSet resultSet = await ObjectQueryManagerAdaptor.RetrieveAsync(query, String.Empty);
 			int count = 0;
-			int totalResult = resultSet.Data.TotalResultCount;
-			while (count < totalResult)
+			int totalResult = 0;
+			string token = String.Empty;
+
+			do
 			{
-				string token = resultSet.Data.QueryToken;
+				ObjectQueryResultSet resultSet = await ObjectQueryManagerAdaptor.RetrieveAsync(query, token);
+				totalResult = resultSet.Data.TotalResultCount;
 				ArtifactDTO[] batchResult = resultSet.GetResultsAsArtifactDto();
 				results.AddRange(batchResult);
 				count += batchResult.Length;
-				resultSet = await ObjectQueryManagerAdaptor.RetrieveAsync(query, token, count + 1);
-			}
+				token = resultSet.Data.QueryToken;
+			} while (count < totalResult);
+
 			return results.ToArray();
 		}
 	}
