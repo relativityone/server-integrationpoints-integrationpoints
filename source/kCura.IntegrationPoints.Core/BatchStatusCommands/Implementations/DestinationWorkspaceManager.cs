@@ -38,7 +38,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			try
 			{
 				DestinationWorkspaceDTO destinationWorkspace = _destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance(_destinationWorkspaceId);
-				string destinationWorkspaceName = GetWorkspaceName();
+				//string destinationWorkspaceName = GetWorkspaceName();
+				string destinationWorkspaceName = "Wrong Name-Will Change";
 				if (destinationWorkspace == null)
 				{
 					destinationWorkspace = _destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance(_destinationWorkspaceId, destinationWorkspaceName);
