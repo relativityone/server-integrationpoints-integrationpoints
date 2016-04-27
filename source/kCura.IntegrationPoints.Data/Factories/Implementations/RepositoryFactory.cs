@@ -74,8 +74,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IDestinationWorkspaceRepository GetDestinationWorkspaceRepository(int sourceWorkspaceArtifactId, int targetWorkspaceArtifactId)
 		{
 			IRSAPIClient rsapiClient = GetRsapiClientForWorkspace(sourceWorkspaceArtifactId);
-			IWorkspaceRepository workspaceRepository = GetWorkspaceRepository();
-			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(rsapiClient, workspaceRepository, targetWorkspaceArtifactId);
+			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(rsapiClient);
 
 			return destinationWorkspaceRepository;
 		}

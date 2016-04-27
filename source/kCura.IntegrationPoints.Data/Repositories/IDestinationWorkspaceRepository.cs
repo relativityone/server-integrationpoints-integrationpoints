@@ -1,4 +1,7 @@
-﻿namespace kCura.IntegrationPoints.Data.Repositories
+﻿using kCura.IntegrationPoints.Contracts.Models;
+using kCura.Relativity.Client.DTOs;
+
+namespace kCura.IntegrationPoints.Data.Repositories
 {
 	/// <summary>
 	/// Responsible for handling Destination Workspace rdos and their functionality
@@ -8,13 +11,18 @@
 		/// <summary>
 		/// Queries to see if a Destination Workspace RDO instance exists for the target workspace
 		/// </summary>
-		/// <returns>-1 if no instance exists, Artifact ID of instance otherwise</returns>
-		int? QueryDestinationWorkspaceRdoInstance();
+		/// <param name="destinationWorkspaceId">The Artifact ID of the workspace we are looking for (note, this is NOT
+		/// instance Artifact ID, it's the Artifact ID of the actual workspace</param>
+		/// <returns>null if no instance exists, DestinationWorkspaceDTO of instance otherwise</returns>
+		DestinationWorkspaceDTO QueryDestinationWorkspaceRdoInstance(int destinationWorkspaceId);
 
 		/// <summary>
 		/// Creates an instance of a Destination Workspace RDO
 		/// </summary>
-		int? CreateDestinationWorkspaceRdoInstance();
+		/// <param name="destinationWorkspaceId">Artifact ID of the DestinationWorkspace</param>
+		/// <param name="destinationWorkspaceName">Name of the DestinationWorkspace RDO instance</param>
+		/// <returns>DestinationWorkspaceDTO of instance that was just created</returns>
+		DestinationWorkspaceDTO CreateDestinationWorkspaceRdoInstance(int destinationWorkspaceId, string destinationWorkspaceName);
 
 		/// <summary>
 		/// Mass Edits/tags the Documents that were pushed with the DestinationWorkspace instance
@@ -32,5 +40,11 @@
 		/// <param name="destinationWorkspaceInstanceId">Artifact ID of the DestinationWorkspace RDO instance</param>
 		/// <param name="jobHistoryInstanceId">Artifact ID of the JobHistory RDO instance</param>
 		void LinkDestinationWorkspaceToJobHistory(int? destinationWorkspaceInstanceId, int jobHistoryInstanceId);
+
+		/// <summary>
+		/// Update the Destination Workspace RDO
+		/// </summary>
+		/// <param name="destinationWorkspace">The DTO of the Destination Workspace to update</param>
+		void UpdateDestinationWorkspaceRdoInstance(DestinationWorkspaceDTO destinationWorkspace);
 	}
 }
