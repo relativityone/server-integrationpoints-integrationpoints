@@ -92,32 +92,28 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		{
 			private readonly BaseServiceContext _context;
 			private readonly DataGridContext _dataGridContext;
-			private readonly int _documentArtifactId;
 			private readonly int _caseId;
-			private readonly int _fieldArtifactId;
 
-			public RelativityLongTextStreamFactory(BaseServiceContext context, DataGridContext dgContext, int documentArtifactId, int caseId, int fieldArtifactId)
+			public RelativityLongTextStreamFactory(BaseServiceContext context, DataGridContext dgContext, int caseId)
 			{
 				_context = context;
 				_dataGridContext = dgContext;
-				_documentArtifactId = documentArtifactId;
 				_caseId = caseId;
-				_fieldArtifactId = fieldArtifactId;
 			}
 
-			public ILongTextStream CreateLongTextStream()
+			public ILongTextStream CreateLongTextStream(int documentArtifactId, int fieldArtifactId)
 			{
-				return new LongTextStream(_context, _documentArtifactId, _caseId, _dataGridContext, _fieldArtifactId);
+				return new LongTextStream(_context, documentArtifactId, _caseId, _dataGridContext, fieldArtifactId);
 			}
 		}
 
-		public static async Task<string> RetrieveLongTextFieldAsync(IILongTextStreamFactory longTextStreamFactory)
+		public static async Task<string> RetrieveLongTextFieldAsync(IILongTextStreamFactory longTextStreamFactory, int documentArtifactId, int fieldArtifactId)
 		{
 			const int bufferSize = 4016;
 			return await Task.Run(() =>
 			{
 				StringBuilder strBuilder = null;
-				using (ILongTextStream stream = longTextStreamFactory.CreateLongTextStream())
+				using (ILongTextStream stream = longTextStreamFactory.CreateLongTextStream(documentArtifactId, fieldArtifactId))
 				{
 					Encoding encoding = stream.IsUnicode ? Encoding.Unicode : Encoding.ASCII;
 					strBuilder  = new StringBuilder((int)stream.Length);

@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 			_context = content;
 		}
 
-		public ILongTextStream CreateLongTextStream()
+		public ILongTextStream CreateLongTextStream(int documentArtifactId, int fieldArtifactId)
 		{
 			return new InMemoryILongTextStream(_context, _isUnicode);
 		}
