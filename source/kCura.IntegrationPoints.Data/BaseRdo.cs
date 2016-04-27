@@ -62,13 +62,9 @@ namespace kCura.IntegrationPoints.Data
 			switch (fieldType)
 			{
 				case FieldTypes.MultipleObject:
-					if (value is FieldValueList<Artifact>)
+					if (value is IEnumerable<Artifact>)
 					{
-						return ((FieldValueList<Artifact>)value).Select(x => x.ArtifactID).ToArray();
-					}
-					if (value is FieldValueList<RDO>)
-					{
-						return ((FieldValueList<RDO>) value).Select(x => x.ArtifactID).ToArray();
+						return ((IEnumerable<Artifact>)value).Select(x => x.ArtifactID).ToArray();
 					}
 					return new int[]{};
 				case FieldTypes.SingleObject:
