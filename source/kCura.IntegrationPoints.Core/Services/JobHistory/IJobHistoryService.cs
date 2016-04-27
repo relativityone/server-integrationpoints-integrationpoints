@@ -7,6 +7,6 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 	{
 		Data.JobHistory CreateRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUtc);
 
-		IList<Data.JobHistory> GetJobHistory(IList<int> jobHistoryArtifactids);
+		IList<Data.JobHistory> GetJobHistory(IList<int> jobHistoryArtifactIds);
 	}
 }

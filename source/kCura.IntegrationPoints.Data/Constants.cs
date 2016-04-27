@@ -4,7 +4,6 @@ namespace kCura.IntegrationPoints.Data
 {
 	public static class GlobalConst
 	{
-		public const string APPLICATION_GUID = "DCF6E9D1-22B6-4DA3-98F6-41381E93C30C";
 		public const string RELATIVITY_INTEGRATION_POINTS_AGENT_GUID = "08C0CE2D-8191-4E8F-B037-899CEAEE493D";
 		public const string Custodian = @"d216472d-a1aa-4965-8b36-367d43d4e64c";
 	}

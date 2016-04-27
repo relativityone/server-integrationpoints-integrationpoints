@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IJobManager _jobManager;
 		private IJobService _jobService;
 		private readonly IHelper _helper;
-		private IntegrationPointService _integrationPointService;
+		private IIntegrationPointService _integrationPointService;
 		private IScheduleRuleFactory _scheduleRuleFactory;
 		private kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private IGuidService _guidService;
@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobManager jobManager,
 			IJobService jobService,
 			IHelper helper,
-			IntegrationPointService integrationPointService,
+			IIntegrationPointService integrationPointService,
 			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 			IGuidService guidService,
 			JobHistoryService jobHistoryService,

@@ -125,7 +125,15 @@ namespace kCura.IntegrationPoints.Contracts
 					}
 				}
 
-				_providerFactory = _windsorContainer.Resolve<IProviderFactory>();
+				try
+				{
+					_providerFactory = _windsorContainer.Resolve<IProviderFactory>();
+				}
+				catch
+				{
+					// Handle case (in event handlers) where IProviderFactory cannot be resolved...
+					_providerFactory = new DefaultProviderFactory(_windsorContainer);					
+				}
 			}
 
 			return new ProviderWrapper(_providerFactory.CreateProvider(identifer));

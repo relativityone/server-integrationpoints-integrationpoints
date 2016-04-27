@@ -127,7 +127,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IWorkspaceRepository workspaceRepository = Container.Resolve<IWorkspaceRepository>();
 		
 			ChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
-			JobResoureTracker jobResourceTracker = new JobResoureTracker(workspaceDbContext);
+			JobResourceTracker jobResourceTracker = new JobResourceTracker(workspaceDbContext);
 			JobTracker jobTracker = new JobTracker(jobResourceTracker);
 			IAgentService agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 

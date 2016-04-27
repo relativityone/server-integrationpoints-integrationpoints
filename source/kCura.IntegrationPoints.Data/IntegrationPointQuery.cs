@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Data
 			_context = context;
 		}
 
-		public IList<IntegrationPoint> GetIntegrationPoints(List<int> allSourceProviderid)
+		public IList<IntegrationPoint> GetIntegrationPoints(List<int> sourceProviderIds)
 		{
 			var query = new Query<RDO>
 			{
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Data
 					new FieldValue(Guid.Parse(IntegrationPointFieldGuids.Name))
 				},
 				Condition = new WholeNumberCondition(
-					IntegrationPointFields.SourceProvider, NumericConditionEnum.In, allSourceProviderid)
+					IntegrationPointFields.SourceProvider, NumericConditionEnum.In, sourceProviderIds)
 			};
 
 			IList<IntegrationPoint> result = _context.IntegrationPointLibrary.Query(query);
