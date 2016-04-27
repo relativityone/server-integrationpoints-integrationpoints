@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoints.Data.Attributes;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using Relativity.Data;
 
 namespace kCura.IntegrationPoints.Data
 {
