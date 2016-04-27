@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
 			do
 			{
-				ObjectQueryResultSet resultSet = await ObjectQueryManagerAdaptor.RetrieveAsync(query, token);
+				ObjectQueryResultSet resultSet = await ObjectQueryManagerAdaptor.RetrieveAsync(query, token ?? String.Empty, count + 1);
 				totalResult = resultSet.Data.TotalResultCount;
 				ArtifactDTO[] batchResult = resultSet.GetResultsAsArtifactDto();
 				results.AddRange(batchResult);
