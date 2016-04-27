@@ -98,6 +98,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 						invalidProperties.Add("Source Provider");
 						throw new Exception(String.Format(UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
 					}
+
+					model.HasErrors = existingModel.HasErrors;
 				}
 			}
 
