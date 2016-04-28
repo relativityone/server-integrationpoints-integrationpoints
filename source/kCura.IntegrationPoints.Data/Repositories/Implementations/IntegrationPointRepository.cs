@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Transformer;
-using kCura.Relativity.Client;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -10,8 +10,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly IGenericLibrary<IntegrationPoint> _integrationPointLibrary;
 
-		public IntegrationPointRepository(IRSAPIClient rsapiClient)
-			: this(new RsapiClientLibrary<IntegrationPoint>(rsapiClient))
+		public IntegrationPointRepository(IHelper helper, int workspaceArtifactId)
+			: this(new RsapiClientLibrary<IntegrationPoint>(helper, workspaceArtifactId))
 		{
 		}
 

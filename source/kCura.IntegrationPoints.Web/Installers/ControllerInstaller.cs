@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
 			
 			container.Register(Component.For<IWorkspaceRepository>()
-					.ImplementedBy<RsapiWorkspaceRepository>()
+					.ImplementedBy<KeplerWorkspaceRepository>()
 					.UsingFactoryMethod((k) => k.Resolve<IRepositoryFactory>().GetWorkspaceRepository())
 					.LifestyleTransient());
 		}

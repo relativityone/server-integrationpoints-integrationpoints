@@ -94,9 +94,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller
 			{
 				if (_service == null)
 				{
-					var client = base.Helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
-					client.APIOptions.WorkspaceID = base.Helper.GetActiveCaseID();
-					_service = new RSAPIService(client);
+					_service = new RSAPIService(base.Helper, base.Helper.GetActiveCaseID());
 				}
 				return _service;
 			}

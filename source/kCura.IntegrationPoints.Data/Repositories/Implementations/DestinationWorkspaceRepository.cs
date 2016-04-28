@@ -4,6 +4,7 @@ using System.Security.Claims;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Authentication;
 using Relativity.Data;
@@ -13,31 +14,38 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class DestinationWorkspaceRepository : RelativityMassEditBase, IDestinationWorkspaceRepository
 	{
-		private readonly IRSAPIClient _client;
-		private readonly int _destinationWorkspaceId;
+		private readonly IHelper _helper;
+		private readonly int _targetWorkspaceArtifactId;
 		private readonly IWorkspaceRepository _workspaceRepository;
+		private readonly int _sourceWorkspaceArtifactId;
 		private const string _DESTINATION_WORKSPACE_JOB_HISTORY_LINK = "20A24C4E-55E8-4FC2-ABBE-F75C07FAD91B";
 
-		public DestinationWorkspaceRepository(IRSAPIClient client, IWorkspaceRepository workspaceRepository, int destinationWorkspaceId)
+		public DestinationWorkspaceRepository(IHelper helper, IWorkspaceRepository workspaceRepository, int sourceWorkspaceArtifactId, int targetWorkspaceArtifactId)
 		{
-			_client = client;
-			_destinationWorkspaceId = destinationWorkspaceId;
+			_helper = helper;
+			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
+			_targetWorkspaceArtifactId = targetWorkspaceArtifactId;
 			_workspaceRepository = workspaceRepository;
 		}
 
 		public int? QueryDestinationWorkspaceRdoInstance()
 		{
-			Query<RDO> query = new Query<RDO>();
+			var query = new Query<RDO>();
 			query.ArtifactTypeGuid = new Guid(DestinationWorkspaceObject.OBJECT_TYPE_GUID);
-			query.Condition = new ObjectCondition(new Guid(DestinationWorkspaceObject.DESTINATION_WORKSPACE_ARTIFACT_ID), ObjectConditionEnum.EqualTo, _destinationWorkspaceId);
+			query.Condition = new ObjectCondition(new Guid(DestinationWorkspaceObject.DESTINATION_WORKSPACE_ARTIFACT_ID), ObjectConditionEnum.EqualTo, _targetWorkspaceArtifactId);
 
 			try
 			{
-				ResultSet<RDO> results = _client.Repositories.RDO.Query(query);
-
-				if (results.Success && results.Results.Count > 0)
+				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 				{
-					return results.Results[0].Artifact.ArtifactID;
+					rsapiClient.APIOptions.WorkspaceID = _sourceWorkspaceArtifactId;
+
+					ResultSet<RDO> results = rsapiClient.Repositories.RDO.Query(query);
+
+					if (results.Success && results.Results.Count > 0)
+					{
+						return results.Results[0].Artifact.ArtifactID;
+					}
 				}
 
 				return -1;
@@ -50,20 +58,25 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int? CreateDestinationWorkspaceRdoInstance()
 		{
-			string destinationWorkspaceName = _workspaceRepository.Retrieve(_destinationWorkspaceId).Name;
-			string instanceName = $"{destinationWorkspaceName} - {_destinationWorkspaceId}";
+			string destinationWorkspaceName = _workspaceRepository.Retrieve(_targetWorkspaceArtifactId).Name;
+			string instanceName = $"{destinationWorkspaceName} - {_targetWorkspaceArtifactId}";
 
 			RDO destinationWorkspaceObject = new RDO();
 
 			destinationWorkspaceObject.ArtifactTypeGuids.Add(new Guid(DestinationWorkspaceObject.OBJECT_TYPE_GUID));
-			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceObject.DESTINATION_WORKSPACE_ARTIFACT_ID), _destinationWorkspaceId));
+			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceObject.DESTINATION_WORKSPACE_ARTIFACT_ID), _targetWorkspaceArtifactId));
 			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceObject.DESTINATION_WORKSPACE_NAME), destinationWorkspaceName));
 			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceObject.DESTINATION_WORKSPACE_INSTANCE_NAME), instanceName));
 
 			WriteResultSet<RDO> results;
 			try
 			{
-				results = _client.Repositories.RDO.Create(destinationWorkspaceObject);
+				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				{
+					rsapiClient.APIOptions.WorkspaceID = _sourceWorkspaceArtifactId;
+
+					results = rsapiClient.Repositories.RDO.Create(destinationWorkspaceObject);
+				}
 			}
 			catch (Exception e)
 			{
@@ -90,7 +103,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			WriteResultSet<RDO> results;
 			try
 			{
-				results = _client.Repositories.RDO.Update(jobHistoryObject);
+				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				{
+					rsapiClient.APIOptions.WorkspaceID = _sourceWorkspaceArtifactId;
+
+					results = rsapiClient.Repositories.RDO.Update(jobHistoryObject);
+				}
 			}
 			catch (Exception e)
 			{

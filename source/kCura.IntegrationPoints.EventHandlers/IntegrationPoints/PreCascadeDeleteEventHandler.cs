@@ -18,9 +18,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				return deleteHistoryErrorService ??
 							 (deleteHistoryErrorService =
 								 new DeleteHistoryErrorService(
-									 ServiceContextFactory.CreateRSAPIService(
-										 new kCura.IntegrationPoints.Core.RsapiClientFactory(base.Helper).CreateClientForWorkspace(
-											 base.Application.ArtifactID))));
+									 ServiceContextFactory.CreateRSAPIService(base.Helper, base.Application.ArtifactID)));
 			}
 			set { deleteHistoryErrorService = value; }
 		}
@@ -32,9 +30,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				return deleteHistoryService ??
 				       (deleteHistoryService =
 					       new DeleteHistoryService(
-						       ServiceContextFactory.CreateRSAPIService(
-							       new kCura.IntegrationPoints.Core.RsapiClientFactory(base.Helper).CreateClientForWorkspace(
-								       base.Application.ArtifactID)),DeleteHistoryErrorService));
+						       ServiceContextFactory.CreateRSAPIService(base.Helper, base.Application.ArtifactID), 
+							   DeleteHistoryErrorService));
 			}
 			set { deleteHistoryService = value; }
 		}
