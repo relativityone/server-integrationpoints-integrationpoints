@@ -63,6 +63,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.106.2\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
+    <Reference Include="kCura.Config">
+      <HintPath>..\Dependencies\kCura\kCura.Config.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -79,13 +82,20 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AgentConfig.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="IConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
