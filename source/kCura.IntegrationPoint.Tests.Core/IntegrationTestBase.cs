@@ -1,6 +1,8 @@
 ﻿
 namespace kCura.IntegrationPoint.Tests.Core
 {
+	using Relativity.Client;
+
 	public abstract class IntegrationTestBase
 	{
 		protected IntegrationTestBase()
@@ -11,6 +13,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public Helper Helper { get; }
 		public SharedVariables SharedVariables { get; }
+
+		public IRSAPIClient RsapiClient { get { return Helper.Rsapi.CreateRsapiClient(); } }
 
 	}
 }
