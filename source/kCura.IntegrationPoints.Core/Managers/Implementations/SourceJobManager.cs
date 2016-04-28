@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 
@@ -121,7 +122,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			SourceWorkspaceJobHistoryDTO sourceWorkspaceJobHistoryDto = sourceWorkspaceJobHistoryRepository.Retrieve(jobHistoryArtifactId);
 			var jobHistoryDto = new SourceJobDTO()
 			{
-				Name = $"{sourceWorkspaceJobHistoryDto.Name} - {jobHistoryArtifactId}",
+				Name = Utils.GetFormatForWorkspaceOrJobDisplay(sourceWorkspaceJobHistoryDto.Name, jobHistoryArtifactId),
 				SourceWorkspaceArtifactId = sourceWorkspaceRDOInstanceArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
 				JobHistoryName = sourceWorkspaceJobHistoryDto.Name,

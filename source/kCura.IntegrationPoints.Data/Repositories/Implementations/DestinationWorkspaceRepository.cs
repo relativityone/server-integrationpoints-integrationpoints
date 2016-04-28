@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public DestinationWorkspaceDTO CreateDestinationWorkspaceRdoInstance(int destinationWorkspaceId, string destinationWorkspaceName)
 		{
-			string instanceName = $"{destinationWorkspaceName} - {destinationWorkspaceId}";
+			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspaceName, destinationWorkspaceId);
 
 			RDO destinationWorkspaceObject = new RDO();
 
@@ -91,7 +91,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			int workspaceId = destinationWorkspace.WorkspaceArtifactId;
 			string workspaceName = destinationWorkspace.WorkspaceName;
-			string instanceName = $"{workspaceName} - {workspaceId}";
+			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceName, workspaceId);
 
 			RDO destinationWorkspaceObject = _client.Repositories.RDO.ReadSingle(destinationWorkspace.ArtifactId);
 
