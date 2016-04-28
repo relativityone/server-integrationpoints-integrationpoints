@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public override int BatchSize
 		{
-			get { return Config.AgentConfig.BatchSize; }
+			get { return kCura.IntegrationPoints.Config.Config.Instance.BatchSize; }
 		}
 
 		public override IEnumerable<string> GetUnbatchedIDs(Job job)

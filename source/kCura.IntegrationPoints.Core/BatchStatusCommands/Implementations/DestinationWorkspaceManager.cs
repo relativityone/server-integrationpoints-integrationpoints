@@ -1,4 +1,5 @@
 using System;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -14,8 +15,10 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly IDestinationWorkspaceRepository _destinationWorkspaceRepository;
 		private readonly string _tableSuffix;
 		private readonly int _sourceWorkspaceId;
+		private readonly int _destinationWorkspaceId;
 		private readonly int _jobHistoryInstanceId;
 		private IScratchTableRepository _scratchTableRepository;
+		private readonly IWorkspaceRepository _workspaceRepository;
 		private int? _destinationWorkspaceRdoId;
 		private bool _errorOccurDuringJobStart;
 
@@ -23,8 +26,10 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			_tempDocHelper = tempDocumentTableFactory.GetDocTableHelper(tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
 			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId, sourceConfig.TargetWorkspaceArtifactId);
+			_workspaceRepository = repositoryFactory.GetWorkspaceRepository();
 			_tableSuffix = tableSuffix;
 			_sourceWorkspaceId = sourceConfig.SourceWorkspaceArtifactId;
+			_destinationWorkspaceId = sourceConfig.TargetWorkspaceArtifactId;
 			_jobHistoryInstanceId = jobHistoryInstanceId;
 		}
 
@@ -32,14 +37,21 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
-				_destinationWorkspaceRdoId = _destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance();
-				if (_destinationWorkspaceRdoId == -1)
+				DestinationWorkspaceDTO destinationWorkspace = _destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance(_destinationWorkspaceId);
+				//string destinationWorkspaceName = GetWorkspaceName();
+				string destinationWorkspaceName = "Wrong Name-Will Change";
+				if (destinationWorkspace == null)
 				{
-					_destinationWorkspaceRdoId = _destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance();
+					destinationWorkspace = _destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance(_destinationWorkspaceId, destinationWorkspaceName);
+				}
+				else if(destinationWorkspaceName != destinationWorkspace.WorkspaceName)
+				{
+					destinationWorkspace.WorkspaceName = destinationWorkspaceName;
+					_destinationWorkspaceRepository.UpdateDestinationWorkspaceRdoInstance(destinationWorkspace);
 				}
 
-				_destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceRdoId,
-					_jobHistoryInstanceId);
+				_destinationWorkspaceRdoId = destinationWorkspace.ArtifactId;
+				_destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceRdoId, _jobHistoryInstanceId);
 			}
 			catch (Exception)
 			{
@@ -62,6 +74,11 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			{
 				ScratchTableRepository.Dispose();
 			}
+		}
+
+		internal string GetWorkspaceName()
+		{
+			return _workspaceRepository.Retrieve(_destinationWorkspaceId).Name;
 		}
 
 		public IScratchTableRepository ScratchTableRepository

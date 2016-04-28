@@ -1,23 +1,31 @@
-﻿namespace kCura.IntegrationPoints.Data.Repositories
+﻿using kCura.IntegrationPoints.Contracts.Models;
+using kCura.Relativity.Client.DTOs;
+
+namespace kCura.IntegrationPoints.Data.Repositories
 {
 	/// <summary>
-	/// Responsible for handling Destination Workspace rdos and their functionality
+	/// Responsible for handling Destination Workspace RDOs and their functionality.
 	/// </summary>
 	public interface IDestinationWorkspaceRepository
 	{
 		/// <summary>
-		/// Queries to see if a Destination Workspace RDO instance exists for the target workspace
+		/// Queries to see if a Destination Workspace RDO instance exists for the corresponding target workspace.
 		/// </summary>
-		/// <returns>-1 if no instance exists, Artifact ID of instance otherwise</returns>
-		int? QueryDestinationWorkspaceRdoInstance();
+		/// <param name="destinationWorkspaceId">The Artifact ID of the workspace we are looking for (note, this is NOT
+		/// the Artifact ID of the object instance, it's the Artifact ID of the actual workspace</param>
+		/// <returns>null if no instance exists, DestinationWorkspaceDTO of instance otherwise</returns>
+		DestinationWorkspaceDTO QueryDestinationWorkspaceRdoInstance(int destinationWorkspaceId);
 
 		/// <summary>
-		/// Creates an instance of a Destination Workspace RDO
+		/// Creates an instance of a Destination Workspace RDO.
 		/// </summary>
-		int? CreateDestinationWorkspaceRdoInstance();
+		/// <param name="destinationWorkspaceId">Artifact ID of the DestinationWorkspace</param>
+		/// <param name="destinationWorkspaceName">Name of the DestinationWorkspace RDO instance</param>
+		/// <returns>DestinationWorkspaceDTO of the instance that was just created</returns>
+		DestinationWorkspaceDTO CreateDestinationWorkspaceRdoInstance(int destinationWorkspaceId, string destinationWorkspaceName);
 
 		/// <summary>
-		/// Mass Edits/tags the Documents that were pushed with the DestinationWorkspace instance
+		/// Mass edits/tags the Documents that were with the corresponding Destination Workspace they were pushed to.
 		/// </summary>
 		/// <param name="numberOfDocs">The number of documents to tag</param>
 		/// <param name="destinationWorkspaceInstanceId">Artifact ID of the DestinationWorkspace RDO instance</param>
@@ -27,10 +35,16 @@
 			int sourceWorkspaceId);
 
 		/// <summary>
-		/// Links the multi-object fields on DestinationWorkspace and JobHistory objects
+		/// Links the multi-object fields on DestinationWorkspace and JobHistory objects to each other.
 		/// </summary>
 		/// <param name="destinationWorkspaceInstanceId">Artifact ID of the DestinationWorkspace RDO instance</param>
 		/// <param name="jobHistoryInstanceId">Artifact ID of the JobHistory RDO instance</param>
 		void LinkDestinationWorkspaceToJobHistory(int? destinationWorkspaceInstanceId, int jobHistoryInstanceId);
+
+		/// <summary>
+		/// Update the Destination Workspace RDO.
+		/// </summary>
+		/// <param name="destinationWorkspace">The DTO of the Destination Workspace to update</param>
+		void UpdateDestinationWorkspaceRdoInstance(DestinationWorkspaceDTO destinationWorkspace);
 	}
 }

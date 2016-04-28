@@ -114,6 +114,7 @@
   <ItemGroup>
     <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
   </ItemGroup>

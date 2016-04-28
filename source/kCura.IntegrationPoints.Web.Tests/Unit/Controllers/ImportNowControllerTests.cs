@@ -24,8 +24,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		private IPermissionService _permissionService;
 		private ImportNowController.IIntegrationPointRdoAdaptor _rdoAdaptor;
 		private ImportNowController.Payload _payload;
-		private readonly string USERID_STRING = USERID.ToString();
-		private const int USERID = 9;
+		private readonly string _userIdString = _USERID.ToString();
+		private const int _USERID = 9;
 
 		[SetUp]
 		public void Setup()
@@ -50,7 +50,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		{
 			List<Claim> claims = new List<Claim>()
 			{
-				new Claim("rel_uai", USERID_STRING)
+				new Claim("rel_uai", _userIdString)
 			};
 			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			const string expectedErrorMessage = @"""You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.""";
@@ -70,7 +70,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		{
 			List<Claim> claims = new List<Claim>()
 			{
-				new Claim("rel_uai", USERID_STRING)
+				new Claim("rel_uai", _userIdString)
 			};
 			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			_rdoAdaptor.SourceProviderIdentifier.Returns(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID);
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			
 			HttpResponseMessage response = _controller.Post(_payload);
 
-			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.ExportService, _payload.AppId, _payload.ArtifactId, USERID);
+			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.ExportService, _payload.AppId, _payload.ArtifactId, _USERID);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 
@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		{
 			List<Claim> claims = new List<Claim>()
 			{
-				new Claim("rel_uai", USERID_STRING)
+				new Claim("rel_uai", _userIdString)
 			};
 			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			const string expectedErrorMessage = @"""ABC : 123,456""";
@@ -139,14 +139,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		{
 			List<Claim> claims = new List<Claim>()
 			{
-				new Claim("rel_uai", USERID_STRING)
+				new Claim("rel_uai", _userIdString)
 			};
 			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			_rdoAdaptor.SourceProviderIdentifier.Returns(Guid.NewGuid().ToString());
 
 			HttpResponseMessage response = _controller.Post(_payload);
 
-			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.SyncManager, _payload.AppId, _payload.ArtifactId, USERID);
+			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.SyncManager, _payload.AppId, _payload.ArtifactId, _USERID);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 	}

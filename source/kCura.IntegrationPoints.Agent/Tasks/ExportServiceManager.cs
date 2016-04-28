@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 						IDataReader dataReader = exporter.GetDataReader(scratchTables);
 
-						string newImportApiSettings = GetImportApiSettingsWithOnBehalfUserInformation(job, destinationConfig);
+						string newImportApiSettings = GetImportApiSettingsForUser(job, destinationConfig);
 						synchronizer.SyncData(dataReader, MappedFields, newImportApiSettings);
 					}
 				}
@@ -145,8 +145,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				.Select(observer => observer.ScratchTableRepository).ToArray();
 
 			_exportJobErrorService = new ExportJobErrorService(scratchTableToMonitorItemLevelError);
-			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
-			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPointDto;
 
 			_statisticsService.Subscribe(synchronizer as IBatchReporter, job);
 			_jobHistoryErrorService.SubscribeToBatchReporterEvents(synchronizer);
@@ -192,11 +190,16 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void InitializeExportService(Job job)
 		{
+			// Load integrationPoint data
+			IntegrationPointDto = LoadIntegrationPointDto(job);
+			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPointDto;
+
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			this._identifier = taskParameters.BatchInstance;
 
-			// Load integrationPoint data
-			IntegrationPointDto = LoadIntegrationPointDto(job);
+			this.JobHistoryDto = _jobHistoryService.CreateRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
+			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
+			this.JobHistoryDto.StartTimeUTC = DateTime.UtcNow;
 
 			// Load Mapped Fields & Sanitize them
 			// #unbelievable
@@ -207,8 +210,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			SourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
 
-			this.JobHistoryDto = _jobHistoryService.CreateRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
-			this.JobHistoryDto.StartTimeUTC = DateTime.UtcNow;
 			UpdateJobStatus();
 
 			_batchStatus.ForEach(batch => batch.JobStarted(job));
@@ -301,9 +302,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 		}
 
-		private string GetImportApiSettingsWithOnBehalfUserInformation(Job job, string orignialImportApiSettings)
+		private string GetImportApiSettingsForUser(Job job, string originalImportApiSettings)
 		{
-			var importSettings = JsonConvert.DeserializeObject<ImportSettings>(orignialImportApiSettings);
+			var importSettings = JsonConvert.DeserializeObject<ImportSettings>(originalImportApiSettings);
 			importSettings.OnBehalfOfUserId = job.SubmittedBy;
 			string jsonString = JsonConvert.SerializeObject(importSettings);
 			return jsonString;

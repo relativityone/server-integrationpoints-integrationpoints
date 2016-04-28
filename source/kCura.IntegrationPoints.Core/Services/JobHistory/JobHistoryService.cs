@@ -82,7 +82,8 @@ namespace kCura.IntegrationPoints.Core.Services
 				};
 
 				ImportSettings setting = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
-				jobHistory.DestinationWorkspace = $"{_workspaceRepository.Retrieve(setting.CaseArtifactId).Name} - {setting.CaseArtifactId}";
+				IntegrationPoints.Contracts.Models.WorkspaceDTO workspaceDto = _workspaceRepository.Retrieve(setting.CaseArtifactId);
+				jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, setting.CaseArtifactId);
 
 				if (startTimeUtc.HasValue)
 				{

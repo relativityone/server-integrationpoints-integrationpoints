@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using kCura.Config;
-using kCura.IntegrationPoints.DocumentTransferProvider.Shared;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations
 {
@@ -11,12 +10,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementati
 		{
 			get
 			{
-				IDictionary config = Manager.GetConfig(Constants.CONFIG_SECTION);
-				if (config.Contains(Constants.WEB_API_PATH))
+				IDictionary config = Manager.GetConfig(kCura.IntegrationPoints.Contracts.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION);
+				if (config.Contains(kCura.IntegrationPoints.Contracts.Constants.WEB_API_PATH))
 				{
-					return config[Constants.WEB_API_PATH] as string;
+					return config[kCura.IntegrationPoints.Contracts.Constants.WEB_API_PATH] as string;
 				}
-				throw new ConfigurationException(String.Format("Unable to find [{0}:{1}] in Relativity's instance settings.", Constants.CONFIG_SECTION, Constants.WEB_API_PATH));
+				throw new ConfigurationException(String.Format("Unable to find [{0}:{1}] in Relativity's instance settings.",
+					kCura.IntegrationPoints.Contracts.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION, kCura.IntegrationPoints.Contracts.Constants.WEB_API_PATH));
 			}
 		}
 	}

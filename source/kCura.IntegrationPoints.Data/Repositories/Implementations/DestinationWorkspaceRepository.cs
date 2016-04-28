@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Security.Claims;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -16,7 +17,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly IHelper _helper;
 		private readonly int _targetWorkspaceArtifactId;
-		private readonly IWorkspaceRepository _workspaceRepository;
 		private readonly int _sourceWorkspaceArtifactId;
 		private const string _DESTINATION_WORKSPACE_JOB_HISTORY_LINK = "20A24C4E-55E8-4FC2-ABBE-F75C07FAD91B";
 
@@ -25,14 +25,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_helper = helper;
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_targetWorkspaceArtifactId = targetWorkspaceArtifactId;
-			_workspaceRepository = workspaceRepository;
 		}
 
-		public int? QueryDestinationWorkspaceRdoInstance()
+		public DestinationWorkspaceDTO QueryDestinationWorkspaceRdoInstance(int destinationWorkspaceId)
 		{
 			var query = new Query<RDO>();
-			query.ArtifactTypeGuid = new Guid(DestinationWorkspaceObject.OBJECT_TYPE_GUID);
-			query.Condition = new ObjectCondition(new Guid(DestinationWorkspaceObject.DESTINATION_WORKSPACE_ARTIFACT_ID), ObjectConditionEnum.EqualTo, _targetWorkspaceArtifactId);
+			query.ArtifactTypeGuid = new Guid(DestinationWorkspaceDTO.Fields.OBJECT_TYPE_GUID);
+			query.Condition = new ObjectCondition(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_ARTIFACT_ID), ObjectConditionEnum.EqualTo, destinationWorkspaceId);
+			query.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_NAME)));
 
 			try
 			{
@@ -44,11 +44,18 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 					if (results.Success && results.Results.Count > 0)
 					{
-						return results.Results[0].Artifact.ArtifactID;
+					DestinationWorkspaceDTO destinationWorkspace = new DestinationWorkspaceDTO()
+					{
+						ArtifactId = results.Results[0].Artifact.ArtifactID,
+						WorkspaceArtifactId = destinationWorkspaceId,
+						WorkspaceName = results.Results[0].Artifact.Fields[0].Value.ToString(),
+					};
+
+					return destinationWorkspace;
 					}
 				}
 
-				return -1;
+				return null;
 			}
 			catch (Exception e)
 			{
@@ -56,17 +63,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public int? CreateDestinationWorkspaceRdoInstance()
+		public DestinationWorkspaceDTO CreateDestinationWorkspaceRdoInstance(int destinationWorkspaceId, string destinationWorkspaceName)
 		{
-			string destinationWorkspaceName = _workspaceRepository.Retrieve(_targetWorkspaceArtifactId).Name;
-			string instanceName = $"{destinationWorkspaceName} - {_targetWorkspaceArtifactId}";
+			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspaceName, destinationWorkspaceId);
 
 			RDO destinationWorkspaceObject = new RDO();
 
-			destinationWorkspaceObject.ArtifactTypeGuids.Add(new Guid(DestinationWorkspaceObject.OBJECT_TYPE_GUID));
-			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceObject.DESTINATION_WORKSPACE_ARTIFACT_ID), _targetWorkspaceArtifactId));
-			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceObject.DESTINATION_WORKSPACE_NAME), destinationWorkspaceName));
-			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceObject.DESTINATION_WORKSPACE_INSTANCE_NAME), instanceName));
+			destinationWorkspaceObject.ArtifactTypeGuids.Add(new Guid(DestinationWorkspaceDTO.Fields.OBJECT_TYPE_GUID));
+			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_ARTIFACT_ID), destinationWorkspaceId));
+			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_NAME), destinationWorkspaceName));
+			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_INSTANCE_NAME), instanceName));
 
 			WriteResultSet<RDO> results;
 			try
@@ -85,10 +91,44 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (results.Success && results.Results.Count > 0)
 			{
-				return results.Results[0].Artifact.ArtifactID;
+				return new DestinationWorkspaceDTO()
+				{
+					ArtifactId = results.Results[0].Artifact.ArtifactID,
+					WorkspaceArtifactId = destinationWorkspaceId,
+					WorkspaceName = destinationWorkspaceName,
+				};
 			}
 
 			throw new Exception(RSAPIErrors.CREATE_DEST_WORKSPACE_ERROR);
+		}
+
+		public void UpdateDestinationWorkspaceRdoInstance(DestinationWorkspaceDTO destinationWorkspace)
+		{
+			int workspaceId = destinationWorkspace.WorkspaceArtifactId;
+			string workspaceName = destinationWorkspace.WorkspaceName;
+			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceName, workspaceId);
+
+			RDO destinationWorkspaceObject = _client.Repositories.RDO.ReadSingle(destinationWorkspace.ArtifactId);
+
+			destinationWorkspaceObject.ArtifactTypeGuids.Add(new Guid(DestinationWorkspaceDTO.Fields.OBJECT_TYPE_GUID));
+			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_ARTIFACT_ID), workspaceId));
+			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_NAME), workspaceName));
+			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_INSTANCE_NAME), instanceName));
+
+			WriteResultSet<RDO> results;
+			try
+			{
+				results = _client.Repositories.RDO.Update(destinationWorkspaceObject);
+			}
+			catch (Exception e)
+			{
+				throw new Exception(RSAPIErrors.UPDATE_DEST_WORKSPACE_ERROR, e);
+			}
+
+			if (!results.Success)
+			{
+				throw new Exception(RSAPIErrors.UPDATE_DEST_WORKSPACE_ERROR);
+			}
 		}
 
 		public void LinkDestinationWorkspaceToJobHistory(int? destinationWorkspaceInstanceId, int jobHistoryInstanceId)

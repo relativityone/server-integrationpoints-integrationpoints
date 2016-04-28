@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 
@@ -131,7 +132,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				sourceWorkspaceDto = new SourceWorkspaceDTO()
 				{
 					ArtifactId = -1,
-					Name = $"{workspaceDto.Name} - {sourceWorkspaceArtifactId}",
+					Name = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, sourceWorkspaceArtifactId),
 					SourceCaseArtifactId = sourceWorkspaceArtifactId,
 					SourceCaseName = workspaceDto.Name
 				};
@@ -145,7 +146,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			// Check to see if instance should be updated
 			if (sourceWorkspaceDto.SourceCaseName != workspaceDto.Name)
 			{
-				sourceWorkspaceDto.Name = $"{workspaceDto.Name} - {sourceWorkspaceArtifactId}";
+				sourceWorkspaceDto.Name = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, sourceWorkspaceArtifactId);
 				sourceWorkspaceDto.SourceCaseName = workspaceDto.Name;
 				sourceWorkspaceRepository.Update(sourceWorkspaceDto);
 			}
