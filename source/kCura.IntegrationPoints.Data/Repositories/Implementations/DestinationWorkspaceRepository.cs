@@ -9,29 +9,26 @@ using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Authentication;
 using Relativity.Data;
-using Field = Relativity.Core.DTO.Field;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class DestinationWorkspaceRepository : RelativityMassEditBase, IDestinationWorkspaceRepository
 	{
 		private readonly IHelper _helper;
-		private readonly int _targetWorkspaceArtifactId;
 		private readonly int _sourceWorkspaceArtifactId;
 		private const string _DESTINATION_WORKSPACE_JOB_HISTORY_LINK = "20A24C4E-55E8-4FC2-ABBE-F75C07FAD91B";
 
-		public DestinationWorkspaceRepository(IHelper helper, IWorkspaceRepository workspaceRepository, int sourceWorkspaceArtifactId, int targetWorkspaceArtifactId)
+		public DestinationWorkspaceRepository(IHelper helper, int sourceWorkspaceArtifactId)
 		{
 			_helper = helper;
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
-			_targetWorkspaceArtifactId = targetWorkspaceArtifactId;
 		}
 
-		public DestinationWorkspaceDTO QueryDestinationWorkspaceRdoInstance(int destinationWorkspaceId)
+		public DestinationWorkspaceDTO QueryDestinationWorkspaceRdoInstance(int targetWorkspaceArtifactId)
 		{
 			var query = new Query<RDO>();
 			query.ArtifactTypeGuid = new Guid(DestinationWorkspaceDTO.Fields.OBJECT_TYPE_GUID);
-			query.Condition = new ObjectCondition(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_ARTIFACT_ID), ObjectConditionEnum.EqualTo, destinationWorkspaceId);
+			query.Condition = new ObjectCondition(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_ARTIFACT_ID), ObjectConditionEnum.EqualTo, targetWorkspaceArtifactId);
 			query.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_NAME)));
 
 			try
@@ -47,7 +44,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					DestinationWorkspaceDTO destinationWorkspace = new DestinationWorkspaceDTO()
 					{
 						ArtifactId = results.Results[0].Artifact.ArtifactID,
-						WorkspaceArtifactId = destinationWorkspaceId,
+						WorkspaceArtifactId = targetWorkspaceArtifactId,
 						WorkspaceName = results.Results[0].Artifact.Fields[0].Value.ToString(),
 					};
 
@@ -63,14 +60,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public DestinationWorkspaceDTO CreateDestinationWorkspaceRdoInstance(int destinationWorkspaceId, string destinationWorkspaceName)
+		public DestinationWorkspaceDTO CreateDestinationWorkspaceRdoInstance(int targetWorkspaceArtifactId, string destinationWorkspaceName)
 		{
-			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspaceName, destinationWorkspaceId);
+			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspaceName, targetWorkspaceArtifactId);
 
 			RDO destinationWorkspaceObject = new RDO();
 
 			destinationWorkspaceObject.ArtifactTypeGuids.Add(new Guid(DestinationWorkspaceDTO.Fields.OBJECT_TYPE_GUID));
-			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_ARTIFACT_ID), destinationWorkspaceId));
+			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_ARTIFACT_ID), targetWorkspaceArtifactId));
 			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_NAME), destinationWorkspaceName));
 			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_INSTANCE_NAME), instanceName));
 
@@ -94,7 +91,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return new DestinationWorkspaceDTO()
 				{
 					ArtifactId = results.Results[0].Artifact.ArtifactID,
-					WorkspaceArtifactId = destinationWorkspaceId,
+					WorkspaceArtifactId = targetWorkspaceArtifactId,
 					WorkspaceName = destinationWorkspaceName,
 				};
 			}
@@ -108,7 +105,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string workspaceName = destinationWorkspace.WorkspaceName;
 			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceName, workspaceId);
 
-			RDO destinationWorkspaceObject = _client.Repositories.RDO.ReadSingle(destinationWorkspace.ArtifactId);
+			RDO destinationWorkspaceObject = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _sourceWorkspaceArtifactId;
+
+				destinationWorkspaceObject = rsapiClient.Repositories.RDO.ReadSingle(destinationWorkspace.ArtifactId);
+			}
 
 			destinationWorkspaceObject.ArtifactTypeGuids.Add(new Guid(DestinationWorkspaceDTO.Fields.OBJECT_TYPE_GUID));
 			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_ARTIFACT_ID), workspaceId));
@@ -118,7 +121,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			WriteResultSet<RDO> results;
 			try
 			{
-				results = _client.Repositories.RDO.Update(destinationWorkspaceObject);
+				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				{
+					rsapiClient.APIOptions.WorkspaceID = _sourceWorkspaceArtifactId;
+
+					results = rsapiClient.Repositories.RDO.Update(destinationWorkspaceObject);
+				}
 			}
 			catch (Exception e)
 			{
@@ -186,7 +194,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception(MassEditErrors.DEST_WORKSPACE_MO_EXISTENCE_ERROR);
 			}
 
-			Field multiObjectField = new Field(baseService, fieldRows[0]);
+			var multiObjectField = new global::Relativity.Core.DTO.Field(baseService, fieldRows[0]);
 			string fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_DEST_WS}_{tableSuffix}";
 
 			try

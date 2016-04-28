@@ -11,18 +11,18 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <summary>
 		/// Queries to see if a Destination Workspace RDO instance exists for the corresponding target workspace.
 		/// </summary>
-		/// <param name="destinationWorkspaceId">The Artifact ID of the workspace we are looking for (note, this is NOT
+		/// <param name="targetWorkspaceArtifactId">The Artifact ID of the workspace we are looking for (note, this is NOT
 		/// the Artifact ID of the object instance, it's the Artifact ID of the actual workspace</param>
 		/// <returns>null if no instance exists, DestinationWorkspaceDTO of instance otherwise</returns>
-		DestinationWorkspaceDTO QueryDestinationWorkspaceRdoInstance(int destinationWorkspaceId);
+		DestinationWorkspaceDTO QueryDestinationWorkspaceRdoInstance(int targetWorkspaceArtifactId);
 
 		/// <summary>
 		/// Creates an instance of a Destination Workspace RDO.
 		/// </summary>
-		/// <param name="destinationWorkspaceId">Artifact ID of the DestinationWorkspace</param>
+		/// <param name="targetWorkspaceArtifactId">Artifact ID of the DestinationWorkspace</param>
 		/// <param name="destinationWorkspaceName">Name of the DestinationWorkspace RDO instance</param>
 		/// <returns>DestinationWorkspaceDTO of the instance that was just created</returns>
-		DestinationWorkspaceDTO CreateDestinationWorkspaceRdoInstance(int destinationWorkspaceId, string destinationWorkspaceName);
+		DestinationWorkspaceDTO CreateDestinationWorkspaceRdoInstance(int targetWorkspaceArtifactId, string destinationWorkspaceName);
 
 		/// <summary>
 		/// Mass edits/tags the Documents that were with the corresponding Destination Workspace they were pushed to.

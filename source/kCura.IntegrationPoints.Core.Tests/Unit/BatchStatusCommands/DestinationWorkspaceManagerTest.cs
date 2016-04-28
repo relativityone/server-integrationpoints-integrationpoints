@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 				Name = _updatedDestWorkspaceName
 			};
 
-			_repositoryFactory.GetDestinationWorkspaceRepository(_sourceConfig.SourceWorkspaceArtifactId, _sourceConfig.TargetWorkspaceArtifactId)
+			_repositoryFactory.GetDestinationWorkspaceRepository(_sourceConfig.SourceWorkspaceArtifactId)
 				.Returns(_destinationWorkspaceRepository);
 			_repositoryFactory.GetWorkspaceRepository().Returns(_workspaceRepository);
 			_docTableFactory.GetDocTableHelper(_tableSuffix, _sourceConfig.SourceWorkspaceArtifactId).Returns(_tempDocHelper);

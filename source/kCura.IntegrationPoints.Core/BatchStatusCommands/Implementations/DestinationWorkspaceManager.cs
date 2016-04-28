@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		public DestinationWorkspaceManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory, SourceConfiguration sourceConfig, string tableSuffix, int jobHistoryInstanceId)
 		{
 			_tempDocHelper = tempDocumentTableFactory.GetDocTableHelper(tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
-			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId, sourceConfig.TargetWorkspaceArtifactId);
+			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId);
 			_workspaceRepository = repositoryFactory.GetWorkspaceRepository();
 			_tableSuffix = tableSuffix;
 			_sourceWorkspaceId = sourceConfig.SourceWorkspaceArtifactId;
