@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
+		[Ignore]
 		public void Testing123()
 		{
 			IDBContext context = Substitute.For<IDBContext>();
