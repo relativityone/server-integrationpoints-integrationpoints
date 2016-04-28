@@ -44,22 +44,19 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				{
 					destinationWorkspace = _destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance(_destinationWorkspaceId, destinationWorkspaceName);
 				}
-				else
+				else if(destinationWorkspaceName != destinationWorkspace.WorkspaceName)
 				{
-					if (destinationWorkspaceName != destinationWorkspace.WorkspaceName)
-					{
-						destinationWorkspace.WorkspaceName = destinationWorkspaceName;
-						_destinationWorkspaceRepository.UpdateDestinationWorkspaceRdoInstance(destinationWorkspace);
-					}
+					destinationWorkspace.WorkspaceName = destinationWorkspaceName;
+					_destinationWorkspaceRepository.UpdateDestinationWorkspaceRdoInstance(destinationWorkspace);
 				}
 
 				_destinationWorkspaceRdoId = destinationWorkspace.ArtifactId;
 				_destinationWorkspaceRepository.LinkDestinationWorkspaceToJobHistory(_destinationWorkspaceRdoId, _jobHistoryInstanceId);
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				_errorOccurDuringJobStart = true;
-				throw ex;
+				throw;
 			}
 		}
 
