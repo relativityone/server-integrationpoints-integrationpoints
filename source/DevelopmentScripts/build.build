@@ -85,7 +85,7 @@
 		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
 	</target>
 	
-	<target name="build_all" description="Build the entire LDAPSync codebase, RAP, and uploads binaries" depends="build, copy_files, build_RAP_Package, upload_binaries_into_relativity">				
+	<target name="build_all" description="Build the entire LDAPSync codebase, RAP, and uploads binaries" depends="build, build_RAP_Package, upload_binaries_into_relativity">
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
