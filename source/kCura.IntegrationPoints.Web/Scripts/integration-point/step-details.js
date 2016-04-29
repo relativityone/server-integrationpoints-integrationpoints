@@ -408,6 +408,9 @@ var IP = IP || {};
 		}).extend({
 		    validation: {
 		        validator: function (value) {
+		            if (!self.isEnabled()) {
+		                return true;
+		            }
 		            if (value) {
 		                var comp = value.split('/');
 		                if (comp.length > 3) {
