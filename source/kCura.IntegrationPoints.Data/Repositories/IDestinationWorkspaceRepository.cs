@@ -20,9 +20,9 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// Creates an instance of a Destination Workspace RDO.
 		/// </summary>
 		/// <param name="targetWorkspaceArtifactId">Artifact ID of the target workspace</param>
-		/// <param name="destinationWorkspaceName">Name of the DestinationWorkspace RDO instance</param>
+		/// <param name="targetWorkspaceName">Name of the DestinationWorkspace RDO instance</param>
 		/// <returns>DestinationWorkspaceDTO of the instance that was just created</returns>
-		DestinationWorkspaceDTO Create(int targetWorkspaceArtifactId, string destinationWorkspaceName);
+		DestinationWorkspaceDTO Create(int targetWorkspaceArtifactId, string targetWorkspaceName);
 
 		/// <summary>
 		/// Mass edits/tags the Documents that were with the corresponding Destination Workspace they were pushed to.
