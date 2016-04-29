@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (result == null)
 			{
-				throw new Exception($"Unable to retrieve workspace: No workspace for given artifact id {workspaceArtifactId}");	
+				throw new Exception("Unable to retrieve Workspace");	
 			}
 
 			var workspaceDto = new WorkspaceDTO()

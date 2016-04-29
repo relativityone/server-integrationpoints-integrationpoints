@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security.Cryptography;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
