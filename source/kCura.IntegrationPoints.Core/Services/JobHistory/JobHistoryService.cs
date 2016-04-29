@@ -92,6 +92,8 @@ namespace kCura.IntegrationPoints.Core.Services
 
 				int artifactId = _caseServiceContext.RsapiService.JobHistoryLibrary.Create(jobHistory);
 				jobHistory.ArtifactId = artifactId;
+				jobHistory.Name = Utils.GetFormatForWorkspaceOrJobDisplay(integrationPoint.Name, artifactId);
+				UpdateRdo(jobHistory);
 			}
 
 			return jobHistory;
