@@ -485,7 +485,14 @@ var IP = IP || {};
 		this.logErrors = ko.observable(settings.logErrors.toString());
 		this.showErrors = ko.observable(false);
 
-		var hasBeenRun = settings.lastRun != null;
+		var hasBeenRun = false;
+		if (settings.lastRun != null) {
+			hasBeenRun = true;
+		}
+		else if (settings.hasBeenRun != null) {
+			hasBeenRun = settings.hasBeenRun;
+		}
+
 		this.hasBeenRun = ko.observable(hasBeenRun);
 
 		this.destination = new Destination(settings.destination, self);

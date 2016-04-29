@@ -152,9 +152,9 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			try
 			{
-				kCura.Method.Injection.InjectionManager.Instance.Evaluate("6a620133-011a-4fb8-8b37-758b53a46872");
 				if (IntegrationPoint != null)
 				{
+					kCura.Method.Injection.InjectionManager.Instance.Evaluate("6a620133-011a-4fb8-8b37-758b53a46872");
 					_context.RsapiService.IntegrationPointLibrary.Update(IntegrationPoint);
 				}
 			}

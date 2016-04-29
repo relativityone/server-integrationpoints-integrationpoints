@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.Relativity.Client;
+using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Service;
 using Relativity.Services.ObjectQuery;
@@ -18,23 +19,26 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class FieldRepository : IFieldRepository
 	{
+		private readonly IHelper _helper;
 		private readonly IObjectQueryManagerAdaptor _objectQueryManagerAdaptor;
 		private readonly BaseServiceContext _serviceContext;
 		private readonly BaseContext _baseContext;
-		private readonly IRSAPIClient _rsapiClient;
+		private readonly int _workspaceArtifactId;
 		private readonly Lazy<IFieldManagerImplementation> _fieldManager;
 		private IFieldManagerImplementation FieldManager => _fieldManager.Value;
 
 		public FieldRepository(
+			IHelper helper,
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor, 
 			BaseServiceContext serviceContext,
 			BaseContext baseContext,
-			IRSAPIClient rsapiClient)
+			int workspaceArtifactId)
 		{
+			_helper = helper;
 			_objectQueryManagerAdaptor = objectQueryManagerAdaptor;
 			_serviceContext = serviceContext;
 			_baseContext = baseContext;
-			_rsapiClient = rsapiClient;
+			_workspaceArtifactId = workspaceArtifactId;
 			_fieldManager = new Lazy<IFieldManagerImplementation>(() => new FieldManagerImplementation());
 		}
 
@@ -100,7 +104,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public void Delete(IEnumerable<int> artifactIds)
 		{
-			_rsapiClient.Repositories.Field.Delete(artifactIds.ToArray());
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+
+				rsapiClient.Repositories.Field.Delete(artifactIds.ToArray());
+			}
 		}
 
 		public int? RetrieveArtifactViewFieldId(int fieldArtifactId)

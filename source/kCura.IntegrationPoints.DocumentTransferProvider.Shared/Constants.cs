@@ -3,7 +3,6 @@
 	public class Constants
 	{
 		internal const string ARTIFACT_ID_FIELD_NAME = "ArtifactId";
-		internal const string CONFIG_SECTION = "kCura.IntegrationPoints";
 		internal const string INVALID_PARAMETERS = "Invalid parameters";
 		internal const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
 		internal const int QUERY_BATCH_SIZE = 10000;
@@ -14,7 +13,6 @@
 		internal const string RELATIVITY_PROVIDER_VIEW = "RelativityProvider";
 		internal const string SAVED_SEARCH_ID = "Saved Search ID";
 		internal const string TARGET_WORKSPACE_ID = "Target Workspace ID";
-		internal const string WEB_API_PATH = "WebAPIPath";
 		internal const string DOC_OBJ_GUID = "15C36703-74EA-4FF8-9DFB-AD30ECE7530D";
 
 		internal static class Fields

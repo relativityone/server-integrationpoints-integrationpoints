@@ -7,15 +7,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Queries
 {
 	[Explicit]
 	[TestFixture]
+	[Ignore]
 	public class GetRecentJobHistoryTests : IntegrationTestBase
 	{
 		public IRSAPIService Service
 		{
 			get
 			{
-				var service = new RSAPIService();
-				service.JobHistoryErrorLibrary = new RsapiClientLibrary<JobHistoryError>(RsapiClient);
-				return service;
+//				var service = new RSAPIService();
+//				service.JobHistoryErrorLibrary = new RsapiClientLibrary<JobHistoryError>(RsapiClient);
+//				return service;
+				return null;
 			}
 		}
 

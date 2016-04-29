@@ -11,12 +11,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		[Test]
 		public void GetIntegrationPoints_SourceProviderId_IntegrationPoint()
 		{
-			IRSAPIService service = new RSAPIService();
-			service.IntegrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(RsapiClient);
-			IntegrationPointQuery ripQuery = new IntegrationPointQuery(service);
-			var value = ripQuery.GetIntegrationPoints(new List<int>() { 1039580 });
-
-			Assert.IsNotNull(value);
+//			IRSAPIService service = new RSAPIService();
+//			service.IntegrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(RsapiClient);
+//			IntegrationPointQuery ripQuery = new IntegrationPointQuery(service);
+//			var value = ripQuery.GetIntegrationPoints(new List<int>() { 1039580 });
+//
+//			Assert.IsNotNull(value);
 		}
 	}
 }
