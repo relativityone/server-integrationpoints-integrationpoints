@@ -6,20 +6,24 @@ using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.LDAPProvider;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
-using IDBContext = Relativity.API.IDBContext;
 using Relativity.CustomPages;
 using Relativity.Toggles;
 using Relativity.Toggles.Providers;
+using IDBContext = Relativity.API.IDBContext;
 
 namespace kCura.IntegrationPoints.Web.Installers
 {
@@ -31,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
 			container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
 
-			container.Register(Component.For<IConfig>().Instance(Config.Instance));
+			container.Register(Component.For<IConfig>().Instance(kCura.IntegrationPoints.Config.Config.Instance));
 
 			container.Register(Component.For<ISessionService>().UsingFactoryMethod(k => SessionService.Session).LifestylePerWebRequest());
 			container.Register(Component.For<IPermissionService>().ImplementedBy<PermissionService>().LifestyleTransient());
@@ -65,13 +69,12 @@ namespace kCura.IntegrationPoints.Web.Installers
 
 			container.Register(Component.For<GridModelFactory>().ImplementedBy<GridModelFactory>().LifestyleTransient());
 
-
 			container.Register(
 				Component.For<GetApplicationBinaries>()
 					.ImplementedBy<GetApplicationBinaries>().DynamicParameters((k, d) => d["eddsDBcontext"] = ConnectionHelper.Helper().GetDBContext(-1))
 					.LifeStyle.Transient);
 
-			container.Register(Component.For<RelativityUrlHelper>().ImplementedBy<RelativityUrlHelper>().LifeStyle.Transient);
+			container.Register(Component.For<IRelativityUrlHelper>().ImplementedBy<RelativityUrlHelper>().LifeStyle.Transient);
 
 			container.Register(Component.For<IEncryptionManager>().ImplementedBy<DefaultEncryptionManager>().LifeStyle.Transient);
 			container.Register(Component.For<WebAPILoginException>().ImplementedBy<WebAPILoginException>().LifeStyle.Transient);
@@ -89,11 +92,18 @@ namespace kCura.IntegrationPoints.Web.Installers
 					Task<SqlConnection> task = Task.Run(() =>
 					{
 						SqlConnection connection = ConnectionHelper.Helper().GetDBContext(-1).GetConnection(true);
-						return connection;	
+						return connection;
 					});
 
 					return await task;
 				})).LifestyleTransient());
+
+			container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
+			
+			container.Register(Component.For<IWorkspaceRepository>()
+					.ImplementedBy<KeplerWorkspaceRepository>()
+					.UsingFactoryMethod((k) => k.Resolve<IRepositoryFactory>().GetWorkspaceRepository())
+					.LifestyleTransient());
 		}
 	}
 }

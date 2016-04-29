@@ -1,26 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
-using kCura.IntegrationPoints.Data.Extensions;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class IntegrationPointService
+	public class IntegrationPointService : IIntegrationPointService
 	{
 		private readonly ICaseServiceContext _context;
-		private Data.IntegrationPoint _rdo;
-		private readonly kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
+		private IntegrationPoint _rdo;
+		private readonly ISerializer _serializer;
 		private readonly ChoiceQuery _choiceQuery;
 		private readonly IJobManager _jobService;
 
-		public IntegrationPointService(ICaseServiceContext context, kCura.Apps.Common.Utils.Serializers.ISerializer serializer, ChoiceQuery choiceQuery, IJobManager jobService)
+		public IntegrationPointService(ICaseServiceContext context, ISerializer serializer, ChoiceQuery choiceQuery, IJobManager jobService)
 		{
 			_context = context;
 			_serializer = serializer;
@@ -28,45 +29,59 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobService = jobService;
 		}
 
-		public Data.IntegrationPoint GetRdo(int rdoID)
+		public IntegrationPoint GetRdo(int artifactId)
 		{
-			if (_rdo == null || _rdo.ArtifactId != rdoID)
+			if (_rdo == null || _rdo.ArtifactId != artifactId)
 			{
-				_rdo = _context.RsapiService.IntegrationPointLibrary.Read(rdoID);
+				_rdo = _context.RsapiService.IntegrationPointLibrary.Read(artifactId);
 			}
 			return _rdo;
 		}
 
-		public virtual string GetSourceOptions(int artifactID)
+		public IList<IntegrationPoint> GetAllIntegrationPoints()
 		{
-			return GetRdo(artifactID).SourceConfiguration;
+			IntegrationPointQuery integrationPointQuery = new IntegrationPointQuery(_context.RsapiService);
+			IList<IntegrationPoint> integrationPoints = integrationPointQuery.GetAllIntegrationPoints();
+			return integrationPoints;
 		}
 
-		public virtual FieldEntry GetIdentifierFieldEntry(int artifactID)
+		public virtual string GetSourceOptions(int artifactId)
 		{
-			var rdo = GetRdo(artifactID);
+			return GetRdo(artifactId).SourceConfiguration;
+		}
+
+		public virtual FieldEntry GetIdentifierFieldEntry(int artifactId)
+		{
+			var rdo = GetRdo(artifactId);
 			var fields = _serializer.Deserialize<List<FieldMap>>(rdo.FieldMappings);
 			return fields.First(x => x.FieldMapType == FieldMapTypeEnum.Identifier).SourceField;
 		}
 
-		public IntegrationModel ReadIntegrationPoint(int artifactID)
+		public IntegrationModel ReadIntegrationPoint(int artifactId)
 		{
-			var point = GetRdo(artifactID);
-			return new IntegrationModel(point);
+			IntegrationPoint integrationPoint = GetRdo(artifactId);
+			var integrationModel = new IntegrationModel(integrationPoint);
+			return integrationModel;
 		}
 
-		public IEnumerable<FieldMap> GetFieldMap(int artifactID)
+		public IEnumerable<FieldMap> GetFieldMap(int artifactId)
 		{
 			IEnumerable<FieldMap> mapping = new List<FieldMap>();
-			if (artifactID > 0)
+			if (artifactId > 0)
 			{
 				string fieldmap;
 				if (_rdo != null)
+				{
 					fieldmap = _rdo.FieldMappings;
+				}
 				else
-					fieldmap = _context.RsapiService.IntegrationPointLibrary.Read(artifactID, new Guid(Data.IntegrationPointFieldGuids.FieldMappings)).FieldMappings;
+				{
+					fieldmap =
+						_context.RsapiService.IntegrationPointLibrary.Read(artifactId, new Guid(IntegrationPointFieldGuids.FieldMappings))
+							.FieldMappings;
+				}
 
-				if (!string.IsNullOrEmpty(fieldmap))
+				if (!String.IsNullOrEmpty(fieldmap))
 				{
 					mapping = _serializer.Deserialize<IEnumerable<FieldMap>>(fieldmap);
 				}
@@ -76,10 +91,9 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public int SaveIntegration(IntegrationModel model)
 		{
-			var choices = _choiceQuery.GetChoicesOnField(Guid.Parse(Data.IntegrationPointFieldGuids.OverwriteFields));
-
-			var ip = model.ToRdo(choices);
-			var rule = this.ToScheduleRule(model);
+			IList<Relativity.Client.DTOs.Choice> choices = _choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
+			IntegrationPoint ip = model.ToRdo(choices);
+			PeriodicScheduleRule rule = ToScheduleRule(model);
 			if (ip.EnableScheduler.GetValueOrDefault(false))
 			{
 				ip.ScheduleRule = rule.ToSerializedString();
@@ -92,6 +106,22 @@ namespace kCura.IntegrationPoints.Core.Services
 				rule = null;
 			}
 
+			TaskType task;
+			TaskParameters jobDetails = null;
+			SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(ip.SourceProvider.Value);
+			if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+			{
+				jobDetails = new TaskParameters
+				{
+					BatchInstance = Guid.NewGuid()
+				};
+				task = TaskType.ExportService;
+			}
+			else
+			{
+				task = TaskType.SyncManager;
+			}
+
 			//save RDO
 			if (ip.ArtifactId > 0)
 			{
@@ -101,13 +131,14 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				ip.ArtifactId = _context.RsapiService.IntegrationPointLibrary.Create(ip);
 			}
+
 			if (rule != null)
 			{
-				_jobService.CreateJob<object>(null, TaskType.SyncManager, _context.WorkspaceID, ip.ArtifactId, rule);
+				_jobService.CreateJob<object>(jobDetails, task, _context.WorkspaceID, ip.ArtifactId, rule);
 			}
 			else
 			{
-				Job job = _jobService.GetJob(_context.WorkspaceID, ip.ArtifactId, TaskType.SyncManager.ToString());
+				Job job = _jobService.GetJob(_context.WorkspaceID, ip.ArtifactId, task.ToString());
 				if (job != null)
 				{
 					_jobService.DeleteJob(job.JobId);
@@ -115,20 +146,22 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			return ip.ArtifactId;
 		}
-
-		public IEnumerable<string> GetRecipientEmails(int integrationPoint)
+		public IEnumerable<string> GetRecipientEmails(int artifactId)
 		{
-			return (this.GetRdo(integrationPoint).EmailNotificationRecipients ?? string.Empty).Split(';').Select(x => x.Trim());
+			IntegrationPoint integrationPoint = GetRdo(artifactId);
+			string emailRecipients = integrationPoint.EmailNotificationRecipients ?? string.Empty;
+			IEnumerable<string> emailRecipientList = emailRecipients.Split(';').Select(x => x.Trim());
+			return emailRecipientList;
 		}
 		#region Please refactor
 		public class Weekly
 		{
 			public List<string> SelectedDays { get; set; }
-			public string TemplateID { get; set; }
+			public string TemplateId { get; set; }
 
 			public Weekly()
 			{
-				this.TemplateID = "weeklySendOn";
+				TemplateId = "weeklySendOn";
 			}
 		}
 
@@ -145,17 +178,17 @@ namespace kCura.IntegrationPoints.Core.Services
 			public int SelectedDay { get; set; }
 			public OccuranceInMonth? SelectedType { get; set; }
 			public DaysOfWeek SelectedDayOfTheMonth { get; set; }
-			public string TemplateID { get; set; }
+			public string TemplateId { get; set; }
 
 			public Monthly()
 			{
-				this.TemplateID = "monthlySendOn";
+				TemplateId = "monthlySendOn";
 			}
 		}
 
 		private static DaysOfWeek FromDayOfWeek(List<DayOfWeek> days)
 		{
-			var map = kCura.ScheduleQueue.Core.ScheduleRules.ScheduleRuleBase.DaysOfWeekMap.ToDictionary(x => x.Value, x => x.Key);
+			var map = ScheduleRuleBase.DaysOfWeekMap.ToDictionary(x => x.Value, x => x.Key);
 			return days.Aggregate(DaysOfWeek.None, (current, dayOfWeek) => current | map[dayOfWeek]);
 		}
 
@@ -175,12 +208,12 @@ namespace kCura.IntegrationPoints.Core.Services
 		private PeriodicScheduleRule ToScheduleRule(IntegrationModel model)
 		{
 			var periodicScheduleRule = new PeriodicScheduleRule();
-			DateTime startDate = DateTime.Now;
+			DateTime startDate;
 			if (DateTime.TryParse(model.Scheduler.StartDate, out startDate))
 			{
 				periodicScheduleRule.StartDate = startDate;
 			}
-			DateTime endDate = DateTime.Now;
+			DateTime endDate;
 			if (DateTime.TryParse(model.Scheduler.EndDate, out endDate))
 			{
 				periodicScheduleRule.EndDate = endDate;

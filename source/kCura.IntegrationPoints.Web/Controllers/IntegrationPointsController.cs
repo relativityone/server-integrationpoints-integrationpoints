@@ -1,32 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Net;
 using System.Web.Mvc;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.LDAPProvider;
-using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Web.Models;
-using kCura.IntegrationPoints.Web.Toggles;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
 	public class IntegrationPointsController : BaseController
 	{
-		private readonly IntegrationPointService _reader;
+		private readonly IIntegrationPointService _reader;
 		private readonly RSAPIRdoQuery _rdoQuery;
 		private readonly ITabService _tabService;
 		private readonly IPermissionService _permissionService;
 
 		public IntegrationPointsController(
-			IntegrationPointService reader, 
-			RSAPIRdoQuery relativityRdoQuery, 
-			ITabService tabService, 
+			IIntegrationPointService reader,
+			RSAPIRdoQuery relativityRdoQuery,
+			ITabService tabService,
 			IPermissionService permissionService)
 		{
 			_reader = reader;
@@ -53,14 +45,13 @@ namespace kCura.IntegrationPoints.Web.Controllers
 				});
 			}
 			return View("NotEnoughPermission", new EditPoint { URL = previousURL });
-
 		}
 
 		public ActionResult StepDetails()
 		{
 			return PartialView("_IntegrationDetailsPartial");
 		}
-		
+
 		public ActionResult StepDetails3()
 		{
 			return PartialView("_IntegrationMapFields");
@@ -81,7 +72,6 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return View("RelativityProviderConfiguration", "_StepLayout");
 		}
 
-
 		public ActionResult Details(int id)
 		{
 			var integrationViewModel = _reader.ReadIntegrationPoint(id);
@@ -100,6 +90,5 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			bool isAuthenticated = service.IsAuthenticated();
 			return isAuthenticated ? JsonNetResult(new object { }) : JsonNetResult(new { }, HttpStatusCode.BadRequest);
 		}
-
 	}
 }

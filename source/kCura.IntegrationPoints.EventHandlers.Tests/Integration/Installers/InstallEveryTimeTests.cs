@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.Relativity.Client;
@@ -20,7 +16,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			{
 				this.WorkspaceID = workspaceID;
 			}
+
 			public int WorkspaceID { get; set; }
+
 			public int GetEddsUserID()
 			{
 				throw new NotImplementedException();
@@ -60,7 +58,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 			//eh.ServiceContext.RsapiService.SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(service);
 			//eh.ServiceContext.RsapiService.DestinationProviderLibrary = new RsapiClientLibrary<DestinationProvider>(service);
 			//eh.Execute();
-
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 	{
 		public static RdoSynchronizerBase ChangeWebAPIPath(RdoSynchronizerBase synchronizer)
 		{
-			var prop = synchronizer.GetType().GetProperty("WebAPIPath");
+			var prop = synchronizer.GetType().GetProperty(kCura.IntegrationPoints.Contracts.Constants.WEB_API_PATH);
 			prop.SetValue(synchronizer, "Mock value");
 			return synchronizer;
 		}
@@ -85,12 +85,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 				new FieldEntry {DisplayName = "User", FieldIdentifier = "4"},
 			};
 
-
 			//ACT
 			var str = JsonConvert.SerializeObject(options);
 			var rdoSynchronizer = ChangeWebAPIPath(new RdoSynchronizerPull(fieldMock, RdoCustodianSynchronizerTests.GetMockAPI(fieldMock)));
 			var listOfFieldEntry = rdoSynchronizer.GetFields(str).ToList();
-
 
 			//ASSERT
 			Assert.AreEqual(expectedFieldEntry.Count, listOfFieldEntry.Count);
@@ -224,7 +222,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			};
 
 			NativeFileImportService nativeFileImportService = new NativeFileImportService();
-			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = true});
+			string options = JsonConvert.SerializeObject(new ImportSettings { ArtifactTypeId = 1111111, CaseArtifactId = 2222222, ImportNativeFile = true });
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
 			//ACT
@@ -262,10 +260,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			//ACT
 			ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
 
-
 			//ASSERT
 			Assert.IsNull(result.FolderPathSourceFieldName);
-			Assert.AreEqual(0, result.DestinationFolderArtifactID);
+			Assert.AreEqual(0, result.DestinationFolderArtifactId);
 		}
 
 		[Test]
@@ -288,8 +285,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			ImportSettings result = rdoSynchronizer.GetSyncDataImportSettings(fieldMap, options, nativeFileImportService);
 
 			//ASSERT
-			Assert.AreEqual("SourceFld4", result.FolderPathSourceFieldName);
-			Assert.AreEqual(0, result.DestinationFolderArtifactID);
+			Assert.AreEqual(Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME, result.FolderPathSourceFieldName);
+			Assert.AreEqual(0, result.DestinationFolderArtifactId);
 		}
 
 		[Test]
@@ -304,10 +301,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			};
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-
 			//ACT
 			bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
-
 
 			//ASSERT
 			Assert.IsTrue(result);
@@ -325,10 +320,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			};
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-
 			//ACT
 			bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
-
 
 			//ASSERT
 			Assert.IsFalse(result);
@@ -346,10 +339,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			};
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-
 			//ACT
 			bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
-
 
 			//ASSERT
 			Assert.IsFalse(result);
@@ -367,17 +358,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			};
 			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
 
-
 			//ACT
 			bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
-
 
 			//ASSERT
 			Assert.IsTrue(result);
 		}
 
 		[Test]
-		public void IncludeFieldInImport_FieldMapTypeIsFolderPathInformation_False()
+		public void IncludeFieldInImport_FieldMapTypeIsFolderPathInformationWhenThereIsADestination_True()
 		{
 			//ARRANGE
 			FieldMap fieldMap = new FieldMap()
@@ -391,18 +380,55 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			//ACT
 			bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
 
+			//ASSERT
+			Assert.IsTrue(result);
+		}
+
+		[Test]
+		public void IncludeFieldInImport_FieldMapTypeIsFolderPathInformationWhenThereIsNoDestinationSet_False()
+		{
+			//ARRANGE
+			FieldMap fieldMap = new FieldMap()
+			{
+				DestinationField = null,
+				FieldMapType = FieldMapTypeEnum.FolderPathInformation,
+				SourceField = new FieldEntry() { FieldIdentifier = "SourceFld1" }
+			};
+			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
+
+			//ACT
+			bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
+
+			//ASSERT
+			Assert.IsFalse(result);
+		}
+
+		[Test]
+		public void IncludeFieldInImport_FieldMapTypeIsFolderPathInformationWhenThereIsDestinationHasNullProperties_False()
+		{
+			//ARRANGE
+			FieldMap fieldMap = new FieldMap()
+			{
+				DestinationField = new FieldEntry(),
+				FieldMapType = FieldMapTypeEnum.FolderPathInformation,
+				SourceField = new FieldEntry() { FieldIdentifier = "SourceFld1" }
+			};
+			TestRdoSynchronizer rdoSynchronizer = new TestRdoSynchronizer();
+
+			//ACT
+			bool result = rdoSynchronizer.IncludeFieldInImport(fieldMap);
 
 			//ASSERT
 			Assert.IsFalse(result);
 		}
 	}
 
-	public class TestRdoSynchronizer : kCura.IntegrationPoints.Synchronizers.RDO.RdoSynchronizerPull
+	public class TestRdoSynchronizer : RdoSynchronizerPull
 	{
 		public TestRdoSynchronizer()
 			: base(null, null)
 		{
-			WebAPIPath = "WebAPIPath";
+			WebAPIPath = kCura.IntegrationPoints.Contracts.Constants.WEB_API_PATH;
 			DisableNativeLocationValidation = false;
 			DisableNativeValidation = false;
 		}

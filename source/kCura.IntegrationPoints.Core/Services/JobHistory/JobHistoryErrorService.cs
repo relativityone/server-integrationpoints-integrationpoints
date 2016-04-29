@@ -10,17 +10,20 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public class JobHistoryErrorService
 	{
-		private ICaseServiceContext _context;
-		private List<JobHistoryError> _jobHistoryErrorList;
+		private readonly ICaseServiceContext _context;
+		private readonly List<JobHistoryError> _jobHistoryErrorList;
+		private bool _errorOccurredDuringJob;
+
 		public JobHistoryErrorService(ICaseServiceContext context)
 		{
 			_context = context;
 			_jobHistoryErrorList = new List<JobHistoryError>();
+			_errorOccurredDuringJob = false;
 		}
 
 		public Data.JobHistory JobHistory { get; set; }
 		public IntegrationPoint IntegrationPoint { get; set; }
-		//private IBatchReporter _batchReporter;
+
 		public void SubscribeToBatchReporterEvents(object batchReporter)
 		{
 			if (batchReporter is IBatchReporter)
@@ -39,8 +42,15 @@ namespace kCura.IntegrationPoints.Core.Services
 					if (_jobHistoryErrorList.Any())
 					{
 						kCura.Method.Injection.InjectionManager.Instance.Evaluate("9B9265FB-F63D-44D3-90A2-87C1570F746D");
+						_errorOccurredDuringJob = true;
+						IntegrationPoint.HasErrors = true;
 
 						_context.RsapiService.JobHistoryErrorLibrary.Create(_jobHistoryErrorList);
+					}
+
+					if (!_errorOccurredDuringJob)
+					{
+						IntegrationPoint.HasErrors = false;
 					}
 				}
 				catch (Exception ex)
@@ -54,11 +64,12 @@ namespace kCura.IntegrationPoints.Core.Services
 								x.SourceUniqueID, x.Error))).ToList();
 					allErrors = String.Join(Environment.NewLine, errorList.ToArray());
 					allErrors += string.Format("{0}{0}Reason for exception: {1}", Environment.NewLine, GenerateErrorMessage(ex));
-					throw new Exception("Could not commit Job History Errors. These are uncommited errors:" + Environment.NewLine + allErrors);
+					throw new Exception("Could not commit Job History Errors. These are uncommitted errors:" + Environment.NewLine + allErrors);
 				}
 				finally
 				{
 					_jobHistoryErrorList.Clear();
+					UpdateIntegrationPoint();
 				}
 			}
 		}
@@ -112,11 +123,46 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private string GenerateErrorMessage(Exception ex)
 		{
-			StringBuilder sb = new StringBuilder();
-			sb.AppendLine(ex.Message);
-			sb.AppendLine(ex.StackTrace);
-			if (ex.InnerException != null) sb.AppendLine(GenerateErrorMessage(ex.InnerException));
-			return sb.ToString();
+			var aggregateException = ex as AggregateException;
+			var stringBuilder = new StringBuilder();
+			bool isAggregateExceptionWithInnerExceptions = aggregateException?.InnerExceptions != null;
+
+			stringBuilder.AppendLine(ex.Message);
+			stringBuilder.AppendLine(ex.StackTrace);
+
+			if (isAggregateExceptionWithInnerExceptions)
+			{
+				for (int i = 0; i < aggregateException.InnerExceptions.Count; i++)
+				{
+					int innerExceptionId = i + 1;
+					stringBuilder.AppendLine($"Inner Exception {innerExceptionId}:");
+					stringBuilder.AppendLine(GenerateErrorMessage(aggregateException.InnerExceptions[i]));
+				}
+			}
+			else if (ex.InnerException != null)
+			{
+				stringBuilder.AppendLine("Inner Exception:");
+				stringBuilder.AppendLine(GenerateErrorMessage(ex.InnerException));
+			}
+
+			return stringBuilder.ToString();
+		}
+
+		private void UpdateIntegrationPoint()
+		{
+			try
+			{
+				if (IntegrationPoint != null)
+				{
+					kCura.Method.Injection.InjectionManager.Instance.Evaluate("6a620133-011a-4fb8-8b37-758b53a46872");
+					_context.RsapiService.IntegrationPointLibrary.Update(IntegrationPoint);
+				}
+			}
+			catch
+			{
+				//Ignore error, if we can't update the Integration Point's Has Errors Field, just continue on.
+				//The field may be out of state with the true job status, or subsequent Update calls may succeed.
+			}
 		}
 	}
 }

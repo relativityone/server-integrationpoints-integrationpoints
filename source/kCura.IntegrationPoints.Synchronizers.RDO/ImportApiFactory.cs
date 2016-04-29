@@ -11,9 +11,9 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 	{
 		private const string _RELATIVITY_BEARER_USERNAME = "XxX_BearerTokenCredentials_XxX";
 
-		public virtual IImportAPI GetImportAPI(ImportSettings settings)
+		public virtual IExtendedImportAPI GetImportAPI(ImportSettings settings)
 		{
-			IImportAPI importAPI = null;
+			IExtendedImportAPI importAPI = null;
 			try
 			{
 				if (RelativityVersion.IsRelativityVersion93OrGreater)

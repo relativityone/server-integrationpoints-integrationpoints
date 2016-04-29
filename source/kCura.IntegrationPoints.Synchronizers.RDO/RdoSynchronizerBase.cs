@@ -46,21 +46,26 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return _api ?? (_api = _factory.GetImportAPI(settings));
 		}
 
-		private List<string> IgnoredList
+
+		private HashSet<string> _ignoredList;
+		private HashSet<string> IgnoredList
 		{
 			get
 			{
 				// fields don't have any space in between words 
-				var list = new List<string>
-			    {
-					"Is System Artifact",
-					"System Created By",
-					"System Created On",
-					"System Last Modified By",
-					"System Last Modified On",
-					"Artifact ID"
-			    };
-				return list;
+				if (_ignoredList == null)
+				{
+					_ignoredList = new HashSet<string>
+					{
+						"Is System Artifact",
+						"System Created By",
+						"System Created On",
+						"System Last Modified By",
+						"System Last Modified On",
+						"Artifact ID"
+					};
+				}
+				return _ignoredList;
 			}
 		}
 
@@ -183,7 +188,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				if (string.IsNullOrEmpty(_webAPIPath))
 				{
-					_webAPIPath = Config.Instance.WebApiPath;
+					_webAPIPath = kCura.IntegrationPoints.Config.Config.Instance.WebApiPath;
 				}
 				return _webAPIPath;
 			}
@@ -197,7 +202,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				if (!_disableNativeLocationValidation.HasValue)
 				{
-					_disableNativeLocationValidation = Config.Instance.DisableNativeLocationValidation;
+					_disableNativeLocationValidation = kCura.IntegrationPoints.Config.Config.Instance.DisableNativeLocationValidation;
 				}
 				return _disableNativeLocationValidation;
 			}
@@ -211,7 +216,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				if (!_disableNativeValidation.HasValue)
 				{
-					_disableNativeValidation = Config.Instance.DisableNativeValidation;
+					_disableNativeValidation = kCura.IntegrationPoints.Config.Config.Instance.DisableNativeValidation;
 				}
 				return _disableNativeValidation;
 			}
@@ -249,7 +254,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				importService.OnDocumentError += OnDocumentError;
 			}
-
 			importService.Initialize();
 
 			return importService;
@@ -294,19 +298,25 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			if (fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation))
 			{
-				settings.FolderPathSourceFieldName = fieldMap.First(x => x.FieldMapType == FieldMapTypeEnum.FolderPathInformation).SourceField.ActualName;
+				// NOTE :: If you expect to import the folder path, the import API will expect this field to be specified upon import. This is to avoid the field being both mapped and used as a folder path.
+				settings.FolderPathSourceFieldName = Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME;
 			}
+
+			if (SourceProvider != null && SourceProvider.Config.AlwaysImportNativeFileNames)
+			{
+				// So that the destination workspace file icons correctly display, we give the import API the file name of the document
+				settings.FileNameColumn = Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME;
+			}
+
 			return settings;
 		}
 
 		protected virtual Dictionary<string, int> GetSyncDataImportFieldMap(IEnumerable<FieldMap> fieldMap, ImportSettings settings)
 		{
 			Dictionary<string, int> importFieldMap = null;
-
 			try
 			{
-				importFieldMap = fieldMap.Where(x => IncludeFieldInImport(x))
-					.ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
+				importFieldMap = fieldMap.Where(IncludeFieldInImport).ToDictionary(x => x.SourceField.FieldIdentifier, x => int.Parse(x.DestinationField.FieldIdentifier));
 			}
 			catch (Exception ex)
 			{
@@ -343,13 +353,13 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		protected bool IncludeFieldInImport(FieldMap fieldMap)
 		{
-			return (
-				fieldMap.FieldMapType != FieldMapTypeEnum.Parent
-				&&
-				fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath
-				&&
-				fieldMap.FieldMapType != FieldMapTypeEnum.FolderPathInformation
-				);
+			bool toInclude = fieldMap.FieldMapType != FieldMapTypeEnum.Parent &&
+			                 fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath;
+			if (toInclude && fieldMap.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
+			{
+				toInclude = fieldMap.DestinationField != null && fieldMap.DestinationField.FieldIdentifier != null;
+			}
+			return toInclude;
 		}
 
 		private void Finish(DateTime startTime, DateTime endTime, int totalRows, int errorRowCount)

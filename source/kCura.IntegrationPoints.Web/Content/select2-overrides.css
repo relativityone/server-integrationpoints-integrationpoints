@@ -356,3 +356,25 @@
 .select2-container.subgrid-pager-container.select2-container-active.select2-dropdown-open a span {
   background-color: #cccccc; }
 
+/* disabled styles */
+
+.select2-container.select2-container-disabled.filter-container .select2-choice {
+    background-color: #EBEBE4;
+    background-image: none;
+    border: 1px solid #C1C1C1;
+    cursor: default;
+}
+
+.select2-container.select2-container-disabled.filter-container .select2-choice .select2-arrow {
+    background-color: #EBEBE4;
+    background-image: none;
+    border-left: 0;
+}
+
+.select2-container.select2-container-disabled.filter-container .select2-choice abbr {
+    display: none;
+}
+
+.select2-container.select2-container-disabled.filter-container .select2-chosen {
+	background: none;
+}

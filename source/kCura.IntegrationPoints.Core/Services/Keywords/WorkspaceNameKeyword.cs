@@ -1,23 +1,26 @@
 ﻿using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Services.Keywords
 {
 	public class WorkspaceNameKeyword : IKeyword
 	{
 		private readonly ICaseServiceContext _context;
-		private readonly Data.Queries.WorkspaceQuery _query;
+		private readonly IWorkspaceRepository _workspaceRepository;
 
 		public string KeywordName { get { return "\\[WORKSPACE.NAME]"; } }
 
-		public WorkspaceNameKeyword(ICaseServiceContext context, Data.Queries.WorkspaceQuery query)
+		// TODO: Resolve workspaceId instead of ICaseServiceContext
+		public WorkspaceNameKeyword(ICaseServiceContext context, IWorkspaceRepository workspaceRepository)
 		{
 			_context = context;
-			_query = query;
+			_workspaceRepository = workspaceRepository;
 		}
 		
 		public string Convert()
 		{
-			return _query.GetWorkspace(_context.WorkspaceID).Name;
+			string workspaceName = _workspaceRepository.Retrieve(_context.WorkspaceID).Name;
+			return workspaceName;
 		}
 	}
 }

@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 		public IRSAPIService GetRsapiService()
 		{
 			if (this.WorkspaceID > 0)
-				return ServiceContextFactory.CreateRSAPIService(this.GetRsapiClient());
+				return ServiceContextFactory.CreateRSAPIService(helper, WorkspaceID);
 			else
 				return null;
 		}

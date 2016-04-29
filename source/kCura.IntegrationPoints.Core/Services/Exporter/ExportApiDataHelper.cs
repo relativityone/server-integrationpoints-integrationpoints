@@ -13,8 +13,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
 	public static class ExportApiDataHelper
 	{
-		private const String MultiObjectParsingError = "Encounter error while processing multi-object field, this may due to out-of-date version of the software. Please contact administrator for more information.";
+		private const String MultiObjectParsingError = "Encountered an error while processing multi-object field, this may due to out-of-date version of the software. Please contact administrator for more information.";
 		private static readonly Lazy<XmlSerializer> MultiObjectFieldSerializer = new Lazy<XmlSerializer>(() => new XmlSerializer(typeof(XmlSerializerRoot)));
+		private const string TempRootGuid = "e7913be0-cd0a-4833-a432-f2d67a2f1349";
 
 		/// <summary>
 		/// Sanitize single choice string that comes from export api.
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		/// Sanitize multi-object string that comes from export api.
 		/// </summary>
 		/// <param name="rawValue">an untyped object from export api</param>
-		/// <returns>a string contains the text identifier represent multi-object data, seperating object by ';'</returns>
+		/// <returns>a string contains the text identifier represent multi-object data, separating object by ';'</returns>
 		public static object SanitizeMultiObjectField(object rawValue)
 		{
 			try
@@ -54,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				string value = rawValue as string;
 				if (String.IsNullOrEmpty(value) == false)
 				{
-					string tempValue = "<e7913be0-cd0a-4833-a432-f2d67a2f1349>" + value + "</e7913be0-cd0a-4833-a432-f2d67a2f1349>";
+					string tempValue = String.Format("<{0}>{1}</{0}>", TempRootGuid, value);
 
 					using (XmlReader reader = XmlReader.Create(new StringReader(tempValue)))
 					{
@@ -65,15 +66,12 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						}
 						else
 						{
-							value = String.Join(IntegrationPoints.Contracts.Constants.MULTI_VALUE_DEIMITER.ToString(), data.Object);
+							value = String.Join(IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER.ToString(), data.Object);
 						}
 					}
 					return value;
 				}
-				else
-				{
-					return rawValue;
-				}
+				return rawValue;
 			}
 			catch (Exception exception)
 			{
@@ -82,27 +80,48 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 		}
 
-		// used to formatize multi object field data
-		[XmlRoot("e7913be0-cd0a-4833-a432-f2d67a2f1349")]
+		// used to format multi object field data
+		[XmlRoot(TempRootGuid)]
 		public class XmlSerializerRoot
 		{
 			[XmlElement("object")]
 			public String[] Object { get; set; }
 		}
 
-		public static async Task<string> RetrieveLongTextFieldAsync(BaseServiceContext context, DataGridContext dgContext, int documentArtifactId, int caseId, int fieldArtifactId)
+		public class RelativityLongTextStreamFactory : IILongTextStreamFactory
+		{
+			private readonly BaseServiceContext _context;
+			private readonly DataGridContext _dataGridContext;
+			private readonly int _caseId;
+
+			public RelativityLongTextStreamFactory(BaseServiceContext context, DataGridContext dgContext, int caseId)
+			{
+				_context = context;
+				_dataGridContext = dgContext;
+				_caseId = caseId;
+			}
+
+			public ILongTextStream CreateLongTextStream(int documentArtifactId, int fieldArtifactId)
+			{
+				return new LongTextStream(_context, documentArtifactId, _caseId, _dataGridContext, fieldArtifactId);
+			}
+		}
+
+		public static async Task<string> RetrieveLongTextFieldAsync(IILongTextStreamFactory longTextStreamFactory, int documentArtifactId, int fieldArtifactId)
 		{
 			const int bufferSize = 4016;
 			return await Task.Run(() =>
 			{
 				StringBuilder strBuilder = null;
-				using (ILongTextStream stream = new LongTextStream(context, documentArtifactId, caseId, dgContext, fieldArtifactId))
+				using (ILongTextStream stream = longTextStreamFactory.CreateLongTextStream(documentArtifactId, fieldArtifactId))
 				{
+					Encoding encoding = stream.IsUnicode ? Encoding.Unicode : Encoding.ASCII;
 					strBuilder  = new StringBuilder((int)stream.Length);
 					byte[] buffer = new byte[bufferSize];
-					while (stream.Read(buffer, 0, buffer.Length) != 0)
+					int read;
+					while ((read = stream.Read(buffer, 0, buffer.Length)) != 0)
 					{
-						strBuilder.Append(Encoding.UTF8.GetString(buffer));
+						strBuilder.Append(encoding.GetString(buffer, 0, read));
 						buffer = new byte[bufferSize];
 					}
 				}

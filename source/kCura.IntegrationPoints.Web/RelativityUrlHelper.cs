@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using kCura.IntegrationPoints.Core;
+﻿using System.Web;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 
 namespace kCura.IntegrationPoints.Web
 {
-	public class RelativityUrlHelper
-	{
+	public class RelativityUrlHelper : IRelativityUrlHelper
+	{ 
 
 		public const string VIEW_URL_TEMPLATE =
 			"/{0}/Case/Mask/View.aspx?AppID={1}&ArtifactID={2}&ArtifactTypeID={3}";

@@ -24,6 +24,11 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.DocumentTransferProvider")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Web.Tests")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] // NSubsitute requires this to mock internal interfaces
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data.Tests")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Core.Tests")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Agent")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.Synchronizers.RDO.Tests")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 //[assembly: Guid("9808fab4-ae17-49c5-a74a-e34543378422")]
@@ -40,3 +45,5 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("2.0.0.0")]
 [assembly: AssemblyFileVersion("2.0.0.0")]
+
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.EventHandlers.Tests")]

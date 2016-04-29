@@ -6,6 +6,7 @@
 	<property name="source.code.directory" value="${root}" />
 	<property name="action" value="build" unless="${property::exists('action')}" />
 	<property name="buildconfig" value="release" unless="${property::exists('buildconfig')}" />
+	<property name="buildconfig" value="release" unless="${property::exists('buildconfig')}" />
 	<property name="copyconfig" value="false" unless="${property::exists('copyconfig')}" />
 	<property name="buildsuccessfile" value="${source.code.directory}\.lastbuildsucceeded" readonly="true" />
 	<property name="targetsfile" value="msbuild.targets" readonly="true" />
@@ -84,7 +85,7 @@
 		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
 	</target>
 	
-	<target name="build_all" description="Build the entire LDAPSync codebase, RAP, and uploads binaries" depends="build, copy_files, build_RAP_Package, upload_binaries_into_relativity">				
+	<target name="build_all" description="Build the entire LDAPSync codebase, RAP, and uploads binaries" depends="build, build_RAP_Package, upload_binaries_into_relativity">
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
@@ -211,8 +212,6 @@
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Email.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.Shared.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Services.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Services.Interfaces.Private.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
 		</exec>
@@ -293,24 +292,24 @@
 				<include name="kCura.IntegrationPoints.dll" />
 				<include name="kCura.LDAPProvider.dll" />
 				<include name="kCura.DocumentTransferProvider.dll" />
+				<include name="kCura.IntegrationPoints.Services.dll" />
+				<include name="kCura.IntegrationPoints.Services.Interfaces.Private.dll" />
+			</fileset>
+		</copy>
+		<copy todir="${bin.directory}">
+			<fileset basedir="${source.reference.kCura.directory}">
+				<include name="kCura.Image.Viewer.dll" />
+				<include name="kCura.Print.dll" />
 			</fileset>
 		</copy>
 	</target>
 	
-	<target name="upload_binaries_into_relativity" description="Upload binary files into Relativity">
-		<choose>
-			<when test="${caseId==''}">
-				<echo message="Skip uploading binaries" />
-			</when>
-			<otherwise>
-				<exec program="${ldap.scripts.directory}\UploadLDAPSyncBinariesIntoLocalRelativity.bat" >
-					<arg line='${caseId}' />
-					<environment>
-						<variable name="root" value="${root}" />
-					</environment>
-				</exec>
-			</otherwise>
-		</choose>
+	<target name="upload_binaries_into_relativity" description="Upload binary files into Relativity">		
+		<exec program="${ldap.scripts.directory}\UploadLDAPSyncBinariesIntoLocalRelativity.bat" >
+			<arg line='${caseId}' />
+			<environment>
+				<variable name="root" value="${root}" />
+			</environment>
+		</exec>
 	</target>
-
 </project>

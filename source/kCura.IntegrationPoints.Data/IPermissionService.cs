@@ -1,5 +1,4 @@
-﻿
-namespace kCura.IntegrationPoints.Data
+﻿namespace kCura.IntegrationPoints.Data
 {
 	public interface IPermissionService 
 	{

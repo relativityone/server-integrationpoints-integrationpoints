@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using kCura.IntegrationPoints.Agent;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
@@ -11,7 +10,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public void Run_Agent()
 		{
 			var agent = new Agent();
-			
 		}
 	}
 }

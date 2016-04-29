@@ -99,6 +99,7 @@
     <Compile Include="BatchProcess\BatchableTaskBase.cs" />
     <Compile Include="Core\AgentTypeInformation.cs" />
     <Compile Include="Data\Interfaces\IQueueDBContext.cs" />
+    <Compile Include="Data\Queries\CleanupJobQueueTable.cs" />
     <Compile Include="Data\Queries\CreateJobLogTable.cs" />
     <Compile Include="Data\Queries\InsertJobLogEntry.cs" />
     <Compile Include="Data\Queries\UnlockScheduledJob.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="TimeMachine\AgentTimeMachineProvider.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\Resources\CleanupJobQueueTable.sql" />
     <Content Include="Data\Resources\InsertJobLogEntry.sql" />
     <Content Include="Data\Resources\CreateJobLogTable.sql" />
     <Content Include="Data\Resources\UnlockScheduledJob.sql" />
@@ -170,6 +172,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
+      <Project>{def928b5-37ce-4bf3-b663-f0b8912c9c3f}</Project>
+      <Name>kCura.IntegrationPoints.Config</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

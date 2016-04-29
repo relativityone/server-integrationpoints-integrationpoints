@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data.Attributes;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using kCura.Relativity.Client.Repositories;
-using CollectionExtensions = Castle.Core.Internal.CollectionExtensions;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data
 {
 	public class RsapiClientLibrary<T> : IGenericLibrary<T> where T : BaseRdo, new()
 	{
-		private readonly RDORepository _client;
+		private readonly IHelper _helper;
+		private readonly int _workspaceArtifactId;
 
-		public RsapiClientLibrary(IRSAPIClient client)
+		public RsapiClientLibrary(IHelper helper, int workspaceArtifactId)
 		{
-			_client = client.Repositories.RDO;
+			_helper = helper;
+			_workspaceArtifactId = workspaceArtifactId;
 		}
 
 		private static void CheckResult<TResult>(ResultSet<TResult> result) where TResult : kCura.Relativity.Client.DTOs.Artifact
@@ -46,7 +44,15 @@ namespace kCura.IntegrationPoints.Data
 			{
 				return new List<int>();
 			}
-			var result = _client.Create(localList.Select(x => x.Rdo).ToList());
+
+			WriteResultSet<RDO> result = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+
+				result = rsapiClient.Repositories.RDO.Create(localList.Select(x => x.Rdo).ToList());
+			}
+
 			CheckResult(result);
 
 			return result.Results.Select(x => x.Artifact.ArtifactID).ToList();
@@ -68,9 +74,17 @@ namespace kCura.IntegrationPoints.Data
 			{
 				return new List<T>();
 			}
-			var readResult = _client.Read(local.ToArray());
-			CheckResult(readResult);
-			return readResult.Results.Select(result => new T { Rdo = result.Artifact }).ToList();
+
+			ResultSet<RDO> result = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+				result = rsapiClient.Repositories.RDO.Read(local.ToArray());
+			}
+
+			CheckResult(result);
+
+			return result.Results.Select(x => new T { Rdo = x.Artifact }).ToList();
 		}
 
 		public bool Update(T obj)
@@ -86,7 +100,14 @@ namespace kCura.IntegrationPoints.Data
 			{
 				return true;
 			}
-			var result = _client.Update(localList.Select(x => x.Rdo).ToList());
+
+			WriteResultSet<RDO> result = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+				result = rsapiClient.Repositories.RDO.Update(localList.Select(x => x.Rdo).ToList());
+			}
+
 			CheckResult(result);
 			return result.Success;
 		}
@@ -107,7 +128,14 @@ namespace kCura.IntegrationPoints.Data
 			{
 				return true;
 			}
-			var result = _client.Delete(localList);
+
+			WriteResultSet<RDO> result = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+				result = rsapiClient.Repositories.RDO.Delete(localList);
+			}
+
 			CheckResult(result);
 			return result.Success;
 		}
@@ -144,9 +172,16 @@ namespace kCura.IntegrationPoints.Data
 			{
 				q.ArtifactTypeGuid = Guid.Parse(BaseRdo.GetObjectMetadata(typeof(T)).ArtifactTypeGuid);
 			}
-			var result = _client.Query(q, pageSize);
+
+			QueryResultSet<RDO> result = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+				result = rsapiClient.Repositories.RDO.Query(q, pageSize);
+			}
 
 			CheckResult(result);
+
 			return result.Results.Select(x => new T { Rdo = x.Artifact }).ToList();
 		}
 	}

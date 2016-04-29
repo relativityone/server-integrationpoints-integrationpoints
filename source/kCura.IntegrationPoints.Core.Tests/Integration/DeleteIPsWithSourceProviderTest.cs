@@ -1,34 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
 	[TestFixture]
-	class DeleteIPsWithSourceProviderTest
+	internal class DeleteIPsWithSourceProviderTest : IntegrationTestBase
 	{
-
 		[Test]
 		[Explicit]
+		[Ignore]
 		public void DeleteIPsWithSourceProvider_id_points()
 		{
-			var client = new RSAPIClient(new Uri("http://localhost/Relativity.Services"), new IntegratedAuthCredentials(), new RSAPIClientSettings())
-			{
-				APIOptions = { WorkspaceID = 1390997 }
-			};
-			IRSAPIService service = new RSAPIService();
-			DeleteHistoryErrorService deleteerErrorService = new DeleteHistoryErrorService(service);
-			service.IntegrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(client);
-			service.JobHistoryLibrary = new RsapiClientLibrary<JobHistory>(client);
-			service.SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(client);
-			IntegrationPointQuery integrationPointQuery = new IntegrationPointQuery(service);
-			DeleteHistoryService deleteHistoryService = new DeleteHistoryService(service,deleteerErrorService);
-
-			var deletePoints = new DeleteIntegrationPoints(integrationPointQuery, deleteHistoryService, service);
-			deletePoints.DeleteIPsWithSourceProvider(new List<int>() { 1040675 });
+//			IRSAPIService service = new RSAPIService();
+//			DeleteHistoryErrorService deleteerErrorService = new DeleteHistoryErrorService(service);
+//			service.IntegrationPointLibrary = new RsapiClientLibrary<Data.IntegrationPoint>(RsapiClient);
+//			service.JobHistoryLibrary = new RsapiClientLibrary<JobHistory>(RsapiClient);
+//			service.SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(RsapiClient);
+//			IntegrationPointQuery integrationPointQuery = new IntegrationPointQuery(service);
+//			DeleteHistoryService deleteHistoryService = new DeleteHistoryService(service, deleteerErrorService);
+//
+//			var deletePoints = new DeleteIntegrationPoints(integrationPointQuery, deleteHistoryService, service);
+//			deletePoints.DeleteIPsWithSourceProvider(new List<int>() { 1040675 });
 		}
 	}
 }

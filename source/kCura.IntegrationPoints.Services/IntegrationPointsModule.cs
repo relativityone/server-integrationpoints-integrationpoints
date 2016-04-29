@@ -1,6 +1,6 @@
-﻿//namespace kCura.IntegrationPoints.Services
-//{
-//    public class IntegrationPointsModule : IIntegrationPointsModule
-//    {
-//    }
-//}
+﻿namespace kCura.IntegrationPoints.Services
+{
+	public class IntegrationPointsModule : IIntegrationPointsModule
+	{
+	}
+}

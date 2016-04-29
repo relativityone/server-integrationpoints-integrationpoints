@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Authentication;
-using System.Xml.Serialization;
 using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils;
@@ -90,11 +88,15 @@ namespace kCura.ScheduleQueue.AgentBase
 
 				OnRaiseAgentLogEntry(20, LogCategory.Info, "Process jobs");
 				ProcessQueueJobs();
+
+				OnRaiseAgentLogEntry(20, LogCategory.Info, "Cleanup jobs");
+				CleanupQueueJobs();
 			}
 			catch (Exception ex)
 			{
 				OnRaiseAgentLogEntry(20, LogCategory.Warn, string.Format("{0} {1}", ex.Message, ex.StackTrace));
 			}
+
 			if (errorRaised)
 			{
 				OnRaiseAgentLogEntry(10, LogCategory.Info, "Completed with errors.");
@@ -114,13 +116,12 @@ namespace kCura.ScheduleQueue.AgentBase
 
 		public void ProcessQueueJobs()
 		{
-			var msg = string.Empty;
-
 			Job nextJob = jobService.GetNextQueueJob(base.GetResourceGroupIDs(), base.AgentID);
+
 			while (nextJob != null)
 			{
-				msg = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, nextJob.JobId, nextJob.WorkspaceID, nextJob.TaskType);
-				OnRaiseAgentLogEntry(1, LogCategory.Info, msg);
+				string agentMessage = string.Format(START_PROCESSING_JOB_MESSAGE_TEMPLATE, nextJob.JobId, nextJob.WorkspaceID, nextJob.TaskType);
+				OnRaiseAgentLogEntry(1, LogCategory.Info, agentMessage);
 
 				//TODO: 
 				//if (!jobService.IsWorkspaceActive(nextJob.WorkspaceID))
@@ -132,7 +133,6 @@ namespace kCura.ScheduleQueue.AgentBase
 				//	continue;
 				//}
 
-				
 				TaskResult taskResult = ExecuteTask(nextJob);
 
 				FinalizeJob(nextJob, taskResult);
@@ -156,7 +156,6 @@ namespace kCura.ScheduleQueue.AgentBase
 				task = GetTask(job);
 				if (task != null)
 				{
-					
 					task.Execute(job);
 
 					OnRaiseJobLogEntry(job, JobLogState.Finished);
@@ -194,6 +193,11 @@ namespace kCura.ScheduleQueue.AgentBase
 				OnRaiseException(job, ex);
 				OnRaiseJobLogEntry(job, JobLogState.Error, ex);
 			}
+		}
+
+		private void CleanupQueueJobs()
+		{
+			jobService.CleanupJobQueueTable();
 		}
 
 		protected virtual void OnRaiseAgentLogEntry(int level, LogCategory category, string message, string detailmessage = null)

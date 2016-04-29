@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Contracts.Readers
 			return Convert.ToByte(GetValue(i));
 		}
 
-		public virtual long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferoffset, int length)
+		public virtual long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length)
 		{
 			// We do not need this at this point
 			throw new System.NotImplementedException();
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Contracts.Readers
 			return Convert.ToChar(GetValue(i));
 		}
 
-		public virtual long GetChars(int i, long fieldoffset, char[] buffer, int bufferoffset, int length)
+		public virtual long GetChars(int i, long fieldoffset, char[] buffer, int bufferOffset, int length)
 		{
 			// We do not need this at this point
 			throw new System.NotImplementedException();
@@ -231,7 +231,8 @@ namespace kCura.IntegrationPoints.Contracts.Readers
 			catch (Exception ex)
 			{
 				// TODO: Handle errors -- biedrzycki: Jan 13, 2015.
-				ReaderOpen = false;
+				Dispose();
+				throw ex;
 			}
 		}
 
