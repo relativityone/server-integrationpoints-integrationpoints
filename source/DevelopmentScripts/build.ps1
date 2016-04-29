@@ -20,13 +20,19 @@ $STATUS = $true
 
 
 for ($i = 0; $i -lt $args.count; $i++){
-
     switch -Regex ($args[$i]){
         "^[-/]b"      {$VERBOSE   = $args[$i + 1]; $i++}
         "^[/-]sk"     {$BUILD     = $false; $APPS = $false}
         "^[/-]t"      {$TEST      = $true}
-        "^[/-]de"     {$DEPLOY    = $args[$i + 1]; $i++}  
-        "^[/-]al"     {$ALERT     = $true}    
+        "^[/-]de"     {
+		               $CASE      = $args[$i + 1];
+					   $IP        = $args[$i + 2];					   
+					   $DEPLOY    += $CASE;
+					   $DEPLOY    += " ";
+					   $DEPLOY    += $IP;
+					   $i++;
+		}  
+        "^[/-]al"     {$ALERT     = $true}
                 
         "^debug$"   {$BUILDCONFIG = "Debug"}
         "^release$" {$BUILDCONFIG = "Release"}
@@ -63,7 +69,7 @@ Write-Host ""
 write-host "Use this script to peform a full build of all projects."
 write-host "This build is the same as the build that happens on the TeamCity server. "
 write-host ""
-write-host "usage: build [debug|release] [dev|alpha|beta|rc|gold] [-b quiet|minimal|normal|detailed|diagnostic] [-skip] [-test] [-deploy 1234567] [-alert]"
+write-host "usage: build [debug|release] [dev|alpha|beta|rc|gold] [-b quiet|minimal|normal|detailed|diagnostic] [-skip] [-test] [-deploy 1234567 172.17.100.47] [-alert]"
 write-host ""
 write-host "options:"
 write-host ""
