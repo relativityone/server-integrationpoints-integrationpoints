@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			SourceWorkspaceJobHistoryDTO sourceWorkspaceJobHistoryDto = sourceWorkspaceJobHistoryRepository.Retrieve(jobHistoryArtifactId);
 			var jobHistoryDto = new SourceJobDTO()
 			{
-				Name = Utils.GetFormatForWorkspaceOrJobDisplay(sourceWorkspaceJobHistoryDto.Name, jobHistoryArtifactId),
+				Name = sourceWorkspaceJobHistoryDto.Name,
 				SourceWorkspaceArtifactId = sourceWorkspaceRDOInstanceArtifactId,
 				JobHistoryArtifactId = jobHistoryArtifactId,
 				JobHistoryName = sourceWorkspaceJobHistoryDto.Name,
