@@ -11,18 +11,18 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <summary>
 		/// Queries to see if a Destination Workspace RDO instance exists for the corresponding target workspace.
 		/// </summary>
-		/// <param name="destinationWorkspaceId">The Artifact ID of the workspace we are looking for (note, this is NOT
+		/// <param name="targetWorkspaceArtifactId">The Artifact ID of the workspace we are looking for (note, this is NOT
 		/// the Artifact ID of the object instance, it's the Artifact ID of the actual workspace</param>
 		/// <returns>null if no instance exists, DestinationWorkspaceDTO of instance otherwise</returns>
-		DestinationWorkspaceDTO QueryDestinationWorkspaceRdoInstance(int destinationWorkspaceId);
+		DestinationWorkspaceDTO Query(int targetWorkspaceArtifactId);
 
 		/// <summary>
 		/// Creates an instance of a Destination Workspace RDO.
 		/// </summary>
-		/// <param name="destinationWorkspaceId">Artifact ID of the DestinationWorkspace</param>
+		/// <param name="targetWorkspaceArtifactId">Artifact ID of the target workspace</param>
 		/// <param name="destinationWorkspaceName">Name of the DestinationWorkspace RDO instance</param>
 		/// <returns>DestinationWorkspaceDTO of the instance that was just created</returns>
-		DestinationWorkspaceDTO CreateDestinationWorkspaceRdoInstance(int destinationWorkspaceId, string destinationWorkspaceName);
+		DestinationWorkspaceDTO Create(int targetWorkspaceArtifactId, string destinationWorkspaceName);
 
 		/// <summary>
 		/// Mass edits/tags the Documents that were with the corresponding Destination Workspace they were pushed to.
@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="destinationWorkspaceInstanceId">Artifact ID of the DestinationWorkspace RDO instance</param>
 		/// <param name="tableSuffix">Unique suffix that is appended to the scratch table</param>
 		/// <param name="sourceWorkspaceId">Artifact ID of the source workspace</param>
-		void TagDocsWithDestinationWorkspace(int numberOfDocs, int? destinationWorkspaceInstanceId, string tableSuffix,
+		void TagDocsWithDestinationWorkspace(int numberOfDocs, int destinationWorkspaceInstanceId, string tableSuffix,
 			int sourceWorkspaceId);
 
 		/// <summary>
@@ -39,12 +39,12 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// </summary>
 		/// <param name="destinationWorkspaceInstanceId">Artifact ID of the DestinationWorkspace RDO instance</param>
 		/// <param name="jobHistoryInstanceId">Artifact ID of the JobHistory RDO instance</param>
-		void LinkDestinationWorkspaceToJobHistory(int? destinationWorkspaceInstanceId, int jobHistoryInstanceId);
+		void LinkDestinationWorkspaceToJobHistory(int destinationWorkspaceInstanceId, int jobHistoryInstanceId);
 
 		/// <summary>
 		/// Update the Destination Workspace RDO.
 		/// </summary>
 		/// <param name="destinationWorkspace">The DTO of the Destination Workspace to update</param>
-		void UpdateDestinationWorkspaceRdoInstance(DestinationWorkspaceDTO destinationWorkspace);
+		void Update(DestinationWorkspaceDTO destinationWorkspace);
 	}
 }

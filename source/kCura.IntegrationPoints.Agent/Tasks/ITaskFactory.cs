@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
@@ -61,6 +62,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Container.Install(FromAssembly.InThisApplication());
 			Container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
 				k.Resolve<RsapiClientFactory>().CreateClientForWorkspace(job.WorkspaceID, ExecutionIdentity.System)).LifestyleTransient());
+			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), job.WorkspaceID)).LifestyleTransient());
 			Container.Register(Component.For<ISendable>()
 				.ImplementedBy<SMTP>()
 				.DependsOn(Dependency.OnValue<EmailConfiguration>(new RelativityConfigurationFactory().GetConfiguration())));

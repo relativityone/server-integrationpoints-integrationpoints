@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoints.Synchronizers.RDO
+﻿namespace kCura.IntegrationPoints.Config
 {
 	public interface IConfig
 	{
@@ -7,5 +7,7 @@
 		bool DisableNativeLocationValidation { get; }
 
 		bool DisableNativeValidation { get; }
+
+		int BatchSize { get; }
 	}
 }

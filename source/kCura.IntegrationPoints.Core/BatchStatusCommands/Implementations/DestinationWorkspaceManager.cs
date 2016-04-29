@@ -19,13 +19,13 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly int _jobHistoryInstanceId;
 		private IScratchTableRepository _scratchTableRepository;
 		private readonly IWorkspaceRepository _workspaceRepository;
-		private int? _destinationWorkspaceRdoId;
+		private int _destinationWorkspaceRdoId;
 		private bool _errorOccurDuringJobStart;
 
 		public DestinationWorkspaceManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory, SourceConfiguration sourceConfig, string tableSuffix, int jobHistoryInstanceId)
 		{
 			_tempDocHelper = tempDocumentTableFactory.GetDocTableHelper(tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
-			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId, sourceConfig.TargetWorkspaceArtifactId);
+			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId);
 			_workspaceRepository = repositoryFactory.GetWorkspaceRepository();
 			_tableSuffix = tableSuffix;
 			_sourceWorkspaceId = sourceConfig.SourceWorkspaceArtifactId;
@@ -37,17 +37,16 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
-				DestinationWorkspaceDTO destinationWorkspace = _destinationWorkspaceRepository.QueryDestinationWorkspaceRdoInstance(_destinationWorkspaceId);
-				//string destinationWorkspaceName = GetWorkspaceName();
-				string destinationWorkspaceName = "Wrong Name-Will Change";
+				DestinationWorkspaceDTO destinationWorkspace = _destinationWorkspaceRepository.Query(_destinationWorkspaceId);
+				string destinationWorkspaceName = GetWorkspaceName();
 				if (destinationWorkspace == null)
 				{
-					destinationWorkspace = _destinationWorkspaceRepository.CreateDestinationWorkspaceRdoInstance(_destinationWorkspaceId, destinationWorkspaceName);
+					destinationWorkspace = _destinationWorkspaceRepository.Create(_destinationWorkspaceId, destinationWorkspaceName);
 				}
 				else if(destinationWorkspaceName != destinationWorkspace.WorkspaceName)
 				{
 					destinationWorkspace.WorkspaceName = destinationWorkspaceName;
-					_destinationWorkspaceRepository.UpdateDestinationWorkspaceRdoInstance(destinationWorkspace);
+					_destinationWorkspaceRepository.Update(destinationWorkspace);
 				}
 
 				_destinationWorkspaceRdoId = destinationWorkspace.ArtifactId;

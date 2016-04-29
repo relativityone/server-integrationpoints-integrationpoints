@@ -1,5 +1,4 @@
 ﻿using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services.ServiceContext
@@ -16,15 +15,15 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 			return new EddsServiceContext(new ServiceContextHelperForEventHandlers(helper, -1, new RsapiClientFactory(helper)));
 		}
 
-		public static IRSAPIService CreateRSAPIService(IRSAPIClient client)
+		public static IRSAPIService CreateRSAPIService(IHelper helper, int workspaceArtifactId)
 		{
 			return new RSAPIService()
 			{
-				IntegrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(client),
-				SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(client),
-				DestinationProviderLibrary = new RsapiClientLibrary<DestinationProvider>(client),
-				JobHistoryLibrary = new RsapiClientLibrary<Data.JobHistory>(client),
-				JobHistoryErrorLibrary = new RsapiClientLibrary<JobHistoryError>(client)
+				IntegrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(helper, workspaceArtifactId),
+				SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(helper, workspaceArtifactId),
+				DestinationProviderLibrary = new RsapiClientLibrary<DestinationProvider>(helper, workspaceArtifactId),
+				JobHistoryLibrary = new RsapiClientLibrary<Data.JobHistory>(helper, workspaceArtifactId),
+				JobHistoryErrorLibrary = new RsapiClientLibrary<JobHistoryError>(helper, workspaceArtifactId)
 			};
 		}
 	}

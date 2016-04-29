@@ -38,9 +38,8 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// Returns a class implementing the IDestinationWorkspaceRepository interface.
 		/// </summary>
 		/// <param name="sourceWorkspaceArtifactId">The source workspace artifact id.</param>
-		/// <param name="targetWorkspaceArtifactId">The target workspace artifact id.</param>
 		/// <returns>A class implementing the IDestinationWorkspaceRepository interface.</returns>
-		IDestinationWorkspaceRepository GetDestinationWorkspaceRepository(int sourceWorkspaceArtifactId, int targetWorkspaceArtifactId);
+		IDestinationWorkspaceRepository GetDestinationWorkspaceRepository(int sourceWorkspaceArtifactId);
 
 		/// <summary>
 		/// Returns a class implementing the IJobHistoryRepository interface.

@@ -18,14 +18,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoint
 			{
 				return deleteHistoryError ??
 							 (deleteHistoryError =
-								 new DeleteHistoryErrorService(ServiceContextFactory.CreateRSAPIService(new kCura.IntegrationPoints.Core.RsapiClientFactory(base.Helper).CreateClientForWorkspace(base.Application.ArtifactID))));
+								 new DeleteHistoryErrorService(ServiceContextFactory.CreateRSAPIService(base.Helper, base.Application.ArtifactID)));
 			}
 			set { deleteHistoryError = value; } 
 		}
 
 		public DeleteHistoryService DeleteHistoryService
 		{
-			get { return deleteHistoryService ?? (deleteHistoryService = new DeleteHistoryService(ServiceContextFactory.CreateRSAPIService(new kCura.IntegrationPoints.Core.RsapiClientFactory(base.Helper).CreateClientForWorkspace(base.Application.ArtifactID)),DeleteHistoryError)); }
+			get { return deleteHistoryService ?? (deleteHistoryService = new DeleteHistoryService(ServiceContextFactory.CreateRSAPIService(base.Helper, base.Application.ArtifactID), DeleteHistoryError)); }
 			set { deleteHistoryService = value; }
 		}
 

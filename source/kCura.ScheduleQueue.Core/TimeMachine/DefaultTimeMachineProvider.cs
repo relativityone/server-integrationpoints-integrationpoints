@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections;
 using kCura.Apps.Common.Config;
-using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.ScheduleQueue.Core.Helpers;
-using Relativity.API;
 
 namespace kCura.ScheduleQueue.Core.TimeMachine
 {
@@ -21,14 +19,12 @@ namespace kCura.ScheduleQueue.Core.TimeMachine
 
 		public DefaultAgentTimeMachineProvider(Guid agentGuid)
 		{
+			kCura.Apps.Common.Config.Manager.Settings.ConfigCacheTimeout = 1;
 			SetKey(agentGuid);
 		}
 
-		private static IDictionary _underlyingSetting;
-		protected static IDictionary ConfigSettings
-		{
-			get { return _underlyingSetting ?? (_underlyingSetting = Manager.Instance.GetConfig("kCura.ScheduleQueue.Core")); }
-		}
+		private static IDictionary _instanceSettings;
+		protected static IDictionary InstanceSettings => _instanceSettings ?? (_instanceSettings = Manager.Instance.GetConfig(kCura.IntegrationPoints.Contracts.Constants.SCHEDULE_QUEUE_INSTANCE_SETTING_SECTION));
 
 		private void GetTimeMachineData()
 		{
@@ -36,7 +32,7 @@ namespace kCura.ScheduleQueue.Core.TimeMachine
 			_workspaceID = -1;
 			_utcNow = DateTime.UtcNow;
 
-			string value = ConfigHelper.GetValue<string>(ConfigSettings[agentKey]);
+			string value = ConfigHelper.GetValue<string>(InstanceSettings[agentKey]);
 			if (!string.IsNullOrEmpty(value))
 			{
 				TimeMachineStruct tm = new JSONSerializer().Deserialize<TimeMachineStruct>(value);

@@ -1,9 +1,5 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using kCura.Relativity.Client;
+﻿using Relativity.API;
+
 namespace kCura.IntegrationPoints.Data
 {
 	public partial class RSAPIService : IRSAPIService
@@ -19,14 +15,13 @@ namespace kCura.IntegrationPoints.Data
 
 		public RSAPIService(){}
 
-		public RSAPIService(IRSAPIClient client)
+		public RSAPIService(IHelper helper, int workspaceArtifactId)
 		{
-			this.IntegrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(client);
-			this.SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(client);
-			this.DestinationProviderLibrary = new RsapiClientLibrary<DestinationProvider>(client);
-			this.JobHistoryLibrary = new RsapiClientLibrary<JobHistory>(client);
-			this.JobHistoryErrorLibrary = new RsapiClientLibrary<JobHistoryError>(client);
-			
+			this.IntegrationPointLibrary = new RsapiClientLibrary<IntegrationPoint>(helper, workspaceArtifactId);
+			this.SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(helper, workspaceArtifactId);
+			this.DestinationProviderLibrary = new RsapiClientLibrary<DestinationProvider>(helper, workspaceArtifactId);
+			this.JobHistoryLibrary = new RsapiClientLibrary<JobHistory>(helper, workspaceArtifactId);
+			this.JobHistoryErrorLibrary = new RsapiClientLibrary<JobHistoryError>(helper, workspaceArtifactId);
 		}
 	}
 }

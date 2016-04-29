@@ -36,7 +36,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private List<IBatchStatus> _exportServiceJobObservers;
 		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private readonly ICaseServiceContext _caseServiceContext;
-		private readonly IDocumentRepository _documentRepository;
 		private readonly IExporterFactory _exporterFactory;
 		private readonly IJobService _jobService;
 		private readonly IRepositoryFactory _repositoryFactory;
@@ -61,7 +60,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ITempDocumentTableFactory tempDocumentTableFactory,
 			IRepositoryFactory repositoryFactory,
 			IEnumerable<IBatchStatus> statuses,
-			IDocumentRepository documentRepository,
 			Apps.Common.Utils.Serializers.ISerializer serializer,
 			IJobService jobService,
 			IScheduleRuleFactory scheduleRuleFactory,
@@ -71,7 +69,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_batchStatus = statuses.ToList();
 			_caseServiceContext = caseServiceContext;
-			_documentRepository = documentRepository;
 			_exporterFactory = exporterFactory;
 			_jobHistoryErrorService = jobHistoryErrorService;
 			_jobHistoryService = jobHistoryService;
@@ -329,10 +326,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			string tempTableName = $"{job.JobId}_{_identifier}";
 			ITempDocTableHelper docTableHelper = _tempDocumentTableFactory.GetDocTableHelper(tempTableName, _sourceConfiguration.SourceWorkspaceArtifactId);
+			IDocumentRepository documentRepository = _repositoryFactory.GetDocumentRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
 
 			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(docTableHelper,
 				_sourceWorkspaceManager, _sourceJobManager,
-				_documentRepository, _synchronizerFactory,
+				documentRepository, _synchronizerFactory,
 				MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration,
 				IntegrationPointDto.DestinationConfiguration, JobHistoryDto.ArtifactId);
 
