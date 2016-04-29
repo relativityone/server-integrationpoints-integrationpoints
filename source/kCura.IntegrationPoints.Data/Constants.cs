@@ -25,19 +25,10 @@ namespace kCura.IntegrationPoints.Data
 	public class Constants
 	{
 		public const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
-		public const string TEMPORARY_DOC_TABLE_DEST_WS = "TempRIPDocTable_DW";
-		public const string TEMPORARY_DOC_TABLE_JOB_HIST = "TempRIPDocTable_JH";
-		public const string TEMPORARY_DOC_TABLE_SOURCEWORKSPACE = "TempRIPDocTable_SourceWorkspace";
+		public const string TEMPORARY_DOC_TABLE_DEST_WS = "IntegrationPoint_Relativity_DW";
+		public const string TEMPORARY_DOC_TABLE_JOB_HIST = "IntegrationPoint_Relativity_JH";
+		public const string TEMPORARY_DOC_TABLE_SOURCEWORKSPACE = "IntegrationPoint_Relativity_SourceWorkspace";
 		public static Guid RELATIVITY_SOURCEPROVIDER_GUID = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
-	}
-
-	public static class DestinationWorkspaceObject
-	{
-		public const string OBJECT_TYPE_GUID = "3F45E490-B4CF-4C7D-8BB6-9CA891C0C198";
-		public const string DESTINATION_WORKSPACE_ARTIFACT_ID = "207E6836-2961-466B-A0D2-29974A4FAD36";
-		public const string DESTINATION_WORKSPACE_NAME = "348D7394-2658-4DA4-87D0-8183824ADF98";
-		public const string DESTINATION_WORKSPACE_DOCUMENTS = "94EE2BD7-76D5-4D17-99E2-04768CCE05E6";
-		public const string DESTINATION_WORKSPACE_INSTANCE_NAME = "155649C0-DB15-4EE7-B449-BFDF2A54B7B5";
 	}
 
 	public static class DocumentMultiObjectFields

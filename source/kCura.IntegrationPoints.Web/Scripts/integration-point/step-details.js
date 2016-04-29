@@ -125,6 +125,7 @@ var IP = IP || {};
 		var settings = $.extend({}, s);
 		this.templateID = 'ldapSourceConfig';
 		var self = this;
+		self.disable = parentModel.hasBeenRun();
 
 		this.sourceTypes = ko.observableArray();
 		this.selectedType = ko.observable().extend({ required: true });
@@ -170,7 +171,7 @@ var IP = IP || {};
 		});
 	};
 
-	var Destination = function (d) {
+	var Destination = function (d, parentModel) {
 		try {
 			d = JSON.parse(d);
 		} catch (e) {
@@ -178,6 +179,7 @@ var IP = IP || {};
 		}
 		var settings = $.extend({}, d);
 		var self = this;
+		self.disable = parentModel.hasBeenRun();
 
 		IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('RdoFilter') }).then(function (result) {
 			var types = $.map(result, function (entry) {
@@ -186,7 +188,7 @@ var IP = IP || {};
 			self.allRdoTypes(types);
 			self.UpdateSelectedItem();
 		}, function () {
-			
+
 		});
 
 		this.templateID = 'ldapDestinationConfig';
@@ -197,7 +199,7 @@ var IP = IP || {};
 		//CaseArtifactId
 		//ParentObjectIdSourceFieldName
 
-		this.UpdateSelectedItem = function() {
+		this.UpdateSelectedItem = function () {
 			self.artifactTypeID(settings.artifactTypeID);
 		}
 	};
@@ -400,35 +402,65 @@ var IP = IP || {};
 		});
 
 		this.startDate = ko.observable(options.startDate).extend({
-			date: {
-				message: 'The field Start Date must be a date.'
-			}
+		    date: {
+		        message: 'The field Start Date must be a date.'
+		    }
 		}).extend({
-			required: {
-				onlyIf: function () {
-					return self.isEnabled();
-				}
-			}
+		    validation: {
+		        validator: function (value) {
+		            if (!self.isEnabled()) {
+		                return true;
+		            }
+		            if (value) {
+		                var comp = value.split('/');
+		                if (comp.length > 3) {
+		                    return false;
+		                }
+		                var currentDate = new Date().setHours(0, 0, 0, 0);// we need to zero out the hours seconds and minutes so that when we compare currentDate with value we compare only date and not time. 
+		                var m = parseInt(comp[0], 10);
+		                var d = parseInt(comp[1], 10);
+		                var y = parseInt(comp[2], 10);
+		                var date = new Date(y, m - 1, d);
+		                // check if the month is within range and is the same ie. 2/30/2016 gets parsed to 3/1/2016 so we compare months date adn year to check if it is the same
+		                if (date.getFullYear() == y && date.getMonth() + 1 == m && date.getDate() == d) {
+                               // used to make sure the user doesn't chose a date older than today 
+		                    if (currentDate <= date) {
+		                        return true;
+		                    }
+		                }
+		            }
+		            return false;
+		        },
+		        message: 'You did not enter a valid date.'
+		    }
+		}).extend({
+		    required: {
+		        onlyIf: function () {
+		            return self.isEnabled();
+		        }
+		    }
 		});
 
 		this.endDate = ko.observable(options.endDate).extend({
-			date: {
-				message: 'The field End Date must be a date.'
-			}
+		    date: {
+		        message: 'The field End Date must be a date.'
+		    }
 		}).extend({
-			validation: {
-				validator: function (value) {
-					if (value && self.startDate() && new Date(value).compareTo(new Date(self.startDate())) < 0) {
-						return false;
-					}
-					return true;
-				},
-				message: 'The start date must come before the end date.'
-			}
+		    validation: {
+		        validator: function (value) {
+		            if (value && self.startDate() && (new Date(value).compareTo(new Date(self.startDate())) < 0 || value.split('/').length > 3)) {
+
+		                return false;
+		            }
+
+		            return true;
+		        },
+		        message: 'The start date must come before the end date.'
+		    }
 		});
 
 
-		this.scheduledTime = ko.observable(options.scheduledTime).extend({
+	this.scheduledTime = ko.observable(options.scheduledTime).extend({
 			required: {
 				onlyIf: function () {
 					return self.isEnabled();
@@ -456,7 +488,17 @@ var IP = IP || {};
 		this.logErrors = ko.observable(settings.logErrors.toString());
 		this.showErrors = ko.observable(false);
 
-		this.destination = new Destination(settings.destination);
+		var hasBeenRun = false;
+		if (settings.lastRun != null) {
+			hasBeenRun = true;
+		}
+		else if (settings.hasBeenRun != null) {
+			hasBeenRun = settings.hasBeenRun;
+		}
+
+		this.hasBeenRun = ko.observable(hasBeenRun);
+
+		this.destination = new Destination(settings.destination, self);
 		this.source = new Source(settings.source, self);
 
 		this.destinationProvider = settings.destinationProvider;

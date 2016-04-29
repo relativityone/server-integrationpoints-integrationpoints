@@ -1,29 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Net;
 using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Web.Models;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Web.Controllers
 {
 	public class IntegrationPointsController : BaseController
 	{
-		private readonly IntegrationPointService _reader;
+		private readonly IIntegrationPointService _reader;
 		private readonly RSAPIRdoQuery _rdoQuery;
 		private readonly ITabService _tabService;
 		private readonly IPermissionService _permissionService;
 
 		public IntegrationPointsController(
-			IntegrationPointService reader,
+			IIntegrationPointService reader,
 			RSAPIRdoQuery relativityRdoQuery,
 			ITabService tabService,
 			IPermissionService permissionService)

@@ -13,8 +13,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 	[TestFixture]
 	public class TempDocTableHelperTests
 	{
-		private string tableNameDestWorkspace = "TempRIPDocTable_DW";
-		private string tableNameJobHistory = "TempRIPDocTable_JH";
+		private string tableNameDestWorkspace = "IntegrationPoint_Relativity_DW";
+		private string tableNameJobHistory = "IntegrationPoint_Relativity_JH";
 		private string _tableSuffix = "12345-6789";
 		private int _sourceWorkspaceId = 99999;
 		private string _docIdColumn = "ControlNumber";

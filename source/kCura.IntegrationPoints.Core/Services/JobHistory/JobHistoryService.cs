@@ -25,16 +25,38 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public Data.JobHistory GetRdo(Guid batchInstance)
 		{
-			var query = new Query<Relativity.Client.DTOs.RDO>();
-			query.ArtifactTypeGuid = Guid.Parse(ObjectTypeGuids.JobHistory);
-			query.Condition = new TextCondition(Guid.Parse(Data.JobHistoryFieldGuids.BatchInstance), TextConditionEnum.EqualTo, batchInstance.ToString());
-			query.Fields = this.GetFields();
+			var query = new Query<RDO>
+			{
+				ArtifactTypeGuid = Guid.Parse(ObjectTypeGuids.JobHistory),
+				Condition =
+					new TextCondition(Guid.Parse(JobHistoryFieldGuids.BatchInstance), TextConditionEnum.EqualTo,
+						batchInstance.ToString()),
+				Fields = GetFields()
+			};
 			Data.JobHistory jobHistory = _caseServiceContext.RsapiService.JobHistoryLibrary.Query(query).SingleOrDefault(); //there should only be one!
 
 			return jobHistory;
 		}
 
-		public Data.JobHistory CreateRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUTC)
+		public IList<Data.JobHistory> GetJobHistory(IList<int> jobHistoryArtifactIds)
+		{
+			var condition = new WholeNumberCondition("ArtifactID", NumericConditionEnum.In)
+			{
+				Value = jobHistoryArtifactIds.ToList()
+			};
+
+			var query = new Query<RDO>
+			{
+				ArtifactTypeGuid = Guid.Parse(ObjectTypeGuids.JobHistory),
+				Condition = condition,
+				Fields = GetFields()
+			};
+
+			IList<Data.JobHistory> jobHistories = _caseServiceContext.RsapiService.JobHistoryLibrary.Query(query);
+			return jobHistories;
+		}
+
+		public Data.JobHistory CreateRdo(IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUtc)
 		{
 			Data.JobHistory jobHistory = null;
 
@@ -60,11 +82,12 @@ namespace kCura.IntegrationPoints.Core.Services
 				};
 
 				ImportSettings setting = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
-				jobHistory.DestinationWorkspace = $"{_workspaceRepository.Retrieve(setting.CaseArtifactId).Name} - {setting.CaseArtifactId}";
+				IntegrationPoints.Contracts.Models.WorkspaceDTO workspaceDto = _workspaceRepository.Retrieve(setting.CaseArtifactId);
+				jobHistory.DestinationWorkspace = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, setting.CaseArtifactId);
 
-				if (startTimeUTC.HasValue)
+				if (startTimeUtc.HasValue)
 				{
-					jobHistory.StartTimeUTC = startTimeUTC.Value;
+					jobHistory.StartTimeUTC = startTimeUtc.Value;
 				}
 
 				int artifactId = _caseServiceContext.RsapiService.JobHistoryLibrary.Create(jobHistory);

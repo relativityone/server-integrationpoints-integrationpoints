@@ -82,8 +82,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.APIHelper, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Dependencies\kCura\Relativity.APIHelper.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Core">
       <HintPath>..\Dependencies\kCura\Relativity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Core.Api">
+      <HintPath>..\..\..\Mainline\EDDS\Relativity.Core.Api\bin\Relativity.Core.Api.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Data, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -114,6 +121,10 @@
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
+    <Compile Include="Contexts\IOnBehalfOfUserClaimsPrincipleFactory.cs" />
+    <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipleFactory.cs" />
+    <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
+    <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
     <Compile Include="Commands\MassEdit\IMassEditCommand.cs" />
     <Compile Include="Commands\MassEdit\RelativityMassEditBase.cs" />
@@ -122,6 +133,12 @@
     <Compile Include="Factories\IRepositoryFactory.cs" />
     <Compile Include="Factories\ITempDocumentTableFactory.cs" />
     <Compile Include="Factories\TempDocumentTableFactory.cs" />
+    <Compile Include="Repositories\IIntegrationPointRepository.cs" />
+    <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
+    <Compile Include="Repositories\ICodeRepository.cs" />
+    <Compile Include="Repositories\IObjectRepository.cs" />
+    <Compile Include="Repositories\Implementations\KelperObjectRepository.cs" />
+    <Compile Include="Repositories\Implementations\KeplerCodeRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiObjectTypeRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiTabRepository.cs" />
     <Compile Include="Repositories\Implementations\SqlArtifactGuidRepository.cs" />
@@ -137,7 +154,7 @@
     <Compile Include="Repositories\Implementations\RsapiSavedSearchRepository.cs" />
     <Compile Include="Adaptors\IObjectQueryManagerAdaptor.cs" />
     <Compile Include="Repositories\Implementations\RsapiSourceWorkspaceRepository.cs" />
-    <Compile Include="Repositories\Implementations\RsapiWorkspaceRepository.cs" />
+    <Compile Include="Repositories\Implementations\KeplerWorkspaceRepository.cs" />
     <Compile Include="Repositories\IDestinationWorkspaceRepository.cs" />
     <Compile Include="Repositories\Implementations\DestinationWorkspaceRepository.cs" />
     <Compile Include="Repositories\Implementations\ScratchTableRepository.cs" />
@@ -147,6 +164,7 @@
     <Compile Include="Repositories\ISourceWorkspaceJobHistoryRepository.cs" />
     <Compile Include="Repositories\ISourceJobRepository.cs" />
     <Compile Include="Repositories\ITabRepository.cs" />
+    <Compile Include="Repositories\KelperServiceBase.cs" />
     <Compile Include="TempDocTableHelper.cs" />
     <Compile Include="Repositories\IObjectTypeRepository.cs" />
     <Compile Include="Repositories\ISavedSearchRepository.cs" />
@@ -183,7 +201,7 @@
     <Compile Include="Migrations\UpdateJobErrorsBlankToNo.cs" />
     <Compile Include="Models\ApplicationBinary.cs" />
     <Compile Include="PermissionService.cs" />
-    <Compile Include="Queries\JobResoureTracker.cs" />
+    <Compile Include="Queries\JobResourceTracker.cs" />
     <Compile Include="Queries\GetJobCustodianManagerLinks.cs" />
     <Compile Include="Queries\CreateCustodianManagerResourceTable.cs" />
     <Compile Include="Queries\GetApplicationBinaries.cs" />
@@ -215,6 +233,8 @@
     </Compile>
     <Compile Include="SourceProviderConfiguration.cs" />
     <Compile Include="SqlObjectTypeQuery.cs" />
+    <Compile Include="Transformer\Helper.cs" />
+    <Compile Include="Transformer\IntegrationPointTransformer.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -284,6 +304,7 @@
       <Name>kCura.IntegrationPoints.Contracts</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>mkdir  "$(SolutionDir)bin"

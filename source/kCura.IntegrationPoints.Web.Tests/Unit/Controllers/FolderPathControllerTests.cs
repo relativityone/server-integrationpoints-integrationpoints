@@ -5,6 +5,7 @@ using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Hosting;
 using System.Web.Http.Routing;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
@@ -62,7 +63,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			ImportSettings settings = new ImportSettings { WebServiceURL = webServiceUrl };
 			_client.APIOptions = new APIOptions(workspaceId);
 
-			IImportAPI importApi = NSubstitute.Substitute.For<IImportAPI>();
+			IImportAPI importApi = NSubstitute.Substitute.For<IExtendedImportAPI>();
 
 			_config.WebApiPath
 				.Returns(webServiceUrl);

@@ -4,6 +4,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
 	public interface IImportApiFactory
 	{
-		IImportAPI GetImportAPI(ImportSettings settings);
+		IExtendedImportAPI GetImportAPI(ImportSettings settings);
 	}
 }

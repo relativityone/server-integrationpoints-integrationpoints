@@ -5,8 +5,8 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public class JobTracker
 	{
-		private readonly JobResoureTracker _tracker;
-		public JobTracker(JobResoureTracker tracker)
+		private readonly JobResourceTracker _tracker;
+		public JobTracker(JobResourceTracker tracker)
 		{
 			_tracker = tracker;
 		}

@@ -13,7 +13,7 @@
 	
 	<property name="testDirectory" value="${source.code.directory}" />
 	
-	<target name="start_tests" description="Run automated tests on the LDAPSync codebase." depends="test_initialize, run_tests64, run_tests64_part2" />
+	<target name="start_tests" description="Run automated tests on the LDAPSync codebase." depends="test_initialize, run_tests64" />
 	
 	<target name="test_initialize">
 		<mkdir dir="${testLogDirectory}" failonerror="false" />
@@ -28,17 +28,6 @@
 	<target name="run_tests64">
 		<exec program="${NUnit64}" verbose="true" failonerror="true">
 			<arg line="&quot;${fileset::to-string('unitTestAssembliesX64', '&quot; &quot;')}&quot;" />
-			<arg value='/exclude:KnownDefect' />
-			<arg value='/labels' />
-			<arg value='/xml:"${testOutput64}"' />
-			<arg value='/domain:Single' />
-			<arg value='/noshadow' />
-		</exec>
-	</target>
-
-	<target name="run_tests64_part2">
-		<exec program="${NUnit64}" verbose="true" failonerror="true">
-			<arg line="&quot;${fileset::to-string('unitTestAssembliesX64_Part2', '&quot; &quot;')}&quot;" />
 			<arg value='/exclude:KnownDefect' />
 			<arg value='/labels' />
 			<arg value='/xml:"${testOutput64}"' />
@@ -70,10 +59,6 @@
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Agent.Tests\bin\kCura.IntegrationPoints.Agent.Tests.dll')}" />
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.EventHandlers.Tests\bin\kCura.IntegrationPoints.EventHandlers.Tests.dll')}" />
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.DocumentTransferProvider.Tests\bin\kCura.IntegrationPoints.DocumentTransferProvider.Tests.dll')}" />
-	</assemblyfileset>
-
-	<assemblyfileset id="unitTestAssembliesX64_Part2">
 		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Web.Tests\bin\kCura.IntegrationPoints.Web.Tests.dll')}" />
 	</assemblyfileset>
-
 </project>

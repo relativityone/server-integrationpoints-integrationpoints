@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
+using kCura.Agent.CustomAttributes;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core;
@@ -14,68 +16,39 @@ using ITaskFactory = kCura.IntegrationPoints.Agent.Tasks.ITaskFactory;
 
 namespace kCura.IntegrationPoints.Agent
 {
-	[kCura.Agent.CustomAttributes.Name("Relativity Integration Points Agent")]
+	[Name(_AGENT_NAME)]
 	[Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID)]
-	public class Agent : kCura.ScheduleQueue.AgentBase.ScheduleQueueAgentBase, IDisposable
+	[Description("An agent that manages Integration Point jobs.")]
+	public class Agent : ScheduleQueueAgentBase, IDisposable
 	{
-		//private IWindsorContainer _container;
-		//private IWindsorContainer Container
-		//{
-		//	get
-		//	{
-		//		if (_container == null)
-		//		{
-		//			_container = new WindsorContainer();
-		//			_container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => base.Helper, managedExternally: true));
-		//			_container.Install(FromAssembly.InThisApplication());
-		//		}
-		//		return _container;
-		//	}
-		//	set { _container = value; }
-		//}
+		private const string _AGENT_NAME = "Integration Points Agent";
 
 		private IRSAPIClient _eddsRsapiClient;
-		public IRSAPIClient EddsRsapiClient
-		{
-			get
-			{
-				if (_eddsRsapiClient == null)
-				{
-					_eddsRsapiClient = new RsapiClientFactory(base.Helper).CreateClientForWorkspace(-1, ExecutionIdentity.System);
-				}
-				return _eddsRsapiClient;
-			}
-			set { _eddsRsapiClient = value; }
-		}
-
 		private ITaskFactory _taskFactory;
-		ITaskFactory TaskFactory
-		{
-			get
-			{
-				if (_taskFactory == null) { _taskFactory = new TaskFactory(base.Helper); }
-				return _taskFactory;
-			}
-		}
+		private CreateErrorRdo _errorService;
 
-		public Agent()
-			: base(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID))
+		private IRSAPIClient EddsRsapiClient => _eddsRsapiClient ??
+		                                        (_eddsRsapiClient = new RsapiClientFactory(Helper).CreateClientForWorkspace(-1, ExecutionIdentity.System));
+
+		private ITaskFactory TaskFactory => _taskFactory ?? (_taskFactory = new TaskFactory(Helper));
+
+		public Agent() : base(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID))
 		{
-			base.RaiseException += new ExceptionEventHandler(RaiseException);
-			base.RaiseJobLogEntry += new JobLoggingEventHandler(RaiseJobLog);
-			kCura.Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(base.Helper);
+			RaiseException += RaiseJobException;
+			RaiseJobLogEntry += RaiseJobLog;
+			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
+
 #if TIME_MACHINE
 			AgentTimeMachineProvider.Current = new DefaultAgentTimeMachineProvider(Guid.Parse(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 #endif
 		}
-		public override string Name
-		{
-			get { return "Relativity Integration Points"; }
-		}
+
+		public override string Name => _AGENT_NAME;
 
 		public override ITask GetTask(Job job)
 		{
-			return TaskFactory.CreateTask(job, this);
+			ITask task = TaskFactory.CreateTask(job, this);
+			return task;
 		}
 
 		protected override void ReleaseTask(ITask task)
@@ -83,21 +56,21 @@ namespace kCura.IntegrationPoints.Agent
 			TaskFactory.Release(task);
 		}
 
-		private CreateErrorRdo errorService;
-		private void RaiseException(Job job, Exception exception)
+		private void RaiseJobException(Job job, Exception exception)
 		{
-			if (errorService == null) errorService = new CreateErrorRdo(this.EddsRsapiClient);
-			errorService.Execute(job, exception, "Relativity Integration Points Agent");
+			if (_errorService == null)
+			{
+				_errorService = new CreateErrorRdo(EddsRsapiClient);
+			}
+			_errorService.Execute(job, exception, _AGENT_NAME);
 		}
 
 		private void RaiseJobLog(Job job, JobLogState state, string details = null)
 		{
-			new JobLogService(base.Helper).Log(base.AgentService.AgentTypeInformation, job, state, details);
+			var jobLogService = new JobLogService(Helper);
+			jobLogService.Log(AgentService.AgentTypeInformation, job, state, details);
 		}
 
-		public void Dispose()
-		{
-			//if (errorService != null) Container.Release(errorService);
-		}
+		public void Dispose() { }
 	}
 }

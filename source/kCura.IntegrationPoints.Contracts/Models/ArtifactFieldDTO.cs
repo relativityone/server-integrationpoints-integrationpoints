@@ -2,11 +2,12 @@
 {
 	public class ArtifactFieldDTO
 	{
-		public int ArtifactId { get;set; }
+		public int ArtifactId { get; set; }
 
 		public string FieldType { get; set; }
 
 		public string Name { get; set; }
-		public object Value { get; set; }
+
+		public virtual object Value { get; set; }
 	}
 }

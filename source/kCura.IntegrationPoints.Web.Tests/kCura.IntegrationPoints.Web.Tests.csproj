@@ -136,7 +136,9 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Helpers\TestBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unit\Controllers\API\IntegrationPointsAPIControllerTests.cs" />
     <Compile Include="Unit\Controllers\FolderPathControllerTests.cs" />
     <Compile Include="Unit\Controllers\BaseControllerTests.cs" />
     <Compile Include="Unit\Controllers\LdapControllerTests.cs" />
@@ -146,6 +148,10 @@
     <Compile Include="Unit\DataStructures\FolderTreeTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
+      <Project>{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}</Project>
+      <Name>kCura.IntegrationPoints.Config</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core.Contracts\kCura.IntegrationPoints.Core.Contracts.csproj">
       <Project>{30503682-e18d-49df-a308-fe7996c4108e}</Project>
       <Name>kCura.IntegrationPoints.Core.Contracts</Name>
@@ -176,7 +182,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Choose>
