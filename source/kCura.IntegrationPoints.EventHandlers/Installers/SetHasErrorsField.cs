@@ -73,6 +73,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			return response;
 		}
 
+		/// <summary>
+		/// It is best to use the Castle Windsor container here instead of manually creating the dependencies.
+		/// TODO: replace the below with the container and resolve the dependencies.
+		/// </summary>
 		private void CreateServices()
 		{
 			RsapiClientFactory rsapiClientFactory = new RsapiClientFactory(Helper);

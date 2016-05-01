@@ -79,6 +79,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				TaskType taskType;
 				Enum.TryParse(job.TaskType, true, out taskType);
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("0b42a5bb-84e9-4fe8-8a75-1c6fbc0d4195");
 				switch (taskType)
 				{
 					case TaskType.SyncManager:

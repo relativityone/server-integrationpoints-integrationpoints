@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 		}
 
-		public DestinationWorkspaceDTO QueryDestinationWorkspaceRdoInstance(int targetWorkspaceArtifactId)
+		public DestinationWorkspaceDTO Query(int targetWorkspaceArtifactId)
 		{
 			var query = new Query<RDO>();
 			query.ArtifactTypeGuid = new Guid(DestinationWorkspaceDTO.Fields.OBJECT_TYPE_GUID);
@@ -60,15 +60,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public DestinationWorkspaceDTO CreateDestinationWorkspaceRdoInstance(int targetWorkspaceArtifactId, string destinationWorkspaceName)
+		public DestinationWorkspaceDTO Create(int targetWorkspaceArtifactId, string targetWorkspaceName)
 		{
-			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspaceName, targetWorkspaceArtifactId);
+			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(targetWorkspaceName, targetWorkspaceArtifactId);
 
 			RDO destinationWorkspaceObject = new RDO();
 
 			destinationWorkspaceObject.ArtifactTypeGuids.Add(new Guid(DestinationWorkspaceDTO.Fields.OBJECT_TYPE_GUID));
 			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_ARTIFACT_ID), targetWorkspaceArtifactId));
-			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_NAME), destinationWorkspaceName));
+			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_NAME), targetWorkspaceName));
 			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_INSTANCE_NAME), instanceName));
 
 			WriteResultSet<RDO> results;
@@ -92,14 +92,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				{
 					ArtifactId = results.Results[0].Artifact.ArtifactID,
 					WorkspaceArtifactId = targetWorkspaceArtifactId,
-					WorkspaceName = destinationWorkspaceName,
+					WorkspaceName = targetWorkspaceName,
 				};
 			}
 
 			throw new Exception(RSAPIErrors.CREATE_DEST_WORKSPACE_ERROR);
 		}
 
-		public void UpdateDestinationWorkspaceRdoInstance(DestinationWorkspaceDTO destinationWorkspace)
+		public void Update(DestinationWorkspaceDTO destinationWorkspace)
 		{
 			int workspaceId = destinationWorkspace.WorkspaceArtifactId;
 			string workspaceName = destinationWorkspace.WorkspaceName;
@@ -139,13 +139,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public void LinkDestinationWorkspaceToJobHistory(int? destinationWorkspaceInstanceId, int jobHistoryInstanceId)
+		public void LinkDestinationWorkspaceToJobHistory(int destinationWorkspaceInstanceId, int jobHistoryInstanceId)
 		{
 			RDO jobHistoryObject = new RDO(jobHistoryInstanceId);
 			jobHistoryObject.ArtifactTypeGuids.Add(new Guid(ObjectTypeGuids.JobHistory));
 
 			FieldValueList<Relativity.Client.DTOs.Artifact> objectToLink = new FieldValueList<Relativity.Client.DTOs.Artifact>();
-			objectToLink.Add(new Relativity.Client.DTOs.Artifact(destinationWorkspaceInstanceId ?? default(int)));
+			objectToLink.Add(new Relativity.Client.DTOs.Artifact(destinationWorkspaceInstanceId));
 			jobHistoryObject.Fields.Add(new FieldValue(new Guid(_DESTINATION_WORKSPACE_JOB_HISTORY_LINK), objectToLink));
 
 			WriteResultSet<RDO> results;
@@ -169,7 +169,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public void TagDocsWithDestinationWorkspace(int numberOfDocs, int? destinationWorkspaceInstanceId, string tableSuffix, int sourceWorkspaceId)
+		public void TagDocsWithDestinationWorkspace(int numberOfDocs, int destinationWorkspaceInstanceId, string tableSuffix, int sourceWorkspaceId)
 		{
 			if (numberOfDocs <= 0)
 			{
@@ -199,7 +199,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				base.TagDocumentsWithRdo(baseService, multiObjectField, numberOfDocs, destinationWorkspaceInstanceId.Value, fullTableName);
+				base.TagDocumentsWithRdo(baseService, multiObjectField, numberOfDocs, destinationWorkspaceInstanceId, fullTableName);
 			}
 			catch (Exception e)
 			{
