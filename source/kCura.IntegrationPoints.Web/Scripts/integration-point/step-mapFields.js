@@ -514,7 +514,18 @@ ko.validation.insertValidationMessage = function (element) {
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 		};
 		this.getTemplate = function () {
+		    if (IP.reverseMapFields) {  
+		            self.settings.url=
+		        IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3Reversed');
+self.settings.templateID = "step4";
+		    }else{
+				 self.settings.url=
+		        IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3');
+				self.settings.templateID = "step3";
+			}
+            
 			IP.data.ajax({ dataType: 'html', cache: true, type: 'get', url: self.settings.url }).then(function (result) {
+				
 				$('body').append(result);
 				self.template(self.settings.templateID);
 				self.hasTemplate = true;
@@ -694,11 +705,13 @@ ko.validation.insertValidationMessage = function (element) {
 			return d.promise;
 		};
 	};
-
-	var step = new Step({
-		url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3'),
-		templateID: 'step3'
-	});
+    
+        var step = new Step({
+            url: IP.utils.generateWebURL('IntegrationPoints', 'StepDetails3'),
+            templateID: 'step3'
+        });
+    
+	
 	IP.messaging.subscribe('back', function () {
 
 	});
