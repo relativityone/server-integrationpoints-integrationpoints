@@ -425,11 +425,7 @@ var IP = IP || {};
 		                // check if the month is within range and is the same ie. 2/30/2016 gets parsed to 3/1/2016 so we compare months date and year to check if it is the same
 		                if (date.getFullYear() == y && date.getMonth() + 1 == m && date.getDate() == d) {
 		                    // used to make sure the user doesn't chose a date older than today 
-		                    var currentDate = new Date().setHours(0, 0, 0, 0);// we need to zero out the hours seconds and minutes so that when we compare currentDate with value we compare only date and not time.
-		                   
-		                    if (currentDate <= date) {
-		                        return true;
-		                    }
+		                    return true;
 		                }
 		            }
 		            return false;
