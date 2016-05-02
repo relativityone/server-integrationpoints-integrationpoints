@@ -58,6 +58,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			// arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
 			_permissionService.UserCanImport(123).Returns(true);
+			_permissionService.UserCanEditDocuments(Arg.Any<int>()).Returns(true);
 
 			// act
 			_instance.RunIntegrationPoint(_workspaceArtifactId, _integrationPointArtifactId, _userId);
@@ -90,9 +91,25 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			// arrange
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
 			_permissionService.UserCanImport(123).Returns(true);
-
+			_permissionService.UserCanEditDocuments(Arg.Any<int>()).Returns(true);
 			// act
 			Assert.Throws<Exception>(() => _instance.RunIntegrationPoint(_workspaceArtifactId, _integrationPointArtifactId, 0), Constants.IntegrationPoints.NO_USERID);
+
+
+			// assert
+			_jobHistoryService.Received(0).CreateRdo(Arg.Any<Data.IntegrationPoint>(), Arg.Any<Guid>(), null);
+			_jobManager.Received(0).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>());
+		}
+
+		[Test]
+		public void RunIntegrationPoint_RelativityProvider_UserHasNoPermissionToMassEditDocs()
+		{
+			// arrange
+			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_permissionService.UserCanImport(123).Returns(true);
+			_permissionService.UserCanEditDocuments(Arg.Any<int>()).Returns(false);
+			// act
+			Assert.Throws<Exception>(() => _instance.RunIntegrationPoint(_workspaceArtifactId, _integrationPointArtifactId, 0), Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
 
 
 			// assert
@@ -106,6 +123,40 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			// arrange
 			_sourceProvider.Identifier = "some thing else";
 			_permissionService.UserCanImport(Arg.Any<int>()).Returns(true);
+			_permissionService.UserCanEditDocuments(Arg.Any<int>()).Returns(true);
+
+			// act
+			_instance.RunIntegrationPoint(_workspaceArtifactId, _integrationPointArtifactId, _userId);
+
+
+			// assert
+			_jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), null);
+			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.SyncManager, _workspaceArtifactId, _integrationPointArtifactId, _userId);
+		}
+
+		[Test]
+		public void RunIntegrationPoint_GoldFlow_OtherProviders_NoImportCheck()
+		{
+			// arrange
+			_sourceProvider.Identifier = "some thing else";
+			_permissionService.UserCanImport(Arg.Any<int>()).Returns(false);
+
+			// act
+			_instance.RunIntegrationPoint(_workspaceArtifactId, _integrationPointArtifactId, _userId);
+
+
+			// assert
+			_jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), null);
+			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.SyncManager, _workspaceArtifactId, _integrationPointArtifactId, _userId);
+		}
+
+		[Test]
+		public void RunIntegrationPoint_GoldFlow_OtherProviders_NoMassEditCheck()
+		{
+			// arrange
+			_sourceProvider.Identifier = "some thing else";
+			_permissionService.UserCanImport(Arg.Any<int>()).Returns(true);
+			_permissionService.UserCanEditDocuments(Arg.Any<int>()).Returns(false);
 
 			// act
 			_instance.RunIntegrationPoint(_workspaceArtifactId, _integrationPointArtifactId, _userId);

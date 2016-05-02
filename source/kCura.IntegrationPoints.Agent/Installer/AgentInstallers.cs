@@ -5,7 +5,6 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Transformer;
 using kCura.ScheduleQueue.Core.Logging;
 using Relativity.API;
 

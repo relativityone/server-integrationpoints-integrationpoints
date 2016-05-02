@@ -125,6 +125,8 @@ namespace kCura.IntegrationPoints.Core.Services
 				{
 					BatchInstance = Guid.NewGuid()
 				};
+
+				CheckForRelativityProviderAdditionalPermissions(ip.SourceConfiguration, _context.EddsUserID);
 				task = TaskType.ExportService;
 			}
 			else
@@ -288,17 +290,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			// if relativity provider is selected, we will create an export task
 			if (identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
 			{
-				DestinationWorkspace destinationWorkspace = JsonConvert.DeserializeObject<DestinationWorkspace>(sourceConfig);
-				if (_permissionService.UserCanImport(destinationWorkspace.TargetWorkspaceArtifactId) == false)
-				{
-					throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT);
-				}
-
-				if (userId == 0)
-				{
-					throw new Exception(Constants.IntegrationPoints.NO_USERID);
-				}
-
+				CheckForRelativityProviderAdditionalPermissions(sourceConfig, userId);
 				_jobHistoryService.CreateRdo(integrationPointRdo, batchInstance, null);
 				_jobService.CreateJobOnBehalfOfAUser(jobDetails, TaskType.ExportService, workspaceArtifactId, integrationPointArtifactId, userId);
 			}
@@ -309,9 +301,29 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		internal class DestinationWorkspace
+		private void CheckForRelativityProviderAdditionalPermissions(string config, int userId)
+		{
+			WorkspaceConfiguration workspaceConfiguration = JsonConvert.DeserializeObject<WorkspaceConfiguration>(config);
+			if (_permissionService.UserCanImport(workspaceConfiguration.TargetWorkspaceArtifactId) == false)
+			{
+				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT);
+			}
+
+			if (_permissionService.UserCanEditDocuments(workspaceConfiguration.SourceWorkspaceArtifactId) == false)
+			{
+				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
+			}
+
+			if (userId == 0)
+			{
+				throw new Exception(Constants.IntegrationPoints.NO_USERID);
+			}
+		}
+
+		internal class WorkspaceConfiguration
 		{
 			public int TargetWorkspaceArtifactId;
+			public int SourceWorkspaceArtifactId;
 		}
 	}
 }

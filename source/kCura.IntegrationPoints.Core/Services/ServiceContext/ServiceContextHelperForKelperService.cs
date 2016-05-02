@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.Services.ServiceContext
 
 		public IRSAPIService GetRsapiService()
 		{
-			return ServiceContextFactory.CreateRSAPIService(this.GetRsapiClient(ExecutionIdentity.CurrentUser));
+			return ServiceContextFactory.CreateRSAPIService(_helper, WorkspaceID);
 		}
 
 		public IRSAPIClient GetRsapiClient(ExecutionIdentity identity)
