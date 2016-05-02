@@ -7,7 +7,7 @@ using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 {
-	public class RdoSynchronizerProvider
+	public class RdoSynchronizerProvider : IRdoSynchronizerProvider
 	{
 		public const string RDO_SYNC_TYPE_GUID = "74A863B9-00EC-4BB7-9B3E-1E22323010C6";
 		public const string FILES_SYNC_TYPE_GUID = "1D3AD995-32C5-48FE-BAA5-5D97089C8F18";
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 				var rdo = new DestinationProvider();
 				rdo.Name = name;
 				rdo.Identifier = providerGuid;
-				rdo.ApplicationIdentifier = Application.GUID;
+				rdo.ApplicationIdentifier = Constants.IntegrationPoints.APPLICATION_GUID_STRING;
 				_context.RsapiService.DestinationProviderLibrary.Create(rdo);
 			}
 			else

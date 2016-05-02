@@ -97,6 +97,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Ser
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.Relativity.Export.Converted", "kCura.Relativity.Export.ConvertedToC#\kCura.Relativity.Export.Converted.csproj", "{A2926718-523C-44ED-99AD-71F9F2B6B491}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoint.Tests.Core", "kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj", "{AD3E5540-FA39-4983-8A23-FCC756D51A32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1045,6 +1047,28 @@ Global
 		{A2926718-523C-44ED-99AD-71F9F2B6B491}.Release|x64.Build.0 = Release|x64
 		{A2926718-523C-44ED-99AD-71F9F2B6B491}.Release|x86.ActiveCfg = Release|x86
 		{A2926718-523C-44ED-99AD-71F9F2B6B491}.Release|x86.Build.0 = Release|x86
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|x64.Build.0 = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Documentation|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Documentation|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Documentation|x64.ActiveCfg = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Documentation|x86.ActiveCfg = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Integrate|Any CPU.ActiveCfg = Release|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Integrate|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Integrate|x64.ActiveCfg = Release|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Integrate|x86.ActiveCfg = Release|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|x64.ActiveCfg = Release|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|x64.Build.0 = Release|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

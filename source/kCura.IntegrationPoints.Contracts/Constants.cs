@@ -18,6 +18,10 @@
 		public const string SPECIAL_NATIVE_FILE_LOCATION_FIELD_NAME = "NATIVE_FILE_PATH_001";
 		public const string SPECIAL_FOLDERPATH_FIELD_NAME = "REL_FOLDER_PATH_001";
 		public const string SPECIAL_FILE_NAME_FIELD_NAME = "REL_FILE_NAME_001";
+		public const string SCHEDULE_QUEUE_INSTANCE_SETTING_SECTION = "kCura.ScheduleQueue.Core";
+		public const string INTEGRATION_POINT_INSTANCE_SETTING_SECTION = "kCura.IntegrationPoints";
+		public const string WEB_API_PATH = "WebAPIPath";
+
 		public const char MULTI_VALUE_DELIMITER = ';';
 		public const char NESTED_VALUE_DELIMITER = '/';
 	}

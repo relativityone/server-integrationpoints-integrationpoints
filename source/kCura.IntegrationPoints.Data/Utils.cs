@@ -38,5 +38,10 @@ namespace kCura.IntegrationPoints.Data
 			}
 			return strBuilder.ToString();
 		}
+
+		public static string GetFormatForWorkspaceOrJobDisplay(string name, int id)
+		{
+			return $"{name} - {id}";
+		}
 	}
 }

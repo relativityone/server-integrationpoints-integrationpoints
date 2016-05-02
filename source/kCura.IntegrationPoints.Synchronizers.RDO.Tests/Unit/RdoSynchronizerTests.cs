@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 	{
 		public static RdoSynchronizerBase ChangeWebAPIPath(RdoSynchronizerBase synchronizer)
 		{
-			var prop = synchronizer.GetType().GetProperty("WebAPIPath");
+			var prop = synchronizer.GetType().GetProperty(kCura.IntegrationPoints.Contracts.Constants.WEB_API_PATH);
 			prop.SetValue(synchronizer, "Mock value");
 			return synchronizer;
 		}
@@ -262,7 +262,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			//ASSERT
 			Assert.IsNull(result.FolderPathSourceFieldName);
-			Assert.AreEqual(0, result.DestinationFolderArtifactID);
+			Assert.AreEqual(0, result.DestinationFolderArtifactId);
 		}
 
 		[Test]
@@ -286,7 +286,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			//ASSERT
 			Assert.AreEqual(Contracts.Constants.SPECIAL_FOLDERPATH_FIELD_NAME, result.FolderPathSourceFieldName);
-			Assert.AreEqual(0, result.DestinationFolderArtifactID);
+			Assert.AreEqual(0, result.DestinationFolderArtifactId);
 		}
 
 		[Test]
@@ -428,7 +428,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 		public TestRdoSynchronizer()
 			: base(null, null)
 		{
-			WebAPIPath = "WebAPIPath";
+			WebAPIPath = kCura.IntegrationPoints.Contracts.Constants.WEB_API_PATH;
 			DisableNativeLocationValidation = false;
 			DisableNativeValidation = false;
 		}

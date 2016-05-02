@@ -153,6 +153,18 @@ namespace kCura.IntegrationPoints.Data
 				SetField<bool?>(new System.Guid(IntegrationPointFieldGuids.LogErrors), value);
 			}
 		}
+		[DynamicField(IntegrationPointFields.HasErrors, IntegrationPointFieldGuids.HasErrors, FieldTypes.YesNo)]
+		public bool? HasErrors
+		{
+			get
+			{
+				return GetField<bool?>(new System.Guid(IntegrationPointFieldGuids.HasErrors));
+			}
+			set
+			{
+				SetField<bool?>(new System.Guid(IntegrationPointFieldGuids.HasErrors), value);
+			}
+		}
 		[DynamicField(IntegrationPointFields.EmailNotificationRecipients, IntegrationPointFieldGuids.EmailNotificationRecipients, FieldTypes.LongText)]
 		public string EmailNotificationRecipients
 		{
@@ -454,6 +466,7 @@ namespace kCura.IntegrationPoints.Data
 				SetField<int?>(new System.Guid(JobHistoryFieldGuids.ItemsWithErrors), value);
 			}
 		}
+
 		[DynamicField(JobHistoryFields.StartTimeUTC, JobHistoryFieldGuids.StartTimeUTC, FieldTypes.Date)]
 		public DateTime? StartTimeUTC
 		{

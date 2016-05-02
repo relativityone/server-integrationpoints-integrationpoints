@@ -147,20 +147,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Application.cs" />
     <Compile Include="BatchEmail.cs" />
     <Compile Include="BatchStatusCommands\Implementations\IConsumeScratchTableBatchStatus.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="ContextContainer.cs" />
     <Compile Include="Factories\IExporterFactory.cs" />
+    <Compile Include="Factories\Implementations\ContextContainerFactory.cs" />
+    <Compile Include="Factories\IIntegrationPointManagerFactory.cs" />
+    <Compile Include="Factories\Implementations\IntegrationPointManagerFactory.cs" />
+    <Compile Include="IContextContainer.cs" />
+    <Compile Include="Factories\IContextContainerFactory.cs" />
+    <Compile Include="Managers\IIntegrationPointManager.cs" />
     <Compile Include="Managers\IJobHistoryManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\DestinationWorkspaceManager.cs" />
     <Compile Include="Installers\KeywordInstaller.cs" />
     <Compile Include="JobHistoryStatus.cs" />
     <Compile Include="BatchStatusCommands\IBatchStatus.cs" />
     <Compile Include="BatchStatusCommands\Implementations\JobHistoryManager.cs" />
+    <Compile Include="Managers\Implementations\IntegrationPointManager.cs" />
     <Compile Include="Managers\Implementations\SourceWorkspaceManager.cs" />
     <Compile Include="Managers\Implementations\SourceJobManager.cs" />
     <Compile Include="Managers\ISourceWorkspaceManager.cs" />
@@ -200,10 +207,12 @@
     <Compile Include="Factories\Implementations\ExporterFactory.cs" />
     <Compile Include="Services\Exporter\IExporterService.cs" />
     <Compile Include="Services\Exporter\ILongTextStreamFactory.cs" />
+    <Compile Include="Services\Exporter\LazyExceptArtifactFieldDto.cs" />
     <Compile Include="Services\Exporter\RelativityExporterService.cs" />
     <Compile Include="Services\Guid\GuidService.cs" />
     <Compile Include="Services\Guid\IGuidService.cs" />
     <Compile Include="Services\IDeleteHistoryErrorService.cs" />
+    <Compile Include="Services\IIntegrationPointService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />
     <Compile Include="Services\JobHistory\ExportJobErrorService.cs" />
     <Compile Include="Services\JobHistory\IJobHistoryService.cs" />
@@ -257,6 +266,7 @@
     <Compile Include="Services\SourceTypes\SourceTypeFactory.cs" />
     <Compile Include="Services\Synchronizer\ExportDestinationSynchronizerFactory.cs" />
     <Compile Include="Services\Synchronizer\GeneralWithCustodianRdoSynchronizerFactory.cs" />
+    <Compile Include="Services\Synchronizer\IRdoSynchronizerProvider.cs" />
     <Compile Include="Services\Synchronizer\RdoSynchronizerProvider.cs" />
     <Compile Include="Services\Tabs\ITabService.cs" />
     <Compile Include="Services\Tabs\RSAPITabService.cs" />

@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
             {
                 if (string.IsNullOrEmpty(_webAPIPath))
                 {
-					_webAPIPath = Config.Instance.WebApiPath;
+					_webAPIPath = Config.Config.Instance.WebApiPath;
                 }
                 return _webAPIPath;
             }

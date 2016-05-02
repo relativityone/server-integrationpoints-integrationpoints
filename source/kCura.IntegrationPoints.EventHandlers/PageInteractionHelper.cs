@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.EventHandlers
 			string applicationPath = null;
 
 			string[] urlSplit = System.Text.RegularExpressions.Regex.Split(currentUrl, "/Case/", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-			applicationPath = $"{urlSplit[0]}/CustomPages/{Core.Application.GUID}";
+			applicationPath = $"{urlSplit[0]}/CustomPages/{Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING}";
 
 			return applicationPath;
 		}

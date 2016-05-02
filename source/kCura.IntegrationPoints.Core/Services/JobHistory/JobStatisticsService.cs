@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		private readonly JobStatisticsQuery _query;
 		private readonly TaskParameterHelper _helper;
 		private readonly JobHistoryService _service;
-		private IWorkspaceDBContext _context;
+		private readonly IWorkspaceDBContext _context;
 		private Job _job;
 
 		private int _rowErrors = 0;

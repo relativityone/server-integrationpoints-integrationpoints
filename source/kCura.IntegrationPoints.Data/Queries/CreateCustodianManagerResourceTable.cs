@@ -5,6 +5,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 	public class CreateCustodianManagerResourceTable
 	{
 		private IDBContext _caseDBcontext;
+
 		public CreateCustodianManagerResourceTable(IDBContext caseDBcontext)
 		{
 			_caseDBcontext = caseDBcontext;
@@ -16,5 +17,4 @@ namespace kCura.IntegrationPoints.Data.Queries
 			_caseDBcontext.ExecuteNonQuerySQLStatement(sql);
 		}
 	}
-
 }

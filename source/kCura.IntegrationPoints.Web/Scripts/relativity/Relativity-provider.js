@@ -59,6 +59,7 @@
 
 		this.workspaces = ko.observableArray(state.workspaces);
 		this.savedSearches = ko.observableArray(state.savedSearches);
+		this.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
 
 		this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId).extend({
 			required: true

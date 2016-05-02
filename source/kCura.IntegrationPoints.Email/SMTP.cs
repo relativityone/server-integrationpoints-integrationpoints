@@ -9,7 +9,6 @@ namespace kCura.IntegrationPoints.Email
 {
 	public class SMTP : ISendable
 	{
-		private SmtpClient _client;
 		private readonly EmailConfiguration _configuration;
 
 		public SMTP(EmailConfiguration configuration)

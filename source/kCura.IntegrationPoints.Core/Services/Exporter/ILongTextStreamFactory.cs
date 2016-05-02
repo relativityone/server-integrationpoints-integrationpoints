@@ -4,6 +4,6 @@
 
 	public interface IILongTextStreamFactory
 	{
-		ILongTextStream CreateLongTextStream();
+		ILongTextStream CreateLongTextStream(int documentArtifactId, int fieldArtifactId);
 	}
 }

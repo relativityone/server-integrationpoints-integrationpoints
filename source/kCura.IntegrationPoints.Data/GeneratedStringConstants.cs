@@ -64,6 +64,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string DestinationProvider = @"Destination Provider";
 		public const string JobHistory = @"Job History";
 		public const string LogErrors = @"LogErrors";
+		public const string HasErrors = "@HasErrors";
 		public const string EmailNotificationRecipients = @"EmailNotificationRecipients";
 		public const string Name = @"Name";
 	}
@@ -82,6 +83,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string DestinationProvider = @"d6f4384a-0d2c-4eee-aab8-033cc77155ee";
 		public const string JobHistory = @"14b230cf-a505-4dd3-b05c-c54d05e62966";
 		public const string LogErrors = @"0319869e-37aa-499c-a95b-6d8d0e96a711";
+		public const string HasErrors = @"A9853E55-0BA0-43D8-A766-747A61471981";
 		public const string EmailNotificationRecipients = @"1bac59db-f7bf-48e0-91d4-18cf09ff0e39";
 		public const string Name = @"d534f433-dd92-4a53-b12d-bf85472e6d7a";
 	}

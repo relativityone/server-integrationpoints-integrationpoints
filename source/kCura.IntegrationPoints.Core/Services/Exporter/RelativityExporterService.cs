@@ -5,15 +5,15 @@ using System.Linq;
 using System.Runtime;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.Core;
 using Relativity.Core.Authentication;
 using Relativity.Data;
-using ArtifactType = kCura.Relativity.Client.ArtifactType;
-using QueryFieldLookup = Relativity.Core.QueryFieldLookup;
-using UserPermissionsMatrix = Relativity.Core.UserPermissionsMatrix;
+using System.Text.RegularExpressions;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {
@@ -22,13 +22,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		private readonly int[] _avfIds;
 		private readonly BaseServiceContext _baseContext;
 		private readonly global::Relativity.Core.Api.Shared.Manager.Export.IExporter _exporter;
+		private readonly IILongTextStreamFactory _longTextStreamFactory;
 		private readonly Export.InitializationResults _exportJobInfo;
 		private readonly int[] _fieldArtifactIds;
 		private readonly HashSet<int> _longTextFieldArtifactIds;
 		private readonly FieldMap[] _mappedFields;
 		private readonly HashSet<int> _multipleObjectFieldArtifactIds;
 		private readonly int _retrievedDataCount;
-		private readonly ExportUsingSavedSearchSettings _settings;
 		private readonly HashSet<int> _singleChoiceFieldsArtifactIds;
 		private IDataReader _reader;
 		private DataGridContext _dataGridContext;
@@ -36,31 +36,34 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 		/// <summary>
 		/// Testing only
 		/// </summary>
-		public RelativityExporterService(
+		internal RelativityExporterService(
 			global::Relativity.Core.Api.Shared.Manager.Export.IExporter exporter,
-			int[] avfIds,
-			int[] fieldArtifactIds)
-			: this()
+			IILongTextStreamFactory longTextStreamFactory,
+			FieldMap[] mappedFields,
+			HashSet<int> longTextField,
+			int[] avfIds)
+			: this(mappedFields)
 		{
 			_exporter = exporter;
+			_longTextStreamFactory = longTextStreamFactory;
 			_avfIds = avfIds;
 			_exportJobInfo = _exporter.InitializeExport(0, null, 0);
-			_fieldArtifactIds = fieldArtifactIds;
+			_longTextFieldArtifactIds = longTextField;
 		}
 
 		public RelativityExporterService(
+			IRepositoryFactory repositoryFactory,
+			ClaimsPrincipal claimsPrincipal,
 			FieldMap[] mappedFields,
 			int startAt,
 			string config)
-			: this()
+			: this(mappedFields)
 		{
-			_settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
-			_mappedFields = mappedFields;
-			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
+			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
+			_baseContext = claimsPrincipal.GetServiceContextUnversionShortTerm(settings.SourceWorkspaceArtifactId);
 
-			_baseContext = ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(_settings.SourceWorkspaceArtifactId);
+			IQueryFieldLookup fieldLookupHelper = new global::Relativity.Core.QueryFieldLookup(_baseContext, (int)Relativity.Client.ArtifactType.Document);
 
-			IQueryFieldLookup fieldLookupHelper = new QueryFieldLookup(_baseContext, (int)ArtifactType.Document);
 			Dictionary<int, int> fieldsReferences = new Dictionary<int, int>();
 			foreach (FieldEntry source in mappedFields.Select(f => f.SourceField))
 			{
@@ -68,17 +71,31 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 				ViewFieldInfo fieldInfo = fieldLookupHelper.GetFieldByArtifactID(artifactId);
 
 				fieldsReferences[artifactId] = fieldInfo.AvfId;
-				if (fieldInfo.FieldType == FieldTypeHelper.FieldType.Objects)
+				switch (fieldInfo.FieldType)
 				{
-					_multipleObjectFieldArtifactIds.Add(artifactId);
-				}
-				else if (fieldInfo.FieldType == FieldTypeHelper.FieldType.Code)
-				{
-					_singleChoiceFieldsArtifactIds.Add(artifactId);
-				}
-				else if (fieldInfo.FieldType == FieldTypeHelper.FieldType.Text)
-				{
-					_longTextFieldArtifactIds.Add(artifactId);
+					case FieldTypeHelper.FieldType.Objects:
+						_multipleObjectFieldArtifactIds.Add(artifactId);
+						IFieldRepository fieldRepository = repositoryFactory.GetFieldRepository(settings.SourceWorkspaceArtifactId);
+						ArtifactDTO identifierField = fieldRepository.RetrieveTheIdentifierField(fieldInfo.AssociativeArtifactTypeID);
+						string identifierFieldName = (string)identifierField.Fields.First(field => field.Name == "Name").Value;
+						IObjectRepository objectRepository = repositoryFactory.GetObjectRepository(settings.SourceWorkspaceArtifactId, fieldInfo.AssociativeArtifactTypeID);
+						ArtifactDTO[] objects = objectRepository.GetFieldsFromObjects(new[] { identifierFieldName }).GetResultsWithoutContextSync();
+						VerifyValidityOfTheNestedOrMultiValuesField(fieldInfo.DisplayName, objects, Constants.IntegrationPoints.InvalidMultiObjectsValueFormat);
+						break;
+
+					case FieldTypeHelper.FieldType.Code:
+						_singleChoiceFieldsArtifactIds.Add(artifactId);
+						break;
+
+					case FieldTypeHelper.FieldType.Text:
+						_longTextFieldArtifactIds.Add(artifactId);
+						break;
+
+					case FieldTypeHelper.FieldType.MultiCode:
+						ICodeRepository codeRepository = repositoryFactory.GetCodeRepository(settings.SourceWorkspaceArtifactId);
+						ArtifactDTO[] codes = codeRepository.RetrieveCodeAsync(fieldInfo.DisplayName).GetResultsWithoutContextSync();
+						VerifyValidityOfTheNestedOrMultiValuesField(fieldInfo.DisplayName, codes, Constants.IntegrationPoints.InvalidMultiChoicesValueFormat);
+						break;
 				}
 
 				if (fieldInfo.EnableDataGrid && _dataGridContext == null)
@@ -92,21 +109,48 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			_exporter = new global::Relativity.Core.Api.Shared.Manager.Export.SavedSearchExporter
 			(
 					_baseContext,
-					new UserPermissionsMatrix(_baseContext),
+					new global::Relativity.Core.UserPermissionsMatrix(_baseContext),
 					global::Relativity.ArtifactType.Document,
 					IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER,
 					IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER,
 					global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
 			);
-			_exportJobInfo = _exporter.InitializeExport(_settings.SavedSearchArtifactId, _avfIds, startAt);
-			_retrievedDataCount = 0;
+
+			_exportJobInfo = _exporter.InitializeExport(settings.SavedSearchArtifactId, _avfIds, startAt);
+			_longTextStreamFactory = new ExportApiDataHelper.RelativityLongTextStreamFactory(_baseContext, _dataGridContext, settings.SourceWorkspaceArtifactId);
 		}
 
-		private RelativityExporterService()
+		private void VerifyValidityOfTheNestedOrMultiValuesField(string fieldName, ArtifactDTO[] dtos, Regex invalidPattern)
+		{
+			List<Exception> exceptions = new List<Exception>(dtos.Length);
+			for (int index = 0; index < dtos.Length; index++)
+			{
+				ArtifactDTO dto = dtos[index];
+				string name = (string)dto.Fields[0].Value;
+				if (invalidPattern.IsMatch(name))
+				{
+					Exception exception = new Exception($"Invalid '{fieldName}' : {name}");
+					exceptions.Add(exception);
+				}
+			}
+
+			if (exceptions.Count > 0)
+			{
+				string message = $"Invalid '{fieldName}' found." +
+								 $" Please remove invalid character(s) - {kCura.IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER} or {kCura.IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER}, before proceeding further.";
+				AggregateException exception = new AggregateException(message, exceptions);
+				throw exception;
+			}
+		}
+
+		private RelativityExporterService(FieldMap[] mappedFields)
 		{
 			_singleChoiceFieldsArtifactIds = new HashSet<int>();
 			_multipleObjectFieldArtifactIds = new HashSet<int>();
 			_longTextFieldArtifactIds = new HashSet<int>();
+			_retrievedDataCount = 0;
+			_mappedFields = mappedFields;
+			_fieldArtifactIds = mappedFields.Select(field => Int32.Parse(field.SourceField.FieldIdentifier)).ToArray();
 		}
 
 		public bool HasDataToRetrieve
@@ -140,7 +184,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			object[] retrievedData = _exporter.RetrieveResults(_exportJobInfo.RunId, _avfIds, size);
 			if (retrievedData != null)
 			{
-				int artifactType = (int)ArtifactType.Document;
+				int artifactType = (int)Relativity.Client.ArtifactType.Document;
 				foreach (object data in retrievedData)
 				{
 					ArtifactFieldDTO[] fields = new ArtifactFieldDTO[_avfIds.Length];
@@ -153,27 +197,31 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 						int artifactId = _fieldArtifactIds[index];
 						object value = fieldsValue[index];
 
-						if (_multipleObjectFieldArtifactIds.Contains(artifactId))
+						Exception exception = null;
+						try
 						{
-							value = ExportApiDataHelper.SanitizeMultiObjectField(value);
+							if (_multipleObjectFieldArtifactIds.Contains(artifactId))
+							{
+								value = ExportApiDataHelper.SanitizeMultiObjectField(value);
+							}
+							else if (_singleChoiceFieldsArtifactIds.Contains(artifactId))
+							{
+								value = ExportApiDataHelper.SanitizeSingleChoiceField(value);
+							}
+							// export api will return a string constant represent the state of the string of which is too big. We will have to go and read this our self.
+							else if (_longTextFieldArtifactIds.Contains(artifactId)
+								&& global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN.Equals(value))
+							{
+								value = ExportApiDataHelper.RetrieveLongTextFieldAsync(_longTextStreamFactory, documentArtifactId, artifactId)
+									.GetResultsWithoutContextSync();
+							}
 						}
-						else if (_singleChoiceFieldsArtifactIds.Contains(artifactId))
+						catch (Exception ex)
 						{
-							value = ExportApiDataHelper.SanitizeSingleChoiceField(value);
-						}
-						// export api will return a string constant represent the state of the string of which is too big. We will have to go and read this our self.
-						else if (_longTextFieldArtifactIds.Contains(artifactId)
-							&& global::Relativity.Constants.LONG_TEXT_EXCEEDS_MAX_LENGTH_FOR_LIST_TOKEN.Equals(value))
-						{
-							ExportApiDataHelper.RelativityLongTextStreamFactory factory = new ExportApiDataHelper.RelativityLongTextStreamFactory(_baseContext,
-								_dataGridContext,
-								documentArtifactId,
-								_settings.SourceWorkspaceArtifactId,
-								artifactId);
-							value = ExportApiDataHelper.RetrieveLongTextFieldAsync(factory).ConfigureAwait(false).GetAwaiter().GetResult();
+							exception = ex;
 						}
 
-						fields[index] = new ArtifactFieldDTO()
+						fields[index] = new LazyExceptArtifactFieldDto(exception)
 						{
 							Name = _exportJobInfo.ColumnNames[index],
 							ArtifactId = artifactId,

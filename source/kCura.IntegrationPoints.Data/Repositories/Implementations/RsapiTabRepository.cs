@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class RsapiTabRepository : ITabRepository
 	{
-		private readonly IRSAPIClient _rsapiClient;
+		private readonly IHelper _helper;
+		private readonly int _workspaceArtifactId;
 
-		public RsapiTabRepository(IRSAPIClient rsapiClient)
+		public RsapiTabRepository(IHelper helper, int workspaceArtifactId)
 		{
-			_rsapiClient = rsapiClient;
+			_helper = helper;
+			_workspaceArtifactId = workspaceArtifactId;
 		}
 
 		public int? RetrieveTabArtifactId(int objectTypeArtifactId, string tabName)
@@ -27,7 +30,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Condition = compositeCondition
 			};
 
-			QueryResultSet<Tab> resultSet = _rsapiClient.Repositories.Tab.Query(tabQuery);
+
+			QueryResultSet<Tab> resultSet = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+
+				resultSet = rsapiClient.Repositories.Tab.Query(tabQuery);
+			}
+
 
 			if (!resultSet.Success)
 			{
@@ -39,6 +50,45 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return tab?.Artifact.ArtifactID;
 		}
 
+		public int? RetrieveTabArtifactIdByGuid(string tabGuid)
+		{
+			var tabQuery = new Query<Tab>();
+
+			QueryResultSet<Tab> resultSet;
+			try
+			{
+				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				{
+					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+
+					resultSet = rsapiClient.Repositories.Tab.Query(tabQuery);
+				}
+			}
+			catch (Exception ex)
+			{
+				
+				throw new Exception("Unable to retrieve tab.", ex);
+			}
+
+			if (!resultSet.Success)
+			{
+				throw new Exception($"Unable to retrieve tab: {resultSet.Message}");
+			}
+		
+			int? tabArtifactId = null;
+			Guid tabGuidToFind = new Guid(tabGuid);
+			foreach (Result<Tab> tab in resultSet.Results)
+			{
+				if (tab.Artifact.Guids.Contains(tabGuidToFind))
+				{
+					tabArtifactId = tab.Artifact.ArtifactID;
+					break;
+				}
+			}
+
+			return tabArtifactId;
+		}
+
 		public void Delete(int artifactId)
 		{
 			var artifactRequest = new List<ArtifactRequest>()
@@ -46,7 +96,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				new ArtifactRequest((int)ArtifactType.Tab, artifactId)
 			};
 
-			ResultSet resultSet = _rsapiClient.Delete(_rsapiClient.APIOptions, artifactRequest);
+			ResultSet resultSet = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+
+				resultSet = rsapiClient.Delete(rsapiClient.APIOptions, artifactRequest);
+			}
 
 			if (!resultSet.Success)
 			{
