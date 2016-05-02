@@ -233,8 +233,8 @@
     </Compile>
     <Compile Include="SourceProviderConfiguration.cs" />
     <Compile Include="SqlObjectTypeQuery.cs" />
-    <Compile Include="Transformer\Helper.cs" />
-    <Compile Include="Transformer\IntegrationPointTransformer.cs" />
+    <Compile Include="Transformers\IDtoTransformer.cs" />
+    <Compile Include="Transformers\IntegrationPointTransformer.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
