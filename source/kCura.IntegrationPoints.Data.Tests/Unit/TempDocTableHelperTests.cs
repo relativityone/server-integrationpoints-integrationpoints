@@ -37,9 +37,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_fieldRepository = Substitute.For<IFieldRepository>();
 			_documentRepository = Substitute.For<IDocumentRepository>();
 
-			_instance = new TempDocTableHelper(_helper, _tableSuffix, _sourceWorkspaceId, _docIdColumn, _fieldRepository,
-				_documentRepository);
-
+			_instance = new TempDocTableHelper(_helper, _tableSuffix, _sourceWorkspaceId, _fieldRepository, _documentRepository, _docIdColumn);
 
 			ArtifactDTO[] fieldArtifacts = CreateArtifactDTOs();
 			ArtifactDTO document = new ArtifactDTO(12345, 10, new ArtifactFieldDTO[] { });
@@ -47,7 +45,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_successFieldTask = Task<ArtifactDTO[]>.FromResult(fieldArtifacts);
 			_successDocumentTask = Task<ArtifactDTO>.FromResult(document);
 			_failedDocumentTask = null;
-
 		}
 
 		[Test]
