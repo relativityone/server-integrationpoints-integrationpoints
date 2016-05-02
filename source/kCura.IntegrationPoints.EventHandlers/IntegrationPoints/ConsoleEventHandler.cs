@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	public class ConsoleEventHandler : ConsoleEventHandlerBase
 	{
 		private IPermissionService _permissionService;
-		private readonly IIntegrationPointManagerFactory _integrationPointManagerFactory;
+		private readonly IManagerFactory _integrationPointManagerFactory;
 		private readonly IContextContainerFactory _contextContainerFactory;
 
 		public IPermissionService PermissionService
@@ -23,11 +23,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			set { _permissionService = value; }
 		}
 
-		public ConsoleEventHandler() : this(new ContextContainerFactory(), new IntegrationPointManagerFactory())
+		public ConsoleEventHandler() : this(new ContextContainerFactory(), new ManagerFactory())
 		{
 		}
 
-		internal ConsoleEventHandler(IContextContainerFactory contextContainerFactory, IIntegrationPointManagerFactory integrationPointManagerFactory)
+		internal ConsoleEventHandler(IContextContainerFactory contextContainerFactory, IManagerFactory integrationPointManagerFactory)
 		{
 			_contextContainerFactory = contextContainerFactory;
 			_integrationPointManagerFactory = integrationPointManagerFactory;
