@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			const string expectedErrorMessage = @"""You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.""";
 
 			_rdoAdaptor.SourceProviderIdentifier.Returns(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID);
-			_rdoAdaptor.SourceConfiguration.Returns("{TargetWorkspaceArtifactId : 123}");
+			_rdoAdaptor.SourceConfiguration.Returns("{\"SourceWorkspaceArtifactId\":\"321\",\"TargetWorkspaceArtifactId\":123}");
 			_permissionService.UserCanImport(123).Returns(false);
 
 			HttpResponseMessage response = _controller.Post(_payload);
@@ -66,7 +66,28 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		}
 
 		[Test]
-		public void UserDoesHaveAPermissionToPushToAnotherWorkspace()
+		public void UserDoesNotHavePermissionToEditDocuments()
+		{
+			List<Claim> claims = new List<Claim>()
+			{
+				new Claim("rel_uai", _userIdString)
+			};
+			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+			const string expectedErrorMessage = @"""You do not have permission to edit documents in the current workspace. Please contact your system administrator.""";
+
+			_rdoAdaptor.SourceProviderIdentifier.Returns(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID);
+			_rdoAdaptor.SourceConfiguration.Returns("{\"SourceWorkspaceArtifactId\":\"321\",\"TargetWorkspaceArtifactId\":123}");
+			_permissionService.UserCanImport(123).Returns(true);
+			_permissionService.UserCanEditDocuments(321).Returns(false);
+
+			HttpResponseMessage response = _controller.Post(_payload);
+
+			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().Result);
+		}
+
+		[Test]
+		public void UserDoesHaveAPermissionToPushToAnotherWorkspaceAndEditDocuments()
 		{
 			List<Claim> claims = new List<Claim>()
 			{
@@ -74,8 +95,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			};
 			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			_rdoAdaptor.SourceProviderIdentifier.Returns(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID);
-			_rdoAdaptor.SourceConfiguration.Returns("{TargetWorkspaceArtifactId : 123}");
+			_rdoAdaptor.SourceConfiguration.Returns("{\"SourceWorkspaceArtifactId\":\"321\",\"TargetWorkspaceArtifactId\":123}");
 			_permissionService.UserCanImport(123).Returns(true);
+			_permissionService.UserCanEditDocuments(321).Returns(true);
 			
 			HttpResponseMessage response = _controller.Post(_payload);
 
@@ -90,8 +112,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			List<Claim> claims = new List<Claim>();
 			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			_rdoAdaptor.SourceProviderIdentifier.Returns(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID);
-			_rdoAdaptor.SourceConfiguration.Returns("{TargetWorkspaceArtifactId : 123}");
+			_rdoAdaptor.SourceConfiguration.Returns("{\"SourceWorkspaceArtifactId\":\"321\",\"TargetWorkspaceArtifactId\":123}");
 			_permissionService.UserCanImport(123).Returns(true);
+			_permissionService.UserCanEditDocuments(321).Returns(true);
 
 			HttpResponseMessage response = _controller.Post(_payload);
 

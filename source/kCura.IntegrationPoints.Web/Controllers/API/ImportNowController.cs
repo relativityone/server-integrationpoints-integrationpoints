@@ -23,6 +23,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private const string _RELATIVITY_USERID = "rel_uai";
 		internal const string NO_PERMISSION_TO_IMPORT = "You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.";
+		internal const string NO_PERMISSION_TO_EDIT_DOCUMENTS =
+			"You do not have permission to edit documents in the current workspace. Please contact your system administrator.";
 		internal const string NO_USERID = "Unable to determine the user id. Please contact your system administrator.";
 
 		private readonly IJobManager _jobManager;
@@ -111,10 +113,14 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				// if relativity provider is selected, we will create an export task
 				if (_rdoDependenciesAdaptor.SourceProviderIdentifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
 				{
-					DestinationWorkspace destinationWorkspace = JsonConvert.DeserializeObject<DestinationWorkspace>(_rdoDependenciesAdaptor.SourceConfiguration);
-					if(_permissionService.UserCanImport(destinationWorkspace.TargetWorkspaceArtifactId) == false)
+					WorkspaceConfiguration workspaceConfiguration = JsonConvert.DeserializeObject<WorkspaceConfiguration>(_rdoDependenciesAdaptor.SourceConfiguration);
+					if(_permissionService.UserCanImport(workspaceConfiguration.TargetWorkspaceArtifactId) == false)
 					{
 						throw new Exception(NO_PERMISSION_TO_IMPORT);
+					}
+					if (_permissionService.UserCanEditDocuments(workspaceConfiguration.SourceWorkspaceArtifactId) == false)
+					{
+						throw new Exception(NO_PERMISSION_TO_EDIT_DOCUMENTS);
 					}
 
 					if (userId == 0)
@@ -211,9 +217,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			string SourceConfiguration { get; }
 		}
 
-		internal class DestinationWorkspace
+		internal class WorkspaceConfiguration
 		{
 			public int TargetWorkspaceArtifactId;
+			public int SourceWorkspaceArtifactId;
 		}
 
 		public class Payload
