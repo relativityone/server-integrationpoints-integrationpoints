@@ -1,9 +1,9 @@
 ﻿$(function (root) {
 	//Create a new communication object that talks to the host page.
 	var message = IP.frameMessaging();
-
+    
 	var viewModel;
-
+	IP.frameMessaging().dFrame.IP.reverseMapFields = true;// set the flag so that the fields can be reversed;
 	//An event raised when the user has clicked the Next or Save button.
 	message.subscribe('submit', function () {
 		//Execute save logic that persists the state.

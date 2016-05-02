@@ -288,17 +288,22 @@ ul li .day-select
 	width: 1200px;
 }
 
-.workspace-field
+.workspace-field, .leftSide-field
 {
+
 	float: left;
 	padding-bottom: 10px;
 }
 
-.source-field
+.source-field, .rightSide-field
 {
 	float: left;
 	padding-bottom: 10px;
-	margin-left: 70.5%;
+	margin-left: 92%;
+}
+.source-field, .rightSide-field.reverse
+{
+	margin-left: 92%;
 }
 
 .list-title

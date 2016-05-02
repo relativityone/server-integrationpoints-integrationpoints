@@ -1,4 +1,5 @@
 ﻿var IP = IP || {};
+IP.reverseMapFields = false;
 
 ko.validation.rules.pattern.message = 'Invalid.';
 
@@ -416,14 +417,16 @@ var IP = IP || {};
 		                if (comp.length > 3) {
 		                    return false;
 		                }
-		                var currentDate = new Date().setHours(0, 0, 0, 0);// we need to zero out the hours seconds and minutes so that when we compare currentDate with value we compare only date and not time. 
+		                
 		                var m = parseInt(comp[0], 10);
 		                var d = parseInt(comp[1], 10);
 		                var y = parseInt(comp[2], 10);
-		                var date = new Date(y, m - 1, d);
-		                // check if the month is within range and is the same ie. 2/30/2016 gets parsed to 3/1/2016 so we compare months date adn year to check if it is the same
+		              
+		                // check if the month is within range and is the same ie. 2/30/2016 gets parsed to 3/1/2016 so we compare months date and year to check if it is the same
 		                if (date.getFullYear() == y && date.getMonth() + 1 == m && date.getDate() == d) {
-                               // used to make sure the user doesn't chose a date older than today 
+		                    // used to make sure the user doesn't chose a date older than today 
+		                    var currentDate = new Date().setHours(0, 0, 0, 0);// we need to zero out the hours seconds and minutes so that when we compare currentDate with value we compare only date and not time.
+		                    var date = new Date(y, m - 1, d);
 		                    if (currentDate <= date) {
 		                        return true;
 		                    }
@@ -431,7 +434,7 @@ var IP = IP || {};
 		            }
 		            return false;
 		        },
-		        message: 'You did not enter a valid date.'
+		        message: 'Please enter a valid date.'
 		    }
 		}).extend({
 		    required: {
