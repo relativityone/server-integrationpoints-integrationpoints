@@ -155,6 +155,7 @@
     <Compile Include="Unit\RdoGetterTest.cs" />
     <Compile Include="Unit\RelativityReaderBaseTests.cs" />
     <Compile Include="Unit\Repositories\IntegrationPointRepositoryTests.cs" />
+    <Compile Include="Unit\Repositories\SqlArtifactGuidRepositoryTests.cs" />
     <Compile Include="Unit\RSAPIServiceInstallerTests.cs" />
     <Compile Include="Unit\TempDocTableHelperTests.cs" />
   </ItemGroup>
