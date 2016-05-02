@@ -1,5 +1,5 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
-using kCura.Relativity.Client.DTOs;
+﻿using System.Security.Claims;
+using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -20,18 +20,19 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// Creates an instance of a Destination Workspace RDO.
 		/// </summary>
 		/// <param name="targetWorkspaceArtifactId">Artifact ID of the target workspace</param>
-		/// <param name="targetWorkspaceName">Name of the DestinationWorkspace RDO instance</param>
+		/// <param name="targetWorkspaceName">Name of the target workspace</param>
 		/// <returns>DestinationWorkspaceDTO of the instance that was just created</returns>
 		DestinationWorkspaceDTO Create(int targetWorkspaceArtifactId, string targetWorkspaceName);
 
 		/// <summary>
 		/// Mass edits/tags the Documents that were with the corresponding Destination Workspace they were pushed to.
 		/// </summary>
+		/// <param name="claimsPrincipal">ClaimsPrincipal to create context under the current user</param>
 		/// <param name="numberOfDocs">The number of documents to tag</param>
 		/// <param name="destinationWorkspaceInstanceId">Artifact ID of the DestinationWorkspace RDO instance</param>
 		/// <param name="tableSuffix">Unique suffix that is appended to the scratch table</param>
 		/// <param name="sourceWorkspaceId">Artifact ID of the source workspace</param>
-		void TagDocsWithDestinationWorkspace(int numberOfDocs, int destinationWorkspaceInstanceId, string tableSuffix,
+		void TagDocsWithDestinationWorkspace(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int destinationWorkspaceInstanceId, string tableSuffix,
 			int sourceWorkspaceId);
 
 		/// <summary>

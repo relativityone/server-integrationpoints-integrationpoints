@@ -169,14 +169,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public void TagDocsWithDestinationWorkspace(int numberOfDocs, int destinationWorkspaceInstanceId, string tableSuffix, int sourceWorkspaceId)
+		public void TagDocsWithDestinationWorkspace(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int destinationWorkspaceInstanceId, string tableSuffix, int sourceWorkspaceId)
 		{
 			if (numberOfDocs <= 0)
 			{
 				return;
 			}
 
-			BaseServiceContext baseService = ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(sourceWorkspaceId);
+			BaseServiceContext baseService = claimsPrincipal.GetServiceContextUnversionShortTerm(sourceWorkspaceId);
 
 			Guid[] guids = { new Guid(DocumentMultiObjectFields.DESTINATION_WORKSPACE_FIELD) };
 			DataRowCollection fieldRows;

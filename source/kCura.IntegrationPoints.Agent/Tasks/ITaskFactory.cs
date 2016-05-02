@@ -67,8 +67,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				.ImplementedBy<SMTP>()
 				.DependsOn(Dependency.OnValue<EmailConfiguration>(new RelativityConfigurationFactory().GetConfiguration())));
 
-			Container.Register(Component.For<IOnBehalfOfUserClaimsPrincipleFactory>()
-					.ImplementedBy<OnBehalfOfUserClaimsPrincipleFactory>()
+			Container.Register(Component.For<IOnBehalfOfUserClaimsPrincipalFactory>()
+					.ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>()
 					.LifestyleTransient());
 		}
 

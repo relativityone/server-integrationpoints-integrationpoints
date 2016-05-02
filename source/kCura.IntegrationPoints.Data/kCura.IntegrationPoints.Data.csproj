@@ -121,8 +121,8 @@
     <Compile Include="Attributes\DynamicFieldAttribute.cs" />
     <Compile Include="Attributes\DynamicObjectAttribute.cs" />
     <Compile Include="ChoiceQuery.cs" />
-    <Compile Include="Contexts\IOnBehalfOfUserClaimsPrincipleFactory.cs" />
-    <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipleFactory.cs" />
+    <Compile Include="Contexts\IOnBehalfOfUserClaimsPrincipalFactory.cs" />
+    <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipalFactory.cs" />
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
