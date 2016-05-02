@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly ITempDocumentTableFactory _tempDocumentTableFactory;
 		private readonly JobHistoryErrorService _jobHistoryErrorService;
-		private readonly JobHistoryService _jobHistoryService;
+		private readonly IJobHistoryService _jobHistoryService;
 		private readonly JobStatisticsService _statisticsService;
 		private readonly List<IBatchStatus> _batchStatus;
 		private readonly TaskResult _taskResult;
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Apps.Common.Utils.Serializers.ISerializer serializer,
 			IJobService jobService,
 			IScheduleRuleFactory scheduleRuleFactory,
-			JobHistoryService jobHistoryService,
+			IJobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
 			JobStatisticsService statisticsService)
 		{

@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly IHelper _helper;
 		internal IDataProviderFactory _dataProviderFactory;
 		internal kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
-		internal JobHistoryService _jobHistoryService;
+		internal IJobHistoryService _jobHistoryService;
 		internal JobHistoryErrorService _jobHistoryErrorService;
 		internal kCura.IntegrationPoints.Contracts.ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
 		internal IJobManager _jobManager;
@@ -48,7 +48,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IDataProviderFactory dataProviderFactory,
 			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 			kCura.IntegrationPoints.Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
-			JobHistoryService jobHistoryService,
+			IJobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
 			IJobManager jobManager,
 			IEnumerable<IBatchStatus> statuses,
