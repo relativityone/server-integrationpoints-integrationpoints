@@ -49,26 +49,21 @@ namespace kCura.IntegrationPoints.Services
 			if (String.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID , sourceProvider.Identifier, StringComparison.OrdinalIgnoreCase))
 			{
 				_settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(SourceConfiguration.ToString());
-				IPermissionService permission = container.Resolve<IPermissionService>();
-				if (permission.UserCanImport(_settings.TargetWorkspaceArtifactId) == false)
-				{
-					throw new Exception($"User ain't got the permission to push to the workspace : {_settings.TargetWorkspaceArtifactId}");
-				}
 				if (_settings.SourceWorkspaceArtifactId != WorkspaceArtifactId)
 				{
-					throw new Exception("Duh f**k are you trying to do ?");
+					throw new Exception("SourceWorkspaceArtifactId and WorkspaceArtifactId must be the same.");
 				}
 				GetSavedSearchesQuery query = new GetSavedSearchesQuery(raspiClient);
 				QueryResult result = query.ExecuteQuery();
 				Artifact artifact = result.QueryArtifacts.FirstOrDefault(art => art.ArtifactID == _settings.SavedSearchArtifactId);
 				if (artifact == null)
 				{
-					throw new Exception("No permission to see saved search");
+					throw new Exception("No permission to see the saved search.");
 				}
 
 				if (DestinationConfiguration.ArtifactTypeId != (int)ArtifactType.Document)
 				{
-					throw new Exception("We only support documents object, remember ?");
+					throw new Exception("Relativity source provider only support documents object.");
 				}
 			}
 			else
@@ -81,28 +76,28 @@ namespace kCura.IntegrationPoints.Services
 		{
 			if (WorkspaceArtifactId < 1)
 			{
-				throw new ArgumentException("WorkspaceArtifactId");
+				throw new ArgumentException("WorkspaceArtifactId must be greater than 1.");
 			}
 			if (String.IsNullOrWhiteSpace(Name))
 			{
-				throw new ArgumentException("Name");
+				throw new ArgumentException("Name cannot be null or white space.");
 			}
 			if (SourceConfiguration == null)
 			{
-				throw new ArgumentException("SourceConfiguration");
+				throw new ArgumentException("SourceConfiguration is not set");
 			}
 			if (DestinationConfiguration == null)
 			{
-				throw new ArgumentException("DestinationConfiguration");
+				throw new ArgumentException("DestinationConfiguration is not set");
 			}
 			if (FieldsMapped.Count == 0)
 			{
-				throw new ArgumentException("FieldsMapped");
+				throw new ArgumentException("FieldsMapped must contains at least 1.");
 			}
 
 			if (FieldsMapped.FirstOrDefault(field => field.FieldMapType == FieldMapTypeEnum.Identifier) == null)
 			{
-				throw new ArgumentException("FieldsMapped");
+				throw new ArgumentException("FieldsMapped must have an identifier field mapped.");
 			}
 
 			if (ScheduleRule == null)
