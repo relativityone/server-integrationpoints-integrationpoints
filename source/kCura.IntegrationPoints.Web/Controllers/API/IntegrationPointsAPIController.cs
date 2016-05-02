@@ -115,10 +115,10 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
 			{
-				ImportNowController.DestinationWorkspace destinationWorkspace = JsonConvert.DeserializeObject<ImportNowController.DestinationWorkspace>(model.SourceConfiguration);
+				IntegrationPointService.DestinationWorkspace destinationWorkspace = JsonConvert.DeserializeObject<IntegrationPointService.DestinationWorkspace>(model.SourceConfiguration);
 				if (_permissionService.UserCanImport(destinationWorkspace.TargetWorkspaceArtifactId) == false)
 				{
-					throw new Exception(ImportNowController.NO_PERMISSION_TO_IMPORT);
+					throw new Exception(Core.Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT);
 				}
 
 				if (existingModel != null && (existingModel.SourceConfiguration != model.SourceConfiguration))

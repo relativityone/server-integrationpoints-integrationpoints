@@ -15,17 +15,12 @@ namespace kCura.IntegrationPoints.Services
 	/// <summary>
 	/// This class is using direct sql because kepler does not provide the ability to aggregate data.
 	/// </summary>
-	public class JobHistoryManager : IJobHistoryManager
+	public class JobHistoryManager : KelperServiceBase, IJobHistoryManager
 	{
 		private const string _ASCENDING_SORT = "ASC";
 		private const string _DESCENDING_SORT = "DESC";
 		private const string _RELATIVITY_PROVIDER_GUID = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 		private const string _NO_ACCESS_EXCEPTION_MESSAGE = "You do not have permission to access this service.";
-
-		public async Task<bool> PingAsync()
-		{
-			return await Task.Run(() => true).ConfigureAwait(false);
-		}
 
 		public async Task<JobHistorySummaryModel> GetJobHistoryAsync(JobHistoryRequest request)
 		{

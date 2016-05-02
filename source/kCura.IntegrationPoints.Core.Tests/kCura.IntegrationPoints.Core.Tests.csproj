@@ -147,6 +147,7 @@
     <Compile Include="Unit\Services\Export\InMemoryILongTextStream.cs" />
     <Compile Include="Unit\Services\Export\LazyExceptArtifactFieldDtoTests.cs" />
     <Compile Include="Unit\Services\Export\RelativityExporterServiceTests.cs" />
+    <Compile Include="Unit\Services\IntegrationPointServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

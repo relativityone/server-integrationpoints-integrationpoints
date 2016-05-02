@@ -194,7 +194,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 			catch (Exception e)
 			{
 				exceptionThrown = true;
-				Assert.AreEqual(ImportNowController.NO_PERMISSION_TO_IMPORT, e.Message, "The exception message was incorrect");
+				Assert.AreEqual(Core.Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT, e.Message, "The exception message was incorrect");
 			}
 
 			// Assert
@@ -337,7 +337,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 				}
 				else
 				{
-					Assert.AreEqual(ImportNowController.NO_PERMISSION_TO_IMPORT, e.Message, "The permission error should have been thrown");
+					Assert.AreEqual(Core.Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT, e.Message, "The permission error should have been thrown");
 				}
 			}
 

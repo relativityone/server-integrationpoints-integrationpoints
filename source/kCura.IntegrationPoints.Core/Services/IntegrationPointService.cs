@@ -5,28 +5,38 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
 	public class IntegrationPointService : IIntegrationPointService
 	{
 		private readonly ICaseServiceContext _context;
+		private readonly IPermissionService _permissionService;
 		private IntegrationPoint _rdo;
 		private readonly ISerializer _serializer;
 		private readonly ChoiceQuery _choiceQuery;
 		private readonly IJobManager _jobService;
+		private readonly IJobHistoryService _jobHistoryService;
 
-		public IntegrationPointService(ICaseServiceContext context, ISerializer serializer, ChoiceQuery choiceQuery, IJobManager jobService)
+		public IntegrationPointService(ICaseServiceContext context,
+			IPermissionService permissionService,
+			ISerializer serializer, ChoiceQuery choiceQuery, 
+			IJobManager jobService,
+			IJobHistoryService jobHistoryService)
 		{
 			_context = context;
+			_permissionService = permissionService;
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
 			_jobService = jobService;
+			_jobHistoryService = jobHistoryService;
 		}
 
 		public IntegrationPoint GetRdo(int artifactId)
@@ -146,6 +156,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			return ip.ArtifactId;
 		}
+
 		public IEnumerable<string> GetRecipientEmails(int artifactId)
 		{
 			IntegrationPoint integrationPoint = GetRdo(artifactId);
@@ -261,6 +272,46 @@ namespace kCura.IntegrationPoints.Core.Services
 			return periodicScheduleRule;
 		}
 
+		public void RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
+		{
+			Guid batchInstance = Guid.NewGuid();
+			var jobDetails = new TaskParameters()
+			{
+				BatchInstance = batchInstance
+			};
 
+			IntegrationPoint integrationPointRdo = GetRdo(integrationPointArtifactId);
+			SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(integrationPointRdo.SourceProvider.Value);
+			string identifier = provider.Identifier;
+			string sourceConfig = integrationPointRdo.SourceConfiguration;
+
+			// if relativity provider is selected, we will create an export task
+			if (identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+			{
+				DestinationWorkspace destinationWorkspace = JsonConvert.DeserializeObject<DestinationWorkspace>(sourceConfig);
+				if (_permissionService.UserCanImport(destinationWorkspace.TargetWorkspaceArtifactId) == false)
+				{
+					throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT);
+				}
+
+				if (userId == 0)
+				{
+					throw new Exception(Constants.IntegrationPoints.NO_USERID);
+				}
+
+				_jobHistoryService.CreateRdo(integrationPointRdo, batchInstance, null);
+				_jobService.CreateJobOnBehalfOfAUser(jobDetails, TaskType.ExportService, workspaceArtifactId, integrationPointArtifactId, userId);
+			}
+			else
+			{
+				_jobHistoryService.CreateRdo(integrationPointRdo, batchInstance, null);
+				_jobService.CreateJobOnBehalfOfAUser(jobDetails, TaskType.SyncManager, workspaceArtifactId, integrationPointArtifactId, userId);
+			}
+		}
+
+		internal class DestinationWorkspace
+		{
+			public int TargetWorkspaceArtifactId;
+		}
 	}
 }

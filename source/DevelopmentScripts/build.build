@@ -75,7 +75,7 @@
 	<include buildfile="Build Application.include"/>
 
 	<!-- Build all LDAPSync projects- presence of a Build.log file indicates failure -->
-	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, merge_ldap, merge_documentsTransfer, merge_source_provider_installer, build_ip_sdk, copy_files">				
+	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_integrationPoint_core, merge_binaries, build_integrationpoint_services, merge_ldap, merge_documentsTransfer, merge_source_provider_installer, build_ip_sdk, copy_files">				
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
@@ -105,7 +105,6 @@
 		<!-- Based on the buildType parameter passed in Enable/Disable Injections and TimeMachine. -->	
 		
 		<echo message="${DSTAMP} ${TSTAMP} ${buildType} ${action} buildType value was passed." />
-		
 		<choose>
 			<when test="${string::contains(buildType,'GOLD')}">
 				<property name="Injections" value="NO_INJECTION" />
@@ -158,10 +157,14 @@
 		<exec program="..\Dependencies\NuGet.exe">
 		  <arg value="restore" />
 		  <arg value="..\kCura.IntegrationPoints.Documentation.sln" />
-		</exec>		
+		</exec>
+		<exec program="..\Dependencies\NuGet.exe">
+		  <arg value="restore" />
+		  <arg value="..\kCura.IntegrationPoints.Services.sln" />
+		</exec>
 	</target>
 	
-	<target name="build_x64">
+	<target name="build_integrationPoint_core">
 		<exec program="${msbuild}">
 			<arg line='"${targetsfile}"' />
 			<arg line='/property:SourceRoot="${root}"' />
@@ -179,7 +182,7 @@
 			<arg line="/nologo" />
 		</exec>
 	</target>
-	
+
 	<target name="merge_binaries" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:v4' />
@@ -217,6 +220,26 @@
 		</exec>
 	</target>
 
+	<target name="build_integrationpoint_services">
+		<echo message="${targetsfile}" />
+		<exec program="${msbuild}">
+			<arg line='"msbuild_service.targets"' />
+			<arg line='/property:SourceRoot="${root}"' />
+			<arg line="/property:Configuration=${buildconfig}" />
+			<arg line="/property:Platform=x64" />
+			<arg line="/property:NoWarn=${ignorewarnings}" />
+			<arg line='/logger:"${logger}"'/>
+			<arg line='/logger:"${buildLogger}";"${buildLoggerLogFile}"'/>
+			<arg line="/noconsolelogger" />
+			<arg line="/filelogger" />
+			<arg line='/flp:LogFile="${logfile}";Verbosity=${verbosity}' />      
+			<arg line="/target:BuildMethod" />
+			<arg line="/verbosity:${verbosity}" />
+			<arg line='/p:DefineConstants="${DevEnv},${TimeMachine},${Injections}"' />
+			<arg line="/nologo" />
+		</exec>
+	</target>
+	
 	<target name="merge_ldap" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:v4' />

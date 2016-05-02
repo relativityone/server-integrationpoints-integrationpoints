@@ -260,6 +260,7 @@
     <Compile Include="Services\IntegrationPointService.cs" />
     <Compile Include="Services\ObjectTypeService.cs" />
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />
+    <Compile Include="Services\ServiceContext\ServiceContextHelperForKelperService.cs" />
     <Compile Include="Services\SourceTypes\ISourceTypeFactory.cs" />
     <Compile Include="Services\SourceTypes\LdapSourceTypeCreator.cs" />
     <Compile Include="Services\SourceTypes\SourceTypeFactory.cs" />
