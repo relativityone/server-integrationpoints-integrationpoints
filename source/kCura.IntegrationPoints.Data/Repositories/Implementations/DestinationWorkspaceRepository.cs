@@ -60,15 +60,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public DestinationWorkspaceDTO Create(int targetWorkspaceArtifactId, string destinationWorkspaceName)
+		public DestinationWorkspaceDTO Create(int targetWorkspaceArtifactId, string targetWorkspaceName)
 		{
-			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspaceName, targetWorkspaceArtifactId);
+			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(targetWorkspaceName, targetWorkspaceArtifactId);
 
 			RDO destinationWorkspaceObject = new RDO();
 
 			destinationWorkspaceObject.ArtifactTypeGuids.Add(new Guid(DestinationWorkspaceDTO.Fields.OBJECT_TYPE_GUID));
 			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_ARTIFACT_ID), targetWorkspaceArtifactId));
-			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_NAME), destinationWorkspaceName));
+			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_NAME), targetWorkspaceName));
 			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_INSTANCE_NAME), instanceName));
 
 			WriteResultSet<RDO> results;
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				{
 					ArtifactId = results.Results[0].Artifact.ArtifactID,
 					WorkspaceArtifactId = targetWorkspaceArtifactId,
-					WorkspaceName = destinationWorkspaceName,
+					WorkspaceName = targetWorkspaceName,
 				};
 			}
 
@@ -169,14 +169,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public void TagDocsWithDestinationWorkspace(int numberOfDocs, int destinationWorkspaceInstanceId, string tableSuffix, int sourceWorkspaceId)
+		public void TagDocsWithDestinationWorkspace(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int destinationWorkspaceInstanceId, string tableSuffix, int sourceWorkspaceId)
 		{
 			if (numberOfDocs <= 0)
 			{
 				return;
 			}
 
-			BaseServiceContext baseService = ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(sourceWorkspaceId);
+			BaseServiceContext baseService = claimsPrincipal.GetServiceContextUnversionShortTerm(sourceWorkspaceId);
 
 			Guid[] guids = { new Guid(DocumentMultiObjectFields.DESTINATION_WORKSPACE_FIELD) };
 			DataRowCollection fieldRows;

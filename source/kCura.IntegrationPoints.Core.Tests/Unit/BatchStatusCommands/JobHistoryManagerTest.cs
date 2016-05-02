@@ -1,5 +1,7 @@
-﻿using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
+﻿using System.Security.Claims;
+using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
@@ -14,11 +16,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		private ITempDocTableHelper _tempDocHelper;
 		private ITempDocumentTableFactory _docTableFactory;
 		private IRepositoryFactory _repositoryFactory;
+		private IOnBehalfOfUserClaimsPrincipalFactory _onBehalfOfUserClaimsPrincipalFactory;
+		private ClaimsPrincipal _claimsPrincipal;
 		private IConsumeScratchTableBatchStatus _instance;
 		private IJobHistoryRepository _jobHistoryRepository;
 		private readonly int _jobHistoryRdoId = 12345;
 		private readonly string _uniqueJobId = "12-25-96";
 		private readonly int _sourceWorkspaceId = 56879;
+		private readonly int _submittedBy = 4141;
 		private readonly Job _job;
 
 		[SetUp]
@@ -28,11 +33,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			_jobHistoryRepository = Substitute.For<IJobHistoryRepository>();
 			_docTableFactory = Substitute.For<ITempDocumentTableFactory>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
+			_onBehalfOfUserClaimsPrincipalFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
 
 			_repositoryFactory.GetJobHistoryRepository().Returns(_jobHistoryRepository);
 			_docTableFactory.GetDocTableHelper(_uniqueJobId, _sourceWorkspaceId).Returns(_tempDocHelper);
+			_onBehalfOfUserClaimsPrincipalFactory.CreateClaimsPrincipal(_submittedBy).Returns(_claimsPrincipal);
 
-			_instance = new JobHistoryManager(_docTableFactory, _repositoryFactory, _jobHistoryRdoId, _sourceWorkspaceId, _uniqueJobId);
+			_instance = new JobHistoryManager(_docTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _jobHistoryRdoId, _sourceWorkspaceId, _uniqueJobId, _submittedBy);
 		}
 
 		[Test]
@@ -45,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 			//Assert
 			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST));
-			_jobHistoryRepository.Received().TagDocsWithJobHistory(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>());
+			_jobHistoryRepository.Received().TagDocsWithJobHistory(_claimsPrincipal, Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>());
 		}
 
 		[Test]
@@ -57,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 
 			//Assert
 			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST));
-			_jobHistoryRepository.Received().TagDocsWithJobHistory(Arg.Any<int>(), _jobHistoryRdoId, _sourceWorkspaceId, _uniqueJobId);
+			_jobHistoryRepository.Received().TagDocsWithJobHistory(_claimsPrincipal, Arg.Any<int>(), _jobHistoryRdoId, _sourceWorkspaceId, _uniqueJobId);
 		}
 
 		[Test]
