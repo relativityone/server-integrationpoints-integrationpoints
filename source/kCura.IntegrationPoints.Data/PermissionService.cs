@@ -19,53 +19,28 @@ namespace kCura.IntegrationPoints.Data
 
 		public bool UserCanImport(int workspaceId)
 		{
-			using (IPermissionManager proxy = _servicesMgr.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
-			{
-				var allowImportPermission = new PermissionRef()
-				{
-					PermissionID = _ALLOW_IMPORT_PERMISSION_ID
-				};
-
-				bool userHasImportPermissions = false;
-				try
-				{
-					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(workspaceId,
-						new List<PermissionRef>() {allowImportPermission});
-					List<PermissionValue> permissionValues = permissionValuesTask.Result;
-
-					if (permissionValues == null || !permissionValues.Any())
-					{
-						return false;
-					}
-
-					PermissionValue allowImportPermissionValue = permissionValues.First();
-					userHasImportPermissions = allowImportPermissionValue.Selected &&
-												allowImportPermissionValue.PermissionID == _ALLOW_IMPORT_PERMISSION_ID;
-				}
-				catch 
-				{
-					// invalid IDs will cause the request to except
-					// suppress these errors and do not give the user access	
-				}
-
-				return userHasImportPermissions;
-			}
+			return HasPermissions(workspaceId, _ALLOW_IMPORT_PERMISSION_ID);
 		}
 
 		public bool UserCanEditDocuments(int workspaceId)
 		{
+			return HasPermissions(workspaceId, _EDIT_DOCUMENT_PERMISSION_ID);
+		}
+
+		internal bool HasPermissions(int workspaceId, int permissionToCheck)
+		{
 			using (IPermissionManager proxy = _servicesMgr.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
 			{
-				var editDocumentPermission = new PermissionRef()
+				var permission = new PermissionRef()
 				{
-					PermissionID = _EDIT_DOCUMENT_PERMISSION_ID
+					PermissionID = permissionToCheck
 				};
 
-				bool userHasEditDocumentPermissions = false;
+				bool hasPermission = false;
 				try
 				{
 					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(workspaceId,
-						new List<PermissionRef>() { editDocumentPermission });
+						new List<PermissionRef>() { permission });
 					List<PermissionValue> permissionValues = permissionValuesTask.Result;
 
 					if (permissionValues == null || !permissionValues.Any())
@@ -73,9 +48,9 @@ namespace kCura.IntegrationPoints.Data
 						return false;
 					}
 
-					PermissionValue editDocumentPermissionValue = permissionValues.First();
-					userHasEditDocumentPermissions = editDocumentPermissionValue.Selected &&
-												editDocumentPermissionValue.PermissionID == _EDIT_DOCUMENT_PERMISSION_ID;
+					PermissionValue hasPermissionValue = permissionValues.First();
+					hasPermission = hasPermissionValue.Selected &&
+												hasPermissionValue.PermissionID == permissionToCheck;
 				}
 				catch
 				{
@@ -83,7 +58,7 @@ namespace kCura.IntegrationPoints.Data
 					// suppress these errors and do not give the user access	
 				}
 
-				return userHasEditDocumentPermissions;
+				return hasPermission;
 			}
 		}
 

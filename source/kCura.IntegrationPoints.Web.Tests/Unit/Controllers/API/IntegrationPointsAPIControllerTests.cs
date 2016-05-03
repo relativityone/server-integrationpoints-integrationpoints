@@ -122,12 +122,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 				.Read(Arg.Is(model.SourceProvider))
 				.Returns(sourceProvider);
 
-			_permissionService.UserCanImport(Arg.Is(targetWorkspaceArtifactId))
-				.Returns(true);
-
-			_permissionService.UserCanEditDocuments(Arg.Is(sourceWorkspaceArtifactId))
-				.Returns(true);
-
 			_integrationPointService.SaveIntegration(Arg.Is(model)).Returns(model.ArtifactID);
 
 			string url = "http://lolol.com";
@@ -173,12 +167,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 			_caseServiceContext.RsapiService.SourceProviderLibrary
 				.Read(Arg.Is(model.SourceProvider))
 				.Returns(sourceProvider);
-
-			_permissionService.UserCanImport(Arg.Is(targetWorkspaceArtifactId))
-				.Returns(true);
-
-			_permissionService.UserCanEditDocuments(Arg.Is(sourceWorkspaceArtifactId))
-				.Returns(true);
 
 			_integrationPointService.SaveIntegration(Arg.Is(model)).Returns(model.ArtifactID);
 
@@ -267,8 +255,6 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 				_caseServiceContext.RsapiService.SourceProviderLibrary
 					.Read(Arg.Is(model.SourceProvider))
 					.Returns(sourceProvider);
-
-
 			}
 
 			// Act

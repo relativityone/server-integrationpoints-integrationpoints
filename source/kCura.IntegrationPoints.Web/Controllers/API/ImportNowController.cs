@@ -19,8 +19,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private const string _SOURCEPROVIDER_ARTIFACT_ID_GUID = "4A091F69-D750-441C-A4F0-24C990D208AE";
 
 		private const string _RELATIVITY_USERID = "rel_uai";
-		internal const string NO_PERMISSION_TO_EDIT_DOCUMENTS =
-			"You do not have permission to edit documents in the current workspace. Please contact your system administrator.";
 
 		private readonly IIntegrationPointService _integrationPointService;
 		private readonly ICaseServiceContext _caseServiceContext;
