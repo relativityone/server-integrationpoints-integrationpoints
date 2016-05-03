@@ -2,6 +2,7 @@
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -13,6 +14,7 @@ using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
@@ -35,6 +37,11 @@ namespace kCura.IntegrationPoints.Core.Installers
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
+			if (container.Kernel.HasComponent(typeof (ISerializer)) == false)
+			{
+				container.Register(Component.For<ISerializer>().ImplementedBy<JSONSerializer>().LifestyleTransient());
+			}
+
 			container.Register(Component.For<IErrorService>().ImplementedBy<Services.ErrorService>().Named("ErrorService").LifestyleTransient());
 			container.Register(Component.For<Core.Services.ObjectTypeService>().ImplementedBy<Core.Services.ObjectTypeService>().LifestyleTransient());
 
@@ -80,7 +87,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IProviderFactory>().ImplementedBy<DefaultProviderFactory>().DependsOn(new { windsorContainer = container }).LifestyleTransient());
 			container.Register(Component.For<ManagerQueueService>().ImplementedBy<ManagerQueueService>().LifestyleTransient());
 			container.Register(Component.For<IGuidService>().ImplementedBy<DefaultGuidService>().LifestyleTransient());
-			container.Register(Component.For<JobHistoryService>().ImplementedBy<JobHistoryService>().LifestyleTransient());
+			container.Register(Component.For<IJobHistoryService>().ImplementedBy<JobHistoryService>().LifestyleTransient());
 			container.Register(Component.For<JobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>().LifestyleTransient());
 
 			container.Register(Component.For<IJobStatusUpdater>().ImplementedBy<JobStatusUpdater>().LifeStyle.Transient);

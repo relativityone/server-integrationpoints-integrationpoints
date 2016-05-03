@@ -9,13 +9,8 @@ namespace kCura.IntegrationPoints.Services
 	/// </summary>
 	[WebService("Job History Manager")]
 	[ServiceAudience(Audience.Private)]
-	public interface IJobHistoryManager: IDisposable
+	public interface IJobHistoryManager : IKelperService, IDisposable
 	{
-		/// <summary>
-		/// Pings the service to ensure it is up and running.
-		/// </summary>
-		Task<bool> PingAsync();
-
 		/// <summary>
 		/// Gets the job history information for the requested job.
 		/// </summary>

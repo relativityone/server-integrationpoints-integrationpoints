@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 										IHelper helper,
 										kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 										Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
-										JobHistoryService jobHistoryService,
+										IJobHistoryService jobHistoryService,
 										JobHistoryErrorService jobHistoryErrorService,
 										IJobManager jobManager,
 										IRSAPIClient workspaceRsapiClient,

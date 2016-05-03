@@ -95,9 +95,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			JobTracker jobTracker = new JobTracker(jobResourceTracker);
 			ISerializer serializer = new JSONSerializer();
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
+			IPermissionService permissionService = new PermissionService(Helper.GetServicesManager());
+			IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
 
 			_caseServiceContext = caseServiceContext;
-			_integrationPointService = new IntegrationPointService(caseServiceContext, serializer, choiceQuery, jobManager);
+			_integrationPointService = new IntegrationPointService(caseServiceContext, permissionService, serializer, choiceQuery, jobManager, jobHistoryService);
 			_jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
 		}
 

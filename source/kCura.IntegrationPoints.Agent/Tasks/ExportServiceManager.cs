@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts;
@@ -48,7 +47,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly ITempDocumentTableFactory _tempDocumentTableFactory;
 		private readonly JobHistoryErrorService _jobHistoryErrorService;
-		private readonly JobHistoryService _jobHistoryService;
+		private readonly IJobHistoryService _jobHistoryService;
 		private readonly JobStatisticsService _statisticsService;
 		private readonly List<IBatchStatus> _batchStatus;
 		private readonly TaskResult _taskResult;
@@ -67,7 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Apps.Common.Utils.Serializers.ISerializer serializer,
 			IJobService jobService,
 			IScheduleRuleFactory scheduleRuleFactory,
-			JobHistoryService jobHistoryService,
+			IJobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
 			JobStatisticsService statisticsService)
 		{
@@ -142,7 +141,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
-
 			IScratchTableRepository[] scratchTableToMonitorItemLevelError = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
 				.Where(observer => observer.ScratchTableRepository.IgnoreErrorDocuments == false)
 				.Select(observer => observer.ScratchTableRepository).ToArray();

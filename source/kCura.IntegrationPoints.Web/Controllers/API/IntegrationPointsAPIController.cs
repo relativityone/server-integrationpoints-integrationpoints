@@ -18,21 +18,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IRelativityUrlHelper _urlHelper;
 		private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
 		private readonly ICaseServiceContext _context;
-		private readonly IPermissionService _permissionService;
 
 		private const string UNABLE_TO_SAVE_FORMAT = "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
 
 		public IntegrationPointsAPIController(IIntegrationPointService reader,
 			IRelativityUrlHelper urlHelper,
 			Core.Services.Synchronizer.IRdoSynchronizerProvider provider,
-			ICaseServiceContext context,
-			IPermissionService permissionService)
+			ICaseServiceContext context)
 		{
 			_reader = reader;
 			_urlHelper = urlHelper;
 			_provider = provider;
 			_context = context;
-			_permissionService = permissionService;
 		}
 
 		[HttpGet]
@@ -117,16 +114,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
 			{
-				ImportNowController.WorkspaceConfiguration workspaceConfiguration = JsonConvert.DeserializeObject<ImportNowController.WorkspaceConfiguration>(model.SourceConfiguration);
-				if (_permissionService.UserCanImport(workspaceConfiguration.TargetWorkspaceArtifactId) == false)
-				{
-					throw new Exception(ImportNowController.NO_PERMISSION_TO_IMPORT);
-				}
-				if (_permissionService.UserCanEditDocuments(workspaceConfiguration.SourceWorkspaceArtifactId) == false)
-				{
-					throw new Exception(ImportNowController.NO_PERMISSION_TO_EDIT_DOCUMENTS);
-				}
-
 				if (existingModel != null && (existingModel.SourceConfiguration != model.SourceConfiguration))
 				{
 					invalidProperties.Add("Source Configuration");

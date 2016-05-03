@@ -61,5 +61,13 @@ namespace kCura.IntegrationPoints.Core.Services
 		/// <param name="artifactId">Artifact id of the integration point.</param>
 		/// <returns>A list of email addresses.</returns>
 		IEnumerable<string> GetRecipientEmails(int artifactId);
+
+		/// <summary>
+		/// Run integration point as a new job.
+		/// </summary>
+		/// <param name="workspaceArtifactId">workspace artifactId of the integration point object</param>
+		/// <param name="integrationPointArtifactId">integration point artifact id</param>
+		/// <param name="userId">user id of which will be used for logging</param>
+		void RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId);
 	}
 }

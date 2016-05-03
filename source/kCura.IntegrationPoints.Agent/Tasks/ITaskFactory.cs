@@ -8,6 +8,7 @@ using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
@@ -27,18 +28,21 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	public interface ITaskFactory
 	{
 		ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase);
+
 		void Release(ITask task);
 	}
 
 	public class TaskFactory : ITaskFactory
 	{
 		private readonly IAgentHelper _helper;
+
 		public TaskFactory(IAgentHelper helper)
 		{
 			_helper = helper;
 		}
 
 		private WindsorContainer _container;
+
 		private WindsorContainer Container
 		{
 			get { return _container ?? (_container = new WindsorContainer()); }
@@ -84,16 +88,22 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				{
 					case TaskType.SyncManager:
 						return Container.Resolve<SyncManager>();
+
 					case TaskType.SyncWorker:
 						return Container.Resolve<SyncWorker>();
+
 					case TaskType.SyncCustodianManagerWorker:
 						return Container.Resolve<SyncCustodianManagerWorker>();
+
 					case TaskType.SendEmailManager:
 						return Container.Resolve<SendEmailManager>();
+
 					case TaskType.SendEmailWorker:
 						return Container.Resolve<SendEmailWorker>();
+
 					case TaskType.ExportService:
 						return Container.Resolve<ExportServiceManager>();
+
 					default:
 						return null;
 				}
@@ -128,7 +138,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IWorkspaceDBContext workspaceDbContext = Container.Resolve<IWorkspaceDBContext>();
 			IEddsServiceContext eddsServiceContext = Container.Resolve<IEddsServiceContext>();
 			IWorkspaceRepository workspaceRepository = Container.Resolve<IWorkspaceRepository>();
-		
+
 			ChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
 			JobResourceTracker jobResourceTracker = new JobResourceTracker(workspaceDbContext);
 			JobTracker jobTracker = new JobTracker(jobResourceTracker);
@@ -136,13 +146,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			IJobService jobService = new JobService(agentService, _helper);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
+			IPermissionService permissionService = new PermissionService(_helper.GetServicesManager());
+			IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
 
-			IntegrationPointService integrationPointService = new IntegrationPointService(caseServiceContext, serializer, choiceQuery, jobManager);
+			IntegrationPointService integrationPointService = new IntegrationPointService(caseServiceContext, permissionService, serializer, choiceQuery, jobManager, jobHistoryService);
 			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
-			
-			TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
 
-			JobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
+			TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
 			JobHistory jobHistory = jobHistoryService.GetRdo(taskParameters.BatchInstance);
 
 			if (integrationPoint == null || jobHistory == null)

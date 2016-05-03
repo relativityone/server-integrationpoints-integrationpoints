@@ -21,5 +21,18 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		/// <param name="jobHistoryArtifactIds">A list of job history artifact ids.</param>
 		/// <returns>A list of job history objects.</returns>
 		IList<Data.JobHistory> GetJobHistory(IList<int> jobHistoryArtifactIds);
+
+		/// <summary>
+		/// TODO
+		/// </summary>
+		/// <param name="batchInstance"></param>
+		/// <returns></returns>
+		Data.JobHistory GetRdo(Guid batchInstance);
+
+		/// <summary>
+		/// TODO
+		/// </summary>
+		/// <param name="jobHistory"></param>
+		void UpdateRdo(Data.JobHistory jobHistory);
 	}
 }
