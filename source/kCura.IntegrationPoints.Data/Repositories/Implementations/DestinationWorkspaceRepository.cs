@@ -31,16 +31,22 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			query.Condition = new ObjectCondition(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_ARTIFACT_ID), ObjectConditionEnum.EqualTo, targetWorkspaceArtifactId);
 			query.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_NAME)));
 
-			try
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
-				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				rsapiClient.APIOptions.WorkspaceID = _sourceWorkspaceArtifactId;
+
+				ResultSet<RDO> results = null;
+				try
 				{
-					rsapiClient.APIOptions.WorkspaceID = _sourceWorkspaceArtifactId;
+					 results = rsapiClient.Repositories.RDO.Query(query);
+				}
+				catch (Exception e)
+				{
+					throw new Exception(RSAPIErrors.QUERY_DEST_WORKSPACE_ERROR, e);
+				}
 
-					ResultSet<RDO> results = rsapiClient.Repositories.RDO.Query(query);
-
-					if (results.Success && results.Results.Count > 0)
-					{
+				if (results.Success && results.Results.Count > 0)
+				{
 					DestinationWorkspaceDTO destinationWorkspace = new DestinationWorkspaceDTO()
 					{
 						ArtifactId = results.Results[0].Artifact.ArtifactID,
@@ -49,15 +55,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					};
 
 					return destinationWorkspace;
-					}
 				}
+			}
 
-				return null;
-			}
-			catch (Exception e)
-			{
-				throw new Exception(RSAPIErrors.QUERY_DEST_WORKSPACE_ERROR, e);
-			}
+			return null;
 		}
 
 		public DestinationWorkspaceDTO Create(int targetWorkspaceArtifactId, string targetWorkspaceName)
@@ -72,18 +73,18 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_INSTANCE_NAME), instanceName));
 
 			WriteResultSet<RDO> results;
-			try
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
-				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
-				{
-					rsapiClient.APIOptions.WorkspaceID = _sourceWorkspaceArtifactId;
+				rsapiClient.APIOptions.WorkspaceID = _sourceWorkspaceArtifactId;
 
+				try
+				{
 					results = rsapiClient.Repositories.RDO.Create(destinationWorkspaceObject);
 				}
-			}
-			catch (Exception e)
-			{
-				throw new Exception(RSAPIErrors.CREATE_DEST_WORKSPACE_ERROR, e);
+				catch (Exception e)
+				{
+					throw new Exception(RSAPIErrors.CREATE_DEST_WORKSPACE_ERROR, e);
+				}
 			}
 
 			if (results.Success && results.Results.Count > 0)
@@ -105,37 +106,42 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string workspaceName = destinationWorkspace.WorkspaceName;
 			string instanceName = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceName, workspaceId);
 
-			RDO destinationWorkspaceObject = null;
 			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _sourceWorkspaceArtifactId;
 
-				destinationWorkspaceObject = rsapiClient.Repositories.RDO.ReadSingle(destinationWorkspace.ArtifactId);
-			}
-
-			destinationWorkspaceObject.ArtifactTypeGuids.Add(new Guid(DestinationWorkspaceDTO.Fields.OBJECT_TYPE_GUID));
-			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_ARTIFACT_ID), workspaceId));
-			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_NAME), workspaceName));
-			destinationWorkspaceObject.Fields.Add(new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_INSTANCE_NAME), instanceName));
-
-			WriteResultSet<RDO> results;
-			try
-			{
-				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				RDO destinationWorkspaceObject = null;
+				try
 				{
-					rsapiClient.APIOptions.WorkspaceID = _sourceWorkspaceArtifactId;
+					destinationWorkspaceObject = rsapiClient.Repositories.RDO.ReadSingle(destinationWorkspace.ArtifactId);
+				}
+				catch (Exception e)
+				{
+					throw new Exception($"{RSAPIErrors.UPDATE_DEST_WORKSPACE_ERROR}: Unable to retrieve Destination Workspace instance", e);
+				}
 
+				destinationWorkspaceObject.ArtifactTypeGuids.Add(new Guid(DestinationWorkspaceDTO.Fields.OBJECT_TYPE_GUID));
+				destinationWorkspaceObject.Fields.Add(
+					new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_ARTIFACT_ID), workspaceId));
+				destinationWorkspaceObject.Fields.Add(
+					new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_NAME), workspaceName));
+				destinationWorkspaceObject.Fields.Add(
+					new FieldValue(new Guid(DestinationWorkspaceDTO.Fields.DESTINATION_WORKSPACE_INSTANCE_NAME), instanceName));
+
+				WriteResultSet<RDO> results;
+				try
+				{
 					results = rsapiClient.Repositories.RDO.Update(destinationWorkspaceObject);
 				}
-			}
-			catch (Exception e)
-			{
-				throw new Exception(RSAPIErrors.UPDATE_DEST_WORKSPACE_ERROR, e);
-			}
+				catch (Exception e)
+				{
+					throw new Exception(RSAPIErrors.UPDATE_DEST_WORKSPACE_ERROR, e);
+				}
 
-			if (!results.Success)
-			{
-				throw new Exception(RSAPIErrors.UPDATE_DEST_WORKSPACE_ERROR);
+				if (!results.Success)
+				{
+					throw new Exception(RSAPIErrors.UPDATE_DEST_WORKSPACE_ERROR);
+				}
 			}
 		}
 

@@ -44,7 +44,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 		private static readonly ArtifactDTO _templateArtifactDto = new ArtifactDTO(
 			_DOCUMENT_ARTIFACTID,
-			10,
+			10, "Document",
 			new List<ArtifactFieldDTO>()
 			{
 				new ArtifactFieldDTO()
@@ -154,8 +154,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE)
 				.Returns(new ArtifactDTO[]
 				{
-					new ArtifactDTO(documentIds[0], 10, new ArtifactFieldDTO[0]),
-					new ArtifactDTO(documentIds[1], 10, new ArtifactFieldDTO[0]),
+					new ArtifactDTO(documentIds[0], 10, "Document", new ArtifactFieldDTO[0]),
+					new ArtifactDTO(documentIds[1], 10, "Document", new ArtifactFieldDTO[0]),
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -184,8 +184,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_exportService.RetrieveData(_FETCH_ARTIFACTDTOS_BATCH_SIZE)
 				.Returns(new ArtifactDTO[]
 				{
-					new ArtifactDTO(documentIds[0], 10, new ArtifactFieldDTO[0]),
-					new ArtifactDTO(documentIds[1], 10, new ArtifactFieldDTO[0]),
+					new ArtifactDTO(documentIds[0], 10, "Document", new ArtifactFieldDTO[0]),
+					new ArtifactDTO(documentIds[1], 10, "Document", new ArtifactFieldDTO[0]),
 				});
 
 			_instance = new DocumentTransferDataReader(
@@ -880,7 +880,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				{
 					new ArtifactDTO(
 						1234,
-						10,
+						10, "Document",
 						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
@@ -923,7 +923,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				{
 					new ArtifactDTO(
 						1234,
-						10,
+						10, "Document",
 						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
@@ -965,7 +965,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				{
 					new ArtifactDTO(
 						1234,
-						10,
+						10, "Document",
 						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
@@ -1006,7 +1006,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				{
 					new ArtifactDTO(
 						1234,
-						10,
+						10, "Document",
 						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
@@ -1048,7 +1048,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				{
 					new ArtifactDTO(
 						1234,
-						10,
+						10, "Document",
 						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
@@ -1090,7 +1090,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				{
 					new ArtifactDTO(
 						1234,
-						10,
+						10, "Document",
 						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
@@ -1132,7 +1132,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				{
 					new ArtifactDTO(
 						1234,
-						10,
+						10, "Document",
 						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
@@ -1175,7 +1175,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				{
 					new ArtifactDTO(
 						1234,
-						10,
+						10, "Document",
 						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
@@ -1218,7 +1218,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				{
 					new ArtifactDTO(
 						1234,
-						10,
+						10, "Document",
 						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
@@ -1261,7 +1261,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				{
 					new ArtifactDTO(
 						1234,
-						10,
+						10, "Document",
 						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()
@@ -1304,7 +1304,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 				{
 					new ArtifactDTO(
 						1234,
-						10,
+						10, "Document",
 						new List<ArtifactFieldDTO>()
 						{
 							new ArtifactFieldDTO()

@@ -10,11 +10,11 @@ using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class KeplerDocumentRepository : IDocumentRepository
+	public class KeplerDocumentRepository : KelperServiceBase, IDocumentRepository
 	{
 		private readonly IObjectQueryManagerAdaptor _objectQueryManagerAdaptor;
 
-		public KeplerDocumentRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor)
+		public KeplerDocumentRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor) : base(objectQueryManagerAdaptor)
 		{
 			_objectQueryManagerAdaptor = objectQueryManagerAdaptor;
 			_objectQueryManagerAdaptor.ArtifactTypeId = (int)ArtifactType.Document;
@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			var documentsQuery = new Query()
 			{
-				Condition = String.Format("'Artifact ID' == {0}", documentId),
+				Condition = $"'Artifact ID' == {documentId}",
 				Fields = fieldIds.Select(x => x.ToString()).ToArray(),
 				IncludeIdWindow = false,
 				SampleParameters = null,
@@ -39,29 +39,25 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				TruncateTextFields = false
 			};
 
-			ObjectQueryResultSet resultSet = await _objectQueryManagerAdaptor.RetrieveAsync(documentsQuery, String.Empty);
+			ArtifactDTO[] documents = null;
 
-			if (resultSet != null && resultSet.Success)
+			try
 			{
-				ArtifactDTO document = resultSet.Data.DataResults.Select(
-					x => new ArtifactDTO(
-						x.ArtifactId,
-						x.ArtifactTypeId,
-						x.Fields.Select(
-							y => new ArtifactFieldDTO() {ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value}))
-					).FirstOrDefault();
-
-				return document;
+				documents = await this.RetrieveAllArtifactsAsync(documentsQuery);
+			}
+			catch (Exception e)
+			{
+				throw new Exception("Unable to retrieve document", e);
 			}
 
-			throw new Exception(resultSet.Message);
+			return documents.FirstOrDefault();
 		}
 
 		public async Task<ArtifactDTO> RetrieveDocumentAsync(string docIdentifierField, string docIdentifierValue)
 		{
 			var documentsQuery = new Query()
 			{
-				Condition = String.Format(@"'{0}' == '{1}'", docIdentifierField, docIdentifierValue),
+				Condition = $@"'{docIdentifierField}' == '{docIdentifierValue}'",
 				IncludeIdWindow = false,
 				SampleParameters = null,
 				RelationalField = null,
@@ -69,29 +65,25 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				TruncateTextFields = false
 			};
 
-			ObjectQueryResultSet resultSet = await _objectQueryManagerAdaptor.RetrieveAsync(documentsQuery, String.Empty);
+			ArtifactDTO[] documents = null;
 
-			if (resultSet != null && resultSet.Success)
+			try
 			{
-				ArtifactDTO document = resultSet.Data.DataResults.Select(
-					x => new ArtifactDTO(
-						x.ArtifactId,
-						x.ArtifactTypeId,
-						x.Fields.Select(
-							y => new ArtifactFieldDTO() { ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value }))
-					).FirstOrDefault();
-
-				return document;
+				documents = await this.RetrieveAllArtifactsAsync(documentsQuery);
+			}
+			catch (Exception e)
+			{
+				throw new Exception("Unable to retrieve document", e);
 			}
 
-			throw new Exception(resultSet.Message);
+			return documents.FirstOrDefault();
 		}
 
 		public async Task<ArtifactDTO[]> RetrieveDocumentsAsync(IEnumerable<int> documentIds, HashSet<int> fieldIds)
 		{
 			var documentsQuery = new Query()
 			{
-				Condition = String.Format("'Artifact ID' in [{0}]", String.Join(",", documentIds)),
+				Condition = $"'Artifact ID' in [{String.Join(",", documentIds)}]",
 				Fields = fieldIds.Select(x => x.ToString()).ToArray(),
 				IncludeIdWindow = false,
 				SampleParameters = null,
@@ -100,21 +92,18 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				TruncateTextFields = false
 			};
 
-			ObjectQueryResultSet resultSet = await _objectQueryManagerAdaptor.RetrieveAsync(documentsQuery, String.Empty);
+			ArtifactDTO[] documents = null;
 
-			if (resultSet != null && resultSet.Success)
+			try
 			{
-				ArtifactDTO[] documents = resultSet.Data.DataResults.Select(
-					x => new ArtifactDTO(
-						x.ArtifactId,
-						x.ArtifactTypeId,
-						x.Fields.Select(
-							y => new ArtifactFieldDTO() {ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value}))
-					).ToArray();
-
-				return documents;
+				documents = await this.RetrieveAllArtifactsAsync(documentsQuery);
 			}
-			throw new Exception(resultSet.Message);
+			catch (Exception e)
+			{
+				throw new Exception("Unable to retrieve documents", e);
+			}
+
+			return documents;
 		}
 	}
 }

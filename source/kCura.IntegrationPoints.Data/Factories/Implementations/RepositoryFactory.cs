@@ -60,8 +60,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IWorkspaceRepository GetWorkspaceRepository()
 		{
-			const int workspaceArtifactTypeId = 8;
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(-1, workspaceArtifactTypeId);
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(-1, ArtifactType.Case);
 			IWorkspaceRepository repository = new KeplerWorkspaceRepository(objectQueryManagerAdaptor);
 
 			return repository;
