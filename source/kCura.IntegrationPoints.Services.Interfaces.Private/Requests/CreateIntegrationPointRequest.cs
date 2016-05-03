@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Services
 
 		public virtual void ValidatePermission(IWindsorContainer container)
 		{
-			IRSAPIClient raspiClient = container.Resolve<IRSAPIClient>();
+			IRSAPIClient rsapiClient = container.Resolve<IRSAPIClient>();
 			ICaseServiceContext caseServiceContext = container.Resolve<ICaseServiceContext>();
 			SourceProvider sourceProvider = caseServiceContext.RsapiService.SourceProviderLibrary.Read(SourceProviderArtifactId);
 			if (sourceProvider == null)
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Services
 				{
 					throw new Exception("SourceWorkspaceArtifactId and WorkspaceArtifactId must be the same.");
 				}
-				GetSavedSearchesQuery query = new GetSavedSearchesQuery(raspiClient);
+				GetSavedSearchesQuery query = new GetSavedSearchesQuery(rsapiClient);
 				QueryResult result = query.ExecuteQuery();
 				Artifact artifact = result.QueryArtifacts.FirstOrDefault(art => art.ArtifactID == _settings.SavedSearchArtifactId);
 				if (artifact == null)
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Services
 
 				if (DestinationConfiguration.ArtifactTypeId != (int)ArtifactType.Document)
 				{
-					throw new Exception("Relativity source provider only support documents object.");
+					throw new Exception("Relativity source provider only supports documents object.");
 				}
 			}
 			else
@@ -92,7 +92,7 @@ namespace kCura.IntegrationPoints.Services
 			}
 			if (FieldsMapped.Count == 0)
 			{
-				throw new ArgumentException("FieldsMapped must contains at least 1.");
+				throw new ArgumentException("FieldsMapped must contains at least 1 FieldMap.");
 			}
 
 			if (FieldsMapped.FirstOrDefault(field => field.FieldMapType == FieldMapTypeEnum.Identifier) == null)

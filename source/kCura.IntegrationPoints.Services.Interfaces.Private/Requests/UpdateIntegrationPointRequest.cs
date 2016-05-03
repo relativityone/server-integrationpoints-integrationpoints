@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Services
 		{
 			if (IntegrationPointArtifactId < 1)
 			{
-				throw new Exception($"Invalid integration point id found {IntegrationPointArtifactId}");
+				throw new Exception($"Invalid integration point id found : {IntegrationPointArtifactId}");
 			}
 			base.ValidateRequest();
 		}
@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Services
 			IIntegrationPointService service = container.Resolve<IIntegrationPointService>();
 			if (service.GetRdo(IntegrationPointArtifactId) == null)
 			{
-				throw new Exception($"Unable to find requested integration point {IntegrationPointArtifactId}");
+				throw new Exception($"Unable to find requested integration point : {IntegrationPointArtifactId}");
 			}
 			base.ValidatePermission(container);
 		}
