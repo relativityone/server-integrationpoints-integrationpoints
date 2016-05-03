@@ -81,6 +81,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			_instance = new DestinationWorkspaceManager(_docTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfig,
 				_tableSuffix, _jobHistoryRdoId, _submittedBy);
+
+			_repositoryFactory.Received().GetDestinationWorkspaceRepository(_sourceConfig.SourceWorkspaceArtifactId);
+			_repositoryFactory.Received().GetWorkspaceRepository();
+			_docTableFactory.Received().GetDocTableHelper(_tableSuffix, _sourceConfig.SourceWorkspaceArtifactId);
+			_onBehalfOfUserClaimsPrincipalFactory.Received().CreateClaimsPrincipal(_submittedBy);
 		}
 
 		[Test]
@@ -148,7 +153,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS));
-			_destinationWorkspaceRepository.Received().TagDocsWithDestinationWorkspace(_claimsPrincipal, Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string>(), Arg.Any<int>());
+			_destinationWorkspaceRepository.Received().TagDocsWithDestinationWorkspace(_claimsPrincipal, 0, 0, _tableSuffix,_sourceConfig.SourceWorkspaceArtifactId);
 		}
 
 		[Test]
@@ -158,7 +163,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_instance.JobComplete(_job);
 
 			//Assert
-			_destinationWorkspaceRepository.Received().TagDocsWithDestinationWorkspace(_claimsPrincipal, Arg.Any<int>(), Arg.Any<int>(), _tableSuffix, _sourceConfig.SourceWorkspaceArtifactId);
+			_destinationWorkspaceRepository.Received().TagDocsWithDestinationWorkspace(_claimsPrincipal, 0, 0, _tableSuffix, _sourceConfig.SourceWorkspaceArtifactId);
 			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS));
 		}
 
