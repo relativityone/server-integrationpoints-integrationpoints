@@ -63,10 +63,11 @@ ko.validation.rules["minArray"] = {
 };
 
 ko.validation.rules['arrayRange'] = {
-	validator: function (value, params) {
+    validator: function (value, params) {
+        if (!$.isNumeric(value) || (value.toString().indexOf(".") != -1)) { return false; }
 		var num = parseInt(value, 10);
-		return !isNaN(num) && num >= params.min && num <= params.max
-	},
+        return !isNaN(num) && num >= params.min && num <= params.max;
+    },
 	message: 'Please enter a value between 1 and 999.'
 };
 
