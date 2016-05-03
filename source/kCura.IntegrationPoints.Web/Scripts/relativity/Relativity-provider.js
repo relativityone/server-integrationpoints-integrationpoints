@@ -79,17 +79,59 @@
 		});
 
 		if (self.savedSearches.length === 0) {
-			// load saved searches
-			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('SavedSearchFinder') }).then(function (result) {
-				self.savedSearches(result);
-			});
+			(function loadSavedSearches(savedSearchArtifactId, isDisabled) {
+
+				IP.data.ajax({
+					type: 'GET',
+					url: IP.utils.generateWebAPIURL('SavedSearchFinder'),
+					async: true,
+					success: function(result) {
+						self.savedSearches(result);
+
+						if (isDisabled) {
+							var availableSavedSearches = self.savedSearches();
+
+							var isArtifactIdInList = doesArtifactIdExistInObjectList(availableSavedSearches, savedSearchArtifactId);
+
+							if (!isArtifactIdInList) {
+								var message = "Unable to access the saved search. Please verify saved search permissions, or create a new integration point if the search no longer exists.";
+								IP.frameMessaging().dFrame.IP.message.error.raise(message);
+							}
+						}
+					},
+					error: function() {
+						self.savedSearches = undefined;
+					}
+				});
+			})(this.SavedSearchArtifactId(), this.disable);
+
 		}
 			
 		if (self.workspaces.length === 0) {
-			// load workspaces
-			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('WorkspaceFinder') }).then(function (result) {
-				self.workspaces(result);
-			});
+			(function loadWorkspaces(targetWorkspaceArtifactId, isDisabled) {
+				IP.data.ajax({
+					type: 'GET',
+					url: IP.utils.generateWebAPIURL('WorkspaceFinder'),
+					async: true,
+					success: function (result) {
+						self.workspaces(result);
+
+						if (isDisabled) {
+							var availableWorkspaces = self.workspaces();
+
+							var isArtifactIdInList = doesArtifactIdExistInObjectList(availableWorkspaces, targetWorkspaceArtifactId);
+
+							if (!isArtifactIdInList) {
+								var message = "The target workspace no longer exists. Please create a new Integration Point.";
+								IP.frameMessaging().dFrame.IP.message.error.raise(message);
+							}
+						}
+					},
+					error: function () {
+						self.workspaces = undefined;
+					}
+				});
+			})(this.TargetWorkspaceArtifactId(), this.disable);
 		}
 		
 		this.errors = ko.validation.group(this, { deep: true });
@@ -100,5 +142,17 @@
 				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
 			}
 		}
+	}
+
+	function doesArtifactIdExistInObjectList(list, artifactId) {
+		if (artifactId !== undefined) {
+			for (var i = 0; i < list.length; i++) {
+				if (list[i].value === artifactId) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 });
