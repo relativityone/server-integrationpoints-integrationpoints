@@ -10,7 +10,7 @@ using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class KeplerDocumentRepository : KelperServiceBase, IDocumentRepository
+	public class KeplerDocumentRepository : KeplerServiceBase, IDocumentRepository
 	{
 		private readonly IObjectQueryManagerAdaptor _objectQueryManagerAdaptor;
 

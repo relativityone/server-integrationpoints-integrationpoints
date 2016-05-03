@@ -136,8 +136,8 @@
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\ICodeRepository.cs" />
+    <Compile Include="Repositories\Implementations\KeplerObjectRepository.cs" />
     <Compile Include="Repositories\IObjectRepository.cs" />
-    <Compile Include="Repositories\Implementations\KelperObjectRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerCodeRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiObjectTypeRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiTabRepository.cs" />
@@ -164,7 +164,7 @@
     <Compile Include="Repositories\ISourceWorkspaceJobHistoryRepository.cs" />
     <Compile Include="Repositories\ISourceJobRepository.cs" />
     <Compile Include="Repositories\ITabRepository.cs" />
-    <Compile Include="Repositories\KelperServiceBase.cs" />
+    <Compile Include="Repositories\KeplerServiceBase.cs" />
     <Compile Include="TempDocTableHelper.cs" />
     <Compile Include="Repositories\IObjectTypeRepository.cs" />
     <Compile Include="Repositories\ISavedSearchRepository.cs" />
