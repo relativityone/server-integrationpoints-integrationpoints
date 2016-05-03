@@ -94,6 +94,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					x => new ArtifactDTO(
 						x.Artifact.ArtifactID,
 						x.Artifact.ArtifactTypeID.Value,
+						"Document",
 						x.Artifact.Fields.Select(
 							y => new ArtifactFieldDTO() { ArtifactId = y.ArtifactID, FieldType = y.FieldType.ToString(), Name = y.Name, Value = y.Value }))
 					).ToArray();

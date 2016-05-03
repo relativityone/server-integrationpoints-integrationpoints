@@ -228,7 +228,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 							Value = value
 						};
 					}
-					result.Add(new ArtifactDTO(documentArtifactId, artifactType, fields));
+
+					// TODO: replace String.empty
+					result.Add(new ArtifactDTO(documentArtifactId, artifactType, String.Empty, fields));
 				}
 			}
 			return result.ToArray();

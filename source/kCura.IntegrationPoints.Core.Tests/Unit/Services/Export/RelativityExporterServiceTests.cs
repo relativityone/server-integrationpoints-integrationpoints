@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 			_exporter.InitializeExport(0, null, 0).Returns(_exportApiResult);
 			_exporter.RetrieveResults(_exportApiResult.RunId, avfIds, 1).Returns(obj);
 
-			ArtifactDTO expecteDto = new ArtifactDTO(1111, 10, new []
+			ArtifactDTO expecteDto = new ArtifactDTO(1111, 10, "Document", new []
 			{
 				new ArtifactFieldDTO()
 				{

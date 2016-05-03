@@ -2,51 +2,48 @@
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
+using Relativity;
 using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class KeplerWorkspaceRepository : IWorkspaceRepository
+	public class KeplerWorkspaceRepository : KelperServiceBase, IWorkspaceRepository
 	{
-		private readonly IObjectQueryManagerAdaptor _objectQueryManagerAdaptor;
-
-		public KeplerWorkspaceRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor)
+		public KeplerWorkspaceRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor) : base(objectQueryManagerAdaptor)
 		{
-			_objectQueryManagerAdaptor = objectQueryManagerAdaptor;
-			_objectQueryManagerAdaptor.ArtifactTypeId = 8;
+			this.ObjectQueryManagerAdaptor.ArtifactTypeId = (int) ArtifactType.Case;
 		}
 
 		public WorkspaceDTO Retrieve(int workspaceArtifactId)
 		{
-			ObjectQueryResultSet resultSet = null;
+			ArtifactDTO[] workspaces = null;
+			var query = new Query()
+			{
+				Fields = new[] { "Name" },
+				Condition = $"'ArtifactID' == {workspaceArtifactId}",
+				TruncateTextFields = false
+			};
+
 			try
 			{
-				var query = new Query()
-				{
-					Fields = new [] { "Name" },
-					Condition = $"'ArtifactID' == {workspaceArtifactId}",
-					TruncateTextFields = false 
-				};
-
-				resultSet = _objectQueryManagerAdaptor.RetrieveAsync(query, String.Empty).ConfigureAwait(false).GetAwaiter().GetResult();
+				 workspaces = this.RetrieveAllArtifactsAsync(query).ConfigureAwait(false).GetAwaiter().GetResult();
 			}
 			catch (Exception e)
 			{
 				throw new Exception("Unable to retrieve Workspace", e);
 			}
 
-			RdoHelper.CheckObjectQueryResultSet(resultSet);
-			QueryDataItemResult result = resultSet.Data.DataResults.FirstOrDefault();
+			ArtifactDTO workspace = workspaces.FirstOrDefault();
 
-			if (result == null)
+			if (workspace == null || (workspace.Fields[0].Value as string) == null)
 			{
 				throw new Exception("Unable to retrieve Workspace");	
 			}
 
 			var workspaceDto = new WorkspaceDTO()
 			{
-				ArtifactId = result.ArtifactId,
-				Name = result.Fields[0].Value as string
+				ArtifactId = workspace.ArtifactId,
+				Name = (string) workspace.Fields[0].Value
 			};
 
 			return workspaceDto;

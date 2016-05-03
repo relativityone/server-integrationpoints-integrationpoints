@@ -17,7 +17,7 @@ using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class FieldRepository : IFieldRepository
+	public class FieldRepository : KelperServiceBase, IFieldRepository
 	{
 		private readonly IHelper _helper;
 		private readonly IObjectQueryManagerAdaptor _objectQueryManagerAdaptor;
@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor, 
 			BaseServiceContext serviceContext,
 			BaseContext baseContext,
-			int workspaceArtifactId)
+			int workspaceArtifactId) : base(objectQueryManagerAdaptor)
 		{
 			_helper = helper;
 			_objectQueryManagerAdaptor = objectQueryManagerAdaptor;
@@ -51,20 +51,25 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Condition = String.Format("'Object Type Artifact Type ID' == {0} AND 'Field Type' == '{1}'", rdoTypeId, longTextFieldName),
 			};
 
-			ObjectQueryResultSet result = await _objectQueryManagerAdaptor.RetrieveAsync(longTextFieldsQuery, String.Empty);
-
-			if (!result.Success)
+			ArtifactDTO[] artifactDtos = null;
+			try
 			{
-				throw new Exception(result.Message);
+				 artifactDtos = await this.RetrieveAllArtifactsAsync(longTextFieldsQuery);
+			}
+			catch (Exception e)
+			{
+				throw new Exception("Unable to retrieve long text fields", e);	
 			}
 
-			ArtifactFieldDTO[] fieldDtos = result.Data.DataResults.Select(x => new ArtifactFieldDTO()
-			{
-				ArtifactId = x.ArtifactId,
-				FieldType = longTextFieldName,
-				Name = x.TextIdentifier,
-				Value = null // Field RDO's don't have values...setting this to NULL to be explicit
-			}).ToArray();
+
+			ArtifactFieldDTO[] fieldDtos =
+				artifactDtos.Select(x => new ArtifactFieldDTO()
+				{
+					ArtifactId = x.ArtifactId,
+					FieldType = longTextFieldName,
+					Name = x.TextIdentifier,
+					Value = null // Field RDO's don't have values...setting this to NULL to be explicit
+				}).ToArray();
 
 			return fieldDtos;
 		}
@@ -77,22 +82,17 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId}"
 			};
 
-			ObjectQueryResultSet result = await _objectQueryManagerAdaptor.RetrieveAsync(fieldQuery, String.Empty);
-
-			if (!result.Success)
+			ArtifactDTO[] fieldArtifactDtos = null;
+			try
 			{
-				throw new Exception(result.Message);
+				fieldArtifactDtos = await this.RetrieveAllArtifactsAsync(fieldQuery);
+			}
+			catch (Exception e)
+			{
+				throw new Exception("Unable to retrieve fields", e);	
 			}
 
-			ArtifactDTO[] fieldArtifacts = result.Data.DataResults.Select(x =>
-				new ArtifactDTO(
-					x.ArtifactId,
-					x.ArtifactTypeId,
-					x.Fields.Select(
-						y => new ArtifactFieldDTO() { ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value }))
-			).ToArray();
-
-			return fieldArtifacts;
+			return fieldArtifactDtos;
 		}
 
 		public void SetOverlayBehavior(int fieldArtifactId, bool value)

@@ -7,16 +7,23 @@ namespace kCura.IntegrationPoints.Contracts.Models
 	{
 		private readonly IDictionary<int, ArtifactFieldDTO> _fieldDictionary;
 
-		public ArtifactDTO(int artifactId, int artifactTypeId, IEnumerable<ArtifactFieldDTO> fields)
+		public ArtifactDTO(
+			int artifactId, 
+			int artifactTypeId, 
+			string textIdentifier, 
+			IEnumerable<ArtifactFieldDTO> fields)
 		{
 			ArtifactId = artifactId;
 			ArtifactTypeId = artifactTypeId;
+			TextIdentifier = textIdentifier;
+
 			Fields = fields.ToList();
 			_fieldDictionary = Fields.Where(x => x.ArtifactId > 0).ToDictionary(x => x.ArtifactId, y => y);
 		}
 
 		public int ArtifactId { get; private set; }
 		public int ArtifactTypeId { get; private set; }
+		public string TextIdentifier { get; private set; }
 		public IList<ArtifactFieldDTO> Fields { get; private set; }
 
 		/// <summary>
