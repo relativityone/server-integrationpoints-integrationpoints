@@ -7,6 +7,9 @@ namespace kCura.IntegrationPoints.Core
 	/// </summary>
 	public interface IContextContainer
 	{
+		/// <summary>
+		/// Helper object used for all context creations
+		/// </summary>
 		IHelper Helper { get; }
 	}
 }

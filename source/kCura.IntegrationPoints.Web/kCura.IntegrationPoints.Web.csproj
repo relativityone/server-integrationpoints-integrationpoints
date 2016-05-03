@@ -525,6 +525,7 @@
     </Content>
     <Content Include="Views\IntegrationPoints\NotEnoughPermission.cshtml" />
     <Content Include="Views\IntegrationPoints\RelativityProviderConfiguration.cshtml" />
+    <Content Include="Views\IntegrationPoints\_IntegrationMapFieldsReversed.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

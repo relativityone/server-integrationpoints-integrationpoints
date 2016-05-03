@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts.Models;
+﻿using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
