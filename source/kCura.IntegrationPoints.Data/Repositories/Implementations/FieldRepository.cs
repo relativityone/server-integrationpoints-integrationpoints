@@ -11,13 +11,12 @@ using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Service;
-using Relativity.Services.ObjectQuery;
 using Field = Relativity.Core.DTO.Field;
 using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class FieldRepository : KelperServiceBase, IFieldRepository
+	public class FieldRepository : KeplerServiceBase, IFieldRepository
 	{
 		private readonly IHelper _helper;
 		private readonly IObjectQueryManagerAdaptor _objectQueryManagerAdaptor;

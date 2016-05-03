@@ -7,7 +7,7 @@ using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class KeplerWorkspaceRepository : KelperServiceBase, IWorkspaceRepository
+	public class KeplerWorkspaceRepository : KeplerServiceBase, IWorkspaceRepository
 	{
 		public KeplerWorkspaceRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor) : base(objectQueryManagerAdaptor)
 		{

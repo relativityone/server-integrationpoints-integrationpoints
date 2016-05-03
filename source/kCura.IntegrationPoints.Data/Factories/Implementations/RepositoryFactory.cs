@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IObjectRepository GetObjectRepository(int workspaceArtifactId, int rdoArtifactId)
 		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, rdoArtifactId);
-			IObjectRepository repository = new KelperObjectRepository(objectQueryManagerAdaptor, rdoArtifactId);
+			IObjectRepository repository = new KeplerObjectRepository(objectQueryManagerAdaptor, rdoArtifactId);
 			return repository;
 		}
 
