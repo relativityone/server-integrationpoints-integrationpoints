@@ -1,13 +1,13 @@
-﻿namespace kCura.IntegrationPoints.Web.Controllers.API
-{
-	using System;
-	using System.Collections.Generic;
-	using System.Net;
-	using System.Net.Http;
-	using System.Web.Http;
-	using kCura.IntegrationPoints.Web.Models;
-	using kCura.Relativity.Client;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+using kCura.IntegrationPoints.Web.Models;
+using kCura.Relativity.Client;
 
+namespace kCura.IntegrationPoints.Web.Controllers.API
+{
 	public class SavedSearchFinderController : ApiController
 	{
 		private readonly IRSAPIClient _context;
