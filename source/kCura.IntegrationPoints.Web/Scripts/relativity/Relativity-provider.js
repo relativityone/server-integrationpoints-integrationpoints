@@ -1,7 +1,7 @@
 ﻿$(function (root) {
 	//Create a new communication object that talks to the host page.
 	var message = IP.frameMessaging();
-    
+
 	var viewModel;
 	IP.frameMessaging().dFrame.IP.reverseMapFields = true;// set the flag so that the fields can be reversed;
 	//An event raised when the user has clicked the Next or Save button.
@@ -80,17 +80,15 @@
 
 		if (self.savedSearches.length === 0) {
 			(function loadSavedSearches(savedSearchArtifactId, isDisabled) {
-
 				IP.data.ajax({
 					type: 'GET',
 					url: IP.utils.generateWebAPIURL('SavedSearchFinder'),
 					async: true,
-					success: function(result) {
+					success: function (result) {
 						self.savedSearches(result);
 
 						if (isDisabled) {
 							var availableSavedSearches = self.savedSearches();
-
 							var isArtifactIdInList = doesArtifactIdExistInObjectList(availableSavedSearches, savedSearchArtifactId);
 
 							if (!isArtifactIdInList) {
@@ -99,14 +97,13 @@
 							}
 						}
 					},
-					error: function() {
+					error: function () {
 						self.savedSearches = undefined;
 					}
 				});
 			})(this.SavedSearchArtifactId(), this.disable);
-
 		}
-			
+
 		if (self.workspaces.length === 0) {
 			(function loadWorkspaces(targetWorkspaceArtifactId, isDisabled) {
 				IP.data.ajax({
@@ -118,7 +115,6 @@
 
 						if (isDisabled) {
 							var availableWorkspaces = self.workspaces();
-
 							var isArtifactIdInList = doesArtifactIdExistInObjectList(availableWorkspaces, targetWorkspaceArtifactId);
 
 							if (!isArtifactIdInList) {
@@ -133,9 +129,9 @@
 				});
 			})(this.TargetWorkspaceArtifactId(), this.disable);
 		}
-		
+
 		this.errors = ko.validation.group(this, { deep: true });
-		this.getSelectedOption = function() {
+		this.getSelectedOption = function () {
 			return {
 				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
 				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
@@ -152,7 +148,6 @@
 				}
 			}
 		}
-
 		return false;
 	}
 });
