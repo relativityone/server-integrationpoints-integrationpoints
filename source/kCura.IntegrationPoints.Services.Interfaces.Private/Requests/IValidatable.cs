@@ -3,7 +3,7 @@
 	public interface IValidatable
 	{
 		/// <summary>
-		/// Validate request's property
+		/// Validate request's property.
 		/// </summary>
 		void ValidateRequest();
 	}
