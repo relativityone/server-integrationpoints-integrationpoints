@@ -1,7 +1,25 @@
 ﻿$(function (root) {
 	//Create a new communication object that talks to the host page.
 	var message = IP.frameMessaging();
-    
+	ko.validation.configure({
+	    registerExtenders: true,
+	    messagesOnModified: true,
+	    insertMessages: true,
+	    parseInputAttributes: true,
+	    messageTemplate: null
+	});
+
+	ko.validation.insertValidationMessage = function (element) {
+	    var errorContainer = document.createElement('div');
+	    var iconSpan = document.createElement('span');
+	    iconSpan.className = 'icon-error legal-hold field-validation-error';
+
+	    errorContainer.appendChild(iconSpan);
+
+	    $(element).parents('.field-value').eq(0).append(errorContainer);
+
+	    return iconSpan;
+	};
 	var viewModel;
 	IP.frameMessaging().dFrame.IP.reverseMapFields = true;// set the flag so that the fields can be reversed;
 	//An event raised when the user has clicked the Next or Save button.
@@ -66,6 +84,33 @@
 		if (!(this.disable)) {
 			this.TargetWorkspaceArtifactId.extend({
 				required: true
+			}).extend({
+			    validation: {
+			        validator: function (value) {
+			            var workspaces = self.workspaces();
+			            for (var i = 0; i < workspaces.length; i++) {
+			                if (workspaces[i].displayName.indexOf(';') != -1 && value == workspaces[i].value) {
+			                    return false;
+			                }
+			            }
+			            return true;
+			        },
+			        message: "Destination workspace name contains an invalid character. Please remove before continuing."
+			    }
+			}).extend({
+			    validation: {
+			        validator: function (value) {
+			            var workspaces = self.workspaces();
+			            var sourceId = IP.utils.getParameterByName('AppID', window.top);
+			            for (var i = 0; i < workspaces.length; i++) {
+			                if (workspaces[i].displayName.indexOf(';') != -1 && workspaces[i].value == sourceId) {
+			                    return false;
+			                }
+			            }
+			            return true;
+			        },
+			        message: "Source workspace name contains an invalid character. Please remove before continuing."
+			    }
 			});
 			this.SavedSearchArtifactId.extend({
 				required: true
