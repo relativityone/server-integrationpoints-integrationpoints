@@ -170,11 +170,11 @@ namespace kCura.IntegrationPoints.Core.Services
 		public class Weekly
 		{
 			public List<string> SelectedDays { get; set; }
-			public string TemplateId { get; set; }
+			public string TemplateID { get; set; }
 
 			public Weekly()
 			{
-				TemplateId = "weeklySendOn";
+				TemplateID = "weeklySendOn";
 			}
 		}
 
