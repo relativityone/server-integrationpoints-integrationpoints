@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.ScheduleQueue.Core.BatchProcess;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IScheduleRuleFactory _scheduleRuleFactory;
 		private kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private IGuidService _guidService;
-		private JobHistoryService _jobHistoryService;
+		private IJobHistoryService _jobHistoryService;
 		private JobHistoryErrorService _jobHistoryErrorService;
 		private IEnumerable<Core.IBatchStatus> _batchStatus;
 		private bool _errorOccurred;
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IIntegrationPointService integrationPointService,
 			kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
 			IGuidService guidService,
-			JobHistoryService jobHistoryService,
+			IJobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
 			IScheduleRuleFactory scheduleRuleFactory,
 			 IEnumerable<IBatchStatus> batchStatuses)

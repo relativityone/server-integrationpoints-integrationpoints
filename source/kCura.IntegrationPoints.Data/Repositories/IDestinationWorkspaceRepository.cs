@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <summary>
 		/// Mass edits/tags the Documents that were with the corresponding Destination Workspace they were pushed to.
 		/// </summary>
-		/// <param name="claimsPrincipal">ClaimsPrincipal to create context under the current user</param>
+		/// <param name="claimsPrincipal">A ClaimsPrincipal object that contains the identity of the user</param>
 		/// <param name="numberOfDocs">The number of documents to tag</param>
 		/// <param name="destinationWorkspaceInstanceId">Artifact ID of the DestinationWorkspace RDO instance</param>
 		/// <param name="tableSuffix">Unique suffix that is appended to the scratch table</param>

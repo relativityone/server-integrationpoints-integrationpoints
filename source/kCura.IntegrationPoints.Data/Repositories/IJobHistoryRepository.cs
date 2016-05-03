@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <summary>
 		/// Mass Edits/tags the Documents that were pushed with the DestinationWorkspace instance
 		/// </summary>
-		/// <param name="claimsPrincipal">ClaimsPrincipal to create context under the current user</param>
+		/// <param name="claimsPrincipal">A ClaimsPrincipal object that contains the identity of the user</param>
 		/// <param name="numberOfDocs">The number of documents to be tagged</param>
 		/// <param name="jobHistoryInstanceArtifactId">Artifact ID of the JobHistory RDO instance</param>
 		/// <param name="sourceWorkspaceId">Artifact ID of the source workspace</param>

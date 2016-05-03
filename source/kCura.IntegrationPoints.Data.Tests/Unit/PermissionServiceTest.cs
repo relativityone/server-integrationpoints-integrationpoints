@@ -16,7 +16,11 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		private IPermissionManager _permissionManager;
 		private IServicesMgr _servicesMgr;
 		private PermissionService _instance;
-		private const int WORKSPACE_ID = 930293; [SetUp] public void SetUp() {
+		private const int WORKSPACE_ID = 930293;
+		private const int _editDocPermission = 45;
+
+		[SetUp]
+		public void SetUp() {
 			_servicesMgr = NSubstitute.Substitute.For<IServicesMgr>();
 			_permissionManager = NSubstitute.Substitute.For<IPermissionManager>();
 
@@ -148,6 +152,131 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			//ASSERT 
 			Assert.IsFalse(userCanImport, "The user should not have correct permissions");
+		}
+
+		[Test]
+		public void UserCanEditDocuments_UserHasPermission_UserPermissionIsTrue()
+		{
+			//ARRANGE
+			_permissionManager.GetPermissionSelectedAsync(
+				Arg.Is(WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = _editDocPermission } }, x)))
+				.Returns(Task.FromResult(new List<PermissionValue>()
+				{
+					new PermissionValue()
+					{
+						PermissionID = _editDocPermission,
+						Selected = true
+					}
+				}));
+
+			//ACT
+			bool userCanEditDocuments = _instance.UserCanEditDocuments(WORKSPACE_ID);
+
+			//ASSERT 
+			Assert.IsTrue(userCanEditDocuments, "The user should have correct permissions");
+		}
+
+		[Test]
+		public void UserCanEditDocuments_UserDoesNotHavePermission_UserPermissionIsFalse()
+		{
+			//ARRANGE
+			_permissionManager.GetPermissionSelectedAsync(
+				Arg.Is(WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = _editDocPermission } }, x)))
+				.Returns(Task.FromResult(new List<PermissionValue>()
+				{
+					new PermissionValue()
+					{
+						PermissionID = _editDocPermission,
+						Selected = false
+					}
+				}));
+
+			//ACT
+			bool userCanEditDocuments = _instance.UserCanEditDocuments(WORKSPACE_ID);
+
+			//ASSERT 
+			Assert.IsFalse(userCanEditDocuments, "The user should not have correct permissions");
+		}
+
+		[Test]
+		public void UserCanEditDocuments_ServiceReturnsIncorrectPermissionIdWihSuccess_UserPermissionIsFalse()
+		{
+			//ARRANGE
+			_permissionManager.GetPermissionSelectedAsync(
+				Arg.Is(WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = _editDocPermission } }, x)))
+				.Returns(Task.FromResult(new List<PermissionValue>()
+				{
+					new PermissionValue()
+					{
+						PermissionID = 123,
+						Selected = true
+					}
+				}));
+
+			//ACT
+			bool userCanEditDocuments = _instance.UserCanEditDocuments(WORKSPACE_ID);
+
+			//ASSERT 
+			Assert.IsFalse(userCanEditDocuments, "The user should not have correct permissions");
+		}
+
+		[Test]
+		public void UserCanEditDocuments_ServiceReturnsIncorrectPermissionIdWithNoSuccess_UserPermissionIsFalse()
+		{
+			//ARRANGE
+			_permissionManager.GetPermissionSelectedAsync(
+				Arg.Is(WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = _editDocPermission } }, x)))
+				.Returns(Task.FromResult(new List<PermissionValue>()
+				{
+					new PermissionValue()
+					{
+						PermissionID = 123,
+						Selected = false
+					}
+				}));
+
+			//ACT
+			bool userCanEditDocuments = _instance.UserCanEditDocuments(WORKSPACE_ID);
+
+			//ASSERT 
+			Assert.IsFalse(userCanEditDocuments, "The user should not have correct permissions");
+		}
+
+		[Test]
+		public void UserCanEditDocuments_ServiceReturnsNoPermissions_UserPermissionsIsFalse()
+		{
+			//ARRANGE
+			_permissionManager.GetPermissionSelectedAsync(
+				Arg.Is(WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = _editDocPermission } }, x)))
+				.Returns(Task.FromResult(new List<PermissionValue>() { }));
+
+			//ACT
+			bool userCanEditDocuments = _instance.UserCanEditDocuments(WORKSPACE_ID);
+
+			//ASSERT 
+			Assert.IsFalse(userCanEditDocuments, "The user should not have correct permissions");
+		}
+
+		[Test]
+		public void UserCanEditDocuments_ServiceThrowsException_UserPermissionIsFalse()
+		{
+			//ARRANGE
+			_permissionManager.GetPermissionSelectedAsync(
+				Arg.Is(WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => this.PermissionValuesMatch(new List<PermissionRef>() { new PermissionRef() { PermissionID = _editDocPermission } }, x)))
+				.Throws(new Exception());
+
+			//ACT
+			bool userCanEditDocuments = _instance.UserCanEditDocuments(WORKSPACE_ID);
+
+			//ASSERT 
+			Assert.IsFalse(userCanEditDocuments, "The user should not have correct permissions");
 		}
 
 		private bool PermissionValuesMatch(List<PermissionRef> expected, List<PermissionRef> actual)

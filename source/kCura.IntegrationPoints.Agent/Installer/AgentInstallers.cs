@@ -4,7 +4,9 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Agent.Tasks;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
+using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core.Logging;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Installer
 {
@@ -20,7 +22,12 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<SyncCustodianManagerWorker>().ImplementedBy<SyncCustodianManagerWorker>().LifeStyle.Transient);
 			container.Register(Component.For<CreateErrorRdo>().ImplementedBy<CreateErrorRdo>().LifeStyle.Transient);
 			container.Register(Component.For<ITaskFactory>().AsFactory(x => x.SelectedWith(new TaskComponentSelector())).LifeStyle.Transient);
-			container.Register(Component.For<kCura.Apps.Common.Utils.Serializers.ISerializer>().ImplementedBy<kCura.Apps.Common.Utils.Serializers.JSONSerializer>().LifestyleTransient());
+			if (container.Kernel.HasComponent(typeof (Apps.Common.Utils.Serializers.ISerializer)) == false)
+			{
+				container.Register(Component.For<kCura.Apps.Common.Utils.Serializers.ISerializer>().ImplementedBy<kCura.Apps.Common.Utils.Serializers.JSONSerializer>().LifestyleTransient());
+			}
+			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(f => f.Resolve<IHelper>().GetServicesManager()));
+			container.Register(Component.For<IPermissionService>().ImplementedBy<PermissionService>().LifestyleTransient());
 
 			container.Register(Component.For<SendEmailManager>().ImplementedBy<SendEmailManager>().LifeStyle.Transient);
 			container.Register(Component.For<SendEmailWorker>().ImplementedBy<SendEmailWorker>().LifeStyle.Transient);
