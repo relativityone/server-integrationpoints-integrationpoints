@@ -258,26 +258,17 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 			}
 
 			// Act
-			bool exceptionThrown = false;
-			try
-			{
-				_instance.Update(WORKSPACE_ID, model);
-			}
-			catch (Exception e)
-			{
-				exceptionThrown = true;
-				
-				string filteredNames =
-					String.Join(",",
-						propertyNames.Where(x => isRelativityProvider || x != "Source Configuration").Select(x => $" {x}"));
-				string expectedErrorString =
-					$"Unable to save Integration Point:{filteredNames} cannot be changed once the Integration Point has been run";
+			HttpResponseMessage response = _instance.Update(WORKSPACE_ID, model);
 
-				Assert.AreEqual(expectedErrorString, e.Message);
-			}
+			string filteredNames = String.Join(",", propertyNames.Where(x => isRelativityProvider || x != "Source Configuration").Select(x => $" {x}"));
+			string expectedErrorString =
+				$"Unable to save Integration Point:{filteredNames} cannot be changed once the Integration Point has been run";
+
 
 			// Assert
-			Assert.IsTrue(exceptionThrown, "An exception should have been thrown");
+			Assert.IsNotNull(response);
+			String content = response.Content.ReadAsStringAsync().Result;
+			Assert.AreEqual($"\"{expectedErrorString}\"", content);
 		}
 
 		[Test]
@@ -297,21 +288,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 				.Throws(new Exception(exceptionMessage));
 
 			// Act
-			bool exceptionThrown = false;
-			try
-			{
-				_instance.Update(WORKSPACE_ID, model);
-			}
-			catch (Exception e)
-			{
-				exceptionThrown = true;
-				Assert.AreEqual("Unable to save Integration Point: Unable to retrieve Integration Point", e.Message, "The exception message should be correct");	
-				Assert.IsNotNull(e.InnerException, "The exception should have an inner exeption");
-				Assert.AreEqual(exceptionMessage, e.InnerException.Message, "The innner exception message should match");
-			}
-
+			HttpResponseMessage response = _instance.Update(WORKSPACE_ID, model);
+		
 			// Assert
-			Assert.IsTrue(exceptionThrown, "An exception should have been thrown");
+			Assert.IsNotNull(response);
+			String content = response.Content.ReadAsStringAsync().Result;
+			Assert.AreEqual(@"""Unable to save Integration Point: Unable to retrieve Integration Point""", content);
 		}
 
 		[Test]
@@ -342,21 +324,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 					.Throws(new Exception(exceptionMessage));
 
 			// Act
-			bool exceptionThrown = false;
-			try
-			{
-				_instance.Update(WORKSPACE_ID, model);
-			}
-			catch (Exception e)
-			{
-				exceptionThrown = true;
-				Assert.AreEqual("Unable to save Integration Point: Unable to retrieve source provider", e.Message, "The exception message should be correct");
-				Assert.IsNotNull(e.InnerException, "The exception should have an inner exeption");
-				Assert.AreEqual(exceptionMessage, e.InnerException.Message, "The innner exception message should match");
-			}
+			HttpResponseMessage response = _instance.Update(WORKSPACE_ID, model);
+
 
 			// Assert
-			Assert.IsTrue(exceptionThrown, "An exception should have been thrown");
+			Assert.IsNotNull(response);
+			String content = response.Content.ReadAsStringAsync().Result;
+			Assert.AreEqual(@"""Unable to save Integration Point: Unable to retrieve source provider""", content);
 		}
 	}
 }
