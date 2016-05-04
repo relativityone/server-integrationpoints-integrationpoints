@@ -81,10 +81,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Doc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.DocumentTransferProvider.Tests", "kCura.IntegrationPoints.DocumentTransferProvider.Tests\kCura.IntegrationPoints.DocumentTransferProvider.Tests.csproj", "{75B57398-7E27-4DF2-BF9F-A7E4A46E898E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Services", "kCura.IntegrationPoints.Services\kCura.IntegrationPoints.Services.csproj", "{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Services.Interfaces.Private", "kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj", "{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D0393643-06E2-4470-96B7-E1153FE4FF69}"
 	ProjectSection(SolutionItems) = preProject
 		Performance1.psess = Performance1.psess
@@ -391,30 +387,6 @@ Global
 		{75B57398-7E27-4DF2-BF9F-A7E4A46E898E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{75B57398-7E27-4DF2-BF9F-A7E4A46E898E}.Release|x64.ActiveCfg = Release|x64
 		{75B57398-7E27-4DF2-BF9F-A7E4A46E898E}.Release|x64.Build.0 = Release|x64
-		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Debug|x64.ActiveCfg = Debug|x64
-		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Debug|x64.Build.0 = Debug|x64
-		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Release|x64.ActiveCfg = Release|x64
-		{FD2C5DB6-8FD6-40D6-8E50-3641B7D89D9D}.Release|x64.Build.0 = Release|x64
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Debug|x64.ActiveCfg = Debug|x64
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Debug|x64.Build.0 = Debug|x64
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|x64.ActiveCfg = Release|x64
-		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|x64.Build.0 = Release|x64
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

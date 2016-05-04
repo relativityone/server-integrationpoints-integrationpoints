@@ -1,39 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data.Transformer;
-using kCura.Relativity.Client;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Transformers;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class IntegrationPointRepository : IIntegrationPointRepository
 	{
 		private readonly IGenericLibrary<IntegrationPoint> _integrationPointLibrary;
+	    private readonly IDtoTransformer<IntegrationPointDTO, IntegrationPoint> _dtoTransformer;
 
-		public IntegrationPointRepository(IRSAPIClient rsapiClient)
-			: this(new RsapiClientLibrary<IntegrationPoint>(rsapiClient))
+        public IntegrationPointRepository(IHelper helper, int workspaceArtifactId)
+			: this(new RsapiClientLibrary<IntegrationPoint>(helper, workspaceArtifactId), 
+                  new IntegrationPointTransformer(helper, workspaceArtifactId))
 		{
 		}
 
-		internal IntegrationPointRepository(IGenericLibrary<IntegrationPoint> integrationPointLibrary)
+		/// <summary>
+		/// To be used externally by unit tests only
+		/// </summary>
+		internal IntegrationPointRepository(IGenericLibrary<IntegrationPoint> integrationPointLibrary, IDtoTransformer<IntegrationPointDTO, IntegrationPoint> dtoTransformer)
 		{
 			_integrationPointLibrary = integrationPointLibrary;
+		    _dtoTransformer = dtoTransformer;
 		}
 
 		public IntegrationPointDTO Read(int artifactId)
 		{
 			IntegrationPoint integrationPoint = _integrationPointLibrary.Read(artifactId);
+            return _dtoTransformer.ConvertToDto(integrationPoint);
 
-			return integrationPoint.ToDto();
 		}
 
 		public List<IntegrationPointDTO> Read(IEnumerable<int> artifactIds)
 		{
 			List<IntegrationPoint> integrationPoints = _integrationPointLibrary.Read(artifactIds);
-
-			return integrationPoints.ToDto();
+            return _dtoTransformer.ConvertToDto(integrationPoints);
 		}
-
-
 	}
 }

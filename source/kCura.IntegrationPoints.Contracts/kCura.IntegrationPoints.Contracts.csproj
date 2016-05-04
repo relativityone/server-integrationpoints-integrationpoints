@@ -96,6 +96,7 @@
     <Compile Include="ISynchronizerFactory.cs" />
     <Compile Include="Models\ArtifactDTO.cs" />
     <Compile Include="Models\ArtifactFieldDTO.cs" />
+    <Compile Include="Models\BaseDTO.cs" />
     <Compile Include="Models\DestinationWorkspaceDTO.cs" />
     <Compile Include="Models\ExportSettings.cs" />
     <Compile Include="Models\FieldMapTypeEnum.cs" />

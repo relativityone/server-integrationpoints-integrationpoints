@@ -1,4 +1,5 @@
 ﻿var IP = IP || {};
+IP.reverseMapFields = false;
 
 ko.validation.rules.pattern.message = 'Invalid.';
 
@@ -62,10 +63,11 @@ ko.validation.rules["minArray"] = {
 };
 
 ko.validation.rules['arrayRange'] = {
-	validator: function (value, params) {
+    validator: function (value, params) {
+        if (!$.isNumeric(value) || (value.toString().indexOf(".") != -1)) { return false; }
 		var num = parseInt(value, 10);
-		return !isNaN(num) && num >= params.min && num <= params.max
-	},
+        return !isNaN(num) && num >= params.min && num <= params.max;
+    },
 	message: 'Please enter a value between 1 and 999.'
 };
 
@@ -402,35 +404,63 @@ var IP = IP || {};
 		});
 
 		this.startDate = ko.observable(options.startDate).extend({
-			date: {
-				message: 'The field Start Date must be a date.'
-			}
+		    date: {
+		        message: 'The field Start Date must be a date.'
+		    }
 		}).extend({
-			required: {
-				onlyIf: function () {
-					return self.isEnabled();
-				}
-			}
+		    validation: {
+		        validator: function (value) {
+		            if (!self.isEnabled()) {
+		                return true;
+		            }
+		            if (value) {
+		                var comp = value.split('/');
+		                if (comp.length > 3) {
+		                    return false;
+		                }
+		                
+		                var m = parseInt(comp[0], 10);
+		                var d = parseInt(comp[1], 10);
+		                var y = parseInt(comp[2], 10);
+		                var date = new Date(y, m - 1, d);
+		                // check if the month is within range and is the same ie. 2/30/2016 gets parsed to 3/1/2016 so we compare months date and year to check if it is the same
+		                if (date.getFullYear() == y && date.getMonth() + 1 == m && date.getDate() == d) {
+		                    // used to make sure the user doesn't chose a date older than today 
+		                    return true;
+		                }
+		            }
+		            return false;
+		        },
+		        message: 'Please enter a valid date.'
+		    }
+		}).extend({
+		    required: {
+		        onlyIf: function () {
+		            return self.isEnabled();
+		        }
+		    }
 		});
 
 		this.endDate = ko.observable(options.endDate).extend({
-			date: {
-				message: 'The field End Date must be a date.'
-			}
+		    date: {
+		        message: 'The field End Date must be a date.'
+		    }
 		}).extend({
-			validation: {
-				validator: function (value) {
-					if (value && self.startDate() && new Date(value).compareTo(new Date(self.startDate())) < 0) {
-						return false;
-					}
-					return true;
-				},
-				message: 'The start date must come before the end date.'
-			}
+		    validation: {
+		        validator: function (value) {
+		            if (value && self.startDate() && (new Date(value).compareTo(new Date(self.startDate())) < 0 || value.split('/').length > 3)) {
+
+		                return false;
+		            }
+
+		            return true;
+		        },
+		        message: 'The start date must come before the end date.'
+		    }
 		});
 
 
-		this.scheduledTime = ko.observable(options.scheduledTime).extend({
+	this.scheduledTime = ko.observable(options.scheduledTime).extend({
 			required: {
 				onlyIf: function () {
 					return self.isEnabled();
@@ -458,7 +488,14 @@ var IP = IP || {};
 		this.logErrors = ko.observable(settings.logErrors.toString());
 		this.showErrors = ko.observable(false);
 
-		var hasBeenRun = settings.lastRun != null;
+		var hasBeenRun = false;
+		if (settings.lastRun != null) {
+			hasBeenRun = true;
+		}
+		else if (settings.hasBeenRun != null) {
+			hasBeenRun = settings.hasBeenRun;
+		}
+
 		this.hasBeenRun = ko.observable(hasBeenRun);
 
 		this.destination = new Destination(settings.destination, self);

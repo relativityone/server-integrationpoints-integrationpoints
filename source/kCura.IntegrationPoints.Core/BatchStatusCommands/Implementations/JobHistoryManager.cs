@@ -1,5 +1,7 @@
-﻿using kCura.IntegrationPoints.Core.Managers;
+﻿using System.Security.Claims;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
@@ -11,15 +13,18 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 	{
 		private readonly ITempDocTableHelper _tempDocHelper;
 		private readonly IJobHistoryRepository _jobHistoryRepository;
+		private readonly ClaimsPrincipal _claimsPrincipal;
 		private readonly int _jobHistoryInstanceId;
 		private readonly int _sourceWorkspaceArtifactId;
 		private readonly string _uniqueJobId;
 		private ScratchTableRepository _scratchTable;
 
-		public JobHistoryManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory, int jobHistoryInstanceId, int sourceWorkspaceArtifactId, string uniqueJobId)
+		public JobHistoryManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory,
+			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, int jobHistoryInstanceId, int sourceWorkspaceArtifactId, string uniqueJobId, int submittedBy)
 		{
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_jobHistoryInstanceId = jobHistoryInstanceId;
+			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);
 			_uniqueJobId = uniqueJobId;
 			_tempDocHelper = tempDocumentTableFactory.GetDocTableHelper(_uniqueJobId, _sourceWorkspaceArtifactId);
 			_jobHistoryRepository = repositoryFactory.GetJobHistoryRepository();
@@ -33,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
-				_jobHistoryRepository.TagDocsWithJobHistory(ScratchTableRepository.Count, _jobHistoryInstanceId, _sourceWorkspaceArtifactId, _uniqueJobId);
+				_jobHistoryRepository.TagDocsWithJobHistory(_claimsPrincipal, ScratchTableRepository.Count, _jobHistoryInstanceId, _sourceWorkspaceArtifactId, _uniqueJobId);
 			}
 			finally
 			{

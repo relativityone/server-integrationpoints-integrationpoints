@@ -7,9 +7,9 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Adaptors.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
@@ -147,7 +147,6 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
     {
       DocumentTransferSettings settings = GetSettings(options);
       // TODO: DI or factory
-      IObjectQueryManagerAdaptor repository = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, Convert.ToInt32(ArtifactType.Document));
       IRSAPIClient rsapiClient = GetRSAPIClient(settings.SourceWorkspaceArtifactId);
       // TODO: create constant
       ISavedSearchRepository savedSearchRepository = new RsapiSavedSearchRepository(rsapiClient, settings.SavedSearchArtifactId, 1000);

@@ -12,16 +12,17 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 	{
 		[Test]
 		[Explicit]
+		[Ignore]
 		public void DeleteHistory_IntegrationPoint_success()
 		{
 
-			IRSAPIService rsapiService = new RSAPIService(RsapiClient);
-			//rsapiService.JobHistoryLibrary = new RsapiClientLibrary<JobHistory>(client);
-
-			//rsapiService.IntegrationPointLibrary = new RsapiClientLibrary<Data.IntegrationPoint>(client);
-			var deleteHistoryError = new DeleteHistoryErrorService(rsapiService);
-			var dhs = new DeleteHistoryService(rsapiService, deleteHistoryError);
-			dhs.DeleteHistoriesAssociatedWithIP(1041683);
+//			IRSAPIService rsapiService = new RSAPIService(RsapiClient);
+//			//rsapiService.JobHistoryLibrary = new RsapiClientLibrary<JobHistory>(client);
+//
+//			//rsapiService.IntegrationPointLibrary = new RsapiClientLibrary<Data.IntegrationPoint>(client);
+//			var deleteHistoryError = new DeleteHistoryErrorService(rsapiService);
+//			var dhs = new DeleteHistoryService(rsapiService, deleteHistoryError);
+//			dhs.DeleteHistoriesAssociatedWithIP(1041683);
 		}
 	}
 }

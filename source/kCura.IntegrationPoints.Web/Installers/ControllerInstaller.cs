@@ -6,6 +6,7 @@ using Castle.Facilities.TypedFactory;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -15,7 +16,6 @@ using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.LDAPProvider;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
@@ -35,12 +35,17 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<IWorkspaceService>().ImplementedBy<ControllerCustomPageService>().LifestyleTransient());
 			container.Register(Component.For<IWorkspaceService>().ImplementedBy<WebAPICustomPageService>().LifestyleTransient());
 
-			container.Register(Component.For<IConfig>().Instance(Config.Instance));
+			container.Register(Component.For<IConfig>().Instance(kCura.IntegrationPoints.Config.Config.Instance));
 
 			container.Register(Component.For<ISessionService>().UsingFactoryMethod(k => SessionService.Session).LifestylePerWebRequest());
 			container.Register(Component.For<IPermissionService>().ImplementedBy<PermissionService>().LifestyleTransient());
 			container.Register(Component.For<WebClientFactory>().ImplementedBy<WebClientFactory>().LifestyleTransient());
-			container.Register(Component.For<kCura.Apps.Common.Utils.Serializers.ISerializer>().ImplementedBy<kCura.Apps.Common.Utils.Serializers.JSONSerializer>().LifestyleTransient());
+
+			if (container.Kernel.HasComponent(typeof (Apps.Common.Utils.Serializers.ISerializer)) == false)
+			{
+				container.Register(Component.For<kCura.Apps.Common.Utils.Serializers.ISerializer>().ImplementedBy<kCura.Apps.Common.Utils.Serializers.JSONSerializer>().LifestyleTransient());
+			}
+
 			container.Register(Classes.FromThisAssembly().BasedOn<IHttpController>().LifestyleTransient());
 			container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => ConnectionHelper.Helper()).LifestylePerWebRequest());
 			container.Register(Component.For<ICPHelper>().UsingFactoryMethod((k) => ConnectionHelper.Helper()).LifestylePerWebRequest());
@@ -101,7 +106,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
 			
 			container.Register(Component.For<IWorkspaceRepository>()
-					.ImplementedBy<RsapiWorkspaceRepository>()
+					.ImplementedBy<KeplerWorkspaceRepository>()
 					.UsingFactoryMethod((k) => k.Resolve<IRepositoryFactory>().GetWorkspaceRepository())
 					.LifestyleTransient());
 		}

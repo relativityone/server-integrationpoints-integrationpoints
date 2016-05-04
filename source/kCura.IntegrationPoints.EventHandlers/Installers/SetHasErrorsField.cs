@@ -73,6 +73,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			return response;
 		}
 
+		/// <summary>
+		/// It is best to use the Castle Windsor container here instead of manually creating the dependencies.
+		/// TODO: replace the below with the container and resolve the dependencies.
+		/// </summary>
 		private void CreateServices()
 		{
 			RsapiClientFactory rsapiClientFactory = new RsapiClientFactory(Helper);
@@ -91,9 +95,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			JobTracker jobTracker = new JobTracker(jobResourceTracker);
 			ISerializer serializer = new JSONSerializer();
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
+			IPermissionService permissionService = new PermissionService(Helper.GetServicesManager());
+			IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
 
 			_caseServiceContext = caseServiceContext;
-			_integrationPointService = new IntegrationPointService(caseServiceContext, serializer, choiceQuery, jobManager);
+			_integrationPointService = new IntegrationPointService(caseServiceContext, permissionService, serializer, choiceQuery, jobManager, jobHistoryService);
 			_jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
 		}
 

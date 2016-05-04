@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
   public class SyncWorker : IntegrationPointTaskBase, ITask
   {
+		internal IJobHistoryService _jobHistoryService;
     private JobStatisticsService _statisticsService;
     private IEnumerable<Core.IBatchStatus> _batchStatus;
 
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
       IDataProviderFactory dataProviderFactory,
       kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
       kCura.IntegrationPoints.Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
-      JobHistoryService jobHistoryService,
+			IJobHistoryService jobHistoryService,
       JobHistoryErrorService jobHistoryErrorService,
       IJobManager jobManager,
       IEnumerable<IBatchStatus> statuses,

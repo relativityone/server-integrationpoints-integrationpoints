@@ -3,6 +3,7 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.ScheduleQueue.Core;
@@ -21,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
       IDataProviderFactory dataProviderFactory,
       kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
       kCura.IntegrationPoints.Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
-      JobHistoryService jobHistoryService,
+      IJobHistoryService jobHistoryService,
       JobHistoryErrorService jobHistoryErrorService,
       IJobManager jobManager) : base(caseServiceContext,
        helper,

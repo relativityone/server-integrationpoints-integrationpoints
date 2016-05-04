@@ -2,8 +2,8 @@
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts;
-using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Domain;
@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Queries;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
@@ -22,7 +23,6 @@ using kCura.IntegrationPoints.CustodianManager;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
@@ -30,7 +30,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
-using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -38,6 +37,11 @@ namespace kCura.IntegrationPoints.Core.Installers
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
+			if (container.Kernel.HasComponent(typeof (ISerializer)) == false)
+			{
+				container.Register(Component.For<ISerializer>().ImplementedBy<JSONSerializer>().LifestyleTransient());
+			}
+
 			container.Register(Component.For<IErrorService>().ImplementedBy<Services.ErrorService>().Named("ErrorService").LifestyleTransient());
 			container.Register(Component.For<Core.Services.ObjectTypeService>().ImplementedBy<Core.Services.ObjectTypeService>().LifestyleTransient());
 
@@ -83,7 +87,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IProviderFactory>().ImplementedBy<DefaultProviderFactory>().DependsOn(new { windsorContainer = container }).LifestyleTransient());
 			container.Register(Component.For<ManagerQueueService>().ImplementedBy<ManagerQueueService>().LifestyleTransient());
 			container.Register(Component.For<IGuidService>().ImplementedBy<DefaultGuidService>().LifestyleTransient());
-			container.Register(Component.For<JobHistoryService>().ImplementedBy<JobHistoryService>().LifestyleTransient());
+			container.Register(Component.For<IJobHistoryService>().ImplementedBy<JobHistoryService>().LifestyleTransient());
 			container.Register(Component.For<JobHistoryErrorService>().ImplementedBy<JobHistoryErrorService>().LifestyleTransient());
 
 			container.Register(Component.For<IJobStatusUpdater>().ImplementedBy<JobStatusUpdater>().LifeStyle.Transient);
@@ -100,24 +104,12 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			if (container.Kernel.HasComponent(typeof(IHelper)))
 			{
-				IHelper helper = container.Resolve<IHelper>();
-
-				// TODO: Investigate; should this be using ExecutionIdentity.CurrentUser? -- biedrzycki: April 6th, 2016
-				IObjectQueryManager queryManager = helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System);
-			
-				container.Register(
-					Component.For<IObjectQueryManagerAdaptor>()
-						.ImplementedBy<ObjectQueryManagerAdaptor>()
-						.DependsOn(new { objectQueryManager = queryManager})
-						.LifeStyle.Transient);
 				container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
-				container.Register(Component.For<IFieldRepository>().ImplementedBy<FieldRepository>().LifeStyle.Transient);
-				container.Register(Component.For<IDocumentRepository>().ImplementedBy<KeplerDocumentRepository>().LifeStyle.Transient);
 
 				// TODO: This is kind of cruddy, see if we can only use this repository through the RepositoryFactory -- biedrzycki: April 6th, 2016
 				container.Register(
 					Component.For<IWorkspaceRepository>()
-						.ImplementedBy<RsapiWorkspaceRepository>()
+						.ImplementedBy<KeplerWorkspaceRepository>()
 						.UsingFactoryMethod((k) => k.Resolve<IRepositoryFactory>().GetWorkspaceRepository())
 						.LifestyleTransient());
 				container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());

@@ -4,17 +4,19 @@ using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using FieldType = kCura.Relativity.Client.FieldType;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class SourceJobRepository : ISourceJobRepository
 	{
-		private readonly IRSAPIClient _rsapiClient;
+		private readonly IHelper _helper;
+		private readonly int _workspaceArtifactId;
 
-		public SourceJobRepository(IRSAPIClient rsapiClient)
+		public SourceJobRepository(IHelper helper, int workspaceArtifactId)
 		{
-			_rsapiClient = rsapiClient;
+			_helper = helper;
+			_workspaceArtifactId = workspaceArtifactId;
 		}
 
 		public int CreateObjectType(int sourceWorkspaceArtifactTypeId)
@@ -31,11 +33,24 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				PersistentLists = false,
 			};
 
-			WriteResultSet<ObjectType> resultSet = _rsapiClient.Repositories.ObjectType.Create(new[] { objectType });
+			WriteResultSet<ObjectType> resultSet = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+
+				try
+				{
+					resultSet = rsapiClient.Repositories.ObjectType.Create(new[] {objectType});
+				}
+				catch (Exception e)
+				{
+					throw new Exception($"Unable to create new Source Job object type: {resultSet?.Message}", e);
+				}
+			}
 
 			if (!resultSet.Success || !resultSet.Results.Any())
 			{
-				throw new Exception("Unable to create new Source Job object type: " + resultSet.Message);
+				throw new Exception($"Unable to create new Source Job object type: {resultSet.Message}");
 			}
 
 			return resultSet.Results.First().Artifact.ArtifactID;
@@ -58,16 +73,22 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Fields = fields
 			};
 
-			try
+			int rdoArtifactId;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
-				int rdoArtifactId = _rsapiClient.Repositories.RDO.CreateSingle(rdo);
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
-				return rdoArtifactId;
+				try
+				{
+					rdoArtifactId = rsapiClient.Repositories.RDO.CreateSingle(rdo);
+				}
+				catch (Exception e)
+				{
+					throw new Exception($"Unable to create new instance of Source Job: {e.Message}", e);
+				}
 			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to create new instance of Source Job", e);
-			}
+
+			return rdoArtifactId;
 		}
 
 		public IDictionary<Guid, int> CreateObjectTypeFields(int sourceJobArtifactTypeId, IEnumerable<Guid> fieldGuids)
@@ -115,20 +136,45 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			kCura.Relativity.Client.DTOs.Field[] fieldsToCreate =
 				jobHistoryFields.Where(x => fieldGuids.Contains(x.Guids.First())).ToArray();
 
-			WriteResultSet<kCura.Relativity.Client.DTOs.Field> fieldWriteResultSet = _rsapiClient.Repositories.Field.Create(fieldsToCreate);
-			if (!fieldWriteResultSet.Success)
+			ResultSet<kCura.Relativity.Client.DTOs.Field> newFieldResultSet = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
-				throw new Exception("Unable to create fields for the Source Job object type: " + fieldWriteResultSet.Message);
-			}
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
-			int[] newFieldIds = fieldWriteResultSet.Results.Select(x => x.Artifact.ArtifactID).ToArray();
+				WriteResultSet<kCura.Relativity.Client.DTOs.Field> fieldWriteResultSet = null;
 
-			ResultSet<kCura.Relativity.Client.DTOs.Field> newFieldResultSet = _rsapiClient.Repositories.Field.Read(newFieldIds);
+				try
+				{
+					rsapiClient.Repositories.Field.Create(fieldsToCreate);
+				}
+				catch (Exception e)
+				{
+					throw new Exception($"Unable to create fields for the Source Job object type: {e.Message}", e);					
+				}
 
-			if (!newFieldResultSet.Success)
-			{
-				_rsapiClient.Repositories.Field.Delete(fieldsToCreate);
-				throw new Exception("Unable to create fields for the Source Job object type: Failed to retrieve after creation: " + newFieldResultSet.Message);
+				if (!fieldWriteResultSet.Success)
+				{
+					throw new Exception($"Unable to create fields for the Source Job object type: {fieldWriteResultSet.Message}");
+				}
+
+				int[] newFieldIds = fieldWriteResultSet.Results.Select(x => x.Artifact.ArtifactID).ToArray();
+
+				newFieldResultSet = rsapiClient.Repositories.Field.Read(newFieldIds);
+
+				if (!newFieldResultSet.Success)
+				{
+					try
+					{
+						rsapiClient.Repositories.Field.Delete(fieldsToCreate);
+					}
+					catch (Exception e)
+					{
+						throw new Exception($"Unable to create fields for the Source Job object type: Failed to retrieve field after creation: Unable to delete field upon failure: {newFieldResultSet.Message}", e);
+					}
+
+					throw new Exception("Unable to create fields for the Source Job object type: Failed to retrieve after creation: " +
+					                    newFieldResultSet.Message);
+				}
 			}
 
 			IDictionary<Guid, int> guidToIdDictionary = newFieldResultSet.Results.ToDictionary(
@@ -160,7 +206,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				new kCura.Relativity.Client.DTOs.Field()
 				{
 					Name = Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
-					FieldTypeID = FieldType.MultipleObject,
+					FieldTypeID = kCura.Relativity.Client.FieldType.MultipleObject,
 					ObjectType = documentObjectType,
 					AssociativeObjectType = jobHistoryObjectType,
 					AllowGroupBy = false,
@@ -171,12 +217,25 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 			};
 
-			WriteResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = _rsapiClient.Repositories.Field.Create(fields);
+			WriteResultSet<kCura.Relativity.Client.DTOs.Field> resultSet = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+
+				try
+				{
+					resultSet = rsapiClient.Repositories.Field.Create(fields);
+				}
+				catch (Exception e)
+				{
+					throw new Exception($"Unable to create Source Job field on Document: {e.Message}", e);
+				}
+			}
 
 			Result<kCura.Relativity.Client.DTOs.Field> field = resultSet.Results.FirstOrDefault();
 			if (!resultSet.Success || field == null)
 			{
-				throw new Exception("Unable to create Source Job field on Document: " + resultSet.Message);
+				throw new Exception($"Unable to create Source Job field on Document: {resultSet.Message}");
 			}
 
 			int newFieldArtifactId = field.Artifact.ArtifactID;

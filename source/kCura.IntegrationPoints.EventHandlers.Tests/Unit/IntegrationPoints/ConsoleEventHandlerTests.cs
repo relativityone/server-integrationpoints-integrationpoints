@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 	{
 		private ConsoleEventHandler testInstance;
 		private IPermissionService _permissionService;
-		private IIntegrationPointManagerFactory _integrationPointManagerFactory;
+		private IManagerFactory _integrationPointManagerFactory;
 		private IIntegrationPointManager _integrationPointManager;
 		private IContextContainerFactory _contextContainerFactory;
 		private IContextContainer _contextContainer;
@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		public void Setup()
 		{
 			_permissionService =Substitute.For<IPermissionService>();
-			_integrationPointManagerFactory = Substitute.For<IIntegrationPointManagerFactory>();
+			_integrationPointManagerFactory = Substitute.For<IManagerFactory>();
 			_integrationPointManager = Substitute.For<IIntegrationPointManager>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_contextContainer = Substitute.For<IContextContainer>();

@@ -156,8 +156,8 @@
     <Compile Include="ContextContainer.cs" />
     <Compile Include="Factories\IExporterFactory.cs" />
     <Compile Include="Factories\Implementations\ContextContainerFactory.cs" />
-    <Compile Include="Factories\IIntegrationPointManagerFactory.cs" />
-    <Compile Include="Factories\Implementations\IntegrationPointManagerFactory.cs" />
+    <Compile Include="Factories\IManagerFactory.cs" />
+    <Compile Include="Factories\Implementations\ManagerFactory.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
     <Compile Include="Managers\IIntegrationPointManager.cs" />
@@ -262,6 +262,7 @@
     <Compile Include="Services\IntegrationPointService.cs" />
     <Compile Include="Services\ObjectTypeService.cs" />
     <Compile Include="Services\Provider\IDataProviderFactory.cs" />
+    <Compile Include="Services\ServiceContext\ServiceContextHelperForKelperService.cs" />
     <Compile Include="Services\SourceTypes\ISourceTypeFactory.cs" />
     <Compile Include="Services\SourceTypes\LdapSourceTypeCreator.cs" />
     <Compile Include="Services\SourceTypes\SourceTypeFactory.cs" />

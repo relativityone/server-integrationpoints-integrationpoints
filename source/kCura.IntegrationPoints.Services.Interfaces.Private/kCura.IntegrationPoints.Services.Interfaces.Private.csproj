@@ -2,53 +2,47 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>kCura.IntegrationPoints.Services.Interfaces.Private</RootNamespace>
     <AssemblyName>kCura.IntegrationPoints.Services.Interfaces.Private</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <OutputPath>..\bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.3.3.0\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.IntegrationPoints, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\kCura.IntegrationPoints.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.IntegrationPoints.Contracts, Version=2.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\kCura.IntegrationPoints.Contracts.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.Relativity.Client, Version=9.3.395.7, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Relativity.Client.9.3.395.7\lib\net45\kCura.Relativity.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.API">
+      <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Kepler">
       <HintPath>..\Dependencies\kCura\Relativity.Kepler.dll</HintPath>
     </Reference>
@@ -65,24 +59,40 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Extensions\IntegrationPointExtensions.cs" />
     <Compile Include="IDocumentManager.cs" />
+    <Compile Include="IIntegrationPointManager.cs" />
     <Compile Include="IJobHistoryManager.cs" />
     <Compile Include="IIntegrationPointsModule.cs" />
+    <Compile Include="IKeplerService.cs" />
+    <Compile Include="KeplerServiceBase.cs" />
+    <Compile Include="Models\DestinationConfiguration.cs" />
     <Compile Include="Models\HistoricalPromotionStatusModel.cs" />
     <Compile Include="Models\HistoricalPromotionStatusSummaryModel.cs" />
     <Compile Include="Models\CurrentPromotionStatusModel.cs" />
+    <Compile Include="Models\IntegrationPointModel.cs" />
     <Compile Include="Models\PercentagePushedToReviewModel.cs" />
     <Compile Include="Models\JobHistoryModel.cs" />
     <Compile Include="Models\JobHistorySummaryModel.cs" />
+    <Compile Include="Requests\UpdateIntegrationPointRequest.cs" />
+    <Compile Include="Requests\CreateIntegrationPointRequest.cs" />
     <Compile Include="Requests\HistoricalPromotionStatusRequest.cs" />
     <Compile Include="Requests\CurrentPromotionStatusRequest.cs" />
+    <Compile Include="Requests\IRequiredPermission.cs" />
+    <Compile Include="Requests\IValidatable.cs" />
     <Compile Include="Requests\PercentagePushedToReviewRequest.cs" />
     <Compile Include="Requests\JobHistoryRequest.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir  "$(SolutionDir)bin\$(Configuration)"
-$(SolutionDir)Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(SolutionDir)bin\$(Configuration)\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)bin\$(Configuration)\$(TargetName).pdb"</PostBuildEvent>
+    <PostBuildEvent>mkdir  "$(SolutionDir)bin"
+$(SolutionDir)Dependencies\PECOPY "$(TargetDir)$(TargetFileName)" "$(SolutionDir)bin\$(TargetFileName)" "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)bin\$(Configuration)\$(TargetName).pdb"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

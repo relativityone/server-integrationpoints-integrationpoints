@@ -1,38 +1,39 @@
 ﻿using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.RDO;
+using Relativity.API;
 using Relativity.Services.ObjectQuery;
 
-namespace kCura.IntegrationPoints.Data.Managers.Implementations
+namespace kCura.IntegrationPoints.Data.Adaptors.Implementations
 {
 	public class ObjectQueryManagerAdaptor : IObjectQueryManagerAdaptor
 	{
-		private readonly IObjectQueryManager _objectQueryManager;
+		private readonly IHelper _helper;
 
 		public int WorkspaceId { set; get; }
 		public int ArtifactTypeId { set; get; }
 
-		public ObjectQueryManagerAdaptor(IObjectQueryManager objectQueryManager)
+		public ObjectQueryManagerAdaptor(IHelper helper, int workspaceId, int artifactTypeId)
 		{
-			_objectQueryManager = objectQueryManager;
-		}
-
-		public ObjectQueryManagerAdaptor(IObjectQueryManager objectQueryManager, int workspaceId, int artifactTypeId)
-		{
-			_objectQueryManager = objectQueryManager;
+			_helper = helper;
 			WorkspaceId = workspaceId;
 			ArtifactTypeId = artifactTypeId;
 		}
 
 		public async Task<ObjectQueryResultSet> RetrieveAsync(Query query, string queryToken, int startIndex = 1, int pageSize = 1000)
 		{
-			return await _objectQueryManager.QueryAsync(
-				WorkspaceId,
-				ArtifactTypeId, 
-				query,
-				startIndex,
-				pageSize,
-				new int[] {(int) ObjectQueryPermissions.View},
-				queryToken);
+			using (IObjectQueryManager objectQueryManager = _helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser))
+			{
+				ObjectQueryResultSet result = await objectQueryManager.QueryAsync(
+					WorkspaceId,
+					ArtifactTypeId,
+					query,
+					startIndex,
+					pageSize,
+					new int[] { (int)ObjectQueryPermissions.View },
+					queryToken).ConfigureAwait(false);
+
+				return result;
+			}
 		}
 
 		private enum ObjectQueryPermissions

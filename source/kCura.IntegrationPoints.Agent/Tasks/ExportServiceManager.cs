@@ -20,6 +20,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
@@ -36,7 +37,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private List<IBatchStatus> _exportServiceJobObservers;
 		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private readonly ICaseServiceContext _caseServiceContext;
-		private readonly IDocumentRepository _documentRepository;
+		private readonly IOnBehalfOfUserClaimsPrincipalFactory _onBehalfOfUserClaimsPrincipalFactory;
 		private readonly IExporterFactory _exporterFactory;
 		private readonly IJobService _jobService;
 		private readonly IRepositoryFactory _repositoryFactory;
@@ -46,7 +47,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly ISynchronizerFactory _synchronizerFactory;
 		private readonly ITempDocumentTableFactory _tempDocumentTableFactory;
 		private readonly JobHistoryErrorService _jobHistoryErrorService;
-		private readonly JobHistoryService _jobHistoryService;
+		private readonly IJobHistoryService _jobHistoryService;
 		private readonly JobStatisticsService _statisticsService;
 		private readonly List<IBatchStatus> _batchStatus;
 		private readonly TaskResult _taskResult;
@@ -56,23 +57,23 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ICaseServiceContext caseServiceContext,
 			ISynchronizerFactory synchronizerFactory,
 			IExporterFactory exporterFactory,
+			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory,
 			ISourceWorkspaceManager sourceWorkspaceManager,
 			ISourceJobManager sourceJobManager,
 			ITempDocumentTableFactory tempDocumentTableFactory,
 			IRepositoryFactory repositoryFactory,
 			IEnumerable<IBatchStatus> statuses,
-			IDocumentRepository documentRepository,
 			Apps.Common.Utils.Serializers.ISerializer serializer,
 			IJobService jobService,
 			IScheduleRuleFactory scheduleRuleFactory,
-			JobHistoryService jobHistoryService,
+			IJobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
 			JobStatisticsService statisticsService)
 		{
 			_batchStatus = statuses.ToList();
 			_caseServiceContext = caseServiceContext;
-			_documentRepository = documentRepository;
 			_exporterFactory = exporterFactory;
+			_onBehalfOfUserClaimsPrincipalFactory = onBehalfOfUserClaimsPrincipalFactory;
 			_jobHistoryErrorService = jobHistoryErrorService;
 			_jobHistoryService = jobHistoryService;
 			_jobService = jobService;
@@ -98,11 +99,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				InitializeExportService(job);
 
-				InitializeExportServiceObservers(job);
-
 				string destinationConfig = IntegrationPointDto.DestinationConfiguration;
+				string userImportApiSettings = GetImportApiSettingsForUser(job, destinationConfig);
 				IDataSynchronizer synchronizer = CreateDestinationProvider(destinationConfig);
 
+				InitializeExportServiceObservers(job, userImportApiSettings);
 				SetupSubscriptions(synchronizer, job);
 
 				// Push documents
@@ -119,9 +120,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 							.Select(observer => observer.ScratchTableRepository).ToArray();
 
 						IDataReader dataReader = exporter.GetDataReader(scratchTables);
-
-						string newImportApiSettings = GetImportApiSettingsForUser(job, destinationConfig);
-						synchronizer.SyncData(dataReader, MappedFields, newImportApiSettings);
+						synchronizer.SyncData(dataReader, MappedFields, userImportApiSettings);
 					}
 				}
 
@@ -142,7 +141,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		private void SetupSubscriptions(IDataSynchronizer synchronizer, Job job)
 		{
-
 			IScratchTableRepository[] scratchTableToMonitorItemLevelError = _exportServiceJobObservers.OfType<IConsumeScratchTableBatchStatus>()
 				.Where(observer => observer.ScratchTableRepository.IgnoreErrorDocuments == false)
 				.Select(observer => observer.ScratchTableRepository).ToArray();
@@ -171,9 +169,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ThrowNewExceptionIfAny(exceptions);
 		}
 
-		private void InitializeExportServiceObservers(Job job)
+		private void InitializeExportServiceObservers(Job job, string userImportApiSettings)
 		{
-			_exportServiceJobObservers = InitializeExportServiceJobObservers(job);
+			_exportServiceJobObservers = InitializeExportServiceJobObservers(job, userImportApiSettings);
 
 			var exceptions = new ConcurrentQueue<Exception>();
 			Parallel.ForEach(_exportServiceJobObservers, batch =>
@@ -325,20 +323,21 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return integrationPoint;
 		}
 
-		private List<IBatchStatus> InitializeExportServiceJobObservers(Job job)
+		private List<IBatchStatus> InitializeExportServiceJobObservers(Job job, string userImportApiSettings)
 		{
 			string tempTableName = $"{job.JobId}_{_identifier}";
 			ITempDocTableHelper docTableHelper = _tempDocumentTableFactory.GetDocTableHelper(tempTableName, _sourceConfiguration.SourceWorkspaceArtifactId);
+			IDocumentRepository documentRepository = _repositoryFactory.GetDocumentRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
 
 			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(docTableHelper,
 				_sourceWorkspaceManager, _sourceJobManager,
-				_documentRepository, _synchronizerFactory,
+				documentRepository, _synchronizerFactory,
 				MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration,
-				IntegrationPointDto.DestinationConfiguration, JobHistoryDto.ArtifactId);
+				userImportApiSettings, JobHistoryDto.ArtifactId);
 
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
-			IConsumeScratchTableBatchStatus sourceFieldsTaggerDestinationWorkspace = new DestinationWorkspaceManager(_tempDocumentTableFactory, _repositoryFactory, _sourceConfiguration, tempTableName, JobHistoryDto.ArtifactId);
-			IConsumeScratchTableBatchStatus sourceJobHistoryTagger = new JobHistoryManager(_tempDocumentTableFactory, _repositoryFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, tempTableName);
+			IConsumeScratchTableBatchStatus sourceFieldsTaggerDestinationWorkspace = new DestinationWorkspaceManager(_tempDocumentTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration, tempTableName, JobHistoryDto.ArtifactId, job.SubmittedBy);
+			IConsumeScratchTableBatchStatus sourceJobHistoryTagger = new JobHistoryManager(_tempDocumentTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, tempTableName, job.SubmittedBy);
 
 			var batchStatusCommands = new List<IBatchStatus>()
 			{

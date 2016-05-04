@@ -31,6 +31,7 @@
 	<property name="source.reference.kCuraAppsCommonConfig.directory" value="${source.packages.directory}\kCura.Apps.Common.Config.1.0.227.4\lib\net45" />
 	<property name="source.reference.kCuraAppsCommonData.directory" value="${source.packages.directory}\kCura.Apps.Common.Data.1.0.77.1\lib\net45" />
 	<property name="source.reference.kCuraAppsCommonUtils.directory" value="${source.packages.directory}\kCura.Apps.Common.Utils.1.0.106.2\lib\net45" />
+	<property name="target.bin.directory" value="${root}\bin" />
 	<property name="target.code.directory" value="${root}\bin\${buildconfig}" />
 	<property name="bin.directory" value="${root}\bin\" />
 	<property name="ldap.build.server.share" value="\\tt-img-app-9-0.testing.corp\BuildShare\LDAPSync\release-1.0" unless="${property::exists('ldap.build.server.share')}"/>
@@ -75,7 +76,7 @@
 	<include buildfile="Build Application.include"/>
 
 	<!-- Build all LDAPSync projects- presence of a Build.log file indicates failure -->
-	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_x64, merge_binaries, merge_ldap, merge_documentsTransfer, merge_source_provider_installer, build_ip_sdk, copy_files">				
+	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_integrationPoint_core, merge_binaries, copy_kCura.IntegrationPoints.Contracts, build_integrationpoint_services, merge_ldap, merge_documentsTransfer, merge_source_provider_installer, build_ip_sdk">				
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
@@ -85,7 +86,7 @@
 		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
 	</target>
 	
-	<target name="build_all" description="Build the entire LDAPSync codebase, RAP, and uploads binaries" depends="build, copy_files, build_RAP_Package, upload_binaries_into_relativity">				
+	<target name="build_all" description="Build the entire LDAPSync codebase, RAP, and uploads binaries" depends="build, build_RAP_Package, upload_binaries_into_relativity">
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
@@ -105,7 +106,6 @@
 		<!-- Based on the buildType parameter passed in Enable/Disable Injections and TimeMachine. -->	
 		
 		<echo message="${DSTAMP} ${TSTAMP} ${buildType} ${action} buildType value was passed." />
-		
 		<choose>
 			<when test="${string::contains(buildType,'GOLD')}">
 				<property name="Injections" value="NO_INJECTION" />
@@ -158,10 +158,14 @@
 		<exec program="..\Dependencies\NuGet.exe">
 		  <arg value="restore" />
 		  <arg value="..\kCura.IntegrationPoints.Documentation.sln" />
-		</exec>		
+		</exec>
+		<exec program="..\Dependencies\NuGet.exe">
+		  <arg value="restore" />
+		  <arg value="..\kCura.IntegrationPoints.Services.sln" />
+		</exec>
 	</target>
 	
-	<target name="build_x64">
+	<target name="build_integrationPoint_core">
 		<exec program="${msbuild}">
 			<arg line='"${targetsfile}"' />
 			<arg line='/property:SourceRoot="${root}"' />
@@ -179,11 +183,11 @@
 			<arg line="/nologo" />
 		</exec>
 	</target>
-	
+
 	<target name="merge_binaries" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:v4' />
-			<arg line='/out:"${target.code.directory}\kCura.IntegrationPoints.dll"' />
+			<arg line='/out:"${target.bin.directory}\kCura.IntegrationPoints.dll"' />
 			<arg line='/internalize:ilmergeExcludeMain.txt' />
 			<arg line='/log' />
 			<arg line='/AllowDup' />
@@ -217,10 +221,30 @@
 		</exec>
 	</target>
 
+	<target name="build_integrationpoint_services">
+		<echo message="${targetsfile}" />
+		<exec program="${msbuild}">
+			<arg line='"msbuild_service.targets"' />
+			<arg line='/property:SourceRoot="${root}"' />
+			<arg line="/property:Configuration=${buildconfig}" />
+			<arg line="/property:Platform=x64" />
+			<arg line="/property:NoWarn=${ignorewarnings}" />
+			<arg line='/logger:"${logger}"'/>
+			<arg line='/logger:"${buildLogger}";"${buildLoggerLogFile}"'/>
+			<arg line="/noconsolelogger" />
+			<arg line="/filelogger" />
+			<arg line='/flp:LogFile="${logfile}";Verbosity=${verbosity}' />      
+			<arg line="/target:BuildMethod" />
+			<arg line="/verbosity:${verbosity}" />
+			<arg line='/p:DefineConstants="${DevEnv},${TimeMachine},${Injections}"' />
+			<arg line="/nologo" />
+		</exec>
+	</target>
+	
 	<target name="merge_ldap" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:v4' />
-			<arg line='/out:"${target.code.directory}\kCura.LDAPProvider.dll"' />
+			<arg line='/out:"${target.bin.directory}\kCura.LDAPProvider.dll"' />
 			<arg line='/internalize:ilmergeExcludeLDAP.txt' />
 			<arg line='/log' />
 			<arg line='/lib:"${source.reference.kCura.directory}"' />
@@ -240,7 +264,7 @@
 	<target name="merge_source_provider_installer" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:v4' />
-			<arg line='/out:"${target.code.directory}\kCura.SourceProviderInstaller.dll"' />
+			<arg line='/out:"${target.bin.directory}\kCura.SourceProviderInstaller.dll"' />
 			<arg line='/internalize:ilmergeExcludeSourceProviderInstaller.txt' />
 			<arg line='/log' />
 			<arg line='/lib:"${source.reference.kCura.directory}"' />
@@ -267,7 +291,7 @@
 	<target name="merge_documentsTransfer" description="Merge all related binaries into a single library">
 		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
 			<arg line='/targetplatform:v4' />
-			<arg line='/out:"${target.code.directory}\kCura.DocumentTransferProvider.dll"' />
+			<arg line='/out:"${target.bin.directory}\kCura.DocumentTransferProvider.dll"' />
 			<arg line='/internalize:excludeDocsTransfer.txt' />
 			<arg line='/log' />
 			<arg line='/lib:"${source.reference.kCura.directory}"' />
@@ -283,6 +307,20 @@
 			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
 		</exec>
+	</target>
+	
+	<target name="copy_kCura.IntegrationPoints.Contracts" description="Copy kCura.IntegrationPoints.Contracts.dll to \bin">
+		<copy todir="${bin.directory}">
+			<fileset basedir="${target.code.directory}">
+				<include name="kCura.IntegrationPoints.Contracts.dll" />
+			</fileset>
+		</copy>
+		<copy todir="${bin.directory}">
+			<fileset basedir="${source.reference.kCura.directory}">
+				<include name="kCura.Image.Viewer.dll" />
+				<include name="kCura.Print.dll" />
+			</fileset>
+		</copy>
 	</target>
 	
 	<target name="copy_files" description="Copy all dlls for rap to \bin">

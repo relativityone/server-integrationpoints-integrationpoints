@@ -5,7 +5,10 @@ using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Hosting;
 using System.Web.Http.Routing;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Config;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.IntegrationPoints.Web.Controllers.API;
@@ -21,7 +24,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		private IRSAPIClient _client;
 		private IImportApiFactory _importApiFactory;
 		private IConfig _config;
-		private IGenericLibrary<IntegrationPoint> _integrationPointLibrary;
+		private IRepositoryFactory _repositoryFactory;
 
 		private HttpConfiguration _configuration;
 		private FolderPathController _instance;
@@ -32,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_client = NSubstitute.Substitute.For<IRSAPIClient>();
 			_importApiFactory = NSubstitute.Substitute.For<IImportApiFactory>();
 			_config = NSubstitute.Substitute.For<IConfig>();
-			_integrationPointLibrary = NSubstitute.Substitute.For<IGenericLibrary<IntegrationPoint>>();
+			_repositoryFactory = NSubstitute.Substitute.For<IRepositoryFactory>();
 
 			_configuration = NSubstitute.Substitute.For<HttpConfiguration>();
 
@@ -41,7 +44,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			IHttpRoute route = config.Routes.MapHttpRoute("DefaultApi", "api/{controller}/{id}");
 			HttpRouteData routeData = new HttpRouteData(route, new HttpRouteValueDictionary { { "controller", "GetFolderPathFieldsController" } });
 
-			_instance = new FolderPathController(_client, _importApiFactory, _config, _integrationPointLibrary)
+			_instance = new FolderPathController(_client, _importApiFactory, _config, _repositoryFactory)
 			{
 				ControllerContext = new HttpControllerContext(config, routeData, request),
 				Request = request
@@ -103,14 +106,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			// ARRANGE
 			int integrationPointArtifactId = 1;
 			int expectedFolderCount = 0;
-			IntegrationPoint integrationPoint = new IntegrationPoint
+			int workspaceId = 1234567;
+			_client.APIOptions = new APIOptions(workspaceId);
+
+			IntegrationPointDTO integrationPoint = new IntegrationPointDTO
 			{
 				SourceConfiguration = "{SavedSearchArtifactId: 123}",
 				DestinationConfiguration = "{UseFolderPathInformation: false}"
 			};
 
-			_integrationPointLibrary.Read(Convert.ToInt32(integrationPointArtifactId))
-				.Returns(integrationPoint);
+			IIntegrationPointRepository integrationPointRepository = NSubstitute.Substitute.For<IIntegrationPointRepository>();
+			_repositoryFactory.GetIntegrationPointRepository(workspaceId).Returns(integrationPointRepository);
+			integrationPointRepository.Read(Convert.ToInt32(integrationPointArtifactId)).Returns(integrationPoint);
 
 			// ACT
 			HttpResponseMessage response = _instance.GetFolderCount(integrationPointArtifactId);
@@ -122,7 +129,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			response.TryGetContentValue(out folderCount);
 			Assert.AreEqual(expectedFolderCount, folderCount);
 
-			_integrationPointLibrary.Received(1).Read(Convert.ToInt32(integrationPointArtifactId));
+			_repositoryFactory.Received(1).GetIntegrationPointRepository(workspaceId);
+			integrationPointRepository.Received(1).Read(Convert.ToInt32(integrationPointArtifactId));
 		}
 	}
 }

@@ -11,18 +11,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 	{
 		[Test]
 		[Explicit]
+		[Ignore]
 		public void DeleteIPsWithSourceProvider_id_points()
 		{
-			IRSAPIService service = new RSAPIService();
-			DeleteHistoryErrorService deleteerErrorService = new DeleteHistoryErrorService(service);
-			service.IntegrationPointLibrary = new RsapiClientLibrary<Data.IntegrationPoint>(RsapiClient);
-			service.JobHistoryLibrary = new RsapiClientLibrary<JobHistory>(RsapiClient);
-			service.SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(RsapiClient);
-			IntegrationPointQuery integrationPointQuery = new IntegrationPointQuery(service);
-			DeleteHistoryService deleteHistoryService = new DeleteHistoryService(service, deleteerErrorService);
-
-			var deletePoints = new DeleteIntegrationPoints(integrationPointQuery, deleteHistoryService, service);
-			deletePoints.DeleteIPsWithSourceProvider(new List<int>() { 1040675 });
+//			IRSAPIService service = new RSAPIService();
+//			DeleteHistoryErrorService deleteerErrorService = new DeleteHistoryErrorService(service);
+//			service.IntegrationPointLibrary = new RsapiClientLibrary<Data.IntegrationPoint>(RsapiClient);
+//			service.JobHistoryLibrary = new RsapiClientLibrary<JobHistory>(RsapiClient);
+//			service.SourceProviderLibrary = new RsapiClientLibrary<SourceProvider>(RsapiClient);
+//			IntegrationPointQuery integrationPointQuery = new IntegrationPointQuery(service);
+//			DeleteHistoryService deleteHistoryService = new DeleteHistoryService(service, deleteerErrorService);
+//
+//			var deletePoints = new DeleteIntegrationPoints(integrationPointQuery, deleteHistoryService, service);
+//			deletePoints.DeleteIPsWithSourceProvider(new List<int>() { 1040675 });
 		}
 	}
 }

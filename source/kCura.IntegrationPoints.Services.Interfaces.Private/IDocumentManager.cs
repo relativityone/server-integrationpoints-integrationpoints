@@ -11,13 +11,8 @@ namespace kCura.IntegrationPoints.Services
 	/// </summary>
 	[WebService("Document Manager")]
 	[ServiceAudience(Audience.Private)]
-	public interface IDocumentManager: IDisposable
+	public interface IDocumentManager: IKeplerService, IDisposable
 	{
-		/// <summary>
-		/// Pings the service to ensure it is up and running.
-		/// </summary>
-		Task<bool> PingAsync();
-
 		/// <summary>
 		/// Gets the number of documents that exist in the current workspace and how many have
 		/// been pushed to other workspaces.

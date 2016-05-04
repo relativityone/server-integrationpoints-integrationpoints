@@ -191,7 +191,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
       {
         if (string.IsNullOrEmpty(_webAPIPath))
         {
-          _webAPIPath = Config.Instance.WebApiPath;
+					_webAPIPath = kCura.IntegrationPoints.Config.Config.Instance.WebApiPath;
         }
         return _webAPIPath;
       }
@@ -205,7 +205,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
       {
         if (!_disableNativeLocationValidation.HasValue)
         {
-          _disableNativeLocationValidation = Config.Instance.DisableNativeLocationValidation;
+					_disableNativeLocationValidation = kCura.IntegrationPoints.Config.Config.Instance.DisableNativeLocationValidation;
         }
         return _disableNativeLocationValidation;
       }
@@ -219,7 +219,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
       {
         if (!_disableNativeValidation.HasValue)
         {
-          _disableNativeValidation = Config.Instance.DisableNativeValidation;
+					_disableNativeValidation = kCura.IntegrationPoints.Config.Config.Instance.DisableNativeValidation;
         }
         return _disableNativeValidation;
       }

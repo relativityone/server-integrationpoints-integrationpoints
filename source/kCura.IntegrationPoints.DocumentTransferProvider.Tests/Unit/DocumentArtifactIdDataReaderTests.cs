@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data.Managers;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.Relativity.Client;
@@ -42,7 +41,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1, 10, new ArtifactFieldDTO[0])
+				new ArtifactDTO(1, 10, "Document", new ArtifactFieldDTO[0])
 			};
 
 			_savedSearchRepository.RetrieveNext().Returns(documents);
@@ -93,8 +92,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
-				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
+				new ArtifactDTO(1,10, "Document", new ArtifactFieldDTO[0]),
+				new ArtifactDTO(10,10, "Document", new ArtifactFieldDTO[0])
 			};
 
 			_savedSearchRepository.RetrieveNext().Returns(documents);
@@ -120,8 +119,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
-				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
+				new ArtifactDTO(1,10, "Document", new ArtifactFieldDTO[0]),
+				new ArtifactDTO(10,10, "Document", new ArtifactFieldDTO[0])
 			};
 
 			_savedSearchRepository.RetrieveNext().Returns(documents);
@@ -150,8 +149,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
-				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
+				new ArtifactDTO(1,10, "Document", new ArtifactFieldDTO[0]),
+				new ArtifactDTO(10,10, "Document", new ArtifactFieldDTO[0])
 			};
 
 			_savedSearchRepository.RetrieveNext().Returns(documents);
@@ -179,8 +178,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
-				new ArtifactDTO(10,10, new ArtifactFieldDTO[0])
+				new ArtifactDTO(1,10, "Document", new ArtifactFieldDTO[0]),
+				new ArtifactDTO(10,10, "Document", new ArtifactFieldDTO[0])
 			};
 
 			_savedSearchRepository.RetrieveNext().Returns(documents);
@@ -218,7 +217,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(1,10, "Document", new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchRepository.RetrieveNext().Returns(documents);
@@ -240,7 +239,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(1,10, "Document", new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchRepository.RetrieveNext().Returns(documents);
@@ -371,7 +370,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Act
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(1,10, "Document", new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchRepository.RetrieveNext().Returns(documents);
@@ -393,7 +392,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(1,10, "Document", new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchRepository.RetrieveNext().Returns(documents);
@@ -415,7 +414,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(1,10, "Document", new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchRepository.RetrieveNext().Returns(documents);
@@ -464,7 +463,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(1,10, "Document", new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchRepository.RetrieveNext().Returns(documents);
@@ -493,7 +492,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(1,10, "Document", new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchRepository.RetrieveNext().Returns(documents);
@@ -515,7 +514,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(1,10, "Document", new ArtifactFieldDTO[0]),
 			};
 			_savedSearchRepository.RetrieveNext().Returns(documents);
 
@@ -536,7 +535,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(1,10, "Document", new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchRepository.RetrieveNext().Returns(documents);
@@ -557,7 +556,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			// Arrange
 			var documents = new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(1,10, "Document", new ArtifactFieldDTO[0]),
 			};
 
 			_savedSearchRepository.RetrieveNext().Returns(documents);

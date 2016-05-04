@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 					fieldToUpdate
 				};
 
-				Edit massEdit = new Edit(context, batch, fields, _BATCH_SIZE, String.Empty, true, true, false, _artifactType);
+				Edit massEdit = new Edit(context, batch, fields, _BATCH_SIZE, String.Empty, true, true, true, _artifactType);
 				massEdit.Execute(true);
 			}
 		}

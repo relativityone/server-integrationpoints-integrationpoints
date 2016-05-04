@@ -10,6 +10,7 @@ using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Conversion;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Conversion;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
@@ -25,7 +26,7 @@ namespace kCura.IntegrationPoints.Core
     internal readonly IHelper _helper;
     internal IDataProviderFactory _dataProviderFactory;
     internal kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
-    internal JobHistoryService _jobHistoryService;
+    internal IJobHistoryService _jobHistoryService;
     internal JobHistoryErrorService _jobHistoryErrorService;
     internal kCura.IntegrationPoints.Contracts.ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
     internal IJobManager _jobManager;
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.Core
       IDataProviderFactory dataProviderFactory,
       kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
       kCura.IntegrationPoints.Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
-      JobHistoryService jobHistoryService,
+      IJobHistoryService jobHistoryService,
       JobHistoryErrorService jobHistoryErrorService,
       IJobManager jobManager)
     {

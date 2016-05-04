@@ -6,7 +6,7 @@ using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class KeplerCodeRepository : KelperServiceBase, ICodeRepository
+	public class KeplerCodeRepository : KeplerServiceBase, ICodeRepository
 	{
 		public KeplerCodeRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor)
 			: base(objectQueryManagerAdaptor)

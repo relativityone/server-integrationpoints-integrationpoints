@@ -525,6 +525,7 @@
     </Content>
     <Content Include="Views\IntegrationPoints\NotEnoughPermission.cshtml" />
     <Content Include="Views\IntegrationPoints\RelativityProviderConfiguration.cshtml" />
+    <Content Include="Views\IntegrationPoints\_IntegrationMapFieldsReversed.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -534,6 +535,10 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
+      <Project>{def928b5-37ce-4bf3-b663-f0b8912c9c3f}</Project>
+      <Name>kCura.IntegrationPoints.Config</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
