@@ -91,6 +91,7 @@
     <Compile Include="DataSourceProviderAttribute.cs" />
     <Compile Include="DefaultProviderFactory.cs" />
     <Compile Include="DefaultSynchronizerFactory.cs" />
+    <Compile Include="IEmailBodyData.cs" />
     <Compile Include="IProviderFactory.cs" />
     <Compile Include="ISynchronizerFactory.cs" />
     <Compile Include="Models\ArtifactDTO.cs" />

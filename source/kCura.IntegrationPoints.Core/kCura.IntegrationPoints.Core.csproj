@@ -224,6 +224,8 @@
     <Compile Include="Services\Keywords\IKeyword.cs" />
     <Compile Include="Services\Keywords\KeywordConverter.cs" />
     <Compile Include="Services\Keywords\KeywordFactory.cs" />
+    <Compile Include="Services\Keywords\DestinationEmailBodyDataKeyword.cs" />
+    <Compile Include="Services\Keywords\SourceEmailBodyDataKeyword.cs" />
     <Compile Include="Services\Keywords\RipNameKeyword.cs" />
     <Compile Include="Services\Keywords\WorkspaceNameKeyword.cs" />
     <Compile Include="Services\Marshaller\IAppDomainDataMarshaller.cs" />
@@ -271,6 +273,7 @@
     <Compile Include="Services\TaskParameterHelper.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\Domain\SynchronizerWrapper.cs" />
+    <Compile Include="IntegrationPointTaskBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\SyncConfiguration\" />
@@ -313,6 +316,7 @@
     <EmbeddedResource Include="Properties\JobStatusMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>JobStatusMessages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
