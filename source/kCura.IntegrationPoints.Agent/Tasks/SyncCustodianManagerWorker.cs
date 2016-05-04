@@ -160,14 +160,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
       SetManagerFieldIDs(_custodianManagerFieldMap, _managerFieldMap);
     }
 
-    internal override IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
+    protected override IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
     {
       _destinationProviderRdo = destinationProviderRdo;
       _destinationConfiguration = configuration;
       return base.GetDestinationProvider(destinationProviderRdo, configuration, job);
     }
 
-    internal override List<FieldEntry> GetSourceFields(IEnumerable<FieldMap> fieldMap)
+    protected override List<FieldEntry> GetSourceFields(IEnumerable<FieldMap> fieldMap)
     {
       List<FieldEntry> sourceFields = base.GetSourceFields(fieldMap);
       if (!sourceFields.Any(f => f.FieldIdentifier.Equals(_oldKeyManagerFieldID, StringComparison.InvariantCultureIgnoreCase)))
@@ -178,7 +178,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
       return sourceFields;
     }
 
-    internal override IEnumerable<IDictionary<FieldEntry, object>> GetSourceData(List<FieldEntry> sourceFields, IDataReader sourceDataReader)
+    protected override IEnumerable<IDictionary<FieldEntry, object>> GetSourceData(List<FieldEntry> sourceFields, IDataReader sourceDataReader)
     {
       var objectBuilder = new SynchronizerObjectBuilder(sourceFields);
       _convertDataService = new CustodianManagerDataReaderToEnumerableService(objectBuilder, _oldKeyManagerFieldID, _newKeyManagerFieldID);

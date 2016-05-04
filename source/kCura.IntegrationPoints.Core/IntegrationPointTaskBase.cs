@@ -22,14 +22,14 @@ namespace kCura.IntegrationPoints.Core
 {
   public class IntegrationPointTaskBase
   {
-    internal ICaseServiceContext _caseServiceContext;
-    internal readonly IHelper _helper;
-    internal IDataProviderFactory _dataProviderFactory;
-    internal kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
-    internal IJobHistoryService _jobHistoryService;
-    internal JobHistoryErrorService _jobHistoryErrorService;
-    internal kCura.IntegrationPoints.Contracts.ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
-    internal IJobManager _jobManager;
+    protected ICaseServiceContext _caseServiceContext;
+    protected readonly IHelper _helper;
+    protected IDataProviderFactory _dataProviderFactory;
+    protected kCura.Apps.Common.Utils.Serializers.ISerializer _serializer;
+    protected IJobHistoryService _jobHistoryService;
+    protected JobHistoryErrorService _jobHistoryErrorService;
+    protected kCura.IntegrationPoints.Contracts.ISynchronizerFactory _appDomainRdoSynchronizerFactoryFactory;
+    protected IJobManager _jobManager;
 
 
     public IntegrationPointTaskBase(
@@ -52,9 +52,9 @@ namespace kCura.IntegrationPoints.Core
       _jobManager = jobManager;
     }
 
-    internal Data.IntegrationPoint IntegrationPoint { get; set; }
-    internal Data.JobHistory JobHistory { get; set; }
-    internal Guid BatchInstance { get; set; }
+    protected Data.IntegrationPoint IntegrationPoint { get; set; }
+    protected Data.JobHistory JobHistory { get; set; }
+    protected Guid BatchInstance { get; set; }
 
     private SourceProvider _sourceProvider;
     protected Data.SourceProvider SourceProvider
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Core
       }
     }
 
-    internal void SetIntegrationPoint(Job job)
+    protected void SetIntegrationPoint(Job job)
     {
       if (this.IntegrationPoint != null) return;
 
@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Core
       }
     }
 
-    internal void SetJobHistory()
+    protected void SetJobHistory()
     {
       if (this.JobHistory != null) return;
 
@@ -111,35 +111,35 @@ namespace kCura.IntegrationPoints.Core
       _jobHistoryErrorService.IntegrationPoint = this.IntegrationPoint;
     }
 
-    internal virtual string GetSourceConfiguration(string originalSourceConfiguration)
+    protected virtual string GetSourceConfiguration(string originalSourceConfiguration)
     {
       return originalSourceConfiguration;
     }
 
-    internal virtual IEnumerable<FieldMap> GetFieldMap(string serializedFieldMappings)
+    protected virtual IEnumerable<FieldMap> GetFieldMap(string serializedFieldMappings)
     {
       IEnumerable<FieldMap> fieldMap = _serializer.Deserialize<List<FieldMap>>(serializedFieldMappings);
       fieldMap.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
       return fieldMap;
     }
 
-    internal virtual List<FieldEntry> GetSourceFields(IEnumerable<FieldMap> fieldMap)
+    protected virtual List<FieldEntry> GetSourceFields(IEnumerable<FieldMap> fieldMap)
     {
       return fieldMap.Select(f => f.SourceField).ToList();
     }
 
-    internal virtual List<FieldEntry> GetDestinationFields(IEnumerable<FieldMap> fieldMap)
+    protected virtual List<FieldEntry> GetDestinationFields(IEnumerable<FieldMap> fieldMap)
     {
       return fieldMap.Select(f => f.DestinationField).ToList();
     }
 
-    internal virtual IEnumerable<IDictionary<FieldEntry, object>> GetSourceData(List<FieldEntry> sourceFields, IDataReader sourceDataReader)
+    protected virtual IEnumerable<IDictionary<FieldEntry, object>> GetSourceData(List<FieldEntry> sourceFields, IDataReader sourceDataReader)
     {
       var objectBuilder = new SynchronizerObjectBuilder(sourceFields);
       return new DataReaderToEnumerableService(objectBuilder).GetData<IDictionary<FieldEntry, object>>(sourceDataReader);
     }
 
-    internal virtual IDataSourceProvider GetSourceProvider(SourceProvider sourceProviderRdo, Job job)
+    protected virtual IDataSourceProvider GetSourceProvider(SourceProvider sourceProviderRdo, Job job)
     {
       Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);
       Guid providerGuid = new Guid(sourceProviderRdo.Identifier);
@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.Core
       return sourceProvider;
     }
 
-    internal virtual IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
+    protected virtual IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
     {
 
       Guid providerGuid = new Guid(destinationProviderRdo.Identifier);
@@ -161,7 +161,7 @@ namespace kCura.IntegrationPoints.Core
       return sourceProvider;
     }
 
-    internal IEnumerable<string> GetRecipientEmails()
+    protected IEnumerable<string> GetRecipientEmails()
     {
       string emailRecipients = string.Empty;
       try { emailRecipients = IntegrationPoint.EmailNotificationRecipients; }
