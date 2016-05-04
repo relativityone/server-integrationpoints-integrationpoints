@@ -288,14 +288,14 @@ ul li .day-select
 	width: 1200px;
 }
 
-.workspace-field, .leftSide-field
+.leftSide-field
 {
 
 	float: left;
 	padding-bottom: 10px;
 }
 
-.source-field, .rightSide-field
+.rightSide-field
 {
 	float: left;
 	padding-bottom: 10px;
