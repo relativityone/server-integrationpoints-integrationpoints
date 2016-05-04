@@ -251,7 +251,6 @@
     </Compile>
     <Compile Include="Models\IntegrationModel.cs" />
     <Compile Include="Models\RdoFilter.cs" />
-    <Compile Include="Models\RDO\IntegrationPoint.cs" />
     <Compile Include="RsapiClientFactory.cs" />
     <Compile Include="Services\ServiceContext\CaseServiceContext.cs" />
     <Compile Include="Services\AgentJobManager.cs" />
@@ -276,9 +275,7 @@
     <Compile Include="Services\Domain\SynchronizerWrapper.cs" />
     <Compile Include="IntegrationPointTaskBase.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\SyncConfiguration\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
