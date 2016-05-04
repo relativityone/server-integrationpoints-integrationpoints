@@ -149,12 +149,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 				catch (Exception e)
 				{
-					throw new Exception($"Unable to create fields for the Source Job object type:  {e.Message}", e);					
+					throw new Exception($"Unable to create fields for the Source Job object type: {e.Message}", e);					
 				}
 
 				if (!fieldWriteResultSet.Success)
 				{
-					throw new Exception($"Unable to create fields for the Source Job object type:  {fieldWriteResultSet.Message}");
+					throw new Exception($"Unable to create fields for the Source Job object type: {fieldWriteResultSet.Message}");
 				}
 
 				int[] newFieldIds = fieldWriteResultSet.Results.Select(x => x.Artifact.ArtifactID).ToArray();
@@ -169,7 +169,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					}
 					catch (Exception e)
 					{
-						throw new Exception($"Unable to create fields for the Source Job object type: Failed to retrieve field after creation: Unable to delete field upon failure{newFieldResultSet.Message}", e);
+						throw new Exception($"Unable to create fields for the Source Job object type: Failed to retrieve field after creation: Unable to delete field upon failure: {newFieldResultSet.Message}", e);
 					}
 
 					throw new Exception("Unable to create fields for the Source Job object type: Failed to retrieve after creation: " +
