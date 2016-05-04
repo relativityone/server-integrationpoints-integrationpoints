@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
 		private readonly ICaseServiceContext _context;
 
-		private const string UNABLE_TO_SAVE_FORMAT = "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
+		private const string _UNABLE_TO_SAVE_FORMAT = "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
 
 		public IntegrationPointsAPIController(IIntegrationPointService reader,
 			IRelativityUrlHelper urlHelper,
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					{
 						// If the source provider has been changed, the code below this exception is invalid
 						invalidProperties.Add("Source Provider");
-						throw new Exception(String.Format(UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
+						throw new Exception(String.Format(_UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
 					}
 
 					model.HasErrors = existingModel.HasErrors;
@@ -122,7 +122,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			if (invalidProperties.Any())
 			{
-				throw new Exception(String.Format(UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
+				throw new Exception(String.Format(_UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
 			}
 
 			int createdId = _reader.SaveIntegration(model);
