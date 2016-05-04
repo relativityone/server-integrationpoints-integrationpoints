@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 		private IRelativityUrlHelper _relativityUrlHelper;
 		private IRdoSynchronizerProvider _rdoSynchronizerProvider;
 
-		private const int WORKSPACE_ID = 23432;
+		private const int _WORKSPACE_ID = 23432;
 
 		[SetUp]
 		public void TestFixtureSetUp()
@@ -76,18 +76,30 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 
 			string url = "http://lolol.com";
 			_relativityUrlHelper.GetRelativityViewUrl(
-				Arg.Is(WORKSPACE_ID), 
+				Arg.Is(_WORKSPACE_ID), 
 				Arg.Is(model.ArtifactID),
 				Arg.Is(Data.ObjectTypes.IntegrationPoint))
 				.Returns(url);
 
 			// Act
-			HttpResponseMessage response = _instance.Update(WORKSPACE_ID, model);
+			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, model);
 
 			// Assert
 			Assert.IsNotNull(response, "Response should not be null");
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "HttpStatusCode should be OK");
 			Assert.AreEqual(JsonConvert.SerializeObject(new {returnURL = url}), response.Content.ReadAsStringAsync().Result, "The HttpContent should be as expected");
+
+			_integrationPointService.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_caseServiceContext.RsapiService.SourceProviderLibrary
+				.Received(1)
+				.Read(Arg.Is(model.SourceProvider));
+			_integrationPointService.Received(1).SaveIntegration(Arg.Is(model));
+			_relativityUrlHelper
+				.Received(1)
+				.GetRelativityViewUrl(
+					Arg.Is(_WORKSPACE_ID),
+					Arg.Is(model.ArtifactID),
+					Arg.Is(Data.ObjectTypes.IntegrationPoint));
 		}
 
 		[Test]
@@ -126,19 +138,29 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 
 			string url = "http://lolol.com";
 			_relativityUrlHelper.GetRelativityViewUrl(
-				Arg.Is(WORKSPACE_ID),
+				Arg.Is(_WORKSPACE_ID),
 				Arg.Is(model.ArtifactID),
 				Arg.Is(Data.ObjectTypes.IntegrationPoint))
 				.Returns(url);
 
 			// Act
-			HttpResponseMessage response = _instance.Update(WORKSPACE_ID, model);
+			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, model);
 
 			// Assert
 			Assert.IsNotNull(response, "Response should not be null");
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "HttpStatusCode should be OK");
 			Assert.AreEqual(JsonConvert.SerializeObject(new { returnURL = url }), response.Content.ReadAsStringAsync().Result, "The HttpContent should be as expected");
 
+			_integrationPointService.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_caseServiceContext.RsapiService.SourceProviderLibrary.Received(1)
+				.Read(Arg.Is(model.SourceProvider));
+			_integrationPointService.Received(1).SaveIntegration(Arg.Is(model));
+			_relativityUrlHelper
+				.Received(1)
+				.GetRelativityViewUrl(
+					Arg.Is(_WORKSPACE_ID),
+					Arg.Is(model.ArtifactID),
+					Arg.Is(Data.ObjectTypes.IntegrationPoint));
 		}
 
 		[Test]
@@ -172,18 +194,27 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 
 			string url = "http://lolol.com";
 			_relativityUrlHelper.GetRelativityViewUrl(
-				Arg.Is(WORKSPACE_ID),
+				Arg.Is(_WORKSPACE_ID),
 				Arg.Is(model.ArtifactID),
 				Arg.Is(Data.ObjectTypes.IntegrationPoint))
 				.Returns(url);
 
 			// Act
-			HttpResponseMessage response = _instance.Update(WORKSPACE_ID, model);
+			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, model);
 
 			// Assert
 			Assert.IsNotNull(response, "Response should not be null");
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "HttpStatusCode should be OK");
 			Assert.AreEqual(JsonConvert.SerializeObject(new { returnURL = url }), response.Content.ReadAsStringAsync().Result, "The HttpContent should be as expected");
+			_caseServiceContext.RsapiService.SourceProviderLibrary.Received(1)
+				.Read(Arg.Is(model.SourceProvider));
+			_integrationPointService.Received(1).SaveIntegration(Arg.Is(model));
+			_relativityUrlHelper
+				.Received(1)
+				.GetRelativityViewUrl(
+					Arg.Is(_WORKSPACE_ID),
+					Arg.Is(model.ArtifactID),
+					Arg.Is(Data.ObjectTypes.IntegrationPoint));
 		}
 
 		[Test]
@@ -258,17 +289,26 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 			}
 
 			// Act
-			HttpResponseMessage response = _instance.Update(WORKSPACE_ID, model);
+			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, model);
 
 			string filteredNames = String.Join(",", propertyNames.Where(x => isRelativityProvider || x != "Source Configuration").Select(x => $" {x}"));
 			string expectedErrorString =
 				$"Unable to save Integration Point:{filteredNames} cannot be changed once the Integration Point has been run";
 
-
 			// Assert
 			Assert.IsNotNull(response);
 			String content = response.Content.ReadAsStringAsync().Result;
 			Assert.AreEqual($"\"{expectedErrorString}\"", content);
+			_integrationPointService.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_caseServiceContext.RsapiService.SourceProviderLibrary
+				.Received(!propertyNameHashSet.Contains("Source Provider") ? 1 : 0)
+				.Read(Arg.Is(model.SourceProvider));
+			_relativityUrlHelper
+				.Received(0)
+				.GetRelativityViewUrl(
+					Arg.Is(_WORKSPACE_ID),
+					Arg.Is(model.ArtifactID),
+					Arg.Is(Data.ObjectTypes.IntegrationPoint));
 		}
 
 		[Test]
@@ -288,12 +328,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 				.Throws(new Exception(exceptionMessage));
 
 			// Act
-			HttpResponseMessage response = _instance.Update(WORKSPACE_ID, model);
+			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, model);
 		
 			// Assert
 			Assert.IsNotNull(response);
 			String content = response.Content.ReadAsStringAsync().Result;
 			Assert.AreEqual(@"""Unable to save Integration Point: Unable to retrieve Integration Point""", content);
+
+			_integrationPointService.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
 		}
 
 		[Test]
@@ -324,13 +366,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 					.Throws(new Exception(exceptionMessage));
 
 			// Act
-			HttpResponseMessage response = _instance.Update(WORKSPACE_ID, model);
+			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, model);
 
 
 			// Assert
 			Assert.IsNotNull(response);
 			String content = response.Content.ReadAsStringAsync().Result;
 			Assert.AreEqual(@"""Unable to save Integration Point: Unable to retrieve source provider""", content);
+
+			_integrationPointService.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_caseServiceContext.RsapiService.SourceProviderLibrary
+				.Received(1)
+				.Read(Arg.Is(model.SourceProvider));
 		}
 	}
 }
