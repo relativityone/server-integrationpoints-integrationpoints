@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Contracts
 		{
 			// Resolve new app domain's assemblies
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyDomainLoader.ResolveAssembly;
-			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+			System.Reflection.Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			Type startupType = typeof(IStartUp);
 
 			var types = new List<Type>();

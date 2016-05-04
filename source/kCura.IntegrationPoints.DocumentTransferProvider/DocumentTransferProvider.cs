@@ -4,9 +4,7 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Adaptors.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -18,7 +16,6 @@ using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using Relativity.API;
-using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider
 {
@@ -163,20 +160,20 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		/// <returns>An IDataReader that contains the Document RDO's for the entryIds</returns>
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
 		{
-//			DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
-//
-//			// TODO: DI or factory
-//			int documentTypeId = Convert.ToInt32(ArtifactType.Document);
-//			IObjectQueryManagerAdaptor documentRepository = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, documentTypeId);
-//			IDocumentRepository documentRepository = new KeplerDocumentRepository(documentRepository);
-//
-//			int fieldTypeArtifactId = Convert.ToInt32(ArtifactType.Field);
-//			IObjectQueryManagerAdaptor fieldRepository = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, fieldTypeArtifactId);
-//			IFieldRepository fieldRepository = new FieldRepository(fieldRepository);
-//
-//			IDBContext dbContext = _helper.GetDBContext(settings.SourceWorkspaceArtifactId);
-//
-//			ArtifactFieldDTO[] longTextFields = fieldRepository.RetrieveLongTextFieldsAsync(documentTypeId).ConfigureAwait(false).GetAwaiter().GetResult();
+			//DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
+
+			//// TODO: DI or factory
+			//int documentTypeId = Convert.ToInt32(ArtifactType.Document);
+			//IObjectQueryManagerAdaptor documentRepository = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, documentTypeId);
+			//IDocumentRepository documentRepository = new KeplerDocumentRepository(documentRepository);
+
+			//int fieldTypeArtifactId = Convert.ToInt32(ArtifactType.Field);
+			//IObjectQueryManagerAdaptor fieldRepository = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, fieldTypeArtifactId);
+			//IFieldRepository fieldRepository = new FieldRepository(fieldRepository);
+
+			//IDBContext dbContext = _helper.GetDBContext(settings.SourceWorkspaceArtifactId);
+
+			//ArtifactFieldDTO[] longTextFields = fieldRepository.RetrieveLongTextFieldsAsync(documentTypeId).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			//IDataReader dataReader = new DocumentTransferDataReader(
 			//	documentRepository,

@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 
 		public virtual void LoadClientLibraries(AppDomain domain, IPluginProvider provider, Guid applicationGuid)
 		{
-			List<Assembly> domainAssemblies = domain.GetAssemblies().ToList();
+			List<System.Reflection.Assembly> domainAssemblies = domain.GetAssemblies().ToList();
 
 			IDictionary<ApplicationBinary, Stream> assemblies = provider.GetPluginLibraries(applicationGuid);
 			List<string> files = new List<string>();
@@ -67,8 +67,8 @@ namespace kCura.IntegrationPoints.Core.Domain
 				stream.Dispose();
 			}
 			var loader = this.CreateInstance<AssemblyDomainLoader>(domain);
-			IDictionary<string, Assembly> loadedAssemblies = new Dictionary<string, Assembly>();
-			foreach (Assembly assembly in domainAssemblies)
+			IDictionary<string, System.Reflection.Assembly> loadedAssemblies = new Dictionary<string, System.Reflection.Assembly>();
+			foreach (System.Reflection.Assembly assembly in domainAssemblies)
 			{
 				string name = assembly.GetName().Name;
 				if (!loadedAssemblies.ContainsKey(name))
@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 			Directory.CreateDirectory(domainPath);
 			domaininfo.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
 			domaininfo.ApplicationBase = domainPath;
-			domaininfo.PrivateBinPath = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+			domaininfo.PrivateBinPath = Path.GetDirectoryName(new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase).LocalPath);
 			string domainName = Guid.NewGuid().ToString();
 			var newDomain = AppDomain.CreateDomain(domainName, null, domaininfo);
 			DeployLibraryFiles(newDomain, relativityFeaturePathService);
@@ -191,7 +191,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 
 		private void PrepAssemblies(AppDomain domain)
 		{
-			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+			foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
 			{
 				string assemblyName = assembly.GetName().Name;
 				if (!IsSystemDependencyName(assemblyName))
@@ -204,15 +204,23 @@ namespace kCura.IntegrationPoints.Core.Domain
 		private bool IsSystemDependencyName(string assemblyName)
 		{
 			string potentialSystemAssemblyName = assemblyName.ToLower();
-			if (potentialSystemAssemblyName.Equals("system")) return true;
-			if (potentialSystemAssemblyName.Equals("mscorlib")) return true;
-			if (potentialSystemAssemblyName.StartsWith("system.")) return true;
-			if (potentialSystemAssemblyName.StartsWith("microsoft.")) return true;
+			if (potentialSystemAssemblyName.Equals("system"))
+			{
+				return true;
+			}
+			if (potentialSystemAssemblyName.Equals("mscorlib"))
+			{
+				return true;
+			}
+			if (potentialSystemAssemblyName.StartsWith("system."))
+			{
+				return true;
+			}
+			if (potentialSystemAssemblyName.StartsWith("microsoft."))
+			{
+				return true;
+			}
 			return false;
 		}
-
-
-
-
 	}
 }

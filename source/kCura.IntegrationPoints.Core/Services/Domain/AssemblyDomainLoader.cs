@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 			{
 				throw new ArgumentNullException("rawAssembly");
 			}
-			Assembly.Load(rawAssembly);
+			System.Reflection.Assembly.Load(rawAssembly);
 		}
 
 		private byte[] ReadFully(Stream stream)
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 		/// <param name="path">The library that will be loaded into the current Application Domain.</param>
 		public void Load(string assemblyName)
 		{
-			Assembly.Load(assemblyName);
+			System.Reflection.Assembly.Load(assemblyName);
 		}
 		/// <summary>
 		/// Loads assembly the current app domain.
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 		public void LoadFrom(string path)
 		{
 			ValidatePath(path);
-			Assembly.LoadFrom(path);
+			System.Reflection.Assembly.LoadFrom(path);
 		}
 
 		private void ValidatePath(string path)
@@ -74,10 +74,10 @@ namespace kCura.IntegrationPoints.Core.Domain
 			}
 		}
 
-		private static Dictionary<String, Assembly> _assemblies = new Dictionary<String, Assembly>(StringComparer.OrdinalIgnoreCase);
-		public static Assembly ResolveAssembly(object sender, ResolveEventArgs args)
+		private static Dictionary<String, System.Reflection.Assembly> _assemblies = new Dictionary<String, System.Reflection.Assembly>(StringComparer.OrdinalIgnoreCase);
+		public static System.Reflection.Assembly ResolveAssembly(object sender, ResolveEventArgs args)
 		{
-			Assembly returnedAssembly = null;
+			System.Reflection.Assembly returnedAssembly = null;
 
 			string dllName = new AssemblyName(args.Name).Name;
 			string dllPath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.PrivateBinPath, dllName + ".dll");
@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 				{
 					if (File.Exists(dllPath))
 					{
-						returnedAssembly = Assembly.LoadFile(dllPath);
+						returnedAssembly = System.Reflection.Assembly.LoadFile(dllPath);
 					}
 					_assemblies.Add(dllName, returnedAssembly);
 				}
@@ -99,11 +99,10 @@ namespace kCura.IntegrationPoints.Core.Domain
 
 		private static void GetLoadedAssemblies()
 		{
-			foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+			foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
 			{
 				_assemblies.Add(assembly.GetName().Name, assembly);
 			}
 		}
-
 	}
 }

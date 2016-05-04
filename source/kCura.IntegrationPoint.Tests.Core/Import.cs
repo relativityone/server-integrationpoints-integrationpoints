@@ -1,12 +1,11 @@
-﻿
+﻿using System.Data;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Synchronizers.RDO;
+using Newtonsoft.Json;
+using kCura.Relativity.Client;
+
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	using System.Data;
-	using IntegrationPoints.Contracts.Models;
-	using IntegrationPoints.Synchronizers.RDO;
-	using Newtonsoft.Json;
-	using Relativity.Client;
-
 	public class Import : HelperBase
 	{
 		public Import(Helper helper) : base(helper)
