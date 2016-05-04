@@ -301,6 +301,38 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
+		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
+		{
+			IntegrationPoint integrationPoint = GetRdo(integrationPointArtifactId);
+
+			SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value);
+			if (!provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+			{
+				throw new Exception(Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
+			}
+
+			CheckForRelativityProviderAdditionalPermissions(integrationPoint.SourceConfiguration, userId);
+
+			if (integrationPoint.HasErrors.HasValue == false || integrationPoint.HasErrors.Value == false)
+			{
+				throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
+			}
+			
+			UpdateJobHistoryOnRetry(integrationPoint);
+			
+			RunIntegrationPoint(workspaceArtifactId, integrationPointArtifactId, userId);
+		}
+
+		private void UpdateJobHistoryOnRetry(IntegrationPoint integrationPoint)
+		{
+			Data.JobHistory lastCompletedJob = _jobHistoryService.GetLastJobHistory(integrationPoint);
+			if (lastCompletedJob == null)
+			{
+				throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
+			}
+			_jobHistoryService.UpdateJobHistoryOnRetry(lastCompletedJob);
+		}
+
 		private void CheckForRelativityProviderAdditionalPermissions(string config, int userId)
 		{
 			WorkspaceConfiguration workspaceConfiguration = JsonConvert.DeserializeObject<WorkspaceConfiguration>(config);
