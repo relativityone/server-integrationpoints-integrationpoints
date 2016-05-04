@@ -9,7 +9,7 @@ namespace kCura.IntegrationPoints.Services
 	/// </summary>
 	[WebService("Job History Manager")]
 	[ServiceAudience(Audience.Private)]
-	public interface IJobHistoryManager : IKelperService, IDisposable
+	public interface IJobHistoryManager : IKeplerService, IDisposable
 	{
 		/// <summary>
 		/// Gets the job history information for the requested job.

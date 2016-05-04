@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Services
 {
-	public abstract class KelperServiceBase : IKelperService
+	public abstract class KeplerServiceBase : IKeplerService
 	{
 		public async Task<bool> PingAsync()
 		{

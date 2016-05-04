@@ -170,11 +170,11 @@ namespace kCura.IntegrationPoints.Core.Services
 		public class Weekly
 		{
 			public List<string> SelectedDays { get; set; }
-			public string TemplateId { get; set; }
+			public string TemplateID { get; set; }
 
 			public Weekly()
 			{
-				TemplateId = "weeklySendOn";
+				TemplateID = "weeklySendOn";
 			}
 		}
 
@@ -285,11 +285,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			IntegrationPoint integrationPointRdo = GetRdo(integrationPointArtifactId);
 			SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(integrationPointRdo.SourceProvider.Value);
 			string identifier = provider.Identifier;
-			string sourceConfig = integrationPointRdo.SourceConfiguration;
 
 			// if relativity provider is selected, we will create an export task
 			if (identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
 			{
+				string sourceConfig = integrationPointRdo.SourceConfiguration;
 				CheckForRelativityProviderAdditionalPermissions(sourceConfig, userId);
 				_jobHistoryService.CreateRdo(integrationPointRdo, batchInstance, null);
 				_jobService.CreateJobOnBehalfOfAUser(jobDetails, TaskType.ExportService, workspaceArtifactId, integrationPointArtifactId, userId);

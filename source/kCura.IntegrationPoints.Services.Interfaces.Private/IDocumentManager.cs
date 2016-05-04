@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.Services
 	/// </summary>
 	[WebService("Document Manager")]
 	[ServiceAudience(Audience.Private)]
-	public interface IDocumentManager: IKelperService, IDisposable
+	public interface IDocumentManager: IKeplerService, IDisposable
 	{
 		/// <summary>
 		/// Gets the number of documents that exist in the current workspace and how many have

@@ -3,11 +3,11 @@ using System.Data;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using Relativity.Core;
-using Relativity.Core.Authentication;
 using Relativity.Data;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -182,7 +182,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return;
 			}
 
-			BaseServiceContext baseService = claimsPrincipal.GetServiceContextUnversionShortTerm(sourceWorkspaceId);
+			BaseServiceContext baseService = claimsPrincipal.GetUnversionContext(sourceWorkspaceId);
 
 			Guid[] guids = { new Guid(DocumentMultiObjectFields.DESTINATION_WORKSPACE_FIELD) };
 			DataRowCollection fieldRows;

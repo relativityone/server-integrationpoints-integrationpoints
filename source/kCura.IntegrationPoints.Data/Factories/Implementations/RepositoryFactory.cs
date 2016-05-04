@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Adaptors.Implementations;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
@@ -114,7 +115,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IObjectRepository GetObjectRepository(int workspaceArtifactId, int rdoArtifactId)
 		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, rdoArtifactId);
-			IObjectRepository repository = new KelperObjectRepository(objectQueryManagerAdaptor, rdoArtifactId);
+			IObjectRepository repository = new KeplerObjectRepository(objectQueryManagerAdaptor, rdoArtifactId);
 			return repository;
 		}
 
@@ -155,19 +156,19 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			ContextContainer contexts;
 			if (!ContextCache.TryGetValue(workspaceArtifactId, out contexts))
 			{
-				BaseServiceContext baseServiceContext = ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(workspaceArtifactId);
+				BaseServiceContext baseServiceContext = ClaimsPrincipal.Current.GetUnversionContext(workspaceArtifactId);
 
 				BaseContext baseContext;
 				if (workspaceArtifactId == -1)
 				{
 					baseContext =
-						ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(workspaceArtifactId)
+						ClaimsPrincipal.Current.GetUnversionContext(workspaceArtifactId)
 							.GetMasterDbServiceContext()
 							.ThreadSafeChicagoContext;
 				}
 				else
 				{
-					baseContext = ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(workspaceArtifactId)
+					baseContext = ClaimsPrincipal.Current.GetUnversionContext(workspaceArtifactId)
 						.ChicagoContext
 						.ThreadSafeChicagoContext;
 				}

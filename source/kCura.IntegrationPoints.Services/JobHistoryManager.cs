@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Services
 	/// <summary>
 	/// This class is using direct sql because kepler does not provide the ability to aggregate data.
 	/// </summary>
-	public class JobHistoryManager : KelperServiceBase, IJobHistoryManager
+	public class JobHistoryManager : KeplerServiceBase, IJobHistoryManager
 	{
 		private const string _ASCENDING_SORT = "ASC";
 		private const string _DESCENDING_SORT = "DESC";
