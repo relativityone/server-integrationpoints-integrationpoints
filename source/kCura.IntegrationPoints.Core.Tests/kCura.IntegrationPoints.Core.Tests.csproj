@@ -140,6 +140,7 @@
     <Compile Include="Unit\BatchStatusCommands\JobHistoryManagerTest.cs" />
     <Compile Include="Unit\JobStatusUpdaterTests.cs" />
     <Compile Include="Unit\Managers\IntegrationPointManagerTests.cs" />
+    <Compile Include="Unit\Keywords\KeywordConverterTests.cs" />
     <Compile Include="Unit\RdoFilterTest.cs" />
     <Compile Include="Unit\Services\Domain\RelativityFeaturePathServiceTests.cs" />
     <Compile Include="Unit\Services\Export\ArgumentMatcher.cs" />

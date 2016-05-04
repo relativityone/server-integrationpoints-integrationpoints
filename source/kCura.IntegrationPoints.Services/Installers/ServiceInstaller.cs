@@ -57,7 +57,7 @@ namespace kCura.IntegrationPoints.Services
 			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod((k) => global::Relativity.API.Services.Helper.GetServicesManager()));
 			container.Register(Component.For<IPermissionService>().ImplementedBy<PermissionService>().LifestyleTransient());
 
-			foreach (var dependency in _dependencies)
+			foreach (IWindsorInstaller dependency in _dependencies)
 			{
 				dependency.Install(container, store);
 			}
