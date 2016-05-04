@@ -152,7 +152,6 @@
     <Compile Include="Repositories\Implementations\KeplerDocumentRepository.cs" />
     <Compile Include="Repositories\Implementations\FieldRepository.cs" />
     <Compile Include="Adaptors\Implementations\ObjectQueryManagerAdaptor.cs" />
-    <Compile Include="Repositories\Implementations\RsapiSavedSearchRepository.cs" />
     <Compile Include="Adaptors\IObjectQueryManagerAdaptor.cs" />
     <Compile Include="Repositories\Implementations\RsapiSourceWorkspaceRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerWorkspaceRepository.cs" />
@@ -168,7 +167,6 @@
     <Compile Include="Repositories\KelperServiceBase.cs" />
     <Compile Include="TempDocTableHelper.cs" />
     <Compile Include="Repositories\IObjectTypeRepository.cs" />
-    <Compile Include="Repositories\ISavedSearchRepository.cs" />
     <Compile Include="Queries\FileQuery.cs" />
     <Compile Include="Queries\GetSavedSearchesQuery.cs" />
     <Compile Include="Queries\GetWorkspacesQuery.cs" />

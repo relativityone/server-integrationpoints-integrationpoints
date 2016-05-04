@@ -14,6 +14,8 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
+using kCura.IntegrationPoints.DocumentTransferProvider.Repositories;
+using kCura.IntegrationPoints.DocumentTransferProvider.Repositories.Implementation;
 using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;

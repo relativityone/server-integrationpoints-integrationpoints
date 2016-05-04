@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 
-namespace kCura.IntegrationPoints.Data.Repositories.Implementations
+namespace kCura.IntegrationPoints.DocumentTransferProvider.Repositories.Implementation
 {
 	public class RsapiSavedSearchRepository : ISavedSearchRepository
 	{
