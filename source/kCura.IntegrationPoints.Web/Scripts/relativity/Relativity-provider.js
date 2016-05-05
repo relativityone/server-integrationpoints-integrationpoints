@@ -19,7 +19,6 @@
 
         return iconSpan;
     };
-
     // custom validation rules 
     ko.validation.rules['checkWorkspace'] = {
         validator: function (value, params) {

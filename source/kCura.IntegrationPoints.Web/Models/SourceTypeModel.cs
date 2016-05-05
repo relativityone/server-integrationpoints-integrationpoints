@@ -53,6 +53,13 @@ namespace kCura.IntegrationPoints.Web.Models
 		}
 
 		[DataMember]
+		public bool OnlyMapIdentifierToIdentifer
+		{
+			get { return _originalConfig.OnlyMapIdentifierToIdentifer; }
+			set { }
+		}
+
+		[DataMember]
 		public ImportSettingVisibility ImportSettingVisibility
 		{
 			get

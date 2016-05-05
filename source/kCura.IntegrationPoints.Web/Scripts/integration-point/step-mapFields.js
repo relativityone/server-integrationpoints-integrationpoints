@@ -17,6 +17,21 @@ ko.validation.rules['mustEqualMapped'] = {
 	message: 'All selected items have not been mapped.'
 };
 
+ko.validation.rules['identiferMustMappedWithAnotherIdentifier'] = {
+	validator: function (value, params) {
+		var tagetMap = params();
+		var isMappedCorrectly = false;
+		$.each(value, function (index, item) {
+			if (item.isIdentifier === true) {
+				isMappedCorrectly = tagetMap[index].isIdentifier;
+				return;
+			}
+		});
+		return isMappedCorrectly;
+	},
+	message: 'Identifier must be mapped with another identifier.'
+};
+
 
 ko.validation.rules['uniqueIdIsMapped'] = {
 	validator: function (value, params) {
@@ -58,6 +73,7 @@ ko.validation.rules['uniqueIdIsMapped'] = {
 	},
 	message: "The unique identifier field must be mapped."
 };
+
 ko.validation.rules['nativeFilePathMustBeMapped'] = {
 	validator: function (value, params) {
 		if (typeof (value) !== "undefined") {
@@ -160,6 +176,14 @@ ko.validation.insertValidationMessage = function (element) {
 
 		this.sourceMapped = ko.observableArray([]).extend({
 			mustEqualMapped: {
+				onlyIf: function () {
+					return self.showErrors();
+				},
+				params: this.mappedWorkspace
+			}
+		}).extend(
+		{
+			identiferMustMappedWithAnotherIdentifier: {
 				onlyIf: function () {
 					return self.showErrors();
 				},
