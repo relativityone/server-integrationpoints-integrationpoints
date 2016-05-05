@@ -169,7 +169,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
 			jobHistoryErrorService.CommitErrors();
 
-			jobHistory.Status = JobStatusChoices.JobHistoryErrorJobFailed;
+			jobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
 			jobHistoryService.UpdateRdo(jobHistory);
 
 			// No updates to IP since the job history error service handles IP updates
