@@ -141,11 +141,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
-				WriteResultSet<kCura.Relativity.Client.DTOs.Field> fieldWriteResultSet = null;
+				WriteResultSet<kCura.Relativity.Client.DTOs.Field> fieldWriteResultSet;
 
 				try
 				{
-					rsapiClient.Repositories.Field.Create(fieldsToCreate);
+					fieldWriteResultSet = rsapiClient.Repositories.Field.Create(fieldsToCreate);
 				}
 				catch (Exception e)
 				{
