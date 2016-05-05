@@ -304,6 +304,12 @@ namespace kCura.IntegrationPoints.Core.Services
 			CreateJob(integrationPoint, sourceProvider, workspaceArtifactId, userId);
 		}
 
+		public SourceProvider GetSourceProvider(int sourceProviderId)
+		{
+			SourceProvider sourceProvider = _context.RsapiService.SourceProviderLibrary.Read(sourceProviderId);
+			return sourceProvider;
+		}
+
 		private void CheckPermissions(IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
 		{
 			if (sourceProvider.Identifier == DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
@@ -318,7 +324,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_SOURCE_PROVIDER_SPECIFIED);
 			}
-			SourceProvider sourceProvider = _context.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value);
+			SourceProvider sourceProvider = GetSourceProvider(integrationPoint.SourceProvider.Value);
 			return sourceProvider;
 		}
 

@@ -48,10 +48,17 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
 			IIntegrationPointManager integrationPointManager = _integrationPointManagerFactory.CreateIntegrationPointManager(contextContainer);
+			ISourceProviderManager sourceProviderManager =
+				_integrationPointManagerFactory.CreateSourceProviderManager(contextContainer);
 			IntegrationPointDTO integrationPointDto = integrationPointManager.Read(Application.ArtifactID, ActiveArtifact.ArtifactID);
+			SourceProviderDTO sourceProviderDto = sourceProviderManager.Read(Application.ArtifactID,
+				integrationPointDto.SourceProvider.Value);
 
 			bool hasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
-			console.ButtonList.Add(GetRetryErrorsButton(hasErrors, isEnabled));
+			if (sourceProviderDto.Name == kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_NAME)
+			{
+				console.ButtonList.Add(GetRetryErrorsButton(hasErrors, isEnabled));
+			}
 			console.ButtonList.Add(GetViewErrorsLink(hasErrors));
 
 			return console;

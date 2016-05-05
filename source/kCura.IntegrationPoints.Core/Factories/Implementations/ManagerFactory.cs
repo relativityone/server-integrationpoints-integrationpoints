@@ -9,5 +9,10 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			return new IntegrationPointManager(contextContainer);
 		}
+
+		public ISourceProviderManager CreateSourceProviderManager(IContextContainer contextContainer)
+		{
+			return new SourceProviderManager(contextContainer);
+		}
 	}
 }

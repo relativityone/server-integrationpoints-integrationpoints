@@ -104,6 +104,7 @@
     <Compile Include="Models\FieldEntry.cs" />
     <Compile Include="Models\IntegrationPointDTO.cs" />
     <Compile Include="Models\ObjectTypeDTO.cs" />
+    <Compile Include="Models\SourceProviderDTO.cs" />
     <Compile Include="Models\SourceWorkspaceDTO.cs" />
     <Compile Include="Models\SourceWorkspaceJobHistoryDTO.cs" />
     <Compile Include="Models\SourceJobDTO.cs" />
