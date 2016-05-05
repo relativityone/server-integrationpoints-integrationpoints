@@ -121,8 +121,8 @@
     <value>An import for the following Relativity Integration Point has successfully completed.
 
 Name: [RIP.Name]
-  
-Workspace: [Workspace.Name]</value>
+[RIP.SOURCEEMAILBODYDATA]
+[RIP.DESTINATIONEMAILBODYDATA]</value>
   </data>
   <data name="JOB_COMPLETED_SUCCESS_SUBJECT" xml:space="preserve">
     <value>Relativity import successfully completed for "[RIP.Name]".</value>
@@ -131,8 +131,8 @@ Workspace: [Workspace.Name]</value>
     <value>An import for the below Relativity Integration Point has completed with errors.
 
 Name: [RIP.Name]
-
-Workspace: [Workspace.Name]</value>
+[RIP.SOURCEEMAILBODYDATA]
+[RIP.DESTINATIONEMAILBODYDATA]</value>
   </data>
   <data name="JOB_COMPLETED_WITH_ERRORS_SUBJECT" xml:space="preserve">
     <value>Relativity import completed with errors for "[RIP.NAME]".</value>
@@ -141,8 +141,8 @@ Workspace: [Workspace.Name]</value>
     <value>An error has occurred for the below Relativity Integration Point.
 
 Name: [RIP.NAME]
- 
-Workspace: [Workspace.Name]
+[RIP.SOURCEEMAILBODYDATA]
+[RIP.DESTINATIONEMAILBODYDATA]
   
 Error: [Error]</value>
   </data>

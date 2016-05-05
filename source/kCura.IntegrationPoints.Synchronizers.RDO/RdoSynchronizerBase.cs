@@ -2,24 +2,31 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
-using kCura.Relativity.Client;
+using kCura.Relativity.ImportAPI.Data;
 using Newtonsoft.Json;
+using Artifact = kCura.Relativity.Client.Artifact;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-	public abstract class RdoSynchronizerBase : Contracts.Synchronizer.IDataSynchronizer, IBatchReporter
+	public abstract class RdoSynchronizerBase : Contracts.Synchronizer.IDataSynchronizer, IBatchReporter, IEmailBodyData
 	{
 		public event BatchCompleted OnBatchComplete;
+
 		public event BatchSubmitted OnBatchSubmit;
+
 		public event BatchCreated OnBatchCreate;
+
 		public event StatusUpdate OnStatusUpdate;
+
 		public event JobError OnJobError;
+
 		public event RowError OnDocumentError;
 
 		protected readonly IRelativityFieldQuery FieldQuery;
@@ -46,24 +53,24 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			return _api ?? (_api = _factory.GetImportAPI(settings));
 		}
 
-
 		private HashSet<string> _ignoredList;
+
 		private HashSet<string> IgnoredList
 		{
 			get
 			{
-				// fields don't have any space in between words 
+				// fields don't have any space in between words
 				if (_ignoredList == null)
 				{
 					_ignoredList = new HashSet<string>
-					{
-						"Is System Artifact",
-						"System Created By",
-						"System Created On",
-						"System Last Modified By",
-						"System Last Modified On",
-						"Artifact ID"
-					};
+		  {
+			"Is System Artifact",
+			"System Created By",
+			"System Created On",
+			"System Last Modified By",
+			"System Last Modified On",
+			"Artifact ID"
+		  };
 				}
 				return _ignoredList;
 			}
@@ -129,9 +136,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				{
 					ItemError(exception.Identifier, exception.Message);
 				}
-
 			} while (movedNext);
-
 
 			_importService.PushBatchIfFull(true);
 
@@ -151,7 +156,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 			WaitUntilTheJobIsDone();
 		}
-
 
 		private void IntializeImportJob(IEnumerable<FieldMap> fieldMap, string options)
 		{
@@ -182,6 +186,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		}
 
 		private string _webAPIPath;
+
 		public string WebAPIPath
 		{
 			get
@@ -196,6 +201,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		}
 
 		private bool? _disableNativeLocationValidation;
+
 		public bool? DisableNativeLocationValidation
 		{
 			get
@@ -210,6 +216,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		}
 
 		private bool? _disableNativeValidation;
+
 		public bool? DisableNativeValidation
 		{
 			get
@@ -263,17 +270,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		{
 			ImportSettings settings = GetSettings(options);
 			if (string.IsNullOrWhiteSpace(settings.ParentObjectIdSourceFieldName) &&
-					fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Parent))
+				fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Parent))
 			{
 				settings.ParentObjectIdSourceFieldName =
-					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Parent).Select(x => x.SourceField.FieldIdentifier).First();
+				  fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Parent).Select(x => x.SourceField.FieldIdentifier).First();
 			}
 			if (settings.IdentityFieldId < 1 && fieldMap.Any(x => x.FieldMapType == FieldMapTypeEnum.Identifier))
 			{
 				settings.IdentityFieldId =
-					fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier)
-						.Select(x => int.Parse(x.DestinationField.FieldIdentifier))
-						.First();
+				  fieldMap.Where(x => x.FieldMapType == FieldMapTypeEnum.Identifier)
+					.Select(x => int.Parse(x.DestinationField.FieldIdentifier))
+					.First();
 			}
 
 			if (settings.ImportNativeFile)
@@ -306,6 +313,15 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				// So that the destination workspace file icons correctly display, we give the import API the file name of the document
 				settings.FileNameColumn = Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME;
+			}
+
+			if (SourceProvider != null && SourceProvider.Config.OnlyMapIdentifierToIdentifer)
+			{
+				FieldMap map = fieldMap.First(field => field.FieldMapType == FieldMapTypeEnum.Identifier);
+				if (!(map.SourceField.IsIdentifier && map.DestinationField.IsIdentifier))
+				{
+					throw new Exception("Source Provider requires the identifier field to be mapped with another identifier field.");
+				}
 			}
 
 			return settings;
@@ -354,7 +370,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		protected bool IncludeFieldInImport(FieldMap fieldMap)
 		{
 			bool toInclude = fieldMap.FieldMapType != FieldMapTypeEnum.Parent &&
-			                 fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath;
+							 fieldMap.FieldMapType != FieldMapTypeEnum.NativeFilePath;
 			if (toInclude && fieldMap.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
 			{
 				toInclude = fieldMap.DestinationField != null && fieldMap.DestinationField.FieldIdentifier != null;
@@ -382,6 +398,31 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private void ItemError(string documentIdentifier, string errorMessage)
 		{
 			_rowErrors.Add(new KeyValuePair<string, string>(documentIdentifier, errorMessage));
+		}
+
+		public string GetEmailBodyData(IEnumerable<FieldEntry> fields, string options)
+		{
+			ImportSettings settings = GetSettings(options);
+			WorkspaceRef destinationWorkspace = GetWorkspace(settings);
+
+			StringBuilder emailBody = new StringBuilder();
+			if (destinationWorkspace != null)
+			{
+				emailBody.AppendLine("");
+				emailBody.AppendFormat("Destination Workspace: {0}", Utils.GetFormatForWorkspaceOrJobDisplay(destinationWorkspace.Name, destinationWorkspace.Id));
+			}
+			return emailBody.ToString();
+		}
+
+		protected virtual WorkspaceRef GetWorkspace(ImportSettings settings)
+		{
+			WorkspaceRef workspaceRef = null;
+			Workspace workspace = GetImportApi(settings).Workspaces().FirstOrDefault(x => x.ArtifactID == settings.CaseArtifactId);
+			if (workspace != null)
+			{
+				workspaceRef = new WorkspaceRef() { Id = workspace.ArtifactID, Name = workspace.Name };
+			}
+			return workspaceRef;
 		}
 	}
 }
