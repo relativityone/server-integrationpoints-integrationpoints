@@ -8,11 +8,11 @@ using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
-	public abstract class KelperServiceBase
+	public abstract class KeplerServiceBase
 	{
 		protected readonly IObjectQueryManagerAdaptor ObjectQueryManagerAdaptor;
 
-		protected KelperServiceBase(IObjectQueryManagerAdaptor objectQueryManagerAdaptor)
+		protected KeplerServiceBase(IObjectQueryManagerAdaptor objectQueryManagerAdaptor)
 		{
 			ObjectQueryManagerAdaptor = objectQueryManagerAdaptor;
 		}
@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
 			do
 			{
-				ObjectQueryResultSet resultSet = await ObjectQueryManagerAdaptor.RetrieveAsync(query, token ?? String.Empty, count + 1);
+				ObjectQueryResultSet resultSet = await ObjectQueryManagerAdaptor.RetrieveAsync(query, token ?? String.Empty, count + 1).ConfigureAwait(false);
 				totalResult = resultSet.Data.TotalResultCount;
 				ArtifactDTO[] batchResult = resultSet.GetResultsAsArtifactDto();
 				results.AddRange(batchResult);

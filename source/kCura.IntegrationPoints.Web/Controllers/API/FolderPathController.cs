@@ -6,7 +6,8 @@ using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.IntegrationPoints.Web.DataStructures;
 using kCura.Relativity.Client;
@@ -17,13 +18,13 @@ using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-	public class IntegrationPointDestinationConfiguration
+	internal class IntegrationPointDestinationConfiguration
 	{
 		public bool UseFolderPathInformation;
 		public int FolderPathSourceField;
 	}
 
-	public class IntegrationPointSourceConfiguration
+	internal class IntegrationPointSourceConfiguration
 	{
 		public int SavedSearchArtifactId;
 	}
@@ -33,17 +34,17 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IRSAPIClient _client;
 		private readonly IImportApiFactory _importApiFactory;
 		private readonly IConfig _config;
-		private readonly IGenericLibrary<IntegrationPoint> _integrationPointLibrary;
+		private readonly IRepositoryFactory _repositoryFactory;
 
 		public FolderPathController(IRSAPIClient client,
 			IImportApiFactory importApiFactory,
 			IConfig config,
-			IGenericLibrary<IntegrationPoint> integrationPointLibrary)
+			IRepositoryFactory repositoryFactory)
 		{
 			_client = client;
 			_importApiFactory = importApiFactory;
 			_config = config;
-			_integrationPointLibrary = integrationPointLibrary;
+			_repositoryFactory = repositoryFactory;
 		}
 
 		[HttpGet]
@@ -62,7 +63,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpGet]
 		public HttpResponseMessage GetFolderCount(int integrationPointArtifactId)
 		{
-			IntegrationPoint integrationPoint = _integrationPointLibrary.Read(Convert.ToInt32(integrationPointArtifactId));
+			IIntegrationPointRepository integrationPointRepository = _repositoryFactory.GetIntegrationPointRepository(_client.APIOptions.WorkspaceID);
+			IntegrationPointDTO integrationPoint = integrationPointRepository.Read(Convert.ToInt32(integrationPointArtifactId));
 			IntegrationPointSourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<IntegrationPointSourceConfiguration>(integrationPoint.SourceConfiguration);
 			IntegrationPointDestinationConfiguration destinationConfiguration = JsonConvert.DeserializeObject<IntegrationPointDestinationConfiguration>(integrationPoint.DestinationConfiguration);
 
@@ -94,6 +96,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 					x => new ArtifactDTO(
 						x.Artifact.ArtifactID,
 						x.Artifact.ArtifactTypeID.Value,
+						"Document",
 						x.Artifact.Fields.Select(
 							y => new ArtifactFieldDTO() { ArtifactId = y.ArtifactID, FieldType = y.FieldType.ToString(), Name = y.Name, Value = y.Value }))
 					).ToArray();

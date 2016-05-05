@@ -22,8 +22,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var objectType = new ObjectType(objectTypeGuid) {Fields = FieldValue.AllFields};
 
 			ResultSet<ObjectType> resultSet = null;
-			using (
-				IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 

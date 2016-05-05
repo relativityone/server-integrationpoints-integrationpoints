@@ -1,5 +1,6 @@
 ﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.ScheduleQueue.Core;
 
@@ -12,9 +13,9 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 
 		private readonly Job _job;
 		private readonly JobHistoryErrorQuery _query;
-		private readonly JobHistoryService _historyService;
+		private readonly IJobHistoryService _historyService;
 		private readonly ISerializer _serializer;
-		public ErrorKeyword(Job job, JobHistoryErrorQuery query, JobHistoryService historyService, ISerializer serializer)
+		public ErrorKeyword(Job job, JobHistoryErrorQuery query, IJobHistoryService historyService, ISerializer serializer)
 		{
 			_job = job;
 			_query = query;

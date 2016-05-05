@@ -3,11 +3,9 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
-	
 	public class ChoiceController : ApiController
 	{
 		private readonly ChoiceService _choiceService;
@@ -15,6 +13,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			_choiceService = choiceService;
 		}
+
 		[HttpGet]
 		[Route("{workspaceID}/Choice/{fieldGuid}")]
 		public HttpResponseMessage Get(int workspaceID, string fieldGuid)
@@ -23,6 +22,5 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			
 			return Request.CreateResponse(HttpStatusCode.OK, choices);
 		}
-
 	}
 }

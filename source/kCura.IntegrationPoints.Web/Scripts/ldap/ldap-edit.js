@@ -5,7 +5,7 @@
 	parseInputAttributes: true,
 	messageTemplate: null
 });
-
+	
 ko.validation.insertValidationMessage = function (element) {
 	var errorContainer = document.createElement('div');
 	var iconSpan = document.createElement('span');
@@ -19,6 +19,8 @@ ko.validation.insertValidationMessage = function (element) {
 };
 var ldapHelper = (function (data) {
 	var _checkLdap = function (localModel) {
+		
+		IP.frameMessaging().dFrame.IP.reverseMapFields = false;  // set the flag so that the fields can be reversed or not ;
 		return IP.data.ajax({
 			url: IP.utils.generateWebURL('IntegrationPoints', 'CheckLdap'),
 			data: JSON.stringify(localModel),

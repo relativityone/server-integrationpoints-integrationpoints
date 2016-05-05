@@ -5,9 +5,9 @@ using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class KelperObjectRepository : KelperServiceBase, IObjectRepository
+	public class KeplerObjectRepository : KeplerServiceBase, IObjectRepository
 	{
-		public KelperObjectRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor, int objectTypeId)
+		public KeplerObjectRepository(IObjectQueryManagerAdaptor objectQueryManagerAdaptor, int objectTypeId)
 			: base(objectQueryManagerAdaptor)
 		{
 			ObjectQueryManagerAdaptor.ArtifactTypeId = objectTypeId;

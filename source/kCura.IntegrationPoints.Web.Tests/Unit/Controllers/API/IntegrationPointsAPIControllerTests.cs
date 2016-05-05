@@ -26,19 +26,19 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 		private IIntegrationPointService _integrationPointService;
 		private ICaseServiceContext _caseServiceContext;
 		private IPermissionService _permissionService;
-		private IRdoSynchronizerProvider _rdoSynchronizerProvider;
 		private IRelativityUrlHelper _relativityUrlHelper;
+		private IRdoSynchronizerProvider _rdoSynchronizerProvider;
 
-		private const int WORKSPACE_ID = 23432;
+		private const int _WORKSPACE_ID = 23432;
 
 		[SetUp]
 		public void TestFixtureSetUp()
 		{
-			_integrationPointService = this.GetMock<IIntegrationPointService>();
 			_caseServiceContext = this.GetMock<ICaseServiceContext>();
 			_permissionService = this.GetMock<IPermissionService>();
-			_rdoSynchronizerProvider = this.GetMock<IRdoSynchronizerProvider>();
 			_relativityUrlHelper = this.GetMock<IRelativityUrlHelper>();
+			_integrationPointService = this.GetMock<IIntegrationPointService>();
+			_rdoSynchronizerProvider = this.GetMock<IRdoSynchronizerProvider>();
 
 			_instance = this.ResolveInstance<IntegrationPointsAPIController>();
 			_instance.Request = new HttpRequestMessage();
@@ -76,18 +76,30 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 
 			string url = "http://lolol.com";
 			_relativityUrlHelper.GetRelativityViewUrl(
-				Arg.Is(WORKSPACE_ID), 
+				Arg.Is(_WORKSPACE_ID), 
 				Arg.Is(model.ArtifactID),
 				Arg.Is(Data.ObjectTypes.IntegrationPoint))
 				.Returns(url);
 
 			// Act
-			HttpResponseMessage response = _instance.Update(WORKSPACE_ID, model);
+			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, model);
 
 			// Assert
 			Assert.IsNotNull(response, "Response should not be null");
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "HttpStatusCode should be OK");
 			Assert.AreEqual(JsonConvert.SerializeObject(new {returnURL = url}), response.Content.ReadAsStringAsync().Result, "The HttpContent should be as expected");
+
+			_integrationPointService.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_caseServiceContext.RsapiService.SourceProviderLibrary
+				.Received(1)
+				.Read(Arg.Is(model.SourceProvider));
+			_integrationPointService.Received(1).SaveIntegration(Arg.Is(model));
+			_relativityUrlHelper
+				.Received(1)
+				.GetRelativityViewUrl(
+					Arg.Is(_WORKSPACE_ID),
+					Arg.Is(model.ArtifactID),
+					Arg.Is(Data.ObjectTypes.IntegrationPoint));
 		}
 
 		[Test]
@@ -95,11 +107,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 		{
 			// Arrange
 			int targetWorkspaceArtifactId = 9302;
+			int sourceWorkspaceArtifactId = 2039;
 			var model = new IntegrationModel()
 			{
 				ArtifactID = 123,
 				SourceProvider = 9830,
-				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId })
+				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId,
+					SourceWorkspaceArtifactId = sourceWorkspaceArtifactId })
 			};
 
 			var existingModel = new IntegrationModel()
@@ -120,85 +134,33 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 				.Read(Arg.Is(model.SourceProvider))
 				.Returns(sourceProvider);
 
-			_permissionService.UserCanImport(Arg.Is(targetWorkspaceArtifactId))
-				.Returns(true);
-
 			_integrationPointService.SaveIntegration(Arg.Is(model)).Returns(model.ArtifactID);
 
 			string url = "http://lolol.com";
 			_relativityUrlHelper.GetRelativityViewUrl(
-				Arg.Is(WORKSPACE_ID),
+				Arg.Is(_WORKSPACE_ID),
 				Arg.Is(model.ArtifactID),
 				Arg.Is(Data.ObjectTypes.IntegrationPoint))
 				.Returns(url);
 
 			// Act
-			HttpResponseMessage response = _instance.Update(WORKSPACE_ID, model);
+			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, model);
 
 			// Assert
 			Assert.IsNotNull(response, "Response should not be null");
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "HttpStatusCode should be OK");
 			Assert.AreEqual(JsonConvert.SerializeObject(new { returnURL = url }), response.Content.ReadAsStringAsync().Result, "The HttpContent should be as expected");
 
-		}
-
-
-		[Test]
-		public void Update_RelativitySourceProvider_NoJobsRun_InvalidPermissions_Excepts()
-		{
-			// Arrange
-			int targetWorkspaceArtifactId = 9302;
-			var model = new IntegrationModel()
-			{
-				ArtifactID = 123,
-				SourceProvider = 9830,
-				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId })
-			};
-
-			var existingModel = new IntegrationModel()
-			{
-				ArtifactID = model.ArtifactID,
-				SourceProvider = model.SourceProvider,
-				SourceConfiguration = model.SourceConfiguration
-			};
-
-			_integrationPointService.ReadIntegrationPoint(Arg.Is(model.ArtifactID))
-				.Returns(existingModel);
-
-			var sourceProvider = new SourceProvider()
-			{
-				Identifier = DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID,
-			};
-			_caseServiceContext.RsapiService.SourceProviderLibrary
-				.Read(Arg.Is(model.SourceProvider))
-				.Returns(sourceProvider);
-
-			_permissionService.UserCanImport(Arg.Is(targetWorkspaceArtifactId))
-				.Returns(false);
-
-			_integrationPointService.SaveIntegration(Arg.Is(model)).Returns(model.ArtifactID);
-
-			string url = "http://lolol.com";
-			_relativityUrlHelper.GetRelativityViewUrl(
-				Arg.Is(WORKSPACE_ID),
-				Arg.Is(model.ArtifactID),
-				Arg.Is(Data.ObjectTypes.IntegrationPoint))
-				.Returns(url);
-
-			// Act
-			bool exceptionThrown = false;
-			try
-			{
-				_instance.Update(WORKSPACE_ID, model);
-			}
-			catch (Exception e)
-			{
-				exceptionThrown = true;
-				Assert.AreEqual(ImportNowController.NO_PERMISSION_TO_IMPORT, e.Message, "The exception message was incorrect");
-			}
-
-			// Assert
-			Assert.IsTrue(exceptionThrown, "An exception should have been thrown");
+			_integrationPointService.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_caseServiceContext.RsapiService.SourceProviderLibrary.Received(1)
+				.Read(Arg.Is(model.SourceProvider));
+			_integrationPointService.Received(1).SaveIntegration(Arg.Is(model));
+			_relativityUrlHelper
+				.Received(1)
+				.GetRelativityViewUrl(
+					Arg.Is(_WORKSPACE_ID),
+					Arg.Is(model.ArtifactID),
+					Arg.Is(Data.ObjectTypes.IntegrationPoint));
 		}
 
 		[Test]
@@ -208,11 +170,16 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 		{
 			// Arrange
 			int targetWorkspaceArtifactId = 9302;
+			int sourceWorkspaceArtifactId = 2039;
 			var model = new IntegrationModel()
 			{
 				ArtifactID = artifactId,
 				SourceProvider = 9830,
-				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId })
+				SourceConfiguration = JsonConvert.SerializeObject(new
+				{
+					TargetWorkspaceArtifactId = targetWorkspaceArtifactId,
+					SourceWorkspaceArtifactId = sourceWorkspaceArtifactId
+				})
 			};
 
 			var sourceProvider = new SourceProvider()
@@ -223,44 +190,51 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 				.Read(Arg.Is(model.SourceProvider))
 				.Returns(sourceProvider);
 
-			_permissionService.UserCanImport(Arg.Is(targetWorkspaceArtifactId))
-				.Returns(true);
-
 			_integrationPointService.SaveIntegration(Arg.Is(model)).Returns(model.ArtifactID);
 
 			string url = "http://lolol.com";
 			_relativityUrlHelper.GetRelativityViewUrl(
-				Arg.Is(WORKSPACE_ID),
+				Arg.Is(_WORKSPACE_ID),
 				Arg.Is(model.ArtifactID),
 				Arg.Is(Data.ObjectTypes.IntegrationPoint))
 				.Returns(url);
 
 			// Act
-			HttpResponseMessage response = _instance.Update(WORKSPACE_ID, model);
+			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, model);
 
 			// Assert
 			Assert.IsNotNull(response, "Response should not be null");
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, "HttpStatusCode should be OK");
 			Assert.AreEqual(JsonConvert.SerializeObject(new { returnURL = url }), response.Content.ReadAsStringAsync().Result, "The HttpContent should be as expected");
+			_caseServiceContext.RsapiService.SourceProviderLibrary.Received(1)
+				.Read(Arg.Is(model.SourceProvider));
+			_integrationPointService.Received(1).SaveIntegration(Arg.Is(model));
+			_relativityUrlHelper
+				.Received(1)
+				.GetRelativityViewUrl(
+					Arg.Is(_WORKSPACE_ID),
+					Arg.Is(model.ArtifactID),
+					Arg.Is(Data.ObjectTypes.IntegrationPoint));
 		}
 
 		[Test]
-		[TestCase(false, new string[] { "Name" }, true)]
-		[TestCase(false, new string[] { "Destination Provider" }, true)]
-		[TestCase(false, new string[] { "Destination RDO" }, true)]
-		[TestCase(false, new string[] { "Case" }, true)]
-		[TestCase(false, new string[] { "Source Provider" }, true)]
-		[TestCase(false, new string[] { "Name", "Destination Provider", "Destination RDO", "Case" }, true)]
-		[TestCase(false, new string[] { "Name", "Destination Provider", "Destination RDO", "Case", "Source Provider" }, true)]
-		[TestCase(false, new string[] { "Name", "Source Configuration" }, true)] // normal providers will only throw with "Name" in list
-		[TestCase(true, new string[] { "Name", "Destination Provider", "Destination RDO", "Case", "Source Configuration" }, true)]
-		[TestCase(true, new string[] { "Source Configuration" }, true)]
-		[TestCase(true, new string[] { "Name", "Destination Provider", "Destination RDO", "Case", "Source Configuration" }, false)] // If relativity provider and no permissions, throw permissions error first
-		public void Update_InvalidProperties_Excepts(bool isRelativityProvider, string[] propertyNames, bool hasPermissions)
+		[TestCase(false, new string[] { "Name" })]
+		[TestCase(false, new string[] { "Destination Provider" })]
+		[TestCase(false, new string[] { "Destination RDO" })]
+		[TestCase(false, new string[] { "Case" })]
+		[TestCase(false, new string[] { "Source Provider" })]
+		[TestCase(false, new string[] { "Name", "Destination Provider", "Destination RDO", "Case" })]
+		[TestCase(false, new string[] { "Name", "Destination Provider", "Destination RDO", "Case", "Source Provider" })]
+		[TestCase(false, new string[] { "Name", "Source Configuration" })] // normal providers will only throw with "Name" in list
+		[TestCase(true, new string[] { "Name", "Destination Provider", "Destination RDO", "Case", "Source Configuration" })]
+		[TestCase(true, new string[] { "Source Configuration" })]
+		[TestCase(true, new string[] { "Name", "Destination Provider", "Destination RDO", "Case", "Source Configuration" })] // If relativity provider and no permissions, throw permissions error first
+		public void Update_InvalidProperties_Excepts(bool isRelativityProvider, string[] propertyNames)
 		{
 			// Arrange
 			var propertyNameHashSet = new HashSet<string>(propertyNames);
 			const int targetWorkspaceArtifactId = 12329;
+			const int sourceWorkspaceArtifactId = 92321;
 			int existingTargetWorkspaceArtifactId = propertyNameHashSet.Contains("Source Configuration")
 				? 12324
 				: targetWorkspaceArtifactId;
@@ -271,7 +245,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 				DestinationProvider = 4909,
 				SourceProvider = 9830,
 				Destination	= JsonConvert.SerializeObject(new { artifactTypeID = 10, CaseArtifactId = 7891232}),
-				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId})
+				SourceConfiguration = JsonConvert.SerializeObject(new
+				{
+					TargetWorkspaceArtifactId = targetWorkspaceArtifactId,
+					SourceWorkspaceArtifactId = sourceWorkspaceArtifactId
+				})
 			};
 
 			var existingModel = new IntegrationModel()
@@ -308,41 +286,29 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 				_caseServiceContext.RsapiService.SourceProviderLibrary
 					.Read(Arg.Is(model.SourceProvider))
 					.Returns(sourceProvider);
-
-				if (isRelativityProvider)
-				{
-					_permissionService.UserCanImport(Arg.Is(targetWorkspaceArtifactId))
-						.Returns(hasPermissions);
-				}
 			}
 
 			// Act
-			bool exceptionThrown = false;
-			try
-			{
-				_instance.Update(WORKSPACE_ID, model);
-			}
-			catch (Exception e)
-			{
-				exceptionThrown = true;
-				if (hasPermissions)
-				{
-					string filteredNames =
-						String.Join(",",
-							propertyNames.Where(x => isRelativityProvider || x != "Source Configuration").Select(x => $" {x}"));
-					string expectedErrorString =
-						$"Unable to save Integration Point:{filteredNames} cannot be changed once the Integration Point has been run";
+			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, model);
 
-					Assert.AreEqual(expectedErrorString, e.Message);
-				}
-				else
-				{
-					Assert.AreEqual(ImportNowController.NO_PERMISSION_TO_IMPORT, e.Message, "The permission error should have been thrown");
-				}
-			}
+			string filteredNames = String.Join(",", propertyNames.Where(x => isRelativityProvider || x != "Source Configuration").Select(x => $" {x}"));
+			string expectedErrorString =
+				$"Unable to save Integration Point:{filteredNames} cannot be changed once the Integration Point has been run";
 
 			// Assert
-			Assert.IsTrue(exceptionThrown, "An exception should have been thrown");
+			Assert.IsNotNull(response);
+			String content = response.Content.ReadAsStringAsync().Result;
+			Assert.AreEqual($"\"{expectedErrorString}\"", content);
+			_integrationPointService.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_caseServiceContext.RsapiService.SourceProviderLibrary
+				.Received(!propertyNameHashSet.Contains("Source Provider") ? 1 : 0)
+				.Read(Arg.Is(model.SourceProvider));
+			_relativityUrlHelper
+				.Received(0)
+				.GetRelativityViewUrl(
+					Arg.Is(_WORKSPACE_ID),
+					Arg.Is(model.ArtifactID),
+					Arg.Is(Data.ObjectTypes.IntegrationPoint));
 		}
 
 		[Test]
@@ -362,21 +328,14 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 				.Throws(new Exception(exceptionMessage));
 
 			// Act
-			bool exceptionThrown = false;
-			try
-			{
-				_instance.Update(WORKSPACE_ID, model);
-			}
-			catch (Exception e)
-			{
-				exceptionThrown = true;
-				Assert.AreEqual("Unable to save Integration Point: Unable to retrieve Integration Point", e.Message, "The exception message should be correct");	
-				Assert.IsNotNull(e.InnerException, "The exception should have an inner exeption");
-				Assert.AreEqual(exceptionMessage, e.InnerException.Message, "The innner exception message should match");
-			}
-
+			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, model);
+		
 			// Assert
-			Assert.IsTrue(exceptionThrown, "An exception should have been thrown");
+			Assert.IsNotNull(response);
+			String content = response.Content.ReadAsStringAsync().Result;
+			Assert.AreEqual(@"""Unable to save Integration Point: Unable to retrieve Integration Point""", content);
+
+			_integrationPointService.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
 		}
 
 		[Test]
@@ -407,21 +366,18 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 					.Throws(new Exception(exceptionMessage));
 
 			// Act
-			bool exceptionThrown = false;
-			try
-			{
-				_instance.Update(WORKSPACE_ID, model);
-			}
-			catch (Exception e)
-			{
-				exceptionThrown = true;
-				Assert.AreEqual("Unable to save Integration Point: Unable to retrieve source provider", e.Message, "The exception message should be correct");
-				Assert.IsNotNull(e.InnerException, "The exception should have an inner exeption");
-				Assert.AreEqual(exceptionMessage, e.InnerException.Message, "The innner exception message should match");
-			}
+			HttpResponseMessage response = _instance.Update(_WORKSPACE_ID, model);
+
 
 			// Assert
-			Assert.IsTrue(exceptionThrown, "An exception should have been thrown");
+			Assert.IsNotNull(response);
+			String content = response.Content.ReadAsStringAsync().Result;
+			Assert.AreEqual(@"""Unable to save Integration Point: Unable to retrieve source provider""", content);
+
+			_integrationPointService.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_caseServiceContext.RsapiService.SourceProviderLibrary
+				.Received(1)
+				.Read(Arg.Is(model.SourceProvider));
 		}
 	}
 }

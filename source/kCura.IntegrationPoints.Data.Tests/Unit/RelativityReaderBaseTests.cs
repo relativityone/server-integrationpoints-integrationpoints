@@ -20,8 +20,8 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Tests.Unit
 		{
 			return new ArtifactDTO[]
 			{
-				new ArtifactDTO(1,10, new ArtifactFieldDTO[0]),
-				new ArtifactDTO(10,10, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(1,10, String.Empty, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(10,10, String.Empty, new ArtifactFieldDTO[0]),
 			};
 		}
 
