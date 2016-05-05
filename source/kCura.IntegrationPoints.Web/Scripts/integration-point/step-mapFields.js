@@ -187,7 +187,7 @@ ko.validation.insertValidationMessage = function (element) {
 				onlyIf: function () {
 					return self.showErrors() && model.SourceProviderConfiguration.onlyMapIdentifierToIdentifer;
 				},
-				params: { mappedWorkspace: this.mappedWorkspace }
+				params: this.mappedWorkspace
 			}
 		});
 
