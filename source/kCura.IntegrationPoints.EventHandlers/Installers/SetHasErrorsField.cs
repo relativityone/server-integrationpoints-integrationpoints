@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 					.OrderByDescending(jobHistory => jobHistory.EndTimeUTC)
 					.FirstOrDefault();
 
-				if (lastCompletedJob != null && lastCompletedJob.Status.Name != JobStatusChoices.JobHistoryCompleted.Name)
+				if (lastCompletedJob != null && lastCompletedJob.JobStatus.Name != JobStatusChoices.JobHistoryCompleted.Name)
 				{
 					integrationPoint.HasErrors = true;
 				}

@@ -17,13 +17,13 @@ ko.validation.rules['mustEqualMapped'] = {
 	message: 'All selected items have not been mapped.'
 };
 
-ko.validation.rules['identiferMustMappedWithAnotherIdentifier'] = {
+ko.validation.rules['identifierMustMappedWithAnotherIdentifier'] = {
 	validator: function (value, params) {
-		var tagetMap = params();
+		var targetMap = params();
 		var isMappedCorrectly = false;
 		$.each(value, function (index, item) {
 			if (item.isIdentifier === true) {
-				isMappedCorrectly = tagetMap[index].isIdentifier;
+				isMappedCorrectly = targetMap[index].isIdentifier;
 				return;
 			}
 		});
@@ -183,9 +183,9 @@ ko.validation.insertValidationMessage = function (element) {
 			}
 		}).extend(
 		{
-			identiferMustMappedWithAnotherIdentifier: {
+			identifierMustMappedWithAnotherIdentifier: {
 				onlyIf: function () {
-					return self.showErrors();
+					return self.showErrors() && model.SourceProviderConfiguration.onlyMapIdentifierToIdentifier;
 				},
 				params: this.mappedWorkspace
 			}

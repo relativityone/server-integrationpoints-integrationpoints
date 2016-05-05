@@ -23,16 +23,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IIntegrationPointService _integrationPointService;
 		private readonly ICaseServiceContext _caseServiceContext;
 
-		public ImportNowController(
-			ICaseServiceContext caseServiceContext,
-			IIntegrationPointService integrationPointService)
+		public ImportNowController(ICaseServiceContext caseServiceContext, IIntegrationPointService integrationPointService)
 		{
 			_caseServiceContext = caseServiceContext;
 			_integrationPointService = integrationPointService;
 		}
-
-
-		// POST api/importnow
+		
+		// POST API/ImportNow
 		[HttpPost]
 		public HttpResponseMessage Post(Payload payload)
 		{
@@ -40,6 +37,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return httpResponseMessage;
 		}
 
+		// POST API/SubmitLastJob
 		[HttpPost]
 		public bool SubmitLastJob(int workspaceId)
 		{
@@ -76,6 +74,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return message.IsSuccessStatusCode;
 		}
 
+		// POST API/RetryJob
+		public HttpResponseMessage RetryJob(Payload payload)
+		{
+			HttpResponseMessage httpResponseMessage = InternalRetry(payload.AppId, payload.ArtifactId);
+			return httpResponseMessage;
+		}
+
 		private HttpResponseMessage Internal(int workspaceId, int relatedObjectArtifactId)
 		{
 			try
@@ -95,9 +100,28 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return Request.CreateResponse(HttpStatusCode.OK);
 		}
 
+		private HttpResponseMessage InternalRetry(int workspaceId, int relatedObjectArtifactId)
+		{
+			try
+			{
+				int userId = GetUserIdIfExists();
+				_integrationPointService.RetryIntegrationPoint(workspaceId, relatedObjectArtifactId, userId);
+			}
+			catch (AggregateException exception)
+			{
+				IEnumerable<string> innerExceptions = exception.InnerExceptions.Where(ex => ex != null).Select(ex => ex.Message);
+				return Request.CreateResponse(HttpStatusCode.BadRequest, String.Format("{0} : {1}", exception.Message, String.Join(",", innerExceptions)));
+			}
+			catch (Exception exception)
+			{
+				return Request.CreateResponse(HttpStatusCode.BadRequest, exception.Message);
+			}
+			return Request.CreateResponse(HttpStatusCode.OK);
+		}
+
 		private int GetUserIdIfExists()
 		{
-			var user = this.User as ClaimsPrincipal;
+			var user = User as ClaimsPrincipal;
 			if (user != null)
 			{
 				foreach (Claim claim in user.Claims)

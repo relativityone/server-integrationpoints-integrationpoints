@@ -16,40 +16,43 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 	[TestFixture]
 	public class ImportNowControllerTests
 	{
-		private ImportNowController _controller;
-		private ImportNowController.Payload _payload;
+		private const int _USERID = 9;
 		private readonly string _userIdString = _USERID.ToString();
+
+		private ImportNowController.Payload _payload;
 		private ICaseServiceContext _caseSericeContext;
 		private IIntegrationPointService _integrationPointService;
-		private const int _USERID = 9;
+
+		private ImportNowController _instance;
 
 		[SetUp]
 		public void Setup()
 		{
-			_payload = new ImportNowController.Payload()
-			{
-				AppId = 1,
-				ArtifactId = 123
-			};
+			_payload = new ImportNowController.Payload { AppId = 1, ArtifactId = 123 };
 
 			_caseSericeContext = Substitute.For<ICaseServiceContext>();
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 
-			_controller = new ImportNowController(_caseSericeContext, _integrationPointService);
-			_controller.Request = new HttpRequestMessage();
-			_controller.Request.Properties.Add(HttpPropertyKeys.HttpConfigurationKey, new HttpConfiguration());
+			_instance = new ImportNowController(_caseSericeContext, _integrationPointService)
+			{
+				Request = new HttpRequestMessage()
+			};
+			_instance.Request.Properties.Add(HttpPropertyKeys.HttpConfigurationKey, new HttpConfiguration());
 		}
 
 		[Test]
 		public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitPushingJob_ExpectBadRequest()
 		{
+			// Arrange
 			const string expectedErrorMessage = @"""Unable to determine the user id. Please contact your system administrator.""";
 
 			Exception exception = new Exception("Unable to determine the user id. Please contact your system administrator.");
 			_integrationPointService.When(service => service.RunIntegrationPoint(1, 123, 0)).Throw(exception);
 
-			HttpResponseMessage response = _controller.Post(_payload);
+			// Act
+			HttpResponseMessage response = _instance.Post(_payload);
 
+			// Assert
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().Result);
 		}
@@ -57,11 +60,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		[Test]
 		public void RsapiCallThrowsException()
 		{
-			List<Claim> claims = new List<Claim>()
+			// Arrange
+			var claims = new List<Claim>(1)
 			{
 				new Claim("rel_uai", _userIdString)
 			};
-			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			const string expectedErrorMessage = @"""ABC : 123,456""";
 
 			AggregateException exceptionToBeThrown = new AggregateException("ABC",
@@ -69,8 +73,10 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 
 			_integrationPointService.When(service => service.RunIntegrationPoint(1, 123, _USERID)).Throw(exceptionToBeThrown);
 
-			HttpResponseMessage response = _controller.Post(_payload);
+			// Act
+			HttpResponseMessage response = _instance.Post(_payload);
 
+			// Assert
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().Result);
 		}
@@ -78,12 +84,13 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		[Test]
 		public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitNormalJob_ExpectNoError()
 		{
-			List<Claim> claims = new List<Claim>();
-			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+			// Arrange
+			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 
-			HttpResponseMessage response = _controller.Post(_payload);
+			// Act
+			HttpResponseMessage response = _instance.Post(_payload);
 
-
+			// Assert
 			_integrationPointService.Received(1).RunIntegrationPoint(1, 123, 0);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
@@ -91,15 +98,50 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		[Test]
 		public void NonRelativityProviderCall()
 		{
-			List<Claim> claims = new List<Claim>()
+			// Arrange
+			var claims = new List<Claim>(1)
 			{
 				new Claim("rel_uai", _userIdString)
 			};
-			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
-			HttpResponseMessage response = _controller.Post(_payload);
+			// Act
+			HttpResponseMessage response = _instance.Post(_payload);
+
+			// Assert
 			_integrationPointService.Received(1).RunIntegrationPoint(1, 123, _USERID);
+			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+		}
 
+		[Test]
+		public void RetryJob_UserIdExists_Succeeds_Test()
+		{
+			// Arrange
+			var claims = new List<Claim>(1)
+			{
+				new Claim("rel_uai", _userIdString)
+			};
+			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+
+			// Act
+			HttpResponseMessage response = _instance.RetryJob(_payload);
+
+			// Assert
+			_integrationPointService.Received(1).RetryIntegrationPoint(1, 123, _USERID);
+			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+		}
+
+		[Test]
+		public void RetryJob_UserIdDoesNotExist_Succeeds_Test()
+		{
+			// Arrange
+			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
+
+			// Act
+			HttpResponseMessage response = _instance.RetryJob(_payload);
+
+			// Assert
+			_integrationPointService.Received(1).RetryIntegrationPoint(1, 123, 0);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 	}

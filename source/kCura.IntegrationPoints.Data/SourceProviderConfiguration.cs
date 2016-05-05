@@ -43,6 +43,6 @@ namespace kCura.IntegrationPoints.Data
 		/// <summary>
 		/// A setting to prevent user to map identifier field to a non identifier field.
 		/// </summary>
-		public bool OnlyMapIdentifierToIdentifer { get; set; }
+		public bool OnlyMapIdentifierToIdentifier { get; set; }
 	}
 }
