@@ -4,6 +4,8 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -18,25 +20,31 @@ namespace kCura.IntegrationPoints.Core.Services
 	public class IntegrationPointService : IIntegrationPointService
 	{
 		private readonly ICaseServiceContext _context;
+		private readonly IContextContainer _contextContainer;
 		private readonly IPermissionService _permissionService;
 		private IntegrationPoint _rdo;
 		private readonly ISerializer _serializer;
 		private readonly ChoiceQuery _choiceQuery;
 		private readonly IJobManager _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
+		private readonly IManagerFactory _managerFactory;
 
 		public IntegrationPointService(ICaseServiceContext context,
+			IContextContainer contextContainer,
 			IPermissionService permissionService,
 			ISerializer serializer, ChoiceQuery choiceQuery, 
 			IJobManager jobService,
-			IJobHistoryService jobHistoryService)
+			IJobHistoryService jobHistoryService,
+			IManagerFactory managerFactory)
 		{
 			_context = context;
+			_contextContainer = contextContainer;
 			_permissionService = permissionService;
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
+			_managerFactory = managerFactory;
 		}
 
 		public IntegrationPoint GetRdo(int artifactId)
@@ -291,6 +299,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				string sourceConfig = integrationPointRdo.SourceConfiguration;
 				CheckForRelativityProviderAdditionalPermissions(sourceConfig, userId);
+				CheckForOtherJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
 				_jobHistoryService.CreateRdo(integrationPointRdo, batchInstance, null);
 				_jobService.CreateJobOnBehalfOfAUser(jobDetails, TaskType.ExportService, workspaceArtifactId, integrationPointArtifactId, userId);
 			}
@@ -317,6 +326,17 @@ namespace kCura.IntegrationPoints.Core.Services
 			if (userId == 0)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_USERID);
+			}
+		}
+
+		private void CheckForOtherJobsExecutingOrInQueue(int workspaceArtifactId , int integrationPointArtifactId)
+		{
+			IQueueManager queueManager = _managerFactory.CreateQueueManager(_contextContainer);
+			bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
+
+			if (jobsExecutingOrInQueue)
+			{
+				throw new Exception(Constants.IntegrationPoints.JOBS_ALREADY_RUNNING);
 			}
 		}
 

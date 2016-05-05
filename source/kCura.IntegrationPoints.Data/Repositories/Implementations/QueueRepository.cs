@@ -6,12 +6,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly IDBContext _dbContext;
 
-		public QueueRepository(IDBContext dbContext)
+		public QueueRepository(IHelper helper)
 		{
-			_dbContext = dbContext;
+			_dbContext = helper.GetDBContext(-1);
 		}
 
-		public bool HasJobsExecutingOrInQueue(int workspaceId, int integrationPointId)
+		public int GetNumberOfJobsExecutingOrInQueue(int workspaceId, int integrationPointId)
 		{
 			string sql = $@"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]
 										WHERE [WorkspaceID] = {workspaceId} AND
@@ -19,15 +19,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			int numberOfJobs = _dbContext.ExecuteSqlStatementAsScalar<int>(sql);
 
-			if (numberOfJobs > 0)
-			{
-				return true;
-			}
-
-			return false;
+			return numberOfJobs;
 		}
 
-		public bool HasJobsExecuting(int workspaceId, int integrationPointId)
+		public int GetNumberOfJobsExecuting(int workspaceId, int integrationPointId)
 		{
 			string sql = $@"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]
 										WHERE [WorkspaceID] = {workspaceId} AND
@@ -35,12 +30,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			int numberOfJobs = _dbContext.ExecuteSqlStatementAsScalar<int>(sql);
 
-			if (numberOfJobs > 0)
-			{
-				return true;
-			}
-
-			return false;
+			return numberOfJobs;
 		}
 	}
 }

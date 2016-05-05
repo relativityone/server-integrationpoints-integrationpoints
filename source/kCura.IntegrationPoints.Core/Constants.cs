@@ -15,6 +15,9 @@ namespace kCura.IntegrationPoints.Core
 			public const string NO_USERID = "Unable to determine the user id. Please contact your system administrator.";
 			public const string NO_PERMISSION_TO_EDIT_DOCUMENTS = "You do not have permission to edit documents in the current workspace. Please contact your system administrator.";
 
+			public const string JOBS_ALREADY_RUNNING =
+				"There are other jobs currently running or awaiting execution.";
+
 			public const string RELATIVITY_PROVIDER_GUID = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 
 			public static Regex InvalidMultiObjectsValueFormat = new Regex($".*{kCura.IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER}.*", RegexOptions.Compiled);
