@@ -65,9 +65,17 @@ namespace kCura.IntegrationPoints.Core.Services
 		/// <summary>
 		/// Run integration point as a new job.
 		/// </summary>
-		/// <param name="workspaceArtifactId">workspace artifactId of the integration point object</param>
-		/// <param name="integrationPointArtifactId">integration point artifact id</param>
-		/// <param name="userId">user id of which will be used for logging</param>
+		/// <param name="workspaceArtifactId">Workspace artifact id of the integration point.</param>
+		/// <param name="integrationPointArtifactId">Integration point artifact id.</param>
+		/// <param name="userId">User id of the user running the job.</param>
 		void RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId);
+
+		/// <summary>
+		/// Retry integration point as a new job.
+		/// </summary>
+		/// <param name="workspaceArtifactId">Workspace artifact id of the integration point.</param>
+		/// <param name="integrationPointArtifactId">Integration point artifact id.</param>
+		/// <param name="userId">User id of the user running the job.</param>
+		void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId);
 	}
 }
