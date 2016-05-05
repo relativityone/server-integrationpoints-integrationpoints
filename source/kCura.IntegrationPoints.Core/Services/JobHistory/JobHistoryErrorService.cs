@@ -109,6 +109,7 @@ namespace kCura.IntegrationPoints.Core.Services
 					jobHistoryError.JobHistory = this.JobHistory.ArtifactId;
 					jobHistoryError.Name = Guid.NewGuid().ToString();
 					jobHistoryError.ErrorType = errorType;
+					jobHistoryError.ErrorStatus = ErrorStatusChoices.JobHistoryErrorNew;
 					jobHistoryError.SourceUniqueID = documentIdentifier;
 					jobHistoryError.Error = errorMessage;
 					jobHistoryError.StackTrace = stackTrace;
