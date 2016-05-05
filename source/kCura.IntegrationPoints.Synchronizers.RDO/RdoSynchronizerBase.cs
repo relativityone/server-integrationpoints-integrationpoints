@@ -315,7 +315,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 				settings.FileNameColumn = Contracts.Constants.SPECIAL_FILE_NAME_FIELD_NAME;
 			}
 
-			if (SourceProvider != null && SourceProvider.Config.OnlyMapIdentifierToIdentifer)
+			if (SourceProvider != null && SourceProvider.Config.OnlyMapIdentifierToIdentifier)
 			{
 				FieldMap map = fieldMap.First(field => field.FieldMapType == FieldMapTypeEnum.Identifier);
 				if (!(map.SourceField.IsIdentifier && map.DestinationField.IsIdentifier))
