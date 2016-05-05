@@ -1,7 +1,5 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Runtime.Serialization;
 using kCura.IntegrationPoints.Data;
 
@@ -53,9 +51,9 @@ namespace kCura.IntegrationPoints.Web.Models
 		}
 
 		[DataMember]
-		public bool OnlyMapIdentifierToIdentifer
+		public bool OnlyMapIdentifierToIdentifier
 		{
-			get { return _originalConfig.OnlyMapIdentifierToIdentifer; }
+			get { return _originalConfig.OnlyMapIdentifierToIdentifier; }
 			set { }
 		}
 
