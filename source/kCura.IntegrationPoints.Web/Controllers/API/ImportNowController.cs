@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	{
 		private const string _INTEGRATIONPOINT_ARTIFACT_ID_GUID = "A992C6FD-B6C2-4B97-AAFB-2CFB3F666F62";
 		private const string _SOURCEPROVIDER_ARTIFACT_ID_GUID = "4A091F69-D750-441C-A4F0-24C990D208AE";
-
 		private const string _RELATIVITY_USERID = "rel_uai";
 
 		private readonly IIntegrationPointService _integrationPointService;
@@ -33,7 +32,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpPost]
 		public HttpResponseMessage Post(Payload payload)
 		{
-			HttpResponseMessage httpResponseMessage = Internal(payload.AppId, payload.ArtifactId);
+			HttpResponseMessage httpResponseMessage = Internal(payload.AppId, payload.ArtifactId, _integrationPointService.RunIntegrationPoint);
 			return httpResponseMessage;
 		}
 
@@ -70,42 +69,24 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				return false;
 			}
 
-			HttpResponseMessage message = Internal(workspaceId, integrationPoints.First().ArtifactId);
+			HttpResponseMessage message = Internal(workspaceId, integrationPoints.First().ArtifactId, _integrationPointService.RunIntegrationPoint);
 			return message.IsSuccessStatusCode;
 		}
 
 		// POST API/RetryJob
+		[HttpPost]
 		public HttpResponseMessage RetryJob(Payload payload)
 		{
-			HttpResponseMessage httpResponseMessage = InternalRetry(payload.AppId, payload.ArtifactId);
+			HttpResponseMessage httpResponseMessage = Internal(payload.AppId, payload.ArtifactId, _integrationPointService.RetryIntegrationPoint);
 			return httpResponseMessage;
 		}
 
-		private HttpResponseMessage Internal(int workspaceId, int relatedObjectArtifactId)
+		private HttpResponseMessage Internal(int workspaceId, int relatedObjectArtifactId, Action<int, int, int> integrationPointServiceMethod)
 		{
 			try
 			{
 				int userId = GetUserIdIfExists();
-				_integrationPointService.RunIntegrationPoint(workspaceId, relatedObjectArtifactId, userId);
-			}
-			catch (AggregateException exception)
-			{
-				IEnumerable<string> innerExceptions = exception.InnerExceptions.Where(ex => ex != null).Select(ex => ex.Message);
-				return Request.CreateResponse(HttpStatusCode.BadRequest, String.Format("{0} : {1}", exception.Message, String.Join(",", innerExceptions)));
-			}
-			catch (Exception exception)
-			{
-				return Request.CreateResponse(HttpStatusCode.BadRequest, exception.Message);
-			}
-			return Request.CreateResponse(HttpStatusCode.OK);
-		}
-
-		private HttpResponseMessage InternalRetry(int workspaceId, int relatedObjectArtifactId)
-		{
-			try
-			{
-				int userId = GetUserIdIfExists();
-				_integrationPointService.RetryIntegrationPoint(workspaceId, relatedObjectArtifactId, userId);
+				integrationPointServiceMethod(workspaceId, relatedObjectArtifactId, userId);
 			}
 			catch (AggregateException exception)
 			{
