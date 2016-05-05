@@ -137,6 +137,11 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return integrationPointRepository;
 		}
 
+		public IQueueRepository GetQueueRepository()
+		{
+			return new QueueRepository(_helper);
+		}
+
 		#region Helper Methods
 
 		private BaseContext GetBaseContextForWorkspace(int workspaceArtifactId)

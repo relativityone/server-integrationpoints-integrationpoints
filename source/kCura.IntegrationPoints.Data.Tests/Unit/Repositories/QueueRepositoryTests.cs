@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
 	public class QueueRepositoryTests
 	{
 		private IQueueRepository _instance;
+		private IHelper _helper;
 		private IDBContext _dbContext;
 		private int _workspaceId = 12345;
 		private int _integrationPointId = 98765;
@@ -18,11 +19,16 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
 		public void Setup()
 		{
 			_dbContext = Substitute.For<IDBContext>();
-			_instance = new QueueRepository(_dbContext);
+			_helper = Substitute.For<IHelper>();
+			_helper.GetDBContext(-1).Returns(_dbContext);
+
+			_instance = new QueueRepository(_helper);
+
+			_helper.Received().GetDBContext(-1);
 		}
 
 		[Test]
-		public void HasJobsRunningOrInQueue_True()
+		public void GetNumberOfJobsExecutingOrInQueue_NonZero()
 		{
 			//Arrange
 			string sql = String.Format(@"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]
@@ -31,15 +37,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
 			_dbContext.ExecuteSqlStatementAsScalar<int>(sql).Returns(5);
 			
 			//Act
-			bool hasJobs = _instance.HasJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
+			int numJobs = _instance.GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
 
 			//Assert
-			Assert.IsTrue(hasJobs);
+			Assert.IsTrue(numJobs == 5);
 			_dbContext.Received().ExecuteSqlStatementAsScalar<int>(sql);
 		}
 
 		[Test]
-		public void HasJobsRunningOrInQueue_False()
+		public void GetNumberOfJobsExecutingOrInQueue_Zero()
 		{
 			//Arrange
 			string sql = String.Format(@"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]
@@ -48,15 +54,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
 			_dbContext.ExecuteSqlStatementAsScalar<int>(sql).Returns(0);
 
 			//Act
-			bool hasJobs = _instance.HasJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
+			int numJobs = _instance.GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
 
 			//Assert
-			Assert.IsFalse(hasJobs);
+			Assert.IsTrue(numJobs == 0);
 			_dbContext.Received().ExecuteSqlStatementAsScalar<int>(sql);
 		}
 
 		[Test]
-		public void HasJobsRunning_True()
+		public void GetNumberOfJobsExecuting_NonZero()
 		{
 			//Arrange
 			string sql = String.Format(@"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]
@@ -65,15 +71,15 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
 			_dbContext.ExecuteSqlStatementAsScalar<int>(sql).Returns(1);
 
 			//Act
-			bool hasJobs = _instance.HasJobsExecuting(_workspaceId, _integrationPointId);
+			int numJobs = _instance.GetNumberOfJobsExecuting(_workspaceId, _integrationPointId);
 
 			//Assert
-			Assert.IsTrue(hasJobs);
+			Assert.IsTrue(numJobs == 1);
 			_dbContext.Received().ExecuteSqlStatementAsScalar<int>(sql);
 		}
 
 		[Test]
-		public void HasJobsRunning_False()
+		public void GetNumberOfJobsExecuting_Zero()
 		{
 			//Arrange
 			string sql = String.Format(@"SELECT count(*) FROM [ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D]
@@ -82,10 +88,10 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
 			_dbContext.ExecuteSqlStatementAsScalar<int>(sql).Returns(0);
 
 			//Act
-			bool hasJobs = _instance.HasJobsExecuting(_workspaceId, _integrationPointId);
+			int numJobs = _instance.GetNumberOfJobsExecuting(_workspaceId, _integrationPointId);
 
 			//Assert
-			Assert.IsFalse(hasJobs);
+			Assert.IsTrue(numJobs == 0);
 			_dbContext.Received().ExecuteSqlStatementAsScalar<int>(sql);
 		}
 	}

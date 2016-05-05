@@ -9,5 +9,10 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			return new IntegrationPointManager(contextContainer);
 		}
+
+		public IQueueManager CreateQueueManager(IContextContainer contextContainer)
+		{
+			return new QueueManager(contextContainer);
+		}
 	}
 }

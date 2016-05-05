@@ -7,6 +7,8 @@ using kCura.EventHandler;
 using kCura.EventHandler.CustomAttributes;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -97,9 +99,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
 			IPermissionService permissionService = new PermissionService(Helper.GetServicesManager());
 			IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
+			IContextContainer contextContainer = new ContextContainer(Helper);
+			IManagerFactory managerFactory = new ManagerFactory();
 
 			_caseServiceContext = caseServiceContext;
-			_integrationPointService = new IntegrationPointService(caseServiceContext, permissionService, serializer, choiceQuery, jobManager, jobHistoryService);
+			_integrationPointService = new IntegrationPointService(caseServiceContext, contextContainer, permissionService, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
 			_jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
 		}
 

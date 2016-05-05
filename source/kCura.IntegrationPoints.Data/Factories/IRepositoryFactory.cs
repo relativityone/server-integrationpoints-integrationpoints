@@ -105,5 +105,11 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <returns>A class implementing the IObjectRepository interface</returns>
 		IObjectRepository GetObjectRepository(int workspaceArtifactId, int rdoArtifactId);
 
+		/// <summary>
+		/// Returns a class implementing the IQueueRepository interface.
+		/// </summary>
+		/// <returns>A class implementing the IQueueRepository interface</returns>
+		IQueueRepository GetQueueRepository();
+
 	}
 }
