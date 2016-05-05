@@ -19,6 +19,7 @@
 
         return iconSpan;
     };
+
     // custom validation rules 
     ko.validation.rules['checkWorkspace'] = {
         validator: function (value, params) {
@@ -50,9 +51,24 @@
     message.subscribe('submit', function() {
         //Execute save logic that persists the state.
         this.publish("saveState", JSON.stringify(ko.toJS(viewModel)));
-        
-        if (viewModel.errors().length === 0) {
+        var fieldsDeleted = false;
+        if (viewModel.disable) {
+            var errorMessage = "";
+            if (typeof viewModel.SavedSearchArtifactId() == 'undefined') {
+                errorMessage = "Unable to access the saved search. Please verify saved search permissions, or create a new integration point if the search no longer exists.";
+                fieldsDeleted = true;
+            }
+            if (typeof viewModel.TargetWorkspaceArtifactId() == 'undefined') {
+                errorMessage = errorMessage === "" ? "The target workspace no longer exists. Please create a new Integration Point." : "The destination workspace or saved search no longer exist. Please create a new integration point.";
+                fieldsDeleted = true;
+            }
+            if (fieldsDeleted) {
+                IP.frameMessaging().dFrame.IP.message.error.raise(errorMessage);
+            }
+        }
+        if (viewModel.errors().length === 0 && !fieldsDeleted ) {
             //Communicate to the host page that it to continue.
+           
             this.publish('saveComplete', JSON.stringify(viewModel.getSelectedOption()));
         } else {
             viewModel.errors.showAllMessages();
