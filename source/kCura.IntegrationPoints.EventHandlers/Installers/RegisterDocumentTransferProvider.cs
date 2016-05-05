@@ -39,7 +39,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 							{
 								AllowUserToMapNativeFileField = false
 							},
-							GetDataProvideAllFieldsRequired = true
+							GetDataProvideAllFieldsRequired = true,
+							OnlyMapIdentifierToIdentifier = true
 						}
 					}
 				}

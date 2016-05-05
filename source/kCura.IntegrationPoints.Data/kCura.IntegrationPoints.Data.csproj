@@ -123,6 +123,7 @@
     <Compile Include="ChoiceQuery.cs" />
     <Compile Include="Contexts\IOnBehalfOfUserClaimsPrincipalFactory.cs" />
     <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipalFactory.cs" />
+    <Compile Include="Extensions\ClaimsPrincipalExtension.cs" />
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
     <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\ICodeRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerObjectRepository.cs" />
+    <Compile Include="Repositories\Implementations\QueueRepository.cs" />
     <Compile Include="Repositories\IObjectRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerCodeRepository.cs" />
     <Compile Include="Repositories\Implementations\RsapiObjectTypeRepository.cs" />
@@ -165,6 +167,7 @@
     <Compile Include="Repositories\ISourceJobRepository.cs" />
     <Compile Include="Repositories\ITabRepository.cs" />
     <Compile Include="Repositories\KeplerServiceBase.cs" />
+    <Compile Include="Repositories\IQueueRepository.cs" />
     <Compile Include="TempDocTableHelper.cs" />
     <Compile Include="Repositories\IObjectTypeRepository.cs" />
     <Compile Include="Repositories\ISavedSearchRepository.cs" />

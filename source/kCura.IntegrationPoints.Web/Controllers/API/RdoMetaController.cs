@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -15,6 +11,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			_service = service;
 		}
+
 		[HttpGet]
 		public HttpResponseMessage Get(int id)
 		{

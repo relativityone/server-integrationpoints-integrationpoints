@@ -144,7 +144,9 @@ namespace kCura.IntegrationPoints.Core.Services
 					Name = integrationPoint.Name,
 					IntegrationPoint = new[] { integrationPoint.ArtifactId },
 					BatchInstance = batchInstance.ToString(),
-					Status = JobStatusChoices.JobHistoryPending,
+					//Should not always be Run Now type job, but cannot find a high enough method call to be able to make a distinction between a Run Now, Scheduled, or Retry job
+					JobType = JobTypeChoices.JobHistoryRunNow,
+					JobStatus = JobStatusChoices.JobHistoryPending,
 					ItemsImported = 0,
 					ItemsWithErrors = 0
 				};

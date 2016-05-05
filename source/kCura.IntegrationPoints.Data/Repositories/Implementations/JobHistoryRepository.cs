@@ -2,8 +2,8 @@
 using System.Data;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
+using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Core;
-using Relativity.Core.Authentication;
 using Relativity.Data;
 using Field = Relativity.Core.DTO.Field;
 
@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return;
 			}
 
-			BaseServiceContext baseService = claimsPrincipal.GetServiceContextUnversionShortTerm(sourceWorkspaceId);
+			BaseServiceContext baseService = claimsPrincipal.GetUnversionContext(sourceWorkspaceId);
 
 			Guid[] guids = { new Guid(DocumentMultiObjectFields.JOB_HISTORY_FIELD) };
 			DataRowCollection fieldRows;

@@ -17,7 +17,7 @@ Microsoft Active Directory.
     usage:
         build [debug|release] [dev|alpha|beta|rc|gold]
         [-b quiet|minimal|normal|detailed|diagnostic] [-skip] [-test]
-        [-deploy 1234567 172.17.100.47] [-alert]
+        [-deploy 1234567 172.17.100.47] [-alert] [help|?]
 
     options:
         -b               sets the verbosity level for msbuild, default is

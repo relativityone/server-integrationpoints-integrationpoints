@@ -233,7 +233,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		}
 
 		[Test]
-		public void UserCanEditDocuments_ServiceReturnsIncorrectPermissionIdWihSuccess_UserPermissionIsFalse()
+		public void UserCanEditDocuments_ServiceReturnsIncorrectPermissionIdWithSuccess_UserPermissionIsFalse()
 		{
 			//ARRANGE
 			_permissionManager.GetPermissionSelectedAsync(
@@ -287,7 +287,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		}
 
 		[Test]
-		public void UserCanEditDocuments_ServiceReturnsNoPermissions_UserPermissionsIsFalse()
+		public void UserCanEditDocuments_ServiceReturnsNoPermissions_UserPermissionIsFalse()
 		{
 			//ARRANGE
 			_permissionManager.GetPermissionSelectedAsync(

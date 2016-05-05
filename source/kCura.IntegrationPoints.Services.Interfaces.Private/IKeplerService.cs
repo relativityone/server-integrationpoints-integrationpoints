@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Services
 {
-	public interface IKelperService
+	public interface IKeplerService
 	{
 		/// <summary>
 		/// Pings the service to ensure it is up and running.

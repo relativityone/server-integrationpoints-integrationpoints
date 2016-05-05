@@ -32,8 +32,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\bin\kCura.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=9.4.35.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Relativity.Client.9.4.35.1\lib\net45\kCura.Relativity.Client.dll</HintPath>
+    <Reference Include="kCura.Relativity.Client, Version=9.3.395.7, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Relativity.Client.9.3.395.7\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -59,12 +59,13 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Extensions\IntegrationPointExtensions.cs" />
     <Compile Include="IDocumentManager.cs" />
     <Compile Include="IIntegrationPointManager.cs" />
     <Compile Include="IJobHistoryManager.cs" />
     <Compile Include="IIntegrationPointsModule.cs" />
-    <Compile Include="KelperServiceBase.cs" />
-    <Compile Include="IKelperService.cs" />
+    <Compile Include="IKeplerService.cs" />
+    <Compile Include="KeplerServiceBase.cs" />
     <Compile Include="Models\DestinationConfiguration.cs" />
     <Compile Include="Models\HistoricalPromotionStatusModel.cs" />
     <Compile Include="Models\HistoricalPromotionStatusSummaryModel.cs" />

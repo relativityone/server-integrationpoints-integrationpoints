@@ -177,7 +177,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 			Data.JobHistory jobHistory = new Data.JobHistory
 			{
 				ArtifactId = 8675309,
-				Status = JobStatusChoices.JobHistoryErrorJobFailed
+				JobStatus = JobStatusChoices.JobHistoryErrorJobFailed
 			};
 			IList<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>(1) { new JobHistoryError() };
 

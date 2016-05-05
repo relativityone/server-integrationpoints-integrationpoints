@@ -215,12 +215,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 						this.JobHistory.EndTimeUTC = DateTime.UtcNow;
 						if (_errorOccurred)
 						{
-							this.JobHistory.Status = JobStatusChoices.JobHistoryErrorJobFailed;
+							this.JobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
 							_errorOccurred = false;
 						}
 						else
 						{
-							this.JobHistory.Status = JobStatusChoices.JobHistoryCompleted;
+							this.JobHistory.JobStatus = JobStatusChoices.JobHistoryCompleted;
 						}
 					}
 					_caseServiceContext.RsapiService.JobHistoryLibrary.Update(this.JobHistory);
