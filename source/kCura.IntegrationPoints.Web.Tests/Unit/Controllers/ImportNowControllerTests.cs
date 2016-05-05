@@ -16,6 +16,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 	[TestFixture]
 	public class ImportNowControllerTests
 	{
+		private const int _WORKSPACE_ARTIFACT_ID = 1020530;
+		private const int _INTEGRATION_POINT_ARTIFACT_ID = 1003663;
 		private const int _USERID = 9;
 		private readonly string _userIdString = _USERID.ToString();
 
@@ -28,7 +30,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		[SetUp]
 		public void Setup()
 		{
-			_payload = new ImportNowController.Payload { AppId = 1, ArtifactId = 123 };
+			_payload = new ImportNowController.Payload { AppId = _WORKSPACE_ARTIFACT_ID, ArtifactId = _INTEGRATION_POINT_ARTIFACT_ID };
 
 			_caseSericeContext = Substitute.For<ICaseServiceContext>();
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
@@ -47,7 +49,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			const string expectedErrorMessage = @"""Unable to determine the user id. Please contact your system administrator.""";
 
 			Exception exception = new Exception("Unable to determine the user id. Please contact your system administrator.");
-			_integrationPointService.When(service => service.RunIntegrationPoint(1, 123, 0)).Throw(exception);
+			_integrationPointService.When(
+				service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
+				.Throw(exception);
 
 			// Act
 			HttpResponseMessage response = _instance.Post(_payload);
@@ -71,7 +75,9 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			AggregateException exceptionToBeThrown = new AggregateException("ABC",
 				new[] { new AccessViolationException("123"), new Exception("456") });
 
-			_integrationPointService.When(service => service.RunIntegrationPoint(1, 123, _USERID)).Throw(exceptionToBeThrown);
+			_integrationPointService.When(
+				service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID))
+				.Throw(exceptionToBeThrown);
 
 			// Act
 			HttpResponseMessage response = _instance.Post(_payload);
@@ -91,7 +97,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			HttpResponseMessage response = _instance.Post(_payload);
 
 			// Assert
-			_integrationPointService.Received(1).RunIntegrationPoint(1, 123, 0);
+			_integrationPointService.Received(1).RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 
@@ -109,7 +115,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			HttpResponseMessage response = _instance.Post(_payload);
 
 			// Assert
-			_integrationPointService.Received(1).RunIntegrationPoint(1, 123, _USERID);
+			_integrationPointService.Received(1).RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 
@@ -127,7 +133,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			HttpResponseMessage response = _instance.RetryJob(_payload);
 
 			// Assert
-			_integrationPointService.Received(1).RetryIntegrationPoint(1, 123, _USERID);
+			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 
@@ -141,7 +147,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			HttpResponseMessage response = _instance.RetryJob(_payload);
 
 			// Assert
-			_integrationPointService.Received(1).RetryIntegrationPoint(1, 123, 0);
+			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 	}
