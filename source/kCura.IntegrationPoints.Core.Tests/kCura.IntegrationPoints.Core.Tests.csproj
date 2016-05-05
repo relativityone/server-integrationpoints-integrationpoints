@@ -135,7 +135,6 @@
     <Compile Include="Unit\BatchStatusCommands\DestinationWorkspaceManagerTest.cs" />
     <Compile Include="Unit\BatchStatusCommands\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="Unit\BatchStatusCommands\TempTableReaderTests.cs" />
-    <Compile Include="Unit\JobHistoryErrorServiceTest.cs" />
     <Compile Include="Unit\DeleteHistoryServiceTest.cs" />
     <Compile Include="Unit\BatchStatusCommands\JobHistoryManagerTest.cs" />
     <Compile Include="Unit\JobStatusUpdaterTests.cs" />
@@ -149,6 +148,8 @@
     <Compile Include="Unit\Services\Export\LazyExceptArtifactFieldDtoTests.cs" />
     <Compile Include="Unit\Services\Export\RelativityExporterServiceTests.cs" />
     <Compile Include="Unit\Services\IntegrationPointServiceTests.cs" />
+    <Compile Include="Unit\Services\JobHistory\JobHistoryErrorServiceTest.cs" />
+    <Compile Include="Unit\Services\JobHistory\JobHistoryServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

@@ -11,6 +11,8 @@ namespace kCura.IntegrationPoints.Core
 			public const string APP_DOMAIN_DATA_SYSTEM_TOKEN_PROVIDER = "SystemToken";
 			public const string APP_DOMAIN_DATA_CONNECTION_STRING = "IntegrationPointsConnectionString";
 
+			public const string NO_SOURCE_PROVIDER_SPECIFIED = "A source provider was not specified for the integration point. Please create a new integration point.";
+
 			public const string NO_PERMISSION_TO_IMPORT = "You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.";
 			public const string NO_USERID = "Unable to determine the user id. Please contact your system administrator.";
 			public const string NO_PERMISSION_TO_EDIT_DOCUMENTS = "You do not have permission to edit documents in the current workspace. Please contact your system administrator.";
