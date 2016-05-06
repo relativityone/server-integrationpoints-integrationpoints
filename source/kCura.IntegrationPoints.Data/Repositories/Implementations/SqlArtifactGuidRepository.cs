@@ -77,7 +77,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return guidExists;
 		}
 
-		public IDictionary<Guid, bool> GuidsExist(IEnumerable<Guid> guids)
+	    public IDictionary<Guid, bool> GuidsExist(IEnumerable<Guid> guids)
 		{
 			List<Guid> guidList = guids.ToList();
 			string guidCSV = String.Join(",", guidList.Select(x => $"'{x}'"));
@@ -98,5 +98,24 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			return guidDictionary;
 		}
-	}
+
+        public Dictionary<int, Guid> GetGuidsForArtifactIds(IEnumerable<int> artifactIds)
+        {
+            var output = new Dictionary<int, Guid>();
+            string artifactIdCsv = String.Join(",", artifactIds);
+            string sql =  $"SELECT [ArtifactID],[ArtifactGuid] FROM [eddsdbo].[ArtifactGuid] WHERE [ArtifactID] IN ({artifactIdCsv})";
+
+            DataTable result = _context.DBContext.ExecuteSqlStatementAsDataTable(sql);
+
+            if (result != null && result.Rows != null && result.Rows.Count > 0)
+            {
+                foreach (DataRow row in result.Rows)
+                {
+                    output.Add((int)row[0], new Guid(row[1].ToString()));
+                }
+            }
+
+            return output;
+        }
+    }
 }

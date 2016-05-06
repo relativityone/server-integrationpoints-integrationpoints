@@ -1,8 +1,4 @@
-﻿using System;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data;
-using kCura.Relativity.Client;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration

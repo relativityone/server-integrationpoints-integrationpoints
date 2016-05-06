@@ -4,8 +4,8 @@
 			<span class="label title">Field Mappings</span>
 			<span style="visibility: hidden;" id="forceRedraw"></span>
 			<div class="map-field-title">
-				<label class="list-title workspace-field">Destination</label>
-				<label class="list-title source-field">Source</label>
+				<label class="list-title leftSide-field">Destination</label>
+				<label class="list-title rightSide-field">Source</label>
 
 			</div>
 			<div data-bind="validationMessage: sourceMapped" class="icon-error legal-hold field-validation-error"></div>
@@ -47,10 +47,10 @@
 				</div>
 				<div class="cell selection map-move">
 					<div>
-						<a href="#" id="add-all-source-fields" class="icon-move-last" data-bind="click: addAlltoSourceField"></a>
+						<a href="#" id="add-all-source-fields" class="icon-move-first" data-bind="click: addSourceToMapped"></a>
 						<a href="#" id="add-source-field" class="icon-move-previous" data-bind="click: addToMappedSource"></a>
 						<a href="#" id="remove-source-field" class="icon-move-next" data-bind="click: addToSourceField"></a>
-						<a href="#" id="remove-all-source-fields" class="icon-move-first" data-bind="click: addSourceToMapped"></a>
+						<a href="#" id="remove-all-source-fields" class="icon-move-last" data-bind="click: addAlltoSourceField"></a>
 					</div>
 				</div>
 				<div class="cell">

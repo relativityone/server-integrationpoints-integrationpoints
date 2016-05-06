@@ -124,7 +124,8 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class JobHistoryFields : BaseFields
 	{
-		public const string Status = @"Status";
+		public const string JobStatus = @"Status";
+		public const string JobType = @"Job Type";
 		public const string DestinationWorkspace = "Destination Workspace";
 		public const string ItemsImported = @"Items Imported";
 		public const string TotalItems = @"Total Items";
@@ -138,7 +139,8 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class JobHistoryFieldGuids 
 	{
-		public const string Status = @"5c28ce93-c62f-4d25-98c9-9a330a6feb52";
+		public const string JobStatus = @"5c28ce93-c62f-4d25-98c9-9a330a6feb52";
+		public const string JobType = @"E809DB5E-5E99-4A75-98A1-26129313A3F5";
 		public const string ItemsImported = @"70680399-c8ea-4b12-b711-e9ecbc53cb1c";
 		public const string TotalItems = @"576189A9-0347-4B20-9369-B16D1AC89B4B";
 		public const string DestinationWorkspace = @"FF01A766-B494-4F2C-9CBB-10A5AB163B8D";
@@ -158,6 +160,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string StackTrace = @"StackTrace";
 		public const string TimestampUTC = @"Timestamp (UTC)";
 		public const string ErrorType = @"Error Type";
+		public const string ErrorStatus = @"Error Status";
 		public const string Name = @"Name";
 	}
 
@@ -169,6 +172,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string StackTrace = "0353DBDE-9E00-4227-8A8F-4380A8891CFF";
 		public const string TimestampUTC = @"b9cba772-e7c9-493e-b7f8-8d605a6bfe1f";
 		public const string ErrorType = @"eeffa5d3-82e3-46f8-9762-b4053d73f973";
+		public const string ErrorStatus = @"DE1A46D2-D615-427A-B9F2-C10769BC2678";
 		public const string Name = @"84e757cc-9da2-435d-b288-0c21ec589e66";
 	}
 
@@ -181,6 +185,13 @@ namespace kCura.IntegrationPoints.Data
 		public static Choice IntegrationPointAppendOnly = new Choice(Guid.Parse("998c2b04-d42e-435b-9fba-11fec836aad8"), @"Append Only");
 		public static Choice IntegrationPointAppendOverlay = new Choice(Guid.Parse("5450ebc3-ac57-4e6a-9d28-d607bbdcf6fd"), @"Append/Overlay");
 		public static Choice IntegrationPointOverlayOnly = new Choice(Guid.Parse("70a1052d-93a3-4b72-9235-ac65f0d5a515"), @"Overlay Only");
+	}
+
+	public partial class JobTypeChoices
+	{
+		public static Choice JobHistoryRunNow = new Choice(Guid.Parse("86C8C17D-74EC-4187-BDB1-9380252F4C20"), @"Run Now");
+		public static Choice JobHistoryScheduledRun = new Choice(Guid.Parse("79510AD3-49CB-4B4F-840C-C64247404A4D"), @"Scheduled Run");
+		public static Choice JobHistoryRetryErrors = new Choice(Guid.Parse("B0171A20-2042-44EB-A957-5DBC9C377C2F"), @"Retry Errors");
 	}
 
 	public partial class JobStatusChoices
@@ -196,6 +207,14 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public static Choice JobHistoryErrorItem = new Choice(Guid.Parse("9ddc4914-fef3-401f-89b7-2967cd76714b"), @"Item");
 		public static Choice JobHistoryErrorJob = new Choice(Guid.Parse("fa8bb625-05e6-4bf7-8573-012146baf19b"), @"Job");
+	}
+
+	public partial class ErrorStatusChoices
+	{
+		public static Choice JobHistoryErrorNew = new Choice(Guid.Parse("F881B199-8A67-4D49-B1C1-F9E68658FB5A"), @"New");
+		public static Choice JobHistoryErrorExpired = new Choice(Guid.Parse("AF01A8FA-B419-49B1-BD71-25296E221E57"), @"Expired");
+		public static Choice JobHistoryErrorInProgress = new Choice(Guid.Parse("E5EBD98C-C976-4FA2-936F-434E265EA0AA"), @"In Progress");
+		public static Choice JobHistoryErrorRetried = new Choice(Guid.Parse("7D3D393D-384F-434E-9776-F9966550D29A"), @"Retried");
 	}
 
 	#endregion								

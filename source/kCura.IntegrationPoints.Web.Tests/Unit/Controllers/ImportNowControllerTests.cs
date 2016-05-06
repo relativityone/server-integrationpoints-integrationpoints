@@ -5,12 +5,10 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
 using System.Web.Http.Hosting;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
@@ -18,84 +16,47 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 	[TestFixture]
 	public class ImportNowControllerTests
 	{
-		private ImportNowController _controller;
-		private IJobManager _jobManager;
-		private ICaseServiceContext _caseServiceContext;
-		private IPermissionService _permissionService;
-		private ImportNowController.IIntegrationPointRdoAdaptor _rdoAdaptor;
-		private ImportNowController.Payload _payload;
-		private readonly string _userIdString = _USERID.ToString();
+		private const int _WORKSPACE_ARTIFACT_ID = 1020530;
+		private const int _INTEGRATION_POINT_ARTIFACT_ID = 1003663;
 		private const int _USERID = 9;
+		private readonly string _userIdString = _USERID.ToString();
+
+		private ImportNowController.Payload _payload;
+		private ICaseServiceContext _caseSericeContext;
+		private IIntegrationPointService _integrationPointService;
+
+		private ImportNowController _instance;
 
 		[SetUp]
 		public void Setup()
 		{
-			_payload = new ImportNowController.Payload()
-			{
-				AppId = 1,
-				ArtifactId = 123
-			};
+			_payload = new ImportNowController.Payload { AppId = _WORKSPACE_ARTIFACT_ID, ArtifactId = _INTEGRATION_POINT_ARTIFACT_ID };
 
-			_jobManager = Substitute.For<IJobManager>();
-			_caseServiceContext = Substitute.For<ICaseServiceContext>();
-			_permissionService = Substitute.For<IPermissionService>();
-			_rdoAdaptor = Substitute.For<ImportNowController.IIntegrationPointRdoAdaptor>();
-			_controller = new ImportNowController(_jobManager, _caseServiceContext, _permissionService, _rdoAdaptor);
-			_controller.Request = new HttpRequestMessage();
-			_controller.Request.Properties.Add(HttpPropertyKeys.HttpConfigurationKey, new HttpConfiguration());
+			_caseSericeContext = Substitute.For<ICaseServiceContext>();
+			_integrationPointService = Substitute.For<IIntegrationPointService>();
+
+			_instance = new ImportNowController(_caseSericeContext, _integrationPointService)
+			{
+				Request = new HttpRequestMessage()
+			};
+			_instance.Request.Properties.Add(HttpPropertyKeys.HttpConfigurationKey, new HttpConfiguration());
 		}
 
 		[Test]
-		public void UserDoesNotHavePermissionToPushToTheDestinationWorkspace()
+		public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitPushingJob_ExpectBadRequest()
 		{
-			List<Claim> claims = new List<Claim>()
-			{
-				new Claim("rel_uai", _userIdString)
-			};
-			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
-			const string expectedErrorMessage = @"""You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.""";
-
-			_rdoAdaptor.SourceProviderIdentifier.Returns(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID);
-			_rdoAdaptor.SourceConfiguration.Returns("{TargetWorkspaceArtifactId : 123}");
-			_permissionService.UserCanImport(123).Returns(false);
-
-			HttpResponseMessage response = _controller.Post(_payload);
-
-			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().Result);
-		}
-
-		[Test]
-		public void UserDoesHaveAPermissionToPushToAnotherWorkspace()
-		{
-			List<Claim> claims = new List<Claim>()
-			{
-				new Claim("rel_uai", _userIdString)
-			};
-			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
-			_rdoAdaptor.SourceProviderIdentifier.Returns(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID);
-			_rdoAdaptor.SourceConfiguration.Returns("{TargetWorkspaceArtifactId : 123}");
-			_permissionService.UserCanImport(123).Returns(true);
-			
-			HttpResponseMessage response = _controller.Post(_payload);
-
-			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.ExportService, _payload.AppId, _payload.ArtifactId, _USERID);
-			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-		}
-
-		[Test]
-		public void	ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitPushingJob_ExpectBadRequest()
-		{
+			// Arrange
 			const string expectedErrorMessage = @"""Unable to determine the user id. Please contact your system administrator.""";
-			List<Claim> claims = new List<Claim>();
-			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
-			_rdoAdaptor.SourceProviderIdentifier.Returns(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID);
-			_rdoAdaptor.SourceConfiguration.Returns("{TargetWorkspaceArtifactId : 123}");
-			_permissionService.UserCanImport(123).Returns(true);
 
-			HttpResponseMessage response = _controller.Post(_payload);
+			Exception exception = new Exception("Unable to determine the user id. Please contact your system administrator.");
+			_integrationPointService.When(
+				service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
+				.Throw(exception);
 
-			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>());
+			// Act
+			HttpResponseMessage response = _instance.Post(_payload);
+
+			// Assert
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().Result);
 		}
@@ -103,19 +64,25 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		[Test]
 		public void RsapiCallThrowsException()
 		{
-			List<Claim> claims = new List<Claim>()
+			// Arrange
+			var claims = new List<Claim>(1)
 			{
 				new Claim("rel_uai", _userIdString)
 			};
-			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 			const string expectedErrorMessage = @"""ABC : 123,456""";
 
 			AggregateException exceptionToBeThrown = new AggregateException("ABC",
 				new[] { new AccessViolationException("123"), new Exception("456") });
 
-			_rdoAdaptor.SourceProviderIdentifier.Throws(exceptionToBeThrown);
-			HttpResponseMessage response = _controller.Post(_payload);
+			_integrationPointService.When(
+				service => service.RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID))
+				.Throw(exceptionToBeThrown);
 
+			// Act
+			HttpResponseMessage response = _instance.Post(_payload);
+
+			// Assert
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
 			Assert.AreEqual(expectedErrorMessage, response.Content.ReadAsStringAsync().Result);
 		}
@@ -123,30 +90,64 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		[Test]
 		public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitNormalJob_ExpectNoError()
 		{
-			List<Claim> claims = new List<Claim>();
-			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
-			_rdoAdaptor.SourceProviderIdentifier.Returns(Guid.NewGuid().ToString());
+			// Arrange
+			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 
-			HttpResponseMessage response = _controller.Post(_payload);
+			// Act
+			HttpResponseMessage response = _instance.Post(_payload);
 
-			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.SyncManager, _payload.AppId, _payload.ArtifactId, 0);
+			// Assert
+			_integrationPointService.Received(1).RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
-
 
 		[Test]
 		public void NonRelativityProviderCall()
 		{
-			List<Claim> claims = new List<Claim>()
+			// Arrange
+			var claims = new List<Claim>(1)
 			{
 				new Claim("rel_uai", _userIdString)
 			};
-			_controller.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
-			_rdoAdaptor.SourceProviderIdentifier.Returns(Guid.NewGuid().ToString());
+			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
-			HttpResponseMessage response = _controller.Post(_payload);
+			// Act
+			HttpResponseMessage response = _instance.Post(_payload);
 
-			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.SyncManager, _payload.AppId, _payload.ArtifactId, _USERID);
+			// Assert
+			_integrationPointService.Received(1).RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID);
+			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+		}
+
+		[Test]
+		public void RetryJob_UserIdExists_Succeeds_Test()
+		{
+			// Arrange
+			var claims = new List<Claim>(1)
+			{
+				new Claim("rel_uai", _userIdString)
+			};
+			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+
+			// Act
+			HttpResponseMessage response = _instance.RetryJob(_payload);
+
+			// Assert
+			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID);
+			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+		}
+
+		[Test]
+		public void RetryJob_UserIdDoesNotExist_Succeeds_Test()
+		{
+			// Arrange
+			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
+
+			// Act
+			HttpResponseMessage response = _instance.RetryJob(_payload);
+
+			// Assert
+			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 		}
 	}

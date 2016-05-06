@@ -4,29 +4,47 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
 	public class IntegrationPointService : IIntegrationPointService
 	{
 		private readonly ICaseServiceContext _context;
+		private readonly IContextContainer _contextContainer;
+		private readonly IPermissionService _permissionService;
 		private IntegrationPoint _rdo;
 		private readonly ISerializer _serializer;
 		private readonly ChoiceQuery _choiceQuery;
 		private readonly IJobManager _jobService;
+		private readonly IJobHistoryService _jobHistoryService;
+		private readonly IManagerFactory _managerFactory;
 
-		public IntegrationPointService(ICaseServiceContext context, ISerializer serializer, ChoiceQuery choiceQuery, IJobManager jobService)
+		public IntegrationPointService(ICaseServiceContext context,
+			IContextContainer contextContainer,
+			IPermissionService permissionService,
+			ISerializer serializer, ChoiceQuery choiceQuery,
+			IJobManager jobService,
+			IJobHistoryService jobHistoryService,
+			IManagerFactory managerFactory)
 		{
 			_context = context;
+			_contextContainer = contextContainer;
+			_permissionService = permissionService;
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
 			_jobService = jobService;
+			_jobHistoryService = jobHistoryService;
+			_managerFactory = managerFactory;
 		}
 
 		public IntegrationPoint GetRdo(int artifactId)
@@ -115,6 +133,8 @@ namespace kCura.IntegrationPoints.Core.Services
 				{
 					BatchInstance = Guid.NewGuid()
 				};
+
+				CheckForRelativityProviderAdditionalPermissions(ip.SourceConfiguration, _context.EddsUserID);
 				task = TaskType.ExportService;
 			}
 			else
@@ -146,6 +166,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			return ip.ArtifactId;
 		}
+
 		public IEnumerable<string> GetRecipientEmails(int artifactId)
 		{
 			IntegrationPoint integrationPoint = GetRdo(artifactId);
@@ -157,11 +178,11 @@ namespace kCura.IntegrationPoints.Core.Services
 		public class Weekly
 		{
 			public List<string> SelectedDays { get; set; }
-			public string TemplateId { get; set; }
+			public string TemplateID { get; set; }
 
 			public Weekly()
 			{
-				TemplateId = "weeklySendOn";
+				TemplateID = "weeklySendOn";
 			}
 		}
 
@@ -261,6 +282,115 @@ namespace kCura.IntegrationPoints.Core.Services
 			return periodicScheduleRule;
 		}
 
+		public void RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
+		{
+			IntegrationPoint integrationPoint = GetRdo(integrationPointArtifactId);
+			SourceProvider sourceProvider = GetSourceProvider(integrationPoint);
 
+			CheckPermissions(integrationPoint, sourceProvider, userId);
+			CheckForOtherJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId); //todo: add this to retry as well - MNG
+			CreateJob(integrationPoint, sourceProvider, workspaceArtifactId, userId);
+		}
+
+		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
+		{
+			IntegrationPoint integrationPoint = GetRdo(integrationPointArtifactId);
+			SourceProvider sourceProvider = GetSourceProvider(integrationPoint);
+
+			if (!sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+			{
+				throw new Exception(Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
+			}
+
+			CheckPermissions(integrationPoint, sourceProvider, userId);
+
+			if (integrationPoint.HasErrors.HasValue == false || integrationPoint.HasErrors.Value == false)
+			{
+				throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
+			}
+
+			UpdateJobHistoryOnRetry(integrationPoint);
+			CreateJob(integrationPoint, sourceProvider, workspaceArtifactId, userId);
+		}
+
+		private void CheckPermissions(IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
+		{
+			if (sourceProvider.Identifier == DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
+			{
+				CheckForRelativityProviderAdditionalPermissions(integrationPoint.SourceConfiguration, userId);
+			}
+		}
+
+		private SourceProvider GetSourceProvider(IntegrationPoint integrationPoint)
+		{
+			if (!integrationPoint.SourceProvider.HasValue)
+			{
+				throw new Exception(Constants.IntegrationPoints.NO_SOURCE_PROVIDER_SPECIFIED);
+			}
+
+			SourceProvider sourceProvider = _context.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value);
+
+			return sourceProvider;
+		}
+
+		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, int workspaceArtifactId, int userId)
+		{
+			var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
+
+			// If the Relativity provider is selected, we need to create an export task
+			TaskType jobTaskType =
+				sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
+					? TaskType.ExportService
+					: TaskType.SyncManager;
+
+			_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, null);
+			_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
+		}
+
+		private void UpdateJobHistoryOnRetry(IntegrationPoint integrationPoint)
+		{
+			Data.JobHistory lastCompletedJob = _jobHistoryService.GetLastJobHistory(integrationPoint);
+			if (lastCompletedJob == null)
+			{
+				throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
+			}
+			_jobHistoryService.UpdateJobHistoryOnRetry(lastCompletedJob);
+		}
+
+		private void CheckForRelativityProviderAdditionalPermissions(string config, int userId)
+		{
+			WorkspaceConfiguration workspaceConfiguration = JsonConvert.DeserializeObject<WorkspaceConfiguration>(config);
+			if (_permissionService.UserCanImport(workspaceConfiguration.TargetWorkspaceArtifactId) == false)
+			{
+				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT);
+			}
+
+			if (_permissionService.UserCanEditDocuments(workspaceConfiguration.SourceWorkspaceArtifactId) == false)
+			{
+				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
+			}
+
+			if (userId == 0)
+			{
+				throw new Exception(Constants.IntegrationPoints.NO_USERID);
+			}
+		}
+
+		private void CheckForOtherJobsExecutingOrInQueue(int workspaceArtifactId , int integrationPointArtifactId)
+		{
+			IQueueManager queueManager = _managerFactory.CreateQueueManager(_contextContainer);
+			bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
+
+			if (jobsExecutingOrInQueue)
+			{
+				throw new Exception(Constants.IntegrationPoints.JOBS_ALREADY_RUNNING);
+			}
+		}
+
+		internal class WorkspaceConfiguration
+		{
+			public int TargetWorkspaceArtifactId;
+			public int SourceWorkspaceArtifactId;
+		}
 	}
 }

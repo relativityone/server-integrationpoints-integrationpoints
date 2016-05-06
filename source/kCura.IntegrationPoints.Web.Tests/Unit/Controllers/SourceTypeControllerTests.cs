@@ -128,8 +128,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			Assert.IsNotNull(response);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 			StringAssert.AreEqualIgnoringCase(
-				"[{\"name\":\"name\",\"id\":123,\"value\":\"d39d9a5e-e009-4c33-b112-73cc45c2ae2d\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}" +
-				",{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[10],\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":false}}}]",
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"d39d9a5e-e009-4c33-b112-73cc45c2ae2d\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null,\"OnlyMapIdentifierToIdentifier\":false,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}" +
+				",{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[10],\"OnlyMapIdentifierToIdentifier\":false,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":false}}}]",
 				response.Content.ReadAsStringAsync().Result);
 		}
 
@@ -161,7 +161,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			Assert.IsNotNull(response);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 			StringAssert.AreEqualIgnoringCase(
-				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[],\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[],\"OnlyMapIdentifierToIdentifier\":false,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
 				response.Content.ReadAsStringAsync().Result);
 		}
 
@@ -190,7 +190,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			Assert.IsNotNull(response);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 			StringAssert.AreEqualIgnoringCase(
-				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":null,\"OnlyMapIdentifierToIdentifier\":false,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
 				response.Content.ReadAsStringAsync().Result);
 		}
 
@@ -222,7 +222,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			Assert.IsNotNull(response);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 			StringAssert.AreEqualIgnoringCase(
-				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[],\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[],\"OnlyMapIdentifierToIdentifier\":false,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
 				response.Content.ReadAsStringAsync().Result);
 		}
 
@@ -258,7 +258,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			Assert.IsNotNull(response);
 			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 			StringAssert.AreEqualIgnoringCase(
-				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[10,789456],\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
+				"[{\"name\":\"name\",\"id\":123,\"value\":\"423b4d43-eae9-4e14-b767-17d629de4bb2\",\"url\":\"url\",\"config\":{\"CompatibleRdoTypes\":[10,789456],\"OnlyMapIdentifierToIdentifier\":false,\"ImportSettingVisibility\":{\"AllowUserToMapNativeFileField\":true}}}]",
 				response.Content.ReadAsStringAsync().Result);
 		}
 	}

@@ -8,10 +8,10 @@ namespace kCura.IntegrationPoints.Web
 	{
 		private readonly int DEFAULT_PAGE_SIZE = 25;
 		private readonly UserService _userService;
+
 		public GridModelFactory(UserService service)
 		{
 			_userService = service;
-		
 		}
 
 		public GridModel CreateModel(string id, int userID)
