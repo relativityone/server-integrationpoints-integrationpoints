@@ -663,7 +663,7 @@
     <Compile Include="Services\TaskParameterHelper.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\Domain\SynchronizerWrapper.cs" />
-    <Compile Include="IntegrationPointTaskBase.cs" />
+    <Compile Include="Agent\IntegrationPointTaskBase.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
