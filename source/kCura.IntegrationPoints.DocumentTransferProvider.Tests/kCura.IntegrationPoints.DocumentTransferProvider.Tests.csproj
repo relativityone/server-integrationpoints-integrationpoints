@@ -67,15 +67,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.API, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.ImportAPI.Wrapper">
-      <HintPath>..\Dependencies\kCura\Relativity.ImportAPI.Wrapper.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.Services.Interfaces">
-      <HintPath>..\Dependencies\kCura\Relativity.Services.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.API">
+      <HintPath>..\packages\Relativity.API.9.3.398.12\lib\net45\Relativity.API.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
