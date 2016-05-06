@@ -4,6 +4,8 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -18,25 +20,31 @@ namespace kCura.IntegrationPoints.Core.Services
 	public class IntegrationPointService : IIntegrationPointService
 	{
 		private readonly ICaseServiceContext _context;
+		private readonly IContextContainer _contextContainer;
 		private readonly IPermissionService _permissionService;
 		private IntegrationPoint _rdo;
 		private readonly ISerializer _serializer;
 		private readonly ChoiceQuery _choiceQuery;
 		private readonly IJobManager _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
+		private readonly IManagerFactory _managerFactory;
 
 		public IntegrationPointService(ICaseServiceContext context,
+			IContextContainer contextContainer,
 			IPermissionService permissionService,
-			ISerializer serializer, ChoiceQuery choiceQuery, 
+			ISerializer serializer, ChoiceQuery choiceQuery,
 			IJobManager jobService,
-			IJobHistoryService jobHistoryService)
+			IJobHistoryService jobHistoryService,
+			IManagerFactory managerFactory)
 		{
 			_context = context;
+			_contextContainer = contextContainer;
 			_permissionService = permissionService;
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
+			_managerFactory = managerFactory;
 		}
 
 		public IntegrationPoint GetRdo(int artifactId)
@@ -191,11 +199,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			public int SelectedDay { get; set; }
 			public OccuranceInMonth? SelectedType { get; set; }
 			public DaysOfWeek SelectedDayOfTheMonth { get; set; }
-			public string TemplateId { get; set; }
+			public string TemplateID { get; set; }
 
 			public Monthly()
 			{
-				TemplateId = "monthlySendOn";
+				TemplateID = "monthlySendOn";
 			}
 		}
 
@@ -276,29 +284,77 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public void RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
 		{
-			Guid batchInstance = Guid.NewGuid();
-			var jobDetails = new TaskParameters()
-			{
-				BatchInstance = batchInstance
-			};
+			IntegrationPoint integrationPoint = GetRdo(integrationPointArtifactId);
+			SourceProvider sourceProvider = GetSourceProvider(integrationPoint);
 
-			IntegrationPoint integrationPointRdo = GetRdo(integrationPointArtifactId);
-			SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(integrationPointRdo.SourceProvider.Value);
-			string identifier = provider.Identifier;
+			CheckPermissions(integrationPoint, sourceProvider, userId);
+			CheckForOtherJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId); //todo: add this to retry as well - MNG
+			CreateJob(integrationPoint, sourceProvider, workspaceArtifactId, userId);
+		}
 
-			// if relativity provider is selected, we will create an export task
-			if (identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
+		{
+			IntegrationPoint integrationPoint = GetRdo(integrationPointArtifactId);
+			SourceProvider sourceProvider = GetSourceProvider(integrationPoint);
+
+			if (!sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
 			{
-				string sourceConfig = integrationPointRdo.SourceConfiguration;
-				CheckForRelativityProviderAdditionalPermissions(sourceConfig, userId);
-				_jobHistoryService.CreateRdo(integrationPointRdo, batchInstance, null);
-				_jobService.CreateJobOnBehalfOfAUser(jobDetails, TaskType.ExportService, workspaceArtifactId, integrationPointArtifactId, userId);
+				throw new Exception(Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
 			}
-			else
+
+			CheckPermissions(integrationPoint, sourceProvider, userId);
+
+			if (integrationPoint.HasErrors.HasValue == false || integrationPoint.HasErrors.Value == false)
 			{
-				_jobHistoryService.CreateRdo(integrationPointRdo, batchInstance, null);
-				_jobService.CreateJobOnBehalfOfAUser(jobDetails, TaskType.SyncManager, workspaceArtifactId, integrationPointArtifactId, userId);
+				throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
 			}
+
+			UpdateJobHistoryOnRetry(integrationPoint);
+			CreateJob(integrationPoint, sourceProvider, workspaceArtifactId, userId);
+		}
+
+		private void CheckPermissions(IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
+		{
+			if (sourceProvider.Identifier == DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
+			{
+				CheckForRelativityProviderAdditionalPermissions(integrationPoint.SourceConfiguration, userId);
+			}
+		}
+
+		private SourceProvider GetSourceProvider(IntegrationPoint integrationPoint)
+		{
+			if (!integrationPoint.SourceProvider.HasValue)
+			{
+				throw new Exception(Constants.IntegrationPoints.NO_SOURCE_PROVIDER_SPECIFIED);
+			}
+
+			SourceProvider sourceProvider = _context.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value);
+
+			return sourceProvider;
+		}
+
+		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, int workspaceArtifactId, int userId)
+		{
+			var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
+
+			// If the Relativity provider is selected, we need to create an export task
+			TaskType jobTaskType =
+				sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
+					? TaskType.ExportService
+					: TaskType.SyncManager;
+
+			_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, null);
+			_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
+		}
+
+		private void UpdateJobHistoryOnRetry(IntegrationPoint integrationPoint)
+		{
+			Data.JobHistory lastCompletedJob = _jobHistoryService.GetLastJobHistory(integrationPoint);
+			if (lastCompletedJob == null)
+			{
+				throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
+			}
+			_jobHistoryService.UpdateJobHistoryOnRetry(lastCompletedJob);
 		}
 
 		private void CheckForRelativityProviderAdditionalPermissions(string config, int userId)
@@ -317,6 +373,17 @@ namespace kCura.IntegrationPoints.Core.Services
 			if (userId == 0)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_USERID);
+			}
+		}
+
+		private void CheckForOtherJobsExecutingOrInQueue(int workspaceArtifactId , int integrationPointArtifactId)
+		{
+			IQueueManager queueManager = _managerFactory.CreateQueueManager(_contextContainer);
+			bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
+
+			if (jobsExecutingOrInQueue)
+			{
+				throw new Exception(Constants.IntegrationPoints.JOBS_ALREADY_RUNNING);
 			}
 		}
 

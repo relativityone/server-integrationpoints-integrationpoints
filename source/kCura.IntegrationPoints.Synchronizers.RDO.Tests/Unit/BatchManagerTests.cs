@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI;
-using kCura.Relativity.ImportAPI.Data;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
@@ -25,10 +23,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			BatchManager batchManager = new BatchManager();
 
-
 			//ACT
 			DataTable dataTable = batchManager.ConfigureTable(columnNames, dataSource);
-
 
 			//ASSERT
 			Assert.AreEqual(3, dataTable.Rows.Count);
@@ -42,6 +38,5 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 			Assert.AreEqual(DateTime.Parse("11/24/2014 11:22:33").ToString(), dataTable.Rows[2]["F2"]);
 			Assert.AreEqual("Privet", dataTable.Rows[2]["F3"]);
 		}
-
 	}
 }

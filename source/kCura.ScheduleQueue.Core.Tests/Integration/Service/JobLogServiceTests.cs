@@ -1,5 +1,4 @@
 ﻿using System;
-using kCura.Agent;
 using kCura.ScheduleQueue.Core.Logging;
 using kCura.ScheduleQueue.Core.Services;
 using NSubstitute;

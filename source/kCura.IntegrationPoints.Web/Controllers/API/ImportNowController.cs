@@ -17,29 +17,26 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	{
 		private const string _INTEGRATIONPOINT_ARTIFACT_ID_GUID = "A992C6FD-B6C2-4B97-AAFB-2CFB3F666F62";
 		private const string _SOURCEPROVIDER_ARTIFACT_ID_GUID = "4A091F69-D750-441C-A4F0-24C990D208AE";
-
 		private const string _RELATIVITY_USERID = "rel_uai";
 
 		private readonly IIntegrationPointService _integrationPointService;
 		private readonly ICaseServiceContext _caseServiceContext;
 
-		public ImportNowController(
-			ICaseServiceContext caseServiceContext,
-			IIntegrationPointService integrationPointService)
+		public ImportNowController(ICaseServiceContext caseServiceContext, IIntegrationPointService integrationPointService)
 		{
 			_caseServiceContext = caseServiceContext;
 			_integrationPointService = integrationPointService;
 		}
-
-
-		// POST api/importnow
+		
+		// POST API/ImportNow
 		[HttpPost]
 		public HttpResponseMessage Post(Payload payload)
 		{
-			HttpResponseMessage httpResponseMessage = Internal(payload.AppId, payload.ArtifactId);
+			HttpResponseMessage httpResponseMessage = Internal(payload.AppId, payload.ArtifactId, _integrationPointService.RunIntegrationPoint);
 			return httpResponseMessage;
 		}
 
+		// POST API/SubmitLastJob
 		[HttpPost]
 		public bool SubmitLastJob(int workspaceId)
 		{
@@ -72,16 +69,24 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				return false;
 			}
 
-			HttpResponseMessage message = Internal(workspaceId, integrationPoints.First().ArtifactId);
+			HttpResponseMessage message = Internal(workspaceId, integrationPoints.First().ArtifactId, _integrationPointService.RunIntegrationPoint);
 			return message.IsSuccessStatusCode;
 		}
 
-		private HttpResponseMessage Internal(int workspaceId, int relatedObjectArtifactId)
+		// POST API/RetryJob
+		[HttpPost]
+		public HttpResponseMessage RetryJob(Payload payload)
+		{
+			HttpResponseMessage httpResponseMessage = Internal(payload.AppId, payload.ArtifactId, _integrationPointService.RetryIntegrationPoint);
+			return httpResponseMessage;
+		}
+
+		private HttpResponseMessage Internal(int workspaceId, int relatedObjectArtifactId, Action<int, int, int> integrationPointServiceMethod)
 		{
 			try
 			{
 				int userId = GetUserIdIfExists();
-				_integrationPointService.RunIntegrationPoint(workspaceId, relatedObjectArtifactId, userId);
+				integrationPointServiceMethod(workspaceId, relatedObjectArtifactId, userId);
 			}
 			catch (AggregateException exception)
 			{
@@ -97,7 +102,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private int GetUserIdIfExists()
 		{
-			var user = this.User as ClaimsPrincipal;
+			var user = User as ClaimsPrincipal;
 			if (user != null)
 			{
 				foreach (Claim claim in user.Claims)

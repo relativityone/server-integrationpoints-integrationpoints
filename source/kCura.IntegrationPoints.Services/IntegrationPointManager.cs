@@ -15,21 +15,22 @@ namespace kCura.IntegrationPoints.Services
 		{
 			return await Task.Run(async () =>
 			{
-				IWindsorContainer container = await GetDependenciesContainerAsync(request.WorkspaceArtifactId).ConfigureAwait(false);
-				request.ValidateRequest();
-				request.ValidatePermission(container);
-
-				IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
-
-				IntegrationModel ip = request.CreateIntegrationPointModel();
-				IntegrationPointModel returnVal = new IntegrationPointModel
+				using (IWindsorContainer container = await GetDependenciesContainerAsync(request.WorkspaceArtifactId).ConfigureAwait(false))
 				{
-					ArtifactId = integrationPointService.SaveIntegration(ip),
-					Name = request.Name,
-					SourceProvider = request.SourceProviderArtifactId
-				};
+					request.ValidateRequest();
+					request.ValidatePermission(container);
 
-				return returnVal;
+					IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
+
+					IntegrationModel ip = request.CreateIntegrationPointModel();
+					IntegrationPointModel returnVal = new IntegrationPointModel
+					{
+						ArtifactId = integrationPointService.SaveIntegration(ip),
+						Name = request.Name,
+						SourceProvider = request.SourceProviderArtifactId
+					};
+					return returnVal;
+				}
 			}).ConfigureAwait(false);
 		}
 
@@ -37,25 +38,32 @@ namespace kCura.IntegrationPoints.Services
 		{
 			return await Task.Run(async () =>
 			{
-				IWindsorContainer container = await GetDependenciesContainerAsync(request.WorkspaceArtifactId).ConfigureAwait(false);
-				request.ValidateRequest();
-				request.ValidatePermission(container);
-
-				IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
-				if (integrationPointService.GetRdo(request.IntegrationPointArtifactId) == null)
+				using (IWindsorContainer container =
+						await GetDependenciesContainerAsync(request.WorkspaceArtifactId).ConfigureAwait(false))
 				{
-					throw new Exception($"requested object with artifact id {request.IntegrationPointArtifactId} does not exist.");
+					request.ValidateRequest();
+					request.ValidatePermission(container);
+
+					IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
+					try
+					{
+						integrationPointService.GetRdo(request.IntegrationPointArtifactId);
+					}
+					catch (Exception)
+					{
+						throw new Exception($"requested object with artifact id {request.IntegrationPointArtifactId} does not exist.");
+					}
+
+					IntegrationModel ip = request.CreateIntegrationPointModel();
+					IntegrationPointModel returnVal = new IntegrationPointModel
+					{
+						ArtifactId = integrationPointService.SaveIntegration(ip),
+						Name = request.Name,
+						SourceProvider = request.SourceProviderArtifactId
+					};
+
+					return returnVal;
 				}
-
-				IntegrationModel ip = request.CreateIntegrationPointModel();
-				IntegrationPointModel returnVal = new IntegrationPointModel
-				{
-					ArtifactId = integrationPointService.SaveIntegration(ip),
-					Name = request.Name,
-					SourceProvider = request.SourceProviderArtifactId
-				};
-
-				return returnVal;
 			}).ConfigureAwait(false);
 		}
 
@@ -63,40 +71,54 @@ namespace kCura.IntegrationPoints.Services
 		{
 			return await Task.Run(async () =>
 			{
-				IWindsorContainer container = await GetDependenciesContainerAsync(workspaceArtifactId).ConfigureAwait(false);
+				using (IWindsorContainer container = await GetDependenciesContainerAsync(workspaceArtifactId).ConfigureAwait(false))
+				{
 
-				IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
-				Data.IntegrationPoint integrationPoint = integrationPointService.GetRdo(integrationPointArtifactId);
+					IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
+					Data.IntegrationPoint integrationPoint = integrationPointService.GetRdo(integrationPointArtifactId);
+					try
+					{
+						integrationPointService.GetRdo(integrationPointArtifactId);
+					}
+					catch (Exception)
+					{
+						throw new Exception($"requested object with artifact id {integrationPointArtifactId} does not exist.");
+					}
 
-				var result = integrationPoint.ToIntegrationPointModel();
-				return result;
+					var result = integrationPoint.ToIntegrationPointModel();
+					return result;
+				}
 			}).ConfigureAwait(false);
 		}
 
 		public async Task RunIntegrationPointAsync(int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			IWindsorContainer container = await GetDependenciesContainerAsync(workspaceArtifactId).ConfigureAwait(false);
-			IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
-			int userId = global::Relativity.API.Services.Helper.GetAuthenticationManager().UserInfo.ArtifactID;
-			integrationPointService.RunIntegrationPoint(workspaceArtifactId, integrationPointArtifactId, userId);
+			using (IWindsorContainer container = await GetDependenciesContainerAsync(workspaceArtifactId).ConfigureAwait(false))
+			{
+				IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
+				int userId = global::Relativity.API.Services.Helper.GetAuthenticationManager().UserInfo.ArtifactID;
+				integrationPointService.RunIntegrationPoint(workspaceArtifactId, integrationPointArtifactId, userId);
+			}
 		}
 
 		public async Task<IList<IntegrationPointModel>> GetAllIntegrationPointsAsync(int workspaceArtifactId)
 		{
 			return await Task.Run(async () =>
 			{
-				IWindsorContainer container = await GetDependenciesContainerAsync(workspaceArtifactId).ConfigureAwait(false);
-				IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
-				IList<Data.IntegrationPoint> integrationPoints = integrationPointService.GetAllIntegrationPoints();
-
-				IList<IntegrationPointModel> result = new List<IntegrationPointModel>(integrationPoints.Count);
-				foreach (var integrationPoint in integrationPoints)
+				using (IWindsorContainer container = await GetDependenciesContainerAsync(workspaceArtifactId).ConfigureAwait(false))
 				{
-					IntegrationPointModel model = integrationPoint.ToIntegrationPointModel();
-					result.Add(model);
-				}
+					IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
+					IList<Data.IntegrationPoint> integrationPoints = integrationPointService.GetAllIntegrationPoints();
 
-				return result;
+					IList<IntegrationPointModel> result = new List<IntegrationPointModel>(integrationPoints.Count);
+					foreach (var integrationPoint in integrationPoints)
+					{
+						IntegrationPointModel model = integrationPoint.ToIntegrationPointModel();
+						result.Add(model);
+					}
+
+					return result;
+				}
 			}).ConfigureAwait(false);
 		}
 

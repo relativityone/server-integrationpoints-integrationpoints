@@ -6,6 +6,10 @@ using Castle.Windsor.Installer;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -73,6 +77,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Container.Register(Component.For<IOnBehalfOfUserClaimsPrincipalFactory>()
 					.ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>()
 					.LifestyleTransient());
+
+			Container.Register(
+				Component.For<IQueueManager>().UsingFactoryMethod(k => new QueueManager(new ContextContainer(_helper))));
 		}
 
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
@@ -136,7 +143,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IRSAPIClient rsapiClient = Container.Resolve<IRSAPIClient>();
 			IWorkspaceDBContext workspaceDbContext = Container.Resolve<IWorkspaceDBContext>();
 			IEddsServiceContext eddsServiceContext = Container.Resolve<IEddsServiceContext>();
-			IWorkspaceRepository workspaceRepository = Container.Resolve<IWorkspaceRepository>();
 
 			ChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
 			JobResourceTracker jobResourceTracker = new JobResourceTracker(workspaceDbContext);
@@ -145,10 +151,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			IJobService jobService = new JobService(agentService, _helper);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
-			IPermissionService permissionService = new PermissionService(_helper.GetServicesManager());
-			IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
+			IPermissionService permissionService = Container.Resolve<IPermissionService>();
+			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
+			IContextContainer contextContainer = new ContextContainer(_helper);
+			IManagerFactory managerFactory = new ManagerFactory();
 
-			IntegrationPointService integrationPointService = new IntegrationPointService(caseServiceContext, permissionService, serializer, choiceQuery, jobManager, jobHistoryService);
+			IntegrationPointService integrationPointService = new IntegrationPointService(caseServiceContext, contextContainer, permissionService, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
 			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 
 			TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
@@ -169,7 +177,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
 			jobHistoryErrorService.CommitErrors();
 
-			jobHistory.Status = JobStatusChoices.JobHistoryErrorJobFailed;
+			jobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
 			jobHistoryService.UpdateRdo(jobHistory);
 
 			// No updates to IP since the job history error service handles IP updates

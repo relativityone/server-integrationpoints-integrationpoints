@@ -41,9 +41,9 @@
 						"artifactId": artifactId
 					})
 				});
-				ajax.fail(function (value) {
+				ajax.fail(function(value) {
 					IP.message.error.raise("Failed to submit integration job. " + value.responseText, $(".cardContainer"));
-				})
+				});
 				ajax.done(function () {
 					IP.message.info.raise("Data will now be imported from the source provider.", $(".cardContainer"));
 				});
@@ -51,8 +51,24 @@
 		});
 	};
 
-	var _convertUTCToLocal = function () {
-	};
+	root.retryJob = function(artifactId, appId) {
+		var ajax = IP.data.ajax({
+			type: "POST",
+			url: root.utils.generateWebAPIURL('ImportNow/RetryJob'),
+			async: true,
+			data: JSON.stringify({
+				"appId": appId,
+				"artifactId": artifactId
+			})
+		});
+
+		ajax.fail(function(value) {
+			IP.message.error.raise("Failed to sumit the retry job. " + value.responseText, $(".cardContainer"));
+		});
+		ajax.done(function() {
+			IP.message.info.raise("Retry job submitted. Data will now be imported from the source provider.", $(".cardContainer"));
+		});
+	}
 
 	var config = {
 		time: {
