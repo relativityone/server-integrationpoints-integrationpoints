@@ -63,7 +63,7 @@
 		});
 
 		ajax.fail(function(value) {
-			IP.message.error.raise("Failed to sumit the retry job. " + value.responseText, $(".cardContainer"));
+			IP.message.error.raise("Failed to submit the retry job. " + value.responseText, $(".cardContainer"));
 		});
 		ajax.done(function() {
 			IP.message.info.raise("Retry job submitted. Data will now be imported from the source provider.", $(".cardContainer"));

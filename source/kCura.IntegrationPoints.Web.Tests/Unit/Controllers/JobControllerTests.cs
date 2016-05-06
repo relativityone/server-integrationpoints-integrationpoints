@@ -135,17 +135,21 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		}
 
 		[Test]
-		public void RetryJob_UserIdDoesNotExist_Succeeds_Test()
+		public void RetryJob_UserIdDoesNotExist_IntegrationPointServiceThrowsError_Test()
 		{
 			// Arrange
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
+			var exception = new Exception(Core.Constants.IntegrationPoints.NO_USERID);
+			_integrationPointService.When(x => x.RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0))
+				.Throw(exception);
 
 			// Act
 			HttpResponseMessage response = _instance.Retry(_payload);
 
 			// Assert
 			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);
-			Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+			Assert.AreEqual(Core.Constants.IntegrationPoints.NO_USERID, response.Content.ReadAsStringAsync().Result.Trim('"'));
 		}
 	}
 }
