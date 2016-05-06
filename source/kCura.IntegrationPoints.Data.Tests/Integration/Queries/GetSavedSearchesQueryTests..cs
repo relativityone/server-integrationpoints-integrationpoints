@@ -1,11 +1,11 @@
-﻿namespace kCura.IntegrationPoints.Data.Tests.Integration.Queries
-{
-	using System;
-	using kCura.IntegrationPoints.Data.Queries;
-	using kCura.Relativity.Client;
-	using NSubstitute;
-	using NUnit.Framework;
+﻿using System;
+using kCura.IntegrationPoints.Data.Queries;
+using kCura.Relativity.Client;
+using NSubstitute;
+using NUnit.Framework;
 
+namespace kCura.IntegrationPoints.Data.Tests.Integration.Queries
+{
 	[TestFixture]
 	public class GetSavedSearchesQueryTest
 	{

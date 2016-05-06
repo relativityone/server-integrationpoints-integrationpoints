@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Core;
+using Relativity.Core.Authentication;
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
 {
@@ -140,6 +141,11 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			ISourceProviderRepository sourceProviderRepository = new SourceProviderRepository(_helper, workspaceArtifactId);	
 			return sourceProviderRepository;
+		}
+
+		public IQueueRepository GetQueueRepository()
+		{
+			return new QueueRepository(_helper);
 		}
 
 		#region Helper Methods

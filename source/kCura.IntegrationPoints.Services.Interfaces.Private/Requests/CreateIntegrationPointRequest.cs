@@ -38,37 +38,40 @@ namespace kCura.IntegrationPoints.Services
 
 		public virtual void ValidatePermission(IWindsorContainer container)
 		{
-			IRSAPIClient rsapiClient = container.Resolve<IRSAPIClient>();
-			ICaseServiceContext caseServiceContext = container.Resolve<ICaseServiceContext>();
-			SourceProvider sourceProvider = caseServiceContext.RsapiService.SourceProviderLibrary.Read(SourceProviderArtifactId);
-			if (sourceProvider == null)
+			using (IRSAPIClient rsapiClient = container.Resolve<IRSAPIClient>())
 			{
-				throw new Exception($"Invalid source provider received : {SourceProviderArtifactId}");
-			}
-
-			if (String.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID , sourceProvider.Identifier, StringComparison.OrdinalIgnoreCase))
-			{
-				_settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(SourceConfiguration.ToString());
-				if (_settings.SourceWorkspaceArtifactId != WorkspaceArtifactId)
+				ICaseServiceContext caseServiceContext = container.Resolve<ICaseServiceContext>();
+				SourceProvider sourceProvider = caseServiceContext.RsapiService.SourceProviderLibrary.Read(SourceProviderArtifactId);
+				if (sourceProvider == null)
 				{
-					throw new Exception("SourceWorkspaceArtifactId and WorkspaceArtifactId must be the same.");
-				}
-				GetSavedSearchesQuery query = new GetSavedSearchesQuery(rsapiClient);
-				QueryResult result = query.ExecuteQuery();
-				Artifact artifact = result.QueryArtifacts.FirstOrDefault(art => art.ArtifactID == _settings.SavedSearchArtifactId);
-				if (artifact == null)
-				{
-					throw new Exception("No permission to see the saved search.");
+					throw new Exception($"Invalid source provider received : {SourceProviderArtifactId}");
 				}
 
-				if (DestinationConfiguration.ArtifactTypeId != (int)ArtifactType.Document)
+				if (String.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID, sourceProvider.Identifier,
+					StringComparison.OrdinalIgnoreCase))
 				{
-					throw new Exception("Relativity source provider only supports documents object.");
+					_settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(SourceConfiguration.ToString());
+					if (_settings.SourceWorkspaceArtifactId != WorkspaceArtifactId)
+					{
+						throw new Exception("SourceWorkspaceArtifactId and WorkspaceArtifactId must be the same.");
+					}
+					GetSavedSearchesQuery query = new GetSavedSearchesQuery(rsapiClient);
+					QueryResult result = query.ExecuteQuery();
+					Artifact artifact = result.QueryArtifacts.FirstOrDefault(art => art.ArtifactID == _settings.SavedSearchArtifactId);
+					if (artifact == null)
+					{
+						throw new Exception("No permission to see the saved search.");
+					}
+
+					if (DestinationConfiguration.ArtifactTypeId != (int) ArtifactType.Document)
+					{
+						throw new Exception("Relativity source provider only supports documents object.");
+					}
 				}
-			}
-			else
-			{
-				throw new NotImplementedException();
+				else
+				{
+					throw new NotImplementedException();
+				}
 			}
 		}
 

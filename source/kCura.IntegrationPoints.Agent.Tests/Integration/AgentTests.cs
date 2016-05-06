@@ -1,15 +1,14 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using System.Data;
+using kCura.Apps.Common.Config;
+using kCura.Apps.Common.Data;
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Models;
+using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
-	using System.Data;
-	using Apps.Common.Config;
-	using Apps.Common.Data;
-	using Core.Models;
-	using global::Relativity.API;
-	using NSubstitute;
-
 	[TestFixture]
 	public class AgentTests : IntegrationTestBase
 	{
@@ -17,7 +16,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		[Explicit]
 		public void CreateJob()
 		{
-
 		}
 
 		[Test]
@@ -35,7 +33,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			int savedSearchArtifactId = Helper.SavedSearch.CreateSavedSearch("localhost", Helper.SharedVariables.RelativityUserName, Helper.SharedVariables.RelativityPassword, workspaceArtifactId, "All Documents");
 			IntegrationModel integrationModel = new IntegrationModel();
 			integrationModel.SourceProvider = savedSearchArtifactId;
-
 		}
 
 		private DataTable GetImportTable()

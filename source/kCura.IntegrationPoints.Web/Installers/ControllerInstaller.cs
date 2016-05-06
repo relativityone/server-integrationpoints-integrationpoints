@@ -8,6 +8,8 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Config;
 using kCura.IntegrationPoints.Core;
+using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -104,7 +106,11 @@ namespace kCura.IntegrationPoints.Web.Installers
 				})).LifestyleTransient());
 
 			container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
-			
+
+			container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>());
+			container.Register(
+				Component.For<IContextContainer>().UsingFactoryMethod(x => new ContextContainer(ConnectionHelper.Helper())));
+
 			container.Register(Component.For<IWorkspaceRepository>()
 					.ImplementedBy<KeplerWorkspaceRepository>()
 					.UsingFactoryMethod((k) => k.Resolve<IRepositoryFactory>().GetWorkspaceRepository())
