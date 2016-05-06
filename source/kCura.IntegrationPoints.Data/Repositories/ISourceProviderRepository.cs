@@ -2,6 +2,9 @@
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
+	/// <summary>
+	/// Repository responsible for Source Provider object
+	/// </summary>
 	public interface ISourceProviderRepository
 	{
 		/// <summary>

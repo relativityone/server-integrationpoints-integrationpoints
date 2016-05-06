@@ -77,12 +77,5 @@ namespace kCura.IntegrationPoints.Core.Services
 		/// <param name="integrationPointArtifactId">Integration point artifact id.</param>
 		/// <param name="userId">User id of the user running the job.</param>
 		void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId);
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="sourceProviderId"></param>
-		/// <returns></returns>
-		SourceProvider GetSourceProvider(int sourceProviderId);
 	}
 }
