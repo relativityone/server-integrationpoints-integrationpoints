@@ -48,10 +48,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
 			IIntegrationPointManager integrationPointManager = _integrationPointManagerFactory.CreateIntegrationPointManager(contextContainer);
+				_integrationPointManagerFactory.CreateSourceProviderManager(contextContainer);
 			IntegrationPointDTO integrationPointDto = integrationPointManager.Read(Application.ArtifactID, ActiveArtifact.ArtifactID);
-
 			bool hasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
-			console.ButtonList.Add(GetRetryErrorsButton(hasErrors, isEnabled));
+			bool isRetriable = integrationPointManager.IntegrationPointTypeIsRetriable(Application.ArtifactID,
+				integrationPointDto);
+
+			if (isRetriable)
+			{
+				console.ButtonList.Add(GetRetryErrorsButton(hasErrors, isEnabled));
+			}
 			console.ButtonList.Add(GetViewErrorsLink(hasErrors));
 
 			return console;

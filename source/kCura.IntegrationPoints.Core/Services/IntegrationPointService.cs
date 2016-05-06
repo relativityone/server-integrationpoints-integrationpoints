@@ -199,11 +199,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			public int SelectedDay { get; set; }
 			public OccuranceInMonth? SelectedType { get; set; }
 			public DaysOfWeek SelectedDayOfTheMonth { get; set; }
-			public string TemplateId { get; set; }
+			public string TemplateID { get; set; }
 
 			public Monthly()
 			{
-				TemplateId = "monthlySendOn";
+				TemplateID = "monthlySendOn";
 			}
 		}
 
@@ -326,7 +326,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_SOURCE_PROVIDER_SPECIFIED);
 			}
+
 			SourceProvider sourceProvider = _context.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value);
+
 			return sourceProvider;
 		}
 

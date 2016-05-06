@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.Core.Services.Provider
 		{
 			get
 			{
-				string codeBase = Assembly.GetCallingAssembly().CodeBase;
+				string codeBase = System.Reflection.Assembly.GetCallingAssembly().CodeBase;
 				UriBuilder uri = new UriBuilder(codeBase);
 				string path = Uri.UnescapeDataString(uri.Path);
 				return Path.GetDirectoryName(path);

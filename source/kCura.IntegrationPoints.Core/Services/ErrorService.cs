@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			try
 			{
-				var appVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+				var appVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 				var message = string.Format("(Integration Points v({0}) {1}", appVersion, error.Message);
 				_createErrorRdo.Execute(error.WorkspaceID, message, error.Exception);
 			}

@@ -143,7 +143,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IRSAPIClient rsapiClient = Container.Resolve<IRSAPIClient>();
 			IWorkspaceDBContext workspaceDbContext = Container.Resolve<IWorkspaceDBContext>();
 			IEddsServiceContext eddsServiceContext = Container.Resolve<IEddsServiceContext>();
-			IWorkspaceRepository workspaceRepository = Container.Resolve<IWorkspaceRepository>();
 
 			ChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
 			JobResourceTracker jobResourceTracker = new JobResourceTracker(workspaceDbContext);
@@ -152,8 +151,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			IJobService jobService = new JobService(agentService, _helper);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
-			IPermissionService permissionService = new PermissionService(_helper.GetServicesManager());
-			IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
+			IPermissionService permissionService = Container.Resolve<IPermissionService>();
+			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IContextContainer contextContainer = new ContextContainer(_helper);
 			IManagerFactory managerFactory = new ManagerFactory();
 

@@ -27,5 +27,16 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			return repository.Read(integrationPointArtifactId);
 		}
+
+		public bool IntegrationPointTypeIsRetriable(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
+		{
+			ISourceProviderRepository repository = _repositoryFactory.GetSourceProviderRepository(workspaceArtifactId);
+			SourceProviderDTO dto = repository.Read(integrationPointDto.SourceProvider.Value);
+
+			bool retriable = dto.Name ==
+			                 kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_NAME;
+
+			return retriable;
+		}
 	}
 }

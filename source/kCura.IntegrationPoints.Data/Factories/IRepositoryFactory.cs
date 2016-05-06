@@ -110,6 +110,13 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// </summary>
 		/// <returns>A class implementing the IQueueRepository interface</returns>
 		IQueueRepository GetQueueRepository();
+		
+		/// <summary>
+		/// Returns a class implementing the ISourceProviderRepository interface
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id</param>
+		/// <returns>A class impelmenting the ISourceProviderRepository interface</returns>
+		ISourceProviderRepository GetSourceProviderRepository(int workspaceArtifactId);
 
 	}
 }
