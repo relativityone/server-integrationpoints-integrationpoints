@@ -292,7 +292,7 @@
     <Compile Include="Controllers\API\FolderPathController.cs" />
     <Compile Include="Controllers\API\RelativityController.cs" />
     <Compile Include="Controllers\API\FieldMapController.cs" />
-    <Compile Include="Controllers\API\ImportNowController.cs" />
+    <Compile Include="Controllers\API\JobController.cs" />
     <Compile Include="Controllers\API\LdapController.cs" />
     <Compile Include="Controllers\API\RdoMetaController.cs" />
     <Compile Include="Controllers\API\SavedSearchFinderController.cs" />

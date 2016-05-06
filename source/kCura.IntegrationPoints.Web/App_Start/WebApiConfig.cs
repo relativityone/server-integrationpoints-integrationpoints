@@ -43,21 +43,15 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "ImportNowPost",
-				routeTemplate: "{workspaceID}/api/ImportNow",
-				defaults: new { controller = "ImportNow", action = "Post" }
+				name: "JobRun",
+				routeTemplate: "{workspaceID}/api/Job",
+				defaults: new { controller = "Job", action = "Run" }
 			);
 
 			config.Routes.MapHttpRoute(
-				name: "ImportNowSubmitLastJob",
-				routeTemplate: "{workspaceID}/api/ImportNow/SubmitLastJob",
-				defaults: new { controller = "ImportNow", action = "SubmitLastJob" }
-			);
-
-			config.Routes.MapHttpRoute(
-				name: "ImportNowRetryJob",
-				routeTemplate: "{workspaceID}/api/ImportNow/RetryJob",
-				defaults: new { controller = "ImportNow", action = "RetryJob" }
+				name: "JobRetry",
+				routeTemplate: "{workspaceID}/api/Job/Retry",
+				defaults: new { controller = "Job", action = "Retry" }
 			);
 
 			config.Routes.MapHttpRoute(
