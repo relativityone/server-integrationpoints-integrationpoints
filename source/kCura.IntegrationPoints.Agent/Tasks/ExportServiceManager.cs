@@ -197,7 +197,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			this._identifier = taskParameters.BatchInstance;
-
+			//check here
 			this.JobHistoryDto = _jobHistoryService.CreateRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
 			this.JobHistoryDto.StartTimeUTC = DateTime.UtcNow;
@@ -253,7 +253,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					{
 						_taskResult.Status = TaskStatusEnum.Success;
 					}
-					this.IntegrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, _taskResult);
+					this.IntegrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, _taskResult); //use this for concurrency -MNG
 				}
 				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPointDto);
 			}
