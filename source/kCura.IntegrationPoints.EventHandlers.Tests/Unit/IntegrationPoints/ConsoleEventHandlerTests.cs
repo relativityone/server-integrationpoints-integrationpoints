@@ -47,7 +47,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		}
 
 		[Test]
-		public void GetConsoleTest()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void GetConsole_GoldFlow(bool isRelativitySourceProvider)
 		{
 			// ARRANGE
 			_permissionService.UserCanImport(_APPLICATION_ID).Returns(true);
@@ -56,10 +58,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 			var integrationPointDto = new Contracts.Models.IntegrationPointDTO()
 			{
-				HasErrors = true
+				HasErrors = true,
+				SourceProvider = 8392
 			};
 
 			_integrationPointManager.Read(_APPLICATION_ID, _ARTIFACT_ID).Returns(integrationPointDto);
+			_integrationPointManager.IntegrationPointTypeIsRetriable(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
+				.Returns(isRelativitySourceProvider);
 
 			// ACT
 			Console console = _instance.GetConsole(ConsoleEventHandler.PageEvent.Load);
@@ -70,21 +75,25 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_integrationPointManagerFactory.Received().CreateIntegrationPointManager(_contextContainer);
 
 			Assert.IsNotNull(console);
-			Assert.AreEqual(3, console.ButtonList.Count);
+			Assert.AreEqual(isRelativitySourceProvider ? 3 : 2, console.ButtonList.Count);
 
-			ConsoleButton runNowButton = console.ButtonList[0];
+			int buttonIndex = 0;
+			ConsoleButton runNowButton = console.ButtonList[buttonIndex++];
 			Assert.AreEqual("Run Now", runNowButton.DisplayText);
 			Assert.AreEqual(true, runNowButton.Enabled);
 			Assert.AreEqual(false, runNowButton.RaisesPostBack);
 			Assert.AreEqual($"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
 
-			ConsoleButton retryErrorsButton = console.ButtonList[1];
-			Assert.AreEqual("Retry Errors", retryErrorsButton.DisplayText);
-			Assert.AreEqual(true, retryErrorsButton.Enabled);
-			Assert.AreEqual(false, retryErrorsButton.RaisesPostBack);
-			Assert.AreEqual($"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})", retryErrorsButton.OnClickEvent);
+			if (isRelativitySourceProvider)
+			{
+				ConsoleButton retryErrorsButton = console.ButtonList[buttonIndex++];
+				Assert.AreEqual("Retry Errors", retryErrorsButton.DisplayText);
+				Assert.AreEqual(true, retryErrorsButton.Enabled);
+				Assert.AreEqual(false, retryErrorsButton.RaisesPostBack);
+				Assert.AreEqual($"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})", retryErrorsButton.OnClickEvent);
+			}
 
-			ConsoleButton viewErrorsButtonLink = console.ButtonList[2];
+			ConsoleButton viewErrorsButtonLink = console.ButtonList[buttonIndex++];
 			Assert.AreEqual("View Errors", viewErrorsButtonLink.DisplayText);
 			Assert.AreEqual(true, viewErrorsButtonLink.Enabled);
 			Assert.AreEqual(false, viewErrorsButtonLink.RaisesPostBack);
