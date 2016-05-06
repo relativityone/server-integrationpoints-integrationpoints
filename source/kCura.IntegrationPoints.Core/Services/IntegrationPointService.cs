@@ -288,7 +288,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			SourceProvider sourceProvider = GetSourceProvider(integrationPoint);
 
 			CheckPermissions(integrationPoint, sourceProvider, userId);
-			CheckForOtherJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId); //todo: add this to retry as well - MNG
 			CreateJob(integrationPoint, sourceProvider, workspaceArtifactId, userId);
 		}
 
@@ -335,6 +334,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, int workspaceArtifactId, int userId)
 		{
+			CheckForOtherJobsExecutingOrInQueue(sourceProvider, workspaceArtifactId, integrationPoint.ArtifactId); 
 			var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
 
 			// If the Relativity provider is selected, we need to create an export task
@@ -376,14 +376,17 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		private void CheckForOtherJobsExecutingOrInQueue(int workspaceArtifactId , int integrationPointArtifactId)
+		private void CheckForOtherJobsExecutingOrInQueue(SourceProvider sourceProvider, int workspaceArtifactId , int integrationPointArtifactId)
 		{
-			IQueueManager queueManager = _managerFactory.CreateQueueManager(_contextContainer);
-			bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
-
-			if (jobsExecutingOrInQueue)
+			if (sourceProvider.Identifier == DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
 			{
-				throw new Exception(Constants.IntegrationPoints.JOBS_ALREADY_RUNNING);
+				IQueueManager queueManager = _managerFactory.CreateQueueManager(_contextContainer);
+				bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
+
+				if (jobsExecutingOrInQueue)
+				{
+					throw new Exception(Constants.IntegrationPoints.JOBS_ALREADY_RUNNING);
+				}
 			}
 		}
 
