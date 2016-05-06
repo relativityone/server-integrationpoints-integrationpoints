@@ -18,7 +18,7 @@ using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Core
+namespace kCura.IntegrationPoints.Core.Agent
 {
   public class IntegrationPointTaskBase
   {
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Core
       {
         if (this.IntegrationPoint == null)
         {
-          throw new ArgumentException("Integration Point Rdo has yet to be retrieved.");
+          throw new ArgumentException("The Integration Point Rdo has not been set yet.");
         }
         if (_sourceProvider == null)
         {
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Core
       {
         if (this.IntegrationPoint == null)
         {
-          throw new ArgumentException("Integration Point Rdo has yet to be retrieved.");
+          throw new ArgumentException("The Integration Point Rdo has not been set yet.");
         }
         if (_destinationProvider == null)
         {
@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Core
       this.IntegrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
       if (this.IntegrationPoint == null)
       {
-        throw new ArgumentException("Failed to retrieved corresponding Integration Point.");
+        throw new ArgumentException("Failed to retrieve corresponding Integration Point Rdo.");
       }
     }
 

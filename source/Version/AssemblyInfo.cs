@@ -29,6 +29,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Core.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Agent")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Synchronizers.RDO.Tests")]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints.DocumentTransferProvider.Tests")]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 //[assembly: Guid("9808fab4-ae17-49c5-a74a-e34543378422")]

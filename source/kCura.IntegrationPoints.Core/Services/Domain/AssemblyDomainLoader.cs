@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 
     }
 
-    public static readonly List<string> MergedBinariesList = new List<string>()
+    public static readonly HashSet<string> MergedBinariesList = new HashSet<string>()
     {
       "kCura.IntegrationPoints.Data",
       "kCura.Apps.Common.Config",
