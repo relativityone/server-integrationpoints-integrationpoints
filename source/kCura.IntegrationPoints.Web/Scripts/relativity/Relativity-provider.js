@@ -29,7 +29,7 @@
             }
             return true;
         },
-        message: 'The target workspace no longer exists. Please create a new Integration Point.'
+        message: 'The target workspace is no longer accessible. Please verify your settings or create a new Integration Point.'
     };
     ko.validation.rules['checkSavedSearch'] = {
         validator: function (value, params) {
@@ -39,7 +39,7 @@
             }
             return true;
         },
-        message: 'Unable to access the saved search. Please verify saved search permissions, or create a new integration point if the search no longer exists.'
+        message: 'The saved search is no longer accessible. Please verify your settings or create a new Integration Point.'
     };
     ko.validation.registerExtenders();
 
