@@ -1,7 +1,7 @@
 #requires -version 3
-$root = hg root
+$root = git rev-parse --show-toplevel
 $root = [System.IO.Path]::Combine($root, 'source')
-$branch = hg branch
+$branch = git branch
 
 $BUILDFILE = [System.IO.Path]::Combine($root, 'DevelopmentScripts', 'Build.build')
 
