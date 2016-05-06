@@ -13,9 +13,9 @@ namespace kCura.IntegrationPoints.Data.Extensions
 			{
 				return claimsPrincipal.GetServiceContextUnversionShortTerm(workspaceArtifactId);
 			}
-			catch (Exception)
+			catch (Exception exception)
 			{
-				throw new Exception("Unable to initialize the user context.");
+				throw new Exception("Unable to initialize the user context.", exception);
 			}
 		}
 	}
