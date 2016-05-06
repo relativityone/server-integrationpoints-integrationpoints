@@ -1,5 +1,4 @@
-syntax: glob
-*.DotSettings.*
+﻿*.DotSettings.*
 bin
 Bin
 obj
