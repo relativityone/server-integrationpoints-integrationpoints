@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Mono.Cecil;
-
-namespace kCura.IntegrationPoints.Data.Migrations
+﻿namespace kCura.IntegrationPoints.Data.Migrations
 {
 	public class AddWebApiConfigValueMigration : IMigration
 	{

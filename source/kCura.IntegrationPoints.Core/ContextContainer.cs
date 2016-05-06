@@ -1,5 +1,4 @@
-﻿using System;
-using Relativity.API;
+﻿using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core
 {

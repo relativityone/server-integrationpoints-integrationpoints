@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using kCura.IntegrationPoints.Data;
+﻿using kCura.IntegrationPoints.Data;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.EventHandlers
