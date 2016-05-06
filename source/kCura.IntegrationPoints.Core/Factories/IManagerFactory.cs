@@ -20,5 +20,12 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="contextContainer"></param>
 		/// <returns>A queue manager</returns>
 		IQueueManager CreateQueueManager(IContextContainer contextContainer);
+		
+		/// <summary>
+		/// Creates source provider manager
+		/// </summary>
+		/// <param name="contextContainer">Container containing necessary contexts</param>
+		/// <returns>Source provider manager</returns>
+		ISourceProviderManager CreateSourceProviderManager(IContextContainer contextContainer);
 	}
 }
