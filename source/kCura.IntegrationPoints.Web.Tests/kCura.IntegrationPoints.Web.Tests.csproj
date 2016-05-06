@@ -235,7 +235,7 @@
     <Compile Include="Unit\Controllers\LdapControllerTests.cs" />
     <Compile Include="Unit\Controllers\RelativityControllerTests.cs" />
     <Compile Include="Unit\Controllers\SourceTypeControllerTests.cs" />
-    <Compile Include="Unit\Controllers\ImportNowControllerTests.cs" />
+    <Compile Include="Unit\Controllers\JobControllerTests.cs" />
     <Compile Include="Unit\DataStructures\FolderTreeTests.cs" />
   </ItemGroup>
   <ItemGroup>

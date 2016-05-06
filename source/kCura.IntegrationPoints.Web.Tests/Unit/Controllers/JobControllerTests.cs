@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Web.Http;
 using System.Web.Http.Hosting;
 using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using NSubstitute;
 using NUnit.Framework;
@@ -14,28 +13,26 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 {
 	[TestFixture]
-	public class ImportNowControllerTests
+	public class JobControllerTests
 	{
 		private const int _WORKSPACE_ARTIFACT_ID = 1020530;
 		private const int _INTEGRATION_POINT_ARTIFACT_ID = 1003663;
 		private const int _USERID = 9;
 		private readonly string _userIdString = _USERID.ToString();
 
-		private ImportNowController.Payload _payload;
-		private ICaseServiceContext _caseSericeContext;
+		private JobController.Payload _payload;
 		private IIntegrationPointService _integrationPointService;
 
-		private ImportNowController _instance;
+		private JobController _instance;
 
 		[SetUp]
 		public void Setup()
 		{
-			_payload = new ImportNowController.Payload { AppId = _WORKSPACE_ARTIFACT_ID, ArtifactId = _INTEGRATION_POINT_ARTIFACT_ID };
-
-			_caseSericeContext = Substitute.For<ICaseServiceContext>();
+			_payload = new JobController.Payload { AppId = _WORKSPACE_ARTIFACT_ID, ArtifactId = _INTEGRATION_POINT_ARTIFACT_ID };
+			
 			_integrationPointService = Substitute.For<IIntegrationPointService>();
 
-			_instance = new ImportNowController(_caseSericeContext, _integrationPointService)
+			_instance = new JobController(_integrationPointService)
 			{
 				Request = new HttpRequestMessage()
 			};
@@ -54,7 +51,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 				.Throw(exception);
 
 			// Act
-			HttpResponseMessage response = _instance.Post(_payload);
+			HttpResponseMessage response = _instance.Run(_payload);
 
 			// Assert
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
@@ -80,7 +77,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 				.Throw(exceptionToBeThrown);
 
 			// Act
-			HttpResponseMessage response = _instance.Post(_payload);
+			HttpResponseMessage response = _instance.Run(_payload);
 
 			// Assert
 			Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
@@ -94,7 +91,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 
 			// Act
-			HttpResponseMessage response = _instance.Post(_payload);
+			HttpResponseMessage response = _instance.Run(_payload);
 
 			// Assert
 			_integrationPointService.Received(1).RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);
@@ -112,7 +109,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
 			// Act
-			HttpResponseMessage response = _instance.Post(_payload);
+			HttpResponseMessage response = _instance.Run(_payload);
 
 			// Assert
 			_integrationPointService.Received(1).RunIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID);
@@ -130,7 +127,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
 
 			// Act
-			HttpResponseMessage response = _instance.RetryJob(_payload);
+			HttpResponseMessage response = _instance.Retry(_payload);
 
 			// Assert
 			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _USERID);
@@ -144,7 +141,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>(0)));
 
 			// Act
-			HttpResponseMessage response = _instance.RetryJob(_payload);
+			HttpResponseMessage response = _instance.Retry(_payload);
 
 			// Assert
 			_integrationPointService.Received(1).RetryIntegrationPoint(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 0);

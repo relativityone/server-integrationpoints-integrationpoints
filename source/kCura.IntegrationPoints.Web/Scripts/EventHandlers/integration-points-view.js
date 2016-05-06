@@ -35,7 +35,7 @@
 				calls.close();
 				var ajax = IP.data.ajax({
 					type: 'post',
-					url: root.utils.generateWebAPIURL('ImportNow'),
+					url: root.utils.generateWebAPIURL('Job/Run'),
 					data: JSON.stringify({
 						"appId": appid,
 						"artifactId": artifactId
@@ -54,7 +54,7 @@
 	root.retryJob = function(artifactId, appId) {
 		var ajax = IP.data.ajax({
 			type: "POST",
-			url: root.utils.generateWebAPIURL('ImportNow/RetryJob'),
+			url: root.utils.generateWebAPIURL('Job/Retry'),
 			async: true,
 			data: JSON.stringify({
 				"appId": appId,
