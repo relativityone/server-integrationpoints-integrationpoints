@@ -176,9 +176,6 @@
       <Name>kCura.ScheduleQueueAgent</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="LICENSE.txt" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>"$(SolutionDir)\DevelopmentScripts\copyifnewer.bat" "$(ProjectDir)app.config.$(UserName)" "$(ProjectDir)app.config"</PreBuildEvent>
