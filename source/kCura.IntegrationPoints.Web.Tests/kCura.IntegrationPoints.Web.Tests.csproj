@@ -168,7 +168,7 @@
     </Reference>
     <Reference Include="Relativity.API, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
+      <HintPath>..\Relativity.API.9.3.398.12\lib\net45\Relativity.API.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.ImportAPI.Wrapper, Version=9.3.0.0, Culture=neutral, PublicKeyToken=15fe5e0f8dc0bf95, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

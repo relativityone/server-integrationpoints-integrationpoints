@@ -56,7 +56,7 @@
     <Reference Include="DevExpress.Utils.v12.2, Version=12.2.11.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="DevExpress.XtraEditors.v12.2, Version=12.2.11.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a, processorArchitecture=MSIL" />
     <Reference Include="kCura.Agent">
-      <HintPath>..\Dependencies\kCura\kCura.Agent.dll</HintPath>
+      <HintPath>..\packages\kCura.Agent.9.3.398.12\lib\net45\kCura.Agent.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Apps.Common.Config, Version=1.0.77.1, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
@@ -72,7 +72,7 @@
     </Reference>
     <Reference Include="kCura.Data.RowDataGateway, Version=8.2.259.3, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\kCura\kCura.Data.RowDataGateway.dll</HintPath>
+      <HintPath>..\packages\kCuraCore.9.3.398.12\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -86,10 +86,10 @@
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.API">
-      <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
+      <HintPath>..\Relativity.API.9.3.398.12\lib\net45\Relativity.API.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.CustomPages">
-      <HintPath>..\Dependencies\kCura\Relativity.CustomPages.dll</HintPath>
+      <HintPath>..\Relativity.CustomPages.9.3.398.12\lib\net45\Relativity.CustomPages.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

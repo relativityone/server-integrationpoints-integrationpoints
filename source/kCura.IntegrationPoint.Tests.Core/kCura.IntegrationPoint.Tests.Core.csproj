@@ -45,7 +45,7 @@
     </Reference>
     <Reference Include="kCura.Data.RowDataGateway, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\kCura\kCura.Data.RowDataGateway.dll</HintPath>
+      <HintPath>..\packages\kCuraCore.9.3.398.12\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Relativity.Client.9.3.398.12\lib\net45\kCura.Relativity.Client.dll</HintPath>
@@ -56,10 +56,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Core">
-      <HintPath>..\Dependencies\kCura\Relativity.Core.dll</HintPath>
+      <HintPath>..\packages\Relativity.Core.9.3.398.12\lib\net45\Relativity.Core.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Core.Api">
-      <HintPath>..\Dependencies\kCura\Relativity.Core.Api.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\Relativity.Core.Api.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.ImportAPI.Wrapper, Version=9.3.0.0, Culture=neutral, PublicKeyToken=15fe5e0f8dc0bf95, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
