@@ -20,16 +20,18 @@
 				<attribute type="ComVisibleAttribute" value="false" />
 				<attribute type="AssemblyVersionAttribute" value="${Product.Version}" />
 				<attribute type="AssemblyFileVersionAttribute" value="${Product.Version}" />
+				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Agent" />
+				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Core" />
+				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Core.Tests" />
+				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Data.Tests" />
+				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.DocumentTransferProvider" />
+				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.DocumentTransferProvider.Tests" />
+				<attribute type="InternalsVisibleToAttribute" value="DynamicProxyGenAssembly2" />
 				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.EventHandlers" />
 				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.EventHandlers.Tests" />
-				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.DocumentTransferProvider" />
-				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.DocumentTransferProvider.Shared" />
+				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Synchronizers.RDO.Tests" />
 				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Web" />
 				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Web.Tests" />
-				<attribute type="InternalsVisibleToAttribute" value="DynamicProxyGenAssembly2" />
-				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Data.Tests" />
-				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Core.Tests" />
-				<attribute type="InternalsVisibleToAttribute" value="kCura.IntegrationPoints.Synchronizers.RDO.Tests" />
 			</attributes>
 		</asminfo>
 	</target>
