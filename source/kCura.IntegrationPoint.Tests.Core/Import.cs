@@ -1,8 +1,8 @@
 ﻿using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using Newtonsoft.Json;
 using kCura.Relativity.Client;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
