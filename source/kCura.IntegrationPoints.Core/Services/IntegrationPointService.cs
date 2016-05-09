@@ -308,7 +308,6 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
 			}
 
-			UpdateJobHistoryOnRetry(integrationPoint);
 			CreateJob(integrationPoint, sourceProvider, workspaceArtifactId, userId);
 		}
 
