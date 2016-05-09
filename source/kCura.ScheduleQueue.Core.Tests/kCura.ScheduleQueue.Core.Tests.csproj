@@ -138,13 +138,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Integration\Service\JobLogServiceTests.cs" />
     <Compile Include="Integration\Service\JobServiceTests.cs" />
     <Compile Include="TestDBContextHelper.cs" />
     <Compile Include="Unit\BatchManagerBaseTests.cs" />
     <Compile Include="Unit\PeriodicScheduleRuleTest.cs" />
     <Compile Include="Unit\QueueTableHelperTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
@@ -177,7 +179,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LICENSE.txt" />
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
