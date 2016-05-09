@@ -1,69 +1,66 @@
-﻿using kCura.IntegrationPoints.Contracts.Provider;
+﻿using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.DocumentTransferProvider;
-using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
+using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Tests.Unit
 {
-	[TestFixture]
-	public class DocumentTransferProviderTests
-	{
-		#region Read
+  [TestFixture]
+  public class DocumentTransferProviderTests
+  {
+    #region Read
 
-		[Test]
-		public void GetEmailBodyData_HasWorkspace_CorrectlyFormatedOutput()
-		{
-			//ARRANGE
-			int workspaceId = 1111111;
-			var helper = NSubstitute.Substitute.For<IHelper>();
-			Workspace workspace = new Workspace(workspaceId) { Name = "My Test workspace" };
+    [Test]
+    public void GetEmailBodyData_HasWorkspace_CorrectlyFormatedOutput()
+    {
+      //ARRANGE
+      int workspaceId = 1111111;
+      var helper = NSubstitute.Substitute.For<IHelper>();
+      var repositoryFactory = NSubstitute.Substitute.For<IRepositoryFactory>();
+      var workspaceRepository = NSubstitute.Substitute.For<Repositories.IWorkspaceRepository>();
+      WorkspaceDTO workspace = new WorkspaceDTO() { ArtifactId = workspaceId, Name = "My Test workspace" };
+      repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
+      workspaceRepository.Retrieve(Arg.Any<int>()).Returns(workspace);
 
-			IEmailBodyData mockDocumentTransferProvider = new mockDocumentTransferProvider(helper, workspace);
 
-			var settings = new DocumentTransferSettings { SourceWorkspaceArtifactId = workspaceId };
-			var options = JsonConvert.SerializeObject(settings);
+      IEmailBodyData mockDocumentTransferProvider = new DocumentTransferProvider.DocumentTransferProvider(helper, repositoryFactory);
 
-			//ACT
-			var returnedString = mockDocumentTransferProvider.GetEmailBodyData(null, options);
+      var settings = new DocumentTransferSettings { SourceWorkspaceArtifactId = workspaceId };
+      var options = JsonConvert.SerializeObject(settings);
 
-			//ASSERT
-			Assert.AreEqual("\r\nSource Workspace: My Test workspace - 1111111", returnedString);
-		}
+      //ACT
+      var returnedString = mockDocumentTransferProvider.GetEmailBodyData(null, options);
 
-		[Test]
-		public void GetEmailBodyData_NoWorkspace_CorrectlyFormatedOutput()
-		{
-			int workspaceId = 1111111;
-			var helper = NSubstitute.Substitute.For<IHelper>();
-			Workspace workspace = null;
+      //ASSERT
+      Assert.AreEqual("\r\nSource Workspace: My Test workspace - 1111111", returnedString);
+    }
 
-			IEmailBodyData mockDocumentTransferProvider = new mockDocumentTransferProvider(helper, workspace);
+    [Test]
+    public void GetEmailBodyData_NoWorkspace_CorrectlyFormatedOutput()
+    {
+      int workspaceId = 1111111;
+      var helper = NSubstitute.Substitute.For<IHelper>();
+      var repositoryFactory = NSubstitute.Substitute.For<IRepositoryFactory>();
+      var workspaceRepository = NSubstitute.Substitute.For<Repositories.IWorkspaceRepository>();
+      WorkspaceDTO workspace = null;
+      repositoryFactory.GetWorkspaceRepository().Returns(workspaceRepository);
+      workspaceRepository.Retrieve(Arg.Any<int>()).Returns(workspace);
 
-			var settings = new DocumentTransferSettings { SourceWorkspaceArtifactId = workspaceId };
-			var options = JsonConvert.SerializeObject(settings);
+      IEmailBodyData mockDocumentTransferProvider = new DocumentTransferProvider.DocumentTransferProvider(helper, repositoryFactory);
 
-			//ACT
-			var returnedString = mockDocumentTransferProvider.GetEmailBodyData(null, options);
+      var settings = new DocumentTransferSettings { SourceWorkspaceArtifactId = workspaceId };
+      var options = JsonConvert.SerializeObject(settings);
 
-			//ASSERT
-			Assert.AreEqual("", returnedString);
-		}
-		#endregion Read
-	}
+      //ACT
+      var returnedString = mockDocumentTransferProvider.GetEmailBodyData(null, options);
 
-	internal class mockDocumentTransferProvider : DocumentTransferProvider.DocumentTransferProvider
-	{
-		private Workspace _workspace;
-		public mockDocumentTransferProvider(IHelper helper, Workspace workspace) : base(helper)
-		{
-			_workspace = workspace;
-		}
-
-		protected override Workspace GetWorkspace(int workspaceArtifactIds)
-		{
-			return _workspace;
-		}
-	}
+      //ASSERT
+      Assert.AreEqual("", returnedString);
+    }
+    #endregion Read
+  }
 }

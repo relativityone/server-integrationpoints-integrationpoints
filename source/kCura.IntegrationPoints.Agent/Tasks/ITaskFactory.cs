@@ -28,159 +28,161 @@ using Component = Castle.MicroKernel.Registration.Component;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
-	public interface ITaskFactory
-	{
-		ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase);
+  public interface ITaskFactory
+  {
+    ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase);
 
-		void Release(ITask task);
-	}
+    void Release(ITask task);
+  }
 
-	public class TaskFactory : ITaskFactory
-	{
-		private readonly IAgentHelper _helper;
+  public class TaskFactory : ITaskFactory
+  {
+    private readonly IAgentHelper _helper;
 
-		public TaskFactory(IAgentHelper helper)
-		{
-			_helper = helper;
-		}
+    public TaskFactory(IAgentHelper helper)
+    {
+      _helper = helper;
+    }
 
-		private WindsorContainer _container;
+    private WindsorContainer _container;
 
-		private WindsorContainer Container
-		{
-			get { return _container ?? (_container = new WindsorContainer()); }
-			set { _container = value; }
-		}
+    private WindsorContainer Container
+    {
+      get { return _container ?? (_container = new WindsorContainer()); }
+      set { _container = value; }
+    }
 
-		private void Install(Job job, ScheduleQueueAgentBase agentBase)
-		{
-			Container.Kernel.Resolver.AddSubResolver(new CollectionResolver(Container.Kernel));
-			Container.Register(Component.For<IScheduleRuleFactory>().UsingFactoryMethod(k => agentBase.ScheduleRuleFactory, true));
-			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => _helper, true));
-			Container.Register(Component.For<IAgentHelper>().UsingFactoryMethod(k => _helper, true));
-			Container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>()
-				.DependsOn(Dependency.OnValue<int>(job.WorkspaceID)));
-			Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>());
-			Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>());
-			Container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k => new WorkspaceContext(_helper.GetDBContext(job.WorkspaceID))));
-			Container.Register(Component.For<Job>().UsingFactoryMethod(k => job));
+    private void Install(Job job, ScheduleQueueAgentBase agentBase)
+    {
+      Container.Kernel.Resolver.AddSubResolver(new CollectionResolver(Container.Kernel));
+      Container.Register(Component.For<IScheduleRuleFactory>().UsingFactoryMethod(k => agentBase.ScheduleRuleFactory, true));
+      Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => _helper, true));
+      Container.Register(Component.For<IAgentHelper>().UsingFactoryMethod(k => _helper, true));
+      Container.Register(Component.For<IServiceContextHelper>().ImplementedBy<ServiceContextHelperForAgent>()
+        .DependsOn(Dependency.OnValue<int>(job.WorkspaceID)));
+      Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>());
+      Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>());
+      Container.Register(Component.For<IWorkspaceDBContext>().UsingFactoryMethod(k => new WorkspaceContext(_helper.GetDBContext(job.WorkspaceID))));
+      Container.Register(Component.For<Job>().UsingFactoryMethod(k => job));
 
-			Container.Register(Component.For<GetApplicationBinaries>().ImplementedBy<GetApplicationBinaries>().DynamicParameters((k, d) => d["eddsDBcontext"] = _helper.GetDBContext(-1)).LifeStyle.Transient);
-			Container.Install(FromAssembly.InThisApplication());
-			Container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
-				k.Resolve<RsapiClientFactory>().CreateClientForWorkspace(job.WorkspaceID, ExecutionIdentity.System)).LifestyleTransient());
-			Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), job.WorkspaceID)).LifestyleTransient());
-			Container.Register(Component.For<ISendable>()
-				.ImplementedBy<SMTP>()
-				.DependsOn(Dependency.OnValue<EmailConfiguration>(new RelativityConfigurationFactory().GetConfiguration())));
+      Container.Register(Component.For<GetApplicationBinaries>().ImplementedBy<GetApplicationBinaries>().DynamicParameters((k, d) => d["eddsDBcontext"] = _helper.GetDBContext(-1)).LifeStyle.Transient);
+      Container.Install(FromAssembly.InThisApplication());
+      Container.Register(Component.For<IRSAPIClient>().UsingFactoryMethod(k =>
+        k.Resolve<RsapiClientFactory>().CreateClientForWorkspace(job.WorkspaceID, ExecutionIdentity.System)).LifestyleTransient());
+      Container.Register(Component.For<IRSAPIService>().Instance(new RSAPIService(Container.Resolve<IHelper>(), job.WorkspaceID)).LifestyleTransient());
+      Container.Register(Component.For<ISendable>()
+        .ImplementedBy<SMTP>()
+        .DependsOn(Dependency.OnValue<EmailConfiguration>(new RelativityConfigurationFactory().GetConfiguration())));
 
-			Container.Register(Component.For<IOnBehalfOfUserClaimsPrincipalFactory>()
-					.ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>()
-					.LifestyleTransient());
+      Container.Register(Component.For<IOnBehalfOfUserClaimsPrincipalFactory>()
+          .ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>()
+          .LifestyleTransient());
 
-			Container.Register(
-				Component.For<IQueueManager>().UsingFactoryMethod(k => new QueueManager(new ContextContainer(_helper))));
-		}
+      Container.Register(
+        Component.For<IQueueManager>().UsingFactoryMethod(k => new QueueManager(new ContextContainer(_helper))));
 
-		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
-		{
-			Install(job, agentBase);
-			try
-			{
-				TaskType taskType;
-				Enum.TryParse(job.TaskType, true, out taskType);
-				kCura.Method.Injection.InjectionManager.Instance.Evaluate("0b42a5bb-84e9-4fe8-8a75-1c6fbc0d4195");
-				switch (taskType)
-				{
-					case TaskType.SyncManager:
-						return Container.Resolve<SyncManager>();
+      Container.Register(Component.For<IContextContainer>().UsingFactoryMethod(x => new ContextContainer(_helper)));
+    }
 
-					case TaskType.SyncWorker:
-						return Container.Resolve<SyncWorker>();
+    public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
+    {
+      Install(job, agentBase);
+      try
+      {
+        TaskType taskType;
+        Enum.TryParse(job.TaskType, true, out taskType);
+        kCura.Method.Injection.InjectionManager.Instance.Evaluate("0b42a5bb-84e9-4fe8-8a75-1c6fbc0d4195");
+        switch (taskType)
+        {
+          case TaskType.SyncManager:
+            return Container.Resolve<SyncManager>();
 
-					case TaskType.SyncCustodianManagerWorker:
-						return Container.Resolve<SyncCustodianManagerWorker>();
+          case TaskType.SyncWorker:
+            return Container.Resolve<SyncWorker>();
 
-					case TaskType.SendEmailManager:
-						return Container.Resolve<SendEmailManager>();
+          case TaskType.SyncCustodianManagerWorker:
+            return Container.Resolve<SyncCustodianManagerWorker>();
 
-					case TaskType.SendEmailWorker:
-						return Container.Resolve<SendEmailWorker>();
+          case TaskType.SendEmailManager:
+            return Container.Resolve<SendEmailManager>();
 
-					case TaskType.ExportService:
-						return Container.Resolve<ExportServiceManager>();
+          case TaskType.SendEmailWorker:
+            return Container.Resolve<SendEmailWorker>();
 
-					default:
-						return null;
-				}
-			}
-			catch (Exception e)
-			{
-				UpdateJobHistoryOnFailure(job, e);
-				throw;
-			}
-		}
+          case TaskType.ExportService:
+            return Container.Resolve<ExportServiceManager>();
 
-		public void Release(ITask task)
-		{
-			try
-			{
-				if (task != null)
-				{
-					Container.Release(task);
-				}
-			}
-			finally
-			{
-				Container = null;
-			}
-		}
+          default:
+            return null;
+        }
+      }
+      catch (Exception e)
+      {
+        UpdateJobHistoryOnFailure(job, e);
+        throw;
+      }
+    }
 
-		private void UpdateJobHistoryOnFailure(Job job, Exception e)
-		{
-			ISerializer serializer = Container.Resolve<ISerializer>();
-			ICaseServiceContext caseServiceContext = Container.Resolve<ICaseServiceContext>();
-			IRSAPIClient rsapiClient = Container.Resolve<IRSAPIClient>();
-			IWorkspaceDBContext workspaceDbContext = Container.Resolve<IWorkspaceDBContext>();
-			IEddsServiceContext eddsServiceContext = Container.Resolve<IEddsServiceContext>();
+    public void Release(ITask task)
+    {
+      try
+      {
+        if (task != null)
+        {
+          Container.Release(task);
+        }
+      }
+      finally
+      {
+        Container = null;
+      }
+    }
 
-			ChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
-			JobResourceTracker jobResourceTracker = new JobResourceTracker(workspaceDbContext);
-			JobTracker jobTracker = new JobTracker(jobResourceTracker);
-			IAgentService agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
+    private void UpdateJobHistoryOnFailure(Job job, Exception e)
+    {
+      ISerializer serializer = Container.Resolve<ISerializer>();
+      ICaseServiceContext caseServiceContext = Container.Resolve<ICaseServiceContext>();
+      IRSAPIClient rsapiClient = Container.Resolve<IRSAPIClient>();
+      IWorkspaceDBContext workspaceDbContext = Container.Resolve<IWorkspaceDBContext>();
+      IEddsServiceContext eddsServiceContext = Container.Resolve<IEddsServiceContext>();
 
-			IJobService jobService = new JobService(agentService, _helper);
-			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
-			IPermissionService permissionService = Container.Resolve<IPermissionService>();
-			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-			IContextContainer contextContainer = new ContextContainer(_helper);
-			IManagerFactory managerFactory = new ManagerFactory();
+      ChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
+      JobResourceTracker jobResourceTracker = new JobResourceTracker(workspaceDbContext);
+      JobTracker jobTracker = new JobTracker(jobResourceTracker);
+      IAgentService agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 
-			IntegrationPointService integrationPointService = new IntegrationPointService(caseServiceContext, contextContainer, permissionService, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
-			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
+      IJobService jobService = new JobService(agentService, _helper);
+      IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
+      IPermissionService permissionService = Container.Resolve<IPermissionService>();
+      IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
+      IContextContainer contextContainer = new ContextContainer(_helper);
+      IManagerFactory managerFactory = new ManagerFactory();
 
-			TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
-			JobHistory jobHistory = jobHistoryService.GetRdo(taskParameters.BatchInstance);
+      IntegrationPointService integrationPointService = new IntegrationPointService(caseServiceContext, contextContainer, permissionService, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
+      IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 
-			if (integrationPoint == null || jobHistory == null)
-			{
-				throw new NullReferenceException(
-					$"Unable to retrieve the integration point or job history information for the following job batch: {taskParameters.BatchInstance}");
-			}
+      TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
+      JobHistory jobHistory = jobHistoryService.GetRdo(taskParameters.BatchInstance);
 
-			JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext)
-			{
-				IntegrationPoint = integrationPoint,
-				JobHistory = jobHistory
-			};
+      if (integrationPoint == null || jobHistory == null)
+      {
+        throw new NullReferenceException(
+          $"Unable to retrieve the integration point or job history information for the following job batch: {taskParameters.BatchInstance}");
+      }
 
-			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
-			jobHistoryErrorService.CommitErrors();
+      JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext)
+      {
+        IntegrationPoint = integrationPoint,
+        JobHistory = jobHistory
+      };
 
-			jobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
-			jobHistoryService.UpdateRdo(jobHistory);
+      jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+      jobHistoryErrorService.CommitErrors();
 
-			// No updates to IP since the job history error service handles IP updates
-		}
-	}
+      jobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
+      jobHistoryService.UpdateRdo(jobHistory);
+
+      // No updates to IP since the job history error service handles IP updates
+    }
+  }
 }
