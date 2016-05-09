@@ -173,9 +173,6 @@
       <HintPath>..\packages\Relativity.Data.9.3.398.12\lib\net45\Relativity.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ImportAPI.Wrapper">
-      <HintPath>..\Dependencies\kCura\Relativity.ImportAPI.Wrapper.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.XML" />
