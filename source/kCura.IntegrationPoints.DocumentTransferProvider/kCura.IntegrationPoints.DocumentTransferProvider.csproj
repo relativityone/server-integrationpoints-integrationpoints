@@ -70,15 +70,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="dtSearchNetApi4, Version=1.0.4166.40099, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.3.397.2\lib\net45\dtSearchNetApi4.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\dtSearchNetApi4.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FParsec, Version=0.9.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.3.397.2\lib\net45\FParsec.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\FParsec.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FParsecCS, Version=0.9.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.3.397.2\lib\net45\FParsecCS.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\FParsecCS.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FreeImageNET, Version=3.15.1.0, Culture=neutral, processorArchitecture=AMD64">
