@@ -248,7 +248,6 @@
     <Content Include="Data\Resources\GetAgentTypeInformation.sql" />
     <Content Include="Data\Resources\CreateQueueTable.sql" />
     <Content Include="Data\Resources\GetNextJob.sql" />
-    <Content Include="LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

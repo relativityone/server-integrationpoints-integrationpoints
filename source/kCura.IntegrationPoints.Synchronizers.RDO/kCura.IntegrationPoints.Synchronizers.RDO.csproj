@@ -256,9 +256,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LICENSE.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Relativity.ImportAPI.Wrapper.dll" />
     <EmbeddedResource Include="Properties\ErrorMessages.resx">
       <Generator>ResXFileCodeGenerator</Generator>
