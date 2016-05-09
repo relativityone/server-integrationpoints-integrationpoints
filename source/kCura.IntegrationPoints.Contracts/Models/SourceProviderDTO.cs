@@ -1,11 +1,12 @@
-﻿namespace kCura.IntegrationPoints.Contracts.Models
+﻿using System;
+
+namespace kCura.IntegrationPoints.Contracts.Models
 {
 	/// <summary>
 	/// DTO for the Source Provider RDO
 	/// </summary>
-	public class SourceProviderDTO
+	public class SourceProviderDTO : BaseDTO
 	{
-		public int ArtifactId { get; set; } 
-		public string Name { get; set; }
+		public Guid Identifier { get; set; }
 	}
 }
