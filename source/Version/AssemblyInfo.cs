@@ -24,7 +24,6 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Core.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Data.Tests")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.DocumentTransferProvider")]
-[assembly: InternalsVisibleTo("kCura.IntegrationPoints.DocumentTransferProvider.Shared")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.DocumentTransferProvider.Tests")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")] // NSubsitute requires this to mock internal interfaces
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.EventHandlers")]
