@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using NSubstitute;
-using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
@@ -290,32 +289,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
 
-		[Test, Description("This test case will almost never occur in the wild, but can if the set has errors field event handler sets the field in error.")]
-		public void RetryIntegrationPoint_UpdateJobHistoryOnRetry_NoExistingJobHistory_ThrowsError_Test()
-		{
-			// Arrange
-			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
-			_permissionService.UserCanImport(_targetWorkspaceArtifactId).Returns(true);
-			_permissionService.UserCanEditDocuments(_sourceWorkspaceArtifactId).Returns(true);
-			_integrationPoint.HasErrors = true;
-			_jobHistoryService.GetLastJobHistory(_integrationPoint).ReturnsNull();
-
-			// Act
-			Assert.Throws<Exception>(() =>
-				_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId),
-				Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
-
-			// Assert
-			_caseServiceManager.RsapiService.SourceProviderLibrary.Received(1).Read(_integrationPoint.SourceProvider.Value);
-			_permissionService.Received(1).UserCanImport(_targetWorkspaceArtifactId);
-			_permissionService.Received(1).UserCanEditDocuments(_sourceWorkspaceArtifactId);
-			_jobHistoryService.Received(1).GetLastJobHistory(_integrationPoint);
-
-			_jobHistoryService.DidNotReceive().UpdateJobHistoryOnRetry(Arg.Any<Data.JobHistory>());
-			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), null);
-			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
-		}
-
 		[Test]
 		public void RetryIntegrationPoint_GoldFlow_Test()
 		{
@@ -325,9 +298,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_permissionService.UserCanEditDocuments(_sourceWorkspaceArtifactId).Returns(true);
 			_integrationPoint.HasErrors = true;
 
-			Data.JobHistory jobHistory = new Data.JobHistory();
-			_jobHistoryService.GetLastJobHistory(_integrationPoint).Returns(jobHistory);
-
 			// Act
 			_instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId);
 
@@ -335,8 +305,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Received(1).Read(_integrationPoint.SourceProvider.Value);
 			_permissionService.Received(1).UserCanImport(_targetWorkspaceArtifactId);
 			_permissionService.Received(1).UserCanEditDocuments(_sourceWorkspaceArtifactId);
-			_jobHistoryService.Received(1).GetLastJobHistory(_integrationPoint);
-			_jobHistoryService.Received(1).UpdateJobHistoryOnRetry(jobHistory);
 			_jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), null);
 			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
