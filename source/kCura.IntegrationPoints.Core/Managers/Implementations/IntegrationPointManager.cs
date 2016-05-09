@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
+﻿using System;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -33,8 +34,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			ISourceProviderRepository repository = _repositoryFactory.GetSourceProviderRepository(workspaceArtifactId);
 			SourceProviderDTO dto = repository.Read(integrationPointDto.SourceProvider.Value);
 
-			bool retriable = dto.Name ==
-			                 kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_NAME;
+			bool retriable = dto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID);
 
 			return retriable;
 		}
