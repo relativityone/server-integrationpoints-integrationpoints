@@ -62,8 +62,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				console.ButtonList.Add(GetRetryErrorsButton(hasErrors, isEnabled));
 			}
 
-			//ConsoleButton viewErrorsLink = GetViewErrorsLink(hasErrors);
-			ConsoleButton viewErrorsLink = GetViewErrorsLink(contextContainer, hasErrors);
+			ConsoleButton viewErrorsLink = GetViewErrorsLink(hasErrors);
+			//ConsoleButton viewErrorsLink = GetViewErrorsLink(contextContainer, hasErrors);
 
 			console.ButtonList.Add(viewErrorsLink);
 
