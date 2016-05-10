@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 {
@@ -23,8 +24,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		private readonly int _sourceProviderId = 321;
 		private readonly int _userId = 951;
 
+		private IHelper _helper;
 		private ICaseServiceContext _caseServiceManager;
 		private IContextContainer _contextContainer;
+		private IContextContainerFactory _contextContainerFactory;
 		private IPermissionService _permissionService;
 		private IJobManager _jobManager;
 		private IQueueManager _queueManager;
@@ -39,16 +42,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		[SetUp]
 		public void Setup()
 		{
+			_helper = Substitute.For<IHelper>();
 			_caseServiceManager = Substitute.For<ICaseServiceContext>();
 			_permissionService = Substitute.For<IPermissionService>();
 			_contextContainer = Substitute.For<IContextContainer>();
+			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
 			_serializer = Substitute.For<ISerializer>();
 			_jobManager = Substitute.For<IJobManager>();
 			_jobHistoryService = Substitute.For<IJobHistoryService>();
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_queueManager = Substitute.For<IQueueManager>();
 
-			_instance = new IntegrationPointService(_caseServiceManager, _contextContainer, _permissionService, _serializer, null, _jobManager,
+			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
+
+			_instance = new IntegrationPointService(_helper, _caseServiceManager, _contextContainerFactory, _permissionService, _serializer, null, _jobManager,
 				_jobHistoryService, _managerFactory);
 
 			_caseServiceManager.RsapiService = Substitute.For<IRSAPIService>();

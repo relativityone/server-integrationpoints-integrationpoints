@@ -99,11 +99,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
 			IPermissionService permissionService = new PermissionService(Helper.GetServicesManager());
 			IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
-			IContextContainer contextContainer = new ContextContainer(Helper);
+			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
 			IManagerFactory managerFactory = new ManagerFactory();
 
 			_caseServiceContext = caseServiceContext;
-			_integrationPointService = new IntegrationPointService(caseServiceContext, contextContainer, permissionService, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
+			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, contextContainerFactory, permissionService, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
 			_jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
 		}
 
