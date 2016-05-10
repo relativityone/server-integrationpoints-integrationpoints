@@ -43,15 +43,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 				container.Register(Component.For<ISerializer>().ImplementedBy<JSONSerializer>().LifestyleTransient());
 			}
 
-			if (container.Kernel.HasComponent(typeof(IContextContainer)) == false)
-			{
-				container.Register(Component.For<IContextContainer>().UsingFactoryMethod(x =>
-				{
-					IHelper helper = x.Resolve<IHelper>();
-					return new ContextContainer(helper);
-				}));
-			}
-
 			container.Register(Component.For<IObjectTypeRepository>().ImplementedBy<RsapiObjectTypeRepository>().UsingFactoryMethod(x =>
 			{
 				IServiceContextHelper contextHelper = x.Resolve<IServiceContextHelper>();
