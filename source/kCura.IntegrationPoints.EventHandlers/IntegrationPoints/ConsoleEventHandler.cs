@@ -6,30 +6,24 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
 	public class ConsoleEventHandler : ConsoleEventHandlerBase
 	{
-		private IPermissionService _permissionService;
 		private readonly IManagerFactory _managerFactory;
 		private readonly IContextContainerFactory _contextContainerFactory;
-
-		private IPermissionService PermissionService => _permissionService ?? (_permissionService = new PermissionService(GetServicesMgr));
-
+		
 		public ConsoleEventHandler()
 		{
 			_contextContainerFactory = new ContextContainerFactory();
 			_managerFactory = new ManagerFactory();
 		}
 
-		internal ConsoleEventHandler(IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory, IPermissionService permissionService)
+		internal ConsoleEventHandler(IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory)
 		{
 			_contextContainerFactory = contextContainerFactory;
 			_managerFactory = managerFactory;
-			_permissionService = permissionService;
 		}
 
 		public override FieldCollection RequiredFields => new FieldCollection();
@@ -43,28 +37,25 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				Title = "RUN",
 				ButtonList = new List<ConsoleButton>()
 			};
-
-			bool isEnabled = PermissionService.UserCanImport(Helper.GetActiveCaseID());
-			console.ButtonList.Add(GetRunNowButton(isEnabled));
-
+			
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
 			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(contextContainer);
-
-			_managerFactory.CreateSourceProviderManager(contextContainer);
-
 			IntegrationPointDTO integrationPointDto = integrationPointManager.Read(Application.ArtifactID, ActiveArtifact.ArtifactID);
-			bool hasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
-			bool isRetriable = integrationPointManager.IntegrationPointTypeIsRetriable(Application.ArtifactID,
-				integrationPointDto);
 
-			if (isRetriable)
+			bool userHasPermissions = integrationPointManager.UserHasPermissions(Helper.GetActiveCaseID());
+			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
+			bool integrationPointIsRetriable = integrationPointManager.IntegrationPointTypeIsRetriable(Application.ArtifactID, integrationPointDto);
+
+			ConsoleButton runNowButton = GetRunNowButton(userHasPermissions);
+			console.ButtonList.Add(runNowButton);
+			
+			if (integrationPointIsRetriable)
 			{
-				console.ButtonList.Add(GetRetryErrorsButton(hasErrors, isEnabled));
+				ConsoleButton retryErrorsButton = GetRetryErrorsButton(userHasPermissions && integrationPointHasErrors && integrationPointIsRetriable);
+				console.ButtonList.Add(retryErrorsButton);
 			}
 
-			ConsoleButton viewErrorsLink = GetViewErrorsLink(hasErrors);
-			//ConsoleButton viewErrorsLink = GetViewErrorsLink(contextContainer, hasErrors);
-
+			ConsoleButton viewErrorsLink = GetViewErrorsLink(integrationPointHasErrors);
 			console.ButtonList.Add(viewErrorsLink);
 
 			return console;
@@ -81,14 +72,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			};
 		}
 
-		private ConsoleButton GetRetryErrorsButton(bool hasErrors, bool isEnabled)
+		private ConsoleButton GetRetryErrorsButton(bool isEnabled)
 		{
 			return new ConsoleButton
 			{
 				DisplayText = "Retry Errors",
 				RaisesPostBack = false,
-				Enabled = hasErrors && isEnabled,
-				OnClickEvent = hasErrors && isEnabled ? $"IP.retryJob({ActiveArtifact.ArtifactID},{Application.ArtifactID})" : String.Empty
+				Enabled = isEnabled,
+				OnClickEvent = isEnabled ? $"IP.retryJob({ActiveArtifact.ArtifactID},{Application.ArtifactID})" : String.Empty
 			};
 		}
 

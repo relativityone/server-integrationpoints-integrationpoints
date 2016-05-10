@@ -216,6 +216,7 @@
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
     <Compile Include="Repositories\ICodeRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerObjectRepository.cs" />
+    <Compile Include="Repositories\Implementations\PermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueueRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceProviderRepository.cs" />
     <Compile Include="Repositories\IObjectRepository.cs" />
@@ -241,6 +242,7 @@
     <Compile Include="Repositories\Implementations\ScratchTableRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceWorkspaceJobHistoryRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceJobRepository.cs" />
+    <Compile Include="Repositories\IPermissionRepository.cs" />
     <Compile Include="Repositories\IScratchTableRepository.cs" />
     <Compile Include="Repositories\ISourceProviderRepository.cs" />
     <Compile Include="Repositories\ISourceWorkspaceJobHistoryRepository.cs" />
@@ -270,7 +272,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="IPermissionService.cs" />
     <Compile Include="IObjectTypeQuery.cs" />
     <Compile Include="IRSAPIService.cs">
       <DependentUpon>IRSAPIService.tt</DependentUpon>
@@ -283,7 +284,6 @@
     <Compile Include="Migrations\MigrationRunner.cs" />
     <Compile Include="Migrations\UpdateJobErrorsBlankToNo.cs" />
     <Compile Include="Models\ApplicationBinary.cs" />
-    <Compile Include="PermissionService.cs" />
     <Compile Include="Queries\JobResourceTracker.cs" />
     <Compile Include="Queries\GetJobCustodianManagerLinks.cs" />
     <Compile Include="Queries\CreateCustodianManagerResourceTable.cs" />

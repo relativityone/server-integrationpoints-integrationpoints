@@ -2,6 +2,8 @@
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -9,7 +11,8 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 	{
 		public IIntegrationPointManager CreateIntegrationPointManager(IContextContainer contextContainer)
 		{
-			return new IntegrationPointManager(CreateRepositoryFactory(contextContainer));
+			IPermissionRepository permissionRepository = new PermissionRepository(contextContainer.Helper.GetServicesManager());
+			return new IntegrationPointManager(CreateRepositoryFactory(contextContainer), permissionRepository);
 		}
 
 		public IQueueManager CreateQueueManager(IContextContainer contextContainer)
