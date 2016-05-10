@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
@@ -84,26 +85,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 		{
 			// Arrange
 			int[] jobHistoryArtifactIds = { 123, 456, 789 };
+			int expectedMaxArtifactId = 789;
 			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint { JobHistory = jobHistoryArtifactIds };
-			WholeNumberCondition expectedCondition = new WholeNumberCondition("ArtifactID", NumericConditionEnum.In)
-			{
-				Value = jobHistoryArtifactIds.ToList()
-			};
 
 			_caseServiceContext.RsapiService.JobHistoryLibrary
-				.Query(Arg.Is<Query<RDO>>(x => x.ArtifactTypeGuid == Guid.Parse(ObjectTypeGuids.JobHistory) && x.Condition is WholeNumberCondition))
-				.Returns(new List<Data.JobHistory>(1) { new Data.JobHistory() });
+				.Read(Arg.Is(expectedMaxArtifactId))
+				.Returns(new Data.JobHistory {ArtifactId = expectedMaxArtifactId });
 
 			// Act
-			Data.JobHistory actual = _instance.GetLastJobHistory(integrationPoint);
+			Data.JobHistory actual = _instance.GetLastJobHistory(integrationPoint.JobHistory.ToList());
 
 			// Assert
 			Assert.IsNotNull(actual);
 
-			_caseServiceContext.RsapiService.JobHistoryLibrary.Received(1)
-				.Query(Arg.Is<Query<RDO>>(x =>
-					x.ArtifactTypeGuid == Guid.Parse(ObjectTypeGuids.JobHistory) && x.Condition is WholeNumberCondition &&
-						ValidateCondition<WholeNumberCondition>(x.Condition, expectedCondition)));
+			_caseServiceContext.RsapiService.JobHistoryLibrary.Received(1).Read(Arg.Is(expectedMaxArtifactId));
 		}
 
 
@@ -112,26 +107,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 		{
 			// Arrange
 			int[] jobHistoryArtifactIds = { 123, 456, 789 };
+			int expectedMaxArtifactId = 789;
 			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint { JobHistory = jobHistoryArtifactIds };
-			WholeNumberCondition expectedCondition = new WholeNumberCondition("ArtifactID", NumericConditionEnum.In)
-			{
-				Value = jobHistoryArtifactIds.ToList()
-			};
 
 			_caseServiceContext.RsapiService.JobHistoryLibrary
-				.Query(Arg.Is<Query<RDO>>(x => x.ArtifactTypeGuid == Guid.Parse(ObjectTypeGuids.JobHistory) && x.Condition is WholeNumberCondition))
-				.Returns(new List<Data.JobHistory>(0));
+				.Read(Arg.Is(expectedMaxArtifactId))
+				.ReturnsNull();
 
 			// Act
-			Data.JobHistory actual = _instance.GetLastJobHistory(integrationPoint);
+			Data.JobHistory actual = _instance.GetLastJobHistory(integrationPoint.JobHistory.ToList());
 
 			// Assert
 			Assert.IsNull(actual);
 
-			_caseServiceContext.RsapiService.JobHistoryLibrary.Received(1)
-				.Query(Arg.Is<Query<RDO>>(x =>
-					x.ArtifactTypeGuid == Guid.Parse(ObjectTypeGuids.JobHistory) && x.Condition is WholeNumberCondition &&
-						ValidateCondition<WholeNumberCondition>(x.Condition, expectedCondition)));
+			_caseServiceContext.RsapiService.JobHistoryLibrary.Received(1).Read(Arg.Is(expectedMaxArtifactId));
 		}
 
 		[Test]
@@ -146,7 +135,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 			};
 
 			// Act
-			Data.JobHistory actual = _instance.GetLastJobHistory(integrationPoint);
+			Data.JobHistory actual = _instance.GetLastJobHistory(integrationPoint.JobHistory.ToList());
 
 			// Assert
 			Assert.IsNull(actual);

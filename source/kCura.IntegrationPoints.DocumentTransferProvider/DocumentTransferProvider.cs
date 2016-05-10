@@ -8,14 +8,12 @@ using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
 using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
 using Relativity.API;
@@ -35,10 +33,17 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 	public class DocumentTransferProvider : IDataSourceProvider, IEmailBodyData
 	{
 		private readonly IHelper _helper;
+		private readonly IRepositoryFactory _repositoryFactory;
 
 		public DocumentTransferProvider(IHelper helper)
+			: this(helper, new RepositoryFactory(helper))
+		{ }
+
+		// TODO: This class needs to be refactored to not reference kCura.IntegrationPoints.Data -- biedrzycki: May 9th
+		internal DocumentTransferProvider(IHelper helper, IRepositoryFactory repositoryFactory)
 		{
 			_helper = helper;
+			_repositoryFactory = repositoryFactory;
 		}
 
 		public IEnumerable<FieldEntry> GetFields(string options)
@@ -56,25 +61,25 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			IFieldRepository fieldRepository = repositoryFactory.GetFieldRepository(workspaceId);
 
 			ArtifactDTO[] fieldArtifacts = fieldRepository.RetrieveFieldsAsync(
-			  rdoTypeId,
-			  new HashSet<string>(new[]
-			  {
-		  Shared.Constants.Fields.Name,
-		  Shared.Constants.Fields.Choices,
-		  Shared.Constants.Fields.ObjectTypeArtifactTypeId,
-		  Shared.Constants.Fields.FieldType,
-		  Shared.Constants.Fields.FieldTypeId,
-		  Shared.Constants.Fields.IsIdentifier,
-		  Shared.Constants.Fields.FieldTypeName,
-			  })).ConfigureAwait(false).GetAwaiter().GetResult();
+				rdoTypeId,
+				new HashSet<string>(new[]
+				{
+					Shared.Constants.Fields.Name,
+					Shared.Constants.Fields.Choices,
+					Shared.Constants.Fields.ObjectTypeArtifactTypeId,
+					Shared.Constants.Fields.FieldType,
+					Shared.Constants.Fields.FieldTypeId,
+					Shared.Constants.Fields.IsIdentifier,
+					Shared.Constants.Fields.FieldTypeName,
+			})).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			HashSet<string> ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-	  {
-		Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-		Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
-		JobHistoryFields.DestinationWorkspace,
-		IntegrationPointFields.JobHistory
-	  };
+			{
+				Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+				Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
+				JobHistoryFields.DestinationWorkspace,
+				IntegrationPointFields.JobHistory
+			};
 
 			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportAPI().GetWorkspaceFields(workspaceId, rdoTypeId).Where(f => !ignoreFields.Contains(f.Name)).Select(x => x.ArtifactID));
 
@@ -191,13 +196,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		{
 			DocumentTransferSettings settings = GetSettings(options);
 
-			Workspace sourceWorkspace = GetWorkspace(settings.SourceWorkspaceArtifactId);
+			WorkspaceDTO sourceWorkspace = GetWorkspace(settings.SourceWorkspaceArtifactId);
 
 			StringBuilder emailBody = new StringBuilder();
 			if (sourceWorkspace != null)
 			{
 				emailBody.AppendLine("");
-				emailBody.AppendFormat("Source Workspace: {0}", Utils.GetFormatForWorkspaceOrJobDisplay(sourceWorkspace.Name, sourceWorkspace.ArtifactID));
+				emailBody.AppendFormat("Source Workspace: {0}", Utils.GetFormatForWorkspaceOrJobDisplay(sourceWorkspace.Name, sourceWorkspace.ArtifactId));
 			}
 			return emailBody.ToString();
 		}
@@ -215,19 +220,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			return rsapiClient;
 		}
 
-		protected virtual Workspace GetWorkspace(int workspaceArtifactIds)
+		protected virtual WorkspaceDTO GetWorkspace(int workspaceArtifactIds)
 		{
-			IRSAPIClient rsapiClient = GetRSAPIClient(-1);
-
-			IEnumerable<Result<Workspace>> workspaces = new GetWorkspacesQuery(rsapiClient).ExecuteQuery().Results;
-
-			Workspace sourceWorkspace = null;
-			if (workspaces != null)
-			{
-				Result<Workspace> workspace = workspaces.FirstOrDefault(x => x.Artifact.ArtifactID == workspaceArtifactIds);
-				if (workspace != null) { sourceWorkspace = workspace.Artifact; }
-			}
-			return sourceWorkspace;
+			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetWorkspaceRepository();
+			WorkspaceDTO workspaceDTO = workspaceRepository.Retrieve(workspaceArtifactIds);
+			return workspaceDTO;
 		}
 	}
 }

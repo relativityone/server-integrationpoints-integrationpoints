@@ -127,7 +127,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Kepler">
-      <HintPath>..\Dependencies\kCura\Relativity.Kepler.dll</HintPath>
+      <HintPath>..\packages\Relativity.Kepler.1.0.1.149\lib\net45\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.DataContracts, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Services.DataContracts.9.3.398.12\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
@@ -182,6 +182,9 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Config.cs" />
     <Compile Include="IntegrationTestAttribute.cs" />
     <Compile Include="Integration\IntegrationPointQueryTest.cs" />

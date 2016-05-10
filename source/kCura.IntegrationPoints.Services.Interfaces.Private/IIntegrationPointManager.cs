@@ -10,6 +10,13 @@ namespace kCura.IntegrationPoints.Services
 	public interface IIntegrationPointManager : IKeplerService, IDisposable
 	{
 		/// <summary>
+		/// Get ArtifactType Id of the integration point object in the given workspace.
+		/// </summary>
+		/// <param name="workspaceArtifactId">The Workspace artifact Id of which has installed integration point application</param>
+		/// <returns>The ArtifactType id of integration point</returns>
+		Task<int> GetIntegrationPointArtifactTypeIdAsync(int workspaceArtifactId);
+		
+		/// <summary>
 		/// Create integration point from the given model
 		/// </summary>
 		/// <param name="request">Integration point model to create integration point object.</param>

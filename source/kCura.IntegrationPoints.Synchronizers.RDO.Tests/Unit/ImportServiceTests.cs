@@ -41,10 +41,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 
 			ImportService importService = new ImportService(null, null, null, null, null);
 
-
 			//ACT
 			Dictionary<string, object> data = importService.GenerateImportFields(sourceFields, mapping, null);
-
 
 			//ASSERT
 			Assert.AreEqual(5, data.Count);

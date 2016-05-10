@@ -16,6 +16,17 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		Data.JobHistory CreateRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUtc);
 
 		/// <summary>
+		/// Creates a job history object for an integration point if the given batch instance guid does not already exist;
+		/// otherwise, we retrieve the existing job history object.
+		/// </summary>
+		/// <param name="integrationPoint">The integration point object.</param>
+		/// <param name="batchInstance">The batch instance guid.</param>
+		/// <param name="jobType">The job type.</param>
+		/// <param name="startTimeUtc">The job start time in UTC format.</param>
+		/// <returns>The job history object of the integration point.</returns>
+		Data.JobHistory CreateRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, Relativity.Client.Choice jobType, DateTime? startTimeUtc);
+
+		/// <summary>
 		/// Retrieves a list of job history objects given the job history artifact ids.
 		/// </summary>
 		/// <param name="jobHistoryArtifactIds">A list of job history artifact ids.</param>
@@ -36,18 +47,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		void UpdateRdo(Data.JobHistory jobHistory);
 
 		/// <summary>
-		/// Retrieves the last job for the integration point given.
-		/// </summary>
-		/// <param name="integrationPoint">The integration point object.</param>
-		/// <returns>The last completed job history object of the integration point.</returns>
-		Data.JobHistory GetLastJobHistory(Data.IntegrationPoint integrationPoint);
-
-		/// <summary>
 		/// Retrives the last job in the given list of job history artifact ids.
 		/// </summary>
 		/// <param name="jobHistoryArtifactIds">The list of job history artifact ids to check against.</param>
-		/// <returns>The last completed job history object from the list of job history artifact ids.</returns>
-		Data.JobHistory GetLastJobHistory(IList<int> jobHistoryArtifactIds);
+		/// <returns>The last job history object from the list of job history artifact ids.</returns>
+		Data.JobHistory GetLastJobHistory(List<int> jobHistoryArtifactIds);
 
 		/// <summary>
 		/// Updates the job history information to expire the errors that exist on the job.

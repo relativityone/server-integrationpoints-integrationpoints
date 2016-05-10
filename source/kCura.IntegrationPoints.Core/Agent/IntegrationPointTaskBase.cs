@@ -92,10 +92,13 @@ namespace kCura.IntegrationPoints.Core.Agent
 
 		protected void SetIntegrationPoint(Job job)
 		{
-			if (this.IntegrationPoint != null) return;
+			if (this.IntegrationPoint != null)
+			{
+				return;
+			}
 
-			int integrationPointID = job.RelatedObjectArtifactID;
-			this.IntegrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointID);
+			int integrationPointId = job.RelatedObjectArtifactID;
+			this.IntegrationPoint = _caseServiceContext.RsapiService.IntegrationPointLibrary.Read(integrationPointId);
 			if (this.IntegrationPoint == null)
 			{
 				throw new ArgumentException("Failed to retrieve corresponding Integration Point Rdo.");
@@ -104,9 +107,13 @@ namespace kCura.IntegrationPoints.Core.Agent
 
 		protected void SetJobHistory()
 		{
-			if (this.JobHistory != null) return;
+			if (this.JobHistory != null)
+			{
+				return;
+			}
 
-			this.JobHistory = _jobHistoryService.CreateRdo(this.IntegrationPoint, this.BatchInstance, DateTime.UtcNow);
+			// TODO: it is possible here that the Job Type is not Run Now - verify expected usage
+			this.JobHistory = _jobHistoryService.CreateRdo(this.IntegrationPoint, this.BatchInstance, JobTypeChoices.JobHistoryRunNow, DateTime.UtcNow);
 			_jobHistoryErrorService.JobHistory = this.JobHistory;
 			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPoint;
 		}

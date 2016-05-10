@@ -62,11 +62,11 @@
     </Reference>
     <Reference Include="kCura.Data, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\kCura\kCura.Data.dll</HintPath>
+      <HintPath>..\packages\kCuraCore.9.3.398.12\lib\net45\kCura.Data.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Data.RowDataGateway, Version=9.1.87.2, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\kCura\kCura.Data.RowDataGateway.dll</HintPath>
+      <HintPath>..\packages\kCuraCore.9.3.398.12\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
     </Reference>
     <Reference Include="kCura.EDDS.DocumentCompareGateway, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -84,7 +84,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Utility">
-      <HintPath>..\Dependencies\kCura\kCura.Utility.dll</HintPath>
+      <HintPath>..\packages\kCuraCore.9.3.398.12\lib\net45\kCura.Utility.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
