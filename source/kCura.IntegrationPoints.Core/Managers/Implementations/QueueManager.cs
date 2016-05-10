@@ -9,14 +9,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	{
 		private readonly IQueueRepository _queueRepository;
 
-		public QueueManager(IContextContainer contextContainer)
-			: this(new RepositoryFactory(contextContainer.Helper))
-		{
-		}
-
-		/// <summary>
-		/// Only consumed by unit tests
-		/// </summary>
 		internal QueueManager(IRepositoryFactory repositoryFactory)
 		{
 			_queueRepository = repositoryFactory.GetQueueRepository();

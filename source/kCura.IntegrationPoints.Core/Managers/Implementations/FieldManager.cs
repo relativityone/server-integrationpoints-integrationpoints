@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
@@ -10,13 +9,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
 
-		public FieldManager(IContextContainer contextContainer)
-		:this(new RepositoryFactory(contextContainer.Helper))
-		{ }
-		
-		/// <summary>
-		/// Unit tests should be the only external consumers of this constructor
-		/// </summary>
 		internal FieldManager(IRepositoryFactory repositoryFactory)
 		{
 			_repositoryFactory = repositoryFactory;
