@@ -27,5 +27,12 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>Source provider manager</returns>
 		ISourceProviderManager CreateSourceProviderManager(IContextContainer contextContainer);
+
+		/// <summary>
+		/// Creates field manager.
+		/// </summary>
+		/// <param name="contextContainer">Container containing necessary contexts</param>
+		/// <returns>Field manager</returns>
+		IFieldManager CreateFieldManager(IContextContainer contextContainer);
 	}
 }

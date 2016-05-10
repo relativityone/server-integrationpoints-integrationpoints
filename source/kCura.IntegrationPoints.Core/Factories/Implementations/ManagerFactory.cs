@@ -19,5 +19,10 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 		{
 			return new SourceProviderManager(contextContainer);
 		}
+
+		public IFieldManager CreateFieldManager(IContextContainer contextContainer)
+		{
+			return new FieldManager(contextContainer);
+		}
 	}
 }

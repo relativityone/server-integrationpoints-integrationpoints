@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Service;
@@ -155,6 +156,35 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var artifactViewFieldIdParam = new SqlParameter(artifactViewFieldIdParamName, SqlDbType.Int) { Value = artifactViewFieldId };
 
 			_baseContext.DBContext.ExecuteNonQuerySQLStatement(sql, new[] { filterTypeParam, artifactViewFieldIdParam });
+		}
+
+
+		public Dictionary<Guid, int> RetrieveFieldArtifactIds(IEnumerable<Guid> fieldGuids)
+		{
+			List<Relativity.Client.DTOs.Field> fields = RetrieveFields(fieldGuids);
+
+			Dictionary<Guid, int> result = fields.ToDictionary(field => field.Guids.First(), field => field.ArtifactID);
+			return result;
+		}
+
+		private List<Relativity.Client.DTOs.Field> RetrieveFields(IEnumerable<Guid> fieldGuids)
+		{
+			ResultSet<Relativity.Client.DTOs.Field> result;
+			List<Relativity.Client.DTOs.Field> fields = fieldGuids.Select(fieldGuid => new Relativity.Client.DTOs.Field(fieldGuid)).ToList();
+
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+				result = rsapiClient.Repositories.Field.Read(fields);
+			}
+
+			if (!result.Success)
+			{
+				throw new Exception($"Unable to retrieve fields. Error message: {result.Message}");
+			}
+
+			List<Relativity.Client.DTOs.Field> resultFields = result.Results.Select(resultField => resultField.Artifact).ToList();
+			return resultFields;
 		}
 	}
 }
