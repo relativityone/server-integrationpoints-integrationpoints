@@ -102,7 +102,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>().LifestyleTransient());
 
-      container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>());
+      container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>().LifestyleTransient());
 
       if (container.Kernel.HasComponent(typeof(IHelper)))
 			{
