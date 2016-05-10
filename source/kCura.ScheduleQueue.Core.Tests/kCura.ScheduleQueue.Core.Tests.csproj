@@ -125,7 +125,7 @@
       <HintPath>..\packages\Relativity.API.9.3.398.12\lib\net45\Relativity.API.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.CustomPages">
-      <HintPath>..\Dependencies\kCura\Relativity.CustomPages.dll</HintPath>
+      <HintPath>..\Relativity.CustomPages.9.3.398.12\lib\net45\Relativity.CustomPages.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -138,13 +138,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Version\AssemblyInfo.cs">
+      <Link>AssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Integration\Service\JobLogServiceTests.cs" />
     <Compile Include="Integration\Service\JobServiceTests.cs" />
     <Compile Include="TestDBContextHelper.cs" />
     <Compile Include="Unit\BatchManagerBaseTests.cs" />
     <Compile Include="Unit\PeriodicScheduleRuleTest.cs" />
     <Compile Include="Unit\QueueTableHelperTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
@@ -173,11 +175,11 @@
     </ProjectReference>
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
       <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>
-      <Name>kCura.ScheduleQueueAgent</Name>
+      <Name>kCura.ScheduleQueue.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LICENSE.txt" />
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

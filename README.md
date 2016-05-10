@@ -13,7 +13,10 @@ Microsoft Active Directory.
 * Relativity - Allowing documents to be pushed between workspaces.
  
 ## How to Build
- 
+Add .\source\DevelopmentScripts to your PATH
+OR
+Natigate to <IntegrationPoint Source Code>\source\DevelopmentScripts and run the following commands:
+
     usage:
         build [debug|release] [dev|alpha|beta|rc|gold]
         [-b quiet|minimal|normal|detailed|diagnostic] [-skip] [-test]

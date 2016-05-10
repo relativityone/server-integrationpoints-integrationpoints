@@ -178,7 +178,7 @@ namespace kCura.IntegrationPoints.SourceProviderInstaller.Services
 			}
 			catch (Exception ex)
 			{
-				throw new InvalidSourceProviderException(string.Format("Could not load {0} ({1}).", provider.Name, provider.GUID), ex);
+				throw new InvalidSourceProviderException(string.Format("Could not load {0} ({1}) provider.", provider.Name, provider.GUID), ex);
 			}
 		}
 	}
