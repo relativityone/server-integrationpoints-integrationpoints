@@ -21,6 +21,7 @@ namespace kCura.IntegrationPoints.Data.Extensions
 					x => new ArtifactDTO(
 						x.ArtifactId,
 						x.ArtifactTypeId,
+						x.TextIdentifier,
 						x.Fields.Select(
 							y => new ArtifactFieldDTO() { ArtifactId = y.ArtifactId, FieldType = y.FieldType, Name = y.Name, Value = y.Value }))
 					).ToArray();

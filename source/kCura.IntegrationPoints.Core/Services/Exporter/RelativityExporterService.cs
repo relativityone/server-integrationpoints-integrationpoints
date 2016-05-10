@@ -11,7 +11,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using Newtonsoft.Json;
 using Relativity;
 using Relativity.Core;
-using Relativity.Core.Authentication;
 using Relativity.Data;
 using System.Text.RegularExpressions;
 
@@ -60,7 +59,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			: this(mappedFields)
 		{
 			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
-			_baseContext = claimsPrincipal.GetServiceContextUnversionShortTerm(settings.SourceWorkspaceArtifactId);
+			_baseContext = claimsPrincipal.GetUnversionContext(settings.SourceWorkspaceArtifactId);
 
 			IQueryFieldLookup fieldLookupHelper = new global::Relativity.Core.QueryFieldLookup(_baseContext, (int)Relativity.Client.ArtifactType.Document);
 
@@ -228,7 +227,9 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 							Value = value
 						};
 					}
-					result.Add(new ArtifactDTO(documentArtifactId, artifactType, fields));
+
+					// TODO: replace String.empty
+					result.Add(new ArtifactDTO(documentArtifactId, artifactType, String.Empty, fields));
 				}
 			}
 			return result.ToArray();

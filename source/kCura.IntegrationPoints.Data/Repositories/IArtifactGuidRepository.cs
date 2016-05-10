@@ -34,5 +34,13 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="guid">The guid to search for</param>
 		/// <returns><code>TRUE</code> if the guid was found, <code>FALSE</code> otherwise</returns>
 		bool GuidExists(Guid guid);
+
+	    /// <summary>
+	    /// Gets GUIDs for Artifact Ids
+	    /// </summary>
+	    /// <param name="artifactIds">Artifact Ids</param>
+	    /// <returns>GUID value</returns>
+	    Dictionary<int, Guid> GetGuidsForArtifactIds(IEnumerable<int> artifactIds);
+
 	}
 }

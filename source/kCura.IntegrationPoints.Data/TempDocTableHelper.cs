@@ -19,17 +19,14 @@ namespace kCura.IntegrationPoints.Data
 		private string _docIdentifierField;
 
 		public TempDocTableHelper(IHelper helper, string tableSuffix, int sourceWorkspaceId, IFieldRepository fieldRepository, IDocumentRepository documentRepository)
+			: this (helper,tableSuffix, sourceWorkspaceId, fieldRepository, documentRepository, null)
 		{
-			_caseContext = helper.GetDBContext(sourceWorkspaceId);
-			_tableSuffix = tableSuffix;
-			_fieldRepository = fieldRepository;
-			_documentRepository = documentRepository;
 		}
 
 		/// <summary>
 		/// For internal testing only
 		/// </summary>
-		internal TempDocTableHelper(IHelper helper, string tableSuffix, int sourceWorkspaceId, string docIdField, IFieldRepository fieldRepository, IDocumentRepository documentRepository)
+		internal TempDocTableHelper(IHelper helper, string tableSuffix, int sourceWorkspaceId, IFieldRepository fieldRepository, IDocumentRepository documentRepository, string docIdField)
 		{
 			_caseContext = helper.GetDBContext(sourceWorkspaceId);
 			_tableSuffix = tableSuffix;

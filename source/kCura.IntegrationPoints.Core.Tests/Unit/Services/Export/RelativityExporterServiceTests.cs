@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 		}
 
 		[Test]
-		public void GoldFlow()
+		public void RetrieveData_GoldFlow()
 		{
 			// Arrange
 			object[] obj = new[] {new object[] { "REL01", "FileName", 1111 }};
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 			_exporter.InitializeExport(0, null, 0).Returns(_exportApiResult);
 			_exporter.RetrieveResults(_exportApiResult.RunId, avfIds, 1).Returns(obj);
 
-			ArtifactDTO expecteDto = new ArtifactDTO(1111, 10, new []
+			ArtifactDTO expecteDto = new ArtifactDTO(1111, 10, "Document", new []
 			{
 				new ArtifactFieldDTO()
 				{
@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 		}
 
 		[Test]
-		public void UnableToGetLongTextField()
+		public void RetrieveData_UnableToGetLongTextField()
 		{
 			// Arrange
 			object[] obj = new[] { new object[] { "REL01", "#KCURA99DF2F0FEB88420388879F1282A55760#", 1111 } };
@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.Export
 		}
 
 		[Test]
-		public void RetrieveNoData()
+		public void RetrieveData_NoDataReturned()
 		{
 			// Arrange
 			int[] avfIds = new[] { 1, 2 };

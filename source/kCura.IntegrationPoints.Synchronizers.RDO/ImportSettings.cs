@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
+using kCura.IntegrationPoints.Data.Extensions;
 using Newtonsoft.Json;
 using Relativity.Core;
-using Relativity.Core.Authentication;
 using Relativity.Core.Service;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO
@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		private readonly IAuditSpoofTokenGenerator _generator;
 		private BaseServiceContext _context;
 
-		private BaseServiceContext Context => _context ?? (_context = ClaimsPrincipal.Current.GetServiceContextUnversionShortTerm(CaseArtifactId));
+		private BaseServiceContext Context => _context ?? (_context = ClaimsPrincipal.Current.GetUnversionContext(CaseArtifactId));
 
 		#region "Constructors"
 

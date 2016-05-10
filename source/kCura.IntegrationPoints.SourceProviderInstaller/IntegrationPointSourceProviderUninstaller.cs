@@ -4,8 +4,6 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
-using kCura.Relativity.Client;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
 {

@@ -130,13 +130,13 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 			if (success)
 			{
-				ArtifactFieldDTO retrivedField = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId);
-				return retrivedField.Value;
+				ArtifactFieldDTO retrievedField = CurrentArtifact.GetFieldForIdentifier(fieldArtifactId);
+				return retrievedField.Value;
 			}
 			else if (fieldIdentifier == IntegrationPoints.Contracts.Constants.SPECIAL_FOLDERPATH_FIELD)
 			{
-				ArtifactFieldDTO retrivedField = CurrentArtifact.GetFieldForIdentifier(_folderPathFieldSourceArtifactId);
-				return retrivedField.Value;
+				ArtifactFieldDTO retrievedField = CurrentArtifact.GetFieldForIdentifier(_folderPathFieldSourceArtifactId);
+				return retrievedField.Value;
 			}
 			else
 			{

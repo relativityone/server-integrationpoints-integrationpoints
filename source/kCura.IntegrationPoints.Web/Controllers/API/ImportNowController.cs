@@ -5,16 +5,11 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
-using kCura.IntegrationPoints.Contracts.Synchronizer;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
-using Newtonsoft.Json;
-
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
@@ -22,45 +17,26 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 	{
 		private const string _INTEGRATIONPOINT_ARTIFACT_ID_GUID = "A992C6FD-B6C2-4B97-AAFB-2CFB3F666F62";
 		private const string _SOURCEPROVIDER_ARTIFACT_ID_GUID = "4A091F69-D750-441C-A4F0-24C990D208AE";
-
 		private const string _RELATIVITY_USERID = "rel_uai";
-		internal const string NO_PERMISSION_TO_IMPORT = "You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.";
-		internal const string NO_USERID = "Unable to determine the user id. Please contact your system administrator.";
 
-		private readonly IJobManager _jobManager;
+		private readonly IIntegrationPointService _integrationPointService;
 		private readonly ICaseServiceContext _caseServiceContext;
-		private readonly IPermissionService _permissionService;
-		private readonly IIntegrationPointRdoAdaptor _rdoDependenciesAdaptor;
 
-		public ImportNowController(IJobManager jobManager,
-			ICaseServiceContext caseServiceContext,
-			IIntegrationPointService integrationPointService,
-			JobHistoryService jobHistoryService,
-			IPermissionService permissionService)
-			: this( jobManager, caseServiceContext, permissionService,
-				new IntegrationPointRdoInitializer(integrationPointService, caseServiceContext, jobHistoryService))
+		public ImportNowController(ICaseServiceContext caseServiceContext, IIntegrationPointService integrationPointService)
 		{
-		}
-
-		internal ImportNowController(IJobManager jobManager,
-			ICaseServiceContext caseServiceContext,
-			IPermissionService permissionService,
-			IIntegrationPointRdoAdaptor rdoAdaptor)
-		{
-			_jobManager = jobManager;
 			_caseServiceContext = caseServiceContext;
-			_permissionService = permissionService;
-			_rdoDependenciesAdaptor = rdoAdaptor;
+			_integrationPointService = integrationPointService;
 		}
-
-		// POST api/importnow
+		
+		// POST API/ImportNow
 		[HttpPost]
 		public HttpResponseMessage Post(Payload payload)
 		{
-			HttpResponseMessage httpResponseMessage = Internal(payload.AppId, payload.ArtifactId);
+			HttpResponseMessage httpResponseMessage = Internal(payload.AppId, payload.ArtifactId, _integrationPointService.RunIntegrationPoint);
 			return httpResponseMessage;
 		}
 
+		// POST API/SubmitLastJob
 		[HttpPost]
 		public bool SubmitLastJob(int workspaceId)
 		{
@@ -75,7 +51,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 			Query<RDO> query2 = new Query<RDO>
 			{
-				Fields = new List<FieldValue> {new FieldValue(_INTEGRATIONPOINT_ARTIFACT_ID_GUID)},
+				Fields = new List<FieldValue> { new FieldValue(_INTEGRATIONPOINT_ARTIFACT_ID_GUID) },
 				Condition = new WholeNumberCondition(Guid.Parse(IntegrationPointFieldGuids.SourceProvider), NumericConditionEnum.EqualTo, sourceProviderArtifactId),
 				Sorts = new List<Sort>
 				{
@@ -93,54 +69,29 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 				return false;
 			}
 
-			HttpResponseMessage message = Internal(workspaceId, integrationPoints.First().ArtifactId);
+			HttpResponseMessage message = Internal(workspaceId, integrationPoints.First().ArtifactId, _integrationPointService.RunIntegrationPoint);
 			return message.IsSuccessStatusCode;
 		}
 
-		private HttpResponseMessage Internal(int workspaceId, int relatedObjectArtifactId)
+		// POST API/RetryJob
+		[HttpPost]
+		public HttpResponseMessage RetryJob(Payload payload)
+		{
+			HttpResponseMessage httpResponseMessage = Internal(payload.AppId, payload.ArtifactId, _integrationPointService.RetryIntegrationPoint);
+			return httpResponseMessage;
+		}
+
+		private HttpResponseMessage Internal(int workspaceId, int relatedObjectArtifactId, Action<int, int, int> integrationPointServiceMethod)
 		{
 			try
 			{
-				Guid batchInstance = Guid.NewGuid();
-				var jobDetails = new TaskParameters()
-				{
-					BatchInstance = batchInstance
-				};
-
-				_rdoDependenciesAdaptor.Initialize(relatedObjectArtifactId, batchInstance);
-
 				int userId = GetUserIdIfExists();
-                if (_rdoDependenciesAdaptor.DestinationProviderIdentifier.Equals(Core.Services.Synchronizer.RdoSynchronizerProvider.FILES_SYNC_TYPE_GUID))
-				{
-					_jobManager.CreateJob(jobDetails, TaskType.ExportManager, workspaceId, relatedObjectArtifactId);
-				}
-				// if relativity provider is selected, we will create an export task
-				else if (_rdoDependenciesAdaptor.SourceProviderIdentifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
-				{
-					DestinationWorkspace destinationWorkspace = JsonConvert.DeserializeObject<DestinationWorkspace>(_rdoDependenciesAdaptor.SourceConfiguration);
-					if (_permissionService.UserCanImport(destinationWorkspace.TargetWorkspaceArtifactId) == false)
-					{
-						throw new Exception(NO_PERMISSION_TO_IMPORT);
-					}
-
-					if (userId == 0)
-					{
-						throw new Exception(NO_USERID);
-					}
-
-					_rdoDependenciesAdaptor.CreateJobHistoryRdo();
-					_jobManager.CreateJobOnBehalfOfAUser(jobDetails,  TaskType.ExportService, workspaceId, relatedObjectArtifactId, userId);
-				}
-				else
-				{
-					_rdoDependenciesAdaptor.CreateJobHistoryRdo();
-					_jobManager.CreateJobOnBehalfOfAUser(jobDetails, TaskType.SyncManager, workspaceId, relatedObjectArtifactId, userId);
-				}
+				integrationPointServiceMethod(workspaceId, relatedObjectArtifactId, userId);
 			}
 			catch (AggregateException exception)
 			{
 				IEnumerable<string> innerExceptions = exception.InnerExceptions.Where(ex => ex != null).Select(ex => ex.Message);
-				return Request.CreateResponse(HttpStatusCode.BadRequest, String.Format("{0} : {1}", exception.Message, String.Join(",", innerExceptions)));
+				return Request.CreateResponse(HttpStatusCode.BadRequest, String.Format("{0} : {1}" , exception.Message, String.Join(",", innerExceptions)));
 			}
 			catch (Exception exception)
 			{
@@ -151,7 +102,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private int GetUserIdIfExists()
 		{
-			var user = this.User as ClaimsPrincipal;
+			var user = User as ClaimsPrincipal;
 			if (user != null)
 			{
 				foreach (Claim claim in user.Claims)
@@ -165,82 +116,6 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			return 0;
 		}
 
-		internal class IntegrationPointRdoInitializer : IIntegrationPointRdoAdaptor
-		{
-			private readonly IIntegrationPointService _integrationPointService;
-			private readonly ICaseServiceContext _caseServiceContext;
-			private readonly JobHistoryService _jobHistoryService;
-			private IntegrationPoint _integrationPoint;
-			private string _identifier;
-			private string _sourceConfig;
-			//private DestinationProvider _destinationProvider;
-			private Guid _batchInstance;
-		    private string _destinationProviderIdentifier;
-
-
-			public IntegrationPointRdoInitializer(IIntegrationPointService integrationPointService,
-					ICaseServiceContext caseServiceContext,
-					JobHistoryService jobHistoryService)
-			{
-				_integrationPointService = integrationPointService;
-				_caseServiceContext = caseServiceContext;
-				_jobHistoryService = jobHistoryService;
-			}
-
-			public void Initialize(int relatedObjectArtifactId, Guid batchInstance)
-			{
-				_batchInstance = batchInstance;
-				_integrationPoint = _integrationPointService.GetRdo(relatedObjectArtifactId);
-				SourceProvider provider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(_integrationPoint.SourceProvider.Value);
-
-                // TO DO replace getting DestinationProvider with the below line when ready
-                //_destinationProvider = _caseServiceContext.RsapiService.DestinationProviderLibrary.Read(_integrationPoint.DestinationProvider.Value);
-                var json = JsonConvert.DeserializeObject<ImportSettings>(_integrationPoint.DestinationConfiguration);
-			    _destinationProviderIdentifier = json.DestinationProviderType;
-
-                _identifier = provider.Identifier;
-				_sourceConfig = _integrationPoint.SourceConfiguration;
-			}
-
-			public void CreateJobHistoryRdo()
-			{
-				_jobHistoryService.CreateRdo(_integrationPoint, _batchInstance, null);
-			}
-
-			public string SourceProviderIdentifier
-			{
-				get { return _identifier; }
-			}
-
-			public string DestinationProviderIdentifier
-			{
-				//get { return _destinationProvider.Identifier; }
-                get { return _destinationProviderIdentifier; }
-                
-            }
-
-
-			public string SourceConfiguration { get { return _sourceConfig; } }
-
-
-		}
-
-		internal interface IIntegrationPointRdoAdaptor
-		{
-			void Initialize(int relatedObjectArtifactId, Guid batchInstance);
-
-			void CreateJobHistoryRdo();
-
-			string SourceProviderIdentifier { get; }
-
-			string SourceConfiguration { get; }
-
-			string DestinationProviderIdentifier { get; }
-		}
-		internal class DestinationWorkspace
-		{
-			public int TargetWorkspaceArtifactId;
-		}
 
 		public class Payload
 		{

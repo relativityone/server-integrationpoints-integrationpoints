@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Data
 	{
 		private readonly IServicesMgr _servicesMgr;
 		private const int _ALLOW_IMPORT_PERMISSION_ID = 158; // 158 is the artifact id of the "Allow Import" permission
+		private const int _EDIT_DOCUMENT_PERMISSION_ID = 45; // 45 is the artifact id of the "Edit Documents" permission
 
 		public PermissionService(IServicesMgr servicesMgr)
 		{
@@ -18,18 +19,28 @@ namespace kCura.IntegrationPoints.Data
 
 		public bool UserCanImport(int workspaceId)
 		{
+			return HasPermissions(workspaceId, _ALLOW_IMPORT_PERMISSION_ID);
+		}
+
+		public bool UserCanEditDocuments(int workspaceId)
+		{
+			return HasPermissions(workspaceId, _EDIT_DOCUMENT_PERMISSION_ID);
+		}
+
+		internal bool HasPermissions(int workspaceId, int permissionToCheck)
+		{
 			using (IPermissionManager proxy = _servicesMgr.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
 			{
-				var allowImportPermission = new PermissionRef()
+				var permission = new PermissionRef()
 				{
-					PermissionID = _ALLOW_IMPORT_PERMISSION_ID
+					PermissionID = permissionToCheck
 				};
 
-				bool userHasImportPermissions = false;
+				bool hasPermission = false;
 				try
 				{
 					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(workspaceId,
-						new List<PermissionRef>() {allowImportPermission});
+						new List<PermissionRef>() { permission });
 					List<PermissionValue> permissionValues = permissionValuesTask.Result;
 
 					if (permissionValues == null || !permissionValues.Any())
@@ -37,17 +48,17 @@ namespace kCura.IntegrationPoints.Data
 						return false;
 					}
 
-					PermissionValue allowImportPermissionValue = permissionValues.First();
-					userHasImportPermissions = allowImportPermissionValue.Selected &&
-												allowImportPermissionValue.PermissionID == _ALLOW_IMPORT_PERMISSION_ID;
+					PermissionValue hasPermissionValue = permissionValues.First();
+					hasPermission = hasPermissionValue.Selected &&
+												hasPermissionValue.PermissionID == permissionToCheck;
 				}
-				catch 
+				catch
 				{
-					// invalid id's will cause the request to except
-					// surpress these errors and do not give the user access	
+					// invalid IDs will cause the request to except
+					// suppress these errors and do not give the user access	
 				}
 
-				return userHasImportPermissions;
+				return hasPermission;
 			}
 		}
 

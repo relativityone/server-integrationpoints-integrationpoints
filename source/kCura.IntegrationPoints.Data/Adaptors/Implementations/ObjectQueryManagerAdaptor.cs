@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Data.Adaptors.Implementations
 		{
 			using (IObjectQueryManager objectQueryManager = _helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser))
 			{
-				var result = await objectQueryManager.QueryAsync(
+				ObjectQueryResultSet result = await objectQueryManager.QueryAsync(
 					WorkspaceId,
 					ArtifactTypeId,
 					query,

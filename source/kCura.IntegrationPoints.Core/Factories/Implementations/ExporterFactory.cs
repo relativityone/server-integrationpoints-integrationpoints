@@ -9,12 +9,12 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class ExporterFactory : IExporterFactory
 	{
-		private readonly IOnBehalfOfUserClaimsPrincipleFactory _claimsPrincipleFactory;
+		private readonly IOnBehalfOfUserClaimsPrincipalFactory _claimsPrincipalFactory;
 		private readonly IRepositoryFactory _repositoryFactory;
 
-		public ExporterFactory(IOnBehalfOfUserClaimsPrincipleFactory claimsPrincipleFactory, IRepositoryFactory repositoryFactory)
+		public ExporterFactory(IOnBehalfOfUserClaimsPrincipalFactory claimsPrincipalFactory, IRepositoryFactory repositoryFactory)
 		{
-			_claimsPrincipleFactory = claimsPrincipleFactory;
+			_claimsPrincipalFactory = claimsPrincipalFactory;
 			_repositoryFactory = repositoryFactory;
 		}
 
@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			{
 				onBehalfOfUser = 9;
 			}
-			ClaimsPrincipal claimsPrincipal = _claimsPrincipleFactory.CreateClaimsPrinciple(onBehalfOfUser);
+			ClaimsPrincipal claimsPrincipal = _claimsPrincipalFactory.CreateClaimsPrincipal(onBehalfOfUser);
 			return new RelativityExporterService(_repositoryFactory, claimsPrincipal, mappedFiles, 0, config);
 		}
 	}

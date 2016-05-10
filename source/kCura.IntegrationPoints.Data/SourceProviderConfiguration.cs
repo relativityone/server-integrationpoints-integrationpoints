@@ -39,5 +39,10 @@ namespace kCura.IntegrationPoints.Data
 		/// </summary>
 		/// <remarks>This configuration value only applies to the Document RDO.</remarks>
 		public bool AlwaysImportNativeFileNames { get; set; }
+
+		/// <summary>
+		/// A setting to prevent user to map identifier field to a non identifier field.
+		/// </summary>
+		public bool OnlyMapIdentifierToIdentifier { get; set; }
 	}
 }

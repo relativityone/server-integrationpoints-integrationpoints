@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			Task<ArtifactDTO[]> task =
 				new Task<ArtifactDTO[]>(() => new ArtifactDTO[]
 				{
-					new ArtifactDTO(0, 0, new List<ArtifactFieldDTO>()
+					new ArtifactDTO(0, 0, String.Empty, new List<ArtifactFieldDTO>()
 					{
 						new ArtifactFieldDTO() { Value = id }
 					})

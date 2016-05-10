@@ -18,21 +18,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		private readonly IRelativityUrlHelper _urlHelper;
 		private readonly Core.Services.Synchronizer.IRdoSynchronizerProvider _provider;
 		private readonly ICaseServiceContext _context;
-		private readonly IPermissionService _permissionService;
 
-		private const string UNABLE_TO_SAVE_FORMAT = "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
+		private const string _UNABLE_TO_SAVE_FORMAT = "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
 
 		public IntegrationPointsAPIController(IIntegrationPointService reader,
 			IRelativityUrlHelper urlHelper,
 			Core.Services.Synchronizer.IRdoSynchronizerProvider provider,
-			ICaseServiceContext context,
-			IPermissionService permissionService)
+			ICaseServiceContext context)
 		{
 			_reader = reader;
 			_urlHelper = urlHelper;
 			_provider = provider;
 			_context = context;
-			_permissionService = permissionService;
 		}
 
 		[HttpGet]
@@ -54,89 +51,90 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpPost]
 		public HttpResponseMessage Update(int workspaceID, IntegrationModel model)
 		{
-			// check that only fields that are allowed to be changed are changed
-			List<string> invalidProperties = new List<string>();
-			IntegrationModel existingModel = null;
-			if (model.ArtifactID > 0)
+			try
 			{
+				// check that only fields that are allowed to be changed are changed
+				List<string> invalidProperties = new List<string>();
+				IntegrationModel existingModel = null;
+				if (model.ArtifactID > 0)
+				{
+					try
+					{
+						existingModel = _reader.ReadIntegrationPoint(model.ArtifactID);
+					}
+					catch (Exception e)
+					{
+						throw new Exception("Unable to save Integration Point: Unable to retrieve Integration Point", e);
+					}
+
+					if (existingModel.LastRun.HasValue)
+					{
+						if (existingModel.Name != model.Name)
+						{
+							invalidProperties.Add("Name");
+						}
+						if (existingModel.DestinationProvider != model.DestinationProvider)
+						{
+							invalidProperties.Add("Destination Provider");
+						}
+						if (existingModel.Destination != model.Destination)
+						{
+							dynamic existingDestination = JsonConvert.DeserializeObject(existingModel.Destination);
+							dynamic newDestination = JsonConvert.DeserializeObject(model.Destination);
+
+							if (existingDestination.artifactTypeID != newDestination.artifactTypeID)
+							{
+								invalidProperties.Add("Destination RDO");
+							}
+							if (existingDestination.CaseArtifactId != newDestination.CaseArtifactId)
+							{
+								invalidProperties.Add("Case");
+							}
+						}
+						if (existingModel.SourceProvider != model.SourceProvider)
+						{
+							// If the source provider has been changed, the code below this exception is invalid
+							invalidProperties.Add("Source Provider");
+							throw new Exception(String.Format(_UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
+						}
+
+						model.HasErrors = existingModel.HasErrors;
+					}
+				}
+
+				// check permission if we want to push
+				// needs to be here because custom page is the only place that has user context
+				SourceProvider provider = null;
 				try
 				{
-					existingModel = _reader.ReadIntegrationPoint(model.ArtifactID);
+					provider = _context.RsapiService.SourceProviderLibrary.Read(model.SourceProvider);
 				}
 				catch (Exception e)
 				{
-					throw new Exception("Unable to save Integration Point: Unable to retrieve Integration Point", e);
+					throw new Exception("Unable to save Integration Point: Unable to retrieve source provider", e);
 				}
 
-				if (existingModel.LastRun.HasValue)
+				if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
 				{
-					if (existingModel.Name != model.Name)
+					if (existingModel != null && (existingModel.SourceConfiguration != model.SourceConfiguration))
 					{
-						invalidProperties.Add("Name");
+						invalidProperties.Add("Source Configuration");
 					}
-					if (existingModel.DestinationProvider != model.DestinationProvider)
-					{
-						invalidProperties.Add("Destination Provider");
-					}
-					if (existingModel.Destination != model.Destination)
-					{
-						dynamic existingDestination = JsonConvert.DeserializeObject(existingModel.Destination);
-						dynamic newDestination = JsonConvert.DeserializeObject(model.Destination);
-
-						if (existingDestination.artifactTypeID != newDestination.artifactTypeID)
-						{
-							invalidProperties.Add("Destination RDO");
-						}
-						if (existingDestination.CaseArtifactId != newDestination.CaseArtifactId)
-						{
-							invalidProperties.Add("Case");
-						}
-					}
-					if (existingModel.SourceProvider != model.SourceProvider)
-					{
-						// If the source provider has been changed, the code below this exception is invalid
-						invalidProperties.Add("Source Provider");
-						throw new Exception(String.Format(UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
-					}
-
-					model.HasErrors = existingModel.HasErrors;
 				}
-			}
 
-			// check permission if we want to push
-			// needs to be here because custom page is the only place that has user context
-			SourceProvider provider = null;
-			try
-			{
-				provider = _context.RsapiService.SourceProviderLibrary.Read(model.SourceProvider);
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to save Integration Point: Unable to retrieve source provider", e);	
-			}
-
-			if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
-			{
-				ImportNowController.DestinationWorkspace destinationWorkspace = JsonConvert.DeserializeObject<ImportNowController.DestinationWorkspace>(model.SourceConfiguration);
-				if (_permissionService.UserCanImport(destinationWorkspace.TargetWorkspaceArtifactId) == false)
+				if (invalidProperties.Any())
 				{
-					throw new Exception(ImportNowController.NO_PERMISSION_TO_IMPORT);
+					throw new Exception(String.Format(_UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
 				}
 
-				if (existingModel != null && (existingModel.SourceConfiguration != model.SourceConfiguration))
-				{
-					invalidProperties.Add("Source Configuration");
-				}
+				int createdId = _reader.SaveIntegration(model);
+				string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
+				return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
 			}
-
-			if (invalidProperties.Any())
+			catch (Exception exception)
 			{
-				throw new Exception(String.Format(UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
+				return Request.CreateResponse(HttpStatusCode.PreconditionFailed, exception.Message);
 			}
-
-			int createdId = _reader.SaveIntegration(model);
-			string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
-			return Request.CreateResponse(HttpStatusCode.OK, new { returnURL = result });
 		}
 
 	}

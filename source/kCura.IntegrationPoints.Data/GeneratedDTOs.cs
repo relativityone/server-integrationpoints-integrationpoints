@@ -401,16 +401,29 @@ namespace kCura.IntegrationPoints.Data
 	[DynamicObject(ObjectTypes.JobHistory, ObjectTypes.Workspace, "", ObjectTypeGuids.JobHistory)]
 	public partial class JobHistory : BaseRdo
 	{
-		[DynamicField(JobHistoryFields.Status, JobHistoryFieldGuids.Status, FieldTypes.SingleChoice)]
-		public Choice Status
+		[DynamicField(JobHistoryFields.JobType, JobHistoryFieldGuids.JobType, FieldTypes.SingleChoice)]
+		public Choice JobType
 		{
 			get
 			{
-				return GetField<Choice>(new System.Guid(JobHistoryFieldGuids.Status));
+				return GetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobType));
 			}
 			set
 			{
-				SetField<Choice>(new System.Guid(JobHistoryFieldGuids.Status), value);
+				SetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobType), value);
+			}
+		}
+
+		[DynamicField(JobHistoryFields.JobStatus, JobHistoryFieldGuids.JobStatus, FieldTypes.SingleChoice)]
+		public Choice JobStatus
+		{
+			get
+			{
+				return GetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobStatus));
+			}
+			set
+			{
+				SetField<Choice>(new System.Guid(JobHistoryFieldGuids.JobStatus), value);
 			}
 		}
 
@@ -616,6 +629,18 @@ namespace kCura.IntegrationPoints.Data
 			set
 			{
 				SetField<Choice>(new System.Guid(JobHistoryErrorFieldGuids.ErrorType), value);
+			}
+		}
+		[DynamicField(JobHistoryErrorFields.ErrorStatus, JobHistoryErrorFieldGuids.ErrorStatus, FieldTypes.SingleChoice)]
+		public Choice ErrorStatus
+		{
+			get
+			{
+				return GetField<Choice>(new System.Guid(JobHistoryErrorFieldGuids.ErrorStatus));
+			}
+			set
+			{
+				SetField<Choice>(new System.Guid(JobHistoryErrorFieldGuids.ErrorStatus), value);
 			}
 		}
 		public const int NameFieldLength = 255;

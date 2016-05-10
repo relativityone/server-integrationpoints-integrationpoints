@@ -55,6 +55,12 @@ namespace kCura.IntegrationPoints.Web
 			);
 
 			config.Routes.MapHttpRoute(
+				name: "ImportNowRetryJob",
+				routeTemplate: "{workspaceID}/api/ImportNow/RetryJob",
+				defaults: new { controller = "ImportNow", action = "RetryJob" }
+			);
+
+			config.Routes.MapHttpRoute(
 				name: "DefaultApi",
 				routeTemplate: "{workspaceID}/api/{controller}/{id}",
 				defaults: new { id = RouteParameter.Optional }

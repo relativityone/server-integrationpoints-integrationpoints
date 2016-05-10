@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Data
 		{
 			if (obj == null)
 			{
-				throw new ArgumentNullException("obj");
+				throw new ArgumentNullException(nameof(obj));
 			}
 		}
 

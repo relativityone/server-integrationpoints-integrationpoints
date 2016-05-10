@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Services
 	/// Get information about the documents in ECA case such as pushed to
 	/// review, included, excluded, untagged, etc.
 	/// </summary>
-	public class DocumentManager : IDocumentManager
+	public class DocumentManager : KeplerServiceBase, IDocumentManager
 	{
 		private const string _DESTINATION_WORKSPACE_FIELD_GUID = "8980C2FA-0D33-4686-9A97-EA9D6F0B4196";
 		private const string _PROMOTE_GUID = "4E418A56-90C5-4E59-A1C5-C43C11A3CCFF";
@@ -24,11 +24,6 @@ namespace kCura.IntegrationPoints.Services
 
 		private const int _DOCUMENT_ARTIFACT_TYPE_ID = (int) ArtifactType.Document;
 		private static readonly int[] _viewPermission = { 1 };
-
-		public async Task<bool> PingAsync()
-		{
-			return await Task.Run(() => true).ConfigureAwait(false);
-		}
 
 		public async Task<PercentagePushedToReviewModel> GetPercentagePushedToReviewAsync(PercentagePushedToReviewRequest request)
 		{
