@@ -61,24 +61,20 @@
       <HintPath>..\packages\RelativityCore.9.3.397.2\lib\net45\Application.Utility.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-     <Reference Include="BCrypt.Net, Version=0.1.5073.29922, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
+    <Reference Include="BCrypt.Net, Version=0.1.5073.29922, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="dtSearchNetApi4, Version=1.0.4166.40099, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\RelativityCore.9.3.397.2\lib\net45\dtSearchNetApi4.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\dtSearchNetApi4.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FParsec, Version=0.9.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.3.397.2\lib\net45\FParsec.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\FParsec.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FParsecCS, Version=0.9.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.3.397.2\lib\net45\FParsecCS.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\FParsecCS.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FreeImageNET, Version=3.15.1.0, Culture=neutral, processorArchitecture=AMD64">
@@ -177,11 +173,8 @@
       <HintPath>..\packages\Relativity.API.9.3.398.12\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.ImportAPI.Wrapper">
-      <HintPath>..\Dependencies\kCura\Relativity.ImportAPI.Wrapper.dll</HintPath>
-    </Reference>
     <Reference Include="Relativity.Services.Interfaces">
-      <HintPath>..\Dependencies\kCura\Relativity.Services.Interfaces.dll</HintPath>
+      <HintPath>..\packages\Relativity.Services.Interfaces.9.3.398.12\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -226,9 +219,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

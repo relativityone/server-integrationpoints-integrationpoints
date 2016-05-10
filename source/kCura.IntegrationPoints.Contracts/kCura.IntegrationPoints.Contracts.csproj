@@ -99,7 +99,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.EDDS.DocumentCompareGateway">
-      <HintPath>..\Dependencies\kCura\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
     </Reference>
     <Reference Include="kCura.ImageValidator, Version=9.3.398.12, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.3.398.12\lib\net45\kCura.ImageValidator.dll</HintPath>
@@ -118,7 +118,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Relativity.Client">
-      <HintPath>..\Dependencies\kCura\kCura.Relativity.Client.dll</HintPath>
+      <HintPath>..\kCura.Relativity.Client.9.3.398.12\lib\net45\kCura.Relativity.Client.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Relativity.DataReaderClient, Version=9.3.398.12, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.3.398.12\lib\net45\kCura.Relativity.DataReaderClient.dll</HintPath>
@@ -162,10 +162,10 @@
     </Reference>
     <Reference Include="Relativity.API, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\kCura\Relativity.API.dll</HintPath>
+      <HintPath>..\Relativity.API.9.3.398.12\lib\net45\Relativity.API.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.Interfaces">
-      <HintPath>..\Dependencies\kCura\Relativity.Services.Interfaces.dll</HintPath>
+      <HintPath>..\Relativity.Services.Interfaces.9.3.398.12\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -223,9 +223,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

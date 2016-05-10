@@ -35,7 +35,7 @@
 				calls.close();
 				var ajax = IP.data.ajax({
 					type: 'post',
-					url: root.utils.generateWebAPIURL('Job/Run'),
+					url: root.utils.generateWebAPIURL('Job'),
 					data: JSON.stringify({
 						"appId": appid,
 						"artifactId": artifactId
