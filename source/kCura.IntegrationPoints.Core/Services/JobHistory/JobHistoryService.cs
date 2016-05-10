@@ -172,6 +172,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Update(jobHistory);
 		}
 
+		public void DeleteRdo(int jobHistoryId)
+		{
+			_caseServiceContext.RsapiService.JobHistoryLibrary.Delete(jobHistoryId);
+		}
+
 		protected List<FieldValue> GetFields()
 		{
 			return (from field in (BaseRdo.GetFieldMetadata(typeof(Data.JobHistory)).Values).ToList()

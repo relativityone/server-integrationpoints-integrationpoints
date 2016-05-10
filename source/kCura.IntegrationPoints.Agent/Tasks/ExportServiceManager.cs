@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
+using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
@@ -37,10 +38,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private List<IBatchStatus> _exportServiceJobObservers;
 		private readonly Apps.Common.Utils.Serializers.ISerializer _serializer;
 		private readonly ICaseServiceContext _caseServiceContext;
+		private readonly IContextContainer _contextContainer;
 		private readonly IOnBehalfOfUserClaimsPrincipalFactory _onBehalfOfUserClaimsPrincipalFactory;
 		private readonly IExporterFactory _exporterFactory;
 		private readonly IJobService _jobService;
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IManagerFactory _managerFactory;
 		private readonly IScheduleRuleFactory _scheduleRuleFactory;
 		private readonly ISourceJobManager _sourceJobManager;
 		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
@@ -55,6 +58,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public ExportServiceManager(
 			ICaseServiceContext caseServiceContext,
+			IContextContainer contextContainer,
 			ISynchronizerFactory synchronizerFactory,
 			IExporterFactory exporterFactory,
 			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory,
@@ -62,6 +66,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			ISourceJobManager sourceJobManager,
 			ITempDocumentTableFactory tempDocumentTableFactory,
 			IRepositoryFactory repositoryFactory,
+			IManagerFactory managerFactory,
 			IEnumerable<IBatchStatus> statuses,
 			Apps.Common.Utils.Serializers.ISerializer serializer,
 			IJobService jobService,
@@ -72,12 +77,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_batchStatus = statuses.ToList();
 			_caseServiceContext = caseServiceContext;
+			_contextContainer = contextContainer;
 			_exporterFactory = exporterFactory;
 			_onBehalfOfUserClaimsPrincipalFactory = onBehalfOfUserClaimsPrincipalFactory;
 			_jobHistoryErrorService = jobHistoryErrorService;
 			_jobHistoryService = jobHistoryService;
 			_jobService = jobService;
 			_repositoryFactory = repositoryFactory;
+			_managerFactory = managerFactory;
 			_scheduleRuleFactory = scheduleRuleFactory;
 			_serializer = serializer;
 			_sourceJobManager = sourceJobManager;
@@ -95,6 +102,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public void Execute(Job job)
 		{
+			bool agentDroppedJob = false;
 			try
 			{
 				InitializeExportService(job);
@@ -127,6 +135,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				// tag documents
 				FinalizeExportServiceObservers(job);
 			}
+			catch (AgentDropJobException) //for concurrency, an Agent drops a job if one is already executing
+			{
+				agentDroppedJob = true;
+				throw;
+			}
 			catch (Exception ex)
 			{
 				_taskResult.Status = TaskStatusEnum.Fail;
@@ -134,8 +147,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			}
 			finally
 			{
-				_jobHistoryErrorService.CommitErrors();
-				FinalizeExportService(job);
+				if (!agentDroppedJob)
+				{
+					_jobHistoryErrorService.CommitErrors();
+					FinalizeExportService(job);
+				}
 			}
 		}
 
@@ -193,12 +209,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			// Load integrationPoint data
 			IntegrationPointDto = LoadIntegrationPointDto(job);
+			_sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
+
 			_jobHistoryErrorService.IntegrationPoint = this.IntegrationPointDto;
 
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			this._identifier = taskParameters.BatchInstance;
-			//check here
+			
 			this.JobHistoryDto = _jobHistoryService.CreateRdo(this.IntegrationPointDto, this._identifier, DateTime.UtcNow);
+
+			CheckForOtherJobsExecuting(job, this.JobHistoryDto.ArtifactId);
+
 			_jobHistoryErrorService.JobHistory = this.JobHistoryDto;
 			this.JobHistoryDto.StartTimeUTC = DateTime.UtcNow;
 
@@ -206,8 +227,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			// #unbelievable
 			MappedFields = JsonConvert.DeserializeObject<List<FieldMap>>(IntegrationPointDto.FieldMappings);
 			MappedFields.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
-
-			_sourceConfiguration = _serializer.Deserialize<SourceConfiguration>(IntegrationPointDto.SourceConfiguration);
 
 			SourceProvider = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(IntegrationPointDto.SourceProvider.Value);
 
@@ -346,6 +365,47 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				sourceJobHistoryTagger
 			};
 			return batchStatusCommands;
+		}
+
+		private void CheckForOtherJobsExecuting(Job job, int jobHistoryId)
+		{
+			IQueueManager queueManager = _managerFactory.CreateQueueManager(_contextContainer);
+			bool isScheduledJob = !String.IsNullOrEmpty(job.ScheduleRuleType);
+			DateTime runTime = job.NextRunTime;
+
+			bool hasJobsRunning = queueManager.HasJobsExecuting(_sourceConfiguration.SourceWorkspaceArtifactId, this.IntegrationPointDto.ArtifactId, job.JobId, runTime);
+
+			if (hasJobsRunning)
+			{
+				string exceptionMessage = "Unable to execute Integration Point job: There is already a job currently running.";
+				if (isScheduledJob)
+				{
+					this.IntegrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, _taskResult);
+					exceptionMessage = $@"{exceptionMessage} The job has been re-scheduled for its next scheduled runtime.";
+				}
+
+				UnlinkJobHistoryFromIntegrationPoint(jobHistoryId);
+				_jobHistoryService.DeleteRdo(jobHistoryId);
+
+				throw new AgentDropJobException(exceptionMessage);
+			}
+		}
+
+		private void UnlinkJobHistoryFromIntegrationPoint(int jobHistoryIdToRemove)
+		{
+			List<int> jobHistoryIds = this.IntegrationPointDto.JobHistory.ToList();
+			int count = 0;
+			foreach (int id in jobHistoryIds)
+			{
+				if (jobHistoryIdToRemove == id)
+				{
+					jobHistoryIds.RemoveAt(count);
+					break;
+				}
+				count++;
+			}
+			this.IntegrationPointDto.JobHistory = jobHistoryIds.ToArray();
+			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPointDto);
 		}
 	}
 }
