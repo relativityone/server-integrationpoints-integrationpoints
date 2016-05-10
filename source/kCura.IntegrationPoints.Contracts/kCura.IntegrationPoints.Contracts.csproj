@@ -193,6 +193,7 @@
     <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Models\FieldEntry.cs" />
     <Compile Include="Models\IntegrationPointDTO.cs" />
+    <Compile Include="Models\JobHistoryErrorDTO.cs" />
     <Compile Include="Models\ObjectTypeDTO.cs" />
     <Compile Include="Models\SourceProviderDTO.cs" />
     <Compile Include="Models\SourceWorkspaceDTO.cs" />
