@@ -58,5 +58,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		/// </summary>
 		/// <param name="jobHistory">The job history object.</param>
 		void UpdateJobHistoryOnRetry(Data.JobHistory jobHistory);
+
+		/// <summary>
+		/// Deletes an instance of job history given its Artifact ID.
+		/// </summary>
+		/// <param name="jobHistoryId">The Artifact ID of the job history instance to delete.</param>
+		void DeleteRdo(int jobHistoryId);
 	}
 }

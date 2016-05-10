@@ -1,4 +1,6 @@
-﻿namespace kCura.IntegrationPoints.Data.Repositories
+﻿using System;
+
+namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface IQueueRepository
 	{
@@ -16,7 +18,9 @@
 		/// </summary>
 		/// <param name="workspaceId">The Artifact ID of the workspace that the job is run from.</param>
 		/// <param name="integrationPointId">The Artifact ID of the Integration Point the job belongs to.</param>
+		/// <param name="jobId"></param>
+		/// <param name="runTime"></param>
 		/// <returns>The number of jobs actively running.</returns>
-		int GetNumberOfJobsExecuting(int workspaceId, int integrationPointId);
+		int GetNumberOfJobsExecuting(int workspaceId, int integrationPointId, long jobId, DateTime runTime);
 	}
 }

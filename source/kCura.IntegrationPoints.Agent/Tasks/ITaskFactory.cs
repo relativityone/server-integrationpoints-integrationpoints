@@ -78,6 +78,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
           .ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>()
           .LifestyleTransient());
 
+			Container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>());
+
       Container.Register(
         Component.For<IQueueManager>().UsingFactoryMethod(k => new QueueManager(new ContextContainer(_helper))));
 

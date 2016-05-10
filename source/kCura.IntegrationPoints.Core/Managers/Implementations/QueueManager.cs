@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Data.Factories;
+﻿using System;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 
@@ -9,7 +10,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		private readonly IQueueRepository _queueRepository;
 
 		public QueueManager(IContextContainer contextContainer)
-			:this(new RepositoryFactory(contextContainer.Helper))
+			: this(new RepositoryFactory(contextContainer.Helper))
 		{
 		}
 
@@ -32,9 +33,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return false;
 		}
 
-		public bool HasJobsExecuting(int workspaceId, int integrationPointId)
+		public bool HasJobsExecuting(int workspaceId, int integrationPointId, long jobId, DateTime runTime)
 		{
-			int numberOfJobs = _queueRepository.GetNumberOfJobsExecuting(workspaceId, integrationPointId);
+			int numberOfJobs = _queueRepository.GetNumberOfJobsExecuting(workspaceId, integrationPointId, jobId, runTime);
 
 			if (numberOfJobs > 0)
 			{
