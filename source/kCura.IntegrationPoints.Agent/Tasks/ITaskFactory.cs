@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
           .ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>()
           .LifestyleTransient());
 
-      Container.Register(Component.For<IContextContainer>().UsingFactoryMethod(x => new ContextContainer(_helper)).LifestyleSingleton());
+      Container.Register(Component.For<IContextContainerFactory>().ImplementedBy<ContextContainerFactory>().LifestyleSingleton());
     }
 
     public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
@@ -152,10 +152,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
       IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
       IPermissionRepository permissionRepository = Container.Resolve<IPermissionRepository>();
       IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-      IContextContainer contextContainer = new ContextContainer(_helper);
+      IContextContainerFactory contextContainerFactory =  Container.Resolve<IContextContainerFactory>();
       IManagerFactory managerFactory = new ManagerFactory();
 
-      IntegrationPointService integrationPointService = new IntegrationPointService(caseServiceContext, contextContainer, permissionRepository, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
+      IntegrationPointService integrationPointService = new IntegrationPointService(_helper, caseServiceContext, permissionRepository, contextContainerFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
       IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 
       TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);

@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
@@ -30,22 +31,24 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IManagerFactory _managerFactory;
 
-		public IntegrationPointService(ICaseServiceContext context,
-			IContextContainer contextContainer,
+		public IntegrationPointService(IHelper helper,
+			ICaseServiceContext context,
 			IPermissionRepository permissionRepository,
+			IContextContainerFactory contextContainerFactory,
 			ISerializer serializer, ChoiceQuery choiceQuery,
 			IJobManager jobService,
 			IJobHistoryService jobHistoryService,
 			IManagerFactory managerFactory)
 		{
 			_context = context;
-			_contextContainer = contextContainer;
 			_permissionRepository = permissionRepository;
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
 			_managerFactory = managerFactory;
+
+			_contextContainer = contextContainerFactory.CreateContextContainer(helper);
 		}
 
 		public IntegrationPoint GetRdo(int artifactId)

@@ -28,6 +28,7 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -56,9 +57,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly TaskResult _taskResult;
 		private SourceConfiguration _sourceConfiguration;
 
-		public ExportServiceManager(
+		public ExportServiceManager(IHelper helper,
 			ICaseServiceContext caseServiceContext,
-			IContextContainer contextContainer,
+			IContextContainerFactory contextContainerFactory,
 			ISynchronizerFactory synchronizerFactory,
 			IExporterFactory exporterFactory,
 			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory,
@@ -77,7 +78,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_batchStatus = statuses.ToList();
 			_caseServiceContext = caseServiceContext;
-			_contextContainer = contextContainer;
+			_contextContainer = contextContainerFactory.CreateContextContainer(helper);
 			_exporterFactory = exporterFactory;
 			_onBehalfOfUserClaimsPrincipalFactory = onBehalfOfUserClaimsPrincipalFactory;
 			_jobHistoryErrorService = jobHistoryErrorService;
