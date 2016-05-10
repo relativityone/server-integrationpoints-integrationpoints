@@ -1,15 +1,17 @@
 ﻿var IP = IP || {};
 (function (root) {
+   
 	root.importNow = function (artifactId, appid) {
 
+        
 		var appendOnlyMessageStart = "You are about to create ";
 		var appendOnlyMessageEnd = " folders in the destination workspace, would you still like to proceed?";
 		var overlayOnlyMessage = "Only documents and their metadata with the same identifier will be overwritten, would you still like to proceed?";
 		var appendOverlayMesssage = "All existing documents and their metadata in the target workspace that have the same identifier will be overwritten, would you still like to proceed?";
-
+		var provider = $("[fafriendlyname=\"Source Provider\"]").closest("tr").find(".dynamicViewFieldValue").text();
 		var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
 		var selectedMessage = "";
-		if (overwriteOption === "Append Only") {
+		if (overwriteOption === "Append Only" && provider === "Relativity") {
 			var folderCount = 0;
 			IP.data.ajax({
 				type: "get",
@@ -20,10 +22,14 @@
 				}
 			});
 			selectedMessage = appendOnlyMessageStart + folderCount + appendOnlyMessageEnd;
-		} else if (overwriteOption === "Overlay Only") {
+		} else if (overwriteOption === "Overlay Only" && provider === "Relativity") {
 			selectedMessage = overlayOnlyMessage;
-		} else if (overwriteOption === "Append/Overlay") {
+		} else if (overwriteOption === "Append/Overlay" && provider === "Relativity") {
 			selectedMessage = appendOverlayMesssage;
+		}
+		if ( provider === "Relativity" && root.errorMessage.length !== 0 ) {
+		    IP.message.error.raise(root.errorMessage, $(".cardContainer"));
+		    return;
 		}
 
 		window.Dragon.dialogs.showConfirm({
@@ -229,6 +235,11 @@ $(function () {
 	var settings = $field.text();
 	$field.text('');
 	_getSource(settings).then(function (result) {
+	    result = result.filter(function (x) {
+	        if (x.value !== -1 && x.value !== 0 && x.key.indexOf("Id") === -1 && x.value != null) {
+	            return true;
+	        }
+	    });
 		IP.utils.createFields($field, result);
 	}, function () {
 		$field.text('There was an error retrieving the source configuration.');
