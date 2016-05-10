@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoints.Core
 		{
 			SetIntegrationPoint(job);
 
-			var emails = GetRecipientEmails().ToList();
+			List<string> emails = GetRecipientEmails().ToList();
 			if (!emails.Any()) return;
 
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);

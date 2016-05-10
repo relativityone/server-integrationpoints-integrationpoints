@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
       Container.Register(
         Component.For<IQueueManager>().UsingFactoryMethod(k => new QueueManager(new ContextContainer(_helper))));
 
-      Container.Register(Component.For<IContextContainer>().UsingFactoryMethod(x => new ContextContainer(_helper)));
+      Container.Register(Component.For<IContextContainer>().UsingFactoryMethod(x => new ContextContainer(_helper)).LifestyleSingleton());
     }
 
     public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
