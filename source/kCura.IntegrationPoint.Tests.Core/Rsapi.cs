@@ -1,9 +1,8 @@
-﻿
+﻿using System;
+using kCura.Relativity.Client;
+
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	using System;
-	using Relativity.Client;
-
 	public class Rsapi : HelperBase
 	{
 		public Rsapi(Helper helper) : base(helper)

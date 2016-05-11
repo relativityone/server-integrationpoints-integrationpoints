@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	using System.Net;
-	using System.Net.Http;
-
 	public class Rest : HelperBase
 	{
 		private const string _JSON_MIME = "application/json";

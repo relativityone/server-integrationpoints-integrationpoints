@@ -1,9 +1,8 @@
-﻿
+﻿using System;
+using System.Configuration;
+
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	using System;
-	using System.Configuration;
-
 	public class SharedVariables
 	{
 		public int WorkspaceArtifactId => Convert.ToInt32(ConfigurationManager.AppSettings["workspaceArtifactId"]);
