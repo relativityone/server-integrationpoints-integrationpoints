@@ -5,12 +5,20 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class SharedVariables
 	{
-		public int WorkspaceArtifactId => Convert.ToInt32(ConfigurationManager.AppSettings["workspaceArtifactId"]);
+		private static string TargetHost => ConfigurationManager.AppSettings["targetHost"];
 
-		public string RsapiClientUri => ConfigurationManager.AppSettings["rsapClientUri"];
+		public static int WorkspaceArtifactId => Convert.ToInt32(ConfigurationManager.AppSettings["workspaceArtifactId"]);
 
-		public string RelativityUserName => ConfigurationManager.AppSettings["userName"];
+		public static string RsapiClientUri => $"http://{TargetHost}/Relativity.Services";
 
-		public string RelativityPassword => ConfigurationManager.AppSettings["password"];
+		public static string RelativityUserName => ConfigurationManager.AppSettings["userName"];
+
+		public static string RelativityPassword => ConfigurationManager.AppSettings["password"];
+
+		public static string RestServer => $"http://{TargetHost}/Relativity.Rest/";
+
+		public static string RelativityWebApiUrl => $"http://{TargetHost}/RelativityWebAPI/";
+
+		public static string RapFileLocation => ConfigurationManager.AppSettings["rapFileLocation"];
 	}
 }

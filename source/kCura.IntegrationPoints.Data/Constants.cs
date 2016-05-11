@@ -5,6 +5,7 @@ namespace kCura.IntegrationPoints.Data
 	public static class GlobalConst
 	{
 		public const string RELATIVITY_INTEGRATION_POINTS_AGENT_GUID = "08C0CE2D-8191-4E8F-B037-899CEAEE493D";
+		public const string SCHEDULE_AGENT_QUEUE_TABLE_NAME = "ScheduleAgentQueue_08C0CE2D-8191-4E8F-B037-899CEAEE493D";
 		public const string Custodian = @"d216472d-a1aa-4965-8b36-367d43d4e64c";
 	}
 
@@ -53,5 +54,11 @@ namespace kCura.IntegrationPoints.Data
 		public const string JOB_HISTORY_MO_QUERY_ERROR = "Unable to query for multi-object field on Document associated with JobHistory object.";
 		public const string JOB_HISTORY_MO_EXISTENCE_ERROR = "Multi-object field on Document associated with JobHistory object does not exist.";
 		public const string JOB_HISTORY_MASS_EDIT_FAILURE = "Tagging Documents with JobHistory object failed - Mass Edit failure.";
+	}
+	
+	public static class JobHistoryErrorErrors
+	{
+		public const string JOB_HISTORY_ERROR_RETRIEVE_FAILURE = "Unable to query for Job History Errors associated with provided JobHistory object ({0}).";
+		public const string JOB_HISTORY_ERROR_RETRIEVE_NO_RESULTS = "No Job History Errors returned for JobHistory object ({0}).";
 	}
 }

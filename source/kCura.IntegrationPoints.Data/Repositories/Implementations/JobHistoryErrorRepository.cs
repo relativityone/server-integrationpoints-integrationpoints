@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Transformers;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
+using kCura.Utility.Extensions;
 using Relativity.API;
-using Relativity.Core;
-using Relativity.Data;
-using Field = Relativity.Core.DTO.Field;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -33,13 +31,34 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_dtoTransformer = dtoTransformer;
 		}
 
-		public void UpdateErrorStatuses(ClaimsPrincipal claimsPrincipal, int sourceWorkspaceId, Relativity.Client.Choice errorStatus, string tableSuffix)
-		{
-		}
-
 		public List<JobHistoryError> RetreiveJobHistoryErrors(int jobHistoryArtifactId)
 		{
-			return new List<JobHistoryError>();
+			List<JobHistoryError> jobHistoryErrors = null;
+			var query = new Query<RDO>();
+
+			try
+			{
+				query.ArtifactTypeGuid = Guid.Parse(ObjectTypeGuids.JobHistoryError);
+				query.Condition = new TextCondition(Guid.Parse(JobHistoryErrorFieldGuids.JobHistory), TextConditionEnum.EqualTo, jobHistoryArtifactId.ToString());
+				query.Fields = FieldValue.AllFields;
+
+				jobHistoryErrors = _jobHistoryErrorLibrary.Query(query);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(System.String.Format(JobHistoryErrorErrors.JOB_HISTORY_ERROR_RETRIEVE_FAILURE, jobHistoryArtifactId), ex);
+			}
+
+			if (jobHistoryErrors.IsNullOrEmpty())
+			{
+				throw new Exception(System.String.Format(JobHistoryErrorErrors.JOB_HISTORY_ERROR_RETRIEVE_NO_RESULTS, jobHistoryArtifactId));
+			}
+
+			return jobHistoryErrors;
+		}
+
+		public void UpdateErrorStatuses(ClaimsPrincipal claimsPrincipal, int sourceWorkspaceId, Relativity.Client.Choice errorStatus, string tableSuffix)
+		{
 		}
 	}
 }

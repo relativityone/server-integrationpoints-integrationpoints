@@ -1,10 +1,15 @@
-﻿using kCura.Relativity.Client;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class SavedSearch : HelperBase
 	{
 		private const string _CREATE_SINGLE_SERVICE = "Relativity.Services.Search.ISearchModule/Keyword Search Manager/CreateSingleAsync";
+
 		public SavedSearch(Helper helper) : base(helper)
 		{
 		}

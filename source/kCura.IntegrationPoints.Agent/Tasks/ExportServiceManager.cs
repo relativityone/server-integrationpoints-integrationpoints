@@ -374,40 +374,36 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private void CheckForOtherJobsExecuting(Job job, int jobHistoryId)
 		{
 			IQueueManager queueManager = _managerFactory.CreateQueueManager(_contextContainer);
-			bool isScheduledJob = !String.IsNullOrEmpty(job.ScheduleRuleType);
 			DateTime runTime = job.NextRunTime;
 
-			bool hasJobsRunning = queueManager.HasJobsExecuting(_sourceConfiguration.SourceWorkspaceArtifactId, this.IntegrationPointDto.ArtifactId, job.JobId, runTime);
+			bool hasExecutingJobs = queueManager.HasJobsExecuting(_sourceConfiguration.SourceWorkspaceArtifactId, this.IntegrationPointDto.ArtifactId, job.JobId, runTime);
 
-			if (hasJobsRunning)
+			if (hasExecutingJobs)
 			{
-				string exceptionMessage = "Unable to execute Integration Point job: There is already a job currently running.";
-				if (isScheduledJob)
-				{
-					this.IntegrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, _taskResult);
-					exceptionMessage = $@"{exceptionMessage} The job has been re-scheduled for its next scheduled runtime.";
-				}
-
-				UnlinkJobHistoryFromIntegrationPoint(jobHistoryId);
-				_jobHistoryService.DeleteRdo(jobHistoryId);
-
-				throw new AgentDropJobException(exceptionMessage);
+				DropJobAndCleanupJobHistory(job, jobHistoryId);
 			}
+		}
+
+		private void DropJobAndCleanupJobHistory(Job job, int jobHistoryId)
+		{
+			string exceptionMessage = "Unable to execute Integration Point job: There is already a job currently running.";
+			//check if it's a scheduled job
+			if (!String.IsNullOrEmpty(job.ScheduleRuleType))
+			{
+				this.IntegrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, _taskResult);
+				exceptionMessage = $@"{exceptionMessage} Job is re-scheduled for {this.IntegrationPointDto.NextScheduledRuntimeUTC}.";
+			}
+
+			UnlinkJobHistoryFromIntegrationPoint(jobHistoryId);
+			_jobHistoryService.DeleteRdo(jobHistoryId);
+
+			throw new AgentDropJobException(exceptionMessage);
 		}
 
 		private void UnlinkJobHistoryFromIntegrationPoint(int jobHistoryIdToRemove)
 		{
 			List<int> jobHistoryIds = this.IntegrationPointDto.JobHistory.ToList();
-			int count = 0;
-			foreach (int id in jobHistoryIds)
-			{
-				if (jobHistoryIdToRemove == id)
-				{
-					jobHistoryIds.RemoveAt(count);
-					break;
-				}
-				count++;
-			}
+			jobHistoryIds.Remove(jobHistoryIdToRemove);
 			this.IntegrationPointDto.JobHistory = jobHistoryIds.ToArray();
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPointDto);
 		}

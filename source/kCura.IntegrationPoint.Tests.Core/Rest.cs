@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -15,7 +18,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public string PostRequestAsJson(string restServer, string serviceMethod, string username, string password, bool isHttps, string parameter = null)
 		{
-			Uri baseAddress = new Uri(string.Format(@"http://{0}/Relativity.Rest/", restServer));
+			Uri baseAddress = new Uri(SharedVariables.RestServer);
 			WebRequestHandler handler = new WebRequestHandler();
 
 			if (isHttps)

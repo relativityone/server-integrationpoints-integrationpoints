@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <summary>
 		/// Creates a queue manager
 		/// </summary>
-		/// <param name="contextContainer"></param>
+		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>A queue manager</returns>
 		IQueueManager CreateQueueManager(IContextContainer contextContainer);
 		
@@ -41,6 +41,13 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>Job History manager</returns>
 		IJobHistoryManager CreateJobHistoryManager(IContextContainer contextContainer);
+
+		/// <summary>
+		/// Creates Job History Error manager
+		/// </summary>
+		/// <param name="contextContainer">Container containing necessary contexts</param>
+		/// <returns>Job History Error manager</returns>
+		IJobHistoryErrorManager CreateJobHistoryErrorManager(IContextContainer contextContainer);
 
 		/// <summary>
 		/// Creates Artifact GUID manager

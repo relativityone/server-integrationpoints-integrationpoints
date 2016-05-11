@@ -96,6 +96,7 @@
     <Compile Include="SharedVariables.cs" />
     <Compile Include="Status.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="Templates\WorkspaceDependentTemplate.cs" />
     <Compile Include="Workspace.cs" />
   </ItemGroup>
   <ItemGroup>
