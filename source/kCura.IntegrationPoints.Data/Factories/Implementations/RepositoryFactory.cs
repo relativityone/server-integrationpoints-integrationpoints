@@ -81,6 +81,12 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return jobHistoryRepository;
 		}
 
+		public IJobHistoryErrorRepository GetJobHistoryErrorRepository(int workspaceArtifactId)
+		{
+			IJobHistoryErrorRepository jobHistoryErrorRepository = new JobHistoryErrorRepository(_helper, workspaceArtifactId);
+			return jobHistoryErrorRepository;
+		}
+
 		public IFieldRepository GetFieldRepository(int workspaceArtifactId)
 		{
 			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);

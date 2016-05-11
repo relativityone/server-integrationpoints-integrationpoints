@@ -68,37 +68,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			return lastJobHistory;
 		}
 
-		public void UpdateJobHistoryOnRetry(Data.JobHistory jobHistory)
-		{
-			// TODO: update the status appropriately
-			//jobHistory.Status = JobStatusChoices.Expired;
-
-			Guid errorTypeJob = ErrorTypeChoices.JobHistoryErrorJob.ArtifactGuids.First();
-			Guid errorTypeItem = ErrorTypeChoices.JobHistoryErrorItem.ArtifactGuids.First();
-			var errorTypes = new List<Guid>(2) { errorTypeJob, errorTypeItem };
-			var errorStatusCondtion = new SingleChoiceCondition(Guid.Parse(JobHistoryErrorFieldGuids.ErrorType), SingleChoiceConditionEnum.AnyOfThese, errorTypes);
-			var jobHistoryArtifactIdCondition = new ObjectCondition(Guid.Parse(JobHistoryErrorFieldGuids.JobHistory), ObjectConditionEnum.EqualTo, jobHistory.ArtifactId);
-			var conditions = new CompositeCondition(jobHistoryArtifactIdCondition, CompositeConditionEnum.And, errorStatusCondtion);
-
-			var query = new Query<RDO>
-			{
-				ArtifactTypeGuid = Guid.Parse(ObjectTypeGuids.JobHistoryError),
-				Condition = conditions,
-				Fields = GetFields<JobHistoryError>(),
-			};
-
-			IList<JobHistoryError> jobHistoryErrors = _caseServiceContext.RsapiService.JobHistoryErrorLibrary.Query(query);
-			foreach (JobHistoryError jobHistoryError in jobHistoryErrors)
-			{
-				// TODO: update the errors appropriately
-				//jobHistoryError.ErrorType = ErrorTypeChoices.JobHistoryErrorExpired;
-				//jobHistoryError.ErrorStatus = ErrorTypeChoices.JobHistoryErrorExpired;
-			}
-
-			_caseServiceContext.RsapiService.JobHistoryLibrary.Update(jobHistory);
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Update(jobHistoryErrors);
-		}
-
 		public Data.JobHistory CreateRdo(IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUtc)
 		{
 			Data.JobHistory jobHistory = null;

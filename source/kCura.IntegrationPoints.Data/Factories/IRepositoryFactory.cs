@@ -49,6 +49,13 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IJobHistoryRepository GetJobHistoryRepository(int workspaceArtifactId = 0);
 
 		/// <summary>
+		/// Returns a class implementing the IJobHistoryErrorRepository interface.
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id</param>
+		/// <returns>A class implementing the IJobHistoryErrorRepository interface.</returns>
+		IJobHistoryErrorRepository GetJobHistoryErrorRepository(int workspaceArtifactId);
+
+		/// <summary>
 		/// Returns a class implementing the IArtifactGuidRepository interface.
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
