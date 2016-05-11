@@ -52,5 +52,11 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		/// <param name="jobHistoryArtifactIds">The list of job history artifact ids to check against.</param>
 		/// <returns>The last job history object from the list of job history artifact ids.</returns>
 		Data.JobHistory GetLastJobHistory(List<int> jobHistoryArtifactIds);
+
+		/// <summary>
+		/// Deletes an instance of job history given its Artifact ID.
+		/// </summary>
+		/// <param name="jobHistoryId">The Artifact ID of the job history instance to delete.</param>
+		void DeleteRdo(int jobHistoryId);
 	}
 }

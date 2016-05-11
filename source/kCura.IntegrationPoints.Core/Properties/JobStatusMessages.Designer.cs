@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An import for the following Relativity Integration Point has successfully completed.
+        ///   Looks up a localized string similar to A job for the following Relativity Integration Point has successfully completed.
         ///
         ///Name: [RIP.Name]
         ///[RIP.SOURCEEMAILBODYDATA]
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An import for the below Relativity Integration Point has completed with errors.
+        ///   Looks up a localized string similar to A job for the below Relativity Integration Point has completed with errors.
         ///
         ///Name: [RIP.Name]
         ///[RIP.SOURCEEMAILBODYDATA]

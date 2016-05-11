@@ -8,6 +8,8 @@ namespace kCura.IntegrationPoints.Contracts.Models
 	/// </summary>
 	public class JobHistoryErrorDTO : BaseDTO
 	{
+		public const string ArtifactTypeGuid = "17E7912D-4F57-4890-9A37-ABC2B8A37BDB";
+
 		/// <summary>
 		/// ArtifactId
 		/// </summary>
@@ -84,12 +86,20 @@ namespace kCura.IntegrationPoints.Contracts.Models
 					Retried
 				}
 
+				public static class Guids
+				{
+					public static readonly Guid Expired = new Guid("AF01A8FA-B419-49B1-BD71-25296E221E57");
+					public static readonly Guid InProgress = new Guid("E5EBD98C-C976-4FA2-936F-434E265EA0AA");
+					public static readonly Guid New = new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A");
+					public static readonly Guid Retried = new Guid("7D3D393D-384F-434E-9776-F9966550D29A");
+				}
+
 				public static readonly Dictionary<Guid, Values> GuidValues = new Dictionary<Guid, Values>()
 				{
-					{new Guid("AF01A8FA-B419-49B1-BD71-25296E221E57"), Values.Expired},
-					{new Guid("E5EBD98C-C976-4FA2-936F-434E265EA0AA"), Values.InProgress},
-					{new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A"), Values.New},
-					{new Guid("7D3D393D-384F-434E-9776-F9966550D29A"), Values.Retried}
+					{Guids.Expired, Values.Expired},
+					{Guids.InProgress, Values.InProgress},
+					{Guids.New, Values.New},
+					{Guids.Retried, Values.Retried}
 				};
 			}
 
@@ -100,11 +110,17 @@ namespace kCura.IntegrationPoints.Contracts.Models
 					Item,
 					Job
 				}
+		
+				public static class Guids
+				{
+					public static readonly Guid Item = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
+					public static readonly Guid Job = new Guid("FA8BB625-05E6-4BF7-8573-012146BAF19B");
+				}
 
 				public static readonly Dictionary<Guid, Values> GuidValues = new Dictionary<Guid, Values>()
 				{
-					{new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B"), Values.Item},
-					{new Guid("FA8BB625-05E6-4BF7-8573-012146BAF19B"), Values.Job}
+					{Guids.Item, Values.Item},
+					{Guids.Job, Values.Job}
 				};
 			}
 		}

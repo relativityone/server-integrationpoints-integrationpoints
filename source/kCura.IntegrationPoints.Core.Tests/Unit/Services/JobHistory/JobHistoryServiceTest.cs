@@ -159,6 +159,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Received(1).Update(jobHistory);
 		}
 
+		[Test]
+		public void DeleteJobHistory_Succeeds()
+		{
+			//Arrange
+			int jobHistoryId = 12345;
+
+			//Act
+			_instance.DeleteRdo(jobHistoryId);
+
+			//Assert
+			_caseServiceContext.RsapiService.JobHistoryLibrary.Received(1).Delete(jobHistoryId);
+		}
+
 		private bool ValidateCondition<T>(Condition actualCondition, Condition expectedCondition)
 		{
 			if (actualCondition == null && expectedCondition == null)

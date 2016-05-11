@@ -74,9 +74,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return destinationWorkspaceRepository;
 		}
 
-		public IJobHistoryRepository GetJobHistoryRepository()
+		public IJobHistoryRepository GetJobHistoryRepository(int workspaceArtifactId = 0)
 		{
-			IJobHistoryRepository jobHistoryRepository = new JobHistoryRepository();
+			IJobHistoryRepository jobHistoryRepository = new JobHistoryRepository(_helper, workspaceArtifactId);
 
 			return jobHistoryRepository;
 		}

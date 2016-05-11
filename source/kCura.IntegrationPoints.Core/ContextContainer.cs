@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Core
 	{
 		public IHelper Helper { get; }
 
-		public ContextContainer(IHelper helper)
+		internal ContextContainer(IHelper helper)
 		{
 			Helper = helper;
 		}
