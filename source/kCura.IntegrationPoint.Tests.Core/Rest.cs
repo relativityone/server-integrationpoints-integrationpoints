@@ -17,9 +17,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 		}
 
-		public string PostRequestAsJsonAsync(string restServer, string serviceMethod, string username, string password, bool isHttps, string parameter = null)
+		public string PostRequestAsJsonAsync(string serviceMethod, string username, string password, bool isHttps, string parameter = null)
 		{
-			Uri baseAddress = new Uri(string.Format(@"http://{0}/Relativity.Rest/", restServer));
+			Uri baseAddress = new Uri(SharedVariables.RestServer);
 			WebRequestHandler handler = new WebRequestHandler();
 			string output = null;
 
