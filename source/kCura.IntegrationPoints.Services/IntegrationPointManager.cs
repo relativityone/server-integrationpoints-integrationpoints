@@ -146,7 +146,7 @@ namespace kCura.IntegrationPoints.Services
 				int? aritfactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
 				if (aritfactTypeId == null)
 				{
-					throw new Exception($"Unable able to find the artifact type id of the integration point on workspace ${workspaceArtifactId}.");
+					throw new Exception($"Unable to find the artifact type id of the integration point on workspace ${workspaceArtifactId}.");
 				}
 				return aritfactTypeId.Value;
 			}
