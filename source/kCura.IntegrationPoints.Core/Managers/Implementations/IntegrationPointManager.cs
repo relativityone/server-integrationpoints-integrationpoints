@@ -8,10 +8,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	public class IntegrationPointManager : IIntegrationPointManager
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IPermissionRepository _permissionRepository;
 
-		internal IntegrationPointManager(IRepositoryFactory repositoryFactory)
+		internal IntegrationPointManager(IRepositoryFactory repositoryFactory, IPermissionRepository permissionRepository)
 		{
 			_repositoryFactory = repositoryFactory;
+			_permissionRepository = permissionRepository;
 		}
 
 		public IntegrationPointDTO Read(int workspaceArtifactId, int integrationPointArtifactId)
@@ -29,6 +31,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			bool retriable = dto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID);
 
 			return retriable;
+		}
+
+		public bool UserHasPermissions(int workspaceArtifactId)
+		{
+			bool userCanEditDocuments = _permissionRepository.UserCanEditDocuments(workspaceArtifactId);
+			bool userCanImport = _permissionRepository.UserCanImport(workspaceArtifactId);
+			bool userHasPermissions = userCanEditDocuments && userCanImport;
+			return userHasPermissions;
 		}
 	}
 }

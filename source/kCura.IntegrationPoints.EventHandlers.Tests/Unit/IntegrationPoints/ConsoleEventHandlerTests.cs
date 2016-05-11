@@ -2,7 +2,6 @@
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Data;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
@@ -15,7 +14,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		private const int _ARTIFACT_ID = 100300;
 		private const int _APPLICATION_ID = 100101;
 
-		private IPermissionService _permissionService;
 		private IManagerFactory _integrationPointManagerFactory;
 		private IIntegrationPointManager _integrationPointManager;
 		private IContextContainerFactory _contextContainerFactory;
@@ -27,7 +25,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		[SetUp]
 		public void Setup()
 		{
-			_permissionService = Substitute.For<IPermissionService>();
 			_integrationPointManagerFactory = Substitute.For<IManagerFactory>();
 			_integrationPointManager = Substitute.For<IIntegrationPointManager>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
@@ -38,7 +35,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, null);
 			var application = new Application(_APPLICATION_ID, "", "");
 
-			_instance = new EventHandlers.IntegrationPoints.ConsoleEventHandler(_contextContainerFactory, _integrationPointManagerFactory, _permissionService)
+			_instance = new EventHandlers.IntegrationPoints.ConsoleEventHandler(_contextContainerFactory, _integrationPointManagerFactory)
 			{
 				ActiveArtifact = activeArtifact,
 				Application = application,
@@ -52,7 +49,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		public void GetConsole_GoldFlow(bool isRelativitySourceProvider)
 		{
 			// ARRANGE
-			_permissionService.UserCanImport(_APPLICATION_ID).Returns(true);
+			_integrationPointManager.UserHasPermissions(_APPLICATION_ID).Returns(true);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_integrationPointManagerFactory.CreateIntegrationPointManager(_contextContainer).Returns(_integrationPointManager);
 
@@ -71,7 +68,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 			// ASSERT
 			_contextContainerFactory.Received().CreateContextContainer(_helper);
-			_permissionService.Received().UserCanImport(_APPLICATION_ID);
+			_integrationPointManager.Received(1).UserHasPermissions(_APPLICATION_ID);
 			_integrationPointManagerFactory.Received().CreateIntegrationPointManager(_contextContainer);
 
 			Assert.IsNotNull(console);

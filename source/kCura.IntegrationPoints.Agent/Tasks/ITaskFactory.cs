@@ -150,12 +150,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
       IJobService jobService = new JobService(agentService, _helper);
       IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
-      IPermissionService permissionService = Container.Resolve<IPermissionService>();
+      IPermissionRepository permissionRepository = Container.Resolve<IPermissionRepository>();
       IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
       IContextContainerFactory contextContainerFactory =  Container.Resolve<IContextContainerFactory>();
       IManagerFactory managerFactory = new ManagerFactory();
 
-      IntegrationPointService integrationPointService = new IntegrationPointService(_helper, caseServiceContext, contextContainerFactory, permissionService, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
+      IntegrationPointService integrationPointService = new IntegrationPointService(_helper, caseServiceContext, permissionRepository, contextContainerFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
       IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 
       TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);

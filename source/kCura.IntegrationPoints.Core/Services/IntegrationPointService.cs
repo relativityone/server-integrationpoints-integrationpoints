@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
@@ -22,7 +23,7 @@ namespace kCura.IntegrationPoints.Core.Services
 	{
 		private readonly ICaseServiceContext _context;
 		private readonly IContextContainer _contextContainer;
-		private readonly IPermissionService _permissionService;
+		private readonly IPermissionRepository _permissionRepository;
 		private IntegrationPoint _rdo;
 		private readonly ISerializer _serializer;
 		private readonly ChoiceQuery _choiceQuery;
@@ -32,15 +33,15 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public IntegrationPointService(IHelper helper,
 			ICaseServiceContext context,
+			IPermissionRepository permissionRepository,
 			IContextContainerFactory contextContainerFactory,
-			IPermissionService permissionService,
 			ISerializer serializer, ChoiceQuery choiceQuery,
 			IJobManager jobService,
 			IJobHistoryService jobHistoryService,
 			IManagerFactory managerFactory)
 		{
 			_context = context;
-			_permissionService = permissionService;
+			_permissionRepository = permissionRepository;
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
 			_jobService = jobService;
@@ -345,13 +346,12 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 
 			SourceProvider sourceProvider = _context.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value);
-
 			return sourceProvider;
 		}
 
 		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, Relativity.Client.Choice jobType, int workspaceArtifactId, int userId)
 		{
-			CheckForOtherJobsExecutingOrInQueue(sourceProvider, workspaceArtifactId, integrationPoint.ArtifactId); 
+			CheckForOtherJobsExecutingOrInQueue(sourceProvider, workspaceArtifactId, integrationPoint.ArtifactId);
 			var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
 
 			// If the Relativity provider is selected, we need to create an export task
@@ -364,25 +364,15 @@ namespace kCura.IntegrationPoints.Core.Services
 			_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
 		}
 
-		private void UpdateJobHistoryOnRetry(IntegrationPoint integrationPoint)
-		{
-			Data.JobHistory lastCompletedJob = _jobHistoryService.GetLastJobHistory(integrationPoint.JobHistory.ToList());
-			if (lastCompletedJob == null)
-			{
-				throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
-			}
-			_jobHistoryService.UpdateJobHistoryOnRetry(lastCompletedJob);
-		}
-
 		private void CheckForRelativityProviderAdditionalPermissions(string config, int userId)
 		{
 			WorkspaceConfiguration workspaceConfiguration = JsonConvert.DeserializeObject<WorkspaceConfiguration>(config);
-			if (_permissionService.UserCanImport(workspaceConfiguration.TargetWorkspaceArtifactId) == false)
+			if (_permissionRepository.UserCanImport(workspaceConfiguration.TargetWorkspaceArtifactId) == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT);
 			}
 
-			if (_permissionService.UserCanEditDocuments(workspaceConfiguration.SourceWorkspaceArtifactId) == false)
+			if (_permissionRepository.UserCanEditDocuments(workspaceConfiguration.SourceWorkspaceArtifactId) == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
 			}
@@ -393,7 +383,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		private void CheckForOtherJobsExecutingOrInQueue(SourceProvider sourceProvider, int workspaceArtifactId , int integrationPointArtifactId)
+		private void CheckForOtherJobsExecutingOrInQueue(SourceProvider sourceProvider, int workspaceArtifactId, int integrationPointArtifactId)
 		{
 			if (sourceProvider.Identifier == DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
 			{

@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
 using Relativity.Services.Permission;
 
-namespace kCura.IntegrationPoints.Data
+namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class PermissionService : IPermissionService
+	public class PermissionRepository : IPermissionRepository
 	{
 		private readonly IServicesMgr _servicesMgr;
 		private const int _ALLOW_IMPORT_PERMISSION_ID = 158; // 158 is the artifact id of the "Allow Import" permission
 		private const int _EDIT_DOCUMENT_PERMISSION_ID = 45; // 45 is the artifact id of the "Edit Documents" permission
 
-		public PermissionService(IServicesMgr servicesMgr)
+		public PermissionRepository(IServicesMgr servicesMgr)
 		{
 			_servicesMgr = servicesMgr;
 		}
@@ -50,12 +50,12 @@ namespace kCura.IntegrationPoints.Data
 
 					PermissionValue hasPermissionValue = permissionValues.First();
 					hasPermission = hasPermissionValue.Selected &&
-												hasPermissionValue.PermissionID == permissionToCheck;
+									hasPermissionValue.PermissionID == permissionToCheck;
 				}
 				catch
 				{
 					// invalid IDs will cause the request to except
-					// suppress these errors and do not give the user access	
+					// suppress these errors and do not give the user access    
 				}
 
 				return hasPermission;

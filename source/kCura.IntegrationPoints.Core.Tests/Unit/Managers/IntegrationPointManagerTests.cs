@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		private IRepositoryFactory _repositoryFactory;
 		private IIntegrationPointRepository _integrationPointRepository;
 		private ISourceProviderRepository _sourceProviderRepository;
+		private IPermissionRepository _permissionRepository;
 
 		private const int WORKSPACE_ID = 100532;
 		private const int INTEGRATION_POINT_ID = 101323; 
@@ -26,7 +27,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 			_sourceProviderRepository = Substitute.For<ISourceProviderRepository>();
-			_testInstance = new IntegrationPointManager(_repositoryFactory);
+			_permissionRepository = Substitute.For<IPermissionRepository>();
+			_testInstance = new IntegrationPointManager(_repositoryFactory, _permissionRepository);
 		}
 
 		[Test]
