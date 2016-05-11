@@ -34,5 +34,12 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>Field manager</returns>
 		IFieldManager CreateFieldManager(IContextContainer contextContainer);
+
+		/// <summary>
+		/// Creates Job History manager
+		/// </summary>
+		/// <param name="contextContainer">Container containing necessary contexts</param>
+		/// <returns>Job History manager</returns>
+		IJobHistoryManager CreateJobHistoryManager(IContextContainer contextContainer);
 	}
 }
