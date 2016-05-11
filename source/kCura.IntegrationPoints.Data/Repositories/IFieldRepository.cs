@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 
@@ -58,5 +59,12 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="artifactViewFieldId">The artifact view field id of the field</param>
 		/// <param name="filterType">The filter type to set</param>
 		void UpdateFilterType(int artifactViewFieldId, string filterType);
+
+		/// <summary>
+		/// Retrieves field artifact ids.
+		/// </summary>
+		/// <param name="fieldGuids">Field guids to be retrieved.</param>
+		/// <returns>Dictionary of field guids and field artifact ids.</returns>
+		Dictionary<Guid, int> RetrieveFieldArtifactIds(IEnumerable<Guid> fieldGuids);
 	}
 }

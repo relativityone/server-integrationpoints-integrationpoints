@@ -117,5 +117,24 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
             return output;
         }
-    }
+
+		public Dictionary<Guid, int> GetArtifactIdsForGuids(IEnumerable<Guid> guids)
+		{
+			var output = new Dictionary<Guid, int>();
+			string guidsCsv = $"'{String.Join("','", guids)}'";
+			string sql = $"SELECT [ArtifactGuid], [ArtifactID] FROM [eddsdbo].[ArtifactGuid] WHERE [ArtifactGuid] IN ({guidsCsv})";
+
+			DataTable result = _context.DBContext.ExecuteSqlStatementAsDataTable(sql);
+
+			if (result != null && result.Rows != null && result.Rows.Count > 0)
+			{
+				foreach (DataRow row in result.Rows)
+				{
+					output.Add(new Guid(row[0].ToString()), (int)row[1]);
+				}
+			}
+
+			return output;
+		}
+	}
 }

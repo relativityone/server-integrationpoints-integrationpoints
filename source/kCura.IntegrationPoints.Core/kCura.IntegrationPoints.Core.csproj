@@ -535,6 +535,7 @@
   <ItemGroup>
     <Compile Include="BatchEmail.cs" />
     <Compile Include="BatchStatusCommands\Implementations\IConsumeScratchTableBatchStatus.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\JobHistoryErrorManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
@@ -546,14 +547,21 @@
     <Compile Include="Factories\Implementations\ManagerFactory.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
+    <Compile Include="Managers\IArtifactGuidManager.cs" />
+    <Compile Include="Managers\IFieldManager.cs" />
     <Compile Include="Managers\IIntegrationPointManager.cs" />
+    <Compile Include="Managers\IJobHistoryErrorManager.cs" />
     <Compile Include="Managers\IJobHistoryManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\DestinationWorkspaceManager.cs" />
     <Compile Include="Installers\KeywordInstaller.cs" />
     <Compile Include="JobHistoryStatus.cs" />
     <Compile Include="BatchStatusCommands\IBatchStatus.cs" />
     <Compile Include="BatchStatusCommands\Implementations\JobHistoryManager.cs" />
+    <Compile Include="Managers\Implementations\ArtifactGuidManager.cs" />
+    <Compile Include="Managers\Implementations\FieldManager.cs" />
     <Compile Include="Managers\Implementations\IntegrationPointManager.cs" />
+    <Compile Include="Managers\Implementations\JobHistoryManager.cs" />
+    <Compile Include="Managers\Implementations\ObjectTypeManager.cs" />
     <Compile Include="Managers\Implementations\QueueManager.cs" />
     <Compile Include="Managers\Implementations\SourceProviderManager.cs" />
     <Compile Include="Managers\Implementations\SourceWorkspaceManager.cs" />
@@ -562,6 +570,7 @@
     <Compile Include="Managers\IQueueManager.cs" />
     <Compile Include="Managers\ISourceWorkspaceManager.cs" />
     <Compile Include="Managers\ISourceJobManager.cs" />
+    <Compile Include="Managers\IObjectTypeManager.cs" />
     <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Properties\JobStatusMessages.Designer.cs">
       <AutoGen>True</AutoGen>

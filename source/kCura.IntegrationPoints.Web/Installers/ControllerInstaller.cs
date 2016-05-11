@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 			container.Register(Component.For<IConfig>().Instance(kCura.IntegrationPoints.Config.Config.Instance));
 
 			container.Register(Component.For<ISessionService>().UsingFactoryMethod(k => SessionService.Session).LifestylePerWebRequest());
-			container.Register(Component.For<IPermissionService>().ImplementedBy<PermissionService>().LifestyleTransient());
+			container.Register(Component.For<IPermissionRepository>().ImplementedBy<PermissionRepository>().LifestyleTransient());
 			container.Register(Component.For<WebClientFactory>().ImplementedBy<WebClientFactory>().LifestyleTransient());
 
 			if (container.Kernel.HasComponent(typeof (Apps.Common.Utils.Serializers.ISerializer)) == false)
@@ -106,9 +106,6 @@ namespace kCura.IntegrationPoints.Web.Installers
 				})).LifestyleTransient());
 
 			container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
-
-			container.Register(
-				Component.For<IContextContainer>().UsingFactoryMethod(x => new ContextContainer(ConnectionHelper.Helper())));
 
 			container.Register(Component.For<IWorkspaceRepository>()
 					.ImplementedBy<KeplerWorkspaceRepository>()

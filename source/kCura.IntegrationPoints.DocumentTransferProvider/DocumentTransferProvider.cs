@@ -33,16 +33,17 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 	public class DocumentTransferProvider : IDataSourceProvider, IEmailBodyData
 	{
 		private readonly IHelper _helper;
-    private readonly IRepositoryFactory _repositoryFactory;
+		private readonly IRepositoryFactory _repositoryFactory;
 
 		public DocumentTransferProvider(IHelper helper)
-      : this(helper, new RepositoryFactory(helper)) { }
+			: this(helper, new RepositoryFactory(helper))
+		{ }
 
-    // TODO: This class needs to be refactored to not reference kCura.IntegrationPoints.Data -- biedrzycki: May 9th
-    internal DocumentTransferProvider(IHelper helper, IRepositoryFactory repositoryFactory)
+		// TODO: This class needs to be refactored to not reference kCura.IntegrationPoints.Data -- biedrzycki: May 9th
+		internal DocumentTransferProvider(IHelper helper, IRepositoryFactory repositoryFactory)
 		{
 			_helper = helper;
-      _repositoryFactory = repositoryFactory;
+			_repositoryFactory = repositoryFactory;
 		}
 
 		public IEnumerable<FieldEntry> GetFields(string options)
@@ -60,25 +61,25 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			IFieldRepository fieldRepository = repositoryFactory.GetFieldRepository(workspaceId);
 
 			ArtifactDTO[] fieldArtifacts = fieldRepository.RetrieveFieldsAsync(
-			  rdoTypeId,
-			  new HashSet<string>(new[]
-			  {
-		  Shared.Constants.Fields.Name,
-		  Shared.Constants.Fields.Choices,
-		  Shared.Constants.Fields.ObjectTypeArtifactTypeId,
-		  Shared.Constants.Fields.FieldType,
-		  Shared.Constants.Fields.FieldTypeId,
-		  Shared.Constants.Fields.IsIdentifier,
-		  Shared.Constants.Fields.FieldTypeName,
-			  })).ConfigureAwait(false).GetAwaiter().GetResult();
+				rdoTypeId,
+				new HashSet<string>(new[]
+				{
+					Shared.Constants.Fields.Name,
+					Shared.Constants.Fields.Choices,
+					Shared.Constants.Fields.ObjectTypeArtifactTypeId,
+					Shared.Constants.Fields.FieldType,
+					Shared.Constants.Fields.FieldTypeId,
+					Shared.Constants.Fields.IsIdentifier,
+					Shared.Constants.Fields.FieldTypeName,
+			})).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			HashSet<string> ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-	  {
-		Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-		Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
-		JobHistoryFields.DestinationWorkspace,
-		IntegrationPointFields.JobHistory
-	  };
+			{
+				Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+				Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
+				JobHistoryFields.DestinationWorkspace,
+				IntegrationPointFields.JobHistory
+			};
 
 			HashSet<int> mappableArtifactIds = new HashSet<int>(GetImportAPI().GetWorkspaceFields(workspaceId, rdoTypeId).Where(f => !ignoreFields.Contains(f.Name)).Select(x => x.ArtifactID));
 
@@ -166,20 +167,20 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		/// <returns>An IDataReader that contains the Document RDO's for the entryIds</returns>
 		public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
 		{
-      //DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
+			//DocumentTransferSettings settings = JsonConvert.DeserializeObject<DocumentTransferSettings>(options);
 
-      //// TODO: DI or factory
-      //int documentTypeId = Convert.ToInt32(ArtifactType.Document);
-      //IObjectQueryManagerAdaptor documentRepository = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, documentTypeId);
-      //IDocumentRepository documentRepository = new KeplerDocumentRepository(documentRepository);
+			//// TODO: DI or factory
+			//int documentTypeId = Convert.ToInt32(ArtifactType.Document);
+			//IObjectQueryManagerAdaptor documentRepository = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, documentTypeId);
+			//IDocumentRepository documentRepository = new KeplerDocumentRepository(documentRepository);
 
-      //int fieldTypeArtifactId = Convert.ToInt32(ArtifactType.Field);
-      //IObjectQueryManagerAdaptor fieldRepository = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, fieldTypeArtifactId);
-      //IFieldRepository fieldRepository = new FieldRepository(fieldRepository);
+			//int fieldTypeArtifactId = Convert.ToInt32(ArtifactType.Field);
+			//IObjectQueryManagerAdaptor fieldRepository = new ObjectQueryManagerAdaptor(_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.System), settings.SourceWorkspaceArtifactId, fieldTypeArtifactId);
+			//IFieldRepository fieldRepository = new FieldRepository(fieldRepository);
 
-      //IDBContext dbContext = _helper.GetDBContext(settings.SourceWorkspaceArtifactId);
+			//IDBContext dbContext = _helper.GetDBContext(settings.SourceWorkspaceArtifactId);
 
-      //ArtifactFieldDTO[] longTextFields = fieldRepository.RetrieveLongTextFieldsAsync(documentTypeId).ConfigureAwait(false).GetAwaiter().GetResult();
+			//ArtifactFieldDTO[] longTextFields = fieldRepository.RetrieveLongTextFieldsAsync(documentTypeId).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			//IDataReader dataReader = new DocumentTransferDataReader(
 			//	documentRepository,
@@ -195,13 +196,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		{
 			DocumentTransferSettings settings = GetSettings(options);
 
-      WorkspaceDTO sourceWorkspace = GetWorkspace(settings.SourceWorkspaceArtifactId);
+			WorkspaceDTO sourceWorkspace = GetWorkspace(settings.SourceWorkspaceArtifactId);
 
 			StringBuilder emailBody = new StringBuilder();
 			if (sourceWorkspace != null)
 			{
 				emailBody.AppendLine("");
-        emailBody.AppendFormat("Source Workspace: {0}", Utils.GetFormatForWorkspaceOrJobDisplay(sourceWorkspace.Name, sourceWorkspace.ArtifactId));
+				emailBody.AppendFormat("Source Workspace: {0}", Utils.GetFormatForWorkspaceOrJobDisplay(sourceWorkspace.Name, sourceWorkspace.ArtifactId));
 			}
 			return emailBody.ToString();
 		}
@@ -219,11 +220,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 			return rsapiClient;
 		}
 
-    protected virtual WorkspaceDTO GetWorkspace(int workspaceArtifactIds)
+		protected virtual WorkspaceDTO GetWorkspace(int workspaceArtifactIds)
 		{
-      IWorkspaceRepository workspaceRepository = _repositoryFactory.GetWorkspaceRepository();
-      WorkspaceDTO workspaceDTO = workspaceRepository.Retrieve(workspaceArtifactIds);
-      return workspaceDTO;
+			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetWorkspaceRepository();
+			WorkspaceDTO workspaceDTO = workspaceRepository.Retrieve(workspaceArtifactIds);
+			return workspaceDTO;
 		}
 	}
 }

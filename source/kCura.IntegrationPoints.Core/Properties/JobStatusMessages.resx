@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="JOB_COMPLETED_SUCCESS_BODY" xml:space="preserve">
-    <value>An import for the following Relativity Integration Point has successfully completed.
+    <value>A job for the following Relativity Integration Point has successfully completed.
 
 Name: [RIP.Name]
 [RIP.SOURCEEMAILBODYDATA]
@@ -128,7 +128,7 @@ Name: [RIP.Name]
     <value>Relativity import successfully completed for "[RIP.Name]".</value>
   </data>
   <data name="JOB_COMPLETED_WITH_ERRORS_BODY" xml:space="preserve">
-    <value>An import for the below Relativity Integration Point has completed with errors.
+    <value>A job for the below Relativity Integration Point has completed with errors.
 
 Name: [RIP.Name]
 [RIP.SOURCEEMAILBODYDATA]

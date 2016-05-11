@@ -1,6 +1,6 @@
-﻿namespace kCura.IntegrationPoints.Data
+﻿namespace kCura.IntegrationPoints.Data.Repositories
 {
-	public interface IPermissionService 
+	public interface IPermissionRepository
 	{
 		/// <summary>
 		/// Determines whether or not the current user has the "Allow Import" permission on the given workspace.

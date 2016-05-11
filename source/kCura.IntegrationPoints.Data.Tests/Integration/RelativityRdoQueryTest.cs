@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration
 		[Explicit]
 		public void RelativityRdoQueryReturnsAllRdo()
 		{   //ARRANGE
-			var rdoQuery = new RSAPIRdoQuery(RsapiClient);
+			var rdoQuery = new RSAPIRdoQuery(Helper.Rsapi.CreateRsapiClient());
 			var data = rdoQuery.GetAllRdo();
 
 			Assert.IsNotNull(data);

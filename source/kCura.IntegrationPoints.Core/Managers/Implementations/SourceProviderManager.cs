@@ -9,13 +9,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
 
-		public SourceProviderManager(IContextContainer contextContainer)
-		:this(new RepositoryFactory(contextContainer.Helper))
-		{ }
-
-		/// <summary>
-		/// Unit tests should be the only external consumers of this constructor
-		/// </summary>
 		internal SourceProviderManager(IRepositoryFactory repositoryFactory)
 		{
 			_repositoryFactory = repositoryFactory;
