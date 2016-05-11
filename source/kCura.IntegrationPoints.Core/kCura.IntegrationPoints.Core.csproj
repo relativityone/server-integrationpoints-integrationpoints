@@ -535,6 +535,7 @@
   <ItemGroup>
     <Compile Include="BatchEmail.cs" />
     <Compile Include="BatchStatusCommands\Implementations\IConsumeScratchTableBatchStatus.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\JobHistoryErrorManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
@@ -547,6 +548,7 @@
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
     <Compile Include="Managers\IIntegrationPointManager.cs" />
+    <Compile Include="Managers\IJobHistoryErrorManager.cs" />
     <Compile Include="Managers\IJobHistoryManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\DestinationWorkspaceManager.cs" />
     <Compile Include="Installers\KeywordInstaller.cs" />

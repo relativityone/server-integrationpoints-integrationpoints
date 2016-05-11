@@ -90,6 +90,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public IntegrationPoint IntegrationPointDto { get; private set; }
 		public JobHistory JobHistoryDto { get; private set; }
+		public JobHistoryError JobHistoryErrorDto { get; private set; }
 		public List<FieldMap> MappedFields { get; private set; }
 		public SourceProvider SourceProvider { get; private set; }
 
@@ -338,12 +339,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
 			IConsumeScratchTableBatchStatus sourceFieldsTaggerDestinationWorkspace = new DestinationWorkspaceManager(_tempDocumentTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration, tempTableName, JobHistoryDto.ArtifactId, job.SubmittedBy);
 			IConsumeScratchTableBatchStatus sourceJobHistoryTagger = new JobHistoryManager(_tempDocumentTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, tempTableName, job.SubmittedBy);
+			IBatchStatus sourceJobHistoryErrorUpdater = new JobHistoryErrorManager(_repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, tempTableName, job.SubmittedBy);
 
 			var batchStatusCommands = new List<IBatchStatus>()
 			{
 				destinationFieldsTagger,
 				sourceFieldsTaggerDestinationWorkspace,
-				sourceJobHistoryTagger
+				sourceJobHistoryTagger,
+				sourceJobHistoryErrorUpdater
 			};
 			return batchStatusCommands;
 		}

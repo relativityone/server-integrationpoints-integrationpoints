@@ -34,8 +34,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		public void JobComplete(Job job)
 		{
-			List<JobHistoryError> jobHistoryErrors = _jobHistoryErrorRepository.RetreiveJobHistoryErrors(int jobHistoryArtifactId)
-			
 			_jobHistoryErrorRepository.UpdateErrorStatuses(_claimsPrincipal, _jobHistoryInstanceId, ErrorStatusChoices.JobHistoryErrorRetried, _uniqueJobId);
 		}
 	}

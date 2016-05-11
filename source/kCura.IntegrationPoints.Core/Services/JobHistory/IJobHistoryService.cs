@@ -52,11 +52,5 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		/// <param name="jobHistoryArtifactIds">The list of job history artifact ids to check against.</param>
 		/// <returns>The last job history object from the list of job history artifact ids.</returns>
 		Data.JobHistory GetLastJobHistory(List<int> jobHistoryArtifactIds);
-
-		/// <summary>
-		/// Updates the job history information to expire the errors that exist on the job.
-		/// </summary>
-		/// <param name="jobHistory">The job history object.</param>
-		void UpdateJobHistoryOnRetry(Data.JobHistory jobHistory);
 	}
 }
