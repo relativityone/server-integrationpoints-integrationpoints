@@ -22,16 +22,16 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public virtual void SetUp()
 		{
 			const string template = "New Case Template";
-			SourecWorkspaceArtifactId = Helper.Workspace.CreateWorkspace(_sourceWorkspaceName, template);
-			TargetWorkspaceArtifactId = Helper.Workspace.CreateWorkspace(_targetWorkspaceName, template);
-			Helper.Workspace.ImportApplicationToWorkspace(SourecWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
+			SourecWorkspaceArtifactId = GerronHelper.Workspace.CreateWorkspace(_sourceWorkspaceName, template);
+			TargetWorkspaceArtifactId = GerronHelper.Workspace.CreateWorkspace(_targetWorkspaceName, template);
+			GerronHelper.Workspace.ImportApplicationToWorkspace(SourecWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
 		}
 
 		[TearDown]
 		public virtual void TearDown()
 		{
-			Helper.Workspace.DeleteWorkspace(SourecWorkspaceArtifactId);
-			Helper.Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
+			GerronHelper.Workspace.DeleteWorkspace(SourecWorkspaceArtifactId);
+			GerronHelper.Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
 		}
 	}
 }

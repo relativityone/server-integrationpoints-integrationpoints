@@ -27,10 +27,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			helper.GetDBContext(-1).Returns(context);
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(helper);
 
-			int workspaceArtifactId = Helper.Workspace.CreateWorkspace("Testing Integration5", "New Case Template");
-			Helper.Workspace.ImportApplicationToWorkspace(workspaceArtifactId, SharedVariables.RapFileLocation, true);
-			Helper.Import.ImportNewDocuments(workspaceArtifactId, GetImportTable());
-			int savedSearchArtifactId = Helper.SavedSearch.CreateSavedSearch("localhost", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, workspaceArtifactId, "All Documents");
+			int workspaceArtifactId = GerronHelper.Workspace.CreateWorkspace("Testing Integration5", "New Case Template");
+			GerronHelper.Workspace.ImportApplicationToWorkspace(workspaceArtifactId, SharedVariables.RapFileLocation, true);
+			GerronHelper.Import.ImportNewDocuments(workspaceArtifactId, GetImportTable());
+			int savedSearchArtifactId = GerronHelper.SavedSearch.CreateSavedSearch("localhost", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, workspaceArtifactId, "All Documents");
 			IntegrationModel integrationModel = new IntegrationModel();
 			integrationModel.SourceProvider = savedSearchArtifactId;
 		}

@@ -1,11 +1,21 @@
 ﻿using System;
 using kCura.Data.RowDataGateway;
+using kCura.Relativity.Client;
+using NSubstitute;
 using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class TestHelper : IHelper
 	{
+		private readonly IServicesMgr _serviceManager;
+
+		public TestHelper(Helper helper)
+		{
+			_serviceManager = Substitute.For<IServicesMgr>();
+			_serviceManager.CreateProxy<IRSAPIClient>(Arg.Any<ExecutionIdentity>()).Returns(helper.Rsapi.CreateRsapiClient());
+		}
+
 		public void Dispose()
 		{
 		}
@@ -33,7 +43,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public IServicesMgr GetServicesManager()
 		{
-			throw new NotImplementedException();
+			return _serviceManager;
 		}
 
 		public IUrlHelper GetUrlHelper()
