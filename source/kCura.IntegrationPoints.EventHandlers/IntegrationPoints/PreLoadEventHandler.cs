@@ -7,15 +7,17 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
 using Relativity.API;
+using Artifact = kCura.Relativity.Client.Artifact;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
 	public class PreLoadEventHandler : PreLoadEventHandlerBase
 	{
 		private ExternalTabURLService _service;
-
+		
 		public ExternalTabURLService Service
 		{
 			get { return _service ?? (_service = new ExternalTabURLService()); }
@@ -27,32 +29,37 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			var response = new Response
 			{
 				Success = true,
-				Message = ""
+				Message = string.Empty
 			};
 
 			var scripts = new StringBuilder();
 			var location = "";
-
-			var sourceProvider = this.ActiveArtifact.Fields["Source Provider"].Value.Value;
+			 const string sourceProviderFieldName = Contracts.Constants.SOURCEPROVIDER_FIELD_NAME;
+			const string sourceConfigurationFieldName = Contracts.Constants.SOURCECONFIGURATION_FIELD_NAME;
+			int sourceProvider = (int) this.ActiveArtifact.Fields[sourceProviderFieldName].Value.Value;
 			// Integration Point Specific Error Handling 
 			if (base.PageMode == EventHandler.Helper.PageMode.View && base.ServiceContext.RsapiService.SourceProviderLibrary.Read(Int32.Parse(sourceProvider.ToString())).Name == "Relativity")
 			{
-				string errorMessage = "";
+				StringBuilder errorMessage = new StringBuilder("");
 
-				string sourceConfiguration = this.ActiveArtifact.Fields["Source Configuration"].Value.Value.ToString();
+				string sourceConfiguration = this.ActiveArtifact.Fields[sourceConfigurationFieldName].Value.Value.ToString();
 				ExportUsingSavedSearchSettings settings =
 					JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(sourceConfiguration);
-				var currentClient = GetRSAPIClient(-1);
-				var workspaces = new GetWorkspacesQuery(currentClient).ExecuteQuery();
-				var targetWorkspace =
-					workspaces.Results.FirstOrDefault(x => x.Artifact.ArtifactID == settings.TargetWorkspaceArtifactId);
-				var sourceWorkspace =
-					workspaces.Results.FirstOrDefault(x => x.Artifact.ArtifactID == settings.SourceWorkspaceArtifactId);
+				Result<Workspace> sourceWorkspace;
+				Result<Workspace> targetWorkspace;
+				using (IRSAPIClient currentClient = GetRSAPIClient(-1))
+				{
+					QueryResultSet<Workspace> workspaces = new GetWorkspacesQuery(currentClient).ExecuteQuery();
+					targetWorkspace =
+						workspaces.Results.FirstOrDefault(x => x.Artifact.ArtifactID == settings.TargetWorkspaceArtifactId);
+					sourceWorkspace =
+						workspaces.Results.FirstOrDefault(x => x.Artifact.ArtifactID == settings.SourceWorkspaceArtifactId);
+				}
+					
 
 				if (targetWorkspace == null)
 				{
-					errorMessage = errorMessage +
-					               "You do not have permissions to import to the Destination workspace. Please contact your system administrator.</br>";
+					errorMessage = errorMessage.Append("You do not have permissions to import to the Destination workspace. Please contact your system administrator.</br>");
 					settings.TargetWorkspaceArtifactId = 0;
 				}
 				else
@@ -60,41 +67,41 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					settings.TargetWorkspace = targetWorkspace.Artifact.Name;
 					if (targetWorkspace.Artifact.Name.Contains(";"))
 					{
-						errorMessage = errorMessage +
-						               "Destination workspace name contains an invalid character. Please remove before continuing.</br>";
+						errorMessage = errorMessage.Append("Destination workspace name contains an invalid character. Please remove before continuing.</br>");
 					}
 				}
 
 				settings.SourceWorkspace = sourceWorkspace.Artifact.Name;
 				if (sourceWorkspace.Artifact.Name.Contains(";"))
 				{
-					errorMessage = errorMessage +
-					               "Source workspace name contains an invalid character. Please remove before continuing.</br>";
+					errorMessage = errorMessage.Append(
+								   "Source workspace name contains an invalid character. Please remove before continuing.</br>");
 				}
-				var client = GetRSAPIClient(settings.SourceWorkspaceArtifactId);
-				var savedSearchs =
-					new GetSavedSearchesQuery(client).ExecuteQuery();
-				var savedSearch = savedSearchs .QueryArtifacts.FirstOrDefault(x => x.ArtifactID == settings.SavedSearchArtifactId);
+				Artifact savedSearch;
+				using (IRSAPIClient client = GetRSAPIClient(settings.SourceWorkspaceArtifactId))
+				{
+					QueryResult savedSearches = new GetSavedSearchesQuery(client).ExecuteQuery();
+					savedSearch = savedSearches.QueryArtifacts.FirstOrDefault(x => x.ArtifactID == settings.SavedSearchArtifactId);
+				}
 				if (savedSearch  == null)
 				{
 					// user does not have any access to the save search
-					errorMessage = errorMessage +
-					               "You do not have permissions to the source saved search. Please contact your system administrator.";
+					errorMessage = errorMessage.Append("You do not have permissions to the source saved search. Please contact your system administrator.");
 					settings.SavedSearchArtifactId = 0;
 				}
 				else
 				{
 					settings.SavedSearch = savedSearch.getFieldByName("Text Identifier").ToString();
 				}
-				using (var Relativityprovider = new TagBuilder("script"))
+				using (TagBuilder Relativityprovider = new TagBuilder("script"))
 				{
 					Relativityprovider.Attributes.Add("type", "text/javascript");
 					Relativityprovider.InnerHtml = String.Format(@" var IP = IP || {{}};$(function(){{IP.errorMessage = '{0}';}});",
-						errorMessage);
-					scripts.Append(Relativityprovider.ToString());
+						errorMessage.ToString());
+					scripts.Append(Relativityprovider);
 				}
 				response.Message = scripts.ToString();
-				this.ActiveArtifact.Fields["Source Configuration"].Value.Value = JsonConvert.SerializeObject(settings);
+				this.ActiveArtifact.Fields[sourceConfigurationFieldName].Value.Value = JsonConvert.SerializeObject(settings);
 			}
 
 

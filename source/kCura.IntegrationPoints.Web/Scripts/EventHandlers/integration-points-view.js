@@ -31,7 +31,9 @@
 		    IP.message.error.raise(root.errorMessage, $(".cardContainer"));
 		    return;
 		}
-
+        //if (provider !== "Relativity") {
+        //    selectedMessage = "Are you sure you want to import data now?";
+        //}
 		window.Dragon.dialogs.showConfirm({
 			message: selectedMessage,
 			title: 'Run Now',
@@ -235,8 +237,8 @@ $(function () {
 	var settings = $field.text();
 	$field.text('');
 	_getSource(settings).then(function (result) {
-	    result = result.filter(function (x) {
-	        if (x.value !== -1 && x.value !== 0 && x.key.indexOf("Id") === -1 && x.value != null) {
+	    result = result.filter(function (setting) {
+	        if (setting.value !== -1 && setting.value !== 0 && setting.key.indexOf("Id") === -1 && setting.value != null) {
 	            return true;
 	        }
 	    });
