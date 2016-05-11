@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
+using Relativity.API;
 using Relativity.Core;
 using Relativity.Data;
 using Field = Relativity.Core.DTO.Field;
@@ -11,6 +16,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class JobHistoryRepository : RelativityMassEditBase, IJobHistoryRepository
 	{
+		private readonly IHelper _helper;
+		private readonly int _workspaceArtifactId;
+
+		internal JobHistoryRepository(IHelper helper, int workspaceArtifactId)
+		{
+			_helper = helper;
+			_workspaceArtifactId = workspaceArtifactId;
+		}
+
 		public void TagDocsWithJobHistory(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int jobHistoryInstanceArtifactId, int sourceWorkspaceId, string tableSuffix)
 		{
 			if (numberOfDocs <= 0)
@@ -46,6 +60,42 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				throw new Exception(MassEditErrors.JOB_HISTORY_MASS_EDIT_FAILURE, e);
 			}
+		}
+
+		public int GetLastJobHistoryArtifactId(int integrationPointArtifactId)
+		{
+			var query = new Query<RDO>
+			{
+				ArtifactTypeGuid = new Guid(ObjectTypeGuids.JobHistory),
+				Condition = new ObjectsCondition(new Guid(JobHistoryFieldGuids.IntegrationPoint), ObjectsConditionEnum.AnyOfThese, new List<int>(){integrationPointArtifactId}),
+				Fields = new List<FieldValue>()
+				{
+					new FieldValue(new Guid(JobHistoryFieldGuids.IntegrationPoint))
+				},
+				Sorts = new List<Sort>()
+				{
+					new Sort()
+					{
+						Field = "ArtifactID",
+						Direction = SortEnum.Descending
+					}
+				}
+			};
+
+			QueryResultSet<RDO> results = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+				results = rsapiClient.Repositories.RDO.Query(query, 1);
+			}
+
+			if (!results.Success)
+			{
+				throw new Exception($"Unable to retrieve Job Hisory: {results.Message}");
+			}
+
+			int lastJobHistoryArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).First();
+			return lastJobHistoryArtifactId;
 		}
 	}
 }

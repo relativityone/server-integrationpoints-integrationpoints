@@ -157,7 +157,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			_baseContext.DBContext.ExecuteNonQuerySQLStatement(sql, new[] { filterTypeParam, artifactViewFieldIdParam });
 		}
-
+		
 
 		public Dictionary<Guid, int> RetrieveFieldArtifactIds(IEnumerable<Guid> fieldGuids)
 		{

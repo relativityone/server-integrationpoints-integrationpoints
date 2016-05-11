@@ -9,6 +9,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Web.Controllers.API;
 using kCura.IntegrationPoints.Web.Tests.Helpers;
 using Newtonsoft.Json;
@@ -25,7 +26,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 		private IntegrationPointsAPIController _instance;
 		private IIntegrationPointService _integrationPointService;
 		private ICaseServiceContext _caseServiceContext;
-		private IPermissionService _permissionService;
+		private IPermissionRepository _permissionRepository;
 		private IRelativityUrlHelper _relativityUrlHelper;
 		private IRdoSynchronizerProvider _rdoSynchronizerProvider;
 
@@ -35,7 +36,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 		public void TestFixtureSetUp()
 		{
 			_caseServiceContext = this.GetMock<ICaseServiceContext>();
-			_permissionService = this.GetMock<IPermissionService>();
+			_permissionRepository = this.GetMock<IPermissionRepository>();
 			_relativityUrlHelper = this.GetMock<IRelativityUrlHelper>();
 			_integrationPointService = this.GetMock<IIntegrationPointService>();
 			_rdoSynchronizerProvider = this.GetMock<IRdoSynchronizerProvider>();

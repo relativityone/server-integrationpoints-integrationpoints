@@ -6,6 +6,8 @@ using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using Relativity.API;
 
@@ -28,10 +30,10 @@ namespace kCura.IntegrationPoints.Services
 
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			container.Register(Component.For<IServiceHelper>().UsingFactoryMethod((k) => global::Relativity.API.Services.Helper, managedExternally: true));
-			container.Register(Component.For<IHelper>().UsingFactoryMethod((k) => k.Resolve<IServiceHelper>(), managedExternally: true));
+			container.Register(Component.For<IServiceHelper>().UsingFactoryMethod(k => global::Relativity.API.Services.Helper, managedExternally: true));
+			container.Register(Component.For<IHelper>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>(), managedExternally: true));
 			container.Register(Component.For<IServiceContextHelper>()
-				.UsingFactoryMethod((k) =>
+				.UsingFactoryMethod(k =>
 				{
 					IServiceHelper helper = k.Resolve<IServiceHelper>();
 					return new ServiceContextHelperForKelperService(helper, _caseArtifactId);
@@ -41,12 +43,12 @@ namespace kCura.IntegrationPoints.Services
 			container.Register(
 				Component.For<IWorkspaceDBContext>()
 					.ImplementedBy<WorkspaceContext>()
-					.UsingFactoryMethod((k) => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(_caseArtifactId)))
+					.UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(_caseArtifactId)))
 					.LifeStyle.Transient);
 
 			container.Register(
 				Component.For<IRSAPIClient>()
-				.UsingFactoryMethod((k) =>
+				.UsingFactoryMethod(k =>
 				{
 					IRSAPIClient client = container.Resolve<IServiceHelper>().GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser);
 					client.APIOptions.WorkspaceID = _caseArtifactId;
@@ -54,8 +56,8 @@ namespace kCura.IntegrationPoints.Services
 				})
 				.LifeStyle.Transient);
 
-			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod((k) => global::Relativity.API.Services.Helper.GetServicesManager()));
-			container.Register(Component.For<IPermissionService>().ImplementedBy<PermissionService>().LifestyleTransient());
+			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => global::Relativity.API.Services.Helper.GetServicesManager()));
+			container.Register(Component.For<IPermissionRepository>().ImplementedBy<PermissionRepository>().LifestyleTransient());
 
 			foreach (IWindsorInstaller dependency in _dependencies)
 			{
