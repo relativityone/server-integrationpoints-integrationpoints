@@ -41,5 +41,19 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>Job History manager</returns>
 		IJobHistoryManager CreateJobHistoryManager(IContextContainer contextContainer);
+
+		/// <summary>
+		/// Creates Artifact GUID manager
+		/// </summary>
+		/// <param name="contextContainer">Container containing necessary contexts</param>
+		/// <returns>Artifact GUID manager</returns>
+		IArtifactGuidManager CreateArtifactGuidManager(IContextContainer contextContainer);
+
+		/// <summary>
+		/// Creates Object Type manage
+		/// </summary>
+		/// <param name="contextContainer">Container containing necessary contexts</param>
+		/// <returns>Object Type manager</returns>
+		IObjectTypeManager CreateObjectTypeManager(IContextContainer contextContainer);
 	}
 }

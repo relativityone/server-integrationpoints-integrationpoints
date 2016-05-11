@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Castle.Components.DictionaryAdapter;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
@@ -56,6 +57,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 
 			ConsoleButton viewErrorsLink = GetViewErrorsLink(integrationPointHasErrors);
+			//ConsoleButton viewErrorsLink = GetViewErrorsLink(contextContainer, integrationPointHasErrors);
 			console.ButtonList.Add(viewErrorsLink);
 
 			return console;
@@ -96,22 +98,29 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		private ConsoleButton GetViewErrorsLink(IContextContainer contextContainer, bool hasErrors)
 		{
-			// NOTE: TODO: Work in progress
 			string onClickEvent = String.Empty;
 
 			if (hasErrors)
 			{
 				IFieldManager fieldManager = _managerFactory.CreateFieldManager(contextContainer);
 				IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(contextContainer);
+				IArtifactGuidManager artifactGuidManager = _managerFactory.CreateArtifactGuidManager(contextContainer);
+				IObjectTypeManager objectTypeManager = _managerFactory.CreateObjectTypeManager(contextContainer);
+
 				var errorErrorStatusFieldGuid = new Guid(JobHistoryErrorDTO.FieldGuids.ErrorStatus);
 				var jobHistoryFieldGuid = new Guid(JobHistoryErrorDTO.FieldGuids.JobHistory);
 
-				Dictionary<Guid, int> fieldGuidsAndIds = fieldManager.RetrieveFieldArtifactIds(Application.ArtifactID, new[] { errorErrorStatusFieldGuid, jobHistoryFieldGuid });
+				Dictionary<Guid, int> guidsAndArtifactIds = artifactGuidManager.GetArtifactIdsForGuids(Application.ArtifactID, new[]
+				{
+					JobHistoryErrorDTO.Choices.ErrorStatus.Guids.New,
+					errorErrorStatusFieldGuid,
+					jobHistoryFieldGuid
+				});
 
-				int errorStatusArtifactViewFieldId = fieldManager.RetrieveArtifactViewFieldId(Application.ArtifactID, fieldGuidsAndIds[errorErrorStatusFieldGuid]).GetValueOrDefault();
-				int errorStatusNewChoiceArtifactId = 1041558;
-				int jobHistoryErrorArtifactTypeId = 1000042;
-				int jobHistoryArtifactViewFieldId = fieldManager.RetrieveArtifactViewFieldId(Application.ArtifactID, fieldGuidsAndIds[jobHistoryFieldGuid]).GetValueOrDefault();
+				int errorStatusArtifactViewFieldId = fieldManager.RetrieveArtifactViewFieldId(Application.ArtifactID, guidsAndArtifactIds[errorErrorStatusFieldGuid]).GetValueOrDefault();
+				int errorStatusNewChoiceArtifactId = guidsAndArtifactIds[JobHistoryErrorDTO.Choices.ErrorStatus.Guids.New];
+				int jobHistoryErrorArtifactTypeId = objectTypeManager.RetrieveObjectTypeDescriptorArtifactTypeId(Application.ArtifactID, new Guid(JobHistoryErrorDTO.ArtifactTypeGuid));
+				int jobHistoryArtifactViewFieldId = fieldManager.RetrieveArtifactViewFieldId(Application.ArtifactID, guidsAndArtifactIds[jobHistoryFieldGuid]).GetValueOrDefault();
 				int jobHistoryInstanceArtifactId = jobHistoryManager.GetLastJobHistoryArtifactId(Application.ArtifactID, ActiveArtifact.ArtifactID);
 
 				onClickEvent = $"window.location='../../Case/IntegrationPoints/ErrorsRedirect.aspx?IntegrationPointArtifactID={ActiveArtifact.ArtifactID}&ErrorStatusArtifactViewFieldID={errorStatusArtifactViewFieldId}"

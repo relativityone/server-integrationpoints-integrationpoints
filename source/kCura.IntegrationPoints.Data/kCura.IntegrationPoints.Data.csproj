@@ -203,6 +203,7 @@
     <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipalFactory.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtension.cs" />
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
+    <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
     <Compile Include="Commands\MassEdit\IMassEditCommand.cs" />

@@ -35,6 +35,16 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new JobHistoryManager(CreateRepositoryFactory(contextContainer));
 		}
 
+		public IArtifactGuidManager CreateArtifactGuidManager(IContextContainer contextContainer)
+		{
+			return new ArtifactGuidManager(CreateRepositoryFactory(contextContainer));
+		}
+
+		public IObjectTypeManager CreateObjectTypeManager(IContextContainer contextContainer)
+		{
+			return new ObjectTypeManager(CreateRepositoryFactory(contextContainer));
+		}
+
 		#region Private Helpers
 
 		private IRepositoryFactory CreateRepositoryFactory(IContextContainer contextContainer)
