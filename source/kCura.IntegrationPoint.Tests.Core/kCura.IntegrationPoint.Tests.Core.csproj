@@ -87,11 +87,19 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.API, Version=9.3.403.16, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.API.9.3.403.16\lib\net45\Relativity.API.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Relativity.Core">
       <HintPath>..\packages\Relativity.Core.9.3.398.12\lib\net45\Relativity.Core.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Core.Api">
       <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\Relativity.Core.Api.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Data, Version=9.3.398.12, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.Data.9.3.398.12\lib\net45\Relativity.Data.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -125,6 +133,7 @@
     <Compile Include="IntegrationPoint.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Templates\WorkspaceDependentTemplate.cs" />
+    <Compile Include="TestHelper.cs" />
     <Compile Include="Workspace.cs" />
   </ItemGroup>
   <ItemGroup>

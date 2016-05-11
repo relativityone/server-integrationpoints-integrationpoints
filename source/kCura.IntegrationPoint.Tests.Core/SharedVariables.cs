@@ -20,5 +20,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static string RelativityWebApiUrl => $"http://{TargetHost}/RelativityWebAPI/";
 
 		public static string RapFileLocation => ConfigurationManager.AppSettings["rapFileLocation"];
+
+		public static string EddsConnectionString => ConfigurationManager.AppSettings["connectionStringEDDS"];
+
+		public static string WorkspaceConnectionStringFormat => ConfigurationManager.AppSettings["connectionStringWorkspace"];
 	}
 }
