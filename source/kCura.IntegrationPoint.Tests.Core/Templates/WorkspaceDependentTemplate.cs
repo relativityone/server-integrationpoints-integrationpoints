@@ -40,22 +40,22 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected void Install()
 		{
-			Cotainer.Register(Component.For<IHelper>().UsingFactoryMethod(k => k.Resolve<IServiceHelper>(), managedExternally: true));
-			Cotainer.Register(Component.For<IServiceContextHelper>()
+			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
+			Container.Register(Component.For<IServiceContextHelper>()
 				.UsingFactoryMethod(k =>
 				{
-					IServiceHelper helper = k.Resolve<IServiceHelper>();
+					IHelper helper = k.Resolve<IHelper>();
 					return new TestServiceContextHelper(helper, SourecWorkspaceArtifactId);
 				}));
-			Cotainer.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
-			Cotainer.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
-			Cotainer.Register(
+			Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
+			Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
+			Container.Register(
 				Component.For<IWorkspaceDBContext>()
 					.ImplementedBy<WorkspaceContext>()
 					.UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(SourecWorkspaceArtifactId)))
 					.LifeStyle.Transient);
 
-			Cotainer.Register(
+			Container.Register(
 				Component.For<IRSAPIClient>()
 				.UsingFactoryMethod(k =>
 				{
@@ -65,13 +65,13 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				})
 				.LifeStyle.Transient);
 
-			Cotainer.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));
-			Cotainer.Register(Component.For<IPermissionRepository>().ImplementedBy<PermissionRepository>().LifestyleTransient());
+			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));
+			Container.Register(Component.For<IPermissionRepository>().ImplementedBy<PermissionRepository>().LifestyleTransient());
 
 			var dependencies = new IWindsorInstaller[]{ new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller()};
 			foreach (IWindsorInstaller dependency in dependencies)
 			{
-				dependency.Install(Cotainer, ConfigurationStore);
+				dependency.Install(Container, ConfigurationStore);
 			}
 		}
 
