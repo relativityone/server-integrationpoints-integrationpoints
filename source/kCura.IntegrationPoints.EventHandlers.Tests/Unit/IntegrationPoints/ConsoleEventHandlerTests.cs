@@ -72,7 +72,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_integrationPointManagerFactory.Received().CreateIntegrationPointManager(_contextContainer);
 
 			Assert.IsNotNull(console);
-			Assert.AreEqual(isRelativitySourceProvider ? 3 : 2, console.ButtonList.Count);
+			Assert.AreEqual(isRelativitySourceProvider ? 3 : 1, console.ButtonList.Count);
 
 			int buttonIndex = 0;
 			ConsoleButton runNowButton = console.ButtonList[buttonIndex++];
@@ -88,13 +88,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				Assert.AreEqual(true, retryErrorsButton.Enabled);
 				Assert.AreEqual(false, retryErrorsButton.RaisesPostBack);
 				Assert.AreEqual($"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})", retryErrorsButton.OnClickEvent);
-			}
 
-			ConsoleButton viewErrorsButtonLink = console.ButtonList[buttonIndex++];
-			Assert.AreEqual("View Errors", viewErrorsButtonLink.DisplayText);
-			Assert.AreEqual(true, viewErrorsButtonLink.Enabled);
-			Assert.AreEqual(false, viewErrorsButtonLink.RaisesPostBack);
-			Assert.AreEqual("alert('NOT IMPLEMENTED')", viewErrorsButtonLink.OnClickEvent);
+				ConsoleButton viewErrorsButtonLink = console.ButtonList[buttonIndex++];
+				Assert.AreEqual("View Errors", viewErrorsButtonLink.DisplayText);
+				Assert.AreEqual(true, viewErrorsButtonLink.Enabled);
+				Assert.AreEqual(false, viewErrorsButtonLink.RaisesPostBack);
+				Assert.AreEqual("alert('NOT IMPLEMENTED')", viewErrorsButtonLink.OnClickEvent);
+			}
 		}
 	}
 }

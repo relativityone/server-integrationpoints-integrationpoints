@@ -52,14 +52,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			
 			if (integrationPointIsRetriable)
 			{
-				ConsoleButton retryErrorsButton = GetRetryErrorsButton(userHasPermissions && integrationPointHasErrors && integrationPointIsRetriable);
+				ConsoleButton retryErrorsButton = GetRetryErrorsButton(userHasPermissions && integrationPointHasErrors);
 				console.ButtonList.Add(retryErrorsButton);
-			}
 
-			ConsoleButton viewErrorsLink = GetViewErrorsLink(integrationPointHasErrors);
+				ConsoleButton viewErrorsLink = GetViewErrorsLink(integrationPointHasErrors);
 			//ConsoleButton viewErrorsLink = GetViewErrorsLink(contextContainer, integrationPointHasErrors);
-			console.ButtonList.Add(viewErrorsLink);
-
+				console.ButtonList.Add(viewErrorsLink);
+			}
+			
 			return console;
 		}
 
