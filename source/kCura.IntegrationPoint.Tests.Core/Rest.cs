@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			Uri baseAddress = new Uri(string.Format(@"http://{0}/Relativity.Rest/", restServer));
 			WebRequestHandler handler = new WebRequestHandler();
-			string output = null;
 
 			if (isHttps)
 			{
@@ -41,6 +40,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					content = new StringContent(parameter, Encoding.UTF8, _JSON_MIME);
 				}
 
+				string output = null;
 				try
 				{
 					string serviceApiPath = string.Format(@"api/{0}", serviceMethod);

@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			const string relativityWebApiUrl = "http://localhost/RelativityWebAPI/";
 
-			ImportApiFactory _factory = new ImportApiFactory();
+			ImportApiFactory factory = new ImportApiFactory();
 			ImportSettings setting = new ImportSettings()
 			{
 				ArtifactTypeId = (int)ArtifactType.Document,
@@ -31,37 +31,42 @@ namespace kCura.IntegrationPoint.Tests.Core
 			};
 
 			string settings = JsonConvert.SerializeObject(setting);
-			RdoSynchronizerPush pusher = new RdoSynchronizerPush(null, _factory);
+			RdoSynchronizerPush pusher = new RdoSynchronizerPush(null, factory);
 
-			FieldMap mapIdentifier = new FieldMap();
-			mapIdentifier.FieldMapType = FieldMapTypeEnum.Identifier;
-			mapIdentifier.SourceField = new FieldEntry()
+			FieldMap mapIdentifier = new FieldMap
 			{
-				DisplayName = "Control Number",
-				IsIdentifier = true,
-				FieldIdentifier = "Control Number",
-			};
-			mapIdentifier.DestinationField = new FieldEntry()
-			{
-				DisplayName = "Control Number",
-				FieldIdentifier = "1003667",
-				IsIdentifier = true,
+				FieldMapType = FieldMapTypeEnum.Identifier,
+				SourceField = new FieldEntry()
+				{
+					DisplayName = "Control Number",
+					IsIdentifier = true,
+					FieldIdentifier = "Control Number",
+				},
+				DestinationField = new FieldEntry()
+				{
+					DisplayName = "Control Number",
+					FieldIdentifier = "1003667",
+					IsIdentifier = true,
+				}
 			};
 
-			FieldMap mapIdentifier2 = new FieldMap();
-			mapIdentifier2.FieldMapType = FieldMapTypeEnum.NativeFilePath;
-			mapIdentifier2.SourceField = new FieldEntry()
-			{
-				DisplayName = "NATIVE_FILE_PATH_001",
-				IsIdentifier = false,
-				FieldIdentifier = "NATIVE_FILE_PATH_001",
-			};
-			mapIdentifier2.DestinationField = new FieldEntry()
-			{
-				DisplayName = "NATIVE_FILE_PATH_001",
-				FieldIdentifier = "NATIVE_FILE_PATH_001",
-				IsIdentifier = false,
-			};
+			// TODO: make this work
+			//FieldMap mapIdentifier2 = new FieldMap
+			//{
+			//	FieldMapType = FieldMapTypeEnum.NativeFilePath,
+			//	SourceField = new FieldEntry()
+			//	{
+			//		DisplayName = "NATIVE_FILE_PATH_001",
+			//		IsIdentifier = false,
+			//		FieldIdentifier = "NATIVE_FILE_PATH_001",
+			//	},
+			//	DestinationField = new FieldEntry()
+			//	{
+			//		DisplayName = "NATIVE_FILE_PATH_001",
+			//		FieldIdentifier = "NATIVE_FILE_PATH_001",
+			//		IsIdentifier = false,
+			//	}
+			//};
 
 			pusher.SyncData(importTable.CreateDataReader(), new FieldMap[] { mapIdentifier }, settings);
 		}

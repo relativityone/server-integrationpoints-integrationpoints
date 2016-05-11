@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	using Relativity.Client;
-	using Relativity.Client.DTOs;
-
 	public class Workspace : HelperBase
 	{
 		public Workspace(Helper helper) : base(helper)
@@ -15,6 +14,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public void ImportApplicationToWorkspace(int workspaceId, string applicationFilePath, bool forceUnlock, List<int> appsToOverride = null)
 		{
 			//List of application ArtifactIDs to override, if already installed
+			// TODO: Add this functionality - Gerron Thurman 5/11/2016
 			List<int> applicationsToOverride = appsToOverride ?? new List<int>();
 
 			AppInstallRequest appInstallRequest = new AppInstallRequest()
@@ -53,8 +53,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				try
 				{
 					//Query for template workspace id
-					TextCondition workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo,
-						templateName);
+					TextCondition workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, templateName);
 					Query<Relativity.Client.DTOs.Workspace> query = new Query<Relativity.Client.DTOs.Workspace>
 					{
 						Condition = workspaceNameCondition
