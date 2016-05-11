@@ -26,22 +26,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			int numberOfJobs = _queueRepository.GetNumberOfJobsExecutingOrInQueue(workspaceId, integrationPointId);
 
-			if (numberOfJobs > 0)
-			{
-				return true;
-			}
-			return false;
+			return numberOfJobs > 0;
 		}
 
 		public bool HasJobsExecuting(int workspaceId, int integrationPointId, long jobId, DateTime runTime)
 		{
 			int numberOfJobs = _queueRepository.GetNumberOfJobsExecuting(workspaceId, integrationPointId, jobId, runTime);
 
-			if (numberOfJobs > 0)
-			{
-				return true;
-			}
-			return false;
+			return numberOfJobs > 0;
 		}
 	}
 }

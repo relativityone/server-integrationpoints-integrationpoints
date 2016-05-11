@@ -28,6 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly IJobManager _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IManagerFactory _managerFactory;
+		private static readonly object _lock = new object();
 
 		public IntegrationPointService(ICaseServiceContext context,
 			IContextContainer contextContainer,
@@ -348,17 +349,20 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, Relativity.Client.Choice jobType, int workspaceArtifactId, int userId)
 		{
-			CheckForOtherJobsExecutingOrInQueue(sourceProvider, workspaceArtifactId, integrationPoint.ArtifactId); 
-			var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
+			lock (_lock)
+			{
+				CheckForOtherJobsExecutingOrInQueue(sourceProvider, workspaceArtifactId, integrationPoint.ArtifactId);
+				var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
 
-			// If the Relativity provider is selected, we need to create an export task
-			TaskType jobTaskType =
-				sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
-					? TaskType.ExportService
-					: TaskType.SyncManager;
+				// If the Relativity provider is selected, we need to create an export task
+				TaskType jobTaskType =
+					sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
+						? TaskType.ExportService
+						: TaskType.SyncManager;
 
-			_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, jobType, null);
-			_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
+				_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, jobType, null);
+				_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
+			}
 		}
 
 		private void UpdateJobHistoryOnRetry(IntegrationPoint integrationPoint)
