@@ -604,7 +604,8 @@ var IP = IP || {};
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 			this.model.submit();
 			if (this.model.errors().length === 0) {
-				this.model.destination = JSON.stringify({
+			    this.model.destinationProvider = this.model.destination.selectedDestinationType();
+			    this.model.destination = JSON.stringify({
 				    artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,	
 			        destinationProviderType: ko.toJS(this.model.destination).selectedDestinationType,
 			        fileshare: ko.toJS(this.model.destination).selectedDestinationPath,

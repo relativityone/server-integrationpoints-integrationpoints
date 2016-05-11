@@ -29,10 +29,13 @@
 				stepCache[model.source.selectedType] = self.model.sourceConfiguration || '';
 			}
 			
-				this.source = $.grep(model.source.sourceTypes, function(item){
-					return item.value === model.source.selectedType;
-				})[0].href;
-			
+			this.source = $.grep(model.source.sourceTypes, function(item){
+				return item.value === model.source.selectedType;
+			})[0].href;
+
+			if (model.destinationProvider.toUpperCase() === "1D3AD995-32C5-48FE-BAA5-5D97089C8F18") {
+			    this.source = "/%applicationpath%/CustomPages/dcf6e9d1-22b6-4da3-98f6-41381e93c30c/IntegrationPoints/ExportProviderConfiguration/";
+			}
 		};
 
 		
