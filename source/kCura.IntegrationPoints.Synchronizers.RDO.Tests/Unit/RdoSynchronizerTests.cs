@@ -10,7 +10,6 @@ using NSubstitute;
 using NUnit.Framework;
 using Artifact = kCura.Relativity.Client.Artifact;
 using Assert = NUnit.Framework.Assert;
-using Workspace = kCura.Relativity.ImportAPI.Data.Workspace;
 
 namespace kCura.IntegrationPoints.Synchronizers.RDO.Tests.Unit
 {
