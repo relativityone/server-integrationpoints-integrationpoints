@@ -90,6 +90,9 @@
     <Compile Include="Import.cs" />
     <Compile Include="IntegrationTestBase.cs" />
     <Compile Include="Jobs\SampleTest.cs" />
+    <Compile Include="Models\BaseField.cs" />
+    <Compile Include="Models\BaseFields.cs" />
+    <Compile Include="Models\UserModel.cs" />
     <Compile Include="Rest.cs" />
     <Compile Include="Rsapi.cs" />
     <Compile Include="SavedSearch.cs" />

@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace kCura.IntegrationPoint.Tests.Core.Jobs
 {

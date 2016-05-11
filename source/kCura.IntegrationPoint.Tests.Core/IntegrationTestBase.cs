@@ -1,5 +1,4 @@
-﻿using kCura.Relativity.Client;
-namespace kCura.IntegrationPoint.Tests.Core
+﻿namespace kCura.IntegrationPoint.Tests.Core
 {
 	public abstract class IntegrationTestBase
 	{

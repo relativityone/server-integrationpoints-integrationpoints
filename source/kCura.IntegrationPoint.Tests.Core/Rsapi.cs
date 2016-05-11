@@ -1,5 +1,6 @@
 ﻿using System;
 using kCura.Relativity.Client;
+
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class Rsapi : HelperBase

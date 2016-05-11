@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoint.Tests.Core
