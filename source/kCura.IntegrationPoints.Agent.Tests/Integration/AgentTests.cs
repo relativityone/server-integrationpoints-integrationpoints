@@ -19,6 +19,14 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
+		[Explicit]
+		public void WTFGERROR()
+		{
+			bool created = User.CreateUser("sample", "test", "stest@kcura.com");
+			Assert.IsTrue(created);
+		}
+
+		[Test]
 		[Ignore]
 		public void Testing123()
 		{

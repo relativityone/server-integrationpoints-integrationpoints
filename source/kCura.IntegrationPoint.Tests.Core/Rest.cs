@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 		}
 
-		public string PostRequestAsJsonAsync(string restServer, string serviceMethod, string username, string password, bool isHttps, string parameter = null)
+		public string PostRequestAsJson(string restServer, string serviceMethod, string username, string password, bool isHttps, string parameter = null)
 		{
 			Uri baseAddress = new Uri(string.Format(@"http://{0}/Relativity.Rest/", restServer));
 			WebRequestHandler handler = new WebRequestHandler();
@@ -43,8 +43,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				string output = null;
 				try
 				{
-					string serviceApiPath = string.Format(@"api/{0}", serviceMethod);
-					HttpResponseMessage response = httpClient.PostAsync(serviceApiPath, content).Result;
+					HttpResponseMessage response = httpClient.PostAsync(serviceMethod, content).Result;
 					if (!response.IsSuccessStatusCode)
 					{
 						string errorMessage = string.Format("Failed submitting post request. Response Error: {0}.", response.Content.ReadAsStringAsync());
