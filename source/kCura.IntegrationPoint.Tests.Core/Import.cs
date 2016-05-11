@@ -21,8 +21,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				ArtifactTypeId = (int)ArtifactType.Document,
 				CaseArtifactId = workspaceId,
-				RelativityUsername = Helper.SharedVariables.RelativityUserName,
-				RelativityPassword = Helper.SharedVariables.RelativityPassword,
+				RelativityUsername = SharedVariables.RelativityUserName,
+				RelativityPassword = SharedVariables.RelativityPassword,
 				WebServiceURL = relativityWebApiUrl,
 				ExtractedTextFieldContainsFilePath = false,
 				ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles,

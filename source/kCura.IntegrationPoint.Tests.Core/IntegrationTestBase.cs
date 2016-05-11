@@ -8,11 +8,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 		protected IntegrationTestBase()
 		{
 			Helper = new Helper();
-			SharedVariables = new SharedVariables();
 		}
 
 		public Helper Helper { get; }
-		public SharedVariables SharedVariables { get; }
 
 		public IRSAPIClient RsapiClient { get { return Helper.Rsapi.CreateRsapiClient(); } }
 

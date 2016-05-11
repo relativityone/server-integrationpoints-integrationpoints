@@ -4,14 +4,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 	using System;
 	using System.Configuration;
 
-	public class SharedVariables
+	public static class SharedVariables
 	{
-		public int WorkspaceArtifactId => Convert.ToInt32(ConfigurationManager.AppSettings["workspaceArtifactId"]);
+		public static int WorkspaceArtifactId => Convert.ToInt32(ConfigurationManager.AppSettings["workspaceArtifactId"]);
 
-		public string RsapiClientUri => ConfigurationManager.AppSettings["rsapClientUri"];
+		public static string RsapiClientUri => ConfigurationManager.AppSettings["rsapClientUri"];
 
-		public string RelativityUserName => ConfigurationManager.AppSettings["userName"];
+		public static string RelativityUserName => ConfigurationManager.AppSettings["userName"];
 
-		public string RelativityPassword => ConfigurationManager.AppSettings["password"];
+		public static string RelativityPassword => ConfigurationManager.AppSettings["password"];
 	}
 }
