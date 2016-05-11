@@ -160,29 +160,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 		}
 
 		[Test]
-		public void UpdateJobHistoryOnRetry()
-		{
-			// Arrange
-			Data.JobHistory jobHistory = new Data.JobHistory
-			{
-				ArtifactId = 8675309,
-				JobStatus = JobStatusChoices.JobHistoryErrorJobFailed
-			};
-			IList<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>(1) { new JobHistoryError() };
-
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary
-				.Query(Arg.Is<Query<RDO>>(x => x.ArtifactTypeGuid == Guid.Parse(ObjectTypeGuids.JobHistoryError) && x.Condition is CompositeCondition))
-				.Returns(jobHistoryErrors);
-
-			// Act
-			_instance.UpdateJobHistoryOnRetry(jobHistory);
-
-			// Assert
-			_caseServiceContext.RsapiService.JobHistoryLibrary.Received(1).Update(jobHistory);
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Received(1).Update(jobHistoryErrors);
-		}
-
-		[Test]
 		public void DeleteJobHistory_Succeeds()
 		{
 			//Arrange
