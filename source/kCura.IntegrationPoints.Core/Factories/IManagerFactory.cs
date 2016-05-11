@@ -43,6 +43,13 @@ namespace kCura.IntegrationPoints.Core.Factories
 		IJobHistoryManager CreateJobHistoryManager(IContextContainer contextContainer);
 
 		/// <summary>
+		/// Creates Job History Error manager
+		/// </summary>
+		/// <param name="contextContainer">Container containing necessary contexts</param>
+		/// <returns>Job History Error manager</returns>
+		IJobHistoryErrorManager CreateJobHistoryErrorManager(IContextContainer contextContainer);
+
+		/// <summary>
 		/// Creates Artifact GUID manager
 		/// </summary>
 		/// <param name="contextContainer">Container containing necessary contexts</param>

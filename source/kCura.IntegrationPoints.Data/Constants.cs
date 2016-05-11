@@ -54,4 +54,10 @@ namespace kCura.IntegrationPoints.Data
 		public const string JOB_HISTORY_MO_EXISTENCE_ERROR = "Multi-object field on Document associated with JobHistory object does not exist.";
 		public const string JOB_HISTORY_MASS_EDIT_FAILURE = "Tagging Documents with JobHistory object failed - Mass Edit failure.";
 	}
+	
+	public static class JobHistoryErrorErrors
+	{
+		public const string JOB_HISTORY_ERROR_RETRIEVE_FAILURE = "Unable to query for Job History Errors associated with provided JobHistory object ({0}).";
+		public const string JOB_HISTORY_ERROR_RETRIEVE_NO_RESULTS = "No Job History Errors returned for JobHistory object ({0}).";
+	}
 }

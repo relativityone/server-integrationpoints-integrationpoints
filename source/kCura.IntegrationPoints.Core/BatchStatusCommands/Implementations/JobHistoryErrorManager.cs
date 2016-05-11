@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-using kCura.IntegrationPoints.Core.Managers;
+﻿using System.Security.Claims;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
@@ -9,7 +7,7 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
-	public class JobHistoryErrorManager : IJobHistoryErrorManager, IBatchStatus
+	public class JobHistoryErrorManager : Managers.Implementations.JobHistoryErrorManager, IBatchStatus
 	{
 		private readonly IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private readonly ClaimsPrincipal _claimsPrincipal;
@@ -29,12 +27,13 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 		public void JobStarted(Job job)
 		{
-			_jobHistoryErrorRepository.UpdateErrorStatuses(_claimsPrincipal, _jobHistoryInstanceId, ErrorStatusChoices.JobHistoryErrorInProgress, _uniqueJobId);
+			//GetLastJobHistoryErrors(job.WorkspaceID, job.RelatedObjectArtifactID);
+			//_jobHistoryErrorRepository.UpdateErrorStatuses(_claimsPrincipal, _jobHistoryInstanceId, ErrorStatusChoices.JobHistoryErrorInProgress, _uniqueJobId);
 		}
 
 		public void JobComplete(Job job)
 		{
-			_jobHistoryErrorRepository.UpdateErrorStatuses(_claimsPrincipal, _jobHistoryInstanceId, ErrorStatusChoices.JobHistoryErrorRetried, _uniqueJobId);
+			//_jobHistoryErrorRepository.UpdateErrorStatuses(_claimsPrincipal, _jobHistoryInstanceId, ErrorStatusChoices.JobHistoryErrorRetried, _uniqueJobId);
 		}
 	}
 }
