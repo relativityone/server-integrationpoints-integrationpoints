@@ -1,16 +1,14 @@
 ﻿using System.Data;
-using kCura.Apps.Common.Config;
-using kCura.Apps.Common.Data;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
-using NSubstitute;
+using kCura.IntegrationPoints.Core.Services;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
-	public class AgentTests : IntegrationTestBase
+	public class AgentTests : WorkspaceDependentTemplate
 	{
 		[Test]
 		[Explicit]
@@ -19,20 +17,23 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		}
 
 		[Test]
-		[Ignore]
+		[Explicit]
 		public void Testing123()
 		{
-			IDBContext context = Substitute.For<IDBContext>();
-			IHelper helper = NSubstitute.Substitute.For<IHelper>();
-			helper.GetDBContext(-1).Returns(context);
-			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(helper);
+			IIntegrationPointService service = Container.Resolve<IIntegrationPointService>();
+			var ips = service.GetAllIntegrationPoints();
+			Assert.IsNotNull(ips);
+			//IDBContext context = Substitute.For<IDBContext>();
+			//IHelper helper = NSubstitute.Substitute.For<IHelper>();
+			//helper.GetDBContext(-1).Returns(context);
+			//Manager.Settings.Factory = new HelperConfigSqlServiceFactory(helper);
 
-			int workspaceArtifactId = Helper.Workspace.CreateWorkspace("Testing Integration5", "New Case Template");
-			Helper.Workspace.ImportApplicationToWorkspace(workspaceArtifactId, SharedVariables.RapFileLocation, true);
-			Helper.Import.ImportNewDocuments(workspaceArtifactId, GetImportTable());
-			int savedSearchArtifactId = Helper.SavedSearch.CreateSavedSearch("localhost", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, workspaceArtifactId, "All Documents");
-			IntegrationModel integrationModel = new IntegrationModel();
-			integrationModel.SourceProvider = savedSearchArtifactId;
+			//int workspaceArtifactId = GerronHelper.Workspace.CreateWorkspace("Testing Integration5", "New Case Template");
+			//GerronHelper.Workspace.ImportApplicationToWorkspace(workspaceArtifactId, SharedVariables.RapFileLocation, true);
+			//GerronHelper.Import.ImportNewDocuments(workspaceArtifactId, GetImportTable());
+			//int savedSearchArtifactId = GerronHelper.SavedSearch.CreateSavedSearch("localhost", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, workspaceArtifactId, "All Documents");
+			//IntegrationModel integrationModel = new IntegrationModel();
+			//integrationModel.SourceProvider = savedSearchArtifactId;
 		}
 
 		private DataTable GetImportTable()
@@ -43,8 +44,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			//table.Columns.Add("Parent Document ID", typeof(string));
 			table.Rows.Add("Doc1");//, "C:\\important3.txt");//, "");
 			table.Rows.Add("Doc2");//, "C:\\important4.txt");//, "");
-		   // table.Rows.Add("Doc2", "C:\\addressomg.txt", "Doc2");
+								   // table.Rows.Add("Doc2", "C:\\addressomg.txt", "Doc2");
 			return table;
+		}
+
+		public AgentTests() : base ("source", "target")
+		{
 		}
 	}
 }
