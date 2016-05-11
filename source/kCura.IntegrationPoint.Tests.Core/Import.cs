@@ -14,8 +14,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public void ImportNewDocuments(int workspaceId, DataTable importTable)
 		{
-			const string relativityWebApiUrl = "http://localhost/RelativityWebAPI/";
-
 			ImportApiFactory _factory = new ImportApiFactory();
 			ImportSettings setting = new ImportSettings()
 			{
@@ -23,7 +21,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				CaseArtifactId = workspaceId,
 				RelativityUsername = SharedVariables.RelativityUserName,
 				RelativityPassword = SharedVariables.RelativityPassword,
-				WebServiceURL = relativityWebApiUrl,
+				WebServiceURL = SharedVariables.RelativityWebApiUrl,
 				ExtractedTextFieldContainsFilePath = false,
 				ImportNativeFileCopyMode = ImportNativeFileCopyModeEnum.DoNotImportNativeFiles,
 				FieldOverlayBehavior = "Use Field Settings",

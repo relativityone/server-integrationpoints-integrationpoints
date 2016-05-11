@@ -16,5 +16,9 @@
 		public static string RelativityPassword => ConfigurationManager.AppSettings["password"];
 
 		public static string RestServer => $"http://{TargetHost}/Relativity.Rest/";
+
+		public static string RelativityWebApiUrl => $"http://{TargetHost}/RelativityWebAPI/";
+
+		public static string RapFileLocation => ConfigurationManager.AppSettings["rapFileLocation"];
 	}
 }

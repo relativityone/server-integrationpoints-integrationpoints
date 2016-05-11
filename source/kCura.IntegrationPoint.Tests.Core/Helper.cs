@@ -1,5 +1,4 @@
-﻿
-namespace kCura.IntegrationPoint.Tests.Core
+﻿namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class Helper
 	{
