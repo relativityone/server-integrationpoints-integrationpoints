@@ -4,6 +4,7 @@ using System.Text;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.Relativity.Client;
@@ -34,8 +35,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			var scripts = new StringBuilder();
 			var location = "";
-			const string sourceProviderFieldName = Contracts.Constants.SOURCEPROVIDER_FIELD_NAME;
-			const string sourceConfigurationFieldName = Contracts.Constants.SOURCECONFIGURATION_FIELD_NAME;
+			const string sourceProviderFieldName = IntegrationPointFields.SourceProvider;
+			const string sourceConfigurationFieldName = IntegrationPointFields.SourceConfiguration;
 			int sourceProvider = (int)this.ActiveArtifact.Fields[sourceProviderFieldName].Value.Value;
 			// Integration Point Specific Error Handling 
 			if (base.PageMode == EventHandler.Helper.PageMode.View && base.ServiceContext.RsapiService.SourceProviderLibrary.Read(Int32.Parse(sourceProvider.ToString())).Name == "Relativity")
