@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services.Keywords;
 using kCura.IntegrationPoints.Services;
+using kCura.Relativity.Client;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -16,24 +16,41 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_helper = new Helper();
 		}
 
-		public static bool CreateIntegrationPoint(string integrationPointName, int sourceWorkspaceId, string fieldOverLayBehavior, bool importNativeFile, string importOverwriteMode, bool useFolderPathInformation,
-			int savedSearchArtifactId)
+		public static string CreateIntegrationPoint(string integrationPointName,
+			int sourceWorkspaceId,
+			int targetWorkspaceId,
+			int savedSearchArtifactId,
+			FieldOverlayBehavior fieldOverLayBehavior,
+			ImportOverwriteMode importOverwriteMode,
+			bool importNativeFile, 
+			bool useFolderPathInformation,
+			UserModel user)
 		{
 			//TODO: Get these for reals
-			int targetWorkspaceId = 1119028;
 			int sourceProviderArtifactId = 1039774;
 			int destinationProviderArtifactId = 1039768;
-			string selectedOverwrite = "AppendOverlay";
-			string userName = "dnelson@kcura.com";
-			string password = "Test1234!";
 
-			DestinationConfiguration destinationConfiguration = new DestinationConfiguration() 
+			string selectedOverwrite = null;
+			if (importOverwriteMode.Value == ImportOverwriteMode.AppendOverlay.Value)
 			{
-				ArtifactTypeId = 10,
+				selectedOverwrite = "Append/Overlay";
+			}
+			else if (importOverwriteMode.Value == ImportOverwriteMode.Append.Value)
+			{
+				selectedOverwrite = "Append Only";
+			}
+			else if (importOverwriteMode.Value == ImportOverwriteMode.Overlay.Value)
+			{
+				selectedOverwrite = "Overlay Only";
+			}
+
+			DestinationConfiguration destinationConfiguration = new DestinationConfiguration
+			{
+				ArtifactTypeId = (int)ArtifactType.Document,
 				CaseArtifactId = sourceWorkspaceId,
-				FieldOverlayBehavior = fieldOverLayBehavior,
+				FieldOverlayBehavior = fieldOverLayBehavior.Value,
 				ImportNativeFile = importNativeFile,
-				ImportOverwriteMode = importOverwriteMode,
+				ImportOverwriteMode = importOverwriteMode.Value,
 				Provider = "relativity",
 				UseFolderPathInformation = useFolderPathInformation
 			};
@@ -47,19 +64,20 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			List<FieldMap> mapIdentifier = new List<FieldMap>
 			{
-				new FieldMap() {
+				new FieldMap
+				{
 				FieldMapType = FieldMapTypeEnum.Identifier,
-				SourceField = new FieldEntry()
+				SourceField = new FieldEntry
 				{
 					DisplayName = "Control Number",
 					IsIdentifier = true,
-					FieldIdentifier = "Control Number",
+					FieldIdentifier = "1003667"
 				},
-				DestinationField = new FieldEntry()
+				DestinationField = new FieldEntry
 				{
 					DisplayName = "Control Number",
 					FieldIdentifier = "1003667",
-					IsIdentifier = true,
+					IsIdentifier = true
 				}}
 			};
 
@@ -77,8 +95,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 			};
 
 			string parameters = JsonConvert.SerializeObject(integrationPointRequest);
-			string response = _helper.Rest.PostRequestAsJson("localhost", "api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Integration Point Manager/CreateIntegrationPointAsync", userName, password, false, parameters);
-			//string response = _helper.Rest.PostRequestAsJson("localhost", "api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Integration Point Manager/PingAsync", userName, password, false, null);
+			string request = $"{{request:{parameters}}}";
+			string response = _helper.Rest.PostRequestAsJson("localhost",
+				"api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Integration Point Manager/CreateIntegrationPointAsync",
+				user.EmailAddress, user.Password, false, request);
+			return response;
+		}
+
+		public static bool RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, UserModel user)
+		{
+			string request = $"{{workspaceArtifactId:{workspaceArtifactId}, integrationPointArtifactId:{integrationPointArtifactId}}}";
+			_helper.Rest.PostRequestAsJson("localhost",
+					"api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Integration Point Manager/RunIntegrationPointAsync",
+					user.EmailAddress, user.Password, false, request);
 			return true;
 		}
 	}

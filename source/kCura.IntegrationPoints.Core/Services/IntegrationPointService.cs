@@ -193,7 +193,6 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public enum MonthlyType
 		{
-
 			Month = 1,
 			Days = 2
 		}

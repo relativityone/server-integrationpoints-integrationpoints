@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using kCura.Apps.Common.Utils.Serializers;
+using System.Threading;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Services;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Relativity.API;
-using Relativity.Services.ObjectQuery;
-using Relativity.Services.Permission;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -24,87 +16,74 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 		}
 
+
 		[Test]
 		[Explicit]
-		public void TestUser()
+		public void AddGroupToWorkspace()
 		{
-			bool createdUser = User.CreateUserRest("first", "last", "flast@kcura.com");
+			int groupId = Group.CreateGroup("test group");
+			bool addedGroupToWorkspace = Group.AddGroupToWorkspace(1118254, groupId);
+			bool deletedGroup = Group.DeleteGroup(groupId);
+
+			Assert.IsTrue(addedGroupToWorkspace);
+			Assert.IsTrue(deletedGroup);
 		}
 
 		[Test]
 		[Explicit]
-		public void TestIntegrationPoint()
+		public void GetPermissions()
 		{
-			//IIntegrationPointService service = Container.Resolve<IIntegrationPointService>();
-			////TODO: Get these for reals
-			//int sourceWorkspaceId = 1118254;
-			//int targetWorkspaceId = 1119028;
-			//int sourceProviderArtifactId = 1039774;
-			//int destinationProviderArtifactId = 1039768;
-			//string fieldOverlayBehavior = "Use Field Settings";
-			//string importOverwriteMode = "AppendOverlay";
-			//bool importNativeFile = false;
-			//bool useFolderPathInformation = false;
-			//string selectedOverwrite = "Append/Overlay";
-			//string userName = "relativity.admin@kcura.com";
-			//string password = "Test1234!";
-			//int savedSearchArtifactId = 1039795;
+			int groupId = Group.CreateGroup("new permissions group");
+			bool success = Group.AddGroupToWorkspace(1118254, groupId);
+			Permission.GetPermissions(1118254, groupId);
+			//bool suceess1 = Group.DeleteGroup(groupId);
+		}
 
-			//DestinationConfiguration destinationConfiguration = new DestinationConfiguration()
-			//{
-			//	ArtifactTypeId = 10,
-			//	CaseArtifactId = sourceWorkspaceId,
-			//	FieldOverlayBehavior = fieldOverlayBehavior,
-			//	ImportNativeFile = importNativeFile,
-			//	ImportOverwriteMode = importOverwriteMode,
-			//	Provider = "relativity",
-			//	UseFolderPathInformation = useFolderPathInformation
-			//};
+		[Test]
+		[Explicit]
+		public void GoldFlow()
+		{
+			int groupId = Group.CreateGroup("Smoke Test Group");
+			bool addedGroupToWorkspace1 = Group.AddGroupToWorkspace(1118254, groupId);
+			bool addedGroupToWorkspace2 = Group.AddGroupToWorkspace(1119028, groupId);
+			bool assignedPermissions1 = Permission.GetPermissions(1118254, groupId);
+			bool assignedPermissions2 = Permission.GetPermissions(1119028, groupId);
+			UserModel user = User.CreateUser("New", "Test", "ntest@kcura.com", new[] { groupId });
 
-			//ExportUsingSavedSearchSettings settings = new ExportUsingSavedSearchSettings
-			//{
-			//	SavedSearchArtifactId = savedSearchArtifactId,
-			//	TargetWorkspaceArtifactId = targetWorkspaceId,
-			//	SourceWorkspaceArtifactId = sourceWorkspaceId
-			//};
+			bool ranIntegrationPoint = false;
+			try
+			{
+				// iisreset needed here?
 
-			//List<FieldMap> mapIdentifier = new List<FieldMap>
-			//{
-			//	new FieldMap() {
-			//	FieldMapType = FieldMapTypeEnum.Identifier,
-			//	SourceField = new FieldEntry()
-			//	{
-			//		DisplayName = "Control Number",
-			//		IsIdentifier = true,
-			//		FieldIdentifier = "Control Number",
-			//	},
-			//	DestinationField = new FieldEntry()
-			//	{
-			//		DisplayName = "Control Number",
-			//		FieldIdentifier = "1003667",
-			//		IsIdentifier = true,
-			//	}}
-			//};
+				// replace hard coded values below
+				string response = IntegrationPoint.CreateIntegrationPoint(Guid.NewGuid().ToString(),
+					SourceWorkspaceArtifactId,
+					TargetWorkspaceArtifactId,
+					1039795,
+					FieldOverlayBehavior.UseFieldSettings,
+					ImportOverwriteMode.AppendOverlay,
+					false,
+					false,
+					user);
+				IntegrationPointModel integrationPoint = JsonConvert.DeserializeObject<IntegrationPointModel>(response);
+				ranIntegrationPoint = IntegrationPoint.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPoint.ArtifactId, user);
 
-			//IntegrationModel model = new IntegrationModel()
-			//{
-			//	Name = "My little integration point",
-			//	SelectedOverwrite = selectedOverwrite,
-			//	SourceProvider = sourceProviderArtifactId,
-			//	DestinationProvider = destinationProviderArtifactId,
-			//	Destination = JsonConvert.SerializeObject(destinationConfiguration),
-			//	Scheduler = new Scheduler(),
-			//	NextRun = null,
-			//	LastRun = null,
-			//	SourceConfiguration = JsonConvert.SerializeObject(settings),
-			//	Map = JsonConvert.SerializeObject(mapIdentifier),
-			//	LogErrors = true,
-			//	HasErrors = null,
-			//	NotificationEmails = String.Empty
-			//};
-			//service.SaveIntegration(model);
+			}
+			catch
+			{
+				//handle this later
+			}
 
-			bool createdIntegrationPoint = IntegrationPoint.CreateIntegrationPoint("My little integration point", 1118254, "Use Field Settings", false, "AppendOverlay", false, 1039795);
+			bool deletedUser = User.DeleteUser(user.ArtifactId);
+			bool deletedGroup = Group.DeleteGroup(groupId);
+
+			Assert.IsTrue(addedGroupToWorkspace1);
+			Assert.IsTrue(addedGroupToWorkspace2);
+			Assert.IsTrue(assignedPermissions1);
+			Assert.IsTrue(assignedPermissions2);
+			Assert.IsTrue(ranIntegrationPoint);
+			Assert.IsTrue(deletedUser);
+			Assert.IsTrue(deletedGroup);
 		}
 	}
 }

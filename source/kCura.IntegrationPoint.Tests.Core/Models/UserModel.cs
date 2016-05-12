@@ -4,6 +4,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 {
 	public class UserModel
 	{
+		[JsonIgnore]
+		public int ArtifactId;
+
 		[JsonProperty(PropertyName = "Artifact Type ID")]
 		public int ArtifactTypeId;
 
@@ -11,7 +14,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Models
 		public string ArtifactTypeName;
 
 		[JsonProperty(PropertyName = "Parent Artifact")]
-		public BaseField BaseField;
+		public BaseField ParentArtifact;
 
 		[JsonProperty(PropertyName = "Groups")]
 		public BaseField[] Groups;
