@@ -216,27 +216,10 @@ var IP = IP || {};
 		});
 
 
-		this.isEnabled = function (type) {
-		    //return self.selectedDestinationType() === type;
-		    return true;
-		};
-		this.selectedDestinationPath = ko.observable(settings.fileshare).extend({
-		    required: {
-		        onlyIf: function () {
-		            return self.isEnabled("Fileshare");
-		        }
-		    }
-		});
-
+		
 	
-		this.artifactTypeID = ko.observable()//.extend({ required: true });
-            .extend({
-		    required: {
-		        onlyIf: function () {
-		            return self.isEnabled("Relativity");
-		        }
-		    }
-            });
+		this.artifactTypeID = ko.observable().extend({ required: true });
+   
 
 		//this.selectedDestinationType.subscribe(function (selectedValue) {
 		//    if (selectedValue === "Fileshare") {
@@ -245,7 +228,6 @@ var IP = IP || {};
 		//    else {
 		//        self.artifactTypeID(settings.artifactTypeID);
 		//    }
-
 		//});
 		//CaseArtifactId
 		//ParentObjectIdSourceFieldName
@@ -604,10 +586,10 @@ var IP = IP || {};
 			this.model.errors = ko.validation.group(this.model, { deep: true });
 			this.model.submit();
 			if (this.model.errors().length === 0) {
-				this.model.destination = JSON.stringify({
+			    this.model.destinationProvider = this.model.destination.selectedDestinationType();
+			    this.model.destination = JSON.stringify({
 				    artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,	
 			        destinationProviderType: ko.toJS(this.model.destination).selectedDestinationType,
-			        fileshare: ko.toJS(this.model.destination).selectedDestinationPath,
 					CaseArtifactId: IP.data.params['appID'],
 					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
 				});
