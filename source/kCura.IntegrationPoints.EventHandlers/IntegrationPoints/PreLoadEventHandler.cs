@@ -4,13 +4,21 @@ using System.Text;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts.Models;
+<<<<<<< HEAD
+=======
+using kCura.IntegrationPoints.Data;
+>>>>>>> 3b7a902a10dedf1952c35d31e2f3e97a50f0b8da
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
 using Relativity.API;
+<<<<<<< HEAD
 using Artifact = kCura.Relativity.Client.Artifact;
+=======
+using Artifact = kCura.EventHandler.Artifact;
+>>>>>>> 3b7a902a10dedf1952c35d31e2f3e97a50f0b8da
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -34,6 +42,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			var scripts = new StringBuilder();
 			var location = "";
+<<<<<<< HEAD
 			 const string sourceProviderFieldName = Contracts.Constants.SOURCEPROVIDER_FIELD_NAME;
 			const string sourceConfigurationFieldName = Contracts.Constants.SOURCECONFIGURATION_FIELD_NAME;
 			int sourceProvider = (int) this.ActiveArtifact.Fields[sourceProviderFieldName].Value.Value;
@@ -102,6 +111,90 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				}
 				response.Message = scripts.ToString();
 				this.ActiveArtifact.Fields[sourceConfigurationFieldName].Value.Value = JsonConvert.SerializeObject(settings);
+=======
+
+
+
+			if (base.PageMode == EventHandler.Helper.PageMode.View)
+			{
+				int sourceProvider = (int) this.ActiveArtifact.Fields[IntegrationPointFields.SourceProvider].Value.Value;
+				// Integration Point Specific Error Handling 
+				if (base.ServiceContext.RsapiService.SourceProviderLibrary.Read(Int32.Parse(sourceProvider.ToString())).Name ==
+				    DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_NAME)
+				{
+
+					StringBuilder errorMessage = new StringBuilder("");
+
+					string sourceConfiguration =
+						this.ActiveArtifact.Fields[IntegrationPointFields.SourceConfiguration].Value.Value.ToString();
+					ExportUsingSavedSearchSettings settings =
+						JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(sourceConfiguration);
+					Result<Workspace> sourceWorkspace;
+					Result<Workspace> targetWorkspace;
+					using (IRSAPIClient currentClient = GetRSAPIClient(-1))
+					{
+						QueryResultSet<Workspace> workspaces = new GetWorkspacesQuery(currentClient).ExecuteQuery();
+						targetWorkspace =
+							workspaces.Results.FirstOrDefault(x => x.Artifact.ArtifactID == settings.TargetWorkspaceArtifactId);
+						sourceWorkspace =
+							workspaces.Results.FirstOrDefault(x => x.Artifact.ArtifactID == settings.SourceWorkspaceArtifactId);
+					}
+
+
+					if (targetWorkspace == null)
+					{
+						errorMessage =
+							errorMessage.Append(
+								"You do not have permissions to import to the Destination workspace. Please contact your system administrator.</br>");
+						settings.TargetWorkspaceArtifactId = 0;
+					}
+					else
+					{
+						settings.TargetWorkspace = targetWorkspace.Artifact.Name;
+						if (targetWorkspace.Artifact.Name.Contains(";"))
+						{
+							errorMessage =
+								errorMessage.Append(
+									"Destination workspace name contains an invalid character. Please remove before continuing.</br>");
+						}
+					}
+
+					settings.SourceWorkspace = sourceWorkspace.Artifact.Name;
+					if (sourceWorkspace.Artifact.Name.Contains(";"))
+					{
+						errorMessage = errorMessage.Append(
+							"Source workspace name contains an invalid character. Please remove before continuing.</br>");
+					}
+					Relativity.Client.Artifact savedSearch;
+					using (IRSAPIClient client = GetRSAPIClient(settings.SourceWorkspaceArtifactId))
+					{
+						QueryResult savedSearches = new GetSavedSearchesQuery(client).ExecuteQuery();
+						savedSearch = savedSearches.QueryArtifacts.FirstOrDefault(x => x.ArtifactID == settings.SavedSearchArtifactId);
+					}
+					if (savedSearch == null)
+					{
+						// user does not have any access to the save search
+						errorMessage =
+							errorMessage.Append(
+								"You do not have permissions to the source saved search. Please contact your system administrator.");
+						settings.SavedSearchArtifactId = 0;
+					}
+					else
+					{
+						settings.SavedSearch = savedSearch.getFieldByName("Text Identifier").ToString();
+					}
+					using (TagBuilder Relativityprovider = new TagBuilder("script"))
+					{
+						Relativityprovider.Attributes.Add("type", "text/javascript");
+						Relativityprovider.InnerHtml = String.Format(@" var IP = IP || {{}};$(function(){{IP.errorMessage = '{0}';}});",
+							errorMessage.ToString());
+						scripts.Append(Relativityprovider);
+					}
+					response.Message = scripts.ToString();
+					this.ActiveArtifact.Fields[IntegrationPointFields.SourceConfiguration].Value.Value =
+						JsonConvert.SerializeObject(settings);
+				}
+>>>>>>> 3b7a902a10dedf1952c35d31e2f3e97a50f0b8da
 			}
 
 

@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		private readonly int _sourceWorkspaceArtifactId = 789;
 		private readonly int _targetWorkspaceArtifactId = 9954;
 		private readonly int _integrationPointArtifactId = 741;
+		private readonly int _savedSearchArtifactId = 93032;
 		private readonly int _sourceProviderId = 321;
 		private readonly int _userId = 951;
 
@@ -74,7 +75,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_integrationPoint = new Data.IntegrationPoint { ArtifactId = _integrationPointArtifactId, EnableScheduler = false };
 			_sourceProvider = new SourceProvider();
 			_integrationPoint.SourceProvider = _sourceProviderId;
-			_integrationPoint.SourceConfiguration = $"{{ TargetWorkspaceArtifactId : {_targetWorkspaceArtifactId}, SourceWorkspaceArtifactId : {_sourceWorkspaceArtifactId} }}";
+			_integrationPoint.SourceConfiguration = $"{{ TargetWorkspaceArtifactId : {_targetWorkspaceArtifactId}, SourceWorkspaceArtifactId : {_sourceWorkspaceArtifactId}, SavedSearchArtifactId: {_savedSearchArtifactId} }}";
 
 			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(_sourceProviderId).Returns(_sourceProvider);
@@ -87,6 +88,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
 			_permissionRepository.UserCanImport(_targetWorkspaceArtifactId).Returns(true);
 			_permissionRepository.UserCanEditDocuments(_sourceWorkspaceArtifactId).Returns(true);
+			_permissionRepository.UserCanViewArtifact(Arg.Is(_sourceWorkspaceArtifactId), Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId)).Returns(true); 
 			_queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(false);
 
 			// act
@@ -154,6 +156,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 
 			_permissionRepository.UserCanImport(_targetWorkspaceArtifactId).Returns(true);
 			_permissionRepository.UserCanEditDocuments(Arg.Any<int>()).Returns(true);
+			_permissionRepository.UserCanViewArtifact(Arg.Is(_sourceWorkspaceArtifactId), Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId)).Returns(true); 
 			_queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(true);
 			
 			// act
@@ -231,8 +234,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Received(1).Read(_integrationPoint.SourceProvider.Value);
 			_permissionRepository.Received(1).UserCanImport(_targetWorkspaceArtifactId);
 			_permissionRepository.Received(1).UserCanEditDocuments(_sourceWorkspaceArtifactId);
-
-			_jobHistoryService.DidNotReceive().GetLastJobHistory(Arg.Any<List<int>>());
+			
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRetryErrors, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
@@ -254,7 +256,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_permissionRepository.Received(1).UserCanImport(_targetWorkspaceArtifactId);
 
 			_permissionRepository.DidNotReceive().UserCanEditDocuments(_sourceWorkspaceArtifactId);
-			_jobHistoryService.DidNotReceive().GetLastJobHistory(Arg.Any<List<int>>());
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(),JobTypeChoices.JobHistoryRetryErrors, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
@@ -276,8 +277,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Received(1).Read(_integrationPoint.SourceProvider.Value);
 			_permissionRepository.Received(1).UserCanImport(_targetWorkspaceArtifactId);
 			_permissionRepository.Received(1).UserCanEditDocuments(_sourceWorkspaceArtifactId);
-
-			_jobHistoryService.DidNotReceive().GetLastJobHistory(Arg.Any<List<int>>());
+			
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRetryErrors, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
@@ -298,7 +298,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 
 			_permissionRepository.DidNotReceive().UserCanImport(_targetWorkspaceArtifactId);
 			_permissionRepository.DidNotReceive().UserCanEditDocuments(_sourceWorkspaceArtifactId);
-			_jobHistoryService.DidNotReceive().GetLastJobHistory(Arg.Any<List<int>>());
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRetryErrors, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
@@ -310,6 +309,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
 			_permissionRepository.UserCanImport(_targetWorkspaceArtifactId).Returns(true);
 			_permissionRepository.UserCanEditDocuments(_sourceWorkspaceArtifactId).Returns(true);
+			_permissionRepository.UserCanViewArtifact(Arg.Is(_sourceWorkspaceArtifactId), Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId)).Returns(true);
 			_integrationPoint.HasErrors = true;
 
 			// Act
@@ -319,9 +319,32 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Received(1).Read(_integrationPoint.SourceProvider.Value);
 			_permissionRepository.Received(1).UserCanImport(_targetWorkspaceArtifactId);
 			_permissionRepository.Received(1).UserCanEditDocuments(_sourceWorkspaceArtifactId);
+			_permissionRepository.Received(1).UserCanViewArtifact(Arg.Is(_sourceWorkspaceArtifactId), Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId));
 			_jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRetryErrors, null);
 			_jobManager.Received(1).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
+
+		[Test]
+		public void RetryIntegrationPoint_InvalidSavedSearchPermissions_Excepts()
+		{
+			// Arrange
+			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
+			_permissionRepository.UserCanImport(_targetWorkspaceArtifactId).Returns(true);
+			_permissionRepository.UserCanEditDocuments(_sourceWorkspaceArtifactId).Returns(true);
+			_permissionRepository.UserCanViewArtifact(Arg.Is(_sourceWorkspaceArtifactId), Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId)).Returns(false);
+			_integrationPoint.HasErrors = true;
+
+			// Act
+			Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId), Constants.IntegrationPoints.NO_PERMISSION_TO_VIEW_SAVEDSEARCH);
+
+			// Assert
+			_caseServiceManager.RsapiService.SourceProviderLibrary.Received(1).Read(_integrationPoint.SourceProvider.Value);
+			_permissionRepository.Received(1).UserCanImport(_targetWorkspaceArtifactId);
+			_permissionRepository.Received(1).UserCanEditDocuments(_sourceWorkspaceArtifactId);
+			_permissionRepository.Received(1).UserCanViewArtifact(Arg.Is(_sourceWorkspaceArtifactId), Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId));
+			_jobManager.Received(0).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
+		}
+
 
 		[Test]
 		public void RunIntegrationPoint_GetSourceProvider_ProviderIsNull_ThrowsException_Test()
@@ -338,7 +361,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary.DidNotReceiveWithAnyArgs().Read(Arg.Any<int>());
 			_permissionRepository.DidNotReceive().UserCanImport(_targetWorkspaceArtifactId);
 			_permissionRepository.DidNotReceive().UserCanEditDocuments(_sourceWorkspaceArtifactId);
-			_jobHistoryService.DidNotReceive().GetLastJobHistory(Arg.Any<List<int>>());
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRunNow, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}

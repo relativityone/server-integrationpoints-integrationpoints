@@ -2,6 +2,8 @@
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.Relativity.Client;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -23,21 +25,26 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return repository.Read(integrationPointArtifactId);
 		}
 
-		public bool IntegrationPointTypeIsRetriable(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
+		public bool IntegrationPointSourceProviderIsRelativity(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
 		{
 			ISourceProviderRepository repository = _repositoryFactory.GetSourceProviderRepository(workspaceArtifactId);
 			SourceProviderDTO dto = repository.Read(integrationPointDto.SourceProvider.Value);
 
-			bool retriable = dto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID);
+			bool isRelativityProvider = dto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID);
 
-			return retriable;
+			return isRelativityProvider;
 		}
 
-		public bool UserHasPermissions(int workspaceArtifactId)
+		public bool UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
 		{
 			bool userCanEditDocuments = _permissionRepository.UserCanEditDocuments(workspaceArtifactId);
 			bool userCanImport = _permissionRepository.UserCanImport(workspaceArtifactId);
-			bool userHasPermissions = userCanEditDocuments && userCanImport;
+
+			dynamic sourceConfiguration = JsonConvert.DeserializeObject(integrationPointDto.SourceConfiguration);
+			bool userCanAccessSavedSearch = _permissionRepository.UserCanViewArtifact(workspaceArtifactId, (int) ArtifactType.Search, (int)sourceConfiguration.SavedSearchArtifactId);
+
+			bool userHasPermissions = userCanEditDocuments && userCanImport && userCanAccessSavedSearch;
+
 			return userHasPermissions;
 		}
 	}
