@@ -32,9 +32,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public virtual void SetUp()
 		{
 			const string template = "New Case Template";
-			SourecWorkspaceArtifactId = GerronHelper.Workspace.CreateWorkspace(_sourceWorkspaceName, template);
-			TargetWorkspaceArtifactId = GerronHelper.Workspace.CreateWorkspace(_targetWorkspaceName, template);
-			GerronHelper.Workspace.ImportApplicationToWorkspace(SourecWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
+			//SourecWorkspaceArtifactId = GerronHelper.Workspace.CreateWorkspace(_sourceWorkspaceName, template);
+			//TargetWorkspaceArtifactId = GerronHelper.Workspace.CreateWorkspace(_targetWorkspaceName, template);
+			//GerronHelper.Workspace.ImportApplicationToWorkspace(SourecWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
+			SourecWorkspaceArtifactId = 1183705;
 			Install();
 		}
 
@@ -78,8 +79,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		[TearDown]
 		public virtual void TearDown()
 		{
-			GerronHelper.Workspace.DeleteWorkspace(SourecWorkspaceArtifactId);
-			GerronHelper.Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
+			//GerronHelper.Workspace.DeleteWorkspace(SourecWorkspaceArtifactId);
+			//GerronHelper.Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
 		}
 	}
 }
