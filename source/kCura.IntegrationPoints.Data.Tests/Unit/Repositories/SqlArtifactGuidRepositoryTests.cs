@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
             };
 
             int[] artifactIds = new [] { artifactId1, artifactId2 };
-            string sql = $"SELECT [ArtifactID],[ArtifactGuid] FROM [eddsdbo].[ArtifactGuid] WHERE [ArtifactID] IN ({artifactId1},{artifactId2})";
+            string sql = $"SELECT [ArtifactID],[ArtifactGuid] FROM [eddsdbo].[ArtifactGuid] WITH (NOLOCK) WHERE [ArtifactID] IN ({artifactId1},{artifactId2})";
 
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add("ArtifactID", typeof(int));
@@ -71,7 +71,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
 			var guids = new Guid[] { guid1, guid2 };
 			int[] artifactIds = new[] { 123456, 987654 };
 
-			string sql = $"SELECT [ArtifactGuid], [ArtifactID] FROM [eddsdbo].[ArtifactGuid] WHERE [ArtifactGuid] IN ('{guid1}','{guid2}')";
+			string sql = $"SELECT [ArtifactGuid], [ArtifactID] FROM [eddsdbo].[ArtifactGuid] WITH (NOLOCK) WHERE [ArtifactGuid] IN ('{guid1}','{guid2}')";
 
 			DataTable dataTable = new DataTable();
 			dataTable.Columns.Add("ArtifactGuid", typeof(object));

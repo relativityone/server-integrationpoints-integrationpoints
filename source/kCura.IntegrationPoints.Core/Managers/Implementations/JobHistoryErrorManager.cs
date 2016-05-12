@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -28,6 +29,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			int jobHistoryArtifactId = jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointArtifactId);
 
 			return jobHistoryErrorRepository.RetreiveJobHistoryErrors(jobHistoryArtifactId);
+		}
+
+		public int CreateItemLevelErrorsSavedSearch(int workspaceArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId)
+		{
+			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(workspaceArtifactId);
+			int itemLevelSavedSearch = jobHistoryErrorRepository.CreateItemLevelErrorsSavedSearch(workspaceArtifactId,
+				savedSearchArtifactId, jobHistoryArtifactId);
+			return itemLevelSavedSearch;
 		}
 	}
 }
