@@ -14,7 +14,6 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Email;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
@@ -75,6 +74,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Container.Register(Component.For<IOnBehalfOfUserClaimsPrincipalFactory>()
 				.ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>()
 				.LifestyleTransient());
+
+
 		}
 
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
@@ -146,12 +147,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			IJobService jobService = new JobService(agentService, _helper);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
-			IPermissionRepository permissionRepository = Container.Resolve<IPermissionRepository>();
+			IPermissionService permissionService = Container.Resolve<IPermissionService>();
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			IManagerFactory managerFactory = new ManagerFactory();
 
-			IntegrationPointService integrationPointService = new IntegrationPointService(_helper, caseServiceContext, permissionRepository, contextContainerFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
+			IntegrationPointService integrationPointService = new IntegrationPointService(caseServiceContext, contextContainer, permissionService, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
 			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 
 			TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
