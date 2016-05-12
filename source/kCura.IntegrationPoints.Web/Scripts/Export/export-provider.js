@@ -19,9 +19,9 @@
         // Modify destination object to contain target workspaceId
         var destinationJson = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination;
         var destination = JSON.parse(destinationJson);
-        //destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
+        destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
         destination.Provider = "Fileshare";
-        //destination.DoNotUseFieldsMapCache = viewModel.WorkspaceHasChanged;
+        destination.DoNotUseFieldsMapCache = viewModel.WorkspaceHasChanged;
         destinationJson = JSON.stringify(destination);
         IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination = destinationJson;
     });
@@ -57,29 +57,27 @@
         var state = $.extend({}, {}, m);
         var self = this;
 
-        //this.workspaces = ko.observableArray(state.workspaces);
+        this.workspaces = ko.observableArray(state.workspaces);
         this.savedSearches = ko.observableArray(state.savedSearches);
 
         this.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
 
-        this.selectedDestinationPath = ko.observable(settings.fileshare).extend({
+        this.selectedDestinationPath = ko.observable(state.fileshare).extend({
             	required: true
         });
 
-        this.copyFileFromRepository = ko.observable(model.copyFileFromRepository || "false");
-        this.overwriteFiles = ko.observable(model.overwriteFiles || "false");
+        this.copyFileFromRepository = ko.observable(state.copyFileFromRepository || "false");
+        this.overwriteFiles = ko.observable(state.overwriteFiles || "false");
 
-        //this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId).extend({
-        //	required: true
-        //});
+        this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId).extend({
+        	required: true
+        });
 
-
-        //this.TargetWorkspaceArtifactId.subscribe(function (value) {
-        //	if (self.TargetWorkspaceArtifactId !== value) {
-        //		self.WorkspaceHasChanged = true;
-        //	}
-        //});
-
+        this.TargetWorkspaceArtifactId.subscribe(function (value) {
+        	if (self.TargetWorkspaceArtifactId !== value) {
+        		self.WorkspaceHasChanged = true;
+        	}
+        });
 
         this.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId).extend({
             required: true
@@ -89,25 +87,26 @@
             // load saved searches
             IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('SavedSearchFinder') }).then(function (result) {
                 self.savedSearches(result);
-
             });
         }
 
-        //if (self.workspaces.length === 0) {
-        //	// load workspaces
-        //	IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('WorkspaceFinder') }).then(function (result) {
-        //		self.workspaces(result);
-        //	});
-        //}
+        if (self.workspaces.length === 0) {
+        	// load workspaces
+        	IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('WorkspaceFinder') }).then(function (result) {
+        		self.workspaces(result);
+        	});
+        }
 
         this.errors = ko.validation.group(this, { deep: true });
 
         this.getSelectedOption = function () {
             return {
-                "SavedSearchArtifactId": self.SavedSearchArtifactId()
-                //,
-                //"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
-                //"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
+                "SavedSearchArtifactId": self.SavedSearchArtifactId(),
+                "TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
+                "SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
+                "CopyFileFromRepository": self.copyFileFromRepository(),
+                "OverwriteFiles": self.overwriteFiles(),
+                "Fileshare": self.selectedDestinationPath()
             }
         }
     }
