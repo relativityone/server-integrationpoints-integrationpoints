@@ -3,6 +3,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -38,7 +39,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 			bool userCanEditDocuments = _permissionRepository.UserCanEditDocuments(workspaceArtifactId);
 			bool userCanImport = _permissionRepository.UserCanImport(workspaceArtifactId);
-			bool userCanAccessSavedSearch = _permissionRepository.UserCanViewArtifact(workspaceArtifactId, (int) ArtifactType.Search, integrationPointDto.SourceProvider.Value);
+
+			dynamic sourceConfiguration = JsonConvert.DeserializeObject(integrationPointDto.SourceConfiguration);
+			bool userCanAccessSavedSearch = _permissionRepository.UserCanViewArtifact(workspaceArtifactId, (int) ArtifactType.Search, (int)sourceConfiguration.SavedSearchArtifactId);
+
 			bool userHasPermissions = userCanEditDocuments && userCanImport && userCanAccessSavedSearch;
 
 			return userHasPermissions;
