@@ -88,7 +88,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper);
 			IWorkspaceRepository workspaceRepository = repositoryFactory.GetWorkspaceRepository();
 			IRSAPIClient rsapiClient = rsapiClientFactory.CreateClientForWorkspace(Helper.GetActiveCaseID(), ExecutionIdentity.System);
-			ChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
+			IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
 			IAgentService agentService = new AgentService(Helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			IJobService jobService = new JobService(agentService, Helper);

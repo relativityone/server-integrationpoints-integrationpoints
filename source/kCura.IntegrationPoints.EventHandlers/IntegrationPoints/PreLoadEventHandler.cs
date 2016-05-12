@@ -38,10 +38,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			if (base.PageMode == EventHandler.Helper.PageMode.View)
 			{
-				int sourceProvider = (int) this.ActiveArtifact.Fields[IntegrationPointFields.SourceProvider].Value.Value;
+				int sourceProvider = (int)this.ActiveArtifact.Fields[IntegrationPointFields.SourceProvider].Value.Value;
 				// Integration Point Specific Error Handling 
 				if (base.ServiceContext.RsapiService.SourceProviderLibrary.Read(Int32.Parse(sourceProvider.ToString())).Name ==
-				    DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_NAME)
+					DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_NAME)
 				{
 
 					StringBuilder errorMessage = new StringBuilder("");
