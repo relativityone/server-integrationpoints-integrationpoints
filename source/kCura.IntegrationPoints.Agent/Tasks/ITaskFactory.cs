@@ -8,14 +8,13 @@ using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Email;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
@@ -77,10 +76,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				.ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>()
 				.LifestyleTransient());
 
-			Container.Register(
-			  Component.For<IQueueManager>().UsingFactoryMethod(k => new QueueManager(new ContextContainer(_helper))));
 
-			Container.Register(Component.For<IContextContainer>().UsingFactoryMethod(x => new ContextContainer(_helper)));
 		}
 
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
@@ -145,19 +141,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IWorkspaceDBContext workspaceDbContext = Container.Resolve<IWorkspaceDBContext>();
 			IEddsServiceContext eddsServiceContext = Container.Resolve<IEddsServiceContext>();
 
-			ChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
+			IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
 			JobResourceTracker jobResourceTracker = new JobResourceTracker(workspaceDbContext);
 			JobTracker jobTracker = new JobTracker(jobResourceTracker);
 			IAgentService agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 
 			IJobService jobService = new JobService(agentService, _helper);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
-			IPermissionService permissionService = Container.Resolve<IPermissionService>();
+			IPermissionRepository permissionService = Container.Resolve<IPermissionRepository>();
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-			IContextContainer contextContainer = new ContextContainer(_helper);
+			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			IManagerFactory managerFactory = new ManagerFactory();
 
-			IntegrationPointService integrationPointService = new IntegrationPointService(caseServiceContext, contextContainer, permissionService, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
+			IntegrationPointService integrationPointService = new IntegrationPointService(_helper, caseServiceContext, permissionService, contextContainerFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
 			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 
 			TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);

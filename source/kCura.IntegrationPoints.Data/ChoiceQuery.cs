@@ -4,7 +4,7 @@ using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoints.Data
 {
-	public class ChoiceQuery
+	public class ChoiceQuery : IChoiceQuery
 	{
 		private readonly IRSAPIClient _client;
 

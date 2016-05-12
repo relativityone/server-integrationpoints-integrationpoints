@@ -39,8 +39,15 @@ namespace kCura.IntegrationPoints.Data.Repositories
 	    /// Gets GUIDs for Artifact Ids
 	    /// </summary>
 	    /// <param name="artifactIds">Artifact Ids</param>
-	    /// <returns>GUID value</returns>
+	    /// <returns>Dictionary of Artifact Ids and GUIDs</returns>
 	    Dictionary<int, Guid> GetGuidsForArtifactIds(IEnumerable<int> artifactIds);
+
+		/// <summary>
+		/// Gets Artifact Ids for GUIDs
+		/// </summary>
+		/// <param name="guids">GUIDs</param>
+		/// <returns>Dictionary of GUIDs and Artifact Ids</returns>
+		Dictionary<Guid, int> GetArtifactIdsForGuids(IEnumerable<Guid> guids);
 
 	}
 }

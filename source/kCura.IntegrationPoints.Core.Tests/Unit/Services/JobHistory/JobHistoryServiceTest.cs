@@ -81,72 +81,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 		}
 
 		[Test]
-		public void GetLastJobHistory_QueryReturnsMultipleJobHistories_Succeeds_Test()
-		{
-			// Arrange
-			int[] jobHistoryArtifactIds = { 123, 456, 789 };
-			int expectedMaxArtifactId = 789;
-			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint { JobHistory = jobHistoryArtifactIds };
-
-			_caseServiceContext.RsapiService.JobHistoryLibrary
-				.Read(Arg.Is(expectedMaxArtifactId))
-				.Returns(new Data.JobHistory {ArtifactId = expectedMaxArtifactId });
-
-			// Act
-			Data.JobHistory actual = _instance.GetLastJobHistory(integrationPoint.JobHistory.ToList());
-
-			// Assert
-			Assert.IsNotNull(actual);
-
-			_caseServiceContext.RsapiService.JobHistoryLibrary.Received(1).Read(Arg.Is(expectedMaxArtifactId));
-		}
-
-
-		[Test]
-		public void GetLastJobHistory_QueryReturnsNoJobHistories_Succeeds_Test()
-		{
-			// Arrange
-			int[] jobHistoryArtifactIds = { 123, 456, 789 };
-			int expectedMaxArtifactId = 789;
-			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint { JobHistory = jobHistoryArtifactIds };
-
-			_caseServiceContext.RsapiService.JobHistoryLibrary
-				.Read(Arg.Is(expectedMaxArtifactId))
-				.ReturnsNull();
-
-			// Act
-			Data.JobHistory actual = _instance.GetLastJobHistory(integrationPoint.JobHistory.ToList());
-
-			// Assert
-			Assert.IsNull(actual);
-
-			_caseServiceContext.RsapiService.JobHistoryLibrary.Received(1).Read(Arg.Is(expectedMaxArtifactId));
-		}
-
-		[Test]
-		public void GetLastJobHistory_IntegrationPointHasNoJobHistories_Succeeds_Test()
-		{
-			// Arrange
-			int[] jobHistoryArtifactIds = new int[0];
-			Data.IntegrationPoint integrationPoint = new Data.IntegrationPoint { JobHistory = jobHistoryArtifactIds };
-			WholeNumberCondition expectedCondition = new WholeNumberCondition("ArtifactID", NumericConditionEnum.In)
-			{
-				Value = jobHistoryArtifactIds.ToList()
-			};
-
-			// Act
-			Data.JobHistory actual = _instance.GetLastJobHistory(integrationPoint.JobHistory.ToList());
-
-			// Assert
-			Assert.IsNull(actual);
-
-			_caseServiceContext.RsapiService.JobHistoryLibrary.DidNotReceive()
-				.Query(Arg.Is<Query<RDO>>(x =>
-					x.ArtifactTypeGuid == Guid.Parse(ObjectTypeGuids.JobHistory) && x.Condition is WholeNumberCondition &&
-						ValidateCondition<WholeNumberCondition>(x.Condition, expectedCondition)));
-		}
-
-		[Test]
 		public void UpdateRdo_Succeeds_Test()
 		{
 			// Arrange
@@ -160,26 +94,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services.JobHistory
 		}
 
 		[Test]
-		public void UpdateJobHistoryOnRetry()
+		public void DeleteJobHistory_Succeeds()
 		{
-			// Arrange
-			Data.JobHistory jobHistory = new Data.JobHistory
-			{
-				ArtifactId = 8675309,
-				JobStatus = JobStatusChoices.JobHistoryErrorJobFailed
-			};
-			IList<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>(1) { new JobHistoryError() };
+			//Arrange
+			int jobHistoryId = 12345;
 
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary
-				.Query(Arg.Is<Query<RDO>>(x => x.ArtifactTypeGuid == Guid.Parse(ObjectTypeGuids.JobHistoryError) && x.Condition is CompositeCondition))
-				.Returns(jobHistoryErrors);
+			//Act
+			_instance.DeleteRdo(jobHistoryId);
 
-			// Act
-			_instance.UpdateJobHistoryOnRetry(jobHistory);
-
-			// Assert
-			_caseServiceContext.RsapiService.JobHistoryLibrary.Received(1).Update(jobHistory);
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Received(1).Update(jobHistoryErrors);
+			//Assert
+			_caseServiceContext.RsapiService.JobHistoryLibrary.Received(1).Delete(jobHistoryId);
 		}
 
 		private bool ValidateCondition<T>(Condition actualCondition, Condition expectedCondition)
