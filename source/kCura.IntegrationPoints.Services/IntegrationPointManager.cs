@@ -143,12 +143,12 @@ namespace kCura.IntegrationPoints.Services
 			using (IWindsorContainer container = await GetDependenciesContainerAsync(workspaceArtifactId).ConfigureAwait(false))
 			{
 				IObjectTypeRepository objectTypeRepository = container.Resolve<IObjectTypeRepository>();
-				int? aritfactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
-				if (aritfactTypeId == null)
+				int? artifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
+				if (artifactTypeId == null)
 				{
-					throw new Exception($"Unable able to find the artifact type id of the integration point on workspace ${workspaceArtifactId}.");
+					throw new Exception($"Unable to find the artifact type id of the integration point on workspace ${workspaceArtifactId}.");
 				}
-				return aritfactTypeId.Value;
+				return artifactTypeId.Value;
 			}
 		}
 	}

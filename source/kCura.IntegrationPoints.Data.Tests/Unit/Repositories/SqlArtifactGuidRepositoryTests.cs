@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
         }
 
         [Test]
-        public void InsertArtifactGuidsForArtifactIdsTest()
+        public void GetGuidsForArtifactIdsTest()
         {
             // ARRANGE
             int artifactId1 = 123456;
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
             };
 
             int[] artifactIds = new [] { artifactId1, artifactId2 };
-            string sql = $"SELECT [ArtifactID],[ArtifactGuid] FROM [eddsdbo].[ArtifactGuid] WHERE [ArtifactID] IN ({artifactId1},{artifactId2})";
+            string sql = $"SELECT [ArtifactID],[ArtifactGuid] FROM [eddsdbo].[ArtifactGuid] WITH (NOLOCK) WHERE [ArtifactID] IN ({artifactId1},{artifactId2})";
 
             DataTable dataTable = new DataTable();
             dataTable.Columns.Add("ArtifactID", typeof(int));
@@ -59,5 +59,39 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
             Assert.AreEqual(guids[1], result[artifactId2]);
         }
 
-    }
+		[Test]
+		public void GetArtifactIdsForGuidsTest()
+		{
+			// ARRANGE
+			int artifactId1 = 123456;
+			int artifactId2 = 987654;
+			Guid guid1 = new Guid("0C453BAF-DAF9-4793-BBC8-8DA03DF38EBC");
+			Guid guid2 = new Guid("BBDB8C62-B068-4F28-B626-B68D0146D4BC");
+
+			var guids = new Guid[] { guid1, guid2 };
+			int[] artifactIds = new[] { 123456, 987654 };
+
+			string sql = $"SELECT [ArtifactGuid], [ArtifactID] FROM [eddsdbo].[ArtifactGuid] WITH (NOLOCK) WHERE [ArtifactGuid] IN ('{guid1}','{guid2}')";
+
+			DataTable dataTable = new DataTable();
+			dataTable.Columns.Add("ArtifactGuid", typeof(object));
+			dataTable.Columns.Add("ArtifactID", typeof(int));
+			
+			dataTable.Rows.Add(guids[0], artifactIds[0]);
+			dataTable.Rows.Add(guids[1], artifactIds[1]);
+
+			_dBContext.ExecuteSqlStatementAsDataTable(sql).Returns(dataTable);
+
+			// ACT
+			Dictionary<Guid, int> result = _testInstance.GetArtifactIdsForGuids(guids);
+
+			// ASSERT
+			Assert.IsNotNull(result);
+			Assert.AreEqual(2, result.Count);
+			Assert.AreEqual(artifactId1, result[guids[0]]);
+			Assert.AreEqual(artifactId2, result[guids[1]]);
+		}
+
+
+	}
 }

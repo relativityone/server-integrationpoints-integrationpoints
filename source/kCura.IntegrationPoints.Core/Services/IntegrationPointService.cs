@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
@@ -381,6 +382,11 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
 			}
 
+			if (_permissionRepository.UserCanViewArtifact(workspaceConfiguration.SourceWorkspaceArtifactId, (int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId) == false)
+			{
+				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_VIEW_SAVEDSEARCH);	
+			}
+
 			if (userId == 0)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_USERID);
@@ -405,6 +411,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			public int TargetWorkspaceArtifactId;
 			public int SourceWorkspaceArtifactId;
+			public int SavedSearchArtifactId;
 		}
 	}
 }

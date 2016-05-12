@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Ser
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Services.Interfaces.Private", "kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.csproj", "{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoint.Tests.Core", "kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj", "{AD3E5540-FA39-4983-8A23-FCC756D51A32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,14 @@ Global
 		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|x64.ActiveCfg = Debug|Any CPU
 		{B8BF6D01-E190-4C2C-B07F-3B627FFC1BFC}.Release|x64.Build.0 = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|x64.Build.0 = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|x64.ActiveCfg = Release|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
