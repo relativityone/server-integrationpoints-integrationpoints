@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -9,7 +8,6 @@ using kCura.IntegrationPoints.Core.Managers;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using Console = kCura.EventHandler.Console;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 {
@@ -77,18 +75,19 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			const int jobHistoryArtifactViewFieldId = 500505;
 			const int jobHistoryInstanceArtifactId = 506070;
 
-			_integrationPointManager.UserHasPermissions(_APPLICATION_ID).Returns(true);
-			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
-			_managerFactory.CreateIntegrationPointManager(_contextContainer).Returns(_integrationPointManager);
-
 			var integrationPointDto = new Contracts.Models.IntegrationPointDTO()
 			{
 				HasErrors = true,
 				SourceProvider = 8392
 			};
 
+			_integrationPointManager.UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto)).Returns(true);
+			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
+			_managerFactory.CreateIntegrationPointManager(_contextContainer).Returns(_integrationPointManager);
+
+
 			_integrationPointManager.Read(_APPLICATION_ID, _ARTIFACT_ID).Returns(integrationPointDto);
-			_integrationPointManager.IntegrationPointTypeIsRetriable(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
+			_integrationPointManager.IntegrationPointSourceProviderIsRelativity(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
 				.Returns(isRelativitySourceProvider);
 
 			if (isRelativitySourceProvider)
@@ -120,11 +119,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 
 			// ACT
-			Console console = _instance.GetConsole(ConsoleEventHandler.PageEvent.Load);
+			kCura.EventHandler.Console console = _instance.GetConsole(ConsoleEventHandler.PageEvent.Load);
 
 			// ASSERT
 			_contextContainerFactory.Received().CreateContextContainer(_helper);
-			_integrationPointManager.Received(1).UserHasPermissions(_APPLICATION_ID);
+			_integrationPointManager.Received(isRelativitySourceProvider ? 1 : 0).UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto));
 			_managerFactory.Received().CreateIntegrationPointManager(_contextContainer);
 
 			Assert.IsNotNull(console);

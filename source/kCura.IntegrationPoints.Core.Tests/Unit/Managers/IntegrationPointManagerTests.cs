@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				.Returns(sourceProviderDto);
 
 			// Act
-			bool isRetriable = _testInstance.IntegrationPointTypeIsRetriable(WORKSPACE_ID, integrationPointDto);
+			bool isRetriable = _testInstance.IntegrationPointSourceProviderIsRelativity(WORKSPACE_ID, integrationPointDto);
 
 			// Assert	
 			Assert.AreEqual(isRelativityProvider, isRetriable);

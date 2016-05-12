@@ -36,28 +36,34 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			var console = new EventHandler.Console
 			{
 				Title = "RUN",
-				ButtonList = new List<ConsoleButton>()
 			};
 			
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
 			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(contextContainer);
 			IntegrationPointDTO integrationPointDto = integrationPointManager.Read(Application.ArtifactID, ActiveArtifact.ArtifactID);
 
-			bool userHasPermissions = integrationPointManager.UserHasPermissions(Helper.GetActiveCaseID());
 			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
-			bool integrationPointIsRetriable = integrationPointManager.IntegrationPointTypeIsRetriable(Application.ArtifactID, integrationPointDto);
+			bool sourceProviderIsRelativity = integrationPointManager.IntegrationPointSourceProviderIsRelativity(Application.ArtifactID, integrationPointDto);
+			bool userHasPermissions = sourceProviderIsRelativity
+				? integrationPointManager.UserHasPermissions(Application.ArtifactID, integrationPointDto)
+				: true;
 
 			ConsoleButton runNowButton = GetRunNowButton(userHasPermissions);
-			console.ButtonList.Add(runNowButton);
-			
-			if (integrationPointIsRetriable)
+			var buttonList = new List<ConsoleButton>()
+			{
+				runNowButton
+			};
+
+			if (sourceProviderIsRelativity)
 			{
 				ConsoleButton retryErrorsButton = GetRetryErrorsButton(userHasPermissions && integrationPointHasErrors);
-				console.ButtonList.Add(retryErrorsButton);
-
 				ConsoleButton viewErrorsLink = GetViewErrorsLink(contextContainer, integrationPointHasErrors);
-				console.ButtonList.Add(viewErrorsLink);
+
+				buttonList.Add(retryErrorsButton);
+				buttonList.Add(viewErrorsLink);
 			}
+
+			console.ButtonList = buttonList;
 			
 			return console;
 		}
