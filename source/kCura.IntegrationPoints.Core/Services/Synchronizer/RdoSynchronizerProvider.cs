@@ -45,6 +45,5 @@ namespace kCura.IntegrationPoints.Core.Services.Synchronizer
 			var s = _context.RsapiService.DestinationProviderLibrary.Query(q).Single(); //there should only be one!
 			return s.ArtifactId;
 		}
-
 	}
 }

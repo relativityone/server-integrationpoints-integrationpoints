@@ -50,6 +50,8 @@ namespace kCura.IntegrationPoints.Core.Installers
 				return new RsapiObjectTypeRepository(helper, contextHelper.WorkspaceID);
 			}));
 
+			container.Register(Component.For<IContextContainerFactory>().ImplementedBy<ContextContainerFactory>().LifestyleSingleton());
+
 			container.Register(Component.For<IErrorService>().ImplementedBy<Services.ErrorService>().Named("ErrorService").LifestyleTransient());
 			container.Register(Component.For<Core.Services.ObjectTypeService>().ImplementedBy<Core.Services.ObjectTypeService>().LifestyleTransient());
 

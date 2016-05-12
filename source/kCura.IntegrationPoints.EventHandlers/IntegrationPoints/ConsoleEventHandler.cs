@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Castle.Components.DictionaryAdapter;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
@@ -51,13 +52,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			
 			if (integrationPointIsRetriable)
 			{
-				ConsoleButton retryErrorsButton = GetRetryErrorsButton(userHasPermissions && integrationPointHasErrors && integrationPointIsRetriable);
+				ConsoleButton retryErrorsButton = GetRetryErrorsButton(userHasPermissions && integrationPointHasErrors);
 				console.ButtonList.Add(retryErrorsButton);
+
+				ConsoleButton viewErrorsLink = GetViewErrorsLink(contextContainer, integrationPointHasErrors);
+				console.ButtonList.Add(viewErrorsLink);
 			}
-
-			ConsoleButton viewErrorsLink = GetViewErrorsLink(integrationPointHasErrors);
-			console.ButtonList.Add(viewErrorsLink);
-
+			
 			return console;
 		}
 
@@ -83,43 +84,44 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			};
 		}
 
-		private ConsoleButton GetViewErrorsLink(bool hasErrors)
-		{
-			return new ConsoleLinkButton
-			{
-				DisplayText = "View Errors",
-				Enabled = hasErrors,
-				RaisesPostBack = false,
-				OnClickEvent = hasErrors ? "alert('NOT IMPLEMENTED')" : String.Empty
-			};
-		}
-
 		private ConsoleButton GetViewErrorsLink(IContextContainer contextContainer, bool hasErrors)
 		{
-			// NOTE: TODO: Work in progress
+			string onClickEvent = String.Empty;
 
-			var managerFactory = _managerFactory.CreateFieldManager(contextContainer);
-			var errorErrorStatusFieldGuid = new Guid(JobHistoryErrorDTO.FieldGuids.ErrorStatus);
-			var jobHistoryFieldGuid = new Guid(JobHistoryErrorDTO.FieldGuids.JobHistory);
+			if (hasErrors)
+			{
+				IFieldManager fieldManager = _managerFactory.CreateFieldManager(contextContainer);
+				IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(contextContainer);
+				IArtifactGuidManager artifactGuidManager = _managerFactory.CreateArtifactGuidManager(contextContainer);
+				IObjectTypeManager objectTypeManager = _managerFactory.CreateObjectTypeManager(contextContainer);
 
-			Dictionary<Guid, int> fieldGuidsAndIds = managerFactory.RetrieveFieldArtifactIds(Application.ArtifactID, new [] { errorErrorStatusFieldGuid, jobHistoryFieldGuid });
+				var errorErrorStatusFieldGuid = new Guid(JobHistoryErrorDTO.FieldGuids.ErrorStatus);
+				var jobHistoryFieldGuid = new Guid(JobHistoryErrorDTO.FieldGuids.JobHistory);
 
-			int errorStatusArtifactViewFieldId = managerFactory.RetrieveArtifactViewFieldId(Application.ArtifactID, fieldGuidsAndIds[errorErrorStatusFieldGuid]).GetValueOrDefault();
-			int errorStatusNewChoiceArtifactId = 1041558;
-			int jobHistoryErrorArtifactTypeId = 1000042;
-			int jobHistoryArtifactViewFieldId = managerFactory.RetrieveArtifactViewFieldId(Application.ArtifactID, fieldGuidsAndIds[jobHistoryFieldGuid]).GetValueOrDefault();
-			int jobHistoryInstanceArtifactId = 1041547;
+				Dictionary<Guid, int> guidsAndArtifactIds = artifactGuidManager.GetArtifactIdsForGuids(Application.ArtifactID, new[]
+				{
+					JobHistoryErrorDTO.Choices.ErrorStatus.Guids.New,
+					errorErrorStatusFieldGuid,
+					jobHistoryFieldGuid
+				});
+
+				int jobHistoryErrorStatusArtifactViewFieldId = fieldManager.RetrieveArtifactViewFieldId(Application.ArtifactID, guidsAndArtifactIds[errorErrorStatusFieldGuid]).GetValueOrDefault();
+				int jobHistoryErrorStatusNewChoiceArtifactId = guidsAndArtifactIds[JobHistoryErrorDTO.Choices.ErrorStatus.Guids.New];
+				int jobHistoryErrorDescriptorArtifactTypeId = objectTypeManager.RetrieveObjectTypeDescriptorArtifactTypeId(Application.ArtifactID, new Guid(JobHistoryErrorDTO.ArtifactTypeGuid));
+				int jobHistoryArtifactViewFieldId = fieldManager.RetrieveArtifactViewFieldId(Application.ArtifactID, guidsAndArtifactIds[jobHistoryFieldGuid]).GetValueOrDefault();
+				int jobHistoryInstanceArtifactId = jobHistoryManager.GetLastJobHistoryArtifactId(Application.ArtifactID, ActiveArtifact.ArtifactID);
+
+				onClickEvent = $"window.location='../../Case/IntegrationPoints/ErrorsRedirect.aspx?ErrorStatusArtifactViewFieldID={jobHistoryErrorStatusArtifactViewFieldId}"
+						+ $"&ErrorStatusNewChoiceArtifactId={jobHistoryErrorStatusNewChoiceArtifactId}&JobHistoryErrorArtifactTypeId={jobHistoryErrorDescriptorArtifactTypeId}"
+						+ $"&JobHistoryArtifactViewFieldID={jobHistoryArtifactViewFieldId}&JobHistoryInstanceArtifactId={jobHistoryInstanceArtifactId}'; return false;";
+			}
 
 			return new ConsoleLinkButton
 			{
 				DisplayText = "View Errors",
 				Enabled = hasErrors,
 				RaisesPostBack = false,
-				OnClickEvent = hasErrors 
-					? $"window.location='../../Case/IntegrationPoints/ErrorsRedirect.aspx?IntegrationPointArtifactID={ActiveArtifact.ArtifactID}&ErrorStatusArtifactViewFieldID={errorStatusArtifactViewFieldId}"
-						+ $"&ErrorStatusNewChoiceArtifactId={errorStatusNewChoiceArtifactId}&JobHistoryErrorArtifactTypeId={jobHistoryErrorArtifactTypeId}"
-						+ $"&JobHistoryArtifactViewFieldID={jobHistoryArtifactViewFieldId}&JobHistoryInstanceArtifactId={jobHistoryInstanceArtifactId}'; return false;" 
-					: String.Empty
+				OnClickEvent = onClickEvent
 			};
 		}
 	}
