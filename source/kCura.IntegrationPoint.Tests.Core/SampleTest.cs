@@ -16,29 +16,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 		}
 
-
-		[Test]
-		[Explicit]
-		public void AddGroupToWorkspace()
-		{
-			int groupId = Group.CreateGroup("test group");
-			bool addedGroupToWorkspace = Group.AddGroupToWorkspace(1118254, groupId);
-			bool deletedGroup = Group.DeleteGroup(groupId);
-
-			Assert.IsTrue(addedGroupToWorkspace);
-			Assert.IsTrue(deletedGroup);
-		}
-
-		[Test]
-		[Explicit]
-		public void GetPermissions()
-		{
-			int groupId = Group.CreateGroup("new permissions group");
-			bool success = Group.AddGroupToWorkspace(1118254, groupId);
-			Permission.GetPermissions(1118254, groupId);
-			//bool suceess1 = Group.DeleteGroup(groupId);
-		}
-
 		[Test]
 		[Explicit]
 		public void GoldFlow()
@@ -71,7 +48,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			catch
 			{
-				//handle this later
+				// TODO: handle this
 			}
 
 			bool deletedUser = User.DeleteUser(user.ArtifactId);
