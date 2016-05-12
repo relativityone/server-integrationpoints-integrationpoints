@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 {
+	[TestFixture]
 	public class QueueManagerTests
 	{
 		private IQueueRepository _queueRepository;
