@@ -73,8 +73,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				SourceConfiguration = settings,
 				DestinationConfiguration = destinationConfiguration,
 				FieldsMapped = mapIdentifier,
-				EnableScheduler = false,
-				ScheduleRule = new Scheduler()
+				EnableScheduler = false
 			};
 
 			string parameters = JsonConvert.SerializeObject(integrationPointRequest);

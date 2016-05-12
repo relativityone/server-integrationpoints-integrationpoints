@@ -73,9 +73,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\kCuraCore.9.3.398.12\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints">
-      <HintPath>..\bin\kCura.IntegrationPoints.dll</HintPath>
-    </Reference>
     <Reference Include="kCura.IntegrationPoints.Services.Interfaces.Private">
       <HintPath>..\bin\kCura.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
     </Reference>
@@ -112,6 +109,10 @@
     <Reference Include="Relativity.Data, Version=9.3.398.12, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.Data.9.3.398.12\lib\net45\Relativity.Data.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Services.Interfaces, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />

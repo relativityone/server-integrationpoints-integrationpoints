@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		private readonly string _sourceWorkspaceName;
 		private readonly string _targetWorkspaceName;
 
-		public int SourecWorkspaceArtifactId { get; private set; }
+		public int SourceWorkspaceArtifactId { get; private set; }
 		public int TargetWorkspaceArtifactId { get; private set; }
 
 		public WorkspaceDependentTemplate(string sourceWorkspaceName, string targetWorkspaceName)
@@ -27,14 +27,13 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			_targetWorkspaceName = targetWorkspaceName;
 		}
 
-
 		[SetUp]
 		public virtual void SetUp()
 		{
-			const string template = "New Case Template";
-			SourecWorkspaceArtifactId = GerronHelper.Workspace.CreateWorkspace(_sourceWorkspaceName, template);
-			TargetWorkspaceArtifactId = GerronHelper.Workspace.CreateWorkspace(_targetWorkspaceName, template);
-			GerronHelper.Workspace.ImportApplicationToWorkspace(SourecWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
+			//const string template = "New Case Template";
+			SourceWorkspaceArtifactId = 1118254;
+			TargetWorkspaceArtifactId = 1119028;
+			//GerronHelper.Workspace.ImportApplicationToWorkspace(SourceWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
 			Install();
 		}
 
@@ -45,14 +44,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				.UsingFactoryMethod(k =>
 				{
 					IHelper helper = k.Resolve<IHelper>();
-					return new TestServiceContextHelper(helper, SourecWorkspaceArtifactId);
+					return new TestServiceContextHelper(helper, SourceWorkspaceArtifactId);
 				}));
 			Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
 			Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
 			Container.Register(
 				Component.For<IWorkspaceDBContext>()
 					.ImplementedBy<WorkspaceContext>()
-					.UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(SourecWorkspaceArtifactId)))
+					.UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(SourceWorkspaceArtifactId)))
 					.LifeStyle.Transient);
 
 			Container.Register(
@@ -60,7 +59,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				.UsingFactoryMethod(k =>
 				{
 					IRSAPIClient client = GerronHelper.Rsapi.CreateRsapiClient();
-					client.APIOptions.WorkspaceID = SourecWorkspaceArtifactId;
+					client.APIOptions.WorkspaceID = SourceWorkspaceArtifactId;
 					return client;
 				})
 				.LifeStyle.Transient);
@@ -78,8 +77,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		[TearDown]
 		public virtual void TearDown()
 		{
-			GerronHelper.Workspace.DeleteWorkspace(SourecWorkspaceArtifactId);
-			GerronHelper.Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
+			//GerronHelper.Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
+			//GerronHelper.Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
 		}
 	}
 }
