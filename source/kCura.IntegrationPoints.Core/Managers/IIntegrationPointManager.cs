@@ -16,11 +16,11 @@ namespace kCura.IntegrationPoints.Core.Managers
 		IntegrationPointDTO Read(int workspaceArtifactId, int integrationPointArtifactId);
 
 		/// <summary>
-		/// Check to see if integration point is of a retriable type
+		/// Check to see if the integration point's source provider is the Relativity source provider
 		/// </summary>
 		/// <param name="workspaceArtifactId">Workspace id of the integration point instance</param>
 		/// <param name="integrationPointDto">The integration point dto to check</param>
-		/// <returns><code>TRUE</code> if the integration point is of a retriable type and <code>FALSE</code> otherwise</returns>
+		/// <returns><code>TRUE</code> if the integration point's source provider is the Relativity source provider <code>FALSE</code> otherwise</returns>
 		bool IntegrationPointSourceProviderIsRelativity(int workspaceArtifactId, IntegrationPointDTO integrationPointDto);
 
 		/// <summary>
