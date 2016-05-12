@@ -14,6 +14,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Email;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
@@ -140,19 +141,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IWorkspaceDBContext workspaceDbContext = Container.Resolve<IWorkspaceDBContext>();
 			IEddsServiceContext eddsServiceContext = Container.Resolve<IEddsServiceContext>();
 
-			ChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
+			IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
 			JobResourceTracker jobResourceTracker = new JobResourceTracker(workspaceDbContext);
 			JobTracker jobTracker = new JobTracker(jobResourceTracker);
 			IAgentService agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 
 			IJobService jobService = new JobService(agentService, _helper);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
-			IPermissionService permissionService = Container.Resolve<IPermissionService>();
+			IPermissionRepository permissionService = Container.Resolve<IPermissionRepository>();
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			IManagerFactory managerFactory = new ManagerFactory();
 
-			IntegrationPointService integrationPointService = new IntegrationPointService(caseServiceContext, contextContainer, permissionService, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
+			IntegrationPointService integrationPointService = new IntegrationPointService(_helper, caseServiceContext, permissionService, contextContainerFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
 			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 
 			TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
