@@ -54,7 +54,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/core/utils.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/integration-point/time-utils.js");
 
-				this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL234324324", Script = "<script>var IP = IP ||{};IP.cpPath = '" + applicationPath + "';</script>" });
+			    this.RegisterLinkedClientScript(applicationPath + "/Scripts/jquery.signalR-2.2.0.js");
+			    this.RegisterLinkedClientScript(applicationPath + "/signalr/hubs");
+			    this.RegisterLinkedClientScript(applicationPath + "/Scripts/hubs/integrationPointHub.js");
+
+
+
+                this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL234324324", Script = "<script>var IP = IP ||{};IP.cpPath = '" + applicationPath + "';</script>" });
 				int nextScheduledRuntimeFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.NextScheduledRuntimeUTC));
 				int destinationFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationConfiguration));
 				int destinationProviderFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationProvider));

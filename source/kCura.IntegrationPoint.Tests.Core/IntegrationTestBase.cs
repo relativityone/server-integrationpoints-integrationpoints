@@ -1,20 +1,26 @@
-﻿
+﻿using System;
+using Castle.MicroKernel.SubSystems.Configuration;
+using Castle.Windsor;
+using Relativity.API;
+
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	using Relativity.Client;
-
 	public abstract class IntegrationTestBase
 	{
+		protected IWindsorContainer Container;
+		protected IConfigurationStore ConfigurationStore;
 		protected IntegrationTestBase()
 		{
-			Helper = new Helper();
-			SharedVariables = new SharedVariables();
+			Container = new WindsorContainer();
+			ConfigurationStore = new DefaultConfigurationStore();
+			GerronHelper = new Helper();
+			_help = new Lazy<IHelper>(() => new TestHelper(GerronHelper));
 		}
 
-		public Helper Helper { get; }
-		public SharedVariables SharedVariables { get; }
+		public IHelper Helper => _help.Value;
+		private readonly Lazy<IHelper> _help;
 
-		public IRSAPIClient RsapiClient { get { return Helper.Rsapi.CreateRsapiClient(); } }
 
+		public Helper GerronHelper { get; }
 	}
 }

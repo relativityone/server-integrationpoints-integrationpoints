@@ -16,6 +16,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string NO_PERMISSION_TO_IMPORT = "You do not have permission to push documents to the destination workspace selected. Please contact your system administrator.";
 			public const string NO_USERID = "Unable to determine the user id. Please contact your system administrator.";
 			public const string NO_PERMISSION_TO_EDIT_DOCUMENTS = "You do not have permission to edit documents in the current workspace. Please contact your system administrator.";
+			public const string NO_PERMISSION_TO_VIEW_SAVEDSEARCH = "You do not have permissions to the saved search. Please contact your system administrator.";
 
 			public const string RETRY_IS_NOT_RELATIVITY_PROVIDER = "Retries are only available for the Relativity provider.";
 			public const string RETRY_NO_EXISTING_ERRORS = "The integration point cannot be retried as there are no errors to be retried.";

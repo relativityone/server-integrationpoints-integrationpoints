@@ -11,11 +11,6 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		public const string ArtifactTypeGuid = "17E7912D-4F57-4890-9A37-ABC2B8A37BDB";
 
 		/// <summary>
-		/// ArtifactId
-		/// </summary>
-		public int ArtifactId { get; set; }
-
-		/// <summary>
 		/// Error
 		/// </summary>
 		public string Error { get; set; }
@@ -34,11 +29,6 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		/// Job History
 		/// </summary>
 		public int? JobHistory { get; set; }
-
-		/// <summary>
-		/// Name
-		/// </summary>
-		public string Name { get; set; }
 
 		/// <summary>
 		/// Source Unique Id

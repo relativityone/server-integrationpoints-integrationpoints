@@ -75,8 +75,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Container.Register(Component.For<IOnBehalfOfUserClaimsPrincipalFactory>()
 				.ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>()
 				.LifestyleTransient());
-
-			Container.Register(Component.For<IContextContainerFactory>().ImplementedBy<ContextContainerFactory>().LifestyleSingleton());
 		}
 
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)

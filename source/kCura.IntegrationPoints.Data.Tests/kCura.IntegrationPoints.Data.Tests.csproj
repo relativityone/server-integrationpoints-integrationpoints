@@ -177,6 +177,10 @@
       <Project>{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}</Project>
       <Name>kCura.IntegrationPoints.DocumentTransferProvider</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Web.Tests\kCura.IntegrationPoints.Web.Tests.csproj">
+      <Project>{c355b68a-5ea2-4bda-8898-c84049d664df}</Project>
+      <Name>kCura.IntegrationPoints.Web.Tests</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

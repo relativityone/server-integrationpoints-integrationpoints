@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
@@ -30,6 +31,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly IJobManager _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IManagerFactory _managerFactory;
+		private static readonly object _lock = new object();
 
 		public IntegrationPointService(IHelper helper,
 			ICaseServiceContext context,
@@ -351,17 +353,20 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, Relativity.Client.Choice jobType, int workspaceArtifactId, int userId)
 		{
-			CheckForOtherJobsExecutingOrInQueue(sourceProvider, workspaceArtifactId, integrationPoint.ArtifactId);
-			var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
+			lock (_lock)
+			{
+				CheckForOtherJobsExecutingOrInQueue(sourceProvider, workspaceArtifactId, integrationPoint.ArtifactId);
+				var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
 
-			// If the Relativity provider is selected, we need to create an export task
-			TaskType jobTaskType =
-				sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
-					? TaskType.ExportService
-					: TaskType.SyncManager;
+				// If the Relativity provider is selected, we need to create an export task
+				TaskType jobTaskType =
+					sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
+						? TaskType.ExportService
+						: TaskType.SyncManager;
 
-			_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, jobType, null);
-			_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
+				_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, jobType, null);
+				_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
+			}
 		}
 
 		private void CheckForRelativityProviderAdditionalPermissions(string config, int userId)
@@ -375,6 +380,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			if (_permissionRepository.UserCanEditDocuments(workspaceConfiguration.SourceWorkspaceArtifactId) == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
+			}
+
+			if (_permissionRepository.UserCanViewArtifact(workspaceConfiguration.SourceWorkspaceArtifactId, (int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId) == false)
+			{
+				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_VIEW_SAVEDSEARCH);	
 			}
 
 			if (userId == 0)
@@ -401,6 +411,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			public int TargetWorkspaceArtifactId;
 			public int SourceWorkspaceArtifactId;
+			public int SavedSearchArtifactId;
 		}
 	}
 }
