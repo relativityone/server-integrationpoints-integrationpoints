@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
+﻿using System;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
@@ -14,6 +15,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		private IIntegrationPointManager _testInstance;
 		private IRepositoryFactory _repositoryFactory;
 		private IIntegrationPointRepository _integrationPointRepository;
+		private ISourceProviderRepository _sourceProviderRepository;
 
 		private const int WORKSPACE_ID = 100532;
 		private const int INTEGRATION_POINT_ID = 101323; 
@@ -23,6 +25,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
+			_sourceProviderRepository = Substitute.For<ISourceProviderRepository>();
 			_testInstance = new IntegrationPointManager(_repositoryFactory);
 		}
 
@@ -42,6 +45,36 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			// ASSERT
 			Assert.IsNotNull(dto);
 			Assert.AreEqual(expectedName, dto.Name);
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void IntegrationPointTypeIsRetriable_GoldFlow(bool isRelativityProvider)
+		{
+			// Arrange
+			var integrationPointDto = new IntegrationPointDTO()
+			{
+				SourceProvider = 123
+			};
+
+			var sourceProviderDto = new SourceProviderDTO()
+			{
+				Name = "DOESN'T ACTUALLY MATTER",
+				Identifier = isRelativityProvider
+					? new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
+					: Guid.NewGuid()
+			};
+			_repositoryFactory.GetSourceProviderRepository(Arg.Is(WORKSPACE_ID))
+				.Returns(_sourceProviderRepository);
+
+			_sourceProviderRepository.Read(Arg.Is(integrationPointDto.SourceProvider.Value))
+				.Returns(sourceProviderDto);
+
+			// Act
+			bool isRetriable = _testInstance.IntegrationPointTypeIsRetriable(WORKSPACE_ID, integrationPointDto);
+
+			// Assert	
+			Assert.AreEqual(isRelativityProvider, isRetriable);
 		}
 	}
 }

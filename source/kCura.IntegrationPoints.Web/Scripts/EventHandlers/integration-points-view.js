@@ -35,7 +35,7 @@
 				calls.close();
 				var ajax = IP.data.ajax({
 					type: 'post',
-					url: root.utils.generateWebAPIURL('ImportNow'),
+					url: root.utils.generateWebAPIURL('Job'),
 					data: JSON.stringify({
 						"appId": appid,
 						"artifactId": artifactId
@@ -54,7 +54,7 @@
 	root.retryJob = function(artifactId, appId) {
 		var ajax = IP.data.ajax({
 			type: "POST",
-			url: root.utils.generateWebAPIURL('ImportNow/RetryJob'),
+			url: root.utils.generateWebAPIURL('Job/Retry'),
 			async: true,
 			data: JSON.stringify({
 				"appId": appId,
@@ -63,7 +63,7 @@
 		});
 
 		ajax.fail(function(value) {
-			IP.message.error.raise("Failed to sumit the retry job. " + value.responseText, $(".cardContainer"));
+			IP.message.error.raise("Failed to submit the retry job. " + value.responseText, $(".cardContainer"));
 		});
 		ajax.done(function() {
 			IP.message.info.raise("Retry job submitted. Data will now be imported from the source provider.", $(".cardContainer"));

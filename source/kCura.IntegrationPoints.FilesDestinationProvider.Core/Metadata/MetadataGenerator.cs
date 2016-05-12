@@ -1,8 +1,8 @@
 ﻿using System;
-using kCura.IntegrationPoint.FilesDestinationProvider.Core.Files;
-using kCura.IntegrationPoint.FilesDestinationProvider.Core.Metadata.Formatters;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Files;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Metadata.Formatters;
 
-namespace kCura.IntegrationPoint.FilesDestinationProvider.Core.Metadata
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Metadata
 {
 	public  class MetadataGenerator : IMetadaGenerator, IDisposable
 	{

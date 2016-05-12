@@ -1,8 +1,18 @@
 ﻿namespace kCura.IntegrationPoints.Synchronizers.RDO
 {
-  public class WorkspaceRef
-  {
-    public int Id { get; set; }
-    public string Name { get; set; }
-  }
+	/// <summary>
+	/// This is Workspace object model.
+	/// </summary>
+	public class WorkspaceRef
+	{
+		/// <summary>
+		/// Workspace Id
+		/// </summary>
+		public int Id { get; set; }
+
+		/// <summary>
+		/// Workspace Name
+		/// </summary>
+		public string Name { get; set; }
+	}
 }

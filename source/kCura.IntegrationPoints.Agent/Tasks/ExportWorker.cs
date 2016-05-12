@@ -12,9 +12,8 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using kCura.Relativity.Export.FileObjects;
-using kCura.Relativity.Export.Process;
 using kCura.ScheduleQueue.Core;
 using Newtonsoft.Json;
 using Relativity.API;
@@ -23,12 +22,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class ExportWorker : SyncWorker
 	{
-		public ExportWorker(ICaseServiceContext caseServiceContext, IHelper helper, IDataProviderFactory dataProviderFactory, ISerializer serializer, ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory, JobHistoryService jobHistoryService, JobHistoryErrorService jobHistoryErrorService, IJobManager jobManager, IEnumerable<IBatchStatus> statuses, JobStatisticsService statisticsService) 
+		public ExportWorker(ICaseServiceContext caseServiceContext, IHelper helper, IDataProviderFactory dataProviderFactory, ISerializer serializer, ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory, IJobHistoryService jobHistoryService, JobHistoryErrorService jobHistoryErrorService, IJobManager jobManager, IEnumerable<IBatchStatus> statuses, JobStatisticsService statisticsService) 
 			: base(caseServiceContext, helper, dataProviderFactory, serializer, appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager, statuses, statisticsService)
 		{
 		}
 
-		internal override IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
+	    protected override IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
 		{
 			Guid providerGuid = new Guid(destinationProviderRdo.Identifier);
 			
@@ -39,19 +38,20 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	    internal override void ExecuteImport(IEnumerable<FieldMap> fieldMap, string sourceConfiguration, string destinationConfiguration, List<string> entryIDs,
 	        SourceProvider sourceProviderRdo, DestinationProvider destinationProvider, Job job)
 		{
-			ExportUsingSavedSearchSettings sourceSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(sourceConfiguration);
+            ExportUsingSavedSearchSettings sourceSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(sourceConfiguration);
 
-			ImportSettings destinationSettings = JsonConvert.DeserializeObject<ImportSettings>(destinationConfiguration);
-			
-			// User & Pwd will be removed as soos we replace code with ExportAPI
-			var exportFileSettings =  ExportFileDefBuilder.CreateDefSetup(sourceSettings.SavedSearchArtifactId, sourceSettings.SourceWorkspaceArtifactId,
-			    "Test1234!", "relativity.admin@kcura.com", destinationSettings.Fileshare, fieldMap.Select(item => int.Parse(item.SourceField.FieldIdentifier)).ToList(),
-				destinationSettings.ArtifactTypeId);
+            ImportSettings destinationSettings = JsonConvert.DeserializeObject<ImportSettings>(destinationConfiguration);
 
-			ExportSearchProcess exportProcess = new ExportSearchProcess();
+	        var exportSettings = new FilesDestinationProvider.Core.ExportSettings
+	        {
+	            ExportedObjArtifactId = sourceSettings.SavedSearchArtifactId,
+	            WorkspaceId = sourceSettings.SourceWorkspaceArtifactId,
+	            ExportFilesLocation = destinationSettings.Fileshare,
+	            SelViewFieldIds = fieldMap.Select(item => int.Parse(item.SourceField.FieldIdentifier)).ToList(),
+	            ArtifactTypeId = destinationSettings.ArtifactTypeId
+	        };
 
-			exportProcess.ExportFile = exportFileSettings;
-			exportProcess.StartProcess();
+	        new ExportProcessRunner().StartWith(exportSettings);
 		}
 	}
 }

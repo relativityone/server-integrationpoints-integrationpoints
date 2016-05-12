@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IJobHistoryService jobHistoryService,
 			JobHistoryErrorService jobHistoryErrorService,
 			IScheduleRuleFactory scheduleRuleFactory,
-			 IEnumerable<IBatchStatus> batchStatuses)
+			IEnumerable<IBatchStatus> batchStatuses)
 		{
 			_caseServiceContext = caseServiceContext;
 			_providerFactory = providerFactory;

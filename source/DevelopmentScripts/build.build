@@ -77,7 +77,7 @@
 	<include buildfile="Build Application.include"/>
 
 
-	<target name="build_all" description="Build the entire LDAPSync codebase, RAP, and uploads binaries" depends="build, build_RAP_Package, upload_binaries_into_relativity">
+	<target name="build_all" description="Build the entire LDAPSync codebase and RAP" depends="build, build_RAP_Package">
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
@@ -252,6 +252,7 @@
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Email.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.Shared.dll"' />
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
 		</exec>

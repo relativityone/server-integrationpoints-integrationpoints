@@ -107,7 +107,6 @@ namespace kCura.IntegrationPoints.Web.Installers
 
 			container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
 
-			container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>());
 			container.Register(
 				Component.For<IContextContainer>().UsingFactoryMethod(x => new ContextContainer(ConnectionHelper.Helper())));
 

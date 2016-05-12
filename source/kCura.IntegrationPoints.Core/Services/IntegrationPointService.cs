@@ -200,11 +200,11 @@ namespace kCura.IntegrationPoints.Core.Services
 			public int SelectedDay { get; set; }
 			public OccuranceInMonth? SelectedType { get; set; }
 			public DaysOfWeek SelectedDayOfTheMonth { get; set; }
-			public string TemplateId { get; set; }
+			public string TemplateID { get; set; }
 
 			public Monthly()
 			{
-				TemplateId = "monthlySendOn";
+				TemplateID = "monthlySendOn";
 			}
 		}
 
@@ -289,8 +289,22 @@ namespace kCura.IntegrationPoints.Core.Services
 			SourceProvider sourceProvider = GetSourceProvider(integrationPoint);
 
 			CheckPermissions(integrationPoint, sourceProvider, userId);
-			CheckForOtherJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId); //todo: add this to retry as well - MNG
-			CreateJob(integrationPoint, sourceProvider, workspaceArtifactId, userId);
+			Relativity.Client.Choice jobType = GetJobType(integrationPoint.EnableScheduler);
+			CreateJob(integrationPoint, sourceProvider, jobType, workspaceArtifactId, userId);
+		}
+
+		private Relativity.Client.Choice GetJobType(bool? enableScheduler)
+		{
+			Relativity.Client.Choice jobType;
+			if (enableScheduler.HasValue && enableScheduler.Value)
+			{
+				jobType = JobTypeChoices.JobHistoryScheduledRun;
+			}
+			else
+			{
+				jobType = JobTypeChoices.JobHistoryRunNow;
+			}
+			return jobType;
 		}
 
 		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
@@ -310,8 +324,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
 			}
 
-			UpdateJobHistoryOnRetry(integrationPoint);
-			CreateJob(integrationPoint, sourceProvider, workspaceArtifactId, userId);
+			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRetryErrors, workspaceArtifactId, userId);
 		}
 
 		private void CheckPermissions(IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
@@ -334,12 +347,13 @@ namespace kCura.IntegrationPoints.Core.Services
 			return sourceProvider;
 		}
 
-		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, int workspaceArtifactId, int userId)
+		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, Relativity.Client.Choice jobType, int workspaceArtifactId, int userId)
 		{
+			CheckForOtherJobsExecutingOrInQueue(sourceProvider, workspaceArtifactId, integrationPoint.ArtifactId); 
 			var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
 
-            // If the Relativity provider is selected, we need to create an export task
-            TaskType jobTaskType =
+			// If the Relativity provider is selected, we need to create an export task
+			TaskType jobTaskType =
 				sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
 					? TaskType.ExportService
 					: TaskType.SyncManager;
@@ -350,13 +364,13 @@ namespace kCura.IntegrationPoints.Core.Services
                 jobTaskType = TaskType.ExportManager;
             }
 
-            _jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, null);
+			_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, jobType, null);
 			_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
 		}
 
 		private void UpdateJobHistoryOnRetry(IntegrationPoint integrationPoint)
 		{
-			Data.JobHistory lastCompletedJob = _jobHistoryService.GetLastJobHistory(integrationPoint);
+			Data.JobHistory lastCompletedJob = _jobHistoryService.GetLastJobHistory(integrationPoint.JobHistory.ToList());
 			if (lastCompletedJob == null)
 			{
 				throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
@@ -383,14 +397,17 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		private void CheckForOtherJobsExecutingOrInQueue(int workspaceArtifactId , int integrationPointArtifactId)
+		private void CheckForOtherJobsExecutingOrInQueue(SourceProvider sourceProvider, int workspaceArtifactId , int integrationPointArtifactId)
 		{
-			IQueueManager queueManager = _managerFactory.CreateQueueManager(_contextContainer);
-			bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
-
-			if (jobsExecutingOrInQueue)
+			if (sourceProvider.Identifier == DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
 			{
-				throw new Exception(Constants.IntegrationPoints.JOBS_ALREADY_RUNNING);
+				IQueueManager queueManager = _managerFactory.CreateQueueManager(_contextContainer);
+				bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
+
+				if (jobsExecutingOrInQueue)
+				{
+					throw new Exception(Constants.IntegrationPoints.JOBS_ALREADY_RUNNING);
+				}
 			}
 		}
 

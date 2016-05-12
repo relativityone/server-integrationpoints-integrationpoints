@@ -107,7 +107,9 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>().LifestyleTransient());
 
-			if (container.Kernel.HasComponent(typeof(IHelper)))
+      container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>());
+
+      if (container.Kernel.HasComponent(typeof(IHelper)))
 			{
 				container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
 

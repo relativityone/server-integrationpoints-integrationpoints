@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				Condition =
 					new TextCondition(Guid.Parse(JobHistoryFieldGuids.BatchInstance), TextConditionEnum.EqualTo,
 						batchInstance.ToString()),
-				Fields = GetFields()
+				Fields = GetFields<Data.JobHistory>()
 			};
 			Data.JobHistory jobHistory = _caseServiceContext.RsapiService.JobHistoryLibrary.Query(query).SingleOrDefault(); //there should only be one!
 
@@ -49,47 +49,22 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				ArtifactTypeGuid = Guid.Parse(ObjectTypeGuids.JobHistory),
 				Condition = condition,
-				Fields = GetFields()
+				Fields = GetFields<Data.JobHistory>()
 			};
 
 			IList<Data.JobHistory> jobHistories = _caseServiceContext.RsapiService.JobHistoryLibrary.Query(query);
 			return jobHistories;
 		}
 
-		public Data.JobHistory GetLastJobHistory(IntegrationPoint integrationPoint)
-		{
-			Data.JobHistory lastCompletedJobHistory = GetLastJobHistory(integrationPoint.JobHistory.ToList());
-			return lastCompletedJobHistory;
-		}
-
-		public Data.JobHistory GetLastJobHistory(IList<int> jobHistoryArtifactIds)
+		public Data.JobHistory GetLastJobHistory(List<int> jobHistoryArtifactIds)
 		{
 			if (!jobHistoryArtifactIds.Any())
 			{
 				return null;
 			}
 
-			var jobHistoryArtifactIdCondition = new WholeNumberCondition("ArtifactID", NumericConditionEnum.In)
-			{
-				Value = jobHistoryArtifactIds as List<int>
-			};
-			var artifactIdSort = new Sort
-			{
-				Field = "ArtifactID",
-				Direction = SortEnum.Descending
-			};
-			List<Sort> sorts = new List<Sort>(1) { artifactIdSort };
-
-			var query = new Query<RDO>
-			{
-				ArtifactTypeGuid = Guid.Parse(ObjectTypeGuids.JobHistory),
-				Condition = jobHistoryArtifactIdCondition,
-				Fields = GetFields(),
-				Sorts = sorts
-			};
-
-			IList<Data.JobHistory> jobHistories = _caseServiceContext.RsapiService.JobHistoryLibrary.Query(query);
-			Data.JobHistory lastJobHistory = jobHistories.FirstOrDefault();
+			int highestArtifactId = jobHistoryArtifactIds.Max();
+			Data.JobHistory lastJobHistory = _caseServiceContext.RsapiService.JobHistoryLibrary.Read(highestArtifactId);
 			return lastJobHistory;
 		}
 
@@ -109,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				ArtifactTypeGuid = Guid.Parse(ObjectTypeGuids.JobHistoryError),
 				Condition = conditions,
-				Fields = GetJobHistoryErrorFields(),
+				Fields = GetFields<JobHistoryError>(),
 			};
 
 			IList<JobHistoryError> jobHistoryErrors = _caseServiceContext.RsapiService.JobHistoryErrorLibrary.Query(query);
@@ -132,6 +107,27 @@ namespace kCura.IntegrationPoints.Core.Services
 			{
 				jobHistory = GetRdo(batchInstance);
 			}
+			catch (Exception)
+			{
+				// ignored
+			}
+
+			if (jobHistory == null)
+			{
+				jobHistory = CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryScheduledRun, startTimeUtc);
+			}
+
+			return jobHistory;
+		}
+
+		public Data.JobHistory CreateRdo(IntegrationPoint integrationPoint, Guid batchInstance, Relativity.Client.Choice jobType, DateTime? startTimeUtc)
+		{
+			Data.JobHistory jobHistory = null;
+
+			try
+			{
+				jobHistory = GetRdo(batchInstance);
+			}
 			catch
 			{
 				// ignored
@@ -144,8 +140,7 @@ namespace kCura.IntegrationPoints.Core.Services
 					Name = integrationPoint.Name,
 					IntegrationPoint = new[] { integrationPoint.ArtifactId },
 					BatchInstance = batchInstance.ToString(),
-					//Should not always be Run Now type job, but cannot find a high enough method call to be able to make a distinction between a Run Now, Scheduled, or Retry job
-					JobType = JobTypeChoices.JobHistoryRunNow,
+					JobType = jobType,
 					JobStatus = JobStatusChoices.JobHistoryPending,
 					ItemsImported = 0,
 					ItemsWithErrors = 0
@@ -172,16 +167,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			_caseServiceContext.RsapiService.JobHistoryLibrary.Update(jobHistory);
 		}
 
-		protected List<FieldValue> GetFields()
+		protected List<FieldValue> GetFields<T>()
 		{
-			return (from field in (BaseRdo.GetFieldMetadata(typeof(Data.JobHistory)).Values).ToList()
-					select new FieldValue(field.FieldGuid)).ToList();
-		}
-
-		private List<FieldValue> GetJobHistoryErrorFields()
-		{
-			return (from field in (BaseRdo.GetFieldMetadata(typeof(JobHistoryError)).Values).ToList()
-					select new FieldValue(field.FieldGuid)).ToList();
+			return (from field in (BaseRdo.GetFieldMetadata(typeof (T)).Values).ToList()
+				select new FieldValue(field.FieldGuid)).ToList();
 		}
 	}
 }

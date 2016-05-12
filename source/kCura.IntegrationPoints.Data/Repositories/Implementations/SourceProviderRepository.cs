@@ -24,8 +24,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var query = new Query<RDO>
 			{
 				ArtifactTypeGuid = new Guid(ObjectTypeGuids.SourceProvider),
-				Condition = new WholeNumberCondition(new Guid("4A091F69-D750-441C-A4F0-24C990D208AE"), NumericConditionEnum.EqualTo, artifactId),
-				Fields = new List<FieldValue>() { new FieldValue(new Guid(SourceProviderFieldGuids.Name)) }
+				Condition = new WholeNumberCondition(new Guid(Contracts.Constants.SOURCEPROVIDER_ARTIFACTID_FIELD), NumericConditionEnum.EqualTo, artifactId),
+				Fields = new List<FieldValue>()
+				{
+					new FieldValue(new Guid(SourceProviderFieldGuids.Name)),
+					new FieldValue(new Guid(SourceProviderFieldGuids.Identifier))
+				}
 			};
 
 			QueryResultSet<RDO> queryResultSet = null;
@@ -52,7 +56,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var dto = new SourceProviderDTO()
 			{
 				ArtifactId = result.Artifact.ArtifactID,
-				Name = result.Artifact.Fields[0].ValueAsFixedLengthText
+				Name = result.Artifact.Fields[0].ValueAsFixedLengthText,
+				Identifier = new Guid(result.Artifact.Fields[1].ValueAsFixedLengthText)
 			};
 
 			return dto;

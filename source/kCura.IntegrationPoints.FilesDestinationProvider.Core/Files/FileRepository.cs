@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace kCura.IntegrationPoint.FilesDestinationProvider.Core.Files
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Files
 {
 	public class FileRepository : IFileRepository
 	{

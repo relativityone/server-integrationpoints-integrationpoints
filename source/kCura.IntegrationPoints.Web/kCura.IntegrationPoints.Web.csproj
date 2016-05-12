@@ -184,14 +184,14 @@
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\kCura\Relativity.Kepler.dll</HintPath>
+      <HintPath>..\packages\Relativity.Kepler.1.0.1.149\lib\net45\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.DataContracts">
-      <HintPath>..\Dependencies\kCura\Relativity.Services.DataContracts.dll</HintPath>
+      <HintPath>..\packages\Relativity.Services.DataContracts.9.3.398.12\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.Interfaces, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\kCura\Relativity.Services.Interfaces.dll</HintPath>
+      <HintPath>..\Relativity.Services.Interfaces.9.3.398.12\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Toggles, Version=1.0.0.68, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Toggles.1.0.0.68\lib\net45\Relativity.Toggles.dll</HintPath>
@@ -292,7 +292,7 @@
     <Compile Include="Controllers\API\FolderPathController.cs" />
     <Compile Include="Controllers\API\RelativityController.cs" />
     <Compile Include="Controllers\API\FieldMapController.cs" />
-    <Compile Include="Controllers\API\ImportNowController.cs" />
+    <Compile Include="Controllers\API\JobController.cs" />
     <Compile Include="Controllers\API\LdapController.cs" />
     <Compile Include="Controllers\API\RdoMetaController.cs" />
     <Compile Include="Controllers\API\SavedSearchFinderController.cs" />

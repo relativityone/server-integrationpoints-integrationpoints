@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Contracts
 				{
 					if (!_windsorContainer.Kernel.HasComponent(typeof(IHelper)))
 					{
-						_windsorContainer.Register(Component.For<IHelper>().Instance(helper).LifestyleTransient());
+						_windsorContainer.Register(Component.For<IHelper>().Instance(helper).LifestyleSingleton());
 					}
 				}
 
