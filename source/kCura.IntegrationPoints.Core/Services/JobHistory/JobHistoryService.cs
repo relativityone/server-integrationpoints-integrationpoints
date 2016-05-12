@@ -56,18 +56,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			return jobHistories;
 		}
 
-		public Data.JobHistory GetLastJobHistory(List<int> jobHistoryArtifactIds)
-		{
-			if (!jobHistoryArtifactIds.Any())
-			{
-				return null;
-			}
-
-			int highestArtifactId = jobHistoryArtifactIds.Max();
-			Data.JobHistory lastJobHistory = _caseServiceContext.RsapiService.JobHistoryLibrary.Read(highestArtifactId);
-			return lastJobHistory;
-		}
-
 		public Data.JobHistory CreateRdo(IntegrationPoint integrationPoint, Guid batchInstance, DateTime? startTimeUtc)
 		{
 			Data.JobHistory jobHistory = null;

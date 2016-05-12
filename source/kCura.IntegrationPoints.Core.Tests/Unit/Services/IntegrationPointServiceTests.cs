@@ -222,8 +222,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Received(1).Read(_integrationPoint.SourceProvider.Value);
 			_permissionRepository.Received(1).UserCanImport(_targetWorkspaceArtifactId);
 			_permissionRepository.Received(1).UserCanEditDocuments(_sourceWorkspaceArtifactId);
-
-			_jobHistoryService.DidNotReceive().GetLastJobHistory(Arg.Any<List<int>>());
+			
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRetryErrors, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
@@ -245,7 +244,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_permissionRepository.Received(1).UserCanImport(_targetWorkspaceArtifactId);
 
 			_permissionRepository.DidNotReceive().UserCanEditDocuments(_sourceWorkspaceArtifactId);
-			_jobHistoryService.DidNotReceive().GetLastJobHistory(Arg.Any<List<int>>());
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(),JobTypeChoices.JobHistoryRetryErrors, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
@@ -267,8 +265,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Received(1).Read(_integrationPoint.SourceProvider.Value);
 			_permissionRepository.Received(1).UserCanImport(_targetWorkspaceArtifactId);
 			_permissionRepository.Received(1).UserCanEditDocuments(_sourceWorkspaceArtifactId);
-
-			_jobHistoryService.DidNotReceive().GetLastJobHistory(Arg.Any<List<int>>());
+			
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRetryErrors, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
@@ -289,7 +286,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 
 			_permissionRepository.DidNotReceive().UserCanImport(_targetWorkspaceArtifactId);
 			_permissionRepository.DidNotReceive().UserCanEditDocuments(_sourceWorkspaceArtifactId);
-			_jobHistoryService.DidNotReceive().GetLastJobHistory(Arg.Any<List<int>>());
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRetryErrors, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
@@ -329,7 +325,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary.DidNotReceiveWithAnyArgs().Read(Arg.Any<int>());
 			_permissionRepository.DidNotReceive().UserCanImport(_targetWorkspaceArtifactId);
 			_permissionRepository.DidNotReceive().UserCanEditDocuments(_sourceWorkspaceArtifactId);
-			_jobHistoryService.DidNotReceive().GetLastJobHistory(Arg.Any<List<int>>());
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRunNow, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}

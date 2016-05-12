@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
@@ -17,6 +16,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly int _sourceWorkspaceArtifactId;
 		private readonly string _uniqueJobId;
 
+		private readonly IRepositoryFactory _repositoryFactory;
+
 		public JobHistoryErrorManager(IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, int jobHistoryInstanceId, 
 			int sourceWorkspaceArtifactId, string uniqueJobId, int submittedBy)
 		{
@@ -25,6 +26,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);
 			_uniqueJobId = uniqueJobId;
 			_jobHistoryErrorRepository = repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceArtifactId);
+			_repositoryFactory = repositoryFactory;
 		}
 
 		public void JobStarted(Job job)
@@ -35,6 +37,12 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		public void JobComplete(Job job)
 		{
 			_jobHistoryErrorRepository.UpdateErrorStatuses(_claimsPrincipal, _jobHistoryInstanceId, ErrorStatusChoices.JobHistoryErrorRetried, _uniqueJobId);
+		}
+
+		public int CreateItemLevelErrorsSavedSearch(int workspaceArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId)
+		{
+			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(workspaceArtifactId);
+			return jobHistoryErrorRepository.CreateItemLevelErrorsSavedSearch(workspaceArtifactId, savedSearchArtifactId, jobHistoryArtifactId);
 		}
 	}
 }
