@@ -326,7 +326,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_integrationPoint.HasErrors = true;
 
 			// Act
-			Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId), Constants.IntegrationPoints.NO_PERMISSION_TO_VIEW_SAVEDSEARCH);
+			Assert.Throws<Exception>(() => _instance.RetryIntegrationPoint(_sourceWorkspaceArtifactId, _integrationPointArtifactId, _userId), Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH);
 
 			// Assert
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Received(1).Read(_integrationPoint.SourceProvider.Value);
