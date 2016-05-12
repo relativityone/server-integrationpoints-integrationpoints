@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 		[TestCase(true)]
 		[TestCase(false)]
-		public void IntegrationPointTypeIsRetriable_GoldFlow(bool isRelativityProvider)
+		public void IntegrationPointSourceProviderIsRelativity_GoldFlow(bool isRelativityProvider)
 		{
 			// Arrange
 			var integrationPointDto = new IntegrationPointDTO()
