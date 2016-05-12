@@ -59,6 +59,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_sourceProvider = new SourceProvider();
 			_integrationPoint.SourceProvider = _sourceProviderId;
 			_integrationPoint.SourceConfiguration = $"{{ TargetWorkspaceArtifactId : {_targetWorkspaceArtifactId}, SourceWorkspaceArtifactId : {_sourceWorkspaceArtifactId} }}";
+		    _integrationPoint.DestinationConfiguration = $"{{ DestinationProviderType : \"{Core.Services.Synchronizer.RdoSynchronizerProvider.RDO_SYNC_TYPE_GUID}\" }}";
 
 			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(_integrationPointArtifactId).Returns(_integrationPoint);
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(_sourceProviderId).Returns(_sourceProvider);
