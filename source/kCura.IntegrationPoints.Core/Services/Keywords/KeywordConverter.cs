@@ -40,7 +40,17 @@ namespace kCura.IntegrationPoints.Core.Services.Keywords
 				{
 					//eat
 				}
-				returnValue = Regex.Replace(returnValue, @"\" + match.Value, replacementValue);
+				if (!string.IsNullOrEmpty(replacementValue))
+				{
+					returnValue = Regex.Replace(returnValue, @"\" + match.Value, replacementValue);
+				}
+				else
+				{
+					//remove line if this keyword is the only entry on the line
+					returnValue = Regex.Replace(returnValue, Environment.NewLine + @"\" + match.Value + Environment.NewLine, replacementValue);
+					//remove keyword for cases when this keyword is not the only entry on the line
+					returnValue = Regex.Replace(returnValue, @"\" + match.Value, replacementValue);
+				}
 			}
 			return returnValue;
 		}

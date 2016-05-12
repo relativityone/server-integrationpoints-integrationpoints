@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.Contracts.Models
 {
-	public class IntegrationPointDTO
+	public class IntegrationPointDTO : BaseDTO
 	{
-		public int ArtifactId { get; set; }
 		public string DestinationConfiguration { get; set; }
 		public int? DestinationProvider { get; set; }
 		public string EmailNotificationRecipients { get; set; }
@@ -15,9 +14,8 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		public int[] JobHistory { get; set; }
 		public DateTime? LastRuntimeUTC { get; set; }
 		public bool? LogErrors { get; set; }
-		public string Name { get; set; }
 		public DateTime? NextScheduledRuntimeUTC { get; set; }
-		public List<Choices.OverwriteFields.Values> OverwriteFields { get; set; }
+		public Choices.OverwriteFields.Values OverwriteFields { get; set; }
 		public string ScheduleRule { get; set; }
 		public string SourceConfiguration { get; set; }
 		public int? SourceProvider { get; set; }

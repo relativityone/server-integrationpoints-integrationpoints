@@ -52,7 +52,11 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return PartialView("_IntegrationDetailsPartial");
 		}
 
-		public ActionResult StepDetails3()
+        public ActionResult StepDetails3Reversed()
+        {
+            return PartialView("_IntegrationMapFieldsReversed");
+        }
+        public ActionResult StepDetails3()
 		{
 			return PartialView("_IntegrationMapFields");
 		}

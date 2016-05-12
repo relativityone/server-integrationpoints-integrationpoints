@@ -49,6 +49,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.Repositories.Implemen
 					x => new ArtifactDTO(
 						x.Artifact.ArtifactID,
 						10, // TODO: use enum but note that Relativity.ArtifactType excepts here on the agent :/
+						"Document",
 						new ArtifactFieldDTO[0])).ToArray();
 
 				_documentsRetrieved += results.Length;

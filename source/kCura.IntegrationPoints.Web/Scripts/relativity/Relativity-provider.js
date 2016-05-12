@@ -1,14 +1,56 @@
 ﻿$(function (root) {
 	//Create a new communication object that talks to the host page.
-	var message = IP.frameMessaging();
+	var message = IP.frameMessaging(); // handle into the global Integration point framework
+	ko.validation.configure({
+		registerExtenders: true,
+		messagesOnModified: true,
+		insertMessages: true,
+		parseInputAttributes: true,
+		messageTemplate: null
+	});
+	ko.validation.insertValidationMessage = function (element) {
+		var errorContainer = document.createElement('div');
+		var iconSpan = document.createElement('span');
+		iconSpan.className = 'icon-error legal-hold field-validation-error';
+
+		errorContainer.appendChild(iconSpan);
+
+		$(element).parents('.field-value').eq(0).append(errorContainer);
+
+		return iconSpan;
+	};
+
+	// custom validation rules 
+	ko.validation.rules['checkWorkspace'] = {
+		validator: function (value, params) {
+			var isArtifactIdInList = doesArtifactIdExistInObjectList(params.workspaces(), value);
+			if (!isArtifactIdInList) {
+				return false;
+			}
+			return true;
+		},
+		message: 'The target workspace is no longer accessible. Please verify your settings or create a new Integration Point.'
+	};
+	ko.validation.rules['checkSavedSearch'] = {
+		validator: function (value, params) {
+			var isArtifactIdInList = doesArtifactIdExistInObjectList(params.savedSearches(), value);
+			if (!isArtifactIdInList) {
+				return false;
+			}
+			return true;
+		},
+		message: 'The saved search is no longer accessible. Please verify your settings or create a new Integration Point.'
+	};
+	ko.validation.registerExtenders();
 
 	var viewModel;
 
+	message.dFrame.IP.reverseMapFields = true; // set the flag so that the fields can be reversed;
 	//An event raised when the user has clicked the Next or Save button.
+
 	message.subscribe('submit', function () {
 		//Execute save logic that persists the state.
 		this.publish("saveState", JSON.stringify(ko.toJS(viewModel)));
-
 		if (viewModel.errors().length === 0) {
 			//Communicate to the host page that it to continue.
 			this.publish('saveComplete', JSON.stringify(viewModel.getSelectedOption()));
@@ -38,7 +80,6 @@
 			viewModel = new Model(m);
 			ko.applyBindings(viewModel, document.getElementById('relativityProviderConfiguration'));
 		}
-
 		// expect model to be serialized to string
 		if (typeof m === "string") {
 			try {
@@ -53,16 +94,102 @@
 	});
 
 	var Model = function (m) {
-
 		var state = $.extend({}, {}, m);
 		var self = this;
 
-		this.workspaces = ko.observableArray(state.workspaces);
-		this.savedSearches = ko.observableArray(state.savedSearches);
-		this.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
+		self.workspaces = ko.observableArray(state.workspaces);
+		self.savedSearches = ko.observableArray(state.savedSearches);
+		self.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
+		this.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId);
+		this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId);
+		// load the data first before preceding this could cause problems below when we try to do validation on fields
+		if (self.savedSearches.length === 0) {
+			IP.data.ajax({
+				type: 'GET',
+				url: IP.utils.generateWebAPIURL('SavedSearchFinder'),
+				async: true,
+				success: function (result) {
+					self.savedSearches(result);
+				},
+				error: function () {
+					self.savedSearches = undefined;
+				}
+			});
+		}
 
-		this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId).extend({
-			required: true
+		if (self.workspaces.length === 0) {
+			IP.data.ajax({
+				type: 'GET',
+				url: IP.utils.generateWebAPIURL('WorkspaceFinder'),
+				async: true,
+				success: function (result) {
+					self.workspaces(result);
+				},
+				error: function () {
+					self.workspaces = undefined;
+				}
+			});
+		}
+
+		this.TargetWorkspaceArtifactId.extend({
+			required: {
+				onlyIf: function () {
+					return !self.disable;
+				}
+			}
+		}).extend({
+			validation: {
+				validator: function (value) {
+					var workspaces = self.workspaces();
+					if (typeof (workspaces) !== "undefined") {
+						for (var i = 0; i < workspaces.length; i++) {
+							if (workspaces[i].displayName.indexOf(';') != -1 && value == workspaces[i].value) {
+								return false;
+							}
+						}
+					}
+					return true;
+				},
+				message: "Destination workspace name contains an invalid character. Please remove before continuing."
+			}
+		}).extend({
+			validation: {
+				validator: function (value) {
+					var workspaces = self.workspaces();
+					if (typeof (workspaces) !== "undefined") {
+						var sourceId = IP.utils.getParameterByName('AppID', window.top);
+						for (var i = 0; i < workspaces.length; i++) {
+							if (workspaces[i].displayName.indexOf(';') != -1 && workspaces[i].value == sourceId) {
+								return false;
+							}
+						}
+					}
+					return true;
+				},
+				message: "Source workspace name contains an invalid character. Please remove before continuing."
+			}
+		}).extend({
+			checkWorkspace: {
+				onlyIf: function () {
+					return (typeof self.workspaces()) !== "undefined";
+				},
+				params: { workspaces: self.workspaces }
+			}
+		});
+
+		this.SavedSearchArtifactId.extend({
+			required: {
+				onlyIf: function () {
+					return !self.disable;
+				}
+			}
+		}).extend({
+			checkSavedSearch: {
+				onlyIf: function () {
+					return (typeof self.savedSearches()) !== "undefined";
+				},
+				params: { savedSearches: self.savedSearches }
+			}
 		});
 
 
@@ -72,33 +199,24 @@
 			}
 		});
 
-
-		this.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId).extend({
-			required: true
-		});
-
-		if (self.savedSearches.length === 0) {
-			// load saved searches
-			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('SavedSearchFinder') }).then(function (result) {
-				self.savedSearches(result);
-
-			});
-		}
-			
-		if (self.workspaces.length === 0) {
-			// load workspaces
-			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('WorkspaceFinder') }).then(function (result) {
-				self.workspaces(result);
-			});
-		}
-		
 		this.errors = ko.validation.group(this, { deep: true });
-		this.getSelectedOption = function() {
+		this.getSelectedOption = function () {
 			return {
 				"SavedSearchArtifactId": self.SavedSearchArtifactId(),
 				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
-				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
+				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId()
 			}
 		}
+	}
+
+	function doesArtifactIdExistInObjectList(list, artifactId) {
+		if (artifactId !== undefined) {
+			for (var i = 0; i < list.length; i++) {
+				if (list[i].value === artifactId) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 });

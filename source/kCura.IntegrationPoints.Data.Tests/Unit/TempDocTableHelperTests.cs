@@ -37,17 +37,14 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_fieldRepository = Substitute.For<IFieldRepository>();
 			_documentRepository = Substitute.For<IDocumentRepository>();
 
-			_instance = new TempDocTableHelper(_helper, _tableSuffix, _sourceWorkspaceId, _docIdColumn, _fieldRepository,
-				_documentRepository);
-
+			_instance = new TempDocTableHelper(_helper, _tableSuffix, _sourceWorkspaceId, _fieldRepository, _documentRepository, _docIdColumn);
 
 			ArtifactDTO[] fieldArtifacts = CreateArtifactDTOs();
-			ArtifactDTO document = new ArtifactDTO(12345, 10, new ArtifactFieldDTO[] { });
+			ArtifactDTO document = new ArtifactDTO(12345, 10, "Document", new ArtifactFieldDTO[] { });
 
 			_successFieldTask = Task<ArtifactDTO[]>.FromResult(fieldArtifacts);
 			_successDocumentTask = Task<ArtifactDTO>.FromResult(document);
 			_failedDocumentTask = null;
-
 		}
 
 		[Test]
@@ -195,7 +192,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			};
 			ArtifactFieldDTO[] fieldDTOs = {artifactFieldName, artifactFieldIdentifier};
 
-			var fieldOne = new ArtifactDTO(1, 10, fieldDTOs);
+			var fieldOne = new ArtifactDTO(1, 10, "Document", fieldDTOs);
 
 			var artifactFieldName2 = new ArtifactFieldDTO()
 			{
@@ -213,7 +210,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			};
 			ArtifactFieldDTO[] fieldDTOs2 = {artifactFieldName2, artifactFieldIdentifier2};
 
-			var fieldTwo = new ArtifactDTO(2, 10, fieldDTOs2);
+			var fieldTwo = new ArtifactDTO(2, 10, "Document", fieldDTOs2);
 
 			return new ArtifactDTO[] {fieldOne, fieldTwo};
 		}

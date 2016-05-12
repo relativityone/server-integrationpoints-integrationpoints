@@ -55,7 +55,7 @@
 | | ...				| [id] 0eefcae0-a89f-11e4-8d1c-b8ca3a83048f
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Communication	| 
-| | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2020	| EndDate=04/15/2021	| ScheduledTime=11:32 PM
+| | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2030	| EndDate=04/15/2031	| ScheduledTime=11:32 PM
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 

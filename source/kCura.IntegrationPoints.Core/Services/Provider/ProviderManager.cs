@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Contracts
 		{
 			// Resolve new app domain's assemblies
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyDomainLoader.ResolveAssembly;
-			Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+			System.Reflection.Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			Type startupType = typeof(IStartUp);
 
 			var types = new List<Type>();
@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Contracts
 				{
 					if (!_windsorContainer.Kernel.HasComponent(typeof(IHelper)))
 					{
-						_windsorContainer.Register(Component.For<IHelper>().Instance(helper).LifestyleTransient());
+						_windsorContainer.Register(Component.For<IHelper>().Instance(helper).LifestyleSingleton());
 					}
 				}
 

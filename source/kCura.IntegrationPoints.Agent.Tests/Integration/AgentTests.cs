@@ -1,15 +1,14 @@
-﻿using kCura.IntegrationPoint.Tests.Core;
+﻿using System.Data;
+using kCura.Apps.Common.Config;
+using kCura.Apps.Common.Data;
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoints.Core.Models;
+using NSubstitute;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
-	using System.Data;
-	using Apps.Common.Config;
-	using Apps.Common.Data;
-	using Core.Models;
-	using global::Relativity.API;
-	using NSubstitute;
-
 	[TestFixture]
 	public class AgentTests : IntegrationTestBase
 	{
@@ -17,7 +16,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		[Explicit]
 		public void CreateJob()
 		{
-
 		}
 
 		[Test]
@@ -29,13 +27,12 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			helper.GetDBContext(-1).Returns(context);
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(helper);
 
-			int workspaceArtifactId = Helper.Workspace.CreateWorkspace("Testing Integration5", "New Case Template");
+			int workspaceArtifactId = Helper.Workspace.CreateWorkspace("Testing Integration7", "New Case Template");
 			Helper.Workspace.ImportApplicationToWorkspace(workspaceArtifactId, @"C:\SourceCode\IntegrationPoints\source\bin\Application\RelativityIntegrationPoints.Auto.rap", true);
 			Helper.Import.ImportNewDocuments(workspaceArtifactId, GetImportTable());
 			int savedSearchArtifactId = Helper.SavedSearch.CreateSavedSearch("localhost", Helper.SharedVariables.RelativityUserName, Helper.SharedVariables.RelativityPassword, workspaceArtifactId, "All Documents");
 			IntegrationModel integrationModel = new IntegrationModel();
 			integrationModel.SourceProvider = savedSearchArtifactId;
-
 		}
 
 		private DataTable GetImportTable()

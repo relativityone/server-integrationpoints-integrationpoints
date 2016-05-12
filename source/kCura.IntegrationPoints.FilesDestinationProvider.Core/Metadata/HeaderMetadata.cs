@@ -1,4 +1,4 @@
-﻿namespace kCura.IntegrationPoint.FilesDestinationProvider.Core.Metadata
+﻿namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Metadata
 {
 	public struct HeaderMetadata
 	{

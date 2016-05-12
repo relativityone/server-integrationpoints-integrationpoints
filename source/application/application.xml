@@ -512,6 +512,11 @@
       <ColumnName>ItemswithErrors</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1001635</ArtifactViewFieldId>
+      <ArtifactTypeId>1000057</ArtifactTypeId>
+      <ColumnName>JobType</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001566</ArtifactViewFieldId>
       <ArtifactTypeId>1000057</ArtifactTypeId>
       <ColumnName>Name</ColumnName>
@@ -570,6 +575,11 @@
       <ArtifactViewFieldId>1001604</ArtifactViewFieldId>
       <ArtifactTypeId>1000058</ArtifactTypeId>
       <ColumnName>Error</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001634</ArtifactViewFieldId>
+      <ArtifactTypeId>1000058</ArtifactTypeId>
+      <ColumnName>ErrorStatus</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001606</ArtifactViewFieldId>
@@ -739,7 +749,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-04-25T21:32:39.2183576Z</ExtractionDate>
+  <ExtractionDate>2016-05-05T19:36:55.2130964Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -2920,22 +2930,35 @@
               <LayoutArtifactId>1038382</LayoutArtifactId>
               <Order>0</Order>
               <Title>General</Title>
+              <ContextualHelp />
               <Collapsible>false</Collapsible>
               <DefaultCollapsed>false</DefaultCollapsed>
               <TabbedDisplay>0</TabbedDisplay>
-              <ParentCategory xsi:nil="true" />
+              <ParentCategory>1000425</ParentCategory>
               <Type>0</Type>
+            </Category>
+            <Category>
+              <CategoryId>1000425</CategoryId>
+              <LayoutArtifactId>1038382</LayoutArtifactId>
+              <Order>0</Order>
+              <Title>Layout Group</Title>
+              <ContextualHelp />
+              <Collapsible>false</Collapsible>
+              <DefaultCollapsed>false</DefaultCollapsed>
+              <TabbedDisplay xsi:nil="true" />
+              <ParentCategory xsi:nil="true" />
+              <Type>1</Type>
             </Category>
             <Category>
               <CategoryId>1000417</CategoryId>
               <LayoutArtifactId>1038382</LayoutArtifactId>
-              <Order>20</Order>
+              <Order>1</Order>
               <Title>Scheduling</Title>
               <ContextualHelp />
               <Collapsible>false</Collapsible>
               <DefaultCollapsed>false</DefaultCollapsed>
               <TabbedDisplay>0</TabbedDisplay>
-              <ParentCategory xsi:nil="true" />
+              <ParentCategory>1000425</ParentCategory>
               <Type>0</Type>
             </Category>
           </Categories>
@@ -3161,7 +3184,7 @@
           <Name>Integration Point Details</Name>
           <Notes />
           <Order>10</Order>
-          <ApplicationVersion>2.0.0.36</ApplicationVersion>
+          <ApplicationVersion>2.0.0.44</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Integration Point</Name>
@@ -3178,6 +3201,18 @@
           <Type>MassActionVisibility</Type>
           <Value>&lt;value /&gt;</Value>
           <ApplicationVersion>2.0.0.28</ApplicationVersion>
+        </ObjectRule>
+        <ObjectRule>
+          <Name>Remove Add/Delete/Rename from Overwrite Fields</Name>
+          <Action>&lt;action&gt;&lt;choiceAddLinkVisibility&gt;&lt;showAdd&gt;False&lt;/showAdd&gt;&lt;showDelete&gt;False&lt;/showDelete&gt;&lt;showRename&gt;False&lt;/showRename&gt;&lt;/choiceAddLinkVisibility&gt;&lt;/action&gt;</Action>
+          <ArtifactTypeID>1000054</ArtifactTypeID>
+          <FieldArtifactID>1038344</FieldArtifactID>
+          <Guid>1fa7cf2e-bda1-406a-a198-bd7262e27077</Guid>
+          <ObjectRuleID>1038492</ObjectRuleID>
+          <Operator />
+          <Type>ChoiceAddLinkVisibility</Type>
+          <Value>&lt;value /&gt;</Value>
+          <ApplicationVersion>2.0.0.41</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -5447,6 +5482,101 @@
           <AutoAddChoices>false</AutoAddChoices>
           <ApplicationVersion>2.0.0.22</ApplicationVersion>
         </Field>
+        <Field>
+          <AllowHTML>false</AllowHTML>
+          <ArtifactId>1038484</ArtifactId>
+          <ArtifactViewFieldId>1001635</ArtifactViewFieldId>
+          <AssociativeArtifactTypeId xsi:nil="true" />
+          <Codes>
+            <Code>
+              <ArtifactId>1038485</ArtifactId>
+              <Guid>86c8c17d-74ec-4187-bdb1-9380252f4c20</Guid>
+              <IsActive>true</IsActive>
+              <Keywords />
+              <Name>Run Now</Name>
+              <Notes />
+              <OIHiliteStyleID>3</OIHiliteStyleID>
+              <Order>0</Order>
+              <ParentArtifactId>1003663</ParentArtifactId>
+              <ParentIsCode>false</ParentIsCode>
+              <UpdateInSearchEngine>false</UpdateInSearchEngine>
+              <ApplicationVersion>2.0.0.41</ApplicationVersion>
+            </Code>
+            <Code>
+              <ArtifactId>1038486</ArtifactId>
+              <Guid>79510ad3-49cb-4b4f-840c-c64247404a4d</Guid>
+              <IsActive>true</IsActive>
+              <Keywords />
+              <Name>Scheduled Run</Name>
+              <Notes />
+              <OIHiliteStyleID>3</OIHiliteStyleID>
+              <Order>10</Order>
+              <ParentArtifactId>1003663</ParentArtifactId>
+              <ParentIsCode>false</ParentIsCode>
+              <UpdateInSearchEngine>true</UpdateInSearchEngine>
+              <ApplicationVersion>2.0.0.41</ApplicationVersion>
+            </Code>
+            <Code>
+              <ArtifactId>1038487</ArtifactId>
+              <Guid>b0171a20-2042-44eb-a957-5dbc9c377c2f</Guid>
+              <IsActive>true</IsActive>
+              <Keywords />
+              <Name>Retry Errors</Name>
+              <Notes />
+              <OIHiliteStyleID>3</OIHiliteStyleID>
+              <Order>20</Order>
+              <ParentArtifactId>1003663</ParentArtifactId>
+              <ParentIsCode>false</ParentIsCode>
+              <UpdateInSearchEngine>false</UpdateInSearchEngine>
+              <ApplicationVersion>2.0.0.41</ApplicationVersion>
+            </Code>
+          </Codes>
+          <CodeTypeId>1000134</CodeTypeId>
+          <ConnectorFieldArtifactId xsi:nil="true" />
+          <DisplayName>Job Type</DisplayName>
+          <DisplayValueFalse />
+          <DisplayValueTrue />
+          <FieldArtifactTypeId>1000057</FieldArtifactTypeId>
+          <FieldCategoryId>0</FieldCategoryId>
+          <FieldTypeId>5</FieldTypeId>
+          <FilterType>List</FilterType>
+          <FormatString />
+          <FriendlyName />
+          <Guids>e809db5e-5e99-4a75-98a1-26129313a3f5</Guids>
+          <Guid>e809db5e-5e99-4a75-98a1-26129313a3f5</Guid>
+          <ImportBehavior xsi:nil="true" />
+          <EnableDataGrid>false</EnableDataGrid>
+          <OverlayBehavior xsi:nil="true" />
+          <IsAdditionalFileField>false</IsAdditionalFileField>
+          <IsArtifactBaseField>false</IsArtifactBaseField>
+          <IsAvailableInChoiceTree>false</IsAvailableInChoiceTree>
+          <IsAvailableToAssociativeObjects>false</IsAvailableToAssociativeObjects>
+          <IsEditable>true</IsEditable>
+          <IsGroupByEnabled>false</IsGroupByEnabled>
+          <IsIndexEnabled>false</IsIndexEnabled>
+          <IsLinked>false</IsLinked>
+          <IsRemovable>true</IsRemovable>
+          <IsRequired>false</IsRequired>
+          <IsSortable>true</IsSortable>
+          <IsVisible>true</IsVisible>
+          <Keywords />
+          <LinkType>false</LinkType>
+          <MaxLength xsi:nil="true" />
+          <Notes />
+          <RelationalIndexViewArtifactID xsi:nil="true" />
+          <SourceFieldArtifactId xsi:nil="true" />
+          <UseUnicodeEncoding>true</UseUnicodeEncoding>
+          <Width />
+          <Wrapping>true</Wrapping>
+          <AllowPivot>false</AllowPivot>
+          <AllowGroupBy>false</AllowGroupBy>
+          <AvailableInViewer>false</AvailableInViewer>
+          <PopupPickerView xsi:nil="true" />
+          <FieldTreeView xsi:nil="true" />
+          <SiblingFieldArtifactID xsi:nil="true" />
+          <AutoAddChoices>true</AutoAddChoices>
+          <ApplicationVersion>2.0.0.42</ApplicationVersion>
+        </Field>
       </Fields>
       <Guid>08f4b1f7-9692-4a08-94ab-b5f3a88b6cc9</Guid>
       <KeyWords />
@@ -5519,6 +5649,23 @@
               <CategoryId>1000421</CategoryId>
               <ColSpan>1</ColSpan>
               <Column>1</Column>
+              <FieldArtifactId>1038484</FieldArtifactId>
+              <FieldDisplayTypeId>4</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>false</IsReadOnly>
+              <LayoutArtifactId>1038385</LayoutArtifactId>
+              <NameValue />
+              <Order>0</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>3</Row>
+              <Rows>10</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
+              <CategoryId>1000421</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>1</Column>
               <FieldArtifactId>1038359</FieldArtifactId>
               <FieldDisplayTypeId>4</FieldDisplayTypeId>
               <FullTextFieldHeight xsi:nil="true" />
@@ -5528,7 +5675,7 @@
               <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>3</Row>
+              <Row>4</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -5541,10 +5688,11 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038385</LayoutArtifactId>
+              <NameValue />
               <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>4</Row>
+              <Row>5</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -5557,10 +5705,11 @@
               <FullTextFieldHeight xsi:nil="true" />
               <IsReadOnly>true</IsReadOnly>
               <LayoutArtifactId>1038385</LayoutArtifactId>
+              <NameValue />
               <Order>0</Order>
               <PickerViewArtifactId xsi:nil="true" />
               <RepeatColumn>0</RepeatColumn>
-              <Row>5</Row>
+              <Row>6</Row>
               <Rows>1</Rows>
               <ShowNameColumn>true</ShowNameColumn>
             </LayoutField>
@@ -5612,7 +5761,7 @@
           <Name>Job Details</Name>
           <Notes />
           <Order>0</Order>
-          <ApplicationVersion>2.0.0.39</ApplicationVersion>
+          <ApplicationVersion>2.0.0.42</ApplicationVersion>
         </Layout>
       </Layouts>
       <Name>Job History</Name>
@@ -5641,6 +5790,30 @@
           <Type>MassActionVisibility</Type>
           <Value>&lt;value /&gt;</Value>
           <ApplicationVersion>2.0.0.23</ApplicationVersion>
+        </ObjectRule>
+        <ObjectRule>
+          <Name>Remove Add/Delete/Rename from Job Type</Name>
+          <Action>&lt;action&gt;&lt;choiceAddLinkVisibility&gt;&lt;showAdd&gt;False&lt;/showAdd&gt;&lt;showDelete&gt;False&lt;/showDelete&gt;&lt;showRename&gt;False&lt;/showRename&gt;&lt;/choiceAddLinkVisibility&gt;&lt;/action&gt;</Action>
+          <ArtifactTypeID>1000057</ArtifactTypeID>
+          <FieldArtifactID>1038484</FieldArtifactID>
+          <Guid>9b6c8ff0-e8ba-4e45-a6be-c579b2956a29</Guid>
+          <ObjectRuleID>1038488</ObjectRuleID>
+          <Operator />
+          <Type>ChoiceAddLinkVisibility</Type>
+          <Value>&lt;value /&gt;</Value>
+          <ApplicationVersion>2.0.0.41</ApplicationVersion>
+        </ObjectRule>
+        <ObjectRule>
+          <Name>Remove Add/Delete/Rename from Status</Name>
+          <Action>&lt;action&gt;&lt;choiceAddLinkVisibility&gt;&lt;showAdd&gt;False&lt;/showAdd&gt;&lt;showDelete&gt;False&lt;/showDelete&gt;&lt;showRename&gt;False&lt;/showRename&gt;&lt;/choiceAddLinkVisibility&gt;&lt;/action&gt;</Action>
+          <ArtifactTypeID>1000057</ArtifactTypeID>
+          <FieldArtifactID>1038359</FieldArtifactID>
+          <Guid>be31de79-3e95-47ee-8330-91ff45955be3</Guid>
+          <ObjectRuleID>1038490</ObjectRuleID>
+          <Operator />
+          <Type>ChoiceAddLinkVisibility</Type>
+          <Value>&lt;value /&gt;</Value>
+          <ApplicationVersion>2.0.0.41</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -6005,39 +6178,49 @@
               <Order>0</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001566</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001563</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>1</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001588</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001566</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>2</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001597</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001588</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>3</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001608</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001635</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>4</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001598</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001597</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>5</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001610</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001608</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>6</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001599</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001598</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>7</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001610</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>8</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001599</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>9</Order>
             </ViewField>
           </ViewFields>
           <ViewOrders>
@@ -6052,7 +6235,7 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>2.0.0.14</ApplicationVersion>
+          <ApplicationVersion>2.0.0.43</ApplicationVersion>
         </View>
         <View>
           <ArtifactId>1038380</ArtifactId>
@@ -6085,34 +6268,44 @@
           </ViewCriteria>
           <ViewFields>
             <ViewField>
-              <ArtifactViewFieldId>1001566</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001563</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>0</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001588</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001566</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>1</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001597</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001588</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>2</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001598</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001635</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>3</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001599</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001597</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>4</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001600</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001598</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>5</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001599</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>6</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001600</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>7</Order>
             </ViewField>
           </ViewFields>
           <ViewOrders>
@@ -6127,7 +6320,7 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>0.0.0.1</ApplicationVersion>
+          <ApplicationVersion>2.0.0.43</ApplicationVersion>
         </View>
       </Views>
       <ApplicationVersion>0.0.0.1</ApplicationVersion>
@@ -6438,10 +6631,319 @@
           <AutoAddChoices>false</AutoAddChoices>
           <ApplicationVersion>2.0.0.4</ApplicationVersion>
         </Field>
+        <Field>
+          <AllowHTML>false</AllowHTML>
+          <ArtifactId>1038479</ArtifactId>
+          <ArtifactViewFieldId>1001634</ArtifactViewFieldId>
+          <AssociativeArtifactTypeId xsi:nil="true" />
+          <Codes>
+            <Code>
+              <ArtifactId>1038480</ArtifactId>
+              <Guid>f881b199-8a67-4d49-b1c1-f9e68658fb5a</Guid>
+              <IsActive>true</IsActive>
+              <Keywords />
+              <Name>New</Name>
+              <Notes />
+              <OIHiliteStyleID>3</OIHiliteStyleID>
+              <Order>0</Order>
+              <ParentArtifactId>1003663</ParentArtifactId>
+              <ParentIsCode>false</ParentIsCode>
+              <UpdateInSearchEngine>false</UpdateInSearchEngine>
+              <ApplicationVersion>2.0.0.41</ApplicationVersion>
+            </Code>
+            <Code>
+              <ArtifactId>1038481</ArtifactId>
+              <Guid>af01a8fa-b419-49b1-bd71-25296e221e57</Guid>
+              <IsActive>true</IsActive>
+              <Keywords />
+              <Name>Expired</Name>
+              <Notes />
+              <OIHiliteStyleID>3</OIHiliteStyleID>
+              <Order>10</Order>
+              <ParentArtifactId>1003663</ParentArtifactId>
+              <ParentIsCode>false</ParentIsCode>
+              <UpdateInSearchEngine>false</UpdateInSearchEngine>
+              <ApplicationVersion>2.0.0.41</ApplicationVersion>
+            </Code>
+            <Code>
+              <ArtifactId>1038482</ArtifactId>
+              <Guid>e5ebd98c-c976-4fa2-936f-434e265ea0aa</Guid>
+              <IsActive>true</IsActive>
+              <Keywords />
+              <Name>In Progress</Name>
+              <Notes />
+              <OIHiliteStyleID>3</OIHiliteStyleID>
+              <Order>20</Order>
+              <ParentArtifactId>1003663</ParentArtifactId>
+              <ParentIsCode>false</ParentIsCode>
+              <UpdateInSearchEngine>false</UpdateInSearchEngine>
+              <ApplicationVersion>2.0.0.41</ApplicationVersion>
+            </Code>
+            <Code>
+              <ArtifactId>1038483</ArtifactId>
+              <Guid>7d3d393d-384f-434e-9776-f9966550d29a</Guid>
+              <IsActive>true</IsActive>
+              <Keywords />
+              <Name>Retried</Name>
+              <Notes />
+              <OIHiliteStyleID>3</OIHiliteStyleID>
+              <Order>30</Order>
+              <ParentArtifactId>1003663</ParentArtifactId>
+              <ParentIsCode>false</ParentIsCode>
+              <UpdateInSearchEngine>false</UpdateInSearchEngine>
+              <ApplicationVersion>2.0.0.41</ApplicationVersion>
+            </Code>
+          </Codes>
+          <CodeTypeId>1000133</CodeTypeId>
+          <ConnectorFieldArtifactId xsi:nil="true" />
+          <DisplayName>Error Status</DisplayName>
+          <DisplayValueFalse />
+          <DisplayValueTrue />
+          <FieldArtifactTypeId>1000058</FieldArtifactTypeId>
+          <FieldCategoryId>0</FieldCategoryId>
+          <FieldTypeId>5</FieldTypeId>
+          <FilterType>List</FilterType>
+          <FormatString />
+          <FriendlyName />
+          <Guids>de1a46d2-d615-427a-b9f2-c10769bc2678</Guids>
+          <Guid>de1a46d2-d615-427a-b9f2-c10769bc2678</Guid>
+          <ImportBehavior xsi:nil="true" />
+          <EnableDataGrid>false</EnableDataGrid>
+          <OverlayBehavior xsi:nil="true" />
+          <IsAdditionalFileField>false</IsAdditionalFileField>
+          <IsArtifactBaseField>false</IsArtifactBaseField>
+          <IsAvailableInChoiceTree>false</IsAvailableInChoiceTree>
+          <IsAvailableToAssociativeObjects>false</IsAvailableToAssociativeObjects>
+          <IsEditable>true</IsEditable>
+          <IsGroupByEnabled>false</IsGroupByEnabled>
+          <IsIndexEnabled>false</IsIndexEnabled>
+          <IsLinked>false</IsLinked>
+          <IsRemovable>true</IsRemovable>
+          <IsRequired>false</IsRequired>
+          <IsSortable>true</IsSortable>
+          <IsVisible>true</IsVisible>
+          <Keywords />
+          <LinkType>false</LinkType>
+          <MaxLength xsi:nil="true" />
+          <Notes />
+          <RelationalIndexViewArtifactID xsi:nil="true" />
+          <SourceFieldArtifactId xsi:nil="true" />
+          <UseUnicodeEncoding>true</UseUnicodeEncoding>
+          <Width />
+          <Wrapping>true</Wrapping>
+          <AllowPivot>false</AllowPivot>
+          <AllowGroupBy>false</AllowGroupBy>
+          <AvailableInViewer>false</AvailableInViewer>
+          <PopupPickerView xsi:nil="true" />
+          <FieldTreeView xsi:nil="true" />
+          <SiblingFieldArtifactID xsi:nil="true" />
+          <AutoAddChoices>true</AutoAddChoices>
+          <ApplicationVersion>2.0.0.42</ApplicationVersion>
+        </Field>
       </Fields>
       <Guid>17e7912d-4f57-4890-9a37-abc2b8a37bdb</Guid>
       <KeyWords />
-      <Layouts />
+      <Layouts>
+        <Layout>
+          <OverwriteProtection>true</OverwriteProtection>
+          <ArtifactId>1038386</ArtifactId>
+          <Categories>
+            <Category>
+              <CategoryId>1000423</CategoryId>
+              <LayoutArtifactId>1038386</LayoutArtifactId>
+              <Order>0</Order>
+              <Title>Error Details</Title>
+              <ContextualHelp />
+              <Collapsible>false</Collapsible>
+              <DefaultCollapsed>false</DefaultCollapsed>
+              <TabbedDisplay>0</TabbedDisplay>
+              <ParentCategory xsi:nil="true" />
+              <Type>0</Type>
+            </Category>
+          </Categories>
+          <Guid>52f405af-9903-47a8-a00b-f1359b548526</Guid>
+          <Keywords />
+          <LayoutArtifactTypeId>1000058</LayoutArtifactTypeId>
+          <LayoutFields>
+            <LayoutField>
+              <CategoryId>1000423</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>1</Column>
+              <FieldArtifactId>1038325</FieldArtifactId>
+              <FieldDisplayTypeId>0</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>true</IsReadOnly>
+              <LayoutArtifactId>1038386</LayoutArtifactId>
+              <NameValue />
+              <Order>1</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>0</Row>
+              <Rows>1</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
+              <CategoryId>1000423</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>2</Column>
+              <FieldArtifactId>1038319</FieldArtifactId>
+              <FieldDisplayTypeId>6</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>true</IsReadOnly>
+              <LayoutArtifactId>1038386</LayoutArtifactId>
+              <NameValue />
+              <Order>0</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>0</Row>
+              <Rows>10</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
+              <CategoryId>1000423</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>1</Column>
+              <FieldArtifactId>1038370</FieldArtifactId>
+              <FieldDisplayTypeId>0</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>false</IsReadOnly>
+              <LayoutArtifactId>1038386</LayoutArtifactId>
+              <NameValue />
+              <Order>0</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>1</Row>
+              <Rows>10</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
+              <CategoryId>1000423</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>2</Column>
+              <FieldArtifactId>1038321</FieldArtifactId>
+              <FieldDisplayTypeId>0</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>true</IsReadOnly>
+              <LayoutArtifactId>1038386</LayoutArtifactId>
+              <NameValue />
+              <Order>0</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>1</Row>
+              <Rows>10</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
+              <CategoryId>1000423</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>1</Column>
+              <FieldArtifactId>1038324</FieldArtifactId>
+              <FieldDisplayTypeId>16</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>true</IsReadOnly>
+              <LayoutArtifactId>1038386</LayoutArtifactId>
+              <NameValue>Job History</NameValue>
+              <Order>0</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>2</Row>
+              <Rows>1</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
+              <CategoryId>1000423</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>2</Column>
+              <FieldArtifactId>1038322</FieldArtifactId>
+              <FieldDisplayTypeId>0</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>true</IsReadOnly>
+              <LayoutArtifactId>1038386</LayoutArtifactId>
+              <NameValue />
+              <Order>0</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>2</Row>
+              <Rows>10</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
+              <CategoryId>1000423</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>1</Column>
+              <FieldArtifactId>1038371</FieldArtifactId>
+              <FieldDisplayTypeId>1</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>false</IsReadOnly>
+              <LayoutArtifactId>1038386</LayoutArtifactId>
+              <NameValue />
+              <Order>0</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>4</Row>
+              <Rows>3</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
+              <CategoryId>1000423</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>1</Column>
+              <FieldArtifactId>1038479</FieldArtifactId>
+              <FieldDisplayTypeId>4</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>false</IsReadOnly>
+              <LayoutArtifactId>1038386</LayoutArtifactId>
+              <NameValue />
+              <Order>0</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>6</Row>
+              <Rows>10</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
+              <CategoryId>1000423</CategoryId>
+              <ColSpan>1</ColSpan>
+              <Column>1</Column>
+              <FieldArtifactId>1038373</FieldArtifactId>
+              <FieldDisplayTypeId>4</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>false</IsReadOnly>
+              <LayoutArtifactId>1038386</LayoutArtifactId>
+              <NameValue />
+              <Order>0</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>7</Row>
+              <Rows>10</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+            <LayoutField>
+              <CategoryId>1000423</CategoryId>
+              <ColSpan>2</ColSpan>
+              <Column>1</Column>
+              <FieldArtifactId>1038394</FieldArtifactId>
+              <FieldDisplayTypeId>1</FieldDisplayTypeId>
+              <FullTextFieldHeight xsi:nil="true" />
+              <IsReadOnly>true</IsReadOnly>
+              <LayoutArtifactId>1038386</LayoutArtifactId>
+              <NameValue>Full Error</NameValue>
+              <Order>0</Order>
+              <PickerViewArtifactId xsi:nil="true" />
+              <RepeatColumn>1</RepeatColumn>
+              <Row>8</Row>
+              <Rows>3</Rows>
+              <ShowNameColumn>true</ShowNameColumn>
+            </LayoutField>
+          </LayoutFields>
+          <LayoutTexts />
+          <LayoutViews />
+          <Name>Job History Error Layout</Name>
+          <Notes />
+          <Order>0</Order>
+          <ApplicationVersion>2.0.0.45</ApplicationVersion>
+        </Layout>
+      </Layouts>
       <Name>Job History Error</Name>
       <Notes />
       <ObjectRules>
@@ -6468,6 +6970,30 @@
           <Type>MassActionVisibility</Type>
           <Value>&lt;value /&gt;</Value>
           <ApplicationVersion>2.0.0.23</ApplicationVersion>
+        </ObjectRule>
+        <ObjectRule>
+          <Name>Remove Add/Delete/Rename from Error Status</Name>
+          <Action>&lt;action&gt;&lt;choiceAddLinkVisibility&gt;&lt;showAdd&gt;False&lt;/showAdd&gt;&lt;showDelete&gt;False&lt;/showDelete&gt;&lt;showRename&gt;False&lt;/showRename&gt;&lt;/choiceAddLinkVisibility&gt;&lt;/action&gt;</Action>
+          <ArtifactTypeID>1000058</ArtifactTypeID>
+          <FieldArtifactID>1038479</FieldArtifactID>
+          <Guid>8d24ea60-7d43-408d-a0ea-f385ce082cdf</Guid>
+          <ObjectRuleID>1038489</ObjectRuleID>
+          <Operator />
+          <Type>ChoiceAddLinkVisibility</Type>
+          <Value>&lt;value /&gt;</Value>
+          <ApplicationVersion>2.0.0.41</ApplicationVersion>
+        </ObjectRule>
+        <ObjectRule>
+          <Name>Remove Add/Delete/Rename from Error Type</Name>
+          <Action>&lt;action&gt;&lt;choiceAddLinkVisibility&gt;&lt;showAdd&gt;False&lt;/showAdd&gt;&lt;showDelete&gt;False&lt;/showDelete&gt;&lt;showRename&gt;False&lt;/showRename&gt;&lt;/choiceAddLinkVisibility&gt;&lt;/action&gt;</Action>
+          <ArtifactTypeID>1000058</ArtifactTypeID>
+          <FieldArtifactID>1038373</FieldArtifactID>
+          <Guid>2c0e1977-c77a-46e8-a1db-32a94bf8d0ea</Guid>
+          <ObjectRuleID>1038491</ObjectRuleID>
+          <Operator />
+          <Type>ChoiceAddLinkVisibility</Type>
+          <Value>&lt;value /&gt;</Value>
+          <ApplicationVersion>2.0.0.41</ApplicationVersion>
         </ObjectRule>
       </ObjectRules>
       <MassOperations />
@@ -6846,6 +7372,18 @@
       </SystemFields>
       <SystemLayouts />
       <SystemViews />
+      <Tab>
+        <ArtifactId>1038329</ArtifactId>
+        <DisplayOrder>25</DisplayOrder>
+        <Guid>fd585dbf-98ea-427b-8ce5-3e09a053dc14</Guid>
+        <IsDefault>false</IsDefault>
+        <Name>Job History Errors</Name>
+        <ObjectArtifactTypeId>1000058</ObjectArtifactTypeId>
+        <ParentArtifactId>1038280</ParentArtifactId>
+        <TabDisplay>0</TabDisplay>
+        <Visible>true</Visible>
+        <ApplicationVersion>2.0.0.47</ApplicationVersion>
+      </Tab>
       <Views>
         <View>
           <ArtifactId>1038381</ArtifactId>
@@ -6872,24 +7410,44 @@
               <Order>0</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001572</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001603</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>1</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001604</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001572</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>2</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001605</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001604</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>3</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001606</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001634</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>4</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001606</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>5</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001567</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>6</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001568</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>7</Order>
+            </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001570</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
+              <Order>8</Order>
             </ViewField>
           </ViewFields>
           <ViewOrders />
@@ -6898,7 +7456,7 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>2.0.0.39</ApplicationVersion>
+          <ApplicationVersion>2.0.0.45</ApplicationVersion>
         </View>
       </Views>
       <ApplicationVersion>0.0.0.1</ApplicationVersion>
@@ -7264,7 +7822,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.40</ApplicationVersion>
+          <ApplicationVersion>2.0.0.47</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7316,7 +7874,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.40</ApplicationVersion>
+          <ApplicationVersion>2.0.0.47</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7368,7 +7926,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.40</ApplicationVersion>
+          <ApplicationVersion>2.0.0.47</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7420,7 +7978,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.40</ApplicationVersion>
+          <ApplicationVersion>2.0.0.47</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7472,7 +8030,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.40</ApplicationVersion>
+          <ApplicationVersion>2.0.0.47</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7524,7 +8082,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.40</ApplicationVersion>
+          <ApplicationVersion>2.0.0.47</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -7600,8 +8158,8 @@
     </Object>
   </Objects>
   <ParentTabs />
-  <RelativityVersion>9.3.362.9</RelativityVersion>
-  <Version>2.0.0.40</Version>
+  <RelativityVersion>9.3.388.10</RelativityVersion>
+  <Version>2.0.0.47</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>30db7baa-93da-4227-bdb1-e3df9e8edc72</OriginSignature>
   <MasterScripts />
@@ -7631,7 +8189,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.40</ApplicationVersion>
+      <ApplicationVersion>2.0.0.47</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038277</ArtifactId>
@@ -7642,7 +8200,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.40</ApplicationVersion>
+      <ApplicationVersion>2.0.0.47</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038278</ArtifactId>
@@ -7653,7 +8211,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.40</ApplicationVersion>
+      <ApplicationVersion>2.0.0.47</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038279</ArtifactId>
@@ -7664,7 +8222,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.40</ApplicationVersion>
+      <ApplicationVersion>2.0.0.47</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038393</ArtifactId>
@@ -7675,18 +8233,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.40</ApplicationVersion>
-    </InstallEventHandler>
-    <InstallEventHandler>
-      <ArtifactId>1038467</ArtifactId>
-      <AssemblyArtifactId>1018550</AssemblyArtifactId>
-      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RemoveJobHistoryErrorTab</Name>
-      <Guid>cfcecb5b-166c-4fba-b7a6-9cba816bcc3c</Guid>
-      <Guids>66970c0e-2b22-4c9d-ba98-9ab712a7df4a</Guids>
-      <ExecutionType>10</ExecutionType>
-      <Order>70</Order>
-      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.40</ApplicationVersion>
+      <ApplicationVersion>2.0.0.47</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038468</ArtifactId>
@@ -7697,7 +8244,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.40</ApplicationVersion>
+      <ApplicationVersion>2.0.0.47</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />
@@ -7724,6 +8271,7 @@
     <Id>1038383</Id>
     <Id>1038384</Id>
     <Id>1038385</Id>
+    <Id>1038386</Id>
     <Id>1038412</Id>
   </LayoutIds>
   <FieldIds>
@@ -7807,6 +8355,8 @@
     <Id>1038421</Id>
     <Id>1038422</Id>
     <Id>1038465</Id>
+    <Id>1038479</Id>
+    <Id>1038484</Id>
   </FieldIds>
   <ChoiceIds>
     <Id>1038345</Id>
@@ -7819,6 +8369,13 @@
     <Id>1038364</Id>
     <Id>1038374</Id>
     <Id>1038375</Id>
+    <Id>1038480</Id>
+    <Id>1038481</Id>
+    <Id>1038482</Id>
+    <Id>1038483</Id>
+    <Id>1038485</Id>
+    <Id>1038486</Id>
+    <Id>1038487</Id>
   </ChoiceIds>
   <ObjectTypeIds>
     <Id>1035231</Id>
@@ -7832,6 +8389,7 @@
   <TabIds>
     <Id>1038290</Id>
     <Id>1038318</Id>
+    <Id>1038329</Id>
     <Id>1038414</Id>
   </TabIds>
   <CustomPageIds>

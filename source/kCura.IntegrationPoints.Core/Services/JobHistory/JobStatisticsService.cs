@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 	{
 		private readonly JobStatisticsQuery _query;
 		private readonly TaskParameterHelper _helper;
-		private readonly JobHistoryService _service;
+		private readonly IJobHistoryService _service;
 		private readonly IWorkspaceDBContext _context;
 		private Job _job;
 
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 
 		public JobStatisticsService(JobStatisticsQuery query,
 			TaskParameterHelper helper,
-			JobHistoryService service,
+			IJobHistoryService service,
 			IWorkspaceDBContext context)
 		{
 			_query = query;

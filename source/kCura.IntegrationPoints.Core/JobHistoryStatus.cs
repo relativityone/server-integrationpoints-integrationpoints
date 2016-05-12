@@ -29,14 +29,14 @@ namespace kCura.IntegrationPoints.Core
 		public void JobStarted(Job job)
 		{
 			var result = GetHistory(job);
-			result.Status = JobStatusChoices.JobHistoryProcessing;
+			result.JobStatus = JobStatusChoices.JobHistoryProcessing;
 			_service.JobHistoryLibrary.Update(result);
 		}
 
 		public void JobComplete(Job job)
 		{
 			var result = GetHistory(job);
-			result.Status = _updater.GenerateStatus(result);
+			result.JobStatus = _updater.GenerateStatus(result);
 			result.EndTimeUTC = DateTime.UtcNow;
 			_service.JobHistoryLibrary.Update(result);
 		}

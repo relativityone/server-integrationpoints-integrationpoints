@@ -8,7 +8,6 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration.Installers
 {
-
 	/// <summary>
 	/// Objective : this test suite is to test the simulation of source provider install eventhandler during migration.
 	/// These set of tests verify that all source providers are passed in to import service properly.

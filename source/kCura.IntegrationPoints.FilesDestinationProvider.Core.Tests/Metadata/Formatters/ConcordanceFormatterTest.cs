@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using kCura.IntegrationPoint.FilesDestinationProvider.Core.Metadata;
-using kCura.IntegrationPoint.FilesDestinationProvider.Core.Metadata.Formatters;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Metadata;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Metadata.Formatters;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Metadata.Formatters

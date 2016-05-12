@@ -26,18 +26,18 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private IRSAPIClient _workspaceRsapiClient;
 		private ManagerQueueService _managerQueueService;
 		public SyncCustodianManagerWorker(ICaseServiceContext caseServiceContext,
-										IDataProviderFactory dataProviderFactory,
-										IHelper helper,
-										kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
-										Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
-										JobHistoryService jobHistoryService,
-										JobHistoryErrorService jobHistoryErrorService,
-										IJobManager jobManager,
-										IRSAPIClient workspaceRsapiClient,
-										ManagerQueueService managerQueueService,
-			JobStatisticsService statisticsService)
-			: base(caseServiceContext, helper, dataProviderFactory, serializer,
-			appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager, null, statisticsService)
+						IDataProviderFactory dataProviderFactory,
+						IHelper helper,
+						kCura.Apps.Common.Utils.Serializers.ISerializer serializer,
+						Contracts.ISynchronizerFactory appDomainRdoSynchronizerFactoryFactory,
+											IJobHistoryService jobHistoryService,
+						JobHistoryErrorService jobHistoryErrorService,
+						IJobManager jobManager,
+						IRSAPIClient workspaceRsapiClient,
+						ManagerQueueService managerQueueService,
+		  JobStatisticsService statisticsService)
+		  : base(caseServiceContext, helper, dataProviderFactory, serializer,
+		  appDomainRdoSynchronizerFactoryFactory, jobHistoryService, jobHistoryErrorService, jobManager, null, statisticsService)
 		{
 			_workspaceRsapiClient = workspaceRsapiClient;
 			_managerQueueService = managerQueueService;
@@ -62,9 +62,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				//get all job parameters
 				GetParameters(job);
 
-				base.GetIntegrationPointRdo(job);
+				base.SetIntegrationPoint(job);
 
-				base.GetJobHistoryRdo();
+				base.SetJobHistory();
 
 				kCura.Method.Injection.InjectionManager.Instance.Evaluate("CB070ADB-8912-4B61-99B0-3321C0670FC6");
 
@@ -95,15 +95,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				FieldEntry fieldEntryCustodianIdentifier = _managerFieldMap.First(x => x.FieldMapType.Equals(FieldMapTypeEnum.Identifier)).SourceField;
 				FieldEntry fieldEntryManagerIdentifier = _managerFieldMap.First(x => x.DestinationField.FieldIdentifier.Equals(custodianManagerFieldArtifactID.ToString())).SourceField;
 				IEnumerable<IDictionary<FieldEntry, object>> sourceData = _custodianManagerMap.Where(x => x.ManagerArtifactID != 0)
-					.Select(x => new Dictionary<FieldEntry, object>()
+				  .Select(x => new Dictionary<FieldEntry, object>()
 				{
-					{ fieldEntryCustodianIdentifier, x.CustodianID }, 
-					{ fieldEntryManagerIdentifier, x.ManagerArtifactID }
+		  { fieldEntryCustodianIdentifier, x.CustodianID },
+		  { fieldEntryManagerIdentifier, x.ManagerArtifactID }
 				});
 
 				var managerLinkMap = _managerFieldMap.Where(x =>
-					(x.SourceField.FieldIdentifier.Equals(fieldEntryCustodianIdentifier.FieldIdentifier) ||
-					 x.SourceField.FieldIdentifier.Equals(fieldEntryManagerIdentifier.FieldIdentifier)));
+				  (x.SourceField.FieldIdentifier.Equals(fieldEntryCustodianIdentifier.FieldIdentifier) ||
+				   x.SourceField.FieldIdentifier.Equals(fieldEntryManagerIdentifier.FieldIdentifier)));
 				IDataSynchronizer dataSynchronizer = base.GetDestinationProvider(_destinationProviderRdo, newDestinationConfiguration, job);
 				base.SetupSubscriptions(dataSynchronizer, job);
 				dataSynchronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration);
@@ -111,7 +111,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				if (missingManagers.Any())
 				{
 					throw new Exception(string.Format("Could not retrieve information and link the following Managers: {0}",
-						string.Join("; ", missingManagers.ToArray())));
+					  string.Join("; ", missingManagers.ToArray())));
 				}
 			}
 			catch (Exception ex)
@@ -144,15 +144,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			if (taskParameters.BatchParameters is Newtonsoft.Json.Linq.JObject)
 			{
 				jobParameters =
-					((Newtonsoft.Json.Linq.JObject)taskParameters.BatchParameters).ToObject<CustodianManagerJobParameters>();
+				  ((Newtonsoft.Json.Linq.JObject)taskParameters.BatchParameters).ToObject<CustodianManagerJobParameters>();
 			}
 			else
 			{
 				jobParameters = (CustodianManagerJobParameters)taskParameters.BatchParameters;
 			}
 			_custodianManagerMap =
-				jobParameters.CustodianManagerMap.Select(x => new CustodianManagerMap() { CustodianID = x.Key, OldManagerID = x.Value })
-					.ToList();
+			  jobParameters.CustodianManagerMap.Select(x => new CustodianManagerMap() { CustodianID = x.Key, OldManagerID = x.Value })
+				.ToList();
 			_custodianManagerFieldMap = jobParameters.CustodianManagerFieldMap;
 			_managerFieldMap = jobParameters.ManagerFieldMap;
 			_managerFieldIdIsBinary = jobParameters.ManagerFieldIdIsBinary;
@@ -160,14 +160,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			SetManagerFieldIDs(_custodianManagerFieldMap, _managerFieldMap);
 		}
 
-		internal override IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
+		protected override IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo, string configuration, Job job)
 		{
 			_destinationProviderRdo = destinationProviderRdo;
 			_destinationConfiguration = configuration;
 			return base.GetDestinationProvider(destinationProviderRdo, configuration, job);
 		}
 
-		internal override List<FieldEntry> GetSourceFields(IEnumerable<FieldMap> fieldMap)
+		protected override List<FieldEntry> GetSourceFields(IEnumerable<FieldMap> fieldMap)
 		{
 			List<FieldEntry> sourceFields = base.GetSourceFields(fieldMap);
 			if (!sourceFields.Any(f => f.FieldIdentifier.Equals(_oldKeyManagerFieldID, StringComparison.InvariantCultureIgnoreCase)))
@@ -178,7 +178,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			return sourceFields;
 		}
 
-		internal override IEnumerable<IDictionary<FieldEntry, object>> GetSourceData(List<FieldEntry> sourceFields, IDataReader sourceDataReader)
+		protected override IEnumerable<IDictionary<FieldEntry, object>> GetSourceData(List<FieldEntry> sourceFields, IDataReader sourceDataReader)
 		{
 			var objectBuilder = new SynchronizerObjectBuilder(sourceFields);
 			_convertDataService = new CustodianManagerDataReaderToEnumerableService(objectBuilder, _oldKeyManagerFieldID, _newKeyManagerFieldID);
@@ -228,8 +228,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			else
 			{
 				managerIDs = result.Results.ToDictionary(r => r.Artifact.Fields.
-					Where(f => f.ArtifactID.Equals(uniqueFieldID)).First().ToString()
-					, r => r.Artifact.ArtifactID);
+				  Where(f => f.ArtifactID.Equals(uniqueFieldID)).First().ToString()
+				  , r => r.Artifact.ArtifactID);
 			}
 			return managerIDs;
 		}

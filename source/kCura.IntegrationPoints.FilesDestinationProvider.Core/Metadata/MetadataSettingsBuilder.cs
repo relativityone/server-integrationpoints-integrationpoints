@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace kCura.IntegrationPoint.FilesDestinationProvider.Core.Metadata
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Metadata
 {
 	class MetadataSettingsBuilder
 	{

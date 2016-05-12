@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -32,6 +27,16 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			IIntegrationPointRepository repository = _repositoryFactory.GetIntegrationPointRepository(workspaceArtifactId);
 
 			return repository.Read(integrationPointArtifactId);
+		}
+
+		public bool IntegrationPointTypeIsRetriable(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
+		{
+			ISourceProviderRepository repository = _repositoryFactory.GetSourceProviderRepository(workspaceArtifactId);
+			SourceProviderDTO dto = repository.Read(integrationPointDto.SourceProvider.Value);
+
+			bool retriable = dto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID);
+
+			return retriable;
 		}
 	}
 }

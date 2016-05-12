@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using kCura.Windows.Process;
 using kCura.WinEDDS;
+using kCura.WinEDDS.Api;
 using kCura.WinEDDS.Service;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
@@ -20,8 +21,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private void PerformLogin(ExportFile exportSettings)
 		{
 			exportSettings.CookieContainer = new CookieContainer();
-			exportSettings.Credential = WinEDDS.Api.LoginHelper.LoginWindowsAuth(exportSettings.CookieContainer);
-		}
+			//exportSettings.Credential = WinEDDS.Api.LoginHelper.LoginWindowsAuth(exportSettings.CookieContainer);
+            exportSettings.Credential = LoginHelper.LoginUsernamePassword("relativity.admin@kcura.com", "Test1234!", exportSettings.CookieContainer);
+        }
 
 		private void PopulateExportFieldsSettings(ExportFile exportFile, List<int> selectedViewFieldIds)
 		{

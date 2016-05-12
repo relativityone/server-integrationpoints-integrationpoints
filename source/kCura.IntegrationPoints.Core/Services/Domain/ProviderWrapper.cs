@@ -9,7 +9,7 @@ using kCura.IntegrationPoints.Data;
 namespace kCura.IntegrationPoints.Core.Domain
 {
 	//represents a wrapper to allow for certain safeties to be guaranteed when marshalling
-	internal class ProviderWrapper : MarshalByRefObject, IDataSourceProvider
+	internal class ProviderWrapper : MarshalByRefObject, IDataSourceProvider, IEmailBodyData
 	{
 		private readonly IDataSourceProvider _provider;
 		internal ProviderWrapper(IDataSourceProvider provider)
@@ -55,6 +55,18 @@ namespace kCura.IntegrationPoints.Core.Domain
 			catch (Exception e)
 			{
 				throw Utils.GetNonCustomException(e);
+			}
+		}
+
+		public string GetEmailBodyData(IEnumerable<FieldEntry> fields, string options)
+		{
+			if (_provider is IEmailBodyData)
+			{
+				return ((IEmailBodyData)_provider).GetEmailBodyData(fields, options);
+			}
+			else
+			{
+				return string.Empty;
 			}
 		}
 	}
