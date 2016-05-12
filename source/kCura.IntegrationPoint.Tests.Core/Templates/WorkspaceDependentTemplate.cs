@@ -34,6 +34,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			SourceWorkspaceArtifactId = 1118254;
 			TargetWorkspaceArtifactId = 1119028;
 			//GerronHelper.Workspace.ImportApplicationToWorkspace(SourceWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
+			SourecWorkspaceArtifactId = 1183705;
 			Install();
 		}
 

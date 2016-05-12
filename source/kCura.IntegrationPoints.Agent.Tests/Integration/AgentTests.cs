@@ -21,7 +21,13 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		public void Testing123()
 		{
 			IIntegrationPointService service = Container.Resolve<IIntegrationPointService>();
+
+			IntegrationModel model = new IntegrationModel();
+			model.SourceProvider = 
+			service.SaveIntegration(model);
 			var ips = service.GetAllIntegrationPoints();
+			
+
 			Assert.IsNotNull(ips);
 			//IDBContext context = Substitute.For<IDBContext>();
 			//IHelper helper = NSubstitute.Substitute.For<IHelper>();

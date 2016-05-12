@@ -13,7 +13,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public TestHelper(Helper helper)
 		{
 			_serviceManager = Substitute.For<IServicesMgr>();
-			_serviceManager.CreateProxy<IRSAPIClient>(Arg.Any<ExecutionIdentity>()).Returns(helper.Rsapi.CreateRsapiClient());
+			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser).Returns(helper.Rsapi.CreateRsapiClient(ExecutionIdentity.CurrentUser));
+			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(helper.Rsapi.CreateRsapiClient(ExecutionIdentity.System));
 		}
 
 		public void Dispose()
