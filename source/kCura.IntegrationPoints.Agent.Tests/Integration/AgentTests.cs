@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			helper.GetDBContext(-1).Returns(context);
 			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(helper);
 
-			int workspaceArtifactId = Helper.Workspace.CreateWorkspace("Testing Integration5", "New Case Template");
+			int workspaceArtifactId = Helper.Workspace.CreateWorkspace("Testing Integration7", "New Case Template");
 			Helper.Workspace.ImportApplicationToWorkspace(workspaceArtifactId, @"C:\SourceCode\IntegrationPoints\source\bin\Application\RelativityIntegrationPoints.Auto.rap", true);
 			Helper.Import.ImportNewDocuments(workspaceArtifactId, GetImportTable());
 			int savedSearchArtifactId = Helper.SavedSearch.CreateSavedSearch("localhost", Helper.SharedVariables.RelativityUserName, Helper.SharedVariables.RelativityPassword, workspaceArtifactId, "All Documents");
