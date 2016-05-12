@@ -18,6 +18,47 @@
     </div>
 </div>
 
+<div class="card">
+    <span class="label title">Physical File Export</span>
+    <div class="identifier">
+        <div class="field-row">
+            <div class="field-label required ">Copy Files from Repository:</div>
+            <div class="field-value">
+                <ul>
+                    <li>
+                        <input id="copy-file-radio-0" type="radio" name="copyFile" value="true" data-bind="checked: copyFileFromRepository">Yes
+                    </li>
+                    <li>
+                        <input id="copy-file-radio-1" type="radio" name="copyFile" value="false" data-bind="checked: copyFileFromRepository">No
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field-label required">
+                Fileshare:
+            </div>
+            <div class="field-value">
+                <input data-bind="value: selectedDestinationPath" />
+            </div>
+        </div>
+        <div class="field-row">
+            <div class="field-label required ">Overwrite files:</div>
+            <div class="field-value">
+                <ul>
+                    <li>
+                        <input id="overwrite-file-radio-0" type="radio" name="copyFile" value="true" data-bind="checked: overwriteFiles">Yes
+                    </li>
+                    <li>
+                        <input id="overwrite-file-radio-1" type="radio" name="copyFile" value="false" data-bind="checked: overwriteFiles">No
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
 @section scripts
 {
     <script src="~/Scripts/core/data.js"></script>

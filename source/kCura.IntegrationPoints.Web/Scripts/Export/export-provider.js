@@ -62,6 +62,13 @@
 
         this.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
 
+        this.selectedDestinationPath = ko.observable(settings.fileshare).extend({
+            	required: true
+        });
+
+        this.copyFileFromRepository = ko.observable(model.copyFileFromRepository || "false");
+        this.overwriteFiles = ko.observable(model.overwriteFiles || "false");
+
         //this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId).extend({
         //	required: true
         //});
