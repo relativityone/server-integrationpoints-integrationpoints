@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void UpdateNothing()
 		{
 			const string name = "Resaved Rip";
-			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRanModel(name);
+			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationModel defaultModel = SaveModel(modelToUse);
 			IntegrationModel newModel = SaveModel(defaultModel);
 
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void UpdateName_OnRanIp()
 		{
 			const string name = "Update Name - OnRanIp";
-			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRanModel(name);
+			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationModel defaultModel = SaveModel(modelToUse);
 
 			defaultModel.Name = "newName";
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void UpdateMap_OnRanIp()
 		{
 			const string name = "Update Map - OnRanIp";
-			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRanModel(name);
+			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationModel defaultModel = SaveModel(modelToUse);
 
 			defaultModel.Map = "Blahh";
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void UpdateConfig_OnNewRip()
 		{
 			const string name = "Update Source Config - SavedSearch - OnNewRip";
-			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRanModel(name);
+			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationModel defaultModel = SaveModel(modelToUse);
 
 			int newSavedSearch = GerronHelper.SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, name);
@@ -95,7 +95,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void UpdateName_OnNewRip()
 		{
 			const string name = "Update Name - OnNewRip";
-			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRanModel(name);
+			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationModel defaultModel = SaveModel(modelToUse);
 
 			defaultModel.Name = name + " 2";
@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void UpdateMap_OnNewRip()
 		{
 			const string name = "Update Map - OnNewRip";
-			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRanModel(name);
+			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationModel defaultModel = SaveModel(modelToUse);
 
 			defaultModel.Map = "New Map string";
@@ -178,7 +178,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 
 
-		private IntegrationModel CreateIntegrationPointThatIsAlreadyRanModel(string name)
+		private IntegrationModel CreateIntegrationPointThatIsAlreadyRunModel(string name)
 		{
 			IntegrationModel model = CreateIntegrationPointThatHasNotRun(name);
 			model.LastRun = DateTime.Now;
