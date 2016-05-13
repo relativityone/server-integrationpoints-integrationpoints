@@ -384,11 +384,13 @@ Global
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|x64.ActiveCfg = Debug|x64
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|x64.Build.0 = Debug|x64
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|x64.ActiveCfg = Release|x64
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
