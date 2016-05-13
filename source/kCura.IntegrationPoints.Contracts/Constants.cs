@@ -22,8 +22,7 @@
 		public const string INTEGRATION_POINT_INSTANCE_SETTING_SECTION = "kCura.IntegrationPoints";
 		public const string WEB_API_PATH = "WebAPIPath";
 		public const string SOURCEPROVIDER_ARTIFACTID_FIELD = "4A091F69-D750-441C-A4F0-24C990D208AE";
-		public const string SOURCEPROVIDER_FIELD_NAME = "Source Provider";
-		public const string SOURCECONFIGURATION_FIELD_NAME = "Source Configuration";
+		
 		public const char MULTI_VALUE_DELIMITER = ';';
 		public const char NESTED_VALUE_DELIMITER = '/';
 	}
