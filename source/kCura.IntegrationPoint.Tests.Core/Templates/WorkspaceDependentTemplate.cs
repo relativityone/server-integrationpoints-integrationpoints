@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			_targetWorkspaceName = targetWorkspaceName;
 		}
 
-		[SetUp]
+		[TestFixtureSetUp]
 		public virtual void SetUp()
 		{
 			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
@@ -79,10 +79,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			}
 		}
 
-		[TearDown]
+		[TestFixtureSetUp]
 		public virtual void TearDown()
 		{
-			//GerronHelper.Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
+			GerronHelper.Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
 			//GerronHelper.Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
 		}
 	}
