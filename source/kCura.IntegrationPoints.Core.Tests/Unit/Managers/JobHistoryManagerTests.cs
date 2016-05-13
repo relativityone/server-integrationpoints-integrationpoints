@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
@@ -32,14 +33,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		{
 			// ARRANGE
 			int integrationPointArtifactId = 1322131;
-			int expectedLastJobHistoryId = 234242;
-			_jobHistoryRepository.GetLastTwoJobHistoryArtifactId(integrationPointArtifactId)[1].Returns(expectedLastJobHistoryId);
+			List<int> expectedLastTwoJobHistoryIds = new List<int>() { 234242, 234241 };
+			_jobHistoryRepository.GetLastTwoJobHistoryArtifactId(integrationPointArtifactId).Returns(expectedLastTwoJobHistoryIds);
 
 			// ACT
 			int result = _testInstance.GetLastJobHistoryArtifactId(_WORKSPACE_ID, integrationPointArtifactId);
 
 			// ASSERT
-			Assert.AreEqual(expectedLastJobHistoryId, result);
+			Assert.AreEqual(expectedLastTwoJobHistoryIds[0], result);
 		}
 
 
