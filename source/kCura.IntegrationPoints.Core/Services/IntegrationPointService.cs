@@ -275,7 +275,6 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public enum MonthlyType
 		{
-
 			Month = 1,
 			Days = 2
 		}
@@ -465,7 +464,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			if (_permissionRepository.UserCanViewArtifact(workspaceConfiguration.SourceWorkspaceArtifactId, (int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId) == false)
 			{
-				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_VIEW_SAVEDSEARCH);	
+				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH);	
 			}
 
 			if (userId == 0)

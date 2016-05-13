@@ -9,6 +9,7 @@ namespace kCura.IntegrationPoints.Contracts.Models
 	public class JobHistoryErrorDTO : BaseDTO
 	{
 		public const string ArtifactTypeGuid = "17E7912D-4F57-4890-9A37-ABC2B8A37BDB";
+		public const string TableName = "JobHistoryError";
 
 		/// <summary>
 		/// Error
@@ -66,6 +67,9 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		/// </summary>
 		public static class Choices
 		{
+			/// <summary>
+			/// Choices for Error Status
+			/// </summary>
 			public static class ErrorStatus
 			{
 				public enum Values
@@ -93,6 +97,9 @@ namespace kCura.IntegrationPoints.Contracts.Models
 				};
 			}
 
+			/// <summary>
+			/// Choices for Error Type
+			/// </summary>
 			public static class ErrorType
 			{
 				public enum Values
@@ -112,6 +119,36 @@ namespace kCura.IntegrationPoints.Contracts.Models
 					{Guids.Item, Values.Item},
 					{Guids.Job, Values.Job}
 				};
+			}
+		}
+
+		/// <summary>
+		/// Update Type used for which Statuses to Update to
+		/// </summary>
+		public class UpdateStatusType
+		{
+			/// <summary>
+			/// Job Type
+			/// </summary>
+			public JobTypeChoices JobType { get; set; }
+
+			/// <summary>
+			/// Error Types for Retry
+			/// </summary>
+			public ErrorTypesChoices ErrorTypes { get; set; }
+
+			public enum JobTypeChoices
+			{
+				RetryErrors,
+				RunNow
+			}
+
+			public enum ErrorTypesChoices
+			{
+				JobOnly,
+				JobAndItem,
+				ItemOnly,
+				None
 			}
 		}
 	}

@@ -35,17 +35,35 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return isRelativityProvider;
 		}
 
-		public bool UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
+		public PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
 		{
-			bool userCanEditDocuments = _permissionRepository.UserCanEditDocuments(workspaceArtifactId);
-			bool userCanImport = _permissionRepository.UserCanImport(workspaceArtifactId);
+			var permissionCheck = new PermissionCheckDTO() { Success = false };
+			if (!_permissionRepository.UserCanEditDocuments(workspaceArtifactId))
+			{
+				permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS;
+
+				return permissionCheck;
+			}
+
+			if (!_permissionRepository.UserCanImport(workspaceArtifactId))
+			{
+				permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT;
+
+				return permissionCheck;
+			}
 
 			dynamic sourceConfiguration = JsonConvert.DeserializeObject(integrationPointDto.SourceConfiguration);
-			bool userCanAccessSavedSearch = _permissionRepository.UserCanViewArtifact(workspaceArtifactId, (int) ArtifactType.Search, (int)sourceConfiguration.SavedSearchArtifactId);
+			if (!_permissionRepository.UserCanViewArtifact(workspaceArtifactId, (int) ArtifactType.Search,
+				(int) sourceConfiguration.SavedSearchArtifactId))
+			{
+				permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH;
 
-			bool userHasPermissions = userCanEditDocuments && userCanImport && userCanAccessSavedSearch;
+				return permissionCheck;
+			}
 
-			return userHasPermissions;
+			permissionCheck.Success = true;
+
+			return permissionCheck;
 		}
 	}
 }

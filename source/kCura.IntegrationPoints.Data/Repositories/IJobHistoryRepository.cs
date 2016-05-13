@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -15,10 +16,10 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		void TagDocsWithJobHistory(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int jobHistoryInstanceArtifactId, int sourceWorkspaceId, string tableSuffix);
 
 		/// <summary>
-		/// Gets last Job History artifact id for a given Integration Point
+		/// Gets last two Job History artifact ids for a given Integration Point
 		/// </summary>
 		/// <param name="integrationPointArtifactId">Integration Point artifact id</param>
-		/// <returns>Artifact id of the Job History object</returns>
-		int GetLastJobHistoryArtifactId(int integrationPointArtifactId);
+		/// <returns>Artifact ids of the two most recent Job History objects</returns>
+		List<int> GetLastTwoJobHistoryArtifactId(int integrationPointArtifactId);
 	}
 }

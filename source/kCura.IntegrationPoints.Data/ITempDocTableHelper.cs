@@ -27,5 +27,11 @@ namespace kCura.IntegrationPoints.Data
 		IDataReader GetDocumentIdsDataReaderFromTable(string tablePrefix);
 
 		string GetTempTableName(string tablePrefix);
+
+		/// <summary>
+		/// Gets the count of rows in temp table
+		/// </summary>
+		/// <param name="tablePrefix">The temp table's prefix to get count on</param>
+		int GetTempTableCount(string tablePrefix);
 	}
 }
