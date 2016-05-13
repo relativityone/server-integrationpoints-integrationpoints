@@ -3,6 +3,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
+using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -34,14 +35,35 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return isRelativityProvider;
 		}
 
-		public bool UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
+		public PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
 		{
-			bool userCanEditDocuments = _permissionRepository.UserCanEditDocuments(workspaceArtifactId);
-			bool userCanImport = _permissionRepository.UserCanImport(workspaceArtifactId);
-			bool userCanAccessSavedSearch = _permissionRepository.UserCanViewArtifact(workspaceArtifactId, (int) ArtifactType.Search, integrationPointDto.SourceProvider.Value);
-			bool userHasPermissions = userCanEditDocuments && userCanImport && userCanAccessSavedSearch;
+			var permissionCheck = new PermissionCheckDTO() { Success = false };
+			if (!_permissionRepository.UserCanEditDocuments(workspaceArtifactId))
+			{
+				permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS;
 
-			return userHasPermissions;
+				return permissionCheck;
+			}
+
+			if (!_permissionRepository.UserCanImport(workspaceArtifactId))
+			{
+				permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT;
+
+				return permissionCheck;
+			}
+
+			dynamic sourceConfiguration = JsonConvert.DeserializeObject(integrationPointDto.SourceConfiguration);
+			if (!_permissionRepository.UserCanViewArtifact(workspaceArtifactId, (int) ArtifactType.Search,
+				(int) sourceConfiguration.SavedSearchArtifactId))
+			{
+				permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH;
+
+				return permissionCheck;
+			}
+
+			permissionCheck.Success = true;
+
+			return permissionCheck;
 		}
 	}
 }

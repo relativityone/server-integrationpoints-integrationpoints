@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
+using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	using Relativity.Client;
-	using Relativity.Client.DTOs;
-
 	public class Workspace : HelperBase
 	{
 		public Workspace(Helper helper) : base(helper)
@@ -15,6 +17,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public void ImportApplicationToWorkspace(int workspaceId, string applicationFilePath, bool forceUnlock, List<int> appsToOverride = null)
 		{
 			//List of application ArtifactIDs to override, if already installed
+			// TODO: Add this functionality - Gerron Thurman 5/11/2016
 			List<int> applicationsToOverride = appsToOverride ?? new List<int>();
 
 			AppInstallRequest appInstallRequest = new AppInstallRequest()
@@ -45,6 +48,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public int CreateWorkspace(string workspaceName, string templateName)
 		{
+			if (String.IsNullOrEmpty(workspaceName)) return 0;
+
 			//Create workspace DTO
 			Relativity.Client.DTOs.Workspace workspaceDto = new Relativity.Client.DTOs.Workspace { Name = workspaceName };
 			int workspaceId = 0;
@@ -53,8 +58,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				try
 				{
 					//Query for template workspace id
-					TextCondition workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo,
-						templateName);
+					TextCondition workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, templateName);
 					Query<Relativity.Client.DTOs.Workspace> query = new Query<Relativity.Client.DTOs.Workspace>
 					{
 						Condition = workspaceNameCondition
@@ -85,6 +89,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public void DeleteWorkspace(int workspaceArtifactId)
 		{
+			if(workspaceArtifactId == 0) return;
 			//Create workspace DTO
 			using (IRSAPIClient proxy = Helper.Rsapi.CreateRsapiClient())
 			{

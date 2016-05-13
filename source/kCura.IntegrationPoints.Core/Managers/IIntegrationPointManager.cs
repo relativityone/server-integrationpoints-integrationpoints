@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
 		/// <param name="integrationPointDto">The integration point dto to check</param>
-		/// <returns><code>True</code> if the user has permissions, <code>false</code> otherwise.</returns>
-		bool UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto);
+		/// <returns>A PermissionCheckDTO object</returns>
+		PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto);
 	}
 }
