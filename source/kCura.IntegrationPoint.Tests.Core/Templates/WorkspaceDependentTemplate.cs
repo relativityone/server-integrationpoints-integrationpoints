@@ -1,4 +1,5 @@
 ﻿using Castle.MicroKernel.Registration;
+using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
@@ -13,6 +14,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
 	[TestFixture]
 	[Category("Integration Tests")]
+	[Explicit]
 	public class WorkspaceDependentTemplate : IntegrationTestBase
 	{
 		private readonly string _sourceWorkspaceName;
@@ -20,6 +22,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		public int SourecWorkspaceArtifactId { get; private set; }
 		public int TargetWorkspaceArtifactId { get; private set; }
+		public int SavedSearchArtifactId { get; set; }
 
 		public WorkspaceDependentTemplate(string sourceWorkspaceName, string targetWorkspaceName)
 		{
@@ -31,11 +34,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		[SetUp]
 		public virtual void SetUp()
 		{
+			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 			const string template = "New Case Template";
 			//SourecWorkspaceArtifactId = GerronHelper.Workspace.CreateWorkspace(_sourceWorkspaceName, template);
 			//TargetWorkspaceArtifactId = GerronHelper.Workspace.CreateWorkspace(_targetWorkspaceName, template);
 			//GerronHelper.Workspace.ImportApplicationToWorkspace(SourecWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
-			SourecWorkspaceArtifactId = 1183705;
+			SourecWorkspaceArtifactId = 1184072;
+			TargetWorkspaceArtifactId = 1184072;
+			SavedSearchArtifactId = GerronHelper.SavedSearch.CreateSavedSearch(SourecWorkspaceArtifactId, "All documents");
 			Install();
 		}
 
@@ -67,7 +73,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				.LifeStyle.Transient);
 
 			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));
-			Container.Register(Component.For<IPermissionRepository>().ImplementedBy<PermissionRepository>().LifestyleTransient());
+			Container.Register(Component.For<IPermissionRepository>().UsingFactoryMethod( k => Helper.PermissionManager));
 
 			var dependencies = new IWindsorInstaller[]{ new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller()};
 			foreach (IWindsorInstaller dependency in dependencies)

@@ -45,6 +45,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public int CreateWorkspace(string workspaceName, string templateName)
 		{
+			if (String.IsNullOrEmpty(workspaceName)) return 0;
+
 			//Create workspace DTO
 			Relativity.Client.DTOs.Workspace workspaceDto = new Relativity.Client.DTOs.Workspace { Name = workspaceName };
 			int workspaceId = 0;
@@ -85,6 +87,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public void DeleteWorkspace(int workspaceArtifactId)
 		{
+			if(workspaceArtifactId == 0) return;
 			//Create workspace DTO
 			using (IRSAPIClient proxy = Helper.Rsapi.CreateRsapiClient())
 			{

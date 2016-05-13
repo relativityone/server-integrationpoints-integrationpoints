@@ -10,7 +10,7 @@
 		{
 		}
 
-		public int CreateSavedSearch(string restServer, string userName, string userPassword, int workspaceId, string name)
+		public int CreateSavedSearch(int workspaceId, string name)
 		{
 			string json = string.Format(@"
 				{{
@@ -26,7 +26,7 @@
 					}}
 				}}
 			", workspaceId, (int)ArtifactType.Document, name);
-			string output = Helper.Rest.PostRequestAsJsonAsync(_createSingleService, userName, userPassword, false, json);
+			string output = Helper.Rest.PostRequestAsJsonAsync(_createSingleService, SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false, json);
 			return int.Parse(output);
 		}
 	}
