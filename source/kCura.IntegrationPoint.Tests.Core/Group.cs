@@ -98,15 +98,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool AddGroupToWorkspace(int workspaceId, int groupId)
 		{
-			string response1 = _helper.Rest.PostRequestAsJson("localhost", "api/Relativity.Services.Permission.IPermissionModule/Permission Manager/GetWorkspaceGroupSelectorAsync",
-				SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false, $"{{workspaceArtifactID:{workspaceId}}}");
+			string response1 = _helper.Rest.PostRequestAsJson("api/Relativity.Services.Permission.IPermissionModule/Permission Manager/GetWorkspaceGroupSelectorAsync", false, $"{{workspaceArtifactID:{workspaceId}}}");
 			GroupSelector groupSelector = JsonConvert.DeserializeObject<GroupSelector>(response1);
 			groupSelector.DisabledGroups = new List<GroupRef>();
 			groupSelector.EnabledGroups = new List<GroupRef> { new GroupRef(groupId) };
 
 			string parameter = $"{{workspaceArtifactID:{workspaceId},groupSelector:{JsonConvert.SerializeObject(groupSelector)}}}";
-			string response2 = _helper.Rest.PostRequestAsJson("localhost", "api/Relativity.Services.Permission.IPermissionModule/Permission Manager/AddRemoveWorkspaceGroupsAsync",
-				SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false, parameter);
+			string response2 = _helper.Rest.PostRequestAsJson("api/Relativity.Services.Permission.IPermissionModule/Permission Manager/AddRemoveWorkspaceGroupsAsync", false, parameter);
 
 			return true;
 		}

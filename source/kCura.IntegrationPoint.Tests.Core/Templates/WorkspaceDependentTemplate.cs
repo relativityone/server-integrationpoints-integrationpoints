@@ -38,8 +38,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			SourceWorkspaceArtifactId = GerronHelper.Workspace.CreateWorkspace(_sourceWorkspaceName, template);
 			TargetWorkspaceArtifactId = SourceWorkspaceArtifactId;
 			GerronHelper.Workspace.ImportApplicationToWorkspace(SourceWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
-
-			SavedSearchArtifactId = GerronHelper.SavedSearch.CreateSavedSearch(SourecWorkspaceArtifactId, "All documents");
+			SavedSearchArtifactId = GerronHelper.SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents");
 			Install();
 		}
 
@@ -83,8 +82,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		[TearDown]
 		public virtual void TearDown()
 		{
-			GerronHelper.Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
-			GerronHelper.Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
+			//GerronHelper.Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
+			//GerronHelper.Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
 		}
 	}
 }

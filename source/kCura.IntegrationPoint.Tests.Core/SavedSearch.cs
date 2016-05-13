@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					}}
 				}}
 			", workspaceId, (int)ArtifactType.Document, name);
-			string output = Helper.Rest.PostRequestAsJsonAsync(_CREATE_SINGLE_SERVICE, SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false, json);
+			string output = Helper.Rest.PostRequestAsJson(_CREATE_SINGLE_SERVICE, false, json);
 			return int.Parse(output);
 		}
 	}

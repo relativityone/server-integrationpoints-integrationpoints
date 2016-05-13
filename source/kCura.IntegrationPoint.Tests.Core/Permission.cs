@@ -20,8 +20,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			GroupRef groupRef = new GroupRef(groupId);
 			string parameter1 = $"{{workspaceArtifactID:{workspaceId},group:{JsonConvert.SerializeObject(groupRef)}}}";
 
-			string response1 = _helper.Rest.PostRequestAsJson("localhost", "api/Relativity.Services.Permission.IPermissionModule/Permission Manager/GetWorkspaceGroupPermissionsAsync",
-				SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false, parameter1);
+			string response1 = _helper.Rest.PostRequestAsJson( "api/Relativity.Services.Permission.IPermissionModule/Permission Manager/GetWorkspaceGroupPermissionsAsync",
+				false, parameter1);
 			GroupPermissions groupPermissions = JsonConvert.DeserializeObject<GroupPermissions>(response1);
 
 			SetObjectPermissions(groupPermissions, new List<string> {"Document", "Integration Point", "Job History", "Search"});
@@ -30,8 +30,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			SetBrowserPermissions(groupPermissions, new List<string> {"Folders", "Advanced & Saved Searches"});
 
 			string parameter2 = $"{{workspaceArtifactID:{workspaceId},groupPermissions:{JsonConvert.SerializeObject(groupPermissions)}}}";
-			string response2 = _helper.Rest.PostRequestAsJson("localhost", "api/Relativity.Services.Permission.IPermissionModule/Permission Manager/SetWorkspaceGroupPermissionsAsync",
-				SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false, parameter2);
+			string response2 = _helper.Rest.PostRequestAsJson("api/Relativity.Services.Permission.IPermissionModule/Permission Manager/SetWorkspaceGroupPermissionsAsync",
+			 false, parameter2);
 
 			return true;
 		}

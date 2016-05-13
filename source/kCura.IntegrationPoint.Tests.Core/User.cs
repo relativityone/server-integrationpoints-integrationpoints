@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			};
 
 			string parameters = JsonConvert.SerializeObject(user);
-			string response = _helper.Rest.PostRequestAsJson("localhost", "Relativity/User", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false, parameters);
+			string response = _helper.Rest.PostRequestAsJson("Relativity/User", false, parameters);
 			JObject resultObject = JObject.Parse(response);
 			user.ArtifactId = Convert.ToInt32(resultObject["Results"][0]["ArtifactID"]);
 			return user;

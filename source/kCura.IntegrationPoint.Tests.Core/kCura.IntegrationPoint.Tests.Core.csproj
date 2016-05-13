@@ -218,14 +218,10 @@
     <Reference Include="Relativity.Kepler, Version=1.0.1.163, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.1.0.1.163\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
-        </Reference>
+    </Reference>
     <Reference Include="Relativity.Services.DataContracts, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.Services.Interfaces, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.SecretCatalog.AzureKeyVault, Version=1.0.16.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.SecretCatalog.AzureKeyVault.1.0.16\lib\Relativity.SecretCatalog.AzureKeyVault.dll</HintPath>
