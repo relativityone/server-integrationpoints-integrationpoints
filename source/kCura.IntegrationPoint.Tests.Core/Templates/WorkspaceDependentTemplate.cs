@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			}
 		}
 
-		[TestFixtureSetUp]
+		[TestFixtureTearDown]
 		public virtual void TearDown()
 		{
 			GerronHelper.Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
