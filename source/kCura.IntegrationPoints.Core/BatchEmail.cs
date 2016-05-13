@@ -46,8 +46,11 @@ namespace kCura.IntegrationPoints.Core
 		{
 			SetIntegrationPoint(job);
 
-			var emails = GetRecipientEmails().ToList();
-			if (!emails.Any()) return;
+			List<string> emails = GetRecipientEmails().ToList();
+		    if (!emails.Any())
+		    {
+		        return;
+		    }
 
 			TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 			kCura.Relativity.Client.Choice choice = _jobStatusUpdater.GenerateStatus(taskParameters.BatchInstance);

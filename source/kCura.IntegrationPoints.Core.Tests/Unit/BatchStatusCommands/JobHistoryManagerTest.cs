@@ -35,13 +35,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_onBehalfOfUserClaimsPrincipalFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
 
-			_repositoryFactory.GetJobHistoryRepository().Returns(_jobHistoryRepository);
+			
 			_docTableFactory.GetDocTableHelper(_uniqueJobId, _sourceWorkspaceId).Returns(_tempDocHelper);
 			_onBehalfOfUserClaimsPrincipalFactory.CreateClaimsPrincipal(_submittedBy).Returns(_claimsPrincipal);
 
 			_instance = new JobHistoryManager(_docTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _jobHistoryRdoId, _sourceWorkspaceId, _uniqueJobId, _submittedBy);
 
-			_repositoryFactory.Received().GetJobHistoryRepository();
+			_repositoryFactory.GetJobHistoryRepository(_sourceWorkspaceId).Returns(_jobHistoryRepository);
 			_docTableFactory.Received().GetDocTableHelper(_uniqueJobId, _sourceWorkspaceId);
 			_onBehalfOfUserClaimsPrincipalFactory.Received().CreateClaimsPrincipal(_submittedBy);
 		}

@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.Tabs;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.LDAPProvider;
 using kCura.IntegrationPoints.Web.Models;
 
@@ -13,18 +14,18 @@ namespace kCura.IntegrationPoints.Web.Controllers
 		private readonly IIntegrationPointService _reader;
 		private readonly RSAPIRdoQuery _rdoQuery;
 		private readonly ITabService _tabService;
-		private readonly IPermissionService _permissionService;
+		private readonly IPermissionRepository _permissionRepository;
 
 		public IntegrationPointsController(
 			IIntegrationPointService reader,
 			RSAPIRdoQuery relativityRdoQuery,
 			ITabService tabService,
-			IPermissionService permissionService)
+			IPermissionRepository permissionRepository)
 		{
 			_reader = reader;
 			_rdoQuery = relativityRdoQuery;
 			_tabService = tabService;
-			_permissionService = permissionService;
+			_permissionRepository = permissionRepository;
 		}
 
 		public ActionResult Edit(int? id)
@@ -33,7 +34,7 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			var tabID = _tabService.GetTabId(objectTypeId);
 			var objectID = _rdoQuery.GetObjectType(objectTypeId).ParentArtifact.ArtifactID;
 			var previousURL = "List.aspx?AppID=" + SessionService.WorkspaceID + "&ArtifactID=" + objectID + "&ArtifactTypeID=" + objectTypeId + "&SelectedTab=" + tabID;
-			if (_permissionService.UserCanImport(SessionService.WorkspaceID))
+			if (_permissionRepository.UserCanImport(SessionService.WorkspaceID))
 			{
 				return View(new EditPoint
 				{

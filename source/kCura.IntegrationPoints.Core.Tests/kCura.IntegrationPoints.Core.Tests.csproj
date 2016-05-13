@@ -165,10 +165,6 @@
     <Reference Include="kCura.Method.Injection">
       <HintPath>..\Dependencies\Injection\kCura.Method.Injection.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=3698d9cc89824494, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.3.406.5\lib\net45\kCura.Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="kCura.Notification, Version=9.3.406.5, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\kCuraCore.9.3.406.5\lib\net45\kCura.Notification.dll</HintPath>
       <Private>True</Private>
@@ -517,6 +513,7 @@
     </Compile>
     <Compile Include="Integration\DeleteIPsWithSourceProviderTest.cs" />
     <Compile Include="Integration\Installers\ServiceInstallerTests.cs" />
+    <Compile Include="Integration\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Unit\AgentJobManagerTest.cs" />
     <Compile Include="Unit\BatchStatusCommands\DestinationWorkspaceManagerTest.cs" />
@@ -525,8 +522,12 @@
     <Compile Include="Unit\DeleteHistoryServiceTest.cs" />
     <Compile Include="Unit\BatchStatusCommands\JobHistoryManagerTest.cs" />
     <Compile Include="Unit\JobStatusUpdaterTests.cs" />
+    <Compile Include="Unit\Managers\ArtifactGuidManagerTests.cs" />
+    <Compile Include="Unit\Managers\FieldManagerTests.cs" />
     <Compile Include="Unit\Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Unit\Keywords\KeywordConverterTests.cs" />
+    <Compile Include="Unit\Managers\JobHistoryManagerTests.cs" />
+    <Compile Include="Unit\Managers\ObjectTypeManagerTests.cs" />
     <Compile Include="Unit\Managers\QueueManagerTests.cs" />
     <Compile Include="Unit\RdoFilterTest.cs" />
     <Compile Include="Unit\Services\Domain\RelativityFeaturePathServiceTests.cs" />
@@ -560,6 +561,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider\kCura.IntegrationPoints.DocumentTransferProvider.csproj">
+      <Project>{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}</Project>
+      <Name>kCura.IntegrationPoints.DocumentTransferProvider</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj">
       <Project>{c831c856-e74f-48b4-aebc-1cf15576e082}</Project>

@@ -179,8 +179,10 @@
     <Compile Include="Models\FieldMapTypeEnum.cs" />
     <Compile Include="Models\FieldMap.cs" />
     <Compile Include="Models\FieldEntry.cs" />
+    <Compile Include="Models\JobHistoryErrorDTO.cs" />
     <Compile Include="Models\IntegrationPointDTO.cs" />
     <Compile Include="Models\ObjectTypeDTO.cs" />
+    <Compile Include="Models\PermissionCheckDTO.cs" />
     <Compile Include="Models\SourceProviderDTO.cs" />
     <Compile Include="Models\SourceWorkspaceDTO.cs" />
     <Compile Include="Models\SourceWorkspaceJobHistoryDTO.cs" />

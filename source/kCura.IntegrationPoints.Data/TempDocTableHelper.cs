@@ -23,6 +23,12 @@ namespace kCura.IntegrationPoints.Data
 		{
 		}
 
+		public TempDocTableHelper(IHelper helper, string tableSuffix)
+		{
+			_caseContext = helper.GetDBContext(-1);
+			_tableSuffix = tableSuffix;
+		}
+
 		/// <summary>
 		/// For internal testing only
 		/// </summary>
@@ -84,6 +90,15 @@ namespace kCura.IntegrationPoints.Data
 		public string GetTempTableName(string tablePrefix)
 		{
 			return $"{tablePrefix}_{_tableSuffix}";
+		}
+
+		public int GetTempTableCount(string tablePrefix)
+		{
+			string fullTableName = GetTempTableName(tablePrefix);
+			string sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
+										SELECT COUNT(*) FROM [EDDSRESOURCE]..[{0}]", fullTableName);
+
+			return _caseContext.ExecuteSqlStatementAsScalar<int>(sql);
 		}
 
 		private int GetErroredDocumentId(string docIdentifier)
