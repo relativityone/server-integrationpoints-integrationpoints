@@ -4,6 +4,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
@@ -37,6 +38,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			int jobHistoryArtifactId = jobHistoryRepository.GetLastTwoJobHistoryArtifactId(integrationPointArtifactId)[1]; //Grab the second in this list as the new job is the first entry
 
 			return jobHistoryErrorRepository.RetreiveJobHistoryErrorArtifactIds(jobHistoryArtifactId, errorType);
+		}
+
+		public int CreateItemLevelErrorsSavedSearch(int workspaceArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId)
+		{
+			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(workspaceArtifactId);
+			int itemLevelSavedSearch = jobHistoryErrorRepository.CreateItemLevelErrorsSavedSearch(workspaceArtifactId,
+				savedSearchArtifactId, jobHistoryArtifactId);
+			return itemLevelSavedSearch;
 		}
 	}
 }

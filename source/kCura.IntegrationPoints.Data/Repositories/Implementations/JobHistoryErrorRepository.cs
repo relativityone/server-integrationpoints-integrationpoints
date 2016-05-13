@@ -11,6 +11,8 @@ using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Data;
+using Relativity.Services.Field;
+using Relativity.Services.Search;
 using Field = Relativity.Core.DTO.Field;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -174,7 +176,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception(MassEditErrors.JOB_HISTORY_ERROR_STATUS_QUERY_ERROR, ex);
 			}
 
-			if (fieldRows.Count == 0)
+			if (fieldRows.Count == 0)				
 			{
 				throw new Exception(MassEditErrors.JOB_HISTORY_ERROR_STATUS_EXISTENCE_ERROR);
 			}
@@ -190,6 +192,60 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			catch (Exception e)
 			{
 				throw new Exception(MassEditErrors.JOB_HISTORY_ERROR_MASS_EDIT_FAILURE, e);
+			}
+
+		}
+
+		public int CreateItemLevelErrorsSavedSearch(int workspaceArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId)
+		{
+			FieldRef savedSearchFieldRef = new FieldRef("(Saved Search)");
+			Criteria savedSearchCriteria = new Criteria
+			{
+				Condition = new CriteriaCondition(savedSearchFieldRef, CriteriaConditionEnum.In, savedSearchArtifactId),
+				BooleanOperator = BooleanOperatorEnum.And
+			};
+
+			FieldRef jobHistoryArtfiactIdFieldRef = new FieldRef("Job History");
+			Criteria jobHistoryArtifactIdCriteria = new Criteria
+			{
+				Condition = new CriteriaCondition(jobHistoryArtfiactIdFieldRef, CriteriaConditionEnum.AnyOfThese, new[] { jobHistoryArtifactId }) { NotOperator = true }
+			};
+			CriteriaCollection jobHistoryObjectCriteriaCollection = new CriteriaCollection
+			{
+				Conditions = new List<CriteriaBase>(1) { jobHistoryArtifactIdCriteria }
+			};
+			
+			FieldRef jobHistoryFieldRef = new FieldRef("Job History");
+			Criteria jobHistoryCriteria = new Criteria
+			{
+				Condition = new CriteriaCondition(jobHistoryFieldRef, CriteriaConditionEnum.In, jobHistoryObjectCriteriaCollection)
+			};
+
+			CriteriaCollection searchCondition = new CriteriaCollection
+			{
+				Conditions = new List<CriteriaBase>(2) { savedSearchCriteria, jobHistoryCriteria }
+			};
+
+			KeywordSearch itemLevelSearch = new KeywordSearch
+			{
+				Name = "Temporary Search",
+				ArtifactTypeID = (int)Relativity.Client.ArtifactType.Document,
+				SearchCriteria = searchCondition
+			};
+
+			using (IKeywordSearchManager searchManager = _helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.CurrentUser))
+			{
+				SearchResultViewFields fields = searchManager.GetFieldsForSearchResultViewAsync(workspaceArtifactId, (int)Relativity.Client.ArtifactType.Document)
+					.ConfigureAwait(false).GetAwaiter().GetResult();
+
+				FieldRef field = fields.FieldsNotIncluded.First(x => x.Name == "Artifact ID");
+				itemLevelSearch.Fields = new List<FieldRef>(1) { field };
+				
+				int itemLevelSearchArtifactId =
+					searchManager.CreateSingleAsync(workspaceArtifactId, itemLevelSearch)
+						.ConfigureAwait(false).GetAwaiter().GetResult();
+
+				return itemLevelSearchArtifactId;
 			}
 		}
 	}

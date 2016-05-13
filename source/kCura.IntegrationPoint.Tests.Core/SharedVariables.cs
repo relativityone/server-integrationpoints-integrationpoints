@@ -1,9 +1,9 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core
-{
-	using System;
-	using System.Configuration;
+﻿using System;
+using System.Configuration;
 
-	public static class SharedVariables
+namespace kCura.IntegrationPoint.Tests.Core
+{
+	public class SharedVariables
 	{
 		private static string TargetHost => ConfigurationManager.AppSettings["targetHost"];
 
@@ -20,5 +20,9 @@
 		public static string RelativityWebApiUrl => $"http://{TargetHost}/RelativityWebAPI/";
 
 		public static string RapFileLocation => ConfigurationManager.AppSettings["rapFileLocation"];
+
+		public static string EddsConnectionString => ConfigurationManager.AppSettings["connectionStringEDDS"];
+
+		public static string WorkspaceConnectionStringFormat => ConfigurationManager.AppSettings["connectionStringWorkspace"];
 	}
 }

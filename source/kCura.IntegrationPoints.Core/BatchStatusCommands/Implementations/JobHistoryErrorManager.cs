@@ -25,7 +25,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		public JobHistoryErrorManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory,
 			int sourceWorkspaceArtifactId, string uniqueJobId, int submittedBy, JobHistoryErrorDTO.UpdateStatusType updateStatusType)
 		{
-			_repositoryFactory = repositoryFactory; _sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
+			_repositoryFactory = repositoryFactory; 
+			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);
 			_uniqueJobId = uniqueJobId;
 			_tempTableHelper = tempDocumentTableFactory.GetDocTableHelper(_uniqueJobId, _sourceWorkspaceArtifactId);
@@ -118,5 +119,12 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 			return objectTypeId.Value;
 		}
+
+		public int CreateItemLevelErrorsSavedSearch(int workspaceArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId)
+		{
+			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(workspaceArtifactId);
+			return jobHistoryErrorRepository.CreateItemLevelErrorsSavedSearch(workspaceArtifactId, savedSearchArtifactId, jobHistoryArtifactId);
+		}
+
 	}
 }

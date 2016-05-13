@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Relativity.API;
+using Relativity.Services;
 using Relativity.Services.Permission;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
@@ -25,6 +26,38 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public bool UserCanEditDocuments(int workspaceId)
 		{
 			return HasPermissions(workspaceId, _EDIT_DOCUMENT_PERMISSION_ID);
+		}
+
+		public bool UserCanViewArtifact(int workspaceId, int artifactTypeId, int artifactId)
+		{
+			var permission = new PermissionRef()
+			{
+				ArtifactType = new ArtifactTypeIdentifier(artifactTypeId),
+				PermissionType = PermissionType.View
+			};
+
+			bool userHasViewPermissions = false;
+
+			using (IPermissionManager proxy = _servicesMgr.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
+			{
+				try
+				{
+					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(workspaceId,
+						new List<PermissionRef>() {permission}, artifactId);
+					List<PermissionValue> permissionValues = permissionValuesTask.Result;
+
+					if (permissionValues != null && permissionValues.Any())
+					{
+						userHasViewPermissions = permissionValues.First().Selected;
+					}
+				}
+				catch 
+				{
+					// If the user does not have permissions, the kepler service throws an exception
+				}
+			}
+
+			return userHasViewPermissions;
 		}
 
 		internal bool HasPermissions(int workspaceId, int permissionToCheck)

@@ -36,28 +36,51 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			var console = new EventHandler.Console
 			{
 				Title = "RUN",
-				ButtonList = new List<ConsoleButton>()
 			};
 			
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
 			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(contextContainer);
 			IntegrationPointDTO integrationPointDto = integrationPointManager.Read(Application.ArtifactID, ActiveArtifact.ArtifactID);
 
-			bool userHasPermissions = integrationPointManager.UserHasPermissions(Helper.GetActiveCaseID());
 			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
-			bool integrationPointIsRetriable = integrationPointManager.IntegrationPointTypeIsRetriable(Application.ArtifactID, integrationPointDto);
+			bool sourceProviderIsRelativity = integrationPointManager.IntegrationPointSourceProviderIsRelativity(Application.ArtifactID, integrationPointDto);
+			bool userHasPermissions = true;
 
-			ConsoleButton runNowButton = GetRunNowButton(userHasPermissions);
-			console.ButtonList.Add(runNowButton);
-			
-			if (integrationPointIsRetriable)
+			var buttonList = new List<ConsoleButton>();
+
+			if (sourceProviderIsRelativity)
 			{
-				ConsoleButton retryErrorsButton = GetRetryErrorsButton(userHasPermissions && integrationPointHasErrors);
-				console.ButtonList.Add(retryErrorsButton);
+				PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissions(Application.ArtifactID,
+					integrationPointDto);
+				userHasPermissions = permissionCheck.Success;
 
+				ConsoleButton runNowButton = GetRunNowButton(userHasPermissions);
+				ConsoleButton retryErrorsButton = GetRetryErrorsButton(userHasPermissions && integrationPointHasErrors);
 				ConsoleButton viewErrorsLink = GetViewErrorsLink(contextContainer, integrationPointHasErrors);
-				console.ButtonList.Add(viewErrorsLink);
+
+				buttonList.Add(runNowButton);
+				buttonList.Add(retryErrorsButton);
+				buttonList.Add(viewErrorsLink);
+
+				if (!userHasPermissions)
+				{
+					string script = "<script type='text/javascript'>"
+					                + "$(document).ready(function () {"
+					                + "IP.message.error.raise(\""
+									+ permissionCheck.ErrorMessage
+									+ "\", $(\".cardContainer\"));"
+					                + "});"
+					                + "</script>";
+					console.AddScriptBlock("IPConsoleErrorDisplayScript", script);
+				}
 			}
+			else
+			{
+				ConsoleButton runNowButton = GetRunNowButton(userHasPermissions);
+				buttonList.Add(runNowButton);
+			}
+
+			console.ButtonList = buttonList;
 			
 			return console;
 		}

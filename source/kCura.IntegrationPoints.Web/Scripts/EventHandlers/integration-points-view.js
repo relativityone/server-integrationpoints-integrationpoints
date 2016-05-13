@@ -1,41 +1,9 @@
 ﻿var IP = IP || {};
 (function (root) {
-
     root.importNow = function (artifactId, appid) {
 
-
-        var appendOnlyMessageStart = "You are about to create ";
-        var appendOnlyMessageEnd = " folders in the destination workspace, would you still like to proceed?";
-        var overlayOnlyMessage = "Only documents and their metadata with the same identifier will be overwritten, would you still like to proceed?";
-        var appendOverlayMesssage = "All existing documents and their metadata in the target workspace that have the same identifier will be overwritten, would you still like to proceed?";
-        var provider = $("[fafriendlyname=\"Source Provider\"]").closest("tr").find(".dynamicViewFieldValue").text();
-        var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
-        var selectedMessage = "";
-        if (overwriteOption === "Append Only" && provider === "Relativity") {
-            var folderCount = 0;
-            IP.data.ajax({
-                type: "get",
-                url: IP.utils.generateWebAPIURL("FolderPath", "GetFolderCount", artifactId),
-                async: false,
-                success: function (result) {
-                    folderCount = result;
-                }
-            });
-            selectedMessage = appendOnlyMessageStart + folderCount + appendOnlyMessageEnd;
-        } else if (overwriteOption === "Overlay Only" && provider === "Relativity") {
-            selectedMessage = overlayOnlyMessage;
-        } else if (overwriteOption === "Append/Overlay" && provider === "Relativity") {
-            selectedMessage = appendOverlayMesssage;
-        }
-        if (provider === "Relativity" && root.errorMessage.length !== 0) {
-            IP.message.error.raise(root.errorMessage, $(".cardContainer"));
-            return;
-        }
-        //if (provider !== "Relativity") {
-        //    selectedMessage = "Are you sure you want to import data now?";
-        //}
         window.Dragon.dialogs.showConfirm({
-            message: selectedMessage,
+            message: 'Are you sure you want to run this job now?',
             title: 'Run Now',
             showCancel: true,
             width: 450,
@@ -43,40 +11,22 @@
                 calls.close();
                 var ajax = IP.data.ajax({
                     type: 'post',
-                    url: root.utils.generateWebAPIURL('Job'),
+                    url: root.utils.generateWebAPIURL('ImportNow'),
                     data: JSON.stringify({
                         "appId": appid,
                         "artifactId": artifactId
                     })
                 });
-                ajax.fail(function (value) {
-                    IP.message.error.raise("Failed to submit integration job. " + value.responseText, $(".cardContainer"));
-                });
-                ajax.done(function () {
+                ajax.then(function () {
                     IP.message.info.raise("Data will now be imported from the source provider.", $(".cardContainer"));
                 });
             }
         });
     };
 
-    root.retryJob = function (artifactId, appId) {
-        var ajax = IP.data.ajax({
-            type: "POST",
-            url: root.utils.generateWebAPIURL('Job/Retry'),
-            async: true,
-            data: JSON.stringify({
-                "appId": appId,
-                "artifactId": artifactId
-            })
-        });
+    var _convertUTCToLocal = function () {
 
-        ajax.fail(function (value) {
-            IP.message.error.raise("Failed to submit the retry job. " + value.responseText, $(".cardContainer"));
-        });
-        ajax.done(function () {
-            IP.message.info.raise("Retry job submitted. Data will now be imported from the source provider.", $(".cardContainer"));
-        });
-    }
+    };
 
     var config = {
         time: {
@@ -109,7 +59,7 @@
 
 })(IP);
 $(window).load(function () {
-    $(".consoleContainer .consoleButtonDisabled").attr("title", "You do not have permission to import.");
+    $(".consoleContainer .consoleButtonDisabled").attr("title", "You do not have permission to run this job.");
 });
 
 $(window).unload(function () {
@@ -237,11 +187,6 @@ $(function () {
     var settings = $field.text();
     $field.text('');
     _getSource(settings).then(function (result) {
-        result = result.filter(function (setting) {
-            if (setting.value !== -1 && setting.value !== 0 && setting.key.indexOf("Id") === -1 && setting.value != null) {
-                return true;
-            }
-        });
         IP.utils.createFields($field, result);
     }, function () {
         $field.text('There was an error retrieving the source configuration.');

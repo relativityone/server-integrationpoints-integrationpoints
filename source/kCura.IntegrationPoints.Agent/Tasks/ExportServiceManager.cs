@@ -243,6 +243,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_batchStatus.ForEach(batch => batch.JobStarted(job));
 		}
 
+		private int GetItemLevelRetrySavedSearch(Job job)
+		{
+			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(job.WorkspaceID);
+			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(job.WorkspaceID);
+
+			var exportSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(IntegrationPointDto.SourceConfiguration);
+			int lastJobHistoryArtifactId = jobHistoryRepository.GetLastTwoJobHistoryArtifactId(IntegrationPointDto.ArtifactId)[1];
+
+			int newSavedSearch = jobHistoryErrorRepository.CreateItemLevelErrorsSavedSearch(
+				job.WorkspaceID, exportSettings.SavedSearchArtifactId, lastJobHistoryArtifactId);
+			return newSavedSearch;
+		}
+
 		private void FinalizeExportService(Job job)
 		{
 			try
