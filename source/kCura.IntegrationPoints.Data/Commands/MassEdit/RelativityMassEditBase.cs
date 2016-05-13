@@ -11,23 +11,12 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 	public abstract class RelativityMassEditBase
 	{
 		private const int _BATCH_SIZE = 1000;
-		private readonly ArtifactType _artifactType = new ArtifactType(global::Relativity.ArtifactType.Document);
 
-		protected void TagDocumentsWithRdo(BaseServiceContext context, Field fieldToUpdate, int numberOfDocuments, int rdoArtifactId, string tempTableName)
+		protected void TagFieldsWithRdo(BaseServiceContext context, Field fieldToUpdate, int numberOfDocuments, ArtifactType objectType, int rdoArtifactId, string tempTableName)
 		{
 			fieldToUpdate.Value = GetMultiObjectListUpdate(rdoArtifactId);
 
-			MassProcessHelper.MassProcessInitArgs initArgs = new MassProcessHelper.MassProcessInitArgs(tempTableName, numberOfDocuments, false);
-			using (SqlMassProcessBatch batch = new SqlMassProcessBatch(context, initArgs, _BATCH_SIZE))
-			{
-				Field[] fields =
-				{
-					fieldToUpdate
-				};
-
-				Edit massEdit = new Edit(context, batch, fields, _BATCH_SIZE, String.Empty, true, true, true, _artifactType);
-				massEdit.Execute(true);
-			}
+			ExecuteMassEditAction(context, fieldToUpdate, numberOfDocuments, objectType, tempTableName);
 		}
 
 		internal MultiObjectListUpdate GetMultiObjectListUpdate(int destinationWorkspaceInstanceId)
@@ -52,7 +41,12 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 			fieldToUpdate.FieldArtifactTypeID = objectType.Id;
 			fieldToUpdate.Value = choiceArtifactId;
 
-			MassProcessHelper.MassProcessInitArgs initArgs = new MassProcessHelper.MassProcessInitArgs(tempTableName, numberOfErrors, false);
+			ExecuteMassEditAction(context, fieldToUpdate, numberOfErrors, objectType, tempTableName);
+		}
+
+		private void ExecuteMassEditAction(BaseServiceContext context, Field fieldToUpdate, int numberToUpdate, ArtifactType objectType, string tempTableName)
+		{
+			MassProcessHelper.MassProcessInitArgs initArgs = new MassProcessHelper.MassProcessInitArgs(tempTableName, numberToUpdate, false);
 			using (SqlMassProcessBatch batch = new SqlMassProcessBatch(context, initArgs, _BATCH_SIZE))
 			{
 				Field[] fields =
@@ -60,7 +54,7 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 					fieldToUpdate
 				};
 
-				Edit massEdit = new Edit(context, batch, fields, _BATCH_SIZE, String.Empty, true, true, false, _artifactType);
+				Edit massEdit = new Edit(context, batch, fields, _BATCH_SIZE, String.Empty, true, true, true, objectType);
 				massEdit.Execute(true);
 			}
 		}
