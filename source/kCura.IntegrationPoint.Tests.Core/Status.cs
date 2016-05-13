@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Threading;
+using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	using System.Threading;
-	using Relativity.Client;
-
 	public class Status : HelperBase
 	{
 		public Status(Helper helper) : base(helper)

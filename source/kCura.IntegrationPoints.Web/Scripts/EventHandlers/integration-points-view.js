@@ -11,14 +11,17 @@
                 calls.close();
                 var ajax = IP.data.ajax({
                     type: 'post',
-                    url: root.utils.generateWebAPIURL('ImportNow'),
+                    url: root.utils.generateWebAPIURL('Job'),
                     data: JSON.stringify({
                         "appId": appid,
                         "artifactId": artifactId
                     })
                 });
-                ajax.then(function () {
-                    IP.message.info.raise("Data will now be imported from the source provider.", $(".cardContainer"));
+                ajax.fail(function (value) {
+                    IP.message.error.raise("Failed to submit integration job. " + value.responseText, $(".cardContainer"));
+                });
+                ajax.done(function () {
+                    IP.message.info.raise("Job started.", $(".cardContainer"));
                 });
             }
         });

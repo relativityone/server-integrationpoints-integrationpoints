@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		public int GetLastJobHistoryArtifactId(int workspaceArtifactId, int integrationPointArtifactId)
 		{
 			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
-			return jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointArtifactId);
+			return jobHistoryRepository.GetLastTwoJobHistoryArtifactId(integrationPointArtifactId)[0];
 		}
 	}
 }

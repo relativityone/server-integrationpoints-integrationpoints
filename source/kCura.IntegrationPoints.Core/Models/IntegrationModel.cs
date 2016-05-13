@@ -162,6 +162,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			this.LogErrors = ip.LogErrors.GetValueOrDefault(false);
 			this.HasErrors = ip.HasErrors.GetValueOrDefault(false);
 			this.LastRun = ip.LastRuntimeUTC;
+			this.Map = ip.FieldMappings;
 		}
 	}
 }

@@ -5,7 +5,6 @@
 		public int SourceWorkspaceArtifactId { set; get; }
 		public int TargetWorkspaceArtifactId { get; set; }
 		public string TargetWorkspace { get; set; }
-
 		public string SourceWorkspace { get; set; }
 	}
 

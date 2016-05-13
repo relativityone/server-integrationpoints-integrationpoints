@@ -1,9 +1,9 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core
-{
-	using System;
-	using System.Configuration;
+﻿using System;
+using System.Configuration;
 
-	public static class SharedVariables
+namespace kCura.IntegrationPoint.Tests.Core
+{
+	public class SharedVariables
 	{
 		private static string TargetHost => ConfigurationManager.AppSettings["targetHost"];
 

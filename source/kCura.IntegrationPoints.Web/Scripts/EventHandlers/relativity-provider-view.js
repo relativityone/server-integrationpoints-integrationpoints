@@ -2,33 +2,20 @@
 (function (root) {
 
     root.importNow = function (artifactId, appid) {
-        var appendOnlyMessageStart = "You are about to create ";
-        var appendOnlyMessageEnd = " folders in the destination workspace, would you still like to proceed?";
+        var field  =$("#destinationrdo").data().destinationrdo;;
         var overlayOnlyMessage = "Only documents and their metadata with the same identifier will be overwritten, would you still like to proceed?";
         var appendOverlayMesssage = "All existing documents and their metadata in the target workspace that have the same identifier will be overwritten, would you still like to proceed?";
-        var provider = $("[fafriendlyname=\"Source Provider\"]").closest("tr").find(".dynamicViewFieldValue").text();
-        var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
+         var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
         var selectedMessage = "";
-        if (overwriteOption === "Append Only" && provider === "Relativity") {
-            var folderCount = 0;
-            IP.data.ajax({
-                type: "get",
-                url: IP.utils.generateWebAPIURL("FolderPath", "GetFolderCount", artifactId),
-                async: false,
-                success: function (result) {
-                    folderCount = result;
-                }
-            });
-            selectedMessage = appendOnlyMessageStart + folderCount + appendOnlyMessageEnd;
-        } else if (overwriteOption === "Overlay Only" && provider === "Relativity") {
+        if (overwriteOption === "Append Only" ) {
+            selectedMessage = "You may be creating folders in the destination workspace using the "+field+" field, would you still like to proceed?";
+        } else if (overwriteOption === "Overlay Only" ) {
             selectedMessage = overlayOnlyMessage;
-        } else if (overwriteOption === "Append/Overlay" && provider === "Relativity") {
+        } else if (overwriteOption === "Append/Overlay") {
             selectedMessage = appendOverlayMesssage;
         }
-        if (provider === "Relativity" && root.errorMessage.length !== 0) {
-            IP.message.error.raise(root.errorMessage, $(".cardContainer"));
-            return;
-        }
+
+        //
         window.Dragon.dialogs.showConfirm({
             message: selectedMessage,
             title: 'Run Now',
@@ -48,7 +35,7 @@
                     IP.message.error.raise("Failed to submit integration job. " + value.responseText, $(".cardContainer"));
                 });
                 ajax.done(function () {
-                    IP.message.info.raise("Data will now be imported from the source provider.", $(".cardContainer"));
+                    IP.message.info.raise("Job started", $(".cardContainer"));
                 });
             }
         });

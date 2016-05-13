@@ -1,16 +1,16 @@
-﻿namespace kCura.IntegrationPoint.Tests.Core
-{
-	using Relativity.Client;
+﻿using kCura.Relativity.Client;
 
+namespace kCura.IntegrationPoint.Tests.Core
+{
 	public class SavedSearch : HelperBase
 	{
-		private const string _createSingleService = "Relativity.Services.Search.ISearchModule/Keyword Search Manager/CreateSingleAsync";
+		private const string _CREATE_SINGLE_SERVICE = "api/Relativity.Services.Search.ISearchModule/Keyword Search Manager/CreateSingleAsync";
 
 		public SavedSearch(Helper helper) : base(helper)
 		{
 		}
 
-		public int CreateSavedSearch(string restServer, string userName, string userPassword, int workspaceId, string name)
+		public int CreateSavedSearch(int workspaceId, string name)
 		{
 			string json = string.Format(@"
 				{{
@@ -26,7 +26,7 @@
 					}}
 				}}
 			", workspaceId, (int)ArtifactType.Document, name);
-			string output = Helper.Rest.PostRequestAsJsonAsync(_createSingleService, userName, userPassword, false, json);
+			string output = Helper.Rest.PostRequestAsJson(_CREATE_SINGLE_SERVICE, false, json);
 			return int.Parse(output);
 		}
 	}
