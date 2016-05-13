@@ -132,7 +132,9 @@ Name: [RIP.Name]
 
 Name: [RIP.Name]
 [RIP.SOURCEEMAILBODYDATA]
-[RIP.DESTINATIONEMAILBODYDATA]</value>
+[RIP.DESTINATIONEMAILBODYDATA]
+
+For error details, please review job history errors for this integration point.</value>
   </data>
   <data name="JOB_COMPLETED_WITH_ERRORS_SUBJECT" xml:space="preserve">
     <value>Relativity Job completed with errors for "[RIP.NAME]".</value>
