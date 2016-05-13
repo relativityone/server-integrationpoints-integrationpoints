@@ -235,6 +235,10 @@
       <HintPath>..\packages\Relativity.Services.Interfaces.9.3.403.16\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Services.Interfaces.Private, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\Relativity.Services.Interfaces.Private.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.149, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.149\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
       <Private>True</Private>
@@ -330,11 +334,10 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Kepler.cs" />
     <Compile Include="Permission.cs" />
     <Compile Include="Models\ImportOverwriteMode.cs" />
     <Compile Include="Models\FieldOverlayBehavior.cs" />
-    <Compile Include="Helper.cs" />
-    <Compile Include="HelperBase.cs" />
     <Compile Include="Import.cs" />
     <Compile Include="IntegrationTestBase.cs" />
     <Compile Include="SampleTest.cs" />

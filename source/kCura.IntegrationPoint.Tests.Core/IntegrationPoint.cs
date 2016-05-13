@@ -9,13 +9,6 @@
 //{
 //	public static class IntegrationPoint
 //	{
-//		private static readonly Helper _helper;
-
-//		static IntegrationPoint()
-//		{
-//			_helper = new Helper();
-//		}
-
 //		public static string CreateIntegrationPoint(string integrationPointName,
 //			int sourceWorkspaceId,
 //			int targetWorkspaceId,

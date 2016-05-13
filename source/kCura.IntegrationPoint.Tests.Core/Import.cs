@@ -6,12 +6,8 @@
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public class Import : HelperBase
+	public static class Import
 	{
-		public Import(Helper helper) : base(helper)
-		{
-		}
-
 		//		public void ImportNewDocuments(int workspaceId, DataTable importTable)
 		//		{
 		//			ImportApiFactory factory = new ImportApiFactory();

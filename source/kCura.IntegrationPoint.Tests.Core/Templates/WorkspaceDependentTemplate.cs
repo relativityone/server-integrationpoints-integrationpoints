@@ -35,10 +35,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 			const string template = "New Case Template";
-			SourceWorkspaceArtifactId = GerronHelper.Workspace.CreateWorkspace(_sourceWorkspaceName, template);
+			SourceWorkspaceArtifactId = Workspace.CreateWorkspace(_sourceWorkspaceName, template);
 			TargetWorkspaceArtifactId = SourceWorkspaceArtifactId;
-			GerronHelper.Workspace.ImportApplicationToWorkspace(SourceWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
-			SavedSearchArtifactId = GerronHelper.SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents");
+			Workspace.ImportApplicationToWorkspace(SourceWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
+			SavedSearchArtifactId = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents");
 			Install();
 		}
 
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				Component.For<IRSAPIClient>()
 				.UsingFactoryMethod(k =>
 				{
-					IRSAPIClient client = GerronHelper.Rsapi.CreateRsapiClient();
+					IRSAPIClient client = Rsapi.CreateRsapiClient();
 					client.APIOptions.WorkspaceID = SourceWorkspaceArtifactId;
 					return client;
 				})
@@ -82,8 +82,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		[TestFixtureTearDown]
 		public virtual void TearDown()
 		{
-			GerronHelper.Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
-			//GerronHelper.Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
+			Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
+			//Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
 		}
 	}
 }
