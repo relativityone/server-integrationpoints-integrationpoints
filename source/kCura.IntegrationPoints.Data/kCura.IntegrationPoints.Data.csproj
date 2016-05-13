@@ -142,10 +142,6 @@
       <HintPath>..\packages\Relativity.ImportExport.9.3.406.5\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Mono.Cecil, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\Mono.Cecil.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -157,10 +153,6 @@
     <Reference Include="Relativity.API, Version=9.3.406.5, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.API.9.3.406.5\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.APIHelper, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\Relativity.APIHelper.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Core, Version=9.3.406.5, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.Core.9.3.406.5\lib\net45\Relativity.Core.dll</HintPath>

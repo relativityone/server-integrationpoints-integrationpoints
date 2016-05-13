@@ -165,10 +165,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\Injection\kCura.Method.Injection.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=3698d9cc89824494, processorArchitecture=MSIL">
-      <HintPath>..\packages\RelativityCore.9.3.406.5\lib\net45\kCura.Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="kCura.Notification, Version=9.3.406.5, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\kCuraCore.9.3.406.5\lib\net45\kCura.Notification.dll</HintPath>
       <Private>True</Private>

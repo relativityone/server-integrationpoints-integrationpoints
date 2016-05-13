@@ -98,9 +98,6 @@
       <HintPath>..\packages\kCuraCore.9.3.406.5\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.EDDS.DocumentCompareGateway">
-      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
-    </Reference>
     <Reference Include="kCura.ImageValidator, Version=9.3.406.5, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.3.406.5\lib\net45\kCura.ImageValidator.dll</HintPath>
       <Private>True</Private>
@@ -116,9 +113,6 @@
     <Reference Include="kCura.OI.FileID, Version=9.3.406.5, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.3.406.5\lib\net45\kCura.OI.FileID.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="kCura.Relativity.Client">
-      <HintPath>..\kCura.Relativity.Client.9.3.398.12\lib\net45\kCura.Relativity.Client.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Relativity.DataReaderClient, Version=9.3.406.5, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.3.406.5\lib\net45\kCura.Relativity.DataReaderClient.dll</HintPath>
@@ -159,13 +153,6 @@
     <Reference Include="Relativity, Version=9.3.406.5, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ImportExport.9.3.406.5\lib\net45\Relativity.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.API, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Relativity.API.9.3.398.12\lib\net45\Relativity.API.dll</HintPath>
-    </Reference>
-    <Reference Include="Relativity.Services.Interfaces">
-      <HintPath>..\Relativity.Services.Interfaces.9.3.398.12\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
