@@ -62,12 +62,12 @@
 
         this.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
 
-        this.selectedDestinationPath = ko.observable(state.fileshare).extend({
+        this.selectedDestinationPath = ko.observable(state.Fileshare).extend({
             	required: true
         });
 
-        this.copyFileFromRepository = ko.observable(state.copyFileFromRepository || "false");
-        this.overwriteFiles = ko.observable(state.overwriteFiles || "false");
+        this.CopyFileFromRepository = ko.observable(state.CopyFileFromRepository || "false");
+        this.OverwriteFiles = ko.observable(state.OverwriteFiles || "false");
 
         this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId).extend({
         	required: true
@@ -104,8 +104,8 @@
                 "SavedSearchArtifactId": self.SavedSearchArtifactId(),
                 "TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
                 "SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
-                "CopyFileFromRepository": self.copyFileFromRepository(),
-                "OverwriteFiles": self.overwriteFiles(),
+                "CopyFileFromRepository": self.CopyFileFromRepository(),
+                "OverwriteFiles": self.OverwriteFiles(),
                 "Fileshare": self.selectedDestinationPath()
             }
         }
