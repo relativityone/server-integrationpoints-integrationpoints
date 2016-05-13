@@ -75,6 +75,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			Container.Register(Component.For<IOnBehalfOfUserClaimsPrincipalFactory>()
 				.ImplementedBy<OnBehalfOfUserClaimsPrincipalFactory>()
 				.LifestyleTransient());
+
+
 		}
 
 		public ITask CreateTask(Job job, ScheduleQueueAgentBase agentBase)
@@ -139,19 +141,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IWorkspaceDBContext workspaceDbContext = Container.Resolve<IWorkspaceDBContext>();
 			IEddsServiceContext eddsServiceContext = Container.Resolve<IEddsServiceContext>();
 
-			ChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
+			IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
 			JobResourceTracker jobResourceTracker = new JobResourceTracker(workspaceDbContext);
 			JobTracker jobTracker = new JobTracker(jobResourceTracker);
 			IAgentService agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 
 			IJobService jobService = new JobService(agentService, _helper);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
-			IPermissionRepository permissionRepository = Container.Resolve<IPermissionRepository>();
+			IPermissionRepository permissionService = Container.Resolve<IPermissionRepository>();
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			IManagerFactory managerFactory = new ManagerFactory();
 
-			IntegrationPointService integrationPointService = new IntegrationPointService(_helper, caseServiceContext, permissionRepository, contextContainerFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
+			IntegrationPointService integrationPointService = new IntegrationPointService(_helper, caseServiceContext, permissionService, contextContainerFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
 			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 
 			TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);

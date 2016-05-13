@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public int GetLastJobHistoryArtifactId(int integrationPointArtifactId)
+		public List<int> GetLastTwoJobHistoryArtifactId(int integrationPointArtifactId)
 		{
 			var query = new Query<RDO>
 			{
@@ -86,7 +86,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-				results = rsapiClient.Repositories.RDO.Query(query, 1);
+				results = rsapiClient.Repositories.RDO.Query(query, 2);
 			}
 
 			if (!results.Success)
@@ -94,7 +94,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception($"Unable to retrieve Job Hisory: {results.Message}");
 			}
 
-			int lastJobHistoryArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).First();
+			List<int> lastJobHistoryArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).ToList();
 			return lastJobHistoryArtifactId;
 		}
 	}

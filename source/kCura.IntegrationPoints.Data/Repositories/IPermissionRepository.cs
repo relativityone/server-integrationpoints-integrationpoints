@@ -22,7 +22,7 @@
 		/// <param name="workspaceId">The workspace to check the permission against.</param>
 		/// <param name="artifactTypeId">The artifact type id</param>
 		/// <param name="artifactId">The artifact id of the instance to check permissions of</param>
-		/// <returns></returns>
+		/// <returns>Returns <code>TRUE</code> if the user can view the artifact, <code>FALSE</code> otherwise.</returns>
 		bool UserCanViewArtifact(int workspaceId, int artifactTypeId, int artifactId);
 	}
 }
