@@ -133,6 +133,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			point.LogErrors = this.LogErrors;
 			point.HasErrors = this.HasErrors;
 			point.EmailNotificationRecipients = string.Join("; ", (this.NotificationEmails ?? string.Empty).Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList());
+			point.LastRuntimeUTC = LastRun;
 
 			return point;
 		}

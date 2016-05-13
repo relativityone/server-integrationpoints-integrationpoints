@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		public void UpdateName_OnRanIp()
+		public void UpdateName_OnRanIp_ErrorCase()
 		{
 			const string name = "Update Name - OnRanIp";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
@@ -60,8 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			defaultModel.Name = "newName";
 
-			IntegrationModel newModel = SaveModel(defaultModel);
-			ValidateModel(defaultModel, newModel, new[] { _NAME });
+			Assert.Throws<Exception>(() => SaveModel(defaultModel));
 		}
 
 		[Test]
