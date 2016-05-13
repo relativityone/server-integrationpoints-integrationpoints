@@ -8,6 +8,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
+	[Explicit]
 	public class AgentTests : WorkspaceDependentTemplate
 	{
 		[Test]
