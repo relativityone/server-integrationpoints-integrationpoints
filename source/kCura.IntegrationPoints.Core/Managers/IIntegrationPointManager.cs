@@ -28,7 +28,8 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
 		/// <param name="integrationPointDto">The integration point dto to check</param>
+		/// <param name="sourceProviderIsRelativity">Whether or not the source provider is the Relativity provider. If not supplied, the method will run queries to check.</param>
 		/// <returns>A PermissionCheckDTO object</returns>
-		PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto);
+		PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, bool? sourceProviderIsRelativity = null);
 	}
 }

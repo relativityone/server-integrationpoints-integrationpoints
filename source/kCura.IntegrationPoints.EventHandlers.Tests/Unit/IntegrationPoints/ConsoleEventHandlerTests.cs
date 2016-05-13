@@ -65,6 +65,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		[TestCase(true, true)]
 		[TestCase(false, true)]
 		[TestCase(true, false)]
+		[TestCase(false, false)]
 		public void GetConsole_GoldFlow(bool isRelativitySourceProvider, bool hasPermissions)
 		{
 			// ARRANGE
@@ -88,7 +89,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				Success = hasPermissions,
 				ErrorMessage = hasPermissions ? null : "GOBBLYGOOK!"
 			};
-			_integrationPointManager.UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto)).Returns(permissionCheck);
+			_integrationPointManager.UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(isRelativitySourceProvider)).Returns(permissionCheck);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_managerFactory.CreateIntegrationPointManager(_contextContainer).Returns(_integrationPointManager);
 
@@ -130,7 +131,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 			// ASSERT
 			_contextContainerFactory.Received().CreateContextContainer(_helper);
-			_integrationPointManager.Received(isRelativitySourceProvider ? 1 : 0).UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto));
+			_integrationPointManager.Received(1).UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(isRelativitySourceProvider));
 			_managerFactory.Received().CreateIntegrationPointManager(_contextContainer);
 
 			Assert.IsNotNull(console);
@@ -139,9 +140,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			int buttonIndex = 0;
 			ConsoleButton runNowButton = console.ButtonList[buttonIndex++];
 			Assert.AreEqual("Run Now", runNowButton.DisplayText);
-			Assert.AreEqual(isRelativitySourceProvider ? hasPermissions : true, runNowButton.Enabled);
+			Assert.AreEqual(hasPermissions, runNowButton.Enabled);
 			Assert.AreEqual(false, runNowButton.RaisesPostBack);
-			Assert.AreEqual(isRelativitySourceProvider && !hasPermissions ? String.Empty : $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
+			Assert.AreEqual(hasPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty, runNowButton.OnClickEvent);
 
 			if (isRelativitySourceProvider)
 			{
