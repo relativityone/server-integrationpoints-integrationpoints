@@ -9,6 +9,7 @@ using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Data;
+using ArtifactType = Relativity.Query.ArtifactType;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -177,6 +178,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public void TagDocsWithDestinationWorkspace(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int destinationWorkspaceInstanceId, string tableSuffix, int sourceWorkspaceId)
 		{
+			ArtifactType artifactType = new ArtifactType(global::Relativity.ArtifactType.Document);
+
 			if (numberOfDocs <= 0)
 			{
 				return;
@@ -205,7 +208,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				base.TagDocumentsWithRdo(baseService, multiObjectField, numberOfDocs, destinationWorkspaceInstanceId, fullTableName);
+				base.TagFieldsWithRdo(baseService, multiObjectField, numberOfDocs, artifactType, destinationWorkspaceInstanceId, fullTableName);
 			}
 			catch (Exception e)
 			{

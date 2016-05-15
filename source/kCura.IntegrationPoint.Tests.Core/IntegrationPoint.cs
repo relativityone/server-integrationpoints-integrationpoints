@@ -9,13 +9,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class IntegrationPoint
 	{
-		private static readonly Helper _helper;
-
-		static IntegrationPoint()
-		{
-			_helper = new Helper();
-		}
-
 		//public static string CreateIntegrationPoint(string integrationPointName,
 		//	int sourceWorkspaceId,
 		//	int targetWorkspaceId,
@@ -96,7 +89,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		//	string parameters = JsonConvert.SerializeObject(integrationPointRequest);
 		//	string request = $"{{request:{parameters}}}";
-		//	string response = _helper.Rest.PostRequestAsJson("api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Integration Point Manager/CreateIntegrationPointAsync",
+		//	string response = Rest.PostRequestAsJson("api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Integration Point Manager/CreateIntegrationPointAsync",
 		//		false, user.EmailAddress, user.Password, request);
 		//	return response;
 		//}
@@ -104,7 +97,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static bool RunIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, UserModel user)
 		{
 			string request = $"{{workspaceArtifactId:{workspaceArtifactId}, integrationPointArtifactId:{integrationPointArtifactId}}}";
-			_helper.Rest.PostRequestAsJson("api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Integration Point Manager/RunIntegrationPointAsync",
+			Rest.PostRequestAsJson("api/kCura.IntegrationPoints.Services.IIntegrationPointsModule/Integration Point Manager/RunIntegrationPointAsync",
 				false, user.EmailAddress, user.Password, request);
 			return true;
 		}

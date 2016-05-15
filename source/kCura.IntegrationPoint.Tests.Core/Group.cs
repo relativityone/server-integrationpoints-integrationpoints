@@ -11,12 +11,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Group
 	{
-		private static readonly Helper _helper;
-
-		static Group()
-		{
-			_helper = new Helper();
-		}
 
 		public static int CreateGroup(string name)
 		{
@@ -32,7 +26,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			// STEP 3: Create the new Group.
 			try
 			{
-				using (IRSAPIClient rsapiClient = _helper.Rsapi.CreateRsapiClient())
+				using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
 				{
 					resultSet = rsapiClient.Repositories.Group.Create(newGroup);
 				}
@@ -70,7 +64,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			// STEP 3: Perform the delete operation.
 			try
 			{
-				using (IRSAPIClient rsapiClient = _helper.Rsapi.CreateRsapiClient())
+				using (IRSAPIClient rsapiClient = Rsapi.CreateRsapiClient())
 				{
 					resultSet = rsapiClient.Repositories.Group.Delete(groupToDelete);
 				}
@@ -98,13 +92,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool AddGroupToWorkspace(int workspaceId, int groupId)
 		{
-			string response1 = _helper.Rest.PostRequestAsJson("api/Relativity.Services.Permission.IPermissionModule/Permission Manager/GetWorkspaceGroupSelectorAsync", false, $"{{workspaceArtifactID:{workspaceId}}}");
+			string response1 = Rest.PostRequestAsJson("api/Relativity.Services.Permission.IPermissionModule/Permission Manager/GetWorkspaceGroupSelectorAsync", false, $"{{workspaceArtifactID:{workspaceId}}}");
 			GroupSelector groupSelector = JsonConvert.DeserializeObject<GroupSelector>(response1);
 			groupSelector.DisabledGroups = new List<GroupRef>();
 			groupSelector.EnabledGroups = new List<GroupRef> { new GroupRef(groupId) };
 
 			string parameter = $"{{workspaceArtifactID:{workspaceId},groupSelector:{JsonConvert.SerializeObject(groupSelector)}}}";
-			string response2 = _helper.Rest.PostRequestAsJson("api/Relativity.Services.Permission.IPermissionModule/Permission Manager/AddRemoveWorkspaceGroupsAsync", false, parameter);
+			string response2 = Rest.PostRequestAsJson("api/Relativity.Services.Permission.IPermissionModule/Permission Manager/AddRemoveWorkspaceGroupsAsync", false, parameter);
 
 			return true;
 		}

@@ -3,18 +3,12 @@ using System.Collections.Generic;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Relativity.Services;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class User
 	{
-		private static readonly Helper _helper;
-
-		static User()
-		{
-			_helper = new Helper();
-		}
-
 		public static UserModel CreateUser(string firstName, string lastName, string emailAddress, IList<int> groupIds = null)
 		{
 			List<BaseField> groups = new List<BaseField>();
@@ -100,7 +94,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			};
 
 			string parameters = JsonConvert.SerializeObject(user);
-			string response = _helper.Rest.PostRequestAsJson("Relativity/User", false, parameters);
+			string response = Rest.PostRequestAsJson("Relativity/User", false, parameters);
 			JObject resultObject = JObject.Parse(response);
 			user.ArtifactId = Convert.ToInt32(resultObject["Results"][0]["ArtifactID"]);
 			return user;
@@ -108,7 +102,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static bool DeleteUser(int userArtifactId)
 		{
-			string response = _helper.Rest.DeleteRequestAsJson("localhost", $"Relativity/User/{userArtifactId}", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false);
+			string response = Rest.DeleteRequestAsJson("localhost", $"Relativity/User/{userArtifactId}", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false);
 			return true;
 		}
 
