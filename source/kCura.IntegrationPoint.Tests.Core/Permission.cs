@@ -15,7 +15,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_helper = new Helper();
 		}
 
-		public static bool GetPermissions(int workspaceId, int groupId)
+		public static GroupPermissions GetGroupPermissions(int workspaceId, int groupId)
+		{
+			GroupRef groupRef = new GroupRef(groupId);
+			string parameter1 = $"{{workspaceArtifactID:{workspaceId},group:{JsonConvert.SerializeObject(groupRef)}}}";
+
+			string response1 = _helper.Rest.PostRequestAsJson("api/Relativity.Services.Permission.IPermissionModule/Permission Manager/GetWorkspaceGroupPermissionsAsync",
+				false, parameter1);
+			GroupPermissions groupPermissions = JsonConvert.DeserializeObject<GroupPermissions>(response1);
+
+			return groupPermissions;
+		}
+
+		public static bool SetMinimumRelativityProviderPermissions(int workspaceId, int groupId)
 		{
 			GroupRef groupRef = new GroupRef(groupId);
 			string parameter1 = $"{{workspaceArtifactID:{workspaceId},group:{JsonConvert.SerializeObject(groupRef)}}}";
