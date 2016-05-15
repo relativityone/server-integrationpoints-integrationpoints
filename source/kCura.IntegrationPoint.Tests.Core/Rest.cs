@@ -13,7 +13,17 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 		}
 
+		public string PostRequestAsJson(string serviceMethod, bool isHttps, string username, string password, string parameter = null)
+		{
+			return PostRequestAsJsonInternal(serviceMethod, isHttps, username, password, parameter);
+		}
+
 		public string PostRequestAsJson(string serviceMethod, bool isHttps, string parameter = null)
+		{
+			return PostRequestAsJsonInternal(serviceMethod, isHttps, SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, parameter);
+		}
+
+		public string PostRequestAsJsonInternal(string serviceMethod, bool isHttps, string username, string password, string parameter)
 		{
 			Uri baseAddress = new Uri(SharedVariables.RestServer);
 			WebRequestHandler handler = new WebRequestHandler();
@@ -28,7 +38,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				httpClient.BaseAddress = baseAddress;
 
 				//Set header information
-				string authorizationBase64 = GetBase64String(string.Format("{0}:{1}", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
+				string authorizationBase64 = GetBase64String(string.Format("{0}:{1}", username, password));
 				string authorizationHeader = string.Format("Basic {0}", authorizationBase64);
 				httpClient.DefaultRequestHeaders.Add("Authorization", authorizationHeader);
 				httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", String.Empty);
