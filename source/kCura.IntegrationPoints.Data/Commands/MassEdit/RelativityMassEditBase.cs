@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Relativity.Core;
 using Relativity.Core.Process;
+using Relativity.Core.Service;
 using ArtifactType = Relativity.Query.ArtifactType;
 using Field = Relativity.Core.DTO.Field;
 
@@ -41,6 +42,27 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 			objectsToUpdate.Selected = instances;
 
 			return objectsToUpdate;
+		}
+
+		protected void UpdateSingleChoiceField(BaseServiceContext context, Field fieldToUpdate, int numberOfErrors, ArtifactType objectType, int choiceArtifactId, string tempTableName)
+		{
+			//Providing some extra properties for the field to update
+			ICodeManagerImplementation codeManagerImplementation = new CodeManagerImplementation();
+			fieldToUpdate.CodeTypeID = codeManagerImplementation.GetCodeTypeIdsByCodeArtifactIds(context, new List<int>() { choiceArtifactId })[0];
+			fieldToUpdate.FieldArtifactTypeID = objectType.Id;
+			fieldToUpdate.Value = choiceArtifactId;
+
+			MassProcessHelper.MassProcessInitArgs initArgs = new MassProcessHelper.MassProcessInitArgs(tempTableName, numberOfErrors, false);
+			using (SqlMassProcessBatch batch = new SqlMassProcessBatch(context, initArgs, _BATCH_SIZE))
+			{
+				Field[] fields =
+				{
+					fieldToUpdate
+				};
+
+				Edit massEdit = new Edit(context, batch, fields, _BATCH_SIZE, String.Empty, true, true, false, _artifactType);
+				massEdit.Execute(true);
+			}
 		}
 	}
 }

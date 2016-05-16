@@ -5,6 +5,7 @@ using kCura.EventHandler;
 
 //http://platform.kcura.com/9.0/index.htm#Customizing_workflows/Page_Interaction_event_handlers.htm?Highlight=javascript
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
@@ -53,7 +54,13 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/core/utils.js");
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/integration-point/time-utils.js");
 
-				this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL234324324", Script = "<script>var IP = IP ||{};IP.cpPath = '" + applicationPath + "';</script>" });
+			    this.RegisterLinkedClientScript(applicationPath + "/Scripts/jquery.signalR-2.2.0.js");
+			    this.RegisterLinkedClientScript(applicationPath + "/signalr/hubs");
+			    this.RegisterLinkedClientScript(applicationPath + "/Scripts/hubs/integrationPointHub.js");
+
+
+
+                this.RegisterClientScriptBlock(new ScriptBlock { Key = "PageURL234324324", Script = "<script>var IP = IP ||{};IP.cpPath = '" + applicationPath + "';</script>" });
 				int nextScheduledRuntimeFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.NextScheduledRuntimeUTC));
 				int destinationFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationConfiguration));
 				int destinationProviderFieldId = base.GetArtifactIdByGuid(Guid.Parse(Data.IntegrationPointFieldGuids.DestinationProvider));
@@ -81,8 +88,17 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				script.Append("</script>");
 
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = script.ToString() });
-
-				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-view.js");
+				const string sourceProviderFieldName = IntegrationPointFields.SourceProvider;
+				int sourceProvider = (int)this.ActiveArtifact.Fields[sourceProviderFieldName].Value.Value;
+				if (ServiceContext.RsapiService.SourceProviderLibrary.Read(Int32.Parse(sourceProvider.ToString())).Name == DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_NAME) 
+				{
+					this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/relativity-provider-view.js");
+				}
+				else
+				{
+					this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-view.js");
+				}
+				
 				this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-view-destination.js");
 
 				//this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/integration-points-grid.js");

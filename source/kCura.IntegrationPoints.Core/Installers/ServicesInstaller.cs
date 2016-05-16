@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.DestinationTypes;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.Provider;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Core.Services.SourceTypes;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Core.Services.Tabs;
@@ -38,10 +39,19 @@ namespace kCura.IntegrationPoints.Core.Installers
 	{
 		public void Install(IWindsorContainer container, IConfigurationStore store)
 		{
-			if (container.Kernel.HasComponent(typeof (ISerializer)) == false)
+			if (container.Kernel.HasComponent(typeof(ISerializer)) == false)
 			{
 				container.Register(Component.For<ISerializer>().ImplementedBy<JSONSerializer>().LifestyleTransient());
 			}
+
+			container.Register(Component.For<IObjectTypeRepository>().ImplementedBy<RsapiObjectTypeRepository>().UsingFactoryMethod(x =>
+			{
+				IServiceContextHelper contextHelper = x.Resolve<IServiceContextHelper>();
+				IHelper helper = x.Resolve<IHelper>();
+				return new RsapiObjectTypeRepository(helper, contextHelper.WorkspaceID);
+			}));
+
+			container.Register(Component.For<IContextContainerFactory>().ImplementedBy<ContextContainerFactory>().LifestyleSingleton());
 
 			container.Register(Component.For<IErrorService>().ImplementedBy<Services.ErrorService>().Named("ErrorService").LifestyleTransient());
 			container.Register(Component.For<Core.Services.ObjectTypeService>().ImplementedBy<Core.Services.ObjectTypeService>().LifestyleTransient());
@@ -107,9 +117,9 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>().LifestyleTransient());
 
-      container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>());
+			container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>());
 
-      if (container.Kernel.HasComponent(typeof(IHelper)))
+			if (container.Kernel.HasComponent(typeof(IHelper)))
 			{
 				container.Register(Component.For<IRepositoryFactory>().ImplementedBy<RepositoryFactory>().LifestyleSingleton());
 

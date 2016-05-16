@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
@@ -15,7 +16,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 	{
 		private IPermissionManager _permissionManager;
 		private IServicesMgr _servicesMgr;
-		private PermissionService _instance;
+		private PermissionRepository _instance;
 		private const int WORKSPACE_ID = 930293;
 		private const int _editDocPermission = 45;
 
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			_servicesMgr.CreateProxy<IPermissionManager>(Arg.Is(ExecutionIdentity.CurrentUser)).Returns(_permissionManager);
 
-			_instance = new PermissionService(_servicesMgr);
+			_instance = new PermissionRepository(_servicesMgr);
 		}
 
 		[Test]

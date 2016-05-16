@@ -6,8 +6,8 @@ namespace kCura.IntegrationPoints.Core.Services
 {
 	public class ChoiceService
 	{
-		private readonly ChoiceQuery _query;
-		public ChoiceService(ChoiceQuery query)
+		private readonly IChoiceQuery _query;
+		public ChoiceService(IChoiceQuery query)
 		{
 			_query = query;
 		}
