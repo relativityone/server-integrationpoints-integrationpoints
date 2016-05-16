@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			TaskType task;
 			TaskParameters jobDetails = null;
 			SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(ip.SourceProvider.Value);
-			if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+			if (provider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
 			{
 				jobDetails = new TaskParameters
 				{
@@ -238,7 +238,7 @@ namespace kCura.IntegrationPoints.Core.Services
 						throw new Exception("Unable to save Integration Point: Unable to retrieve source provider", e);
 					}
 
-					if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+					if (provider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
 					{
 						if (existingModel != null && (existingModel.SourceConfiguration != model.SourceConfiguration))
 						{
@@ -402,7 +402,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			IntegrationPoint integrationPoint = GetRdo(integrationPointArtifactId);
 			SourceProvider sourceProvider = GetSourceProvider(integrationPoint);
 
-			if (!sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+			if (!sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
 			{
 				throw new Exception(Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
 			}
@@ -419,7 +419,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private void CheckPermissions(IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
 		{
-			if (sourceProvider.Identifier == DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
+			if (sourceProvider.Identifier == Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
 			{
 				CheckForRelativityProviderAdditionalPermissions(integrationPoint.SourceConfiguration, userId);
 			}
@@ -445,7 +445,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 				// If the Relativity provider is selected, we need to create an export task
 				TaskType jobTaskType =
-					sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
+					sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
 						? TaskType.ExportService
 						: TaskType.SyncManager;
 
@@ -480,7 +480,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private void CheckForOtherJobsExecutingOrInQueue(SourceProvider sourceProvider, int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			if (sourceProvider.Identifier == DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
+			if (sourceProvider.Identifier == Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
 			{
 				IQueueManager queueManager = _managerFactory.CreateQueueManager(_contextContainer);
 				bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);

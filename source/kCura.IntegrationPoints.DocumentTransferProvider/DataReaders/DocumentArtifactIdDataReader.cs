@@ -11,7 +11,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private readonly ISavedSearchRepository _savedSearchRepository;
 
 		public DocumentArtifactIdDataReader(ISavedSearchRepository savedSearchRepository) :
-			base(new[] { new DataColumn(Shared.Constants.ARTIFACT_ID_FIELD_NAME) })
+			base(new[] { new DataColumn(Constants.ARTIFACT_ID_FIELD_NAME) })
 		{
 			_savedSearchRepository = savedSearchRepository;
 		}

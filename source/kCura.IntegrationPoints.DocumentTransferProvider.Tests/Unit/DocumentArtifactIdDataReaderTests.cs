@@ -14,6 +14,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 	[TestFixture]
 	public class DocumentArtifactIdDataReaderTests
 	{
+		private const string _ARTIFACT_ID_FIELD_NAME = "ArtifactId";
 		private ISavedSearchRepository _savedSearchRepository;
 		private IDataReader _instance;
 		private const int SAVED_SEARCH_ID = 123;
@@ -158,9 +159,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 			// Act
 			bool readResult1 = _instance.Read();
-			object accessorResult1 = _instance[DocumentTransferProvider.Shared.Constants.ARTIFACT_ID_FIELD_NAME];
+			object accessorResult1 = _instance[_ARTIFACT_ID_FIELD_NAME];
 			bool readResult2 = _instance.Read();
-			object accessorResult2 = _instance[DocumentTransferProvider.Shared.Constants.ARTIFACT_ID_FIELD_NAME];
+			object accessorResult2 = _instance[_ARTIFACT_ID_FIELD_NAME];
 			bool readResult3 = _instance.Read();
 
 			// Assert
@@ -275,7 +276,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			string result = _instance.GetName(0);
 
 			// Assert
-			Assert.AreEqual(DocumentTransferProvider.Shared.Constants.ARTIFACT_ID_FIELD_NAME, result, "The result should be correct");
+			Assert.AreEqual(_ARTIFACT_ID_FIELD_NAME, result, "The result should be correct");
 		}
 
 		[Test]
@@ -304,7 +305,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		public void GetOrdinal_ValidIndex_ReturnsName()
 		{
 			// Act
-			int result = _instance.GetOrdinal(DocumentTransferProvider.Shared.Constants.ARTIFACT_ID_FIELD_NAME);
+			int result = _instance.GetOrdinal(_ARTIFACT_ID_FIELD_NAME);
 
 			// Assert
 			Assert.AreEqual(0, result, "The result should be correct");
