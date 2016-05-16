@@ -53,7 +53,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 			throw new NotImplementedException();
 		}
 
-		public IServicesMgr GetServicesManager()
+	    public string ResourceDBPrepend()
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public IServicesMgr GetServicesManager()
 		{
 			return _serviceManager;
 		}
