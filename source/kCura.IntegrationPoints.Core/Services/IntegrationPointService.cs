@@ -379,23 +379,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			SourceProvider sourceProvider = GetSourceProvider(integrationPoint);
 
 			CheckPermissions(integrationPoint, sourceProvider, userId);
-			Relativity.Client.Choice jobType = GetJobType(integrationPoint.EnableScheduler);
-			CreateJob(integrationPoint, sourceProvider, jobType, workspaceArtifactId, userId);
+			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRunNow, workspaceArtifactId, userId);
 		}
 
-		private Relativity.Client.Choice GetJobType(bool? enableScheduler)
-		{
-			Relativity.Client.Choice jobType;
-			if (enableScheduler.HasValue && enableScheduler.Value)
-			{
-				jobType = JobTypeChoices.JobHistoryScheduledRun;
-			}
-			else
-			{
-				jobType = JobTypeChoices.JobHistoryRunNow;
-			}
-			return jobType;
-		}
+
 
 		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
 		{
