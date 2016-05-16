@@ -13,7 +13,6 @@ using Relativity.Core;
 using Relativity.Data;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
-using Field = Relativity.Core.DTO.Field;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -183,7 +182,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			global::Relativity.Query.ArtifactType jobHistoryErrorArtifactType = new global::Relativity.Query.ArtifactType(jobHistoryErrorTypeId, JobHistoryErrorDTO.TableName);
 
-			Field singleChoiceField = new Field(baseService, fieldRows[0]);
+			global::Relativity.Core.DTO.Field singleChoiceField = new global::Relativity.Core.DTO.Field(baseService, fieldRows[0]);
 
 			try
 			{

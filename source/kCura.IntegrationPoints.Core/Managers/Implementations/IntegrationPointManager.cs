@@ -25,23 +25,27 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return repository.Read(integrationPointArtifactId);
 		}
 
-		public bool IntegrationPointSourceProviderIsRelativity(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
+		public Constants.SourceProvider GetSourceProvider(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
 		{
 			ISourceProviderRepository repository = _repositoryFactory.GetSourceProviderRepository(workspaceArtifactId);
 			SourceProviderDTO dto = repository.Read(integrationPointDto.SourceProvider.Value);
 
-			bool isRelativityProvider = dto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID);
+			Constants.SourceProvider sourceProvider;
+			if (dto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
+			{
+				sourceProvider = Constants.SourceProvider.Relativity;
+			}
+			else
+			{
+				sourceProvider = Constants.SourceProvider.Other;
+			}
 
-			return isRelativityProvider;
+			return sourceProvider;
 		}
 
-		public PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, bool? sourceProviderIsRelativity = null)
+		public PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null)
 		{
 			var permissionCheck = new PermissionCheckDTO() { Success = false };
-			if (!sourceProviderIsRelativity.HasValue)
-			{
-				sourceProviderIsRelativity = this.IntegrationPointSourceProviderIsRelativity(workspaceArtifactId, integrationPointDto);
-			}
 
 			if (!_permissionRepository.UserCanImport(workspaceArtifactId))
 			{
@@ -50,7 +54,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				return permissionCheck;
 			}
 
-			if (sourceProviderIsRelativity.Value)
+			if (!sourceProvider.HasValue)
+			{
+				sourceProvider = this.GetSourceProvider(workspaceArtifactId, integrationPointDto);
+			}
+
+			if (sourceProvider == Constants.SourceProvider.Relativity)
 			{
 				if (!_permissionRepository.UserCanEditDocuments(workspaceArtifactId))
 				{

@@ -33,14 +33,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		{
 			// ARRANGE
 			int integrationPointArtifactId = 1322131;
-			List<int> expectedLastTwoJobHistoryIds = new List<int>() { 234242, 234241 };
-			_jobHistoryRepository.GetLastTwoJobHistoryArtifactId(integrationPointArtifactId).Returns(expectedLastTwoJobHistoryIds);
+			int expectedLastTwoJobHistoryIds = 234242;
+			_jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointArtifactId).Returns(expectedLastTwoJobHistoryIds);
 
 			// ACT
 			int result = _testInstance.GetLastJobHistoryArtifactId(_WORKSPACE_ID, integrationPointArtifactId);
 
 			// ASSERT
-			Assert.AreEqual(expectedLastTwoJobHistoryIds[0], result);
+			Assert.AreEqual(expectedLastTwoJobHistoryIds, result);
 		}
 
 

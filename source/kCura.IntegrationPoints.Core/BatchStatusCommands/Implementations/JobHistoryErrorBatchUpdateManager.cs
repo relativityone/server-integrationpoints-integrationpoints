@@ -10,7 +10,7 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
-	public class JobHistoryErrorManager : IBatchStatus
+	public class JobHistoryErrorBatchUpdateManager : IBatchStatus
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ClaimsPrincipal _claimsPrincipal;
@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private int _jobHistoryErrorTypeId;
 		private string _tempTableName;
 
-		public JobHistoryErrorManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory,
+		public JobHistoryErrorBatchUpdateManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory,
 			int sourceWorkspaceArtifactId, string uniqueJobId, int submittedBy, JobHistoryErrorDTO.UpdateStatusType updateStatusType)
 		{
 			_repositoryFactory = repositoryFactory; 
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_jobHistoryErrorTypeId = SetJobHistoryErrorArtifactTypeId(_sourceWorkspaceArtifactId);
 		}
 
-		public void JobStarted(Job job)
+		public void OnJobStart(Job job)
 		{
 			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(job.WorkspaceID);
 
@@ -76,7 +76,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 		}
 
-		public void JobComplete(Job job)
+		public void OnJobComplete(Job job)
 		{
 			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(job.WorkspaceID);
 
