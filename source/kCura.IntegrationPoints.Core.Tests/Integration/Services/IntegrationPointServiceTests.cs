@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -51,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		public void UpdateName_OnRanIp()
+		public void UpdateName_OnRanIp_ErrorCase()
 		{
 			const string name = "Update Name - OnRanIp";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
@@ -59,8 +60,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			defaultModel.Name = "newName";
 
-			IntegrationModel newModel = SaveModel(defaultModel);
-			ValidateModel(defaultModel, newModel, new[] { _NAME });
+			Assert.Throws<Exception>(() => SaveModel(defaultModel));
 		}
 
 		[Test]
@@ -83,7 +83,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
 			IntegrationModel defaultModel = SaveModel(modelToUse);
 
-			int newSavedSearch = GerronHelper.SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, name);
+			int newSavedSearch = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, name);
 			defaultModel.SourceConfiguration = CreateSourceConfig(newSavedSearch, SourceWorkspaceArtifactId);
 
 			IntegrationModel newModel = SaveModel(defaultModel);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Castle.Components.DictionaryAdapter;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
@@ -43,8 +42,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			IntegrationPointDTO integrationPointDto = integrationPointManager.Read(Application.ArtifactID, ActiveArtifact.ArtifactID);
 
 			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
-			bool sourceProviderIsRelativity = integrationPointManager.IntegrationPointSourceProviderIsRelativity(Application.ArtifactID, integrationPointDto);
-			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissions(Application.ArtifactID, integrationPointDto, sourceProviderIsRelativity);
+			kCura.IntegrationPoints.Core.Constants.SourceProvider sourceProvider = integrationPointManager.GetSourceProvider(Application.ArtifactID, integrationPointDto);
+			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissions(Application.ArtifactID, integrationPointDto, sourceProvider);
 
 			ConsoleButton runNowButton = GetRunNowButton(permissionCheck.Success);
 			var buttonList = new List<ConsoleButton>()
@@ -52,7 +51,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				runNowButton
 			};
 
-			if (sourceProviderIsRelativity)
+			if (sourceProvider == kCura.IntegrationPoints.Core.Constants.SourceProvider.Relativity)
 			{
 				ConsoleButton retryErrorsButton = GetRetryErrorsButton(permissionCheck.Success && integrationPointHasErrors);
 				ConsoleButton viewErrorsLink = GetViewErrorsLink(contextContainer, integrationPointHasErrors);

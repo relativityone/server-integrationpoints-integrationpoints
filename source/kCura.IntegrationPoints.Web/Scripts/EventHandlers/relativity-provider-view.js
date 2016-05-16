@@ -15,7 +15,10 @@
             selectedMessage = appendOverlayMesssage;
         }
 
-        //
+         if (root.errorMessage.length !== 0) {
+            IP.message.error.raise(root.errorMessage, $(".cardContainer"));
+            return;
+         }
         window.Dragon.dialogs.showConfirm({
             message: selectedMessage,
             title: 'Run Now',
