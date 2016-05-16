@@ -8,7 +8,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <summary>
 		/// Gets GUIDs for Artifact Ids
 		/// </summary>
-
+		/// <param name="workspaceArtifactId">Workspace artifact id</param>
 		/// <param name="artifactIds">Artifact Ids</param>
 		/// <returns>GUID value</returns>
 		Dictionary<int, Guid> GetGuidsForArtifactIds(int workspaceArtifactId, IEnumerable<int> artifactIds);
