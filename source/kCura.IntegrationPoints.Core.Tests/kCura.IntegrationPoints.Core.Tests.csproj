@@ -572,7 +572,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="..\kCura.IntegrationPoint.Tests.Core\app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
