@@ -225,26 +225,31 @@ namespace kCura.IntegrationPoints.Core.Services
 					}
 
 					model.HasErrors = existingModel.HasErrors;
-				}
-			}
 
-			// check permission if we want to push
-			// needs to be here because custom page is the only place that has user context
-			SourceProvider provider = null;
-			try
-			{
-				provider = _context.RsapiService.SourceProviderLibrary.Read(model.SourceProvider);
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Unable to save Integration Point: Unable to retrieve source provider", e);
-			}
+					// check permission if we want to push
+					// needs to be here because custom page is the only place that has user context
+					SourceProvider provider = null;
+					try
+					{
+						provider = _context.RsapiService.SourceProviderLibrary.Read(model.SourceProvider);
+					}
+					catch (Exception e)
+					{
+						throw new Exception("Unable to save Integration Point: Unable to retrieve source provider", e);
+					}
 
-			if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
-			{
-				if (existingModel != null && (existingModel.SourceConfiguration != model.SourceConfiguration))
-				{
-					invalidProperties.Add("Source Configuration");
+					if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+					{
+						if (existingModel != null && (existingModel.SourceConfiguration != model.SourceConfiguration))
+						{
+							invalidProperties.Add("Source Configuration");
+						}
+					}
+
+					if (invalidProperties.Any())
+					{
+						throw new Exception(String.Format(_UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
+					}
 				}
 			}
 
@@ -374,23 +379,10 @@ namespace kCura.IntegrationPoints.Core.Services
 			SourceProvider sourceProvider = GetSourceProvider(integrationPoint);
 
 			CheckPermissions(integrationPoint, sourceProvider, userId);
-			Relativity.Client.Choice jobType = GetJobType(integrationPoint.EnableScheduler);
-			CreateJob(integrationPoint, sourceProvider, jobType, workspaceArtifactId, userId);
+			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRunNow, workspaceArtifactId, userId);
 		}
 
-		private Relativity.Client.Choice GetJobType(bool? enableScheduler)
-		{
-			Relativity.Client.Choice jobType;
-			if (enableScheduler.HasValue && enableScheduler.Value)
-			{
-				jobType = JobTypeChoices.JobHistoryScheduledRun;
-			}
-			else
-			{
-				jobType = JobTypeChoices.JobHistoryRunNow;
-			}
-			return jobType;
-		}
+
 
 		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
 		{
@@ -454,7 +446,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			WorkspaceConfiguration workspaceConfiguration = JsonConvert.DeserializeObject<WorkspaceConfiguration>(config);
 			if (_permissionRepository.UserCanImport(workspaceConfiguration.TargetWorkspaceArtifactId) == false)
 			{
-				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT);
+				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
 			}
 
 			if (_permissionRepository.UserCanEditDocuments(workspaceConfiguration.SourceWorkspaceArtifactId) == false)

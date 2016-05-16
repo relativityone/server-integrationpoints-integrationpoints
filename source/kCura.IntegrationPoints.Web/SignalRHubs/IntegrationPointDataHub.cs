@@ -33,13 +33,16 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
         {
         }
 
-        public IntegrationPointDataHub(IContextContainer context, IManagerFactory managerFactory)
+        internal IntegrationPointDataHub(IContextContainer context, IManagerFactory managerFactory)
         {
             _context = context;
             _managerFactory = managerFactory;
             _integrationPointManager = _managerFactory.CreateIntegrationPointManager(_context);
 
-            if (_tasks == null) _tasks = new SortedDictionary<string, IntegrationPointDataHubInput>();
+            if (_tasks == null)
+            {
+                _tasks = new SortedDictionary<string, IntegrationPointDataHubInput>();
+            }
 
             if (_updateTimer == null)
             {

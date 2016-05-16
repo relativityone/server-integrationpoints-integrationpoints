@@ -14,14 +14,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			Container = new WindsorContainer();
 			ConfigurationStore = new DefaultConfigurationStore();
-			GerronHelper = new Helper();
-			_help = new Lazy<ITestHelper>(() => new TestHelper(GerronHelper));
+			_help = new Lazy<ITestHelper>(() => new TestHelper());
 		}
 
 		public ITestHelper Helper => _help.Value;
 		private readonly Lazy<ITestHelper> _help;
-
-
-		public Helper GerronHelper { get; }
 	}
 }

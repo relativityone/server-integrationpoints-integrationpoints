@@ -33,11 +33,18 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		private List<int> GetLastJobHistoryErrorArtifactIds(int workspaceArtifactId, int integrationPointArtifactId, Relativity.Client.Choice errorType)
 		{
+			int lastJobHistoryArtifactId = 0;
+
 			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
 			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(workspaceArtifactId);
-			int jobHistoryArtifactId = jobHistoryRepository.GetLastTwoJobHistoryArtifactId(integrationPointArtifactId)[1]; //Grab the second in this list as the new job is the first entry
 
-			return jobHistoryErrorRepository.RetreiveJobHistoryErrorArtifactIds(jobHistoryArtifactId, errorType);
+			List<int> jobHistoryArtifactIds = jobHistoryRepository.GetLastTwoJobHistoryArtifactId(integrationPointArtifactId);
+			if (jobHistoryArtifactIds.Count > 1)
+			{
+				lastJobHistoryArtifactId = jobHistoryArtifactIds[1]; //Grab the second in this list if it exists as the current job is the first entry
+			}
+
+			return jobHistoryErrorRepository.RetreiveJobHistoryErrorArtifactIds(lastJobHistoryArtifactId, errorType);
 		}
 
 		public int CreateItemLevelErrorsSavedSearch(int workspaceArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId)

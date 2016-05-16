@@ -87,7 +87,9 @@ namespace kCura.IntegrationPoints.Core.Properties {
         ///
         ///Name: [RIP.Name]
         ///[RIP.SOURCEEMAILBODYDATA]
-        ///[RIP.DESTINATIONEMAILBODYDATA].
+        ///[RIP.DESTINATIONEMAILBODYDATA]
+        ///
+        ///For error details, please review job history errors for this integration point..
         /// </summary>
         internal static string JOB_COMPLETED_WITH_ERRORS_BODY {
             get {

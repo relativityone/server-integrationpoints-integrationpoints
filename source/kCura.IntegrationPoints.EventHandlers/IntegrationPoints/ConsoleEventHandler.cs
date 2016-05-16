@@ -44,25 +44,23 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
 			bool sourceProviderIsRelativity = integrationPointManager.IntegrationPointSourceProviderIsRelativity(Application.ArtifactID, integrationPointDto);
-			bool userHasPermissions = true;
+			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissions(Application.ArtifactID, integrationPointDto, sourceProviderIsRelativity);
 
-			var buttonList = new List<ConsoleButton>();
+			ConsoleButton runNowButton = GetRunNowButton(permissionCheck.Success);
+			var buttonList = new List<ConsoleButton>()
+			{
+				runNowButton
+			};
 
 			if (sourceProviderIsRelativity)
 			{
-				PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissions(Application.ArtifactID,
-					integrationPointDto);
-				userHasPermissions = permissionCheck.Success;
-
-				ConsoleButton runNowButton = GetRunNowButton(userHasPermissions);
-				ConsoleButton retryErrorsButton = GetRetryErrorsButton(userHasPermissions && integrationPointHasErrors);
+				ConsoleButton retryErrorsButton = GetRetryErrorsButton(permissionCheck.Success && integrationPointHasErrors);
 				ConsoleButton viewErrorsLink = GetViewErrorsLink(contextContainer, integrationPointHasErrors);
 
-				buttonList.Add(runNowButton);
 				buttonList.Add(retryErrorsButton);
 				buttonList.Add(viewErrorsLink);
 
-				if (!userHasPermissions)
+				if (!permissionCheck.Success)
 				{
 					string script = "<script type='text/javascript'>"
 					                + "$(document).ready(function () {"
@@ -73,11 +71,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					                + "</script>";
 					console.AddScriptBlock("IPConsoleErrorDisplayScript", script);
 				}
-			}
-			else
-			{
-				ConsoleButton runNowButton = GetRunNowButton(userHasPermissions);
-				buttonList.Add(runNowButton);
 			}
 
 			console.ButtonList = buttonList;
