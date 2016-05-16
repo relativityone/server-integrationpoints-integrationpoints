@@ -81,13 +81,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		}
 
 		[Test]
-		public void JobStarted_CreateSourceWorkspaceAndJobHistory()
+		public void OnJobStart_CreateSourceWorkspaceAndJobHistory()
 		{
 			// arrange
 			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId).Returns(_sourceWorkspaceDto);
 
 			//act
-			_instance.JobStarted(_job);
+			_instance.OnJobStart(_job);
 
 			//assert
 			_sourceWorkspaceManager.Received().InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId);
@@ -98,20 +98,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		}
 
 		[Test]
-		public void JobStarted_SourceWorkspaceManagerFails()
+		public void OnJobStart_SourceWorkspaceManagerFails()
 		{
 			// arrange
 			_sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId).Throws(new Exception());
 
 			//act
-			Assert.Throws<Exception>(() => _instance.JobStarted(_job));
+			Assert.Throws<Exception>(() => _instance.OnJobStart(_job));
 
 			//assert
-			Assert.DoesNotThrow(() => _instance.JobComplete(_job));
+			Assert.DoesNotThrow(() => _instance.OnJobComplete(_job));
 		}
 
 		[Test]
-		public void JobComplete_ImportTaggingFieldsWhenThereAreDocumentsToTag()
+		public void OnJobComplete_ImportTaggingFieldsWhenThereAreDocumentsToTag()
 		{
 			//arrange
 			SourceJobDTO job = new SourceJobDTO()
@@ -128,15 +128,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_instance.ScratchTableRepository.AddArtifactIdsIntoTempTable(new List<int>() { 1, 2 });
 
 			//act
-			_instance.JobStarted(_job);
-			_instance.JobComplete(_job);
+			_instance.OnJobStart(_job);
+			_instance.OnJobComplete(_job);
 
 			//assert
 			_synchronizer.Received().SyncData(Arg.Any<TempTableReader>(), Arg.Any<FieldMap[]>(), _importConfig);
 		}
 
 		[Test]
-		public void JobComplete_DoesNotImportTaggingFieldsWhenThereIsNoDocumentToTag()
+		public void OnJobComplete_DoesNotImportTaggingFieldsWhenThereIsNoDocumentToTag()
 		{
 			//arrange
 			SourceJobDTO job = new SourceJobDTO()
@@ -151,8 +151,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 				_jobHistoryArtifactId).Returns(job);
 
 			//act
-			_instance.JobStarted(_job);
-			_instance.JobComplete(_job);
+			_instance.OnJobStart(_job);
+			_instance.OnJobComplete(_job);
 
 			//assert
 			_synchronizer.DidNotReceiveWithAnyArgs().SyncData(Arg.Any<TempTableReader>(), Arg.Any<FieldMap[]>(), _importConfig);

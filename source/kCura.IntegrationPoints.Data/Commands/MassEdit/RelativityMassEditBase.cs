@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Relativity.Core;
 using Relativity.Core.Process;
 using Relativity.Core.Service;
-using ArtifactType = Relativity.Query.ArtifactType;
-using Field = Relativity.Core.DTO.Field;
 
 namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 {
@@ -12,7 +10,7 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 	{
 		private const int _BATCH_SIZE = 1000;
 
-		protected void TagFieldsWithRdo(BaseServiceContext context, Field fieldToUpdate, int numberOfDocuments, ArtifactType objectType, int rdoArtifactId, string tempTableName)
+		protected void TagFieldsWithRdo(BaseServiceContext context, global::Relativity.Core.DTO.Field fieldToUpdate, int numberOfDocuments, global::Relativity.Query.ArtifactType objectType, int rdoArtifactId, string tempTableName)
 		{
 			fieldToUpdate.Value = GetMultiObjectListUpdate(rdoArtifactId);
 
@@ -33,7 +31,7 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 			return objectsToUpdate;
 		}
 
-		protected void UpdateSingleChoiceField(BaseServiceContext context, Field fieldToUpdate, int numberOfErrors, ArtifactType objectType, int choiceArtifactId, string tempTableName)
+		protected void UpdateSingleChoiceField(BaseServiceContext context, global::Relativity.Core.DTO.Field fieldToUpdate, int numberOfErrors, global::Relativity.Query.ArtifactType objectType, int choiceArtifactId, string tempTableName)
 		{
 			//Providing some extra properties for the field to update
 			ICodeManagerImplementation codeManagerImplementation = new CodeManagerImplementation();
@@ -44,12 +42,12 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 			ExecuteMassEditAction(context, fieldToUpdate, numberOfErrors, objectType, tempTableName);
 		}
 
-		private void ExecuteMassEditAction(BaseServiceContext context, Field fieldToUpdate, int numberToUpdate, ArtifactType objectType, string tempTableName)
+		private void ExecuteMassEditAction(BaseServiceContext context, global::Relativity.Core.DTO.Field fieldToUpdate, int numberToUpdate, global::Relativity.Query.ArtifactType objectType, string tempTableName)
 		{
 			MassProcessHelper.MassProcessInitArgs initArgs = new MassProcessHelper.MassProcessInitArgs(tempTableName, numberToUpdate, false);
 			using (SqlMassProcessBatch batch = new SqlMassProcessBatch(context, initArgs, _BATCH_SIZE))
 			{
-				Field[] fields =
+				global::Relativity.Core.DTO.Field[] fields =
 				{
 					fieldToUpdate
 				};

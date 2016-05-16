@@ -11,7 +11,7 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
-	public class DestinationWorkspaceManager : IConsumeScratchTableBatchStatus
+	public class DestinationWorkspaceBatchUpdateManager : IConsumeScratchTableBatchStatus
 	{
 		private readonly ITempDocTableHelper _tempDocHelper;
 		private readonly IDestinationWorkspaceRepository _destinationWorkspaceRepository;
@@ -25,7 +25,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private int _destinationWorkspaceRdoId;
 		private bool _errorOccurDuringJobStart;
 
-		public DestinationWorkspaceManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory,
+		public DestinationWorkspaceBatchUpdateManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory,
 			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, SourceConfiguration sourceConfig, string tableSuffix, int jobHistoryInstanceId, int submittedBy)
 		{
 			_tempDocHelper = tempDocumentTableFactory.GetDocTableHelper(tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_jobHistoryInstanceId = jobHistoryInstanceId;
 		}
 
-		public void JobStarted(Job job)
+		public void OnJobStart(Job job)
 		{
 			try
 			{
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 		}
 
-		public void JobComplete(Job job)
+		public void OnJobComplete(Job job)
 		{
 			try
 			{

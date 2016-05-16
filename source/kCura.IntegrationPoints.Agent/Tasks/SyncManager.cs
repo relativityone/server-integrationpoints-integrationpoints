@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				}
 				foreach (var batchStatus in BatchStatus)
 				{
-					batchStatus.JobStarted(job);
+					batchStatus.OnJobStart(job);
 				}
 				SourceProvider sourceProviderRdo = _caseServiceContext.RsapiService.SourceProviderLibrary.Read(this.IntegrationPoint.SourceProvider.Value);
 				Guid applicationGuid = new Guid(sourceProviderRdo.ApplicationIdentifier);

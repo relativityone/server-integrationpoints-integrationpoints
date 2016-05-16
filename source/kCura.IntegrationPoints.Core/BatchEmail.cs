@@ -40,9 +40,9 @@ namespace kCura.IntegrationPoints.Core
 			_converter = converter;
 		}
 
-		public void JobStarted(Job job) { }
+		public void OnJobStart(Job job) { }
 
-		public void JobComplete(Job job)
+		public void OnJobComplete(Job job)
 		{
 			SetIntegrationPoint(job);
 
