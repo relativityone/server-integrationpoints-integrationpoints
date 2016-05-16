@@ -25,17 +25,25 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return repository.Read(integrationPointArtifactId);
 		}
 
-		public bool IntegrationPointSourceProviderIsRelativity(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
+		public Constants.SourceProvider GetSourceProvider(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
 		{
 			ISourceProviderRepository repository = _repositoryFactory.GetSourceProviderRepository(workspaceArtifactId);
 			SourceProviderDTO dto = repository.Read(integrationPointDto.SourceProvider.Value);
 
-			bool isRelativityProvider = dto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID);
+			Constants.SourceProvider sourceProvider;
+			if (dto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
+			{
+				sourceProvider = Constants.SourceProvider.Relativity;
+			}
+			else
+			{
+				sourceProvider = Constants.SourceProvider.Other;
+			}
 
-			return isRelativityProvider;
+			return sourceProvider;
 		}
 
-		public PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, bool? sourceProviderIsRelativity = null)
+		public PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null)
 		{
 			var permissionCheck = new PermissionCheckDTO() { Success = false };
 
@@ -46,12 +54,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				return permissionCheck;
 			}
 
-			if (!sourceProviderIsRelativity.HasValue)
+			if (!sourceProvider.HasValue)
 			{
-				sourceProviderIsRelativity = this.IntegrationPointSourceProviderIsRelativity(workspaceArtifactId, integrationPointDto);
+				sourceProvider = this.GetSourceProvider(workspaceArtifactId, integrationPointDto);
 			}
 
-			if (sourceProviderIsRelativity.Value)
+			if (sourceProvider == Constants.SourceProvider.Relativity)
 			{
 				if (!_permissionRepository.UserCanEditDocuments(workspaceArtifactId))
 				{

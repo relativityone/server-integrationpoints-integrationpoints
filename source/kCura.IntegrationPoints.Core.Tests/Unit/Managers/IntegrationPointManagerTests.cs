@@ -74,10 +74,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				.Returns(sourceProviderDto);
 
 			// Act
-			bool isRetriable = _testInstance.IntegrationPointSourceProviderIsRelativity(WORKSPACE_ID, integrationPointDto);
+			Constants.SourceProvider sourceProvider = _testInstance.GetSourceProvider(WORKSPACE_ID, integrationPointDto);
 
 			// Assert	
-			Assert.AreEqual(isRelativityProvider, isRetriable);
+			Assert.AreEqual(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other, sourceProvider);
 		}
 
 		[TestCase(true)]
@@ -160,7 +160,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_permissionRepository.UserCanImport(WORKSPACE_ID).Returns(true);
 
 			// Act
-			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, false);
+			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, Core.Constants.SourceProvider.Other);
 
 			// Assert	
 			_permissionRepository.Received(1).UserCanImport(WORKSPACE_ID);
@@ -185,7 +185,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_permissionRepository.UserCanImport(WORKSPACE_ID).Returns(false);
 
 			// Act
-			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, false);
+			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, Core.Constants.SourceProvider.Other);
 
 			// Assert	
 			_permissionRepository.Received(1).UserCanImport(WORKSPACE_ID);
@@ -212,7 +212,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_permissionRepository.UserCanViewArtifact(Arg.Is(WORKSPACE_ID), Arg.Is((int) ArtifactType.Search), Arg.Is(savedSearchArtifactId)).Returns(true);
 
 			// Act
-			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, true);
+			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, Core.Constants.SourceProvider.Relativity);
 
 			// Assert	
 			_permissionRepository.Received(1).UserCanEditDocuments(WORKSPACE_ID);
@@ -238,7 +238,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_permissionRepository.UserCanEditDocuments(WORKSPACE_ID).Returns(false);
 
 			// Act
-			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, true);
+			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, Core.Constants.SourceProvider.Relativity);
 
 			// Assert	
 			_permissionRepository.Received(1).UserCanImport(WORKSPACE_ID);
@@ -263,7 +263,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_permissionRepository.UserCanImport(WORKSPACE_ID).Returns(false);
 
 			// Act
-			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, true);
+			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, Core.Constants.SourceProvider.Relativity);
 
 			// Assert	
 			_permissionRepository.Received(1).UserCanImport(WORKSPACE_ID);
@@ -290,7 +290,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_permissionRepository.UserCanViewArtifact(Arg.Is(WORKSPACE_ID), Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId)).Returns(false);
 
 			// Act
-			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, true);
+			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, Core.Constants.SourceProvider.Relativity);
 
 			// Assert	
 			_permissionRepository.Received(1).UserCanImport(WORKSPACE_ID);
