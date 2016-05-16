@@ -5,7 +5,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public class SharedVariables
 	{
-		private static string TargetHost => ConfigurationManager.AppSettings["targetHost"];
+		public static string TargetHost => ConfigurationManager.AppSettings["targetHost"];
 
 		public static int WorkspaceArtifactId => Convert.ToInt32(ConfigurationManager.AppSettings["workspaceArtifactId"]);
 

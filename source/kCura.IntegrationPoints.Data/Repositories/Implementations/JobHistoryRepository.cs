@@ -11,6 +11,7 @@ using Relativity.API;
 using Relativity.Core;
 using Relativity.Data;
 using Field = Relativity.Core.DTO.Field;
+using ArtifactType = Relativity.Query.ArtifactType;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -27,6 +28,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public void TagDocsWithJobHistory(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int jobHistoryInstanceArtifactId, int sourceWorkspaceId, string tableSuffix)
 		{
+			ArtifactType artifactType = new ArtifactType(global::Relativity.ArtifactType.Document);
+
 			if (numberOfDocs <= 0)
 			{
 				return;
@@ -54,7 +57,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			string fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_JOB_HIST}_{tableSuffix}";
 			try
 			{
-				base.TagDocumentsWithRdo(baseService, multiObjectField, numberOfDocs, jobHistoryInstanceArtifactId, fullTableName);
+				base.TagFieldsWithRdo(baseService, multiObjectField, numberOfDocs, artifactType, jobHistoryInstanceArtifactId, fullTableName);
 			}
 			catch (Exception e)
 			{

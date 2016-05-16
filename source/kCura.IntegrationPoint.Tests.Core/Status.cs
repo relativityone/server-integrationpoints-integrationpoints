@@ -4,13 +4,9 @@ using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public class Status : HelperBase
+	public static class Status
 	{
-		public Status(Helper helper) : base(helper)
-		{
-		}
-
-		public void WaitForProcessToComplete(IRSAPIClient rsapiClient, Guid processId, int timeout = 300, int interval = 500)
+		public static void WaitForProcessToComplete(IRSAPIClient rsapiClient, Guid processId, int timeout = 300, int interval = 500)
 		{
 			double timeWaitedInSeconds = 0.0;
 			ProcessInformation processInfo = rsapiClient.GetProcessState(rsapiClient.APIOptions, processId);

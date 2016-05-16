@@ -8,6 +8,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Agent.Tests.Integration
 {
 	[TestFixture]
+	[Explicit]
 	public class AgentTests : WorkspaceDependentTemplate
 	{
 		[Test]
@@ -35,9 +36,9 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			//Manager.Settings.Factory = new HelperConfigSqlServiceFactory(helper);
 
 			//int workspaceArtifactId = Helper.Workspace.CreateWorkspace("Testing Integration7", "New Case Template");
-			//GerronHelper.Workspace.ImportApplicationToWorkspace(workspaceArtifactId, SharedVariables.RapFileLocation, true);
-			//GerronHelper.Import.ImportNewDocuments(workspaceArtifactId, GetImportTable());
-			//int savedSearchArtifactId = GerronHelper.SavedSearch.CreateSavedSearch("localhost", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, workspaceArtifactId, "All Documents");
+			//Workspace.ImportApplicationToWorkspace(workspaceArtifactId, SharedVariables.RapFileLocation, true);
+			//Import.ImportNewDocuments(workspaceArtifactId, GetImportTable());
+			//int savedSearchArtifactId = SavedSearch.CreateSavedSearch("localhost", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, workspaceArtifactId, "All Documents");
 			//IntegrationModel integrationModel = new IntegrationModel();
 			//integrationModel.SourceProvider = savedSearchArtifactId;
 		}

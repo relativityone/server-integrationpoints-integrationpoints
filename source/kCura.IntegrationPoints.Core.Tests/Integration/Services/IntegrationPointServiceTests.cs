@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
-using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -19,71 +17,172 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 	[Explicit]
 	public class IntegrationPointServiceTests : WorkspaceDependentTemplate
 	{
+		private SourceProvider _relativityProvider;
+		private DestinationProvider _destinationProvider;
+
 		public IntegrationPointServiceTests()
 			: base("IntegrationPointService Source", null)
 		{
 		}
 
-		[Test]
-		[Explicit]
-		public void CreateIntegrationPoint_GoldFlow()
+		[TestFixtureSetUp]
+		public override void SetUp()
 		{
+			base.SetUp();
 			ICaseServiceContext caseContext = Container.Resolve<ICaseServiceContext>();
-			IntegrationModel defaultModel = SaveModel(null);
-			Data.IntegrationPoint integrationPoint = caseContext.RsapiService.IntegrationPointLibrary.Read(defaultModel.ArtifactID);
-			Assert.IsNotNull(integrationPoint);
+			IEnumerable<SourceProvider> providers =
+				caseContext.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name),
+					Guid.Parse(Data.SourceProviderFieldGuids.Identifier));
+
+
+			_relativityProvider = providers.First(provider => provider.Name == "Relativity");
+			_destinationProvider = caseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
+
 		}
 
 		[Test]
-		[Explicit]
-		public void UpdateName()
+		public void UpdateNothing()
 		{
-			IntegrationModel defaultModel = SaveModel(null);
+			const string name = "Resaved Rip";
+			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationModel defaultModel = SaveModel(modelToUse);
+			IntegrationModel newModel = SaveModel(defaultModel);
+
+			ValidateModel(defaultModel, newModel, new string[0]);
+		}
+
+		[Test]
+		public void UpdateName_OnRanIp_ErrorCase()
+		{
+			const string name = "Update Name - OnRanIp";
+			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationModel defaultModel = SaveModel(modelToUse);
 
 			defaultModel.Name = "newName";
 
-			IntegrationModel newModel = SaveModel(defaultModel);
-			Assert.AreNotEqual(defaultModel.Name, newModel.Name);
-			Assert.AreEqual(defaultModel.ArtifactID, newModel.ArtifactID);
-			Assert.AreEqual(defaultModel.Map, newModel.Map);
-			Assert.AreEqual(defaultModel.SourceProvider, newModel.SourceProvider);
-			Assert.AreEqual(defaultModel.DestinationProvider, newModel.DestinationProvider);
-			Assert.AreEqual(defaultModel.HasErrors, newModel.HasErrors);
-			Assert.AreEqual(defaultModel.SourceConfiguration, newModel.SourceConfiguration);
+			Assert.Throws<Exception>(() => SaveModel(defaultModel));
 		}
 
 		[Test]
-		[Explicit]
-		public void UpdateMap()
+		public void UpdateMap_OnRanIp()
 		{
-			IntegrationModel defaultModel = SaveModel(null);
+			const string name = "Update Map - OnRanIp";
+			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationModel defaultModel = SaveModel(modelToUse);
 
 			defaultModel.Map = "Blahh";
 
 			IntegrationModel newModel = SaveModel(defaultModel);
-			Assert.AreEqual(defaultModel.Name, newModel.Name);
-			Assert.AreEqual(defaultModel.ArtifactID, newModel.ArtifactID);
-			Assert.AreNotEqual(defaultModel.Map, newModel.Map);
-			Assert.AreEqual(defaultModel.SourceProvider, newModel.SourceProvider);
-			Assert.AreEqual(defaultModel.DestinationProvider, newModel.DestinationProvider);
-			Assert.AreEqual(defaultModel.HasErrors, newModel.HasErrors);
-			Assert.AreEqual(defaultModel.SourceConfiguration, newModel.SourceConfiguration);
+			ValidateModel(defaultModel, newModel, new string[] { _FIELDMAP });
 		}
 
-		private IntegrationModel CreateDefaultModel(int sourceProvider, int destinationProvider)
+		[Test]
+		public void UpdateConfig_OnNewRip()
+		{
+			const string name = "Update Source Config - SavedSearch - OnNewRip";
+			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationModel defaultModel = SaveModel(modelToUse);
+
+			int newSavedSearch = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, name);
+			defaultModel.SourceConfiguration = CreateSourceConfig(newSavedSearch, SourceWorkspaceArtifactId);
+
+			IntegrationModel newModel = SaveModel(defaultModel);
+
+			ValidateModel(defaultModel, newModel, new []{ _SOURCECONFIG });
+		}
+
+		[Test]
+		public void UpdateName_OnNewRip()
+		{
+			const string name = "Update Name - OnNewRip";
+			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationModel defaultModel = SaveModel(modelToUse);
+
+			defaultModel.Name = name + " 2";
+
+			IntegrationModel newModel = SaveModel(defaultModel);
+
+			ValidateModel(defaultModel, newModel, new[] { _NAME });
+		}
+
+		[Test]
+		public void UpdateMap_OnNewRip()
+		{
+			const string name = "Update Map - OnNewRip";
+			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationModel defaultModel = SaveModel(modelToUse);
+
+			defaultModel.Map = "New Map string";
+
+			IntegrationModel newModel = SaveModel(defaultModel);
+
+			ValidateModel(defaultModel, newModel, new[] { _FIELDMAP });
+		}
+
+
+		private const string _SOURCECONFIG = "Source Config";
+		private const string _NAME = "Name";
+		private const string _FIELDMAP = "Map";
+
+
+		private void ValidateModel(IntegrationModel expectedModel, IntegrationModel actual, string[] updatedProperties)
+		{
+			Action<object, object> assertion = DetermineAssertion(updatedProperties, _SOURCECONFIG);
+			assertion(expectedModel.SourceConfiguration, actual.SourceConfiguration);
+
+			assertion = DetermineAssertion(updatedProperties, _NAME);
+			assertion(expectedModel.Name, actual.Name);
+
+			assertion = DetermineAssertion(updatedProperties, _FIELDMAP);
+			assertion(expectedModel.Map, actual.Map);
+
+			Assert.AreEqual(expectedModel.HasErrors, actual.HasErrors);
+			Assert.AreEqual(expectedModel.ArtifactID, actual.ArtifactID);
+			Assert.AreEqual(expectedModel.DestinationProvider, actual.DestinationProvider);
+		}
+
+		private Action<object, object> DetermineAssertion(string[] updatedProperties, string property)
+		{
+			Action<object, object> assertion;
+			if (updatedProperties.Contains(property))
+			{
+				assertion = Assert.AreNotEqual;
+			}
+			else
+			{
+				assertion = Assert.AreEqual;
+			}
+			return assertion;
+		}
+
+		private string CreateSourceConfig(int savedSearchId, int targetWorkspaceId)
+		{
+			return$"{{\"SavedSearchArtifactId\":{savedSearchId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{targetWorkspaceId}}}";
+		}
+
+		private IntegrationModel CreateIntegrationPointThatHasNotRun(string name)
 		{
 			return new IntegrationModel()
 			{
 				Destination = $"{{\"artifactTypeID\":10,\"CaseArtifactId\":{TargetWorkspaceArtifactId},\"Provider\":\"relativity\",\"DoNotUseFieldsMapCache\":true,\"ImportOverwriteMode\":\"AppendOnly\",\"importNativeFile\":\"false\",\"UseFolderPathInformation\":\"false\",\"ExtractedTextFieldContainsFilePath\":\"false\",\"ExtractedTextFileEncoding\":\"utf - 16\",\"CustodianManagerFieldContainsLink\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}}",
-				DestinationProvider = destinationProvider,
-				SourceProvider = sourceProvider,
-				SourceConfiguration = $"{{\"SavedSearchArtifactId\":{SavedSearchArtifactId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{TargetWorkspaceArtifactId}}}",
+				DestinationProvider = _destinationProvider.ArtifactId,
+				SourceProvider = _relativityProvider.ArtifactId,
+				SourceConfiguration = CreateSourceConfig(SavedSearchArtifactId, TargetWorkspaceArtifactId),
 				LogErrors = true,
-				Name = $"Sample Object - {DateTime.Today}",
-				Map = String.Empty,
+				Name = $"${name} - {DateTime.Today}",
+				Map = "[]",
 				SelectedOverwrite = "Append Only",
 				Scheduler = new Scheduler(),
 			};
+		}
+
+
+
+		private IntegrationModel CreateIntegrationPointThatIsAlreadyRunModel(string name)
+		{
+			IntegrationModel model = CreateIntegrationPointThatHasNotRun(name);
+			model.LastRun = DateTime.Now;
+			return model;
 		}
 
 
@@ -94,15 +193,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Helper.PermissionManager.UserCanViewArtifact(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>()).Returns(true);
 
 			IIntegrationPointService service = Container.Resolve<IIntegrationPointService>();
-			ICaseServiceContext caseContext = Container.Resolve<ICaseServiceContext>();
-			IEnumerable<SourceProvider> providers = caseContext.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name), Guid.Parse(Data.SourceProviderFieldGuids.Identifier));
-
-			if (model == null)
-			{
-				SourceProvider relativityProvider = providers.First(provider => provider.Name == "Relativity");
-				DestinationProvider destinationProvider = caseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
-				model = CreateDefaultModel(relativityProvider.ArtifactId, destinationProvider.ArtifactId);
-			}
 
 			int integrationPointAritfactId = service.SaveIntegration(model);
 

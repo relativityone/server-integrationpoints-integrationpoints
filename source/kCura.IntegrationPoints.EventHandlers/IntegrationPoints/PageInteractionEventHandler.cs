@@ -88,8 +88,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				script.Append("</script>");
 
 				this.RegisterClientScriptBlock(new ScriptBlock { Key = Guid.NewGuid().ToString(), Script = script.ToString() });
-				const string sourceProviderFieldName = IntegrationPointFields.SourceProvider;
-				int sourceProvider = (int)this.ActiveArtifact.Fields[sourceProviderFieldName].Value.Value;
+				
+				int sourceProvider = (int)this.ActiveArtifact.Fields[IntegrationPointFields.SourceProvider].Value.Value;
 				if (ServiceContext.RsapiService.SourceProviderLibrary.Read(Int32.Parse(sourceProvider.ToString())).Name == DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_NAME) 
 				{
 					this.RegisterLinkedClientScript(applicationPath + "/Scripts/EventHandlers/relativity-provider-view.js");

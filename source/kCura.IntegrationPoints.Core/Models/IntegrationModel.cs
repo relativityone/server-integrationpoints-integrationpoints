@@ -133,6 +133,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			point.LogErrors = this.LogErrors;
 			point.HasErrors = this.HasErrors;
 			point.EmailNotificationRecipients = string.Join("; ", (this.NotificationEmails ?? string.Empty).Split(new[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList());
+			point.LastRuntimeUTC = LastRun;
 
 			return point;
 		}
@@ -162,6 +163,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			this.LogErrors = ip.LogErrors.GetValueOrDefault(false);
 			this.HasErrors = ip.HasErrors.GetValueOrDefault(false);
 			this.LastRun = ip.LastRuntimeUTC;
+			this.Map = ip.FieldMappings;
 		}
 	}
 }

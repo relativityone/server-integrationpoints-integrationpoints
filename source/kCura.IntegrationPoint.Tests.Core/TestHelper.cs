@@ -17,12 +17,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private readonly IServicesMgr _serviceManager;
 		public IPermissionRepository PermissionManager { get; }
 
-		public TestHelper(Helper helper)
+		public TestHelper()
 		{
 			PermissionManager = Substitute.For<IPermissionRepository>();
 			_serviceManager = Substitute.For<IServicesMgr>();
-			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser).Returns(helper.Rsapi.CreateRsapiClient(ExecutionIdentity.CurrentUser));
-			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(helper.Rsapi.CreateRsapiClient(ExecutionIdentity.System));
+			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser).Returns(Rsapi.CreateRsapiClient(ExecutionIdentity.CurrentUser));
+			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(Rsapi.CreateRsapiClient(ExecutionIdentity.System));
 		}
 
 

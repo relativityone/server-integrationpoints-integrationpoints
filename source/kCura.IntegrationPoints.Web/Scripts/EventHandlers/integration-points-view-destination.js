@@ -22,7 +22,9 @@ $(function () {
 	var url = IP.utils.generateWebAPIURL('RdoFilter', obj.artifactTypeID);
 	
 	IP.data.get(url).then(function (result) {
-		$value.text(result.name);
+	    $value.text(result.name);
+	    $value.attr("id", "destinationrdo");
+	    $value.attr("data-destinationRdo", result.name);
 	}, function () {
 		//debugger;
 	});
