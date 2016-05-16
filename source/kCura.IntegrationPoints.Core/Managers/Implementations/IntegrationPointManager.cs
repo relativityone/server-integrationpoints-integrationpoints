@@ -38,16 +38,17 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		public PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, bool? sourceProviderIsRelativity = null)
 		{
 			var permissionCheck = new PermissionCheckDTO() { Success = false };
-			if (!sourceProviderIsRelativity.HasValue)
-			{
-				sourceProviderIsRelativity = this.IntegrationPointSourceProviderIsRelativity(workspaceArtifactId, integrationPointDto);
-			}
 
 			if (!_permissionRepository.UserCanImport(workspaceArtifactId))
 			{
 				permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE;
 
 				return permissionCheck;
+			}
+
+			if (!sourceProviderIsRelativity.HasValue)
+			{
+				sourceProviderIsRelativity = this.IntegrationPointSourceProviderIsRelativity(workspaceArtifactId, integrationPointDto);
 			}
 
 			if (sourceProviderIsRelativity.Value)

@@ -122,6 +122,31 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
+		public void UserHasPermissions_SourceProviderNotSuppliedNoImportPermissions_ReturnsFalse()
+		{
+			// Arrange
+			int savedSearchArtifactId = 94902;
+			var integrationPointDto = new IntegrationPointDTO()
+			{
+				SourceProvider = 123,
+				SourceConfiguration = $"{{SavedSearchArtifactId: {savedSearchArtifactId}}}"
+			};
+
+			_permissionRepository.UserCanImport(WORKSPACE_ID).Returns(false);
+
+			// Act
+			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, null);
+
+			// Assert	
+			_permissionRepository.Received(1).UserCanImport(WORKSPACE_ID);
+			_permissionRepository.Received(0).UserCanEditDocuments(WORKSPACE_ID);
+			_permissionRepository.Received(0).UserCanViewArtifact(Arg.Is(WORKSPACE_ID), Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
+
+			Assert.IsFalse(permissionCheckDto.Success);
+			Assert.AreEqual(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE, permissionCheckDto.ErrorMessage);
+		}
+
+		[Test]
 		public void UserHasPermissions_NonRelativityProvider_UserHasAllPermissions_Success()
 		{
 			// Arrange
