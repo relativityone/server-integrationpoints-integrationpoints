@@ -32,8 +32,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		private List<int> GetLastJobHistoryErrorArtifactIds(int workspaceArtifactId, int integrationPointArtifactId, Relativity.Client.Choice errorType)
 		{
-			int lastJobHistoryArtifactId = 0;
-
 			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
 			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(workspaceArtifactId);
 

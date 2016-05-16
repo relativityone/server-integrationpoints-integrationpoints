@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception($"Unable to retrieve Job Hisory: {results.Message}");
 			}
 
-			int lastJobHistoryArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).First();
+			int lastJobHistoryArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).FirstOrDefault();
 			return lastJobHistoryArtifactId;
 		}
 	}
