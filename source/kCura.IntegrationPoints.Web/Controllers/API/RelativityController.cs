@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			}
 			catch
 			{
-				return BadRequest(kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.INVALID_PARAMETERS);
+				return BadRequest(Core.Constants.IntegrationPoints.INVALID_PARAMETERS);
 			}
 
 			return Ok(result);

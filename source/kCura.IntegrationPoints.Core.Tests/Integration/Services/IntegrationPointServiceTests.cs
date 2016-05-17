@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
-using kCura.IntegrationPoints.Core.Services;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
-using NSubstitute;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
@@ -17,7 +13,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 	[Explicit]
 	public class IntegrationPointServiceTests : WorkspaceDependentTemplate
 	{
-		private SourceProvider _relativityProvider;
 		private DestinationProvider _destinationProvider;
 
 		public IntegrationPointServiceTests()
@@ -29,15 +24,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public override void SetUp()
 		{
 			base.SetUp();
-			ICaseServiceContext caseContext = Container.Resolve<ICaseServiceContext>();
-			IEnumerable<SourceProvider> providers =
-				caseContext.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name),
-					Guid.Parse(Data.SourceProviderFieldGuids.Identifier));
-
-
-			_relativityProvider = providers.First(provider => provider.Name == "Relativity");
-			_destinationProvider = caseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
-
+			_destinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
 		}
 
 		[Test]
@@ -45,8 +32,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 			const string name = "Resaved Rip";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = SaveModel(modelToUse);
-			IntegrationModel newModel = SaveModel(defaultModel);
+			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(modelToUse);
+			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 
 			ValidateModel(defaultModel, newModel, new string[0]);
 		}
@@ -56,11 +43,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 			const string name = "Update Name - OnRanIp";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = SaveModel(modelToUse);
+			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(modelToUse);
 
 			defaultModel.Name = "newName";
 
-			Assert.Throws<Exception>(() => SaveModel(defaultModel));
+			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(defaultModel));
 		}
 
 		[Test]
@@ -68,11 +55,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 			const string name = "Update Map - OnRanIp";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = SaveModel(modelToUse);
+			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(modelToUse);
 
 			defaultModel.Map = "Blahh";
 
-			IntegrationModel newModel = SaveModel(defaultModel);
+			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 			ValidateModel(defaultModel, newModel, new string[] { _FIELDMAP });
 		}
 
@@ -81,14 +68,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 			const string name = "Update Source Config - SavedSearch - OnNewRip";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = SaveModel(modelToUse);
+			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(modelToUse);
 
 			int newSavedSearch = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, name);
 			defaultModel.SourceConfiguration = CreateSourceConfig(newSavedSearch, SourceWorkspaceArtifactId);
 
-			IntegrationModel newModel = SaveModel(defaultModel);
+			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 
-			ValidateModel(defaultModel, newModel, new []{ _SOURCECONFIG });
+			ValidateModel(defaultModel, newModel, new[] { _SOURCECONFIG });
 		}
 
 		[Test]
@@ -96,11 +83,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 			const string name = "Update Name - OnNewRip";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = SaveModel(modelToUse);
+			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(modelToUse);
 
 			defaultModel.Name = name + " 2";
 
-			IntegrationModel newModel = SaveModel(defaultModel);
+			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 
 			ValidateModel(defaultModel, newModel, new[] { _NAME });
 		}
@@ -110,20 +97,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 			const string name = "Update Map - OnNewRip";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = SaveModel(modelToUse);
+			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(modelToUse);
 
 			defaultModel.Map = "New Map string";
 
-			IntegrationModel newModel = SaveModel(defaultModel);
+			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 
 			ValidateModel(defaultModel, newModel, new[] { _FIELDMAP });
 		}
 
-
 		private const string _SOURCECONFIG = "Source Config";
 		private const string _NAME = "Name";
 		private const string _FIELDMAP = "Map";
-
 
 		private void ValidateModel(IntegrationModel expectedModel, IntegrationModel actual, string[] updatedProperties)
 		{
@@ -157,7 +142,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		private string CreateSourceConfig(int savedSearchId, int targetWorkspaceId)
 		{
-			return$"{{\"SavedSearchArtifactId\":{savedSearchId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{targetWorkspaceId}}}";
+			return $"{{\"SavedSearchArtifactId\":{savedSearchId},\"SourceWorkspaceArtifactId\":\"{SourceWorkspaceArtifactId}\",\"TargetWorkspaceArtifactId\":{targetWorkspaceId}}}";
 		}
 
 		private IntegrationModel CreateIntegrationPointThatHasNotRun(string name)
@@ -166,7 +151,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			{
 				Destination = $"{{\"artifactTypeID\":10,\"CaseArtifactId\":{TargetWorkspaceArtifactId},\"Provider\":\"relativity\",\"DoNotUseFieldsMapCache\":true,\"ImportOverwriteMode\":\"AppendOnly\",\"importNativeFile\":\"false\",\"UseFolderPathInformation\":\"false\",\"ExtractedTextFieldContainsFilePath\":\"false\",\"ExtractedTextFileEncoding\":\"utf - 16\",\"CustodianManagerFieldContainsLink\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}}",
 				DestinationProvider = _destinationProvider.ArtifactId,
-				SourceProvider = _relativityProvider.ArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
 				SourceConfiguration = CreateSourceConfig(SavedSearchArtifactId, TargetWorkspaceArtifactId),
 				LogErrors = true,
 				Name = $"${name} - {DateTime.Today}",
@@ -176,29 +161,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			};
 		}
 
-
-
 		private IntegrationModel CreateIntegrationPointThatIsAlreadyRunModel(string name)
 		{
 			IntegrationModel model = CreateIntegrationPointThatHasNotRun(name);
 			model.LastRun = DateTime.Now;
 			return model;
-		}
-
-
-		private IntegrationModel SaveModel(IntegrationModel model)
-		{
-			Helper.PermissionManager.UserCanEditDocuments(SourceWorkspaceArtifactId).Returns(true);
-			Helper.PermissionManager.UserCanImport(TargetWorkspaceArtifactId).Returns(true);
-			Helper.PermissionManager.UserCanViewArtifact(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>()).Returns(true);
-
-			IIntegrationPointService service = Container.Resolve<IIntegrationPointService>();
-
-			int integrationPointAritfactId = service.SaveIntegration(model);
-
-			var rdo = service.GetRdo(integrationPointAritfactId);
-			IntegrationModel newModel = new IntegrationModel(rdo);
-			return newModel;
 		}
 	}
 }

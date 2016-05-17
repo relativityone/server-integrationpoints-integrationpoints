@@ -32,8 +32,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			var expectedResult = new List<KeyValuePair<string, object>>
 			{
 				new KeyValuePair<string, object>(
-					kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.TARGET_WORKSPACE_ID, WORKSPACE_ARTIFACT_ID),
-				new KeyValuePair<string, object>(kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.SAVED_SEARCH_ID,
+					"Target Workspace ID", WORKSPACE_ARTIFACT_ID),
+				new KeyValuePair<string, object>("Saved Search ID",
 					SAVED_SEARCH_ID)
 			};
 
@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			var expectedResult = new List<KeyValuePair<string, object>>
 			{
 				new KeyValuePair<string, object>(
-					kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.TARGET_WORKSPACE_ID, WORKSPACE_ARTIFACT_ID),
+					"Target Workspace ID", WORKSPACE_ARTIFACT_ID),
 				new KeyValuePair<string, object>("Test", "wooplah")
 			};
 
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			// Assert
 			Assert.IsNotNull(result);
 			Assert.IsInstanceOf<BadRequestErrorMessageResult>(result);
-			Assert.AreEqual(kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.INVALID_PARAMETERS, ((BadRequestErrorMessageResult)result).Message);
+			Assert.AreEqual(Core.Constants.IntegrationPoints.INVALID_PARAMETERS, ((BadRequestErrorMessageResult)result).Message);
 		}
 
 		[Test]
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 			// Assert
 			Assert.IsNotNull(result);
 			Assert.IsInstanceOf<BadRequestErrorMessageResult>(result);
-			Assert.AreEqual(kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.INVALID_PARAMETERS, ((BadRequestErrorMessageResult)result).Message);
+			Assert.AreEqual(Core.Constants.IntegrationPoints.INVALID_PARAMETERS, ((BadRequestErrorMessageResult)result).Message);
 		}
 
 

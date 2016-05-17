@@ -145,6 +145,7 @@
     </Compile>
     <Compile Include="Integration\DeleteIPsWithSourceProviderTest.cs" />
     <Compile Include="Integration\Installers\ServiceInstallerTests.cs" />
+    <Compile Include="Integration\Managers\QueueManagerTests.cs" />
     <Compile Include="Integration\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Unit\AgentJobManagerTest.cs" />

@@ -105,7 +105,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 				new SourceType()
 				{
 					Name = "name",
-					ID = kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID,
+					ID = Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID,
 					ArtifactID = 123,
 					SourceURL = "url",
 					Config = new SourceProviderConfiguration()
@@ -142,12 +142,12 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 				new SourceType()
 				{
 					Name = "name",
-					ID = kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID,
+					ID = Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID,
 					ArtifactID = 123,
 					SourceURL = "url",
 					Config = new SourceProviderConfiguration()
 					{
-						CompatibleRdoTypes = new List<Guid>() { new Guid(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID) }
+						CompatibleRdoTypes = new List<Guid>() { new Guid(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) }
 					}
 				}
 			};
@@ -174,7 +174,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 				new SourceType()
 				{
 					Name = "name",
-					ID = kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID,
+					ID = Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID,
 					ArtifactID = 123,
 					SourceURL = "url",
 					Config = new SourceProviderConfiguration()
@@ -203,7 +203,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 				new SourceType()
 				{
 					Name = "name",
-					ID = kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID,
+					ID = Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID,
 					ArtifactID = 123,
 					SourceURL = "url",
 					Config = new SourceProviderConfiguration()
@@ -235,7 +235,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 				new SourceType()
 				{
 					Name = "name",
-					ID = kCura.IntegrationPoints.DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID,
+					ID = Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID,
 					ArtifactID = 123,
 					SourceURL = "url",
 					Config = new SourceProviderConfiguration()
