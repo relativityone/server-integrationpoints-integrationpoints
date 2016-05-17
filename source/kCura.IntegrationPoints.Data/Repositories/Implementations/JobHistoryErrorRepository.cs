@@ -208,7 +208,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			//Check that the documents have not been tagged with the last Job History Object (meaning the job finished for them)
-			FieldRef jobHistoryFieldRef = new FieldRef("Job History");
+			FieldRef jobHistoryFieldRef = new FieldRef(JobHistoryErrorFields.JobHistory);
 			Criteria jobHistoryArtifactIdCriteria = new Criteria
 			{
 				Condition = new CriteriaCondition(jobHistoryFieldRef, CriteriaConditionEnum.AnyOfThese, new[] { jobHistoryArtifactId }) { NotOperator = true }
