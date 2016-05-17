@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 			var query = new Query()
 			{
 				ArtifactTypeID = (Int32)ArtifactType.Search,
-				Condition = new NotCondition(new TextCondition("Name", TextConditionEnum.Like, "Temporary Retry Errors Search%")),
+				Condition = new NotCondition(new TextCondition("Name", TextConditionEnum.Like, $"{Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_SAVED_SEARCH_NAME}%")),
 				Sorts = new List<Sort>()
 				{
 					new Sort()

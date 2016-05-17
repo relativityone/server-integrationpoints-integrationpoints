@@ -185,7 +185,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			KeywordSearch itemLevelSearch = new KeywordSearch
 			{
 				Owner = new UserRef(userArtifactId),
-				Name = $"Temporary Retry Errors Search - {integrationPointArtifactId} - {jobHistoryArtifactId}",
+				Name = $"{Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_SAVED_SEARCH_NAME} - {integrationPointArtifactId} - {jobHistoryArtifactId}",
 				ArtifactTypeID = (int)Relativity.Client.ArtifactType.Document,
 				SearchCriteria = searchCondition
 			};
