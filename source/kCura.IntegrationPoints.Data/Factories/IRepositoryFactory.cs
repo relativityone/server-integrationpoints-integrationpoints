@@ -8,31 +8,18 @@ namespace kCura.IntegrationPoints.Data.Factories
 	public interface IRepositoryFactory
 	{
 		/// <summary>
-		/// Returns a class implementing the ISourceWorkspaceRepository interface.
+		/// Returns a class implementing the IArtifactGuidRepository interface.
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
-		/// <returns>A class implementing the ISourceWorkspaceRepository interface.</returns>
-		ISourceWorkspaceRepository GetSourceWorkspaceRepository(int workspaceArtifactId);
+		/// <returns>A class implementing the IArtifactGuidRepository interface.</returns>
+		IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId);
 
 		/// <summary>
-		/// Returns a class implementing the ISourceWorkspaceJobHistoryRepository interface. 
+		/// Returns a class implementing the ICodeRepository interface
 		/// </summary>
-		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
-		/// <returns>A class implementing the ISourceWorkspaceJobHistoryRepository interface.</returns>
-		ISourceWorkspaceJobHistoryRepository GetSourceWorkspaceJobHistoryRepository(int workspaceArtifactId);
-
-		/// <summary>
-		/// Returns a class implementing the ISourceJobRepository interface.
-		/// </summary>
-		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
-		/// <returns>A class implementing the ISourceJobRepository interface.</returns>
-		ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId);
-
-		/// <summary>
-		/// Returns a class implementing the IWorkspaceRepository interface.
-		/// </summary>
-		/// <returns>A class implementing the IWorkspaceRepository.</returns>
-		IWorkspaceRepository GetWorkspaceRepository();
+		/// <param name="workspaceArtifactId">The workspace artifact id</param>
+		/// <returns>A class implementing the ICodeRepository interface</returns>
+		ICodeRepository GetCodeRepository(int workspaceArtifactId);
 
 		/// <summary>
 		/// Returns a class implementing the IDestinationWorkspaceRepository interface.
@@ -40,6 +27,27 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <param name="sourceWorkspaceArtifactId">The source workspace artifact id.</param>
 		/// <returns>A class implementing the IDestinationWorkspaceRepository interface.</returns>
 		IDestinationWorkspaceRepository GetDestinationWorkspaceRepository(int sourceWorkspaceArtifactId);
+
+		/// <summary>
+		/// Returns a class implementing the IDocumentRepository interface.
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
+		/// <returns>A class implementing the IDocumentRepository interface.</returns>
+		IDocumentRepository GetDocumentRepository(int workspaceArtifactId);
+
+		/// <summary>
+		/// Returns a class implementing the IFieldRepository interface.
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
+		/// <returns>A class implementing the IFieldRepository interface.</returns>
+		IFieldRepository GetFieldRepository(int workspaceArtifactId);
+
+		/// <summary>
+		/// Returns a class implementing the IntegrationPointRepository interface
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id</param>
+		/// <returns>A class implementing the IntegrationPointRepository interface</returns>
+		IIntegrationPointRepository GetIntegrationPointRepository(int workspaceArtifactId);
 
 		/// <summary>
 		/// Returns a class implementing the IJobHistoryRepository interface.
@@ -56,18 +64,12 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IJobHistoryErrorRepository GetJobHistoryErrorRepository(int workspaceArtifactId);
 
 		/// <summary>
-		/// Returns a class implementing the IArtifactGuidRepository interface.
+		/// Returns a class implementing the IObjectRepository interface
 		/// </summary>
-		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
-		/// <returns>A class implementing the IArtifactGuidRepository interface.</returns>
-		IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId);
-
-		/// <summary>
-		/// Returns a class implementing the IFieldRepository interface.
-		/// </summary>
-		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
-		/// <returns>A class implementing the IFieldRepository interface.</returns>
-		IFieldRepository GetFieldRepository(int workspaceArtifactId);
+		/// <param name="workspaceArtifactId">The workspace artifact id</param>
+		/// <param name="rdoArtifactId">The artifact type id of the relativity object</param>
+		/// <returns>A class implementing the IObjectRepository interface</returns>
+		IObjectRepository GetObjectRepository(int workspaceArtifactId, int rdoArtifactId);
 
 		/// <summary>
 		/// Returns a class implementing the IObjectTypeRepository interface.
@@ -77,6 +79,47 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IObjectTypeRepository GetObjectTypeRepository(int workspaceArtifactId);
 
 		/// <summary>
+		/// Returns a class implementing the IPermissionRepository interface.
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
+		/// <returns>A class implementing the IPermissionRepository interface.</returns>
+		IPermissionRepository GetPermissionRepository(int workspaceArtifactId);
+
+		/// <summary>
+		/// Returns a class implementing the IQueueRepository interface.
+		/// </summary>
+		/// <returns>A class implementing the IQueueRepository interface</returns>
+		IQueueRepository GetQueueRepository();
+
+		/// <summary>
+		/// Returns a class implementing the ISourceJobRepository interface.
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
+		/// <returns>A class implementing the ISourceJobRepository interface.</returns>
+		ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId);
+
+		/// <summary>
+		/// Returns a class implementing the ISourceProviderRepository interface
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id</param>
+		/// <returns>A class impelmenting the ISourceProviderRepository interface</returns>
+		ISourceProviderRepository GetSourceProviderRepository(int workspaceArtifactId);
+
+		/// <summary>
+		/// Returns a class implementing the ISourceWorkspaceRepository interface.
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
+		/// <returns>A class implementing the ISourceWorkspaceRepository interface.</returns>
+		ISourceWorkspaceRepository GetSourceWorkspaceRepository(int workspaceArtifactId);
+
+		/// <summary>
+		/// Returns a class implementing the ISourceWorkspaceJobHistoryRepository interface. 
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
+		/// <returns>A class implementing the ISourceWorkspaceJobHistoryRepository interface.</returns>
+		ISourceWorkspaceJobHistoryRepository GetSourceWorkspaceJobHistoryRepository(int workspaceArtifactId);
+
+		/// <summary>
 		/// Returns a class implementing the ITabRepository interface.
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
@@ -84,47 +127,10 @@ namespace kCura.IntegrationPoints.Data.Factories
 		ITabRepository GetTabRepository(int workspaceArtifactId);
 
 		/// <summary>
-		/// Returns a class implementing the IDocumentRepository interface.
+		/// Returns a class implementing the IWorkspaceRepository interface.
 		/// </summary>
-		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
-		/// <returns>A class implementing the IDocumentRepository interface.</returns>
-		IDocumentRepository GetDocumentRepository(int workspaceArtifactId);
-
-		/// <summary>
-		/// Returns a class implementing the IntegrationPointRepository interface
-		/// </summary>
-		/// <param name="workspaceArtifactId">The workspace artifact id</param>
-		/// <returns>A class implementing the IntegrationPointRepository interface</returns>
-		IIntegrationPointRepository GetIntegrationPointRepository(int workspaceArtifactId);
-
-		/// <summary>
-		/// Returns a class implementing the ICodeRepository interface
-		/// </summary>
-		/// <param name="workspaceArtifactId">The workspace artifact id</param>
-		/// <returns>A class implementing the ICodeRepository interface</returns>
-		ICodeRepository GetCodeRepository(int workspaceArtifactId);
-
-
-		/// <summary>
-		/// Returns a class implementing the IObjectRepository interface
-		/// </summary>
-		/// <param name="workspaceArtifactId">The workspace artifact id</param>
-		/// <param name="rdoArtifactId">The artifact type id of the relativity object</param>
-		/// <returns>A class implementing the IObjectRepository interface</returns>
-		IObjectRepository GetObjectRepository(int workspaceArtifactId, int rdoArtifactId);
-
-		/// <summary>
-		/// Returns a class implementing the IQueueRepository interface.
-		/// </summary>
-		/// <returns>A class implementing the IQueueRepository interface</returns>
-		IQueueRepository GetQueueRepository();
-		
-		/// <summary>
-		/// Returns a class implementing the ISourceProviderRepository interface
-		/// </summary>
-		/// <param name="workspaceArtifactId">The workspace artifact id</param>
-		/// <returns>A class impelmenting the ISourceProviderRepository interface</returns>
-		ISourceProviderRepository GetSourceProviderRepository(int workspaceArtifactId);
+		/// <returns>A class implementing the IWorkspaceRepository.</returns>
+		IWorkspaceRepository GetWorkspaceRepository();
 
 	}
 }

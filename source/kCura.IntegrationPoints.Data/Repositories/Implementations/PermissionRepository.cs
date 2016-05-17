@@ -9,26 +9,28 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class PermissionRepository : IPermissionRepository
 	{
-		private readonly IServicesMgr _servicesMgr;
+		private readonly IHelper _helper;
+		private readonly int _workspaceArtifactId;
 		private const int _ALLOW_IMPORT_PERMISSION_ID = 158; // 158 is the artifact id of the "Allow Import" permission
 		private const int _EDIT_DOCUMENT_PERMISSION_ID = 45; // 45 is the artifact id of the "Edit Documents" permission
 
-		public PermissionRepository(IServicesMgr servicesMgr)
+		public PermissionRepository(IHelper helper, int workspaceArtifactId)
 		{
-			_servicesMgr = servicesMgr;
+			_helper = helper;
+			_workspaceArtifactId = workspaceArtifactId;
 		}
 
-		public bool UserCanImport(int workspaceId)
+		public bool UserCanImport()
 		{
-			return HasPermissions(workspaceId, _ALLOW_IMPORT_PERMISSION_ID);
+			return HasPermissions(_workspaceArtifactId, _ALLOW_IMPORT_PERMISSION_ID);
 		}
 
-		public bool UserCanEditDocuments(int workspaceId)
+		public bool UserCanEditDocuments()
 		{
-			return HasPermissions(workspaceId, _EDIT_DOCUMENT_PERMISSION_ID);
+			return HasPermissions(_workspaceArtifactId, _EDIT_DOCUMENT_PERMISSION_ID);
 		}
 
-		public bool UserCanViewArtifact(int workspaceId, int artifactTypeId, int artifactId)
+		public bool UserCanViewArtifact(int artifactTypeId, int artifactId)
 		{
 			var permission = new PermissionRef()
 			{
@@ -38,11 +40,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			bool userHasViewPermissions = false;
 
-			using (IPermissionManager proxy = _servicesMgr.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
+			using (IPermissionManager proxy = _helper.GetServicesManager().CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
 			{
 				try
 				{
-					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(workspaceId,
+					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(_workspaceArtifactId,
 						new List<PermissionRef>() {permission}, artifactId);
 					List<PermissionValue> permissionValues = permissionValuesTask.Result;
 
@@ -62,7 +64,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		internal bool HasPermissions(int workspaceId, int permissionToCheck)
 		{
-			using (IPermissionManager proxy = _servicesMgr.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
+			using (IPermissionManager proxy = _helper.GetServicesManager().CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
 			{
 				var permission = new PermissionRef()
 				{

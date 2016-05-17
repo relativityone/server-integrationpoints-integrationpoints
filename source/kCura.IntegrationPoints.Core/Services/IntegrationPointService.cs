@@ -442,17 +442,17 @@ namespace kCura.IntegrationPoints.Core.Services
 		private void CheckForRelativityProviderAdditionalPermissions(string config, int userId)
 		{
 			WorkspaceConfiguration workspaceConfiguration = JsonConvert.DeserializeObject<WorkspaceConfiguration>(config);
-			if (_permissionRepository.UserCanImport(workspaceConfiguration.TargetWorkspaceArtifactId) == false)
+			if (_permissionRepository.UserCanImport() == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
 			}
 
-			if (_permissionRepository.UserCanEditDocuments(workspaceConfiguration.SourceWorkspaceArtifactId) == false)
+			if (_permissionRepository.UserCanEditDocuments() == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
 			}
 
-			if (_permissionRepository.UserCanViewArtifact(workspaceConfiguration.SourceWorkspaceArtifactId, (int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId) == false)
+			if (_permissionRepository.UserCanViewArtifact((int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId) == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH);	
 			}

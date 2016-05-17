@@ -108,9 +108,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected IntegrationModel CreateOrUpdateIntegrationPoint(IntegrationModel model)
 		{
-			Helper.PermissionManager.UserCanEditDocuments(SourceWorkspaceArtifactId).Returns(true);
-			Helper.PermissionManager.UserCanImport(TargetWorkspaceArtifactId).Returns(true);
-			Helper.PermissionManager.UserCanViewArtifact(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<int>()).Returns(true);
+			Helper.PermissionManager.UserCanEditDocuments().Returns(true);
+			Helper.PermissionManager.UserCanImport().Returns(true);
+			Helper.PermissionManager.UserCanViewArtifact(Arg.Any<int>(), Arg.Any<int>()).Returns(true);
 
 			IIntegrationPointService service = Container.Resolve<IIntegrationPointService>();
 
