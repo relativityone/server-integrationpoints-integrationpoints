@@ -2,20 +2,27 @@
 (function (root) {
 
     root.importNow = function (artifactId, appid) {
-        var field  =$("#destinationrdo").data().destinationrdo;;
+        
         var overlayOnlyMessage = "Only documents and their metadata with the same identifier will be overwritten, would you still like to proceed?";
         var appendOverlayMesssage = "All existing documents and their metadata in the target workspace that have the same identifier will be overwritten, would you still like to proceed?";
          var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
         var selectedMessage = "";
-        if (overwriteOption === "Append Only" ) {
-            selectedMessage = "You may be creating folders in the destination workspace using the "+field+" field, would you still like to proceed?";
+        if (overwriteOption === "Append Only") {
+            if (IP.fieldName.length !== 0) {
+                selectedMessage = "You may be creating folders in the destination workspace using the " + IP.fieldName + " field, would you still like to proceed?";
+            } else {
+                selectedMessage = "Documents will be placed in the workspace parent folder. Would you still like to proceed?";
+            }
         } else if (overwriteOption === "Overlay Only" ) {
             selectedMessage = overlayOnlyMessage;
         } else if (overwriteOption === "Append/Overlay") {
             selectedMessage = appendOverlayMesssage;
         }
 
-        //
+         if (root.errorMessage.length !== 0) {
+            IP.message.error.raise(root.errorMessage, $(".cardContainer"));
+            return;
+         }
         window.Dragon.dialogs.showConfirm({
             message: selectedMessage,
             title: 'Run Now',

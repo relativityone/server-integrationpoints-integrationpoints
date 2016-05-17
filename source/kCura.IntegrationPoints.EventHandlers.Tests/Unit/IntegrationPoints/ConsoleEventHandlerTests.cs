@@ -89,14 +89,15 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				Success = hasPermissions,
 				ErrorMessage = hasPermissions ? null : "GOBBLYGOOK!"
 			};
-			_integrationPointManager.UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(isRelativitySourceProvider)).Returns(permissionCheck);
+			Core.Constants.SourceProvider sourceProvider = isRelativitySourceProvider ? Core.Constants.SourceProvider.Relativity : Core.Constants.SourceProvider.Other;
+			_integrationPointManager.UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider)).Returns(permissionCheck);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_managerFactory.CreateIntegrationPointManager(_contextContainer).Returns(_integrationPointManager);
 
 
 			_integrationPointManager.Read(_APPLICATION_ID, _ARTIFACT_ID).Returns(integrationPointDto);
-			_integrationPointManager.IntegrationPointSourceProviderIsRelativity(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
-				.Returns(isRelativitySourceProvider);
+			_integrationPointManager.GetSourceProvider(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
+				.Returns(sourceProvider);
 
 			if (isRelativitySourceProvider)
 			{
@@ -131,7 +132,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 			// ASSERT
 			_contextContainerFactory.Received().CreateContextContainer(_helper);
-			_integrationPointManager.Received(1).UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(isRelativitySourceProvider));
+			_integrationPointManager.Received(1).UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider));
 			_managerFactory.Received().CreateIntegrationPointManager(_contextContainer);
 
 			Assert.IsNotNull(console);

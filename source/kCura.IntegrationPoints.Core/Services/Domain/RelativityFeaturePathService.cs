@@ -190,7 +190,7 @@ namespace kCura.IntegrationPoints.Core.Domain
 
 		protected virtual string GetDevEnvironmentLibPath()
 		{
-			return @"C:\SourceCode\Mainline\lib";
+			return Environment.GetEnvironmentVariable("TRUNK")+ @"\lib";
 		}
 	}
 }

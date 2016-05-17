@@ -12,8 +12,6 @@ using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Service;
-using Field = Relativity.Core.DTO.Field;
-using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -46,7 +44,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			const string longTextFieldName = "Long Text";
 
-			var longTextFieldsQuery = new Query()
+			var longTextFieldsQuery = new global::Relativity.Services.ObjectQuery.Query()
 			{
 				Condition = String.Format("'Object Type Artifact Type ID' == {0} AND 'Field Type' == '{1}'", rdoTypeId, longTextFieldName),
 			};
@@ -76,7 +74,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public async Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, HashSet<string> fieldFieldsNames)
 		{
-			var fieldQuery = new Query()
+			var fieldQuery = new global::Relativity.Services.ObjectQuery.Query()
 			{
 				Fields = fieldFieldsNames.ToArray(),
 				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId}"
@@ -97,7 +95,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public void SetOverlayBehavior(int fieldArtifactId, bool value)
 		{
-			Field fieldDto = FieldManager.Read(_serviceContext, fieldArtifactId);
+			global::Relativity.Core.DTO.Field fieldDto = FieldManager.Read(_serviceContext, fieldArtifactId);
 			fieldDto.OverlayBehavior = value;
 			FieldManager.Update(_serviceContext, fieldDto, fieldDto.DisplayName, fieldDto.IsArtifactBaseField);
 		}

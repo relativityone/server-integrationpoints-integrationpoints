@@ -535,7 +535,7 @@
   <ItemGroup>
     <Compile Include="BatchEmail.cs" />
     <Compile Include="BatchStatusCommands\Implementations\IConsumeScratchTableBatchStatus.cs" />
-    <Compile Include="BatchStatusCommands\Implementations\JobHistoryErrorManager.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\JobHistoryErrorBatchUpdateManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
@@ -552,11 +552,11 @@
     <Compile Include="Managers\IIntegrationPointManager.cs" />
     <Compile Include="Managers\IJobHistoryErrorManager.cs" />
     <Compile Include="Managers\IJobHistoryManager.cs" />
-    <Compile Include="BatchStatusCommands\Implementations\DestinationWorkspaceManager.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\DestinationWorkspaceBatchUpdateManager.cs" />
     <Compile Include="Installers\KeywordInstaller.cs" />
-    <Compile Include="JobHistoryStatus.cs" />
+    <Compile Include="JobHistoryBatchUpdateStatus.cs" />
     <Compile Include="BatchStatusCommands\IBatchStatus.cs" />
-    <Compile Include="BatchStatusCommands\Implementations\JobHistoryManager.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\JobHistoryBatchUpdateManager.cs" />
     <Compile Include="Managers\Implementations\ArtifactGuidManager.cs" />
     <Compile Include="Managers\Implementations\FieldManager.cs" />
     <Compile Include="Managers\Implementations\IntegrationPointManager.cs" />

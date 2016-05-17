@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			}
 			_job = job;
 			reporter.OnStatusUpdate += this.StatusUpdate;
-			reporter.OnBatchComplete += this.JobComplete;
+			reporter.OnBatchComplete += this.OnJobComplete;
 			reporter.OnDocumentError += RowError;
 		}
 
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			_rowErrors++;
 		}
 
-		private void JobComplete(DateTime start, DateTime end, int total, int errorCount)
+		private void OnJobComplete(DateTime start, DateTime end, int total, int errorCount)
 		{
 			//skip errorCount because we do suppress some errors so RowError is a more reliable mechanism 
 			string tableName = JobTracker.GenerateJobTrackerTempTableName(_job, _helper.GetBatchInstance(_job).ToString());

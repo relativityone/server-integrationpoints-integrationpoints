@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
@@ -45,13 +46,21 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				{
 
 					StringBuilder errorMessage = new StringBuilder("");
-
-					string sourceConfiguration =
-						this.ActiveArtifact.Fields[IntegrationPointFields.SourceConfiguration].Value.Value.ToString();
-					ExportUsingSavedSearchSettings settings =
-						JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(sourceConfiguration);
+					StringBuilder folderPathInformation = new StringBuilder("");
+					string  destinationConfiguration = (string)this.ActiveArtifact.Fields[IntegrationPointFields.DestinationConfiguration].Value.Value;
+					ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(destinationConfiguration);
+					IntegrationPointDestinationConfiguration integrationPointDestinationConfiguration = JsonConvert.DeserializeObject<IntegrationPointDestinationConfiguration>(destinationConfiguration);
+					if (importSettings.ImportOverwriteMode == ImportOverwriteModeEnum.AppendOnly && integrationPointDestinationConfiguration.UseFolderPathInformation == true)
+					{
+						var sqlString = $"SELECT TextIdentifier FROM Artifact WHERE ArtifactID = {integrationPointDestinationConfiguration.FolderPathSourceField}";
+							folderPathInformation.Append(base.ServiceContext.SqlContext.ExecuteSqlStatementAsDataTable(sqlString).Rows[0].ItemArray[0].ToString());
+					}
+					string sourceConfiguration =this.ActiveArtifact.Fields[IntegrationPointFields.SourceConfiguration].Value.Value.ToString();
+					ExportUsingSavedSearchSettings settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(sourceConfiguration);
 					Result<Workspace> sourceWorkspace;
 					Result<Workspace> targetWorkspace;
+
+					
 					using (IRSAPIClient currentClient = GetRSAPIClient(-1))
 					{
 						QueryResultSet<Workspace> workspaces = new GetWorkspacesQuery(currentClient).ExecuteQuery();
@@ -107,8 +116,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					using (TagBuilder Relativityprovider = new TagBuilder("script"))
 					{
 						Relativityprovider.Attributes.Add("type", "text/javascript");
-						Relativityprovider.InnerHtml = String.Format(@" var IP = IP || {{}};$(function(){{IP.errorMessage = '{0}';}});",
-							errorMessage.ToString());
+						Relativityprovider.InnerHtml = String.Format(" var IP = IP || {{}};$(function(){{IP.errorMessage = '{0}';IP.fieldName ='{1}';}});", errorMessage, folderPathInformation);
 						scripts.Append(Relativityprovider);
 					}
 					response.Message = scripts.ToString();
@@ -154,5 +162,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			get { return new FieldCollection(); }
 		}
+	}
+	internal class IntegrationPointDestinationConfiguration
+	{
+		public bool UseFolderPathInformation;
+		public int FolderPathSourceField;
 	}
 }

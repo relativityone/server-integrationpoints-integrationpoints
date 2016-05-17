@@ -158,6 +158,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		internal kCura.Relativity.DataReaderClient.OverwriteModeEnum OverwriteMode
 		{
 			get { return (kCura.Relativity.DataReaderClient.OverwriteModeEnum)this.ImportOverwriteMode; }
+
+			set { this.ImportOverwriteMode = (ImportOverwriteModeEnum)value; }
 		}
 
 		[JsonIgnore]
