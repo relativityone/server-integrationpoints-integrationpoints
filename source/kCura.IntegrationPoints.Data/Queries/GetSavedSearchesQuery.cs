@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 		}
 
 		/// <summary>
-		/// Get all saved searches within specified workspace via RSAPI client.
+		/// Get all saved searches within specified workspace via RSAPI client. Excludes the Temporary Retry Errors Searches that are made for item-level retries.
 		/// </summary>
 		/// <returns>query result contains saved search artifact(s).</returns>
 		public QueryResult ExecuteQuery()
@@ -23,6 +23,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 			var query = new Query()
 			{
 				ArtifactTypeID = (Int32)ArtifactType.Search,
+				Condition = new NotCondition(new TextCondition("Name", TextConditionEnum.Like, "Temporary Retry Errors Search%")),
 				Sorts = new List<Sort>()
 				{
 					new Sort()

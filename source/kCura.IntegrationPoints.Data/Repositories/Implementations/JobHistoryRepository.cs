@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				{
 					new Sort()
 					{
-						Field = "StartTimeUTC",
+						Field = JobHistoryFields.EndTimeUTC,
 						Direction = SortEnum.Descending
 					}
 				}
