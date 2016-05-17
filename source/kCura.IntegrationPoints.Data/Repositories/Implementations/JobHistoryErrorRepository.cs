@@ -31,24 +31,23 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_workspaceArtifactId = workspaceArtifactId;
 		}
 
-		public List<int> RetreiveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType)
+		public List<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType)
 		{
 			QueryResultSet<RDO> results = null;
 			var query = new Query<RDO>();
 
-			try
-			{
-				query.ArtifactTypeGuid = new Guid(ObjectTypeGuids.JobHistoryError);
-				var jobHistoryCondition = new WholeNumberCondition(new Guid(JobHistoryErrorDTO.FieldGuids.JobHistory), NumericConditionEnum.EqualTo, jobHistoryArtifactId);
-				var errorTypeCondition = new SingleChoiceCondition(new Guid(JobHistoryErrorDTO.FieldGuids.ErrorType), SingleChoiceConditionEnum.AnyOfThese, errorType.ArtifactGuids);
-				query.Condition = new CompositeCondition(jobHistoryCondition, CompositeConditionEnum.And, errorTypeCondition);
-				query.Fields = new List<FieldValue>
+			query.ArtifactTypeGuid = new Guid(ObjectTypeGuids.JobHistoryError);
+			var jobHistoryCondition = new WholeNumberCondition(new Guid(JobHistoryErrorDTO.FieldGuids.JobHistory), NumericConditionEnum.EqualTo, jobHistoryArtifactId);
+			var errorTypeCondition = new SingleChoiceCondition(new Guid(JobHistoryErrorDTO.FieldGuids.ErrorType), SingleChoiceConditionEnum.AnyOfThese, errorType.ArtifactGuids);
+			query.Condition = new CompositeCondition(jobHistoryCondition, CompositeConditionEnum.And, errorTypeCondition);
+			query.Fields = new List<FieldValue>
 				{
 					new FieldValue(Guid.Parse(JobHistoryErrorDTO.FieldGuids.ArtifactId))
 				};
 
-				using (
-					IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			try
+			{
+				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 				{
 					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 					results = rsapiClient.Repositories.RDO.Query(query);
@@ -100,51 +99,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return updateStatusType;
 		}
 
-		public void CreateErrorListTempTables(List<int> jobLevelErrors, List<int> itemLevelErrors, JobHistoryErrorDTO.UpdateStatusType updateStatusType, string uniqueJobId)
-		{
-			if (updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors)
-			{
-				switch (updateStatusType.ErrorTypes)
-				{
-					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
-						CreateErrorListTempTable(jobLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
-						CreateErrorListTempTable(jobLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE, uniqueJobId);
-						CreateErrorListTempTable(itemLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
-						break;
-
-					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
-						CreateErrorListTempTable(jobLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
-						CreateErrorListTempTable(jobLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE, uniqueJobId);
-						break;
-
-					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
-						CreateErrorListTempTable(itemLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
-						//ToDo: Second CreateErrorListTempTable needed when logic to split item level errors between those being retried and those no longer included is written
-						CreateErrorListTempTable(itemLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE, uniqueJobId);
-						break;
-				}
-			}
-			else
-			{
-				switch (updateStatusType.ErrorTypes)
-				{
-					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
-						CreateErrorListTempTable(jobLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
-						CreateErrorListTempTable(itemLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
-						break;
-
-					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
-						CreateErrorListTempTable(jobLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
-						break;
-
-					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
-						CreateErrorListTempTable(itemLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
-						break;
-				}
-			}
-		}
-
-		private void CreateErrorListTempTable(List<int> errors, string tablePrefix, string uniqueJobId)
+		public void CreateErrorListTempTable(List<int> errors, string tablePrefix, string uniqueJobId)
 		{
 			try
 			{

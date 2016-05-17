@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 						break;
 				}
 			}
-			else
+			else //This runs for Run Now or Scheduled jobs
 			{
 				switch (_updateStatusType.ErrorTypes)
 				{
