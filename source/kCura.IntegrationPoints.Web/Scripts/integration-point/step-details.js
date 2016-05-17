@@ -598,10 +598,11 @@ var IP = IP || {};
 			this.model.submit();
 			if (this.model.errors().length === 0) {
 			    this.model.destinationProvider = this.model.destination.selectedDestinationType();
-			    this.model.destinationProviderGuid = this.model.destination.selectedDestinationTypeGuid();
+			    var guid = this.model.destination.selectedDestinationTypeGuid();
+			    this.model.destinationProviderGuid = guid;
 			    this.model.destination = JSON.stringify({
 				    artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,	
-			        destinationProviderType: ko.toJS(this.model.destination).selectedDestinationType,
+				    destinationProviderType: ko.toJS(guid),
 					CaseArtifactId: IP.data.params['appID'],
 					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
 				});
