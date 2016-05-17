@@ -8,7 +8,7 @@
          var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
         var selectedMessage = "";
         if (overwriteOption === "Append Only") {
-            if (IP.fieldName !== 0) {
+            if (IP.fieldName.length !== 0) {
                 selectedMessage = "You may be creating folders in the destination workspace using the " + IP.fieldName + " field, would you still like to proceed?";
             } else {
                 selectedMessage = "Documents will be placed in the workspace parent folder. Would you still like to proceed?";
