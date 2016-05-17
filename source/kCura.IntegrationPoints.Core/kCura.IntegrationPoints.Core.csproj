@@ -611,6 +611,7 @@
     <Compile Include="Services\IIntegrationPointService.cs" />
     <Compile Include="Services\IJobStatusUpdater.cs" />
     <Compile Include="Services\JobHistory\ExportJobErrorService.cs" />
+    <Compile Include="Services\JobHistory\IJobHistoryErrorService.cs" />
     <Compile Include="Services\JobHistory\IJobHistoryService.cs" />
     <Compile Include="Services\JobHistory\JobHistoryErrorService.cs" />
     <Compile Include="Services\JobHistory\JobHistoryService.cs" />

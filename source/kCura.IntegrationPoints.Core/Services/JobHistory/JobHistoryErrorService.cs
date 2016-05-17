@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
-	public class JobHistoryErrorService
+	public class JobHistoryErrorService : IJobHistoryErrorService
 	{
 		private readonly ICaseServiceContext _context;
 		private readonly List<JobHistoryError> _jobHistoryErrorList;
