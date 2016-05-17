@@ -382,8 +382,6 @@ namespace kCura.IntegrationPoints.Core.Services
 			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRunNow, workspaceArtifactId, userId);
 		}
 
-
-
 		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
 		{
 			IntegrationPoint integrationPoint = GetRdo(integrationPointArtifactId);
