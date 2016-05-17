@@ -98,10 +98,6 @@
       <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider.Shared\kCura.IntegrationPoints.DocumentTransferProvider.Shared.csproj">
-      <Project>{22991306-a168-4d22-80a7-aaa99c9e9fd6}</Project>
-      <Name>kCura.IntegrationPoints.DocumentTransferProvider.Shared</Name>
-    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider\kCura.IntegrationPoints.DocumentTransferProvider.csproj">
       <Project>{ca3d5b8b-b99c-4ba5-bb8b-44a0ba9aa0f7}</Project>
       <Name>kCura.IntegrationPoints.DocumentTransferProvider</Name>

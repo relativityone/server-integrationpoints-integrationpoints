@@ -30,22 +30,28 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return updateStatusType;
 		}
 
-		private List<int> GetLastJobHistoryErrorArtifactIds(int workspaceArtifactId, int integrationPointArtifactId, Relativity.Client.Choice errorType)
+		public int CreateItemLevelErrorsSavedSearch(Job job, int originalSavedSearchArtifactId)
 		{
-			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
-			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(workspaceArtifactId);
+			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(job.WorkspaceID);
+			int lastJobHistoryArtifactId = GetLastJobHistory(job.WorkspaceID, job.RelatedObjectArtifactID);
 
-			int jobHistoryArtifactId = jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointArtifactId);
-
-			return jobHistoryErrorRepository.RetreiveJobHistoryErrorArtifactIds(jobHistoryArtifactId, errorType);
+			return jobHistoryErrorRepository.CreateItemLevelErrorsSavedSearch(job.WorkspaceID, job.RelatedObjectArtifactID,
+				originalSavedSearchArtifactId, lastJobHistoryArtifactId, job.SubmittedBy);
 		}
 
-		public int CreateItemLevelErrorsSavedSearch(int workspaceArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId)
+		private List<int> GetLastJobHistoryErrorArtifactIds(int workspaceArtifactId, int integrationPointArtifactId, Relativity.Client.Choice errorType)
 		{
 			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(workspaceArtifactId);
-			int itemLevelSavedSearch = jobHistoryErrorRepository.CreateItemLevelErrorsSavedSearch(workspaceArtifactId,
-				savedSearchArtifactId, jobHistoryArtifactId);
-			return itemLevelSavedSearch;
+			int lastJobHistoryArtifactId = GetLastJobHistory(workspaceArtifactId, integrationPointArtifactId);
+
+			return jobHistoryErrorRepository.RetreiveJobHistoryErrorArtifactIds(lastJobHistoryArtifactId, errorType);
+		}
+
+		private int GetLastJobHistory(int workspaceArtifactId, int integrationPointArtifactId)
+		{
+			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
+
+			return jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointArtifactId);
 		}
 	}
 }

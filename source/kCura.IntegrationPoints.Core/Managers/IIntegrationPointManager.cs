@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		Constants.SourceProvider GetSourceProvider(int workspaceArtifactId, IntegrationPointDTO integrationPointDto);
 
 		/// <summary>
-		/// Determines whether or not the current user has integration point permissions in the given workspace.
+		/// Determines whether or not the current user has permissions to run an integration point in the given workspace. This only applies to the Relativity source provider.
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
 		/// <param name="integrationPointDto">The integration point dto to check.</param>

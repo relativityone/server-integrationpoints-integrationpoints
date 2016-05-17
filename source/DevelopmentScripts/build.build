@@ -242,7 +242,6 @@
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.EventHandlers.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Email.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.Shared.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
 		</exec>
@@ -305,7 +304,6 @@
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
 			<arg line='/lib:"${source.reference.NewtonsoftJson.directory}"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.Shared.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
 		</exec>

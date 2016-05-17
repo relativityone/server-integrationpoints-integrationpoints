@@ -13,6 +13,7 @@ using Relativity.Core;
 using Relativity.Data;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
+using Relativity.Services.User;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -118,6 +119,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
 						CreateErrorListTempTable(itemLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
+						//ToDo: Second CreateErrorListTempTable needed when logic to split item level errors between those being retried and those no longer included is written
 						CreateErrorListTempTable(itemLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE, uniqueJobId);
 						break;
 				}
@@ -195,8 +197,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		}
 
-		public int CreateItemLevelErrorsSavedSearch(int workspaceArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId)
+		public int CreateItemLevelErrorsSavedSearch(int workspaceArtifactId, int integrationPointArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId, int userArtifactId)
 		{
+			//Check for all documents that are part of the current saved search
 			FieldRef savedSearchFieldRef = new FieldRef("(Saved Search)");
 			Criteria savedSearchCriteria = new Criteria
 			{
@@ -204,17 +207,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				BooleanOperator = BooleanOperatorEnum.And
 			};
 
-			FieldRef jobHistoryArtfiactIdFieldRef = new FieldRef("Job History");
+			//Check that the documents have not been tagged with the last Job History Object (meaning the job finished for them)
+			FieldRef jobHistoryFieldRef = new FieldRef(JobHistoryErrorFields.JobHistory);
 			Criteria jobHistoryArtifactIdCriteria = new Criteria
 			{
-				Condition = new CriteriaCondition(jobHistoryArtfiactIdFieldRef, CriteriaConditionEnum.AnyOfThese, new[] { jobHistoryArtifactId }) { NotOperator = true }
+				Condition = new CriteriaCondition(jobHistoryFieldRef, CriteriaConditionEnum.AnyOfThese, new[] { jobHistoryArtifactId }) { NotOperator = true }
 			};
 			CriteriaCollection jobHistoryObjectCriteriaCollection = new CriteriaCollection
 			{
 				Conditions = new List<CriteriaBase>(1) { jobHistoryArtifactIdCriteria }
 			};
-			
-			FieldRef jobHistoryFieldRef = new FieldRef("Job History");
 			Criteria jobHistoryCriteria = new Criteria
 			{
 				Condition = new CriteriaCondition(jobHistoryFieldRef, CriteriaConditionEnum.In, jobHistoryObjectCriteriaCollection)
@@ -227,12 +229,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			KeywordSearch itemLevelSearch = new KeywordSearch
 			{
-				Name = "Temporary Search",
+				Owner = new UserRef(userArtifactId),
+				Name = $"Temporary Retry Errors Search - {integrationPointArtifactId} - {jobHistoryArtifactId}",
 				ArtifactTypeID = (int)Relativity.Client.ArtifactType.Document,
 				SearchCriteria = searchCondition
 			};
 
-			using (IKeywordSearchManager searchManager = _helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.CurrentUser))
+			using (IKeywordSearchManager searchManager = _helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System))
 			{
 				SearchResultViewFields fields = searchManager.GetFieldsForSearchResultViewAsync(workspaceArtifactId, (int)Relativity.Client.ArtifactType.Document)
 					.ConfigureAwait(false).GetAwaiter().GetResult();
@@ -245,6 +248,20 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 						.ConfigureAwait(false).GetAwaiter().GetResult();
 
 				return itemLevelSearchArtifactId;
+			}
+		}
+
+		public void DeleteItemLevelErrorsSavedSearch(int workspaceArtifactId, int searchArtifactId, int retryAttempts)
+		{
+			using (IKeywordSearchManager searchManager = _helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System))
+			{
+				var task = searchManager.DeleteSingleAsync(workspaceArtifactId, searchArtifactId);
+				task.ConfigureAwait(false).GetAwaiter().GetResult();
+
+				if (task.IsFaulted && retryAttempts < 3)
+				{
+					DeleteItemLevelErrorsSavedSearch(workspaceArtifactId, searchArtifactId, retryAttempts + 1);
+				}
 			}
 		}
 	}

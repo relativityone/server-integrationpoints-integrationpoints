@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				{
 					new Sort()
 					{
-						Field = "ArtifactID",
+						Field = "StartTimeUTC",
 						Direction = SortEnum.Descending
 					}
 				}
