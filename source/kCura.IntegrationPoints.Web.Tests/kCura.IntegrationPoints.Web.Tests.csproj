@@ -225,6 +225,7 @@
     </Compile>
     <Compile Include="Helpers\TestBase.cs" />
     <Compile Include="Unit\Controllers\API\IntegrationPointsAPIControllerTests.cs" />
+    <Compile Include="Unit\Controllers\DestinationTypeControllerTests.cs" />
     <Compile Include="Unit\Controllers\FolderPathControllerTests.cs" />
     <Compile Include="Unit\Controllers\BaseControllerTests.cs" />
     <Compile Include="Unit\Controllers\LdapControllerTests.cs" />
