@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Data;
@@ -34,8 +36,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected DestinationProvider DestinationProvider;
 		protected ICaseServiceContext CaseContext;
 
-		public int SourceWorkspaceArtifactId { get; private set; }
-		public int TargetWorkspaceArtifactId { get; private set; }
+		public int SourceWorkspaceArtifactId { get; protected set; }
+		public int TargetWorkspaceArtifactId { get; protected set; }
 		public int SavedSearchArtifactId { get; set; }
 
 		public WorkspaceDependentTemplate(string sourceWorkspaceName, string targetWorkspaceName)
@@ -62,7 +64,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
 		}
 
-		protected void Install()
+		protected virtual void Install()
 		{
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
 			Container.Register(Component.For<IServiceContextHelper>()
@@ -179,6 +181,16 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				}
 			};
 			return Container.Resolve<ISerializer>().Serialize(map);
+		}
+
+		protected void AssignJobToAgent(int agentId, long jobId)
+		{
+			string query = $" Update [{GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME}] SET [LockedByAgentID] = @agentId Where JobId = @JobId";
+
+			SqlParameter agentIdParam = new SqlParameter("@agentId", SqlDbType.BigInt) { Value = agentId };
+			SqlParameter jobIdParam = new SqlParameter("@JobId", SqlDbType.Int) { Value = jobId };
+
+			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new SqlParameter[] { agentIdParam, jobIdParam });
 		}
 	}
 }

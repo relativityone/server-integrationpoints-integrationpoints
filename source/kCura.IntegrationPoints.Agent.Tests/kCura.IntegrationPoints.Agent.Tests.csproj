@@ -138,6 +138,7 @@
     </Compile>
     <Compile Include="Integration\AgentConstractorTests.cs" />
     <Compile Include="Integration\AgentTests.cs" />
+    <Compile Include="Integration\ExportServiceManagerTests.cs" />
     <Compile Include="Unit\Tasks\SyncCustodianManagerWorkerTests.cs" />
     <Compile Include="Unit\Tasks\SyncManagerTests.cs" />
   </ItemGroup>

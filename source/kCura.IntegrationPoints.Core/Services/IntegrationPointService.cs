@@ -421,7 +421,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			return sourceProvider;
 		}
 
-		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, Relativity.Client.Choice jobType, int workspaceArtifactId, int userId)
+		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, Choice jobType, int workspaceArtifactId, int userId)
 		{
 			lock (_lock)
 			{

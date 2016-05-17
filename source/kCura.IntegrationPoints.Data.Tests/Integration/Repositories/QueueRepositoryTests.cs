@@ -360,7 +360,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				job = _jobService.CreateJob(SourceWorkspaceArtifactId, _RipObjectArtifactId,
 						"Kwuuuuuuuuuuuuuuuuuuuuuuuuuuu",
 						DateTime.MaxValue, String.Empty, 9, null, null);
-				_jobService.GetNextQueueJob(new int[] { SourceWorkspaceArtifactId }, agentId);
+				_jobService.GetNextQueueJob(new int[] { SourceWorkspaceArtifactId }, _jobService.AgentTypeInformation.AgentTypeID);
 
 				// act
 				int count = _queueRepo.GetNumberOfJobsExecutingOrInQueue(SourceWorkspaceArtifactId, _RipObjectArtifactId);
@@ -424,7 +424,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				job = _jobService.CreateJob(SourceWorkspaceArtifactId, _RipObjectArtifactId,
 						"Kwuuuuuuuuuuuuuuuuuuuuuuuuuuu",
 						DateTime.MaxValue, String.Empty, 9, null, null);
-				_jobService.GetNextQueueJob(new int[] { SourceWorkspaceArtifactId }, agentId);
 				AssignJobToAgent(agentId, job.JobId);
 
 				// act
@@ -633,16 +632,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			{
 				_jobService.DeleteJob(job.JobId);
 			}
-		}
-
-		private void AssignJobToAgent(int agentId, long jobId)
-		{
-			string query = $" Update [{GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME}] SET [LockedByAgentID] = @agentId Where JobId = @JobId";
-
-			SqlParameter agentIdParam = new SqlParameter("@agentId", SqlDbType.BigInt) {Value = agentId};
-			SqlParameter jobIdParam = new SqlParameter("@JobId", SqlDbType.Int) { Value = jobId };
-
-			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new SqlParameter[] {agentIdParam, jobIdParam});
 		}
 
 		private void ControlIntegrationPointAgents(bool enable)

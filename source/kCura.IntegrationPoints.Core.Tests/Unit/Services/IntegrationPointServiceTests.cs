@@ -167,12 +167,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		}
 
 		[Test]
-		public void RunIntegrationPoint_RelativityProvider()
-		{
-			
-		}
-
-		[Test]
 		public void RunIntegrationPoint_GoldFlow_OtherProviders()
 		{
 			// arrange

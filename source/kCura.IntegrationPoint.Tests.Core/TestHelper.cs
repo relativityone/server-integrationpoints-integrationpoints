@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_serviceManager = Substitute.For<IServicesMgr>();
 			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser).Returns(Rsapi.CreateRsapiClient(ExecutionIdentity.CurrentUser));
 			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(Rsapi.CreateRsapiClient(ExecutionIdentity.System));
-			
+
 			//_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.System).Returns(CreateAdminObjectQueryManager(), CreateAdminObjectQueryManager());
 			//_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser).Returns(CreateUserObjectQueryManager(), CreateUserObjectQueryManager());
 		}
