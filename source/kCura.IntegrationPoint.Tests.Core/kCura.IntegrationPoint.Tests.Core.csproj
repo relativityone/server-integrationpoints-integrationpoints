@@ -115,6 +115,12 @@
       <HintPath>..\packages\kCuraCore.9.3.405.5\lib\net45\kCura.Injection.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.IntegrationPoints.Services">
+      <HintPath>..\bin\kCura.IntegrationPoints.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="kCura.IntegrationPoints.Services.Interfaces.Private">
+      <HintPath>..\bin\kCura.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.Notification, Version=9.3.405.5, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\kCuraCore.9.3.405.5\lib\net45\kCura.Notification.dll</HintPath>
       <Private>True</Private>
@@ -302,6 +308,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.1\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
@@ -347,6 +354,7 @@
     <Compile Include="Rest.cs" />
     <Compile Include="Rsapi.cs" />
     <Compile Include="SavedSearch.cs" />
+    <Compile Include="Selenium.cs" />
     <Compile Include="SharedVariables.cs" />
     <Compile Include="Status.cs" />
     <Compile Include="IntegrationPoint.cs" />
