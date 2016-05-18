@@ -2,7 +2,7 @@
 
 namespace kCura.IntegrationPoints.Core.Helpers
 {
-	public interface IOnClickEventHelper
+	public interface IOnClickEventConstructor
 	{
 		/// <summary>
 		/// Creates the set of On Click Events used for the console buttons for the Relativity Provider.

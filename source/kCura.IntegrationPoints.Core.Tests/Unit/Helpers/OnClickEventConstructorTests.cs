@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers.Implementations;
@@ -12,7 +9,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 {
-	public class OnClickEventHelperTests
+	public class OnClickEventConstructorTests
 	{
 		private IManagerFactory _managerFactory;
 		private IContextContainerFactory _contextContainerFactory;
@@ -24,7 +21,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 		private int _workspaceId = 12345;
 		private int _integrationPointId = 54321;
 
-		private OnClickEventHelper _instance;
+		private OnClickEventConstructor _instance;
 
 		[SetUp]
 		public void Setup()
@@ -42,11 +39,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 			_managerFactory.CreateArtifactGuidManager(_contextContainer).Returns(_artifactGuidManager);
 			_managerFactory.CreateObjectTypeManager(_contextContainer).Returns(_objectTypeManager);
 
-			_instance = new OnClickEventHelper(_contextContainer, _managerFactory);
+			_instance = new OnClickEventConstructor(_contextContainer, _managerFactory);
 		}
 
 		[Test]
-		public void GetOnClickEventsForRelativityProviders_GoldFlow_AllButtonsEnabled()
+		public void GetOnClickEventsForRelativityProvider_GoldFlow_AllButtonsEnabled()
 		{
 			//Arrange
 			string expectedViewErrorsOnClickEvent = ViewErrorsLinkSetup();
@@ -68,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Helpers
 		}
 
 		[Test]
-		public void GetOnClickEventsForRelativityProviders_GoldFlow_AllButtonsDisabled()
+		public void GetOnClickEventsForRelativityProvider_GoldFlow_AllButtonsDisabled()
 		{
 			//Arrange
 			ButtonStateDTO buttonStates = new ButtonStateDTO()
