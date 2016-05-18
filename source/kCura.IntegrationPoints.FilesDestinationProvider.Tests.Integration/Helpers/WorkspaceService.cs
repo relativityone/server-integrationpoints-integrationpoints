@@ -1,89 +1,141 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.Relativity.Client.DTOs;
+using kCura.Relativity.Client;
 using kCura.Relativity.DataReaderClient;
 using kCura.Relativity.ImportAPI;
-using Relativity.Services;
 using Status = kCura.Relativity.DataReaderClient.Status;
-using TextCondition = kCura.Relativity.Client.TextCondition;
-using TextConditionEnum = kCura.Relativity.Client.TextConditionEnum;
-using Workspace = kCura.Relativity.Client.DTOs.Workspace;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {
 	internal class WorkspaceService
 	{
-		private IntegrationPoint.Tests.Core.Helper _helper;
+		#region Fileds
 
-		public WorkspaceService(IntegrationPoint.Tests.Core.Helper helper)
+		private readonly ConfigSettings _configSettings;
+
+		private const string TemplateWorkspaceName = "kCura Starter Template";
+		private const int ControlNumberFieldArtifactId = 1003667;
+
+		#endregion //Fileds
+
+		#region Constructors
+
+		public WorkspaceService(ConfigSettings configSettings)
 		{
-			_helper = helper;
+			_configSettings = configSettings;
 		}
 
-		internal void ImportDocument(int workspaceArtifactID, IDataReader dataReader)
+		#endregion //Constructors
+
+		#region Methods
+
+		internal int CreateWorkspace(string name)
 		{
-			// Predifined Control Number artifact id
-			Int32 identifyFieldArtifactID = 1003667;
+			return Workspace.CreateWorkspace(name, TemplateWorkspaceName);
+		}
 
-			String relativityUserName = _helper.SharedVariables.RelativityUserName;
-			String relativityPassword = _helper.SharedVariables.RelativityPassword;
+		internal void DeleteWorkspace(int artifactId)
+		{
+			using (IRSAPIClient rsApiClient = Rsapi.CreateRsapiClient())
+			{
+				rsApiClient.Repositories.Workspace.DeleteSingle(artifactId);
+			}
+		}
 
-			String relativityWebAPIUrl = "http://localhost/Relativitywebapi/";
+		internal int GetSavedSearchIdBy(string name, int workspaceId)
+		{
+			using (IRSAPIClient rsApiClient = Rsapi.CreateRsapiClient())
+			{
+				var query = new Query
+				{
+					ArtifactTypeID = (int)ArtifactType.Search,
+					Condition = new TextCondition("Name", TextConditionEnum.Like, name),
+				};
 
-			ImportAPI iapi = new ImportAPI(relativityUserName, relativityPassword, relativityWebAPIUrl);
+				rsApiClient.APIOptions.WorkspaceID = workspaceId;
+				QueryResult result = rsApiClient.Query(rsApiClient.APIOptions, query);
 
-			var importJob = iapi.NewNativeDocumentImportJob();
+				return result.QueryArtifacts[0].ArtifactID;
+			}
+		}
+
+		internal IEnumerable<int> GetFieldIdsBy(List<string> listName, int workspaceId)
+		{
+			ImportAPI importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, _configSettings.WebApiUrl);
+
+			IEnumerable<Relativity.ImportAPI.Data.Field> fields = importApi.GetWorkspaceFields(workspaceId, (int)ArtifactType.Document);
+
+			return fields.Where(field => listName.Contains(field.Name)).Select(field => field.ArtifactID);
+		}
+
+		internal void ImportData(int workspaceArtifactId, DataTable nativeFilesSourceDataTable, DataTable imageSourceDataTable)
+		{
+			ImportAPI importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, _configSettings.WebApiUrl);
+
+			ImportNativeFiles(workspaceArtifactId, nativeFilesSourceDataTable.CreateDataReader(), importApi, ControlNumberFieldArtifactId);
+			ImportImagesAndExtractedText(workspaceArtifactId, imageSourceDataTable, importApi, ControlNumberFieldArtifactId);
+		}
+
+		private void ImportImagesAndExtractedText(int workspaceArtifactId, DataTable dataTable, ImportAPI importApi, int identifyFieldArtifactId)
+		{
+			var importJob = importApi.NewImageImportJob();
 
 			importJob.OnMessage += ImportJobOnMessage;
 			importJob.OnComplete += ImportJobOnComplete;
 			importJob.OnFatalException += ImportJobOnFatalException;
-			importJob.Settings.CaseArtifactId = workspaceArtifactID;
-			importJob.Settings.ExtractedTextFieldContainsFilePath = false;
 
-			// Indicates file path for the native file.
-			importJob.Settings.NativeFilePathSourceFieldName = "Native File";
+			importJob.Settings.AutoNumberImages = false;
 
-			// Indicates the column containing the ID of the parent document.
-			//importJob.Settings.ParentObjectIdSourceFieldName = "Parent Document ID";
+			importJob.Settings.CaseArtifactId = workspaceArtifactId;
+			importJob.Settings.ExtractedTextFieldContainsFilePath = true;
+			importJob.Settings.ExtractedTextEncoding = Encoding.UTF8;
 
-			// Indicates the column containing the ID of the Data Grid records already created for the documents.
-			//importJob.Settings.DataGridIDColumnName = "Data Grid ID";
+			importJob.Settings.DocumentIdentifierField = "Control Number";
 
-			// The name of the document identifier column must match the name of the document identifier field
-			// in the workspace.
-			//importJob.Settings.SelectedIdentifierFieldName = "Doc ID Beg";
-			importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
-			importJob.Settings.OverwriteMode = OverwriteModeEnum.AppendOverlay;
-			importJob.Settings.FileNameColumn = "File Name";
+			// Indicates filepath for an image.
+			importJob.Settings.FileLocationField = "File";
+			importJob.Settings.BatesNumberField = "Bates Beg";
+			//Indicates that the images must be copied to the document repository
 			importJob.Settings.CopyFilesToDocumentRepository = true;
 
-			// Specify the ArtifactID of the document identifier field, such as a control number.
-			importJob.Settings.IdentityFieldId = identifyFieldArtifactID;
+			// Specifies the ArtifactID of a document identifier field, such as a control number.
+			importJob.Settings.IdentityFieldId = identifyFieldArtifactId;
+			importJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
+			importJob.SourceData.SourceData = dataTable;
 
-			importJob.SourceData.SourceData = dataReader;
-
-			Console.WriteLine("Executing import...");
+			Console.WriteLine("Executing native import...");
 
 			importJob.Execute();
 		}
 
-		internal DataTable GetDocumentDataTable()
+		private static void ImportNativeFiles(int workspaceArtifactId, IDataReader dataReader, ImportAPI importApi, int identifyFieldArtifactId)
 		{
-			DataTable table = new DataTable();
+			var importJob = importApi.NewNativeDocumentImportJob();
+			importJob.OnMessage += ImportJobOnMessage;
+			importJob.OnComplete += ImportJobOnComplete;
+			importJob.OnFatalException += ImportJobOnFatalException;
+			importJob.Settings.CaseArtifactId = workspaceArtifactId;
+			importJob.Settings.ExtractedTextFieldContainsFilePath = false;
 
-			// The document identifer column name must match the field name in the workspace.
-			table.Columns.Add("Control Number", typeof (string));
-			table.Columns.Add("File Name", typeof(string));
-			table.Columns.Add("Native File", typeof(string));
-			table.Rows.Add("SBECK_0048462", "SBECK_0048462.docx", "E:\\Datasets\\Import\\AdminTrainingSampleData\\Sample01\\NATIVES\\NATIVES001\\SBECK_0048462.docx");
-			table.Rows.Add("SBECK_0048461", "SBECK_0048461.docx", "E:\\Datasets\\Import\\AdminTrainingSampleData\\Sample01\\NATIVES\\NATIVES001\\SBECK_0048461.docx");
+			// Indicates file path for the native file.
+			importJob.Settings.NativeFilePathSourceFieldName = "Native File";
+			importJob.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
+			importJob.Settings.OverwriteMode = OverwriteModeEnum.Append;
+			importJob.Settings.FileNameColumn = "File Name";
+			importJob.Settings.CopyFilesToDocumentRepository = true;
 
-			return table;
+			// Specify the ArtifactID of the document identifier field, such as a control number.
+			importJob.Settings.IdentityFieldId = identifyFieldArtifactId;
+
+			importJob.SourceData.SourceData = dataReader;
+
+			Console.WriteLine("Executing import native files...");
+
+			importJob.Execute();
 		}
 
 		private static void ImportJobOnFatalException(JobReport jobreport)
@@ -102,5 +154,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		{
 			Console.WriteLine(status.Message);
 		}
+
+		#endregion Methods
 	}
 }
