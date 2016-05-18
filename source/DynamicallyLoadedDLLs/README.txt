@@ -1,1 +1,1 @@
-DO NOT USE THIS DLLs. This is only use in our tests
+DO NOT USE THESE DLLs. They are for only to be use in our integration tests
