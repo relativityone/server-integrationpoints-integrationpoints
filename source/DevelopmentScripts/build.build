@@ -357,6 +357,21 @@
 		</exec>
 	</target>
 	
+	<target name="merge_export_provider" description="Merge all related binaries into a single library">
+		<exec program="${source.reference.directory}\ILMerge\ILMerge.exe" >
+			<arg line='/targetplatform:v4' />
+			<arg line='/out:"${target.bin.directory}\kCura.IntegrationPoints.FilesDestinationProvider.dll"' />
+			<arg line='/internalize:ilmergeExcludeExportProvider.txt' />
+			<arg line='/log' />
+			
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />				
+			<arg line='/lib:"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45"' />
+			
+			<arg line='"${target.code.directory}\kCura.IntegrationPoints.FilesDestinationProvider.Core.dll"' />				
+			<arg line='/closed' />
+		</exec>
+	</target>
+	
 	<target name="copy_kCura.IntegrationPoints.Contracts" description="Copy kCura.IntegrationPoints.Contracts.dll to \bin">
 		<copy todir="${bin.directory}">
 			<fileset basedir="${target.code.directory}">
