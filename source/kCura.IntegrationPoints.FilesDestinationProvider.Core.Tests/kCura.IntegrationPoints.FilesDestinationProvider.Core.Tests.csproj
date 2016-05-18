@@ -163,7 +163,6 @@
     <Compile Include="Logging\ExportUserNotificationTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -179,9 +178,6 @@
       <Project>{1fc70536-a8ef-48ce-b20a-e5c5c6723f23}</Project>
       <Name>kCura.IntegrationPoints.FilesDestinationProvider.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="LICENSE.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Relativity.ImportExport.9.3.410.2\build\Relativity.ImportExport.targets" Condition="Exists('..\packages\Relativity.ImportExport.9.3.410.2\build\Relativity.ImportExport.targets')" />
