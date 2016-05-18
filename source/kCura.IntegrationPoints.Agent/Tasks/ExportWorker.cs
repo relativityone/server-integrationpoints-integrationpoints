@@ -46,7 +46,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	        {
 	            ExportedObjArtifactId = sourceSettings.SavedSearchArtifactId,
 	            WorkspaceId = sourceSettings.SourceWorkspaceArtifactId,
-	            ExportFilesLocation = destinationSettings.Fileshare,
+                ExportFilesLocation = sourceSettings.Fileshare,
+                OverwriteFiles = sourceSettings.OverwriteFiles,
+                CopyFileFromRepository =  sourceSettings.CopyFileFromRepository,
 	            SelViewFieldIds = fieldMap.Select(item => int.Parse(item.SourceField.FieldIdentifier)).ToList(),
 	            ArtifactTypeId = destinationSettings.ArtifactTypeId
 	        };

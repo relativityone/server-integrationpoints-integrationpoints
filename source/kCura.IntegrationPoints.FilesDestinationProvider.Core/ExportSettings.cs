@@ -9,5 +9,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public string ExportFilesLocation { get; set; }
 		public List<int> SelViewFieldIds { get; set; }
 		public int ArtifactTypeId { get; set; }
+	    public bool OverwriteFiles { get; set; }
+	    public bool CopyFileFromRepository { get; set; }
 	}
 }
