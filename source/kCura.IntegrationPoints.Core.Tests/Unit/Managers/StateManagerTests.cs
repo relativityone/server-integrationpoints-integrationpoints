@@ -11,8 +11,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 	[TestFixture]
 	public class StateManagerTests
 	{
-		private IQueueRepository _queueRepository;
-		private IRepositoryFactory _repositoryFactory;
 		private IStateManager _instance;
 		private int _workspaceId = 12345;
 		private int _integrationPointId = 54321;
@@ -20,14 +18,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		[SetUp]
 		public void Setup()
 		{
-			_repositoryFactory = Substitute.For<IRepositoryFactory>();
-			_queueRepository = Substitute.For<IQueueRepository>();
-
-			_repositoryFactory.GetQueueRepository().Returns(_queueRepository);
-
-			_instance = new StateManager(_repositoryFactory);
-
-			_repositoryFactory.Received().GetQueueRepository();
+			_instance = new StateManager();
 		}
 
 		[Test]
@@ -36,17 +27,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			//Arrange
 			bool hasErrors = false;
 			bool hasPermission = true;
-
-			_queueRepository.GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId).Returns(0);
+			bool hasJobsExecutingOrInQueue = false;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasPermission, hasErrors);
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasPermission, hasErrors);
 
 			//Assert
 			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
-			_queueRepository.Received(1).GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
 		}
 
 		[Test]
@@ -55,17 +44,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			//Arrange
 			bool hasErrors = false;
 			bool hasPermission = true;
-
-			_queueRepository.GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId).Returns(1);
+			bool hasJobsExecutingOrInQueue = true;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasPermission, hasErrors);
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasPermission, hasErrors);
 
 			//Assert
 			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
-			_queueRepository.Received(1).GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
 		}
 
 		[Test]
@@ -74,17 +61,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			//Arrange
 			bool hasErrors = true;
 			bool hasPermission = true;
-
-			_queueRepository.GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId).Returns(0);
+			bool hasJobsExecutingOrInQueue = false;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasPermission, hasErrors);
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasPermission, hasErrors);
 
 			//Assert
 			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
 			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsTrue(buttonStates.ViewErrorsLinkEnabled);
-			_queueRepository.Received(1).GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
 		}
 
 		[Test]
@@ -93,17 +78,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			//Arrange
 			bool hasErrors = true;
 			bool hasPermission = true;
-
-			_queueRepository.GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId).Returns(5);
+			bool hasJobsExecutingOrInQueue = true;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasPermission, hasErrors);
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasPermission, hasErrors);
 
 			//Assert
 			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
-			_queueRepository.Received(1).GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
 		}
 
 		[Test]
@@ -112,19 +95,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			//Arrange
 			bool hasErrors = false;
 			bool hasPermission = false;
-
-			_queueRepository.GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId).Returns(0);
+			bool hasJobsExecutingOrInQueue = false;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasPermission, hasErrors);
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasPermission, hasErrors);
 
 			//Assert
 			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
-			_queueRepository.Received(1).GetNumberOfJobsExecutingOrInQueue(_workspaceId, _integrationPointId);
 		}
-	}
-
-	
+	}	
 }

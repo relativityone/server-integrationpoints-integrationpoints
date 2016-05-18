@@ -55,12 +55,12 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>A queue manager</returns>
 		IQueueManager CreateQueueManager(IContextContainer contextContainer);
+		
 		/// <summary>
 		/// Create State manager.
 		/// </summary>
-		/// <param name="contextContainer">Container containing necessary contexts.</param>
 		/// <returns>State manager (for console buttons)</returns>
-		IStateManager CreateStateManager(IContextContainer contextContainer);
+		IStateManager CreateStateManager();
 		
 		/// <summary>
 		/// Creates source provider manager

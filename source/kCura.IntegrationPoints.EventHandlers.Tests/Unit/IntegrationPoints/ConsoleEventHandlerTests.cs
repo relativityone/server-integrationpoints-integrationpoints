@@ -25,7 +25,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		private IContextContainer _contextContainer;
 		private IEHHelper _helper;
 		private IStateManager _stateManager;
-		private IOnClickEventHelper _onClickEventHelper;
+		private IQueueManager _queueManager;
+		private IOnClickEventConstructor _onClickEventHelper;
 
 		private ConsoleEventHandler _instance;
 
@@ -40,7 +41,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_helper = Substitute.For<IEHHelper>();
 			_helper.GetActiveCaseID().Returns(_APPLICATION_ID);
 			_stateManager = Substitute.For<IStateManager>();
-			_onClickEventHelper = Substitute.For<IOnClickEventHelper>();
+			_queueManager = Substitute.For<IQueueManager>();
+			_onClickEventHelper = Substitute.For<IOnClickEventConstructor>();
 
 			var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, null);
 			var application = new Application(_APPLICATION_ID, "", "");
@@ -76,7 +78,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_integrationPointManager.UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider)).Returns(permissionCheck);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_managerFactory.CreateIntegrationPointManager(_contextContainer).Returns(_integrationPointManager);
-			_managerFactory.CreateStateManager(_contextContainer).Returns(_stateManager);
+			_managerFactory.CreateStateManager().Returns(_stateManager);
+			_managerFactory.CreateQueueManager(_contextContainer).Returns(_queueManager);
+
 			_helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer).Returns(_onClickEventHelper);
 
 			_integrationPointManager.Read(_APPLICATION_ID, _ARTIFACT_ID).Returns(integrationPointDto);
@@ -85,6 +89,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 			if (isRelativitySourceProvider)
 			{
+				bool hasJobsExecutingOrInQueue = false;
 				ButtonStateDTO buttonStates = new ButtonStateDTO()
 				{
 					RunNowButtonEnabled = true & hasPermissions,
@@ -98,7 +103,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 					ViewErrorsOnClickEvent = integrationPointDto.HasErrors.Value ? "Really long string" : String.Empty
 				};
 
-				_stateManager.GetButtonState(_APPLICATION_ID, _ARTIFACT_ID, hasPermissions, integrationPointDto.HasErrors.Value)
+				_queueManager.HasJobsExecutingOrInQueue(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasJobsExecutingOrInQueue);
+
+				_stateManager.GetButtonState(_APPLICATION_ID, _ARTIFACT_ID, hasJobsExecutingOrInQueue, hasPermissions, integrationPointDto.HasErrors.Value)
 					.Returns(buttonStates);
 				_onClickEventHelper.GetOnClickEventsForRelativityProvider(_APPLICATION_ID, _ARTIFACT_ID, buttonStates)
 					.Returns(onClickEvents);
