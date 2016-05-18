@@ -45,14 +45,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Eve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.EventHandlers.Tests", "kCura.IntegrationPoints.EventHandlers.Tests\kCura.IntegrationPoints.EventHandlers.Tests.csproj", "{8966DE8D-89D0-4F63-B514-7C1F4E94AA89}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A34000B0-F2E7-401C-A72B-D6AAC6847860}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-		.nuget\packages.config = .nuget\packages.config
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueue.Core", "kCura.ScheduleQueue.Core\kCura.ScheduleQueue.Core.csproj", "{C831C856-E74F-48B4-AEBC-1CF15576E082}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.ScheduleQueue.Core.Tests", "kCura.ScheduleQueue.Core.Tests\kCura.ScheduleQueue.Core.Tests.csproj", "{B14533FD-8C47-4292-8C01-2FB008FBF76E}"
@@ -85,13 +77,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Fil
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests", "kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests\kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.csproj", "{CACFB723-C66D-47AD-882F-28F35A5C890C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoint.Tests.Core", "kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj", "{AD3E5540-FA39-4983-8A23-FCC756D51A32}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D0393643-06E2-4470-96B7-E1153FE4FF69}"
 	ProjectSection(SolutionItems) = preProject
 		Performance1.psess = Performance1.psess
 		Performance2.psess = Performance2.psess
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoint.Tests.Core", "kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj", "{AD3E5540-FA39-4983-8A23-FCC756D51A32}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration", "kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration\kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.csproj", "{BEAA22C4-7FF1-45FA-8323-4707B92C2C94}"
 EndProject
@@ -421,14 +413,14 @@ Global
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|x64.Build.0 = Debug|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|x64.ActiveCfg = Debug|x64
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Debug|x64.Build.0 = Debug|x64
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|x64.ActiveCfg = Release|Any CPU
-		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|x64.Build.0 = Release|Any CPU
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|x64.ActiveCfg = Release|x64
+		{AD3E5540-FA39-4983-8A23-FCC756D51A32}.Release|x64.Build.0 = Release|x64
 		{BEAA22C4-7FF1-45FA-8323-4707B92C2C94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BEAA22C4-7FF1-45FA-8323-4707B92C2C94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BEAA22C4-7FF1-45FA-8323-4707B92C2C94}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

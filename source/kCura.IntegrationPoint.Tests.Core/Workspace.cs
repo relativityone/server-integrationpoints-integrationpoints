@@ -1,23 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using kCura.Relativity.Client;
+using kCura.Relativity.Client.DTOs;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	using Relativity.Client;
-	using Relativity.Client.DTOs;
-
-	public class Workspace : HelperBase
+	public static class Workspace
 	{
-		public Workspace(Helper helper) : base(helper)
-		{
-		}
-
-		public void ImportApplicationToWorkspace(int workspaceId, string applicationFilePath, bool forceUnlock, List<int> appsToOverride = null)
+		public static void ImportApplicationToWorkspace(int workspaceId, string applicationFilePath, bool forceUnlock, List<int> appsToOverride = null)
 		{
 			//List of application ArtifactIDs to override, if already installed
+			// TODO: Add this functionality - Gerron Thurman 5/11/2016
 			List<int> applicationsToOverride = appsToOverride ?? new List<int>();
 
 			AppInstallRequest appInstallRequest = new AppInstallRequest()
@@ -26,7 +19,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				ForceFlag = true
 			};
 
-			using (IRSAPIClient proxy = Helper.Rsapi.CreateRsapiClient())
+			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
 			{
 				try
 				{
@@ -37,7 +30,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 						throw new Exception(string.Format("Failed to install application file: {0} to workspace: {1}.", applicationFilePath, workspaceId));
 					}
 
-					Helper.Status.WaitForProcessToComplete(proxy, result.ProcessID, 300, 500);
+					Status.WaitForProcessToComplete(proxy, result.ProcessID, 300, 500);
 				}
 				catch (Exception ex)
 				{
@@ -46,18 +39,19 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public int CreateWorkspace(string workspaceName, string templateName)
+		public static int CreateWorkspace(string workspaceName, string templateName)
 		{
+			if (String.IsNullOrEmpty(workspaceName)) return 0;
+
 			//Create workspace DTO
 			Relativity.Client.DTOs.Workspace workspaceDto = new Relativity.Client.DTOs.Workspace { Name = workspaceName };
 			int workspaceId = 0;
-			using (IRSAPIClient proxy = Helper.Rsapi.CreateRsapiClient())
+			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
 			{
 				try
 				{
 					//Query for template workspace id
-					TextCondition workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo,
-						templateName);
+					TextCondition workspaceNameCondition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, templateName);
 					Query<Relativity.Client.DTOs.Workspace> query = new Query<Relativity.Client.DTOs.Workspace>
 					{
 						Condition = workspaceNameCondition
@@ -74,7 +68,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 						throw new Exception(string.Format("Failed creating workspace {0}. Result Message: {1}", workspaceName, result.Message));
 					}
 
-					Helper.Status.WaitForProcessToComplete(proxy, result.ProcessID);
+					Status.WaitForProcessToComplete(proxy, result.ProcessID);
 					ProcessInformation processInfo = proxy.GetProcessState(proxy.APIOptions, result.ProcessID);
 					workspaceId = processInfo.OperationArtifactIDs[0].GetValueOrDefault();
 				}
@@ -86,10 +80,28 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return workspaceId;
 		}
 
-		public QueryResultSet<Relativity.Client.DTOs.Workspace> QueryWorkspace(Query<Relativity.Client.DTOs.Workspace> query, int results)
+		public static void DeleteWorkspace(int workspaceArtifactId)
+		{
+			if(workspaceArtifactId == 0) return;
+			//Create workspace DTO
+			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
+			{
+				try
+				{
+
+					proxy.Repositories.Workspace.Delete(workspaceArtifactId);
+				}
+				catch (Exception ex)
+				{
+					throw new Exception($"An error occurred while deleting workspace [{workspaceArtifactId}]. Error Message: {ex.Message}");
+				}
+			}
+		}
+
+		public static QueryResultSet<Relativity.Client.DTOs.Workspace> QueryWorkspace(Query<Relativity.Client.DTOs.Workspace> query, int results)
 		{
 			QueryResultSet<Relativity.Client.DTOs.Workspace> resultSet = new QueryResultSet<Relativity.Client.DTOs.Workspace>();
-			using (IRSAPIClient proxy = Helper.Rsapi.CreateRsapiClient())
+			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
 			{
 				try
 				{

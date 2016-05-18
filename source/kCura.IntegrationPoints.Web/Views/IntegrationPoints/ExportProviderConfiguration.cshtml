@@ -7,6 +7,16 @@
 
 <div class="card" id="exportProviderConfiguration">
 
+    <label class="section label">Fileshare Provider</label>
+    <div class="field-row">
+        <div class="field-label required">
+            Workspace :
+        </div>
+        <div class="field-value">
+            <select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, optionsCaption: 'Select...', select2: {}"></select>
+        </div>
+    </div>
+
     <label class="section label">Export Provider</label>
     <div class="field-row">
         <div class="field-label required">
@@ -16,48 +26,49 @@
             <select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', value: SavedSearchArtifactId,  optionsCaption: 'Select...', select2: {}"></select>
         </div>
     </div>
-</div>
 
-<div class="card">
-    <span class="label title">Physical File Export</span>
-    <div class="identifier">
-        <div class="field-row">
-            <div class="field-label required ">Copy Files from Repository:</div>
-            <div class="field-value">
-                <ul>
-                    <li>
-                        <input id="copy-file-radio-0" type="radio" name="copyFile" value="true" data-bind="checked: copyFileFromRepository">Yes
-                    </li>
-                    <li>
-                        <input id="copy-file-radio-1" type="radio" name="copyFile" value="false" data-bind="checked: copyFileFromRepository">No
-                    </li>
-                </ul>
+    <div class="card">
+        <span class="label title">Physical File Export</span>
+        <div class="identifier">
+            <div class="field-row">
+                <div class="field-label required ">Copy Files from Repository:</div>
+                <div class="field-value">
+                    <ul>
+                        <li>
+                            <input id="copy-file-radio-0" type="radio" name="copyFiles" value="true" data-bind="checked: CopyFileFromRepository" />Yes
+                        </li>
+                        <li>
+                            <input id="copy-file-radio-1" type="radio" name="copyFiles" value="false" data-bind="checked: CopyFileFromRepository" />No
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-        <div class="field-row">
-            <div class="field-label required">
-                Fileshare:
+            <div class="field-row">
+                <div class="field-label required">
+                    Fileshare:
+                </div>
+                <div class="field-value">
+                    <input data-bind="value: selectedDestinationPath" />
+                </div>
             </div>
-            <div class="field-value">
-                <input data-bind="value: selectedDestinationPath" />
-            </div>
-        </div>
-        <div class="field-row">
-            <div class="field-label required ">Overwrite files:</div>
-            <div class="field-value">
-                <ul>
-                    <li>
-                        <input id="overwrite-file-radio-0" type="radio" name="copyFile" value="true" data-bind="checked: overwriteFiles">Yes
-                    </li>
-                    <li>
-                        <input id="overwrite-file-radio-1" type="radio" name="copyFile" value="false" data-bind="checked: overwriteFiles">No
-                    </li>
-                </ul>
+            <div class="field-row">
+                <div class="field-label required ">Overwrite files:</div>
+                <div class="field-value">
+                    <ul>
+                        <li>
+                            <input id="overwrite-file-radio-0" type="radio" name="OverwriteFiles" value="true" data-bind="checked: OverwriteFiles" />Yes
+                        </li>
+                        <li>
+	                            <input id="overwrite-file-radio-1" type="radio" name="OverwriteFiles" value="false" data-bind="checked: OverwriteFiles" />No
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 
 </div>
+
 
 @section scripts
 {

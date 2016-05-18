@@ -1,4 +1,6 @@
-﻿namespace kCura.IntegrationPoints.Core.Managers
+﻿using System;
+
+namespace kCura.IntegrationPoints.Core.Managers
 {
 	public interface IQueueManager
 	{
@@ -16,7 +18,9 @@
 		/// </summary>
 		/// <param name="workspaceId">The workspace that the Integration Point belongs to.</param>
 		/// <param name="integrationPointId">The Integration Point the job belongs to.</param>
+		/// <param name="jobId">The ID of the job in the queue.</param>
+		/// <param name="runTime">The timestamp at which the job was kicked off.</param>
 		/// <returns>True if there are jobs running, false otherwise.</returns>
-		bool HasJobsExecuting(int workspaceId, int integrationPointId);
+		bool HasJobsExecuting(int workspaceId, int integrationPointId, long jobId, DateTime runTime);
 	}
 }

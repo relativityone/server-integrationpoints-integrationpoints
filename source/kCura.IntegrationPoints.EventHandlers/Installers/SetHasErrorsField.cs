@@ -17,6 +17,7 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
@@ -87,7 +88,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			IRepositoryFactory repositoryFactory = new RepositoryFactory(Helper);
 			IWorkspaceRepository workspaceRepository = repositoryFactory.GetWorkspaceRepository();
 			IRSAPIClient rsapiClient = rsapiClientFactory.CreateClientForWorkspace(Helper.GetActiveCaseID(), ExecutionIdentity.System);
-			ChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
+			IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
 			IEddsServiceContext eddsServiceContext = new EddsServiceContext(serviceContextHelper);
 			IAgentService agentService = new AgentService(Helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 			IJobService jobService = new JobService(agentService, Helper);
@@ -97,13 +98,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			JobTracker jobTracker = new JobTracker(jobResourceTracker);
 			ISerializer serializer = new JSONSerializer();
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
-			IPermissionService permissionService = new PermissionService(Helper.GetServicesManager());
+			IPermissionRepository permissionRepository = new PermissionRepository(Helper.GetServicesManager());
 			IJobHistoryService jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
-			IContextContainer contextContainer = new ContextContainer(Helper);
+			IContextContainerFactory contextContainerFactory = new ContextContainerFactory();
 			IManagerFactory managerFactory = new ManagerFactory();
 
 			_caseServiceContext = caseServiceContext;
-			_integrationPointService = new IntegrationPointService(caseServiceContext, contextContainer, permissionService, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
+			_integrationPointService = new IntegrationPointService(Helper, caseServiceContext, permissionRepository, contextContainerFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
 			_jobHistoryService = new JobHistoryService(caseServiceContext, workspaceRepository);
 		}
 

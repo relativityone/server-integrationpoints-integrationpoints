@@ -9,15 +9,15 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
-	public class JobHistoryManager : IJobHistoryManager, IConsumeScratchTableBatchStatus
+	public class JobHistoryManager : IConsumeScratchTableBatchStatus
 	{
 		private readonly ITempDocTableHelper _tempDocHelper;
-		private readonly IJobHistoryRepository _jobHistoryRepository;
 		private readonly ClaimsPrincipal _claimsPrincipal;
 		private readonly int _jobHistoryInstanceId;
 		private readonly int _sourceWorkspaceArtifactId;
 		private readonly string _uniqueJobId;
 		private ScratchTableRepository _scratchTable;
+		private readonly IRepositoryFactory _repositoryFactory;
 
 		public JobHistoryManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory,
 			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, int jobHistoryInstanceId, int sourceWorkspaceArtifactId, string uniqueJobId, int submittedBy)
@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);
 			_uniqueJobId = uniqueJobId;
 			_tempDocHelper = tempDocumentTableFactory.GetDocTableHelper(_uniqueJobId, _sourceWorkspaceArtifactId);
-			_jobHistoryRepository = repositoryFactory.GetJobHistoryRepository();
+			_repositoryFactory = repositoryFactory;
 		}
 
 		public void JobStarted(Job job)
@@ -38,7 +38,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			try
 			{
-				_jobHistoryRepository.TagDocsWithJobHistory(_claimsPrincipal, ScratchTableRepository.Count, _jobHistoryInstanceId, _sourceWorkspaceArtifactId, _uniqueJobId);
+				IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(_sourceWorkspaceArtifactId);
+				jobHistoryRepository.TagDocsWithJobHistory(_claimsPrincipal, ScratchTableRepository.Count, _jobHistoryInstanceId, _sourceWorkspaceArtifactId, _uniqueJobId);
 			}
 			finally
 			{

@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		{
 			_configSettings = new ConfigSettings();
 			_instanceUnderTest = new ExportProcessRunner();
-			_workspaceService = new WorkspaceService(new Helper(), _configSettings);
+			_workspaceService = new WorkspaceService(_configSettings);
 			_exportSettings = CreateExportSettings();
 
 			ImportTestDataToWorkspace(_exportSettings.WorkspaceId);
@@ -100,7 +100,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			var expectedFileNames = GetDocumentDataTable().AsEnumerable().Select(row => row.Field<string>("File Name")).ToList();
 
-			Assert.AreEqual(Is.EqualTo(expectedFileNames.Count), nativeFileInfos.Count(), "Exported Native File count is not like expected!");
+			Assert.AreEqual(expectedFileNames.Count, nativeFileInfos.Count(), "Exported Native File count is not like expected!");
 			Assert.That(nativeFileInfos.Any(item => expectedFileNames.Exists(name => name == item.Name)));
 
 			var datFileInfo = directory.EnumerateFiles("*.dat", SearchOption.TopDirectoryOnly).FirstOrDefault();

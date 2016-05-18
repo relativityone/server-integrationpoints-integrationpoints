@@ -15,7 +15,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 	{
 		#region Fileds
 
-		private readonly Helper _helper;
 		private readonly ConfigSettings _configSettings;
 
 		private const string TemplateWorkspaceName = "kCura Starter Template";
@@ -25,9 +24,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		#region Constructors
 
-		public WorkspaceService(Helper helper, ConfigSettings configSettings)
+		public WorkspaceService(ConfigSettings configSettings)
 		{
-			_helper = helper;
 			_configSettings = configSettings;
 		}
 
@@ -37,12 +35,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		internal int CreateWorkspace(string name)
 		{
-			return _helper.Workspace.CreateWorkspace(name, TemplateWorkspaceName);
+			return Workspace.CreateWorkspace(name, TemplateWorkspaceName);
 		}
 
 		internal void DeleteWorkspace(int artifactId)
 		{
-			using (IRSAPIClient rsApiClient = _helper.Rsapi.CreateRsapiClient())
+			using (IRSAPIClient rsApiClient = Rsapi.CreateRsapiClient())
 			{
 				rsApiClient.Repositories.Workspace.DeleteSingle(artifactId);
 			}
@@ -50,7 +48,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		internal int GetSavedSearchIdBy(string name, int workspaceId)
 		{
-			using (IRSAPIClient rsApiClient = _helper.Rsapi.CreateRsapiClient())
+			using (IRSAPIClient rsApiClient = Rsapi.CreateRsapiClient())
 			{
 				var query = new Query
 				{
@@ -67,8 +65,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		internal IEnumerable<int> GetFieldIdsBy(List<string> listName, int workspaceId)
 		{
-			ImportAPI importApi = new ImportAPI(_helper.SharedVariables.RelativityUserName,
-				_helper.SharedVariables.RelativityPassword);
+			ImportAPI importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, _configSettings.WebApiUrl);
 
 			IEnumerable<Relativity.ImportAPI.Data.Field> fields = importApi.GetWorkspaceFields(workspaceId, (int)ArtifactType.Document);
 
@@ -77,13 +74,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		internal void ImportData(int workspaceArtifactId, DataTable nativeFilesSourceDataTable, DataTable imageSourceDataTable)
 		{
-			string relativityUserName = _helper.SharedVariables.RelativityUserName;
-			string relativityPassword = _helper.SharedVariables.RelativityPassword;
+			ImportAPI importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, _configSettings.WebApiUrl);
 
-			ImportAPI iapi = new ImportAPI(relativityUserName, relativityPassword, _configSettings.WebApiUrl);
-
-			ImportNativeFiles(workspaceArtifactId, nativeFilesSourceDataTable.CreateDataReader(), iapi, ControlNumberFieldArtifactId);
-			ImportImagesAndExtractedText(workspaceArtifactId, imageSourceDataTable, iapi, ControlNumberFieldArtifactId);
+			ImportNativeFiles(workspaceArtifactId, nativeFilesSourceDataTable.CreateDataReader(), importApi, ControlNumberFieldArtifactId);
+			ImportImagesAndExtractedText(workspaceArtifactId, imageSourceDataTable, importApi, ControlNumberFieldArtifactId);
 		}
 
 		private void ImportImagesAndExtractedText(int workspaceArtifactId, DataTable dataTable, ImportAPI importApi, int identifyFieldArtifactId)

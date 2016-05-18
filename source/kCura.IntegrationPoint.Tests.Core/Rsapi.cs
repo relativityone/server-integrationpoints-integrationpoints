@@ -1,19 +1,33 @@
-﻿
+﻿using Relativity.API;
+
+using System;
+using kCura.Relativity.Client;
+
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	using System;
-	using Relativity.Client;
-
-	public class Rsapi : HelperBase
+	public static class Rsapi
 	{
-		public Rsapi(Helper helper) : base(helper)
+		public static IRSAPIClient CreateRsapiClient()
 		{
-		}
-		public IRSAPIClient CreateRsapiClient()
-		{
-			Uri relativityServicesUri = new Uri(Helper.SharedVariables.RsapiClientUri);
-			IRSAPIClient client = new RSAPIClient(relativityServicesUri, new UsernamePasswordCredentials(Helper.SharedVariables.RelativityUserName, Helper.SharedVariables.RelativityPassword));
+			Uri relativityServicesUri = new Uri(SharedVariables.RsapiClientUri);
+			IRSAPIClient client = new RSAPIClient(relativityServicesUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
 			return client;
+		}
+
+		public static IRSAPIClient CreateRsapiClient(ExecutionIdentity identify)
+		{
+			if (identify == ExecutionIdentity.CurrentUser)
+			{
+				Uri relativityServicesUri = new Uri(SharedVariables.RsapiClientUri);
+				IRSAPIClient client = new RSAPIClient(relativityServicesUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
+				return client;
+			}
+			else
+			{
+				Uri relativityServicesUri = new Uri(SharedVariables.RsapiClientUri);
+				IRSAPIClient client = new RSAPIClient(relativityServicesUri, new UsernamePasswordCredentials("relativity.admin@kcura.com", "Test1234!"));
+				return client;
+			}
 		}
 	}
 }

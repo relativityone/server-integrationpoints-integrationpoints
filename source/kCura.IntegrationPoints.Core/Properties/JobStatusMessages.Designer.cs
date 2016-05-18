@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoints.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An import for the following Relativity Integration Point has successfully completed.
+        ///   Looks up a localized string similar to A Job for the following Relativity Integration Point has successfully completed.
         ///
         ///Name: [RIP.Name]
         ///[RIP.SOURCEEMAILBODYDATA]
@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoints.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Relativity import successfully completed for &quot;[RIP.Name]&quot;..
+        ///   Looks up a localized string similar to Relativity Job successfully completed for &quot;[RIP.Name]&quot;..
         /// </summary>
         internal static string JOB_COMPLETED_SUCCESS_SUBJECT {
             get {
@@ -83,11 +83,13 @@ namespace kCura.IntegrationPoints.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An import for the below Relativity Integration Point has completed with errors.
+        ///   Looks up a localized string similar to An error has occurred for the below Relativity Integration Point.
         ///
         ///Name: [RIP.Name]
         ///[RIP.SOURCEEMAILBODYDATA]
-        ///[RIP.DESTINATIONEMAILBODYDATA].
+        ///[RIP.DESTINATIONEMAILBODYDATA]
+        ///
+        ///For error details, please review job history errors for this integration point..
         /// </summary>
         internal static string JOB_COMPLETED_WITH_ERRORS_BODY {
             get {
@@ -96,7 +98,7 @@ namespace kCura.IntegrationPoints.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Relativity import completed with errors for &quot;[RIP.NAME]&quot;..
+        ///   Looks up a localized string similar to Relativity Job completed with errors for &quot;[RIP.NAME]&quot;..
         /// </summary>
         internal static string JOB_COMPLETED_WITH_ERRORS_SUBJECT {
             get {
@@ -120,7 +122,7 @@ namespace kCura.IntegrationPoints.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error has occurred for Relativity import &quot;[RIP.NAME]&quot;..
+        ///   Looks up a localized string similar to Relativity Job completed with errors for &quot;[RIP.NAME]&quot;..
         /// </summary>
         internal static string JOB_FAILED_SUBJECT {
             get {

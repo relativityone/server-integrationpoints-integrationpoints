@@ -11,41 +11,49 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.ScheduleRules;
 using Newtonsoft.Json;
 using kCura.IntegrationPoints.Synchronizers.RDO;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Services
 {
 	public class IntegrationPointService : IIntegrationPointService
 	{
+		private const string _UNABLE_TO_SAVE_FORMAT = "Unable to save Integration Point:{0} cannot be changed once the Integration Point has been run";
+
 		private readonly ICaseServiceContext _context;
 		private readonly IContextContainer _contextContainer;
-		private readonly IPermissionService _permissionService;
+		private readonly IPermissionRepository _permissionRepository;
 		private IntegrationPoint _rdo;
 		private readonly ISerializer _serializer;
-		private readonly ChoiceQuery _choiceQuery;
+		private readonly IChoiceQuery _choiceQuery;
 		private readonly IJobManager _jobService;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly IManagerFactory _managerFactory;
+		private static readonly object _lock = new object();
 
-		public IntegrationPointService(ICaseServiceContext context,
-			IContextContainer contextContainer,
-			IPermissionService permissionService,
-			ISerializer serializer, ChoiceQuery choiceQuery,
+		public IntegrationPointService(IHelper helper,
+			ICaseServiceContext context,
+			IPermissionRepository permissionRepository,
+			IContextContainerFactory contextContainerFactory,
+			ISerializer serializer, IChoiceQuery choiceQuery,
 			IJobManager jobService,
 			IJobHistoryService jobHistoryService,
 			IManagerFactory managerFactory)
 		{
 			_context = context;
-			_contextContainer = contextContainer;
-			_permissionService = permissionService;
+			_permissionRepository = permissionRepository;
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
 			_jobService = jobService;
 			_jobHistoryService = jobHistoryService;
 			_managerFactory = managerFactory;
+
+			_contextContainer = contextContainerFactory.CreateContextContainer(helper);
 		}
 
 		public IntegrationPoint GetRdo(int artifactId)
@@ -76,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			return fields.First(x => x.FieldMapType == FieldMapTypeEnum.Identifier).SourceField;
 		}
 
-		public IntegrationModel ReadIntegrationPoint(int artifactId)
+		public virtual IntegrationModel ReadIntegrationPoint(int artifactId)
 		{
 			IntegrationPoint integrationPoint = GetRdo(artifactId);
 			var integrationModel = new IntegrationModel(integrationPoint);
@@ -110,6 +118,8 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public int SaveIntegration(IntegrationModel model)
 		{
+			ValidateConfigurationWhenUpdatingObject(model);
+
 			IList<Relativity.Client.DTOs.Choice> choices = _choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields));
 			IntegrationPoint ip = model.ToRdo(choices);
 			PeriodicScheduleRule rule = ToScheduleRule(model);
@@ -168,6 +178,88 @@ namespace kCura.IntegrationPoints.Core.Services
 			return ip.ArtifactId;
 		}
 
+		private void ValidateConfigurationWhenUpdatingObject(IntegrationModel model)
+		{
+			// check that only fields that are allowed to be changed are changed
+			List<string> invalidProperties = new List<string>();
+			IntegrationModel existingModel = null;
+			if (model.ArtifactID > 0)
+			{
+				try
+				{
+					existingModel = ReadIntegrationPoint(model.ArtifactID);
+				}
+				catch (Exception e)
+				{
+					throw new Exception("Unable to save Integration Point: Unable to retrieve Integration Point", e);
+				}
+
+				if (existingModel.LastRun.HasValue)
+				{
+					if (existingModel.Name != model.Name)
+					{
+						invalidProperties.Add("Name");
+					}
+					if (existingModel.DestinationProvider != model.DestinationProvider)
+					{
+						invalidProperties.Add("Destination Provider");
+					}
+					if (existingModel.Destination != model.Destination)
+					{
+						dynamic existingDestination = JsonConvert.DeserializeObject(existingModel.Destination);
+						dynamic newDestination = JsonConvert.DeserializeObject(model.Destination);
+
+						if (existingDestination.artifactTypeID != newDestination.artifactTypeID)
+						{
+							invalidProperties.Add("Destination RDO");
+						}
+						if (existingDestination.CaseArtifactId != newDestination.CaseArtifactId)
+						{
+							invalidProperties.Add("Case");
+						}
+					}
+					if (existingModel.SourceProvider != model.SourceProvider)
+					{
+						// If the source provider has been changed, the code below this exception is invalid
+						invalidProperties.Add("Source Provider");
+						throw new Exception(String.Format(_UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
+					}
+
+					model.HasErrors = existingModel.HasErrors;
+
+					// check permission if we want to push
+					// needs to be here because custom page is the only place that has user context
+					SourceProvider provider = null;
+					try
+					{
+						provider = _context.RsapiService.SourceProviderLibrary.Read(model.SourceProvider);
+					}
+					catch (Exception e)
+					{
+						throw new Exception("Unable to save Integration Point: Unable to retrieve source provider", e);
+					}
+
+					if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+					{
+						if (existingModel != null && (existingModel.SourceConfiguration != model.SourceConfiguration))
+						{
+							invalidProperties.Add("Source Configuration");
+						}
+					}
+
+					if (invalidProperties.Any())
+					{
+						throw new Exception(String.Format(_UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
+					}
+				}
+			}
+
+			if (invalidProperties.Any())
+			{
+				throw new Exception(String.Format(_UNABLE_TO_SAVE_FORMAT, String.Join(",", invalidProperties.Select(x => $" {x}"))));
+			}
+		}
+
 		public IEnumerable<string> GetRecipientEmails(int artifactId)
 		{
 			IntegrationPoint integrationPoint = GetRdo(artifactId);
@@ -189,7 +281,6 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public enum MonthlyType
 		{
-
 			Month = 1,
 			Days = 2
 		}
@@ -343,52 +434,49 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 
 			SourceProvider sourceProvider = _context.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value);
-
 			return sourceProvider;
 		}
 
 		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, Relativity.Client.Choice jobType, int workspaceArtifactId, int userId)
 		{
-			CheckForOtherJobsExecutingOrInQueue(sourceProvider, workspaceArtifactId, integrationPoint.ArtifactId); 
-			var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
-
-			// If the Relativity provider is selected, we need to create an export task
-			TaskType jobTaskType =
-				sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
-					? TaskType.ExportService
-					: TaskType.SyncManager;
-
-            var importSettings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
-            if (importSettings.DestinationProviderType.Equals(Core.Services.Synchronizer.RdoSynchronizerProvider.FILES_SYNC_TYPE_GUID))
-            {
-                jobTaskType = TaskType.ExportManager;
-            }
-
-			_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, jobType, null);
-			_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
-		}
-
-		private void UpdateJobHistoryOnRetry(IntegrationPoint integrationPoint)
-		{
-			Data.JobHistory lastCompletedJob = _jobHistoryService.GetLastJobHistory(integrationPoint.JobHistory.ToList());
-			if (lastCompletedJob == null)
+			lock (_lock)
 			{
-				throw new Exception(Constants.IntegrationPoints.RETRY_NO_EXISTING_ERRORS);
+				CheckForOtherJobsExecutingOrInQueue(sourceProvider, workspaceArtifactId, integrationPoint.ArtifactId);
+				var jobDetails = new TaskParameters { BatchInstance = Guid.NewGuid() };
+
+				// If the Relativity provider is selected, we need to create an export task
+				TaskType jobTaskType =
+					sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
+						? TaskType.ExportService
+						: TaskType.SyncManager;
+
+	            var importSettings = JsonConvert.DeserializeObject<ImportSettings>(integrationPoint.DestinationConfiguration);
+	            if (importSettings.DestinationProviderType.Equals(Core.Services.Synchronizer.RdoSynchronizerProvider.FILES_SYNC_TYPE_GUID))
+	            {
+	                jobTaskType = TaskType.ExportManager;
+	            }
+
+				_jobHistoryService.CreateRdo(integrationPoint, jobDetails.BatchInstance, jobType, null);
+				_jobService.CreateJobOnBehalfOfAUser(jobDetails, jobTaskType, workspaceArtifactId, integrationPoint.ArtifactId, userId);
 			}
-			_jobHistoryService.UpdateJobHistoryOnRetry(lastCompletedJob);
 		}
 
 		private void CheckForRelativityProviderAdditionalPermissions(string config, int userId)
 		{
 			WorkspaceConfiguration workspaceConfiguration = JsonConvert.DeserializeObject<WorkspaceConfiguration>(config);
-			if (_permissionService.UserCanImport(workspaceConfiguration.TargetWorkspaceArtifactId) == false)
+			if (_permissionRepository.UserCanImport(workspaceConfiguration.TargetWorkspaceArtifactId) == false)
 			{
-				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT);
+				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
 			}
 
-			if (_permissionService.UserCanEditDocuments(workspaceConfiguration.SourceWorkspaceArtifactId) == false)
+			if (_permissionRepository.UserCanEditDocuments(workspaceConfiguration.SourceWorkspaceArtifactId) == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
+			}
+
+			if (_permissionRepository.UserCanViewArtifact(workspaceConfiguration.SourceWorkspaceArtifactId, (int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId) == false)
+			{
+				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH);	
 			}
 
 			if (userId == 0)
@@ -397,7 +485,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		private void CheckForOtherJobsExecutingOrInQueue(SourceProvider sourceProvider, int workspaceArtifactId , int integrationPointArtifactId)
+		private void CheckForOtherJobsExecutingOrInQueue(SourceProvider sourceProvider, int workspaceArtifactId, int integrationPointArtifactId)
 		{
 			if (sourceProvider.Identifier == DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
 			{
@@ -415,6 +503,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			public int TargetWorkspaceArtifactId;
 			public int SourceWorkspaceArtifactId;
+			public int SavedSearchArtifactId;
 		}
 	}
 }

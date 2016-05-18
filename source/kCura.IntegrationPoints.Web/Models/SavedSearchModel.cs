@@ -20,15 +20,17 @@ namespace kCura.IntegrationPoints.Web.Models
 		public static IList<SavedSearchModel> GetAllPublicSavedSearches(IRSAPIClient context)
 		{
 			const String identifier = "Text Identifier";
-			const String security = "Security";
+			const String owner = "Owner";
 
 			GetSavedSearchesQuery query = new GetSavedSearchesQuery(context);
 			List<Artifact> artifacts = query.ExecuteQuery().QueryArtifacts;
 			List<SavedSearchModel> result = new List<SavedSearchModel>(artifacts.Count);
 			foreach (var artifact in artifacts)
 			{
-				Field securityField = artifact.getFieldByName(security);
-				if (securityField == null || (bool)securityField.Value == false)
+				// if the search doesn't have an Owner, then the search is public
+				Field ownerField = artifact.getFieldByName(owner);
+				byte[] fieldValue = ownerField.Value as byte[];
+				if (fieldValue != null && fieldValue.Length > 0)
 				{
 					continue;
 				}

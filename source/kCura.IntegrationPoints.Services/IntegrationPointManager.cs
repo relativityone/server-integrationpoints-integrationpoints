@@ -5,6 +5,8 @@ using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Extensions;
 
 namespace kCura.IntegrationPoints.Services
@@ -51,7 +53,7 @@ namespace kCura.IntegrationPoints.Services
 					}
 					catch (Exception)
 					{
-						throw new Exception($"requested object with artifact id {request.IntegrationPointArtifactId} does not exist.");
+						throw new Exception($"The requested object with artifact id {request.IntegrationPointArtifactId} does not exist.");
 					}
 
 					IntegrationModel ip = request.CreateIntegrationPointModel();
@@ -73,7 +75,6 @@ namespace kCura.IntegrationPoints.Services
 			{
 				using (IWindsorContainer container = await GetDependenciesContainerAsync(workspaceArtifactId).ConfigureAwait(false))
 				{
-
 					IIntegrationPointService integrationPointService = container.Resolve<IIntegrationPointService>();
 					Data.IntegrationPoint integrationPoint = integrationPointService.GetRdo(integrationPointArtifactId);
 					try
@@ -82,7 +83,7 @@ namespace kCura.IntegrationPoints.Services
 					}
 					catch (Exception)
 					{
-						throw new Exception($"requested object with artifact id {integrationPointArtifactId} does not exist.");
+						throw new Exception($"The requested object with artifact id {integrationPointArtifactId} does not exist.");
 					}
 
 					var result = integrationPoint.ToIntegrationPointModel();
@@ -135,6 +136,20 @@ namespace kCura.IntegrationPoints.Services
 
 		public void Dispose()
 		{
+		}
+
+		public async Task<int> GetIntegrationPointArtifactTypeIdAsync(int workspaceArtifactId)
+		{
+			using (IWindsorContainer container = await GetDependenciesContainerAsync(workspaceArtifactId).ConfigureAwait(false))
+			{
+				IObjectTypeRepository objectTypeRepository = container.Resolve<IObjectTypeRepository>();
+				int? artifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
+				if (artifactTypeId == null)
+				{
+					throw new Exception($"Unable to find the artifact type id of the integration point on workspace ${workspaceArtifactId}.");
+				}
+				return artifactTypeId.Value;
+			}
 		}
 	}
 }

@@ -200,6 +200,17 @@ var IP = IP || {};
 		this.destinationTypes = ko.observableArray();
 		this.selectedDestinationType = ko.observable().extend({ required: true });
 
+		var withArtifactId = function(artifacId) {
+		    return function (element) {
+		        return element.artifactID === artifacId;
+		    }
+		}
+		this.selectedDestinationTypeGuid = function () {
+		    var results = this.destinationTypes().filter(withArtifactId(this.selectedDestinationType()));
+		    return results.length > 0 ? results[0].value : "";
+		}
+		
+
 		root.data.ajax({ type: 'get', url: root.utils.generateWebAPIURL('DestinationType') }).then(function (result) {
 		    var types = $.map(result, function (entry) {
 		        var c = new Choice(entry.name, entry.id, entry.artifactID, entry);
@@ -587,9 +598,11 @@ var IP = IP || {};
 			this.model.submit();
 			if (this.model.errors().length === 0) {
 			    this.model.destinationProvider = this.model.destination.selectedDestinationType();
+			    var guid = this.model.destination.selectedDestinationTypeGuid();
+			    this.model.destinationProviderGuid = guid;
 			    this.model.destination = JSON.stringify({
 				    artifactTypeID: ko.toJS(this.model.destination).artifactTypeID,	
-			        destinationProviderType: ko.toJS(this.model.destination).selectedDestinationType,
+				    destinationProviderType: ko.toJS(guid),
 					CaseArtifactId: IP.data.params['appID'],
 					CustodianManagerFieldContainsLink: ko.toJS(this.model.CustodianManagerFieldContainsLink)
 				});
