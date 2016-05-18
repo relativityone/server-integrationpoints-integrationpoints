@@ -5,14 +5,18 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 {
-    public class ExportLoggingMediator
+    public class ExportLoggingMediator : ILoggingMediator
     {
         private readonly IAPILog _apiLog;
 
-        public ExportLoggingMediator(IUserMessageNotification userMessageNotification,
-            IExporterStatusNotification exporterStatusNotification, IAPILog apiLog)
+        public ExportLoggingMediator(IAPILog apiLog)
         {
             _apiLog = apiLog;
+        }
+
+        public void RegisterEventHandlers(IUserMessageNotification userMessageNotification,
+            IExporterStatusNotification exporterStatusNotification)
+        {
             userMessageNotification.UserMessageEvent += OnUserMessage;
             exporterStatusNotification.FatalErrorEvent += OnFatalError;
             exporterStatusNotification.FileTransferModeChangeEvent += OnFileTransferModeChange;

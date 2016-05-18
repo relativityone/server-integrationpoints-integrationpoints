@@ -31,7 +31,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
             _apiLog = Substitute.For<IAPILog>();
             _userMessageNotification = Substitute.For<IUserMessageNotification>();
             _exporterStatusNotification = Substitute.For<IExporterStatusNotification>();
-            var exportLogger = new ExportLoggingMediator(_userMessageNotification, _exporterStatusNotification, _apiLog);
+            var exportLogger = new ExportLoggingMediator(_apiLog);
+            exportLogger.RegisterEventHandlers(_userMessageNotification, _exporterStatusNotification);
         }
 
         [Test]

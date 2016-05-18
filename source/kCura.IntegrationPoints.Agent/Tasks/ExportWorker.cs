@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	            ArtifactTypeId = destinationSettings.ArtifactTypeId
 	        };
 
-	        new ExportProcessRunner().StartWith(exportSettings);
+	        new ExportProcessRunner().StartWith(exportSettings, _jobHistoryErrorService, _helper.GetLoggerFactory().GetLogger());
 		}
 	}
 }
