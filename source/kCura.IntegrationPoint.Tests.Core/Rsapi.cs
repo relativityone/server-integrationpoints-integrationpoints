@@ -5,20 +5,16 @@ using kCura.Relativity.Client;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public class Rsapi : HelperBase
+	public static class Rsapi
 	{
-		public Rsapi(Helper helper) : base(helper)
-		{
-		}
-
-		public IRSAPIClient CreateRsapiClient()
+		public static IRSAPIClient CreateRsapiClient()
 		{
 			Uri relativityServicesUri = new Uri(SharedVariables.RsapiClientUri);
 			IRSAPIClient client = new RSAPIClient(relativityServicesUri, new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
 			return client;
 		}
 
-		public IRSAPIClient CreateRsapiClient(ExecutionIdentity identify)
+		public static IRSAPIClient CreateRsapiClient(ExecutionIdentity identify)
 		{
 			if (identify == ExecutionIdentity.CurrentUser)
 			{

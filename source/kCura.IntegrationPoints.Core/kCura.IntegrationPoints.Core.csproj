@@ -535,7 +535,7 @@
   <ItemGroup>
     <Compile Include="BatchEmail.cs" />
     <Compile Include="BatchStatusCommands\Implementations\IConsumeScratchTableBatchStatus.cs" />
-    <Compile Include="BatchStatusCommands\Implementations\JobHistoryErrorManager.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\JobHistoryErrorBatchUpdateManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManager.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TargetDocumentsTaggingManagerFactory.cs" />
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
@@ -556,11 +556,11 @@
     <Compile Include="Managers\IIntegrationPointManager.cs" />
     <Compile Include="Managers\IJobHistoryErrorManager.cs" />
     <Compile Include="Managers\IJobHistoryManager.cs" />
-    <Compile Include="BatchStatusCommands\Implementations\DestinationWorkspaceManager.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\DestinationWorkspaceBatchUpdateManager.cs" />
     <Compile Include="Installers\KeywordInstaller.cs" />
-    <Compile Include="JobHistoryStatus.cs" />
+    <Compile Include="JobHistoryBatchUpdateStatus.cs" />
     <Compile Include="BatchStatusCommands\IBatchStatus.cs" />
-    <Compile Include="BatchStatusCommands\Implementations\JobHistoryManager.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\JobHistoryBatchUpdateManager.cs" />
     <Compile Include="Managers\Implementations\ArtifactGuidManager.cs" />
     <Compile Include="Managers\Implementations\FieldManager.cs" />
     <Compile Include="Managers\Implementations\IntegrationPointManager.cs" />
@@ -698,10 +698,6 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider.Shared\kCura.IntegrationPoints.DocumentTransferProvider.Shared.csproj">
-      <Project>{22991306-a168-4d22-80a7-aaa99c9e9fd6}</Project>
-      <Name>kCura.IntegrationPoints.DocumentTransferProvider.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>

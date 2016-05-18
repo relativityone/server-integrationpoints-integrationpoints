@@ -48,15 +48,15 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			IntegrationPointDTO integrationPointDto = integrationPointManager.Read(Application.ArtifactID, ActiveArtifact.ArtifactID);
 
 			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
-			bool sourceProviderIsRelativity = integrationPointManager.IntegrationPointSourceProviderIsRelativity(Application.ArtifactID, integrationPointDto);
-			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissions(Application.ArtifactID, integrationPointDto, sourceProviderIsRelativity);
+			kCura.IntegrationPoints.Core.Constants.SourceProvider sourceProvider = integrationPointManager.GetSourceProvider(Application.ArtifactID, integrationPointDto);
+			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissions(Application.ArtifactID, integrationPointDto, sourceProvider);
 
 			IOnClickEventHelper onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory,
 				contextContainer);
 
 			var buttonList = new List<ConsoleButton>();
 
-			if (sourceProviderIsRelativity)
+			if (sourceProvider == kCura.IntegrationPoints.Core.Constants.SourceProvider.Relativity)
 			{
 				ButtonStateDTO buttonState = stateManager.GetButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID,
 					permissionCheck.Success, integrationPointHasErrors);

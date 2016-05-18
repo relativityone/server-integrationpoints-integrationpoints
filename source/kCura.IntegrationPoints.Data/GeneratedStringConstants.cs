@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class JobHistoryFields : BaseFields
 	{
-		public const string JobStatus = @"Status";
+		public const string JobStatus = @"JobStatus";
 		public const string JobType = @"Job Type";
 		public const string DestinationWorkspace = "Destination Workspace";
 		public const string ItemsImported = @"Items Imported";
@@ -154,7 +154,7 @@ namespace kCura.IntegrationPoints.Data
 
 	public partial class JobHistoryErrorFields : BaseFields
 	{
-		public const string JobHistory = @"JobHistory";
+		public const string JobHistory = @"Job History";
 		public const string SourceUniqueID = @"Source Unique ID";
 		public const string Error = @"Error";
 		public const string StackTrace = @"StackTrace";

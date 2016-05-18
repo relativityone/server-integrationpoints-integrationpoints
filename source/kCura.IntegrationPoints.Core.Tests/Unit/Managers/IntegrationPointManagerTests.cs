@@ -17,7 +17,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		private IRepositoryFactory _repositoryFactory;
 		private IIntegrationPointRepository _integrationPointRepository;
 		private ISourceProviderRepository _sourceProviderRepository;
-		private IPermissionRepository _permissionRepository;
 
 		private const int WORKSPACE_ID = 100532;
 		private const int INTEGRATION_POINT_ID = 101323; 
@@ -28,8 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_integrationPointRepository = Substitute.For<IIntegrationPointRepository>();
 			_sourceProviderRepository = Substitute.For<ISourceProviderRepository>();
-			_permissionRepository = Substitute.For<IPermissionRepository>();
-			_testInstance = new IntegrationPointManager(_repositoryFactory, _permissionRepository);
+			_testInstance = new IntegrationPointManager(_repositoryFactory);
 		}
 
 		[Test]
@@ -74,16 +72,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				.Returns(sourceProviderDto);
 
 			// Act
-			bool isRetriable = _testInstance.IntegrationPointSourceProviderIsRelativity(WORKSPACE_ID, integrationPointDto);
+			Constants.SourceProvider sourceProvider = _testInstance.GetSourceProvider(WORKSPACE_ID, integrationPointDto);
 
 			// Assert	
-			Assert.AreEqual(isRelativityProvider, isRetriable);
+			Assert.AreEqual(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other, sourceProvider);
 		}
 
 		[TestCase(true)]
 		[TestCase(false)]
 		public void UserHasPermissions_SourceProviderNotSupplied_MakesCallToCheck(bool isRelativityProvider)
 		{
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(WORKSPACE_ID);
+
 			// Arrange
 			int savedSearchArtifactId = 94902;
 			var integrationPointDto = new IntegrationPointDTO()
@@ -105,25 +105,27 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_sourceProviderRepository.Read(Arg.Is(integrationPointDto.SourceProvider.Value))
 				.Returns(sourceProviderDto);
 
-			_permissionRepository.UserCanImport(WORKSPACE_ID).Returns(true);
-			_permissionRepository.UserCanEditDocuments(WORKSPACE_ID).Returns(true);
-			_permissionRepository.UserCanViewArtifact(Arg.Is(WORKSPACE_ID), Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId)).Returns(true);
+			permissionRepository.UserCanImport().Returns(true);
+			permissionRepository.UserCanEditDocuments().Returns(true);
+			permissionRepository.UserCanViewArtifact(Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId)).Returns(true);
 
 			// Act
 			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, null);
 
 			// Assert	
-			_permissionRepository.Received(1).UserCanImport(WORKSPACE_ID);
-			_permissionRepository.Received(isRelativityProvider ? 1 : 0).UserCanEditDocuments(WORKSPACE_ID);
-			_permissionRepository.Received(isRelativityProvider ? 1 : 0).UserCanViewArtifact(Arg.Is(WORKSPACE_ID), Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
+			permissionRepository.Received(1).UserCanImport();
+			permissionRepository.Received(isRelativityProvider ? 1 : 0).UserCanEditDocuments();
+			permissionRepository.Received(isRelativityProvider ? 1 : 0).UserCanViewArtifact(Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
 
 			Assert.IsTrue(permissionCheckDto.Success);
 			Assert.AreEqual(null, permissionCheckDto.ErrorMessage);
 		}
 
 		[Test]
-		public void UserHasPermissions_NonRelativityProvider_UserHasAllPermissions_Success()
+		public void UserHasPermissions_SourceProviderNotSuppliedNoImportPermissions_ReturnsFalse()
 		{
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(WORKSPACE_ID);
+
 			// Arrange
 			int savedSearchArtifactId = 94902;
 			var integrationPointDto = new IntegrationPointDTO()
@@ -132,15 +134,42 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				SourceConfiguration = $"{{SavedSearchArtifactId: {savedSearchArtifactId}}}"
 			};
 
-			_permissionRepository.UserCanImport(WORKSPACE_ID).Returns(true);
+			permissionRepository.UserCanImport().Returns(false);
 
 			// Act
-			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, false);
+			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, null);
 
 			// Assert	
-			_permissionRepository.Received(1).UserCanImport(WORKSPACE_ID);
-			_permissionRepository.Received(0).UserCanEditDocuments(WORKSPACE_ID);
-			_permissionRepository.Received(0).UserCanViewArtifact(Arg.Is(WORKSPACE_ID), Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
+			permissionRepository.Received(1).UserCanImport();
+			permissionRepository.Received(0).UserCanEditDocuments();
+			permissionRepository.Received(0).UserCanViewArtifact(Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
+
+			Assert.IsFalse(permissionCheckDto.Success);
+			Assert.AreEqual(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE, permissionCheckDto.ErrorMessage);
+		}
+
+		[Test]
+		public void UserHasPermissions_NonRelativityProvider_UserHasAllPermissions_Success()
+		{
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(WORKSPACE_ID);
+
+			// Arrange
+			int savedSearchArtifactId = 94902;
+			var integrationPointDto = new IntegrationPointDTO()
+			{
+				SourceProvider = 123,
+				SourceConfiguration = $"{{SavedSearchArtifactId: {savedSearchArtifactId}}}"
+			};
+
+			permissionRepository.UserCanImport().Returns(true);
+
+			// Act
+			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, Core.Constants.SourceProvider.Other);
+
+			// Assert	
+			permissionRepository.Received(1).UserCanImport();
+			permissionRepository.Received(0).UserCanEditDocuments();
+			permissionRepository.Received(0).UserCanViewArtifact(Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
 
 			Assert.IsTrue(permissionCheckDto.Success);
 			Assert.AreEqual(null, permissionCheckDto.ErrorMessage);
@@ -149,6 +178,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		[Test]
 		public void UserHasPermissions_NonRelativityProvider_NoImportPermissions_Fails()
 		{
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(WORKSPACE_ID);
+
 			// Arrange
 			int savedSearchArtifactId = 94902;
 			var integrationPointDto = new IntegrationPointDTO()
@@ -157,15 +188,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				SourceConfiguration = $"{{SavedSearchArtifactId: {savedSearchArtifactId}}}"
 			};
 
-			_permissionRepository.UserCanImport(WORKSPACE_ID).Returns(false);
+			permissionRepository.UserCanImport().Returns(false);
 
 			// Act
-			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, false);
+			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, Core.Constants.SourceProvider.Other);
 
 			// Assert	
-			_permissionRepository.Received(1).UserCanImport(WORKSPACE_ID);
-			_permissionRepository.Received(0).UserCanEditDocuments(WORKSPACE_ID);
-			_permissionRepository.Received(0).UserCanViewArtifact(Arg.Is(WORKSPACE_ID), Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
+			permissionRepository.Received(1).UserCanImport();
+			permissionRepository.Received(0).UserCanEditDocuments();
+			permissionRepository.Received(0).UserCanViewArtifact(Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
 
 			Assert.IsFalse(permissionCheckDto.Success);
 			Assert.AreEqual(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE, permissionCheckDto.ErrorMessage);
@@ -174,6 +205,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		[Test]
 		public void UserHasPermissions_RelativityProvider_UserHasAllPermissions_Success()
 		{
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(WORKSPACE_ID);
+
 			// Arrange
 			int savedSearchArtifactId = 94902;
 			var integrationPointDto = new IntegrationPointDTO()
@@ -182,17 +215,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				SourceConfiguration = $"{{SavedSearchArtifactId: {savedSearchArtifactId}}}"
 			};
 
-			_permissionRepository.UserCanEditDocuments(WORKSPACE_ID).Returns(true);
-			_permissionRepository.UserCanImport(WORKSPACE_ID).Returns(true);
-			_permissionRepository.UserCanViewArtifact(Arg.Is(WORKSPACE_ID), Arg.Is((int) ArtifactType.Search), Arg.Is(savedSearchArtifactId)).Returns(true);
+			permissionRepository.UserCanEditDocuments().Returns(true);
+			permissionRepository.UserCanImport().Returns(true);
+			permissionRepository.UserCanViewArtifact(Arg.Is((int) ArtifactType.Search), Arg.Is(savedSearchArtifactId)).Returns(true);
 
 			// Act
-			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, true);
+			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, Core.Constants.SourceProvider.Relativity);
 
 			// Assert	
-			_permissionRepository.Received(1).UserCanEditDocuments(WORKSPACE_ID);
-			_permissionRepository.Received(1).UserCanImport(WORKSPACE_ID);
-			_permissionRepository.Received(1).UserCanViewArtifact(Arg.Is(WORKSPACE_ID), Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
+			permissionRepository.Received(1).UserCanEditDocuments();
+			permissionRepository.Received(1).UserCanImport();
+			permissionRepository.Received(1).UserCanViewArtifact(Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
 
 			Assert.IsTrue(permissionCheckDto.Success);
 			Assert.AreEqual(null, permissionCheckDto.ErrorMessage);
@@ -201,6 +234,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		[Test]
 		public void UserHasPermissions_RelativityProvider_NoEditDocPermissions_Failure()
 		{
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(WORKSPACE_ID);
+
 			// Arrange
 			int savedSearchArtifactId = 94902;
 			var integrationPointDto = new IntegrationPointDTO()
@@ -209,16 +244,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				SourceConfiguration = $"{{SavedSearchArtifactId: {savedSearchArtifactId}}}"
 			};
 
-			_permissionRepository.UserCanImport(WORKSPACE_ID).Returns(true);
-			_permissionRepository.UserCanEditDocuments(WORKSPACE_ID).Returns(false);
+			permissionRepository.UserCanImport().Returns(true);
+			permissionRepository.UserCanEditDocuments().Returns(false);
 
 			// Act
-			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, true);
+			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, Core.Constants.SourceProvider.Relativity);
 
 			// Assert	
-			_permissionRepository.Received(1).UserCanImport(WORKSPACE_ID);
-			_permissionRepository.Received(1).UserCanEditDocuments(WORKSPACE_ID);
-			_permissionRepository.Received(0).UserCanViewArtifact(Arg.Is(WORKSPACE_ID), Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
+			permissionRepository.Received(1).UserCanImport();
+			permissionRepository.Received(1).UserCanEditDocuments();
+			permissionRepository.Received(0).UserCanViewArtifact(Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
 
 			Assert.IsFalse(permissionCheckDto.Success);
 			Assert.AreEqual(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS, permissionCheckDto.ErrorMessage);
@@ -227,6 +262,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		[Test]
 		public void UserHasPermissions_RelativityProvider_NoImportPermissions_Failure()
 		{
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(WORKSPACE_ID);
+
 			// Arrange
 			int savedSearchArtifactId = 94902;
 			var integrationPointDto = new IntegrationPointDTO()
@@ -235,15 +272,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				SourceConfiguration = $"{{SavedSearchArtifactId: {savedSearchArtifactId}}}"
 			};
 
-			_permissionRepository.UserCanImport(WORKSPACE_ID).Returns(false);
+			permissionRepository.UserCanImport().Returns(false);
 
 			// Act
-			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, true);
+			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, Core.Constants.SourceProvider.Relativity);
 
 			// Assert	
-			_permissionRepository.Received(1).UserCanImport(WORKSPACE_ID);
-			_permissionRepository.Received(0).UserCanEditDocuments(WORKSPACE_ID);
-			_permissionRepository.Received(0).UserCanViewArtifact(Arg.Is(WORKSPACE_ID), Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
+			permissionRepository.Received(1).UserCanImport();
+			permissionRepository.Received(0).UserCanEditDocuments();
+			permissionRepository.Received(0).UserCanViewArtifact(Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
 
 			Assert.IsFalse(permissionCheckDto.Success);
 			Assert.AreEqual(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE, permissionCheckDto.ErrorMessage);
@@ -252,6 +289,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		[Test]
 		public void UserHasPermissions_RelativityProvider_NoSavedSearchPermissions_Failure()
 		{
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(WORKSPACE_ID);
+
 			// Arrange
 			int savedSearchArtifactId = 94902;
 			var integrationPointDto = new IntegrationPointDTO()
@@ -260,17 +299,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				SourceConfiguration = $"{{SavedSearchArtifactId: {savedSearchArtifactId}}}"
 			};
 
-			_permissionRepository.UserCanImport(WORKSPACE_ID).Returns(true);
-			_permissionRepository.UserCanEditDocuments(WORKSPACE_ID).Returns(true);
-			_permissionRepository.UserCanViewArtifact(Arg.Is(WORKSPACE_ID), Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId)).Returns(false);
+			permissionRepository.UserCanImport().Returns(true);
+			permissionRepository.UserCanEditDocuments().Returns(true);
+			permissionRepository.UserCanViewArtifact(Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId)).Returns(false);
 
 			// Act
-			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, true);
+			PermissionCheckDTO permissionCheckDto = _testInstance.UserHasPermissions(WORKSPACE_ID, integrationPointDto, Core.Constants.SourceProvider.Relativity);
 
 			// Assert	
-			_permissionRepository.Received(1).UserCanImport(WORKSPACE_ID);
-			_permissionRepository.Received(1).UserCanEditDocuments(WORKSPACE_ID);
-			_permissionRepository.Received(1).UserCanViewArtifact(Arg.Is(WORKSPACE_ID), Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
+			permissionRepository.Received(1).UserCanImport();
+			permissionRepository.Received(1).UserCanEditDocuments();
+			permissionRepository.Received(1).UserCanViewArtifact(Arg.Is((int)ArtifactType.Search), Arg.Is(savedSearchArtifactId));
 
 			Assert.IsFalse(permissionCheckDto.Success);
 			Assert.AreEqual(Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH, permissionCheckDto.ErrorMessage);

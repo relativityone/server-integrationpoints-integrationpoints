@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 					.LifeStyle.Transient);
 
 			container.Register(Component.For<IBatchStatus>().ImplementedBy<BatchEmail>().LifeStyle.Transient);
-			container.Register(Component.For<IBatchStatus>().ImplementedBy<JobHistoryStatus>().LifeStyle.Transient);
+			container.Register(Component.For<IBatchStatus>().ImplementedBy<JobHistoryBatchUpdateStatus>().LifeStyle.Transient);
 
 			container.Register(Component.For<ISourceTypeFactory>().ImplementedBy<SourceTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<RsapiClientFactory>().ImplementedBy<RsapiClientFactory>().LifestyleTransient());

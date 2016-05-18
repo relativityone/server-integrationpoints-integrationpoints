@@ -36,15 +36,18 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
         {
         }
 
-        public IntegrationPointDataHub(IContextContainer context, IManagerFactory managerFactory, IHelperClassFactory helperClassFactory)
+        internal IntegrationPointDataHub(IContextContainer context, IManagerFactory managerFactory, IHelperClassFactory helperClassFactory)
         {
             _context = context;
             _managerFactory = managerFactory;
-	        _helperClassFactory = helperClassFactory;
-			_integrationPointManager = _managerFactory.CreateIntegrationPointManager(_context);
+			_helperClassFactory = helperClassFactory;
+        	_integrationPointManager = _managerFactory.CreateIntegrationPointManager(_context);
 	        _stateManager = _managerFactory.CreateStateManager(_context);
 
-            if (_tasks == null) _tasks = new SortedDictionary<string, IntegrationPointDataHubInput>();
+            if (_tasks == null)
+            {
+                _tasks = new SortedDictionary<string, IntegrationPointDataHubInput>();
+            }
 
             if (_updateTimer == null)
             {
@@ -88,8 +91,11 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
                         IntegrationPointDataHubInput input = _tasks[key];
                         IntegrationPointDTO integrationPointDTO = _integrationPointManager.Read(input.WorkspaceId, input.ArtifactId);
 						bool integrationPointHasErrors = integrationPointDTO.HasErrors.GetValueOrDefault(false);
-						bool sourceProviderIsRelativity = _integrationPointManager.IntegrationPointSourceProviderIsRelativity(input.WorkspaceId, integrationPointDTO);
-						PermissionCheckDTO permissionCheck = _integrationPointManager.UserHasPermissions(input.WorkspaceId, integrationPointDTO, sourceProviderIsRelativity);
+					
+						Core.Constants.SourceProvider sourceProvider = _integrationPointManager.GetSourceProvider(input.WorkspaceId, integrationPointDTO);
+	                    bool sourceProviderIsRelativity = (sourceProvider == Core.Constants.SourceProvider.Relativity);
+
+						PermissionCheckDTO permissionCheck = _integrationPointManager.UserHasPermissions(input.WorkspaceId, integrationPointDTO, sourceProvider);
 
 						if (integrationPointDTO != null)
                         {

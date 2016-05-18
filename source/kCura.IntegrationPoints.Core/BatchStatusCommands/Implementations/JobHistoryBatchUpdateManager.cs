@@ -9,7 +9,7 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
-	public class JobHistoryManager : IConsumeScratchTableBatchStatus
+	public class JobHistoryBatchUpdateManager : IConsumeScratchTableBatchStatus
 	{
 		private readonly ITempDocTableHelper _tempDocHelper;
 		private readonly ClaimsPrincipal _claimsPrincipal;
@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private ScratchTableRepository _scratchTable;
 		private readonly IRepositoryFactory _repositoryFactory;
 
-		public JobHistoryManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory,
+		public JobHistoryBatchUpdateManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory,
 			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, int jobHistoryInstanceId, int sourceWorkspaceArtifactId, string uniqueJobId, int submittedBy)
 		{
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
@@ -30,11 +30,11 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public void JobStarted(Job job)
+		public void OnJobStart(Job job)
 		{
 		}
 
-		public void JobComplete(Job job)
+		public void OnJobComplete(Job job)
 		{
 			try
 			{

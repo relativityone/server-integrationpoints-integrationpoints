@@ -1,15 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using NSubstitute;
 using Relativity.API;
+using Relativity.Services.ObjectQuery;
+using Relativity.Services.ServiceProxy;
 using Context = kCura.Data.RowDataGateway.Context;
+using UsernamePasswordCredentials = Relativity.Services.ServiceProxy.UsernamePasswordCredentials;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public interface ITestHelper : IHelper
 	{
 		IPermissionRepository PermissionManager { get; }
+
+		IObjectQueryManager CreateUserObjectQueryManager();
+
+		T CreateUserProxy<T>() where T : IDisposable;
 	}
 
 	public class TestHelper : ITestHelper
@@ -17,14 +25,37 @@ namespace kCura.IntegrationPoint.Tests.Core
 		private readonly IServicesMgr _serviceManager;
 		public IPermissionRepository PermissionManager { get; }
 
-		public TestHelper(Helper helper)
+		public TestHelper()
 		{
 			PermissionManager = Substitute.For<IPermissionRepository>();
 			_serviceManager = Substitute.For<IServicesMgr>();
-			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser).Returns(helper.Rsapi.CreateRsapiClient(ExecutionIdentity.CurrentUser));
-			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(helper.Rsapi.CreateRsapiClient(ExecutionIdentity.System));
+			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser).Returns(Rsapi.CreateRsapiClient(ExecutionIdentity.CurrentUser));
+			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(Rsapi.CreateRsapiClient(ExecutionIdentity.System));
+			
+			//_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.System).Returns(CreateAdminObjectQueryManager(), CreateAdminObjectQueryManager());
+			//_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser).Returns(CreateUserObjectQueryManager(), CreateUserObjectQueryManager());
 		}
 
+		public IObjectQueryManager CreateUserObjectQueryManager()
+		{
+			return CreateUserProxy<IObjectQueryManager>();
+		}
+
+		public T CreateUserProxy<T>() where T : IDisposable
+		{
+			var userCredential = new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
+			ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RsapiClientServiceUri, SharedVariables.RestClientServiceUri, userCredential);
+			ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
+			return userServiceFactory.CreateProxy<T>();
+		}
+
+		public IObjectQueryManager CreateAdminObjectQueryManager()
+		{
+			var credential = new UsernamePasswordCredentials("relativity.admin@kcura.com", "P@ssw0rd@1");
+			ServiceFactorySettings settings = new ServiceFactorySettings(SharedVariables.RsapiClientServiceUri, SharedVariables.RestClientServiceUri, credential);
+			ServiceFactory adminServiceFactory = new ServiceFactory(settings);
+			return adminServiceFactory.CreateProxy<IObjectQueryManager>();
+		}
 
 		public void Dispose()
 		{
@@ -44,7 +75,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 				baseContext = new Context(connectionString);
 			}
 			DBContext context = new DBContext(baseContext);
-			context.BeginTransaction();
 			return context;
 		}
 

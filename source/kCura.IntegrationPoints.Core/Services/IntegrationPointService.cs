@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			TaskType task;
 			TaskParameters jobDetails = null;
 			SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(ip.SourceProvider.Value);
-			if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+			if (provider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
 			{
 				jobDetails = new TaskParameters
 				{
@@ -238,7 +238,7 @@ namespace kCura.IntegrationPoints.Core.Services
 						throw new Exception("Unable to save Integration Point: Unable to retrieve source provider", e);
 					}
 
-					if (provider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+					if (provider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
 					{
 						if (existingModel != null && (existingModel.SourceConfiguration != model.SourceConfiguration))
 						{
@@ -379,22 +379,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			SourceProvider sourceProvider = GetSourceProvider(integrationPoint);
 
 			CheckPermissions(integrationPoint, sourceProvider, userId);
-			Relativity.Client.Choice jobType = GetJobType(integrationPoint.EnableScheduler);
-			CreateJob(integrationPoint, sourceProvider, jobType, workspaceArtifactId, userId);
-		}
-
-		private Relativity.Client.Choice GetJobType(bool? enableScheduler)
-		{
-			Relativity.Client.Choice jobType;
-			if (enableScheduler.HasValue && enableScheduler.Value)
-			{
-				jobType = JobTypeChoices.JobHistoryScheduledRun;
-			}
-			else
-			{
-				jobType = JobTypeChoices.JobHistoryRunNow;
-			}
-			return jobType;
+			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRunNow, workspaceArtifactId, userId);
 		}
 
 		public void RetryIntegrationPoint(int workspaceArtifactId, int integrationPointArtifactId, int userId)
@@ -402,7 +387,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			IntegrationPoint integrationPoint = GetRdo(integrationPointArtifactId);
 			SourceProvider sourceProvider = GetSourceProvider(integrationPoint);
 
-			if (!sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID))
+			if (!sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
 			{
 				throw new Exception(Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
 			}
@@ -419,7 +404,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private void CheckPermissions(IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
 		{
-			if (sourceProvider.Identifier == DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
+			if (sourceProvider.Identifier == Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
 			{
 				CheckForRelativityProviderAdditionalPermissions(integrationPoint.SourceConfiguration, userId);
 			}
@@ -445,7 +430,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 				// If the Relativity provider is selected, we need to create an export task
 				TaskType jobTaskType =
-					sourceProvider.Identifier.Equals(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
+					sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
 						? TaskType.ExportService
 						: TaskType.SyncManager;
 
@@ -457,17 +442,17 @@ namespace kCura.IntegrationPoints.Core.Services
 		private void CheckForRelativityProviderAdditionalPermissions(string config, int userId)
 		{
 			WorkspaceConfiguration workspaceConfiguration = JsonConvert.DeserializeObject<WorkspaceConfiguration>(config);
-			if (_permissionRepository.UserCanImport(workspaceConfiguration.TargetWorkspaceArtifactId) == false)
+			if (_permissionRepository.UserCanImport() == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
 			}
 
-			if (_permissionRepository.UserCanEditDocuments(workspaceConfiguration.SourceWorkspaceArtifactId) == false)
+			if (_permissionRepository.UserCanEditDocuments() == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
 			}
 
-			if (_permissionRepository.UserCanViewArtifact(workspaceConfiguration.SourceWorkspaceArtifactId, (int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId) == false)
+			if (_permissionRepository.UserCanViewArtifact((int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId) == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH);	
 			}
@@ -480,7 +465,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private void CheckForOtherJobsExecutingOrInQueue(SourceProvider sourceProvider, int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			if (sourceProvider.Identifier == DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID)
+			if (sourceProvider.Identifier == Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
 			{
 				IQueueManager queueManager = _managerFactory.CreateQueueManager(_contextContainer);
 				bool jobsExecutingOrInQueue = queueManager.HasJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);

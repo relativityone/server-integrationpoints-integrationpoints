@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 
@@ -10,12 +11,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	public class IntegrationPointManager : IIntegrationPointManager
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly IPermissionRepository _permissionRepository;
 
-		internal IntegrationPointManager(IRepositoryFactory repositoryFactory, IPermissionRepository permissionRepository)
+		internal IntegrationPointManager(IRepositoryFactory repositoryFactory)
 		{
 			_repositoryFactory = repositoryFactory;
-			_permissionRepository = permissionRepository;
 		}
 
 		public IntegrationPointDTO Read(int workspaceArtifactId, int integrationPointArtifactId)
@@ -25,34 +24,45 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return repository.Read(integrationPointArtifactId);
 		}
 
-		public bool IntegrationPointSourceProviderIsRelativity(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
+		public Constants.SourceProvider GetSourceProvider(int workspaceArtifactId, IntegrationPointDTO integrationPointDto)
 		{
 			ISourceProviderRepository repository = _repositoryFactory.GetSourceProviderRepository(workspaceArtifactId);
 			SourceProviderDTO dto = repository.Read(integrationPointDto.SourceProvider.Value);
 
-			bool isRelativityProvider = dto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID);
-
-			return isRelativityProvider;
-		}
-
-		public PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, bool? sourceProviderIsRelativity = null)
-		{
-			var permissionCheck = new PermissionCheckDTO() { Success = false };
-			if (!sourceProviderIsRelativity.HasValue)
+			Constants.SourceProvider sourceProvider;
+			if (dto.Identifier == new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
 			{
-				sourceProviderIsRelativity = this.IntegrationPointSourceProviderIsRelativity(workspaceArtifactId, integrationPointDto);
+				sourceProvider = Constants.SourceProvider.Relativity;
+			}
+			else
+			{
+				sourceProvider = Constants.SourceProvider.Other;
 			}
 
-			if (!_permissionRepository.UserCanImport(workspaceArtifactId))
+			return sourceProvider;
+		}
+
+		public PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null)
+		{
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(workspaceArtifactId);
+
+			var permissionCheck = new PermissionCheckDTO() { Success = false };
+
+			if (!permissionRepository.UserCanImport())
 			{
 				permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE;
 
 				return permissionCheck;
 			}
 
-			if (sourceProviderIsRelativity.Value)
+			if (!sourceProvider.HasValue)
 			{
-				if (!_permissionRepository.UserCanEditDocuments(workspaceArtifactId))
+				sourceProvider = this.GetSourceProvider(workspaceArtifactId, integrationPointDto);
+			}
+
+			if (sourceProvider == Constants.SourceProvider.Relativity)
+			{
+				if (!permissionRepository.UserCanEditDocuments())
 				{
 					permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS;
 
@@ -60,8 +70,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				}
 
 				dynamic sourceConfiguration = JsonConvert.DeserializeObject(integrationPointDto.SourceConfiguration);
-				if (!_permissionRepository.UserCanViewArtifact(workspaceArtifactId, (int)ArtifactType.Search,
-					(int)sourceConfiguration.SavedSearchArtifactId))
+				if (!permissionRepository.UserCanViewArtifact((int)ArtifactType.Search, (int)sourceConfiguration.SavedSearchArtifactId))
 				{
 					permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH;
 

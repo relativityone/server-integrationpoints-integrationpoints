@@ -5,15 +5,21 @@ using System.Text;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public class Rest : HelperBase
+	public static class Rest
 	{
 		private const string _JSON_MIME = "application/json";
 
-		public Rest(Helper helper) : base(helper)
+		public static string PostRequestAsJson(string serviceMethod, bool isHttps, string parameter = null)
 		{
+			return PostRequestAsJsonInternal(serviceMethod, isHttps, SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, parameter);
 		}
 
-		public string PostRequestAsJson(string serviceMethod, bool isHttps, string parameter = null)
+		public static string PostRequestAsJson(string serviceMethod, bool isHttps, string username, string password, string parameter = null)
+		{
+			return PostRequestAsJsonInternal(serviceMethod, isHttps, username, password, parameter);
+		}
+
+		public static string PostRequestAsJsonInternal(string serviceMethod, bool isHttps, string username, string password, string parameter)
 		{
 			Uri baseAddress = new Uri(SharedVariables.RestServer);
 			WebRequestHandler handler = new WebRequestHandler();
@@ -28,7 +34,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				httpClient.BaseAddress = baseAddress;
 
 				//Set header information
-				string authorizationBase64 = GetBase64String(string.Format("{0}:{1}", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword));
+				string authorizationBase64 = GetBase64String(string.Format("{0}:{1}", username, password));
 				string authorizationHeader = string.Format("Basic {0}", authorizationBase64);
 				httpClient.DefaultRequestHeaders.Add("Authorization", authorizationHeader);
 				httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", String.Empty);
@@ -60,7 +66,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public string DeleteRequestAsJson(string restServer, string serviceMethod, string username, string password, bool isHttps)
+		public static string DeleteRequestAsJson(string restServer, string serviceMethod, string username, string password, bool isHttps)
 		{
 			Uri baseAddress = new Uri(SharedVariables.RestServer);
 			WebRequestHandler handler = new WebRequestHandler();
@@ -100,7 +106,17 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		private string GetBase64String(string stringToConvertToBase64)
+		public static Uri GetRestUrl(bool isHttp, bool isApiService)
+		{
+			string serverBinding = (isHttp) ? "http" : "https";
+			string apiSegment = (isApiService) ? "api" : string.Empty;
+			string url = $"{serverBinding}://{SharedVariables.TargetHost}/relativity.rest/{apiSegment}";
+
+			Uri restUri = new Uri(url);
+			return restUri;
+		}
+
+		private static string GetBase64String(string stringToConvertToBase64)
 		{
 			string base64String = Convert.ToBase64String(Encoding.ASCII.GetBytes(stringToConvertToBase64));
 			return base64String;

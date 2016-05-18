@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using kCura.Apps.Common.Data;
-using Relativity.API;
+using kCura.IntegrationPoints.Data.Contexts;
+using NSubstitute;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -12,16 +14,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 		protected IConfigurationStore ConfigurationStore;
 		protected IntegrationTestBase()
 		{
+			ClaimsPrincipal.ClaimsPrincipalSelector += () =>
+			{
+				OnBehalfOfUserClaimsPrincipalFactory factory = new OnBehalfOfUserClaimsPrincipalFactory();
+				return factory.CreateClaimsPrincipal(9);
+			};
+
 			Container = new WindsorContainer();
 			ConfigurationStore = new DefaultConfigurationStore();
-			GerronHelper = new Helper();
-			_help = new Lazy<ITestHelper>(() => new TestHelper(GerronHelper));
+			_help = new Lazy<ITestHelper>(() => new TestHelper());
 		}
 
 		public ITestHelper Helper => _help.Value;
 		private readonly Lazy<ITestHelper> _help;
-
-
-		public Helper GerronHelper { get; }
 	}
 }

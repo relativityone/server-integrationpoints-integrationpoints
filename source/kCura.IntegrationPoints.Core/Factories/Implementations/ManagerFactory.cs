@@ -9,25 +9,19 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class ManagerFactory : IManagerFactory
 	{
-		public IIntegrationPointManager CreateIntegrationPointManager(IContextContainer contextContainer)
+		public IArtifactGuidManager CreateArtifactGuidManager(IContextContainer contextContainer)
 		{
-			IPermissionRepository permissionRepository = new PermissionRepository(contextContainer.Helper.GetServicesManager());
-			return new IntegrationPointManager(CreateRepositoryFactory(contextContainer), permissionRepository);
-		}
-
-		public IQueueManager CreateQueueManager(IContextContainer contextContainer)
-		{
-			return new QueueManager(CreateRepositoryFactory(contextContainer));
-		}
-		
-		public ISourceProviderManager CreateSourceProviderManager(IContextContainer contextContainer)
-		{
-			return new SourceProviderManager(CreateRepositoryFactory(contextContainer));
+			return new ArtifactGuidManager(CreateRepositoryFactory(contextContainer));
 		}
 
 		public IFieldManager CreateFieldManager(IContextContainer contextContainer)
 		{
 			return new FieldManager(CreateRepositoryFactory(contextContainer));
+		}
+
+		public IIntegrationPointManager CreateIntegrationPointManager(IContextContainer contextContainer)
+		{
+			return new IntegrationPointManager(CreateRepositoryFactory(contextContainer));
 		}
 
 		public IJobHistoryManager CreateJobHistoryManager(IContextContainer contextContainer)
@@ -40,14 +34,19 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new JobHistoryErrorManager(CreateRepositoryFactory(contextContainer));
 		}
 
-		public IArtifactGuidManager CreateArtifactGuidManager(IContextContainer contextContainer)
-		{
-			return new ArtifactGuidManager(CreateRepositoryFactory(contextContainer));
-		}
-
 		public IObjectTypeManager CreateObjectTypeManager(IContextContainer contextContainer)
 		{
 			return new ObjectTypeManager(CreateRepositoryFactory(contextContainer));
+		}
+
+		public IQueueManager CreateQueueManager(IContextContainer contextContainer)
+		{
+			return new QueueManager(CreateRepositoryFactory(contextContainer));
+		}
+		
+		public ISourceProviderManager CreateSourceProviderManager(IContextContainer contextContainer)
+		{
+			return new SourceProviderManager(CreateRepositoryFactory(contextContainer));
 		}
 
 		public IStateManager CreateStateManager(IContextContainer contextContainer)

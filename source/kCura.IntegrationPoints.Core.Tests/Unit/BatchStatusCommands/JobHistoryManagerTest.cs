@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.Unit
 {
 	[TestFixture]
-	public class JobHistoryManagerTest
+	public class JobHistoryBatchUpdateManagerTest
 	{
 		private ITempDocTableHelper _tempDocHelper;
 		private ITempDocumentTableFactory _docTableFactory;
@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 			_docTableFactory.GetDocTableHelper(_uniqueJobId, _sourceWorkspaceId).Returns(_tempDocHelper);
 			_onBehalfOfUserClaimsPrincipalFactory.CreateClaimsPrincipal(_submittedBy).Returns(_claimsPrincipal);
 
-			_instance = new JobHistoryManager(_docTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _jobHistoryRdoId, _sourceWorkspaceId, _uniqueJobId, _submittedBy);
+			_instance = new JobHistoryBatchUpdateManager(_docTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _jobHistoryRdoId, _sourceWorkspaceId, _uniqueJobId, _submittedBy);
 
 			_repositoryFactory.GetJobHistoryRepository(_sourceWorkspaceId).Returns(_jobHistoryRepository);
 			_docTableFactory.Received().GetDocTableHelper(_uniqueJobId, _sourceWorkspaceId);
@@ -47,12 +47,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		}
 
 		[Test]
-		public void JobComplete_EmptyDocuments()
+		public void OnJobComplete_EmptyDocuments()
 		{
 			//Arrange
 
 			//Act
-			_instance.JobComplete(_job);
+			_instance.OnJobComplete(_job);
 
 			//Assert
 			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST));
@@ -60,11 +60,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		}
 
 		[Test]
-		public void JobComplete_FullDocuments()
+		public void OnJobComplete_FullDocuments()
 		{
 			//Arrange
 			//Act
-			_instance.JobComplete(_job);
+			_instance.OnJobComplete(_job);
 
 			//Assert
 			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST));

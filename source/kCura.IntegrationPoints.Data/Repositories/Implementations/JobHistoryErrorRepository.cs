@@ -13,7 +13,7 @@ using Relativity.Core;
 using Relativity.Data;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
-using Field = Relativity.Core.DTO.Field;
+using Relativity.Services.User;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -31,24 +31,23 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_workspaceArtifactId = workspaceArtifactId;
 		}
 
-		public List<int> RetreiveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType)
+		public List<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType)
 		{
 			QueryResultSet<RDO> results = null;
 			var query = new Query<RDO>();
 
-			try
-			{
-				query.ArtifactTypeGuid = new Guid(ObjectTypeGuids.JobHistoryError);
-				var jobHistoryCondition = new WholeNumberCondition(new Guid(JobHistoryErrorDTO.FieldGuids.JobHistory), NumericConditionEnum.EqualTo, jobHistoryArtifactId);
-				var errorTypeCondition = new SingleChoiceCondition(new Guid(JobHistoryErrorDTO.FieldGuids.ErrorType), SingleChoiceConditionEnum.AnyOfThese, errorType.ArtifactGuids);
-				query.Condition = new CompositeCondition(jobHistoryCondition, CompositeConditionEnum.And, errorTypeCondition);
-				query.Fields = new List<FieldValue>
+			query.ArtifactTypeGuid = new Guid(ObjectTypeGuids.JobHistoryError);
+			var jobHistoryCondition = new WholeNumberCondition(new Guid(JobHistoryErrorDTO.FieldGuids.JobHistory), NumericConditionEnum.EqualTo, jobHistoryArtifactId);
+			var errorTypeCondition = new SingleChoiceCondition(new Guid(JobHistoryErrorDTO.FieldGuids.ErrorType), SingleChoiceConditionEnum.AnyOfThese, errorType.ArtifactGuids);
+			query.Condition = new CompositeCondition(jobHistoryCondition, CompositeConditionEnum.And, errorTypeCondition);
+			query.Fields = new List<FieldValue>
 				{
 					new FieldValue(Guid.Parse(JobHistoryErrorDTO.FieldGuids.ArtifactId))
 				};
 
-				using (
-					IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			try
+			{
+				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 				{
 					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 					results = rsapiClient.Repositories.RDO.Query(query);
@@ -100,50 +99,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return updateStatusType;
 		}
 
-		public void CreateErrorListTempTables(List<int> jobLevelErrors, List<int> itemLevelErrors, JobHistoryErrorDTO.UpdateStatusType updateStatusType, string uniqueJobId)
-		{
-			if (updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors)
-			{
-				switch (updateStatusType.ErrorTypes)
-				{
-					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
-						CreateErrorListTempTable(jobLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
-						CreateErrorListTempTable(jobLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE, uniqueJobId);
-						CreateErrorListTempTable(itemLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
-						break;
-
-					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
-						CreateErrorListTempTable(jobLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
-						CreateErrorListTempTable(jobLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE, uniqueJobId);
-						break;
-
-					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
-						CreateErrorListTempTable(itemLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
-						CreateErrorListTempTable(itemLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE, uniqueJobId);
-						break;
-				}
-			}
-			else
-			{
-				switch (updateStatusType.ErrorTypes)
-				{
-					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
-						CreateErrorListTempTable(jobLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
-						CreateErrorListTempTable(itemLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
-						break;
-
-					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
-						CreateErrorListTempTable(jobLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
-						break;
-
-					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
-						CreateErrorListTempTable(itemLevelErrors, Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
-						break;
-				}
-			}
-		}
-
-		private void CreateErrorListTempTable(List<int> errors, string tablePrefix, string uniqueJobId)
+		public void CreateErrorListTempTable(List<int> errors, string tablePrefix, string uniqueJobId)
 		{
 			try
 			{
@@ -183,7 +139,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			global::Relativity.Query.ArtifactType jobHistoryErrorArtifactType = new global::Relativity.Query.ArtifactType(jobHistoryErrorTypeId, JobHistoryErrorDTO.TableName);
 
-			Field singleChoiceField = new Field(baseService, fieldRows[0]);
+			global::Relativity.Core.DTO.Field singleChoiceField = new global::Relativity.Core.DTO.Field(baseService, fieldRows[0]);
 
 			try
 			{
@@ -196,8 +152,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		}
 
-		public int CreateItemLevelErrorsSavedSearch(int workspaceArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId)
+		public int CreateItemLevelErrorsSavedSearch(int workspaceArtifactId, int integrationPointArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId, int userArtifactId)
 		{
+			//Check for all documents that are part of the current saved search
 			FieldRef savedSearchFieldRef = new FieldRef("(Saved Search)");
 			Criteria savedSearchCriteria = new Criteria
 			{
@@ -205,17 +162,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				BooleanOperator = BooleanOperatorEnum.And
 			};
 
-			FieldRef jobHistoryArtfiactIdFieldRef = new FieldRef("Job History");
+			//Check that the documents have not been tagged with the last Job History Object (meaning the job finished for them)
+			FieldRef jobHistoryFieldRef = new FieldRef(JobHistoryErrorFields.JobHistory);
 			Criteria jobHistoryArtifactIdCriteria = new Criteria
 			{
-				Condition = new CriteriaCondition(jobHistoryArtfiactIdFieldRef, CriteriaConditionEnum.AnyOfThese, new[] { jobHistoryArtifactId }) { NotOperator = true }
+				Condition = new CriteriaCondition(jobHistoryFieldRef, CriteriaConditionEnum.AnyOfThese, new[] { jobHistoryArtifactId }) { NotOperator = true }
 			};
 			CriteriaCollection jobHistoryObjectCriteriaCollection = new CriteriaCollection
 			{
 				Conditions = new List<CriteriaBase>(1) { jobHistoryArtifactIdCriteria }
 			};
-			
-			FieldRef jobHistoryFieldRef = new FieldRef("Job History");
 			Criteria jobHistoryCriteria = new Criteria
 			{
 				Condition = new CriteriaCondition(jobHistoryFieldRef, CriteriaConditionEnum.In, jobHistoryObjectCriteriaCollection)
@@ -228,12 +184,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			KeywordSearch itemLevelSearch = new KeywordSearch
 			{
-				Name = "Temporary Search",
+				Owner = new UserRef(userArtifactId),
+				Name = $"{Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_SAVED_SEARCH_NAME} - {integrationPointArtifactId} - {jobHistoryArtifactId}",
 				ArtifactTypeID = (int)Relativity.Client.ArtifactType.Document,
 				SearchCriteria = searchCondition
 			};
 
-			using (IKeywordSearchManager searchManager = _helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.CurrentUser))
+			using (IKeywordSearchManager searchManager = _helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System))
 			{
 				SearchResultViewFields fields = searchManager.GetFieldsForSearchResultViewAsync(workspaceArtifactId, (int)Relativity.Client.ArtifactType.Document)
 					.ConfigureAwait(false).GetAwaiter().GetResult();
@@ -246,6 +203,20 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 						.ConfigureAwait(false).GetAwaiter().GetResult();
 
 				return itemLevelSearchArtifactId;
+			}
+		}
+
+		public void DeleteItemLevelErrorsSavedSearch(int workspaceArtifactId, int searchArtifactId, int retryAttempts)
+		{
+			using (IKeywordSearchManager searchManager = _helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System))
+			{
+				var task = searchManager.DeleteSingleAsync(workspaceArtifactId, searchArtifactId);
+				task.ConfigureAwait(false).GetAwaiter().GetResult();
+
+				if (task.IsFaulted && retryAttempts < 3)
+				{
+					DeleteItemLevelErrorsSavedSearch(workspaceArtifactId, searchArtifactId, retryAttempts + 1);
+				}
 			}
 		}
 	}

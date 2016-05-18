@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 {
+	[TestFixture]
 	public class ObjectTypeManagerTests
 	{
 		private IObjectTypeManager _testInstance;
@@ -16,7 +17,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 		private const int _WORKSPACE_ID = 100532;
 
-		[TestFixtureSetUp]
+		[SetUp]
 		public void Setup()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
@@ -27,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
-		public void RetrieveObjectTypeDescriptorArtifactTypeIdTests()
+		public void RetrieveObjectTypeDescriptorArtifactTypeId_GoldFlow()
 		{
 			// ARRANGE
 			Guid objectTypeGuid = Guid.NewGuid();

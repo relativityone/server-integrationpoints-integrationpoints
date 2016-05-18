@@ -2,15 +2,11 @@
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public class SavedSearch : HelperBase
+	public static class SavedSearch
 	{
 		private const string _CREATE_SINGLE_SERVICE = "api/Relativity.Services.Search.ISearchModule/Keyword Search Manager/CreateSingleAsync";
 
-		public SavedSearch(Helper helper) : base(helper)
-		{
-		}
-
-		public int CreateSavedSearch(int workspaceId, string name)
+		public static int CreateSavedSearch(int workspaceId, string name)
 		{
 			string json = string.Format(@"
 				{{
@@ -26,7 +22,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					}}
 				}}
 			", workspaceId, (int)ArtifactType.Document, name);
-			string output = Helper.Rest.PostRequestAsJson(_CREATE_SINGLE_SERVICE, false, json);
+			string output = Rest.PostRequestAsJson(_CREATE_SINGLE_SERVICE, false, json);
 			return int.Parse(output);
 		}
 	}

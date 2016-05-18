@@ -11,7 +11,7 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core
 {
-	public class JobHistoryStatus : IBatchStatus
+	public class JobHistoryBatchUpdateStatus : IBatchStatus
 	{
 		private readonly IJobStatusUpdater _updater;
 		private readonly ISerializer _serializer;
@@ -19,21 +19,21 @@ namespace kCura.IntegrationPoints.Core
 
 		public JobHistory JobHistory { set; get; }
 
-		public JobHistoryStatus(IJobStatusUpdater jobStatusUpdater, ISerializer serializer, IRSAPIService rsapiService)
+		public JobHistoryBatchUpdateStatus(IJobStatusUpdater jobStatusUpdater, ISerializer serializer, IRSAPIService rsapiService)
 		{
 			_updater = jobStatusUpdater;
 			_serializer = serializer;
 			_service = rsapiService;
 		}
 
-		public void JobStarted(Job job)
+		public void OnJobStart(Job job)
 		{
 			var result = GetHistory(job);
 			result.JobStatus = JobStatusChoices.JobHistoryProcessing;
 			_service.JobHistoryLibrary.Update(result);
 		}
 
-		public void JobComplete(Job job)
+		public void OnJobComplete(Job job)
 		{
 			var result = GetHistory(job);
 			result.JobStatus = _updater.GenerateStatus(result);

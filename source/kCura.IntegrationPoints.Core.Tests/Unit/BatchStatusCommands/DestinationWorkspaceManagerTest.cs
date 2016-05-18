@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 {
 	[TestFixture]
-	public class DestinationWorkspaceManagerTest
+	public class DestinationWorkspaceBatchUpdateManagerTest
 	{
 		private ITempDocTableHelper _tempDocHelper;
 		private ITempDocumentTableFactory _docTableFactory;
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_docTableFactory.GetDocTableHelper(_tableSuffix, _sourceConfig.SourceWorkspaceArtifactId).Returns(_tempDocHelper);
 			_onBehalfOfUserClaimsPrincipalFactory.CreateClaimsPrincipal(_submittedBy).Returns(_claimsPrincipal);
 
-			_instance = new DestinationWorkspaceManager(_docTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfig,
+			_instance = new DestinationWorkspaceBatchUpdateManager(_docTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfig,
 				_tableSuffix, _jobHistoryRdoId, _submittedBy);
 
 			_repositoryFactory.Received().GetDestinationWorkspaceRepository(_sourceConfig.SourceWorkspaceArtifactId);
@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_workspaceRepository.Retrieve(_destinationWorkspaceId).Returns(_workspaceX); //name has not been changed
 
 			// Act
-			_instance.JobStarted(_job);
+			_instance.OnJobStart(_job);
 
 			// Assert
 			_destinationWorkspaceRepository.Received().Query(Arg.Any<int>());
@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_workspaceRepository.Retrieve(_destinationWorkspaceId).Returns(_workspaceX); //name has not been changed
 
 			// Act
-			_instance.JobStarted(_job);
+			_instance.OnJobStart(_job);
 
 			// Assert
 			_destinationWorkspaceRepository.Received().Query(_destinationWorkspaceId);
@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_workspaceRepository.Retrieve(_destinationWorkspaceId).Returns(_workspaceY); //name of destination case has changed
 
 			// Act
-			_instance.JobStarted(_job);
+			_instance.OnJobStart(_job);
 
 			// Assert
 			_destinationWorkspaceRepository.Received().Query(_destinationWorkspaceId);
@@ -146,10 +146,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		}
 
 		[Test]
-		public void JobComplete_EmptyDocuments()
+		public void OnJobComplete_EmptyDocuments()
 		{
 			//Act
-			_instance.JobComplete(_job);
+			_instance.OnJobComplete(_job);
 
 			//Assert
 			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS));
@@ -157,10 +157,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		}
 
 		[Test]
-		public void JobComplete_FullDocuments()
+		public void OnJobComplete_FullDocuments()
 		{
 			//Act
-			_instance.JobComplete(_job);
+			_instance.OnJobComplete(_job);
 
 			//Assert
 			_destinationWorkspaceRepository.Received().TagDocsWithDestinationWorkspace(_claimsPrincipal, 0, 0, _tableSuffix, _sourceConfig.SourceWorkspaceArtifactId);
@@ -203,13 +203,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			//Act
 			try
 			{
-				_instance.JobStarted(_job);
+				_instance.OnJobStart(_job);
 			}
 			catch
 			{
 			}
 
-			_instance.JobComplete(_job);
+			_instance.OnJobComplete(_job);
 
 			//Assert
 			_destinationWorkspaceRepository.Received().Query(_destinationWorkspaceId);
@@ -226,13 +226,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			//Act
 			try
 			{
-				_instance.JobStarted(_job);
+				_instance.OnJobStart(_job);
 			}
 			catch
 			{
 			}
 
-			_instance.JobComplete(_job);
+			_instance.OnJobComplete(_job);
 
 			//Assert
 			_destinationWorkspaceRepository.Received().Query(_destinationWorkspaceId);
@@ -251,13 +251,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			//Act
 			try
 			{
-				_instance.JobStarted(_job);
+				_instance.OnJobStart(_job);
 			}
 			catch
 			{
 			}
 
-			_instance.JobComplete(_job);
+			_instance.OnJobComplete(_job);
 
 			//Assert
 			_destinationWorkspaceRepository.Received().Query(_destinationWorkspaceId);
