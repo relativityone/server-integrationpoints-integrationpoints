@@ -18,6 +18,8 @@ using UsernamePasswordCredentials = Relativity.Services.ServiceProxy.UsernamePas
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
+	using global::Relativity.Services.Permission;
+
 	public interface ITestHelper : IHelper
 	{
 		IPermissionRepository PermissionManager { get; }
@@ -38,6 +40,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_serviceManager = Substitute.For<IServicesMgr>();
 			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIRSAPIClient(this, ExecutionIdentity.CurrentUser));
 			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(new ExtendedIRSAPIClient(this, ExecutionIdentity.System));
+			_serviceManager.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser).Returns(CreateUserProxy<IPermissionManager>(), CreateUserProxy<IPermissionManager>(), CreateUserProxy<IPermissionManager>());
 
 			//_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.System).Returns(CreateUserObjectQueryManager(), managers);
 			_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIObjectQueryManager(this));

@@ -57,9 +57,6 @@
       <HintPath>..\packages\kCura.EventHandler.9.3.398.12\lib\net45\kCura.EventHandler.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints.Services.Interfaces.Private">
-      <HintPath>..\bin\kCura.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
-    </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCura.Relativity.Client.9.3.398.12\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
