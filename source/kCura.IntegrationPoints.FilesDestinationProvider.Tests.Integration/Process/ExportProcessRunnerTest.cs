@@ -1,41 +1,145 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Data;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
 using NUnit.Framework;
+using Relativity;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process
 {
 
 	public class ExportProcessRunnerTest
 	{
-		private ExportProcessRunner _objectToTest;
-		private ExportSettings _settings;
-		private WorkspaceService _service;
+		#region Fields
 
-		[SetUp]
+		private ExportProcessRunner _instanceUnderTest;
+		private ConfigSettings _configSettings;
+		private WorkspaceService _workspaceService;
+		private ExportSettings _exportSettings;
+
+		#endregion //Fields
+
+		[TestFixtureSetUp]
 		public void Init()
 		{
-			
-			_objectToTest = new ExportProcessRunner();
-			_service = new WorkspaceService(new Helper());
-			_settings = DefaultExportConfigLoader.Create();
+			_configSettings = new ConfigSettings();
+			_instanceUnderTest = new ExportProcessRunner();
+			_workspaceService = new WorkspaceService(new Helper(), _configSettings);
+			_exportSettings = CreateExportSettings();
+
+			ImportTestDataToWorkspace(_exportSettings.WorkspaceId);
+			CreateOutputFolder();
 		}
+
+		[TestFixtureTearDown]
+		public void CleanUp()
+		{
+			Utility.Directory.Instance.DeleteDirectoryIfExists(_configSettings.DestinationPath, true, false);
+			
+			if (_exportSettings.WorkspaceId > 0)
+			{
+				_workspaceService.DeleteWorkspace(_exportSettings.WorkspaceId);
+			}
+		}
+
+		#region Tests
 
 		[Test]
 		[Ignore("Integration Test")]
 		public void it_should_export_saved_search()
 		{
-			var dt = _service.GetDocumentDataTable();
-			_service.ImportDocument(1016890, dt.CreateDataReader());
-			//var obj = _service.GetWorkspaceId("Test1");
-			//_objectToTest.StartWith(_settings);
+			_instanceUnderTest.StartWith(_exportSettings);
 
+			ValidateResults(_exportSettings.ExportFilesLocation);
 		}
+
+		#endregion //Tests
+
+		#region Methods
+
+		private ExportSettings CreateExportSettings()
+		{
+			ExportSettings exportSettings = new ExportSettings()
+			{
+				ArtifactTypeId = (int)ArtifactType.Document,
+				ExportFilesLocation = _configSettings.DestinationPath
+			};
+
+			exportSettings.WorkspaceId = _workspaceService.CreateWorkspace(_configSettings.WorkspaceName);
+
+			exportSettings.ExportedObjArtifactId = _workspaceService.GetSavedSearchIdBy(_configSettings.SavedSearchArtifactName,
+				exportSettings.WorkspaceId);
+
+			exportSettings.SelViewFieldIds = _workspaceService.GetFieldIdsBy(_configSettings.SelectedFieldNames, exportSettings.WorkspaceId).ToList();
+
+			return exportSettings;
+		}
+
+		private void ImportTestDataToWorkspace(int workspaceId)
+		{
+			_workspaceService.ImportData(workspaceId, GetDocumentDataTable(), GetImageDataTable());
+		}
+
+		private void CreateOutputFolder()
+		{
+			if (!Directory.Exists(_configSettings.DestinationPath))
+			{
+				Directory.CreateDirectory(_configSettings.DestinationPath);
+			}
+		}
+
+		private void ValidateResults(string folder)
+		{
+			var directory = new DirectoryInfo(folder);
+			// Get all directories with NATIVE files
+			var nativeDirectories = directory.EnumerateDirectories("NATIVES", SearchOption.AllDirectories);
+			var nativeFileInfos = nativeDirectories.SelectMany(item => item.EnumerateFiles("*", SearchOption.AllDirectories)).ToList();
+
+			var expectedFileNames = GetDocumentDataTable().AsEnumerable().Select(row => row.Field<string>("File Name")).ToList();
+
+			Assert.AreEqual(Is.EqualTo(expectedFileNames.Count), nativeFileInfos.Count(), "Exported Native File count is not like expected!");
+			Assert.That(nativeFileInfos.Any(item => expectedFileNames.Exists(name => name == item.Name)));
+
+			var datFileInfo = directory.EnumerateFiles("*.dat", SearchOption.TopDirectoryOnly).FirstOrDefault();
+			Assert.That(datFileInfo, Is.Not.Null);
+			Assert.That(datFileInfo.Length, Is.GreaterThan(0));
+		}
+
+		internal DataTable GetDocumentDataTable()
+		{
+			DataTable table = new DataTable();
+
+			// The document identifer column name must match the field name in the workspace.
+			table.Columns.Add("Control Number", typeof(string));
+			table.Columns.Add("File Name", typeof(string));
+			table.Columns.Add("Native File", typeof(string));
+
+			table.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757.htm", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\NATIVES\AMEYERS_0000757.htm"));
+			table.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975.pdf", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\NATIVES\AMEYERS_0000975.pdf"));
+			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185.xls", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\NATIVES\AMEYERS_0001185.xls"));
+
+			return table;
+		}
+
+		internal DataTable GetImageDataTable()
+		{
+			DataTable table = new DataTable();
+
+			// The document identifer column name must match the field name in the workspace.
+			table.Columns.Add("Control Number", typeof(string));
+			table.Columns.Add("Bates Beg", typeof(string));
+			table.Columns.Add("File", typeof(string));
+			table.Rows.Add("AMEYERS_0000757", "AMEYERS_0000757", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\IMAGES\AMEYERS_0000757.tif"));
+			table.Rows.Add("AMEYERS_0000975", "AMEYERS_0000975", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\IMAGES\AMEYERS_0000975.tif"));
+			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185_1", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\IMAGES\AMEYERS_0001185.tif"));
+			table.Rows.Add("AMEYERS_0001185", "AMEYERS_0001185_2", Path.Combine(Directory.GetCurrentDirectory(), @"TestData\IMAGES\AMEYERS_0001185_001.tif"));
+
+			return table;
+		}
+
+		#endregion Methods
 	}
 }
