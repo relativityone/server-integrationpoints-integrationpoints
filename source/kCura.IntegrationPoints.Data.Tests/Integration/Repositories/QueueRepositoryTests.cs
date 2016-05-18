@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Threading;
 using kCura.Data.RowDataGateway;
 using kCura.IntegrationPoint.Tests.Core;
@@ -268,17 +266,17 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[Test]
-		public void TwoSchedualedJobsExecutingAtTheSameTimeOnDifferentAgents()
+		public void TwoScheduledJobsExecutingAtTheSameTimeOnDifferentAgents()
 		{
 			const int agentId = 123456;
 			const int agentId2 = 12345226;
 			const int anotherIntegrationPoint = 88885;
-			Job schedualedJob1 = null;
-			Job schedualedJob2 = null;
+			Job scheduledJob1 = null;
+			Job scheduledJob2 = null;
 			try
 			{
 				// arrange
-				schedualedJob1 = _jobService.CreateJob(SourceWorkspaceArtifactId, _RipObjectArtifactId,
+				scheduledJob1 = _jobService.CreateJob(SourceWorkspaceArtifactId, _RipObjectArtifactId,
 				"Kwuuuuuuuuuuuuuuuuuuuuuuuuuuu", new PeriodicScheduleRule()
 				{
 					StartDate = DateTime.UtcNow.AddDays(10),
@@ -286,9 +284,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 					Interval = ScheduleInterval.Daily,
 					Reoccur = 2,
 				}, String.Empty, 9, null, null);
-				AssignJobToAgent(agentId, schedualedJob1.JobId);
+				AssignJobToAgent(agentId, scheduledJob1.JobId);
 
-				schedualedJob2 = _jobService.CreateJob(SourceWorkspaceArtifactId, anotherIntegrationPoint,
+				scheduledJob2 = _jobService.CreateJob(SourceWorkspaceArtifactId, anotherIntegrationPoint,
 				"Kwuuuuuuuuuuuuuuuuuuuuuuuuuuu", new PeriodicScheduleRule()
 				{
 					StartDate = DateTime.UtcNow.AddDays(10),
@@ -296,7 +294,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 					Interval = ScheduleInterval.Daily,
 					Reoccur = 2,
 				}, String.Empty, 9, null, null);
-				AssignJobToAgent(agentId2, schedualedJob2.JobId);
+				AssignJobToAgent(agentId2, scheduledJob2.JobId);
 
 				// act
 				int count = _queueRepo.GetNumberOfJobsExecutingOrInQueue(SourceWorkspaceArtifactId, _RipObjectArtifactId);
@@ -306,8 +304,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 			finally
 			{
-				RemoveJobFromTheQueue(schedualedJob1);
-				RemoveJobFromTheQueue(schedualedJob2);
+				RemoveJobFromTheQueue(scheduledJob1);
+				RemoveJobFromTheQueue(scheduledJob2);
 			}
 		}
 
@@ -448,7 +446,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			Assert.AreEqual(0, count);
 		}
 
-		#endregion
+		#endregion GetNumberOfJobsExecutingOrInQueue
 
 		#region GetNumberOfJobsExecuting
 
@@ -471,7 +469,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			{
 				job = _jobService.CreateJob(SourceWorkspaceArtifactId, _RipObjectArtifactId,
 					"Gerron_#snitch",
-					DateTime.UtcNow.AddYears(1) , String.Empty, 9, null, null);
+					DateTime.UtcNow.AddYears(1), String.Empty, 9, null, null);
 
 				// act
 				int count = _queueRepo.GetNumberOfJobsExecuting(SourceWorkspaceArtifactId, _RipObjectArtifactId, 1, DateTime.Now);
@@ -623,7 +621,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			}
 		}
 
-		#endregion
+		#endregion GetNumberOfJobsExecuting
 
 		private void RemoveJobFromTheQueue(Job job)
 		{

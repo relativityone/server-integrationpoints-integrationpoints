@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.SqlClient;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Agent.Exceptions;
 using kCura.IntegrationPoints.Agent.Tasks;
@@ -36,6 +35,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		private IJobService _jobServiceManager;
 		private IJobService _jobService;
 		private ICaseServiceContext _caseContext;
+		private Relativity.Client.DTOs.Workspace SourceWorkspaceDto;
 
 		public ExportServiceManagerTests() : base("ExportServiceManagerTests", null)
 		{ }
@@ -98,6 +98,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_jobServiceManager = Container.Resolve<IJobService>();
+			SourceWorkspaceDto = IntegrationPoint.Tests.Core.Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
 		}
 
 		[Test]
@@ -105,11 +106,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		{
 			// arrange
 			ISerializer serializer = Container.Resolve<ISerializer>();
-			Relativity.Client.DTOs.Workspace workspace = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
 			IntegrationModel model = new IntegrationModel()
 			{
 				SourceProvider = RelativityProvider.ArtifactId,
-				Name = "ARRRRRRRGGGHHHHH",
+				Name = "ARRRRRRRGGGHHHHH - RunRelativityProviderAlone",
 				DestinationProvider = DestinationProvider.ArtifactId,
 				SourceConfiguration = CreateDefaultSourceConfig(),
 				Destination = CreateDefaultDestinationConfig(),
@@ -126,7 +126,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			Job job = null;
 			try
 			{
-				job = GetNextInQueue(new[] {workspace.ResourcePoolID.Value}, model.ArtifactID); // pick up job
+				job = GetNextInQueue(new[] { SourceWorkspaceDto.ResourcePoolID.Value}, model.ArtifactID); // pick up job
 
 				TaskParameters parameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
 
@@ -165,11 +165,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				const int fakeAgentId = 78945;
 				ISerializer serializer = Container.Resolve<ISerializer>();
 				IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-				Relativity.Client.DTOs.Workspace workspace = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
 				IntegrationModel model = new IntegrationModel()
 				{
 					SourceProvider = RelativityProvider.ArtifactId,
-					Name = "ARRRRRRRGGGHHHHH",
+					Name = "ARRRRRRRGGGHHHHH - AgentPickUpRunNowJobWhenScheduledJobIsRunning",
 					DestinationProvider = DestinationProvider.ArtifactId,
 					SourceConfiguration = CreateDefaultSourceConfig(),
 					Destination = CreateDefaultDestinationConfig(),
@@ -193,7 +192,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					DateTime.UtcNow, serializer.Serialize(new TaskParameters() { BatchInstance = Guid.NewGuid() }), 9,
 					null, null);
 
-				job = GetNextInQueue(new[] { workspace.ResourcePoolID.Value }, model.ArtifactID); // agent pick up job
+				job = GetNextInQueue(new[] { SourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // agent pick up job
 
 				AssignJobToAgent(fakeAgentId, scheduledJob.JobId); // agent pick up scheduled job
 				TaskParameters runNowParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
@@ -240,7 +239,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				const int fakeAgentId = 78945;
 				ISerializer serializer = Container.Resolve<ISerializer>();
 				IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
-				Relativity.Client.DTOs.Workspace workspace = Workspace.GetWorkspaceDto(SourceWorkspaceArtifactId);
 				IntegrationModel model = new IntegrationModel()
 				{
 					SourceProvider = RelativityProvider.ArtifactId,
@@ -269,7 +267,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointId, 9);
 
 				// run now picked up by an agent
-				job = GetNextInQueue(new[] { workspace.ResourcePoolID.Value }, model.ArtifactID);
+				job = GetNextInQueue(new[] { SourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID);
 
 				AssignJobToAgent(fakeAgentId, fakScheduledJob.JobId); // agent pick up the scheduled job
 				TaskParameters scheduledJobParameters = serializer.Deserialize<TaskParameters>(fakScheduledJob.JobDetails);
