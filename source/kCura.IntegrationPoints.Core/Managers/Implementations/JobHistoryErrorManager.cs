@@ -25,9 +25,53 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType = jobHistoryErrorRepository.DetermineUpdateStatusType(jobType, jobLevelErrors.Any(), itemLevelErrors.Any());
 
-			jobHistoryErrorRepository.CreateErrorListTempTables(jobLevelErrors, itemLevelErrors, updateStatusType, uniqueJobId);
+			CreateErrorListTempTables(jobHistoryErrorRepository, jobLevelErrors, itemLevelErrors, updateStatusType, uniqueJobId);
 
 			return updateStatusType;
+		}
+
+		private void CreateErrorListTempTables(IJobHistoryErrorRepository jobHistoryErrorRepository, List<int> jobLevelErrors, List<int> itemLevelErrors, JobHistoryErrorDTO.UpdateStatusType updateStatusType, string uniqueJobId)
+		{
+			if (updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors)
+			{
+				switch (updateStatusType.ErrorTypes)
+				{
+					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
+						jobHistoryErrorRepository.CreateErrorListTempTable(jobLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
+						jobHistoryErrorRepository.CreateErrorListTempTable(jobLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE, uniqueJobId);
+						jobHistoryErrorRepository.CreateErrorListTempTable(itemLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
+						break;
+
+					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
+						jobHistoryErrorRepository.CreateErrorListTempTable(jobLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
+						jobHistoryErrorRepository.CreateErrorListTempTable(jobLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE, uniqueJobId);
+						break;
+
+					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
+						jobHistoryErrorRepository.CreateErrorListTempTable(itemLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
+						//ToDo: Second CreateErrorListTempTable needed when logic to split item level errors between those being retried and those no longer included is written
+						jobHistoryErrorRepository.CreateErrorListTempTable(itemLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE, uniqueJobId);
+						break;
+				}
+			}
+			else
+			{
+				switch (updateStatusType.ErrorTypes)
+				{
+					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
+						jobHistoryErrorRepository.CreateErrorListTempTable(jobLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
+						jobHistoryErrorRepository.CreateErrorListTempTable(itemLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
+						break;
+
+					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
+						jobHistoryErrorRepository.CreateErrorListTempTable(jobLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
+						break;
+
+					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
+						jobHistoryErrorRepository.CreateErrorListTempTable(itemLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
+						break;
+				}
+			}
 		}
 
 		public int CreateItemLevelErrorsSavedSearch(Job job, int originalSavedSearchArtifactId)
@@ -44,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(workspaceArtifactId);
 			int lastJobHistoryArtifactId = GetLastJobHistory(workspaceArtifactId, integrationPointArtifactId);
 
-			return jobHistoryErrorRepository.RetreiveJobHistoryErrorArtifactIds(lastJobHistoryArtifactId, errorType);
+			return jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(lastJobHistoryArtifactId, errorType);
 		}
 
 		private int GetLastJobHistory(int workspaceArtifactId, int integrationPointArtifactId)

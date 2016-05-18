@@ -2,6 +2,7 @@
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 
@@ -10,12 +11,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	public class IntegrationPointManager : IIntegrationPointManager
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
-		private readonly IPermissionRepository _permissionRepository;
 
-		internal IntegrationPointManager(IRepositoryFactory repositoryFactory, IPermissionRepository permissionRepository)
+		internal IntegrationPointManager(IRepositoryFactory repositoryFactory)
 		{
 			_repositoryFactory = repositoryFactory;
-			_permissionRepository = permissionRepository;
 		}
 
 		public IntegrationPointDTO Read(int workspaceArtifactId, int integrationPointArtifactId)
@@ -45,9 +44,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null)
 		{
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(workspaceArtifactId);
+
 			var permissionCheck = new PermissionCheckDTO() { Success = false };
 
-			if (!_permissionRepository.UserCanImport(workspaceArtifactId))
+			if (!permissionRepository.UserCanImport())
 			{
 				permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE;
 
@@ -61,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			if (sourceProvider == Constants.SourceProvider.Relativity)
 			{
-				if (!_permissionRepository.UserCanEditDocuments(workspaceArtifactId))
+				if (!permissionRepository.UserCanEditDocuments())
 				{
 					permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS;
 
@@ -69,8 +70,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				}
 
 				dynamic sourceConfiguration = JsonConvert.DeserializeObject(integrationPointDto.SourceConfiguration);
-				if (!_permissionRepository.UserCanViewArtifact(workspaceArtifactId, (int)ArtifactType.Search,
-					(int)sourceConfiguration.SavedSearchArtifactId))
+				if (!permissionRepository.UserCanViewArtifact((int)ArtifactType.Search, (int)sourceConfiguration.SavedSearchArtifactId))
 				{
 					permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH;
 

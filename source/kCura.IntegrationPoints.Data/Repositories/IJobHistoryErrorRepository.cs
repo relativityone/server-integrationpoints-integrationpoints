@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="jobHistoryArtifactId">Job History Artifact Id to gather job history errors for</param>
 		/// <param name="errorType">Error Type choice to gather job history errors for</param>
 		/// <returns>List of Artifact Ids of Job History Errors for the provided Job History and Error Type</returns>
-		List<int> RetreiveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType);
+		List<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType);
 		
 		/// <summary>
 		/// Determines the Update Status Type that will be used to know which temp tables to create and which to use for started and completed status updates
@@ -26,11 +26,10 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <summary>
 		/// Creates the unique temp tables required to make Error Status updates for currently running job
 		/// </summary>
-		/// <param name="jobLevelErrors">List of Artifact Ids of Job-level Job History Errors for the previous Job History</param>
-		/// <param name="itemLevelErrors">List of Artifact Ids of Item-level Job History Errors for the previous Job History</param>
-		/// <param name="updateStatusType">UpdateStatusType that houses the job type and error types to know which temp tables to create</param>
+		/// <param name="errors">List of Artifact Ids of errors for the previous Job History</param>
+		/// <param name="tablePrefix">Temp table name prefix</param>
 		/// <param name="uniqueJobId">Job Id and Job Guid combined to be a suffix for the temp table</param>
-		void CreateErrorListTempTables(List<int> jobLevelErrors, List<int> itemLevelErrors, JobHistoryErrorDTO.UpdateStatusType updateStatusType, string uniqueJobId);
+		void CreateErrorListTempTable(List<int> errors, string tablePrefix, string uniqueJobId);
 
 		/// <summary>
 		/// Mass edits the Job History Errors 

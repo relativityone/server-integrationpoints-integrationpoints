@@ -11,6 +11,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private readonly ICaseServiceContext _context;
 		private readonly IContextContainer _contextContainer;
-		private readonly IPermissionRepository _permissionRepository;
+		private readonly IRepositoryFactory _repositoryFactory;
 		private IntegrationPoint _rdo;
 		private readonly ISerializer _serializer;
 		private readonly IChoiceQuery _choiceQuery;
@@ -37,15 +38,15 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		public IntegrationPointService(IHelper helper,
 			ICaseServiceContext context,
-			IPermissionRepository permissionRepository,
 			IContextContainerFactory contextContainerFactory,
+			IRepositoryFactory repositoryFactory,
 			ISerializer serializer, IChoiceQuery choiceQuery,
 			IJobManager jobService,
 			IJobHistoryService jobHistoryService,
 			IManagerFactory managerFactory)
 		{
 			_context = context;
-			_permissionRepository = permissionRepository;
+			_repositoryFactory = repositoryFactory;
 			_serializer = serializer;
 			_choiceQuery = choiceQuery;
 			_jobService = jobService;
@@ -421,7 +422,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			return sourceProvider;
 		}
 
-		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, Relativity.Client.Choice jobType, int workspaceArtifactId, int userId)
+		private void CreateJob(IntegrationPoint integrationPoint, SourceProvider sourceProvider, Choice jobType, int workspaceArtifactId, int userId)
 		{
 			lock (_lock)
 			{
@@ -442,17 +443,20 @@ namespace kCura.IntegrationPoints.Core.Services
 		private void CheckForRelativityProviderAdditionalPermissions(string config, int userId)
 		{
 			WorkspaceConfiguration workspaceConfiguration = JsonConvert.DeserializeObject<WorkspaceConfiguration>(config);
-			if (_permissionRepository.UserCanImport(workspaceConfiguration.TargetWorkspaceArtifactId) == false)
+			IPermissionRepository sourceWorkspacePermissionRepository = _repositoryFactory.GetPermissionRepository(workspaceConfiguration.SourceWorkspaceArtifactId);
+			IPermissionRepository targetWorkspacePermissionRepository = _repositoryFactory.GetPermissionRepository(workspaceConfiguration.TargetWorkspaceArtifactId);
+
+			if (targetWorkspacePermissionRepository.UserCanImport() == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
 			}
 
-			if (_permissionRepository.UserCanEditDocuments(workspaceConfiguration.SourceWorkspaceArtifactId) == false)
+			if (sourceWorkspacePermissionRepository.UserCanEditDocuments() == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
 			}
 
-			if (_permissionRepository.UserCanViewArtifact(workspaceConfiguration.SourceWorkspaceArtifactId, (int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId) == false)
+			if (sourceWorkspacePermissionRepository.UserCanViewArtifact((int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId) == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH);	
 			}

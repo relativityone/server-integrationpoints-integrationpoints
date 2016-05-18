@@ -542,9 +542,13 @@
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
     <Compile Include="Factories\IExporterFactory.cs" />
+    <Compile Include="Factories\IHelperClassFactory.cs" />
     <Compile Include="Factories\Implementations\ContextContainerFactory.cs" />
     <Compile Include="Factories\IManagerFactory.cs" />
+    <Compile Include="Factories\Implementations\HelperClassFactory.cs" />
     <Compile Include="Factories\Implementations\ManagerFactory.cs" />
+    <Compile Include="Helpers\Implementations\OnClickEventHelper.cs" />
+    <Compile Include="Helpers\IOnClickEventHelper.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
     <Compile Include="Managers\IArtifactGuidManager.cs" />
@@ -567,11 +571,13 @@
     <Compile Include="Managers\Implementations\SourceProviderManager.cs" />
     <Compile Include="Managers\Implementations\SourceWorkspaceManager.cs" />
     <Compile Include="Managers\Implementations\SourceJobManager.cs" />
+    <Compile Include="Managers\Implementations\StateManager.cs" />
     <Compile Include="Managers\ISourceProviderManager.cs" />
     <Compile Include="Managers\IQueueManager.cs" />
     <Compile Include="Managers\ISourceWorkspaceManager.cs" />
     <Compile Include="Managers\ISourceJobManager.cs" />
     <Compile Include="Managers\IObjectTypeManager.cs" />
+    <Compile Include="Managers\IStateManager.cs" />
     <Compile Include="Models\EmailMessage.cs" />
     <Compile Include="Properties\JobStatusMessages.Designer.cs">
       <AutoGen>True</AutoGen>
