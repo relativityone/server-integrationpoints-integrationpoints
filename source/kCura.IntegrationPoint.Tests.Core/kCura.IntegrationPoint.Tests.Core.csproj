@@ -171,12 +171,6 @@
       <HintPath>..\packages\kCuraCore.9.3.405.5\lib\net45\kCura.Injection.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints.Services">
-      <HintPath>..\bin\kCura.IntegrationPoints.Services.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.IntegrationPoints.Services.Interfaces.Private">
-      <HintPath>..\bin\kCura.IntegrationPoints.Services.Interfaces.Private.dll</HintPath>
-    </Reference>
     <Reference Include="kCura.kCanvas, Version=8.0.0.0, Culture=neutral, PublicKeyToken=f8fcd18179f8fdff, processorArchitecture=AMD64">
       <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\kCura.kCanvas.dll</HintPath>
       <Private>True</Private>

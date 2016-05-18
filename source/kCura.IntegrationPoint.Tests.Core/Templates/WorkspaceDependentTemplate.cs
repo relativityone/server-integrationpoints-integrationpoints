@@ -23,6 +23,8 @@ using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
+	using IntegrationPoints.Data.Factories.Implementations;
+
 	[TestFixture]
 	[Category("Integration Tests")]
 	[Explicit]
@@ -104,6 +106,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
 			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
+			CloseSeleniumBrowser();
 		}
 
 		protected IntegrationModel CreateOrUpdateIntegrationPoint(IntegrationModel model)
@@ -179,6 +182,17 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				}
 			};
 			return Container.Resolve<ISerializer>().Serialize(map);
+		}
+
+		protected void CloseSeleniumBrowser()
+		{
+			try
+			{
+				Selenium.WebDriver.Quit();
+			}
+			catch (Exception)
+			{
+			}
 		}
 	}
 }
