@@ -5,28 +5,29 @@
 
 <link href="~/Content/site.css" rel="stylesheet" />
 
-<div class="card" id="exportProviderConfiguration">
+<div id="exportProviderConfiguration">
+    <div class="card">
+        <span class="label title">Export Source</span>
 
-    <label class="section label">Fileshare Provider</label>
-    <div class="field-row">
-        <div class="field-label required">
-            Workspace :
+        <div class="field-row" style="visibility: collapse">
+            <div class="field-label required">
+                Workspace :
+            </div>
+            <div class="field-value">
+                <select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, select2: {}"></select>
+            </div>
         </div>
-        <div class="field-value">
-            <select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, optionsCaption: 'Select...', select2: {}"></select>
+
+
+        <div class="field-row">
+            <div class="field-label required">
+                Saved Search :
+            </div>
+            <div class="field-value ">
+                <select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', value: SavedSearchArtifactId,  optionsCaption: 'Select...', select2: {}"></select>
+            </div>
         </div>
     </div>
-
-    <label class="section label">Export Provider</label>
-    <div class="field-row">
-        <div class="field-label required">
-            Saved Search :
-        </div>
-        <div class="field-value ">
-            <select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsValue: 'value', value: SavedSearchArtifactId,  optionsCaption: 'Select...', select2: {}"></select>
-        </div>
-    </div>
-
     <div class="card">
         <span class="label title">Physical File Export</span>
         <div class="identifier">
@@ -59,7 +60,7 @@
                             <input id="overwrite-file-radio-0" type="radio" name="OverwriteFiles" value="true" data-bind="checked: OverwriteFiles" />Yes
                         </li>
                         <li>
-	                            <input id="overwrite-file-radio-1" type="radio" name="OverwriteFiles" value="false" data-bind="checked: OverwriteFiles" />No
+                            <input id="overwrite-file-radio-1" type="radio" name="OverwriteFiles" value="false" data-bind="checked: OverwriteFiles" />No
                         </li>
                     </ul>
                 </div>
