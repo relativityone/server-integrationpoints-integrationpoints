@@ -221,7 +221,7 @@ var IP = IP || {};
 		    $.each(self.destinationTypes(), function () {
 
 		        if (this.value === settings.destinationProviderType && settings.destinationProviderType !== undefined) {
-		            self.selectedDestinationType(this.value);
+		            self.selectedDestinationType(this.artifactID);
 		        }
 		    });
 		});
