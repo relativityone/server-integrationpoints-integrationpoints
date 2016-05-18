@@ -5,9 +5,9 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class HelperClassFactory : IHelperClassFactory
 	{
-		public IOnClickEventHelper CreateOnClickEventHelper(IManagerFactory managerFactory, IContextContainer contextContainer)
+		public IOnClickEventConstructor CreateOnClickEventHelper(IManagerFactory managerFactory, IContextContainer contextContainer)
 		{
-			return new OnClickEventHelper(contextContainer, managerFactory);
+			return new OnClickEventConstructor(contextContainer, managerFactory);
 		}
 	}
 }

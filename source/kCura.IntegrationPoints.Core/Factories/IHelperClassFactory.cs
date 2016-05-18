@@ -10,6 +10,6 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="managerFactory">A factory used to create manager objects.</param>
 		/// <param name="contextContainer">Container containing necessary contexts.</param>
 		/// <returns>An instance of an OnClickEventHelper object</returns>
-		IOnClickEventHelper CreateOnClickEventHelper(IManagerFactory managerFactory, IContextContainer contextContainer);
+		IOnClickEventConstructor CreateOnClickEventHelper(IManagerFactory managerFactory, IContextContainer contextContainer);
 	}
 }

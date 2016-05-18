@@ -6,12 +6,12 @@ using kCura.IntegrationPoints.Core.Managers;
 
 namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
-	public class OnClickEventHelper : IOnClickEventHelper
+	public class OnClickEventConstructor : IOnClickEventConstructor
 	{
 		private IManagerFactory _managerFactory;
 		private IContextContainer _contextContainer;
 
-		public OnClickEventHelper(IContextContainer contextContainer, IManagerFactory managerFactory)
+		public OnClickEventConstructor(IContextContainer contextContainer, IManagerFactory managerFactory)
 		{
 			_managerFactory = managerFactory;
 			_contextContainer = contextContainer;

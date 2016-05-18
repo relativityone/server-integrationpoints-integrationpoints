@@ -154,7 +154,7 @@
     <Compile Include="Unit\BatchStatusCommands\TempTableReaderTests.cs" />
     <Compile Include="Unit\DeleteHistoryServiceTest.cs" />
     <Compile Include="Unit\BatchStatusCommands\JobHistoryManagerTest.cs" />
-    <Compile Include="Unit\Helpers\OnClickEventHelperTests.cs" />
+    <Compile Include="Unit\Helpers\OnClickEventConstructorTests.cs" />
     <Compile Include="Unit\JobStatusUpdaterTests.cs" />
     <Compile Include="Unit\Managers\ArtifactGuidManagerTests.cs" />
     <Compile Include="Unit\Managers\FieldManagerTests.cs" />
