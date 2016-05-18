@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Helpers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
@@ -167,19 +168,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		private List<Relativity.Client.DTOs.Field> RetrieveFields(IEnumerable<Guid> fieldGuids)
 		{
-			ResultSet<Relativity.Client.DTOs.Field> result;
+			ResultSet<Relativity.Client.DTOs.Field> result = null;
 			List<Relativity.Client.DTOs.Field> fields = fieldGuids.Select(fieldGuid => new Relativity.Client.DTOs.Field(fieldGuid)).ToList();
 
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			ApiHelper.ExecuteRsapi(_helper, _workspaceArtifactId, func =>
 			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-				result = rsapiClient.Repositories.Field.Read(fields);
-			}
-
-			if (!result.Success)
-			{
-				throw new Exception($"Unable to retrieve fields. Error message: {result.Message}");
-			}
+				result = func.Repositories.Field.Read(fields).CheckResult();
+			});
 
 			List<Relativity.Client.DTOs.Field> resultFields = result.Results.Select(resultField => resultField.Artifact).ToList();
 			return resultFields;
