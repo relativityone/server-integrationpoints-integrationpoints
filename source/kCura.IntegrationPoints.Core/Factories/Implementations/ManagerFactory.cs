@@ -49,6 +49,11 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new SourceProviderManager(CreateRepositoryFactory(contextContainer));
 		}
 
+		public IStateManager CreateStateManager(IContextContainer contextContainer)
+		{
+			return new StateManager(CreateRepositoryFactory(contextContainer));
+		}
+
 		#region Private Helpers
 
 		private IRepositoryFactory CreateRepositoryFactory(IContextContainer contextContainer)
