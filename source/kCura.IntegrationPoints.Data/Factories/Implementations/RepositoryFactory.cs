@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Core;
-using Relativity.Core.Authentication;
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
 {
@@ -23,20 +22,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			ContextCache = new Dictionary<int, ContextContainer>();
 		}
 
-		public IObjectTypeRepository GetObjectTypeRepository(int workspaceArtifactId)
-		{
-			IObjectTypeRepository repository = new RsapiObjectTypeRepository(_helper, workspaceArtifactId);
-
-			return repository;
-		}
-
-		public ISourceWorkspaceRepository GetSourceWorkspaceRepository(int workspaceArtifactId)
-		{
-			ISourceWorkspaceRepository repository = new RsapiSourceWorkspaceRepository(_helper, workspaceArtifactId);
-
-			return repository;
-		}
-
 		public IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId)
 		{
 			BaseContext baseContext = GetBaseContextForWorkspace(workspaceArtifactId);
@@ -45,25 +30,10 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return artifactGuidRepository;
 		}
 
-		public ISourceWorkspaceJobHistoryRepository GetSourceWorkspaceJobHistoryRepository(int workspaceArtifactId)
+		public ICodeRepository GetCodeRepository(int workspaceArtifactId)
 		{
-			ISourceWorkspaceJobHistoryRepository repository = new SourceWorkspaceJobHistoryRepository(_helper, workspaceArtifactId);
-
-			return repository;
-		}
-
-		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)
-		{
-			ISourceJobRepository repository = new SourceJobRepository(_helper, workspaceArtifactId);
-
-			return repository;
-		}
-
-		public IWorkspaceRepository GetWorkspaceRepository()
-		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(-1, ArtifactType.Case);
-			IWorkspaceRepository repository = new KeplerWorkspaceRepository(objectQueryManagerAdaptor);
-
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Code);
+			ICodeRepository repository = new KeplerCodeRepository(objectQueryManagerAdaptor);
 			return repository;
 		}
 
@@ -72,6 +42,29 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IDestinationWorkspaceRepository destinationWorkspaceRepository = new DestinationWorkspaceRepository(_helper, sourceWorkspaceArtifactId);
 
 			return destinationWorkspaceRepository;
+		}
+
+		public IDocumentRepository GetDocumentRepository(int workspaceArtifactId)
+		{
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Document);
+			IDocumentRepository documentRepository = new KeplerDocumentRepository(objectQueryManagerAdaptor);
+			return documentRepository;
+		}
+
+		public IFieldRepository GetFieldRepository(int workspaceArtifactId)
+		{
+			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
+			BaseContext baseContext = GetBaseContextForWorkspace(workspaceArtifactId);
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Field);
+
+			IFieldRepository fieldRepository = new FieldRepository(_helper, objectQueryManagerAdaptor, baseServiceContext, baseContext, workspaceArtifactId);
+			return fieldRepository;
+		}
+
+		public IIntegrationPointRepository GetIntegrationPointRepository(int workspaceArtifactId)
+		{
+			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(_helper, workspaceArtifactId);
+			return integrationPointRepository;
 		}
 
 		public IJobHistoryRepository GetJobHistoryRepository(int workspaceArtifactId = 0)
@@ -87,14 +80,55 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return jobHistoryErrorRepository;
 		}
 
-		public IFieldRepository GetFieldRepository(int workspaceArtifactId)
+		public IObjectRepository GetObjectRepository(int workspaceArtifactId, int rdoArtifactId)
 		{
-			BaseServiceContext baseServiceContext = GetBaseServiceContextForWorkspace(workspaceArtifactId);
-			BaseContext baseContext = GetBaseContextForWorkspace(workspaceArtifactId);
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Field);
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, rdoArtifactId);
+			IObjectRepository repository = new KeplerObjectRepository(objectQueryManagerAdaptor, rdoArtifactId);
+			return repository;
+		}
 
-			IFieldRepository fieldRepository = new FieldRepository(_helper, objectQueryManagerAdaptor, baseServiceContext, baseContext, workspaceArtifactId);
-			return fieldRepository;
+		public IObjectTypeRepository GetObjectTypeRepository(int workspaceArtifactId)
+		{
+			IObjectTypeRepository repository = new RsapiObjectTypeRepository(_helper, workspaceArtifactId);
+
+			return repository;
+		}
+
+		public IPermissionRepository GetPermissionRepository(int workspaceArtifactId)
+		{
+			return new PermissionRepository(_helper, workspaceArtifactId);
+		}
+
+		public IQueueRepository GetQueueRepository()
+		{
+			return new QueueRepository(_helper);
+		}
+
+		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)
+		{
+			ISourceJobRepository repository = new SourceJobRepository(_helper, workspaceArtifactId);
+
+			return repository;
+		}
+
+		public ISourceProviderRepository GetSourceProviderRepository(int workspaceArtifactId)
+		{
+			ISourceProviderRepository sourceProviderRepository = new SourceProviderRepository(_helper, workspaceArtifactId);
+			return sourceProviderRepository;
+		}
+
+		public ISourceWorkspaceRepository GetSourceWorkspaceRepository(int workspaceArtifactId)
+		{
+			ISourceWorkspaceRepository repository = new RsapiSourceWorkspaceRepository(_helper, workspaceArtifactId);
+
+			return repository;
+		}
+
+		public ISourceWorkspaceJobHistoryRepository GetSourceWorkspaceJobHistoryRepository(int workspaceArtifactId)
+		{
+			ISourceWorkspaceJobHistoryRepository repository = new SourceWorkspaceJobHistoryRepository(_helper, workspaceArtifactId);
+
+			return repository;
 		}
 
 		public ITabRepository GetTabRepository(int workspaceArtifactId)
@@ -104,24 +138,11 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return tabRepository;
 		}
 
-		public IDocumentRepository GetDocumentRepository(int workspaceArtifactId)
+		public IWorkspaceRepository GetWorkspaceRepository()
 		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Document);
-			IDocumentRepository documentRepository = new KeplerDocumentRepository(objectQueryManagerAdaptor);
-			return documentRepository;
-		}
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(-1, ArtifactType.Case);
+			IWorkspaceRepository repository = new KeplerWorkspaceRepository(objectQueryManagerAdaptor);
 
-		public ICodeRepository GetCodeRepository(int workspaceArtifactId)
-		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Code);
-			ICodeRepository repository = new KeplerCodeRepository(objectQueryManagerAdaptor);
-			return repository;
-		}
-
-		public IObjectRepository GetObjectRepository(int workspaceArtifactId, int rdoArtifactId)
-		{
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, rdoArtifactId);
-			IObjectRepository repository = new KeplerObjectRepository(objectQueryManagerAdaptor, rdoArtifactId);
 			return repository;
 		}
 
@@ -135,23 +156,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(_helper, workspaceArtifactId, artifactType);
 			return objectQueryManagerAdaptor;
-		}
-
-		public IIntegrationPointRepository GetIntegrationPointRepository(int workspaceArtifactId)
-		{
-			IIntegrationPointRepository integrationPointRepository = new IntegrationPointRepository(_helper, workspaceArtifactId);
-			return integrationPointRepository;
-		}
-
-		public ISourceProviderRepository GetSourceProviderRepository(int workspaceArtifactId)
-		{
-			ISourceProviderRepository sourceProviderRepository = new SourceProviderRepository(_helper, workspaceArtifactId);	
-			return sourceProviderRepository;
-		}
-
-		public IQueueRepository GetQueueRepository()
-		{
-			return new QueueRepository(_helper);
 		}
 
 		#region Helper Methods

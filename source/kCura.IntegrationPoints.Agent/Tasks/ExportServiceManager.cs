@@ -343,9 +343,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			var importSettings = JsonConvert.DeserializeObject<ImportSettings>(originalImportApiSettings);
 			importSettings.OnBehalfOfUserId = job.SubmittedBy;
 
-			//Switch to Append/Overlay for item-level error retries where original setting was Append Only
+			//Switch to Append/Overlay for error retries where original setting was Append Only
 			if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
-				_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly &&
 			    importSettings.OverwriteMode == OverwriteModeEnum.Append)
 			{
 				importSettings.OverwriteMode = OverwriteModeEnum.AppendOverlay;

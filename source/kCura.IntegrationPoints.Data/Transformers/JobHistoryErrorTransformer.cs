@@ -36,10 +36,8 @@ namespace kCura.IntegrationPoints.Data.Transformers
 		public JobHistoryErrorDTO ConvertToDto(JobHistoryError jobHistoryError)
         {
             IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(_workspaceArtifactId);
-            int errorStatusChoiceArtifactId = jobHistoryError.ErrorStatus.ArtifactID;
-            Guid errorStatusChoiceGuid = artifactGuidRepository.GetGuidsForArtifactIds(new List<int> { errorStatusChoiceArtifactId })[errorStatusChoiceArtifactId];
-			int errorTypeChoiceArtifactId = jobHistoryError.ErrorStatus.ArtifactID;
-			Guid errorTypeChoiceGuid = artifactGuidRepository.GetGuidsForArtifactIds(new List<int> { errorTypeChoiceArtifactId })[errorTypeChoiceArtifactId];
+            Guid errorStatusChoiceGuid = artifactGuidRepository.GetGuidsForArtifactIds(new List<int> { jobHistoryError.ErrorStatus.ArtifactID })[jobHistoryError.ErrorStatus.ArtifactID];
+			Guid errorTypeChoiceGuid = artifactGuidRepository.GetGuidsForArtifactIds(new List<int> { jobHistoryError.ErrorType.ArtifactID })[jobHistoryError.ErrorType.ArtifactID];
 
 			var dto = new JobHistoryErrorDTO()
             {

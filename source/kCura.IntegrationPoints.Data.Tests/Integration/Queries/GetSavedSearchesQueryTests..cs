@@ -21,7 +21,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Queries
 			client.Received().Query(Arg.Is<APIOptions>(option => option == client.APIOptions),
 				Arg.Is<Query>(query =>
 							query.ArtifactTypeID == (Int32)ArtifactType.Search
-							&& query.Condition == null
+							&& query.Condition.GetType() == typeof(NotCondition)
+							&& query.Condition.ToString() == new NotCondition(new TextCondition("Name", TextConditionEnum.Like, "Temporary Retry Errors Search%")).ToString()
 							&& query.Sorts.Count == 1
 							&& query.Sorts[0].Field == "Name"
 							&& query.Sorts[0].Direction == SortEnum.Ascending));

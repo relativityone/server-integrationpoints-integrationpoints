@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 						break;
 				}
 			}
-			else
+			else //This runs for Run Now or Scheduled jobs
 			{
 				switch (_updateStatusType.ErrorTypes)
 				{
@@ -83,14 +83,20 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(job.WorkspaceID);
 
-			if (_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
+			if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors)
 			{
-				UpdateStatuses(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorRetried);
-				jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(job.WorkspaceID, _savedSearchArtifactId, 0);
-			}
-			else
-			{
-				UpdateStatuses(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorRetried);
+				if (_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
+				{
+					UpdateStatuses(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE, jobHistoryErrorRepository,
+						ErrorStatusChoices.JobHistoryErrorRetried);
+					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(job.WorkspaceID, _savedSearchArtifactId, 0);
+				}
+				else if (_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly ||
+						_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem)
+				{
+					UpdateStatuses(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE, jobHistoryErrorRepository,
+						ErrorStatusChoices.JobHistoryErrorRetried);
+				}
 			}
 		}
 
