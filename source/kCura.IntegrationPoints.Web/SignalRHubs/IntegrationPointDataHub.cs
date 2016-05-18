@@ -26,10 +26,11 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
         private int _intervalBetweentasks = 100;
         private IContextContainer _context;
         private IManagerFactory _managerFactory;
-	    private IHelperClassFactory _helperClassFactory;
+		private IHelperClassFactory _helperClassFactory;
         private ISessionService _sessionService;
         private IIntegrationPointManager _integrationPointManager;
-	    private IStateManager _stateManager;
+	    private IQueueManager _queueManager;
+		private IStateManager _stateManager;
 
         public IntegrationPointDataHub() :
             this(new ContextContainer(ConnectionHelper.Helper()), new ManagerFactory(), new HelperClassFactory())
@@ -39,10 +40,11 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
         internal IntegrationPointDataHub(IContextContainer context, IManagerFactory managerFactory, IHelperClassFactory helperClassFactory)
         {
             _context = context;
-            _managerFactory = managerFactory;
+			_managerFactory = managerFactory;
 			_helperClassFactory = helperClassFactory;
-        	_integrationPointManager = _managerFactory.CreateIntegrationPointManager(_context);
-	        _stateManager = _managerFactory.CreateStateManager(_context);
+			_integrationPointManager = _managerFactory.CreateIntegrationPointManager(_context);
+	        _queueManager = _managerFactory.CreateQueueManager(_context);
+			_stateManager = _managerFactory.CreateStateManager();
 
             if (_tasks == null)
             {
@@ -109,12 +111,12 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 							var onClickEvents = new OnClickEventDTO();
 							if (sourceProviderIsRelativity)
 							{
-								IOnClickEventHelper onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, _context);
+								IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, _context);
+								bool hasJobsExecutingOrInQueue = _queueManager.HasJobsExecutingOrInQueue(input.WorkspaceId, input.ArtifactId);
 
-		                        buttonStates = _stateManager.GetButtonState(input.WorkspaceId, input.ArtifactId, permissionCheck.Success,
+								buttonStates = _stateManager.GetButtonState(input.WorkspaceId, input.ArtifactId, hasJobsExecutingOrInQueue, permissionCheck.Success,
 			                        integrationPointHasErrors);
 								onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(input.WorkspaceId, input.ArtifactId, buttonStates);
-
 							}
                             Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
                         }

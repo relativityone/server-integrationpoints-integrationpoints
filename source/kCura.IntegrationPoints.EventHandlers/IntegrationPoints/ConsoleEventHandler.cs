@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using kCura.EventHandler;
+﻿using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
+using System;
+using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		private readonly IManagerFactory _managerFactory;
 		private readonly IContextContainerFactory _contextContainerFactory;
 		private readonly IHelperClassFactory _helperClassFactory;
-		
+
 		public ConsoleEventHandler()
 		{
 			_contextContainerFactory = new ContextContainerFactory();
@@ -32,18 +32,21 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 		public override FieldCollection RequiredFields => new FieldCollection();
 
-		public override void OnButtonClick(ConsoleButton consoleButton) { }
-		
+		public override void OnButtonClick(ConsoleButton consoleButton)
+		{
+		}
+
 		public override EventHandler.Console GetConsole(PageEvent pageEvent)
 		{
 			var console = new EventHandler.Console
 			{
 				Title = "RUN",
 			};
-			
+
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
 			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(contextContainer);
-			IStateManager stateManager = _managerFactory.CreateStateManager(contextContainer);
+			IStateManager stateManager = _managerFactory.CreateStateManager();
+			IQueueManager queueManager = _managerFactory.CreateQueueManager(contextContainer);
 
 			IntegrationPointDTO integrationPointDto = integrationPointManager.Read(Application.ArtifactID, ActiveArtifact.ArtifactID);
 
@@ -51,15 +54,16 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			kCura.IntegrationPoints.Core.Constants.SourceProvider sourceProvider = integrationPointManager.GetSourceProvider(Application.ArtifactID, integrationPointDto);
 			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissions(Application.ArtifactID, integrationPointDto, sourceProvider);
 
-			IOnClickEventHelper onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory,
+			IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory,
 				contextContainer);
 
 			var buttonList = new List<ConsoleButton>();
 
 			if (sourceProvider == kCura.IntegrationPoints.Core.Constants.SourceProvider.Relativity)
 			{
-				ButtonStateDTO buttonState = stateManager.GetButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID,
-					permissionCheck.Success, integrationPointHasErrors);
+				bool hasJobsExecutingOrInQueue= queueManager.HasJobsExecutingOrInQueue(Application.ArtifactID,
+					ActiveArtifact.ArtifactID);
+				ButtonStateDTO buttonState = stateManager.GetButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID, hasJobsExecutingOrInQueue, permissionCheck.Success, integrationPointHasErrors);
 				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(Application.ArtifactID, ActiveArtifact.ArtifactID, buttonState);
 
 				ConsoleButton runNowButton = GetRunNowButtonRelativityProvider(buttonState.RunNowButtonEnabled, onClickEvents.RunNowOnClickEvent);
@@ -73,12 +77,12 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				if (!permissionCheck.Success)
 				{
 					string script = "<script type='text/javascript'>"
-					                + "$(document).ready(function () {"
-					                + "IP.message.error.raise(\""
+									+ "$(document).ready(function () {"
+									+ "IP.message.error.raise(\""
 									+ permissionCheck.ErrorMessage
 									+ "\", $(\".cardContainer\"));"
-					                + "});"
-					                + "</script>";
+									+ "});"
+									+ "</script>";
 					console.AddScriptBlock("IPConsoleErrorDisplayScript", script);
 				}
 			}
@@ -89,7 +93,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			}
 
 			console.ButtonList = buttonList;
-			
+
 			return console;
 		}
 
