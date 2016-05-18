@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
 using kCura.WinEDDS;
+using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
@@ -31,7 +32,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		public void Init()
 		{
 			_configSettings = new ConfigSettings();
-			_instanceUnderTest = new ExportProcessRunner();
+		    var exportProcessBuilder = new ExportProcessBuilder(Substitute.For<ILoggingMediator>(),
+		        Substitute.For<IUserNotification>(), Substitute.For<IUserMessageNotification>());
+            _instanceUnderTest = new ExportProcessRunner(exportProcessBuilder);
 			_workspaceService = new WorkspaceService(_configSettings);
 			_exportSettings = CreateExportSettings();
 
@@ -56,7 +59,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		[Ignore("Integration Test")]
 		public void it_should_export_saved_search()
 		{
-			_instanceUnderTest.StartWith(_exportSettings, Substitute.For<IJobHistoryErrorService>(), Substitute.For<IAPILog>());
+			_instanceUnderTest.StartWith(_exportSettings);
 
 			ValidateResults(_exportSettings.ExportFilesLocation);
 		}

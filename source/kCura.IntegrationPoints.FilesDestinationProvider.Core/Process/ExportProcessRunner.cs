@@ -1,30 +1,18 @@
-﻿using kCura.IntegrationPoints.Core.Services.JobHistory;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
-using kCura.WinEDDS;
-using Relativity.API;
-
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
+﻿namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
     public class ExportProcessRunner
     {
-        public void StartWith(ExportSettings settings, IJobHistoryErrorService jobHistoryErrorService, IAPILog apiLog)
-        {
-            var searchExporter = new ExportProcessBuilder().Create(settings);
+        private readonly IExportProcessBuilder _exportProcessBuilder;
 
-            AttachHandlers(searchExporter, jobHistoryErrorService, apiLog);
-            searchExporter.ExportSearch();
+        public ExportProcessRunner(IExportProcessBuilder exportProcessBuilder)
+        {
+            _exportProcessBuilder = exportProcessBuilder;
         }
 
-        private void AttachHandlers(Exporter exporter, IJobHistoryErrorService jobHistoryErrorService, IAPILog apiLog)
+        public void StartWith(ExportSettings settings)
         {
-            var exportUserNotification = new ExportUserNotification();
-            var jobErrorLoggingMediator = new JobErrorLoggingMediator(jobHistoryErrorService);
-            var exportLoggingMediator = new ExportLoggingMediator(apiLog);
-
-            exporter.InteractionManager = exportUserNotification;
-
-            jobErrorLoggingMediator.RegisterEventHandlers(exportUserNotification, exporter);
-            exportLoggingMediator.RegisterEventHandlers(exportUserNotification, exporter);
+            var searchExporter = _exportProcessBuilder.Create(settings);
+            searchExporter.ExportSearch();
         }
     }
 }

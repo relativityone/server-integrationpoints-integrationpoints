@@ -156,6 +156,9 @@
     <Compile Include="Logging\ILoggingMediator.cs" />
     <Compile Include="Logging\IUserMessageNotification.cs" />
     <Compile Include="Logging\JobErrorLoggingMediator.cs" />
+    <Compile Include="Logging\JobHistoryErrorServiceProvider.cs" />
+    <Compile Include="Logging\LoggingMediatorFactory.cs" />
+    <Compile Include="Process\ExporterWrapper.cs" />
     <Compile Include="Process\ExportFileHelper.cs" />
     <Compile Include="Process\ExportProcessBuilder.cs" />
     <Compile Include="Files\FileRepository.cs" />
@@ -169,6 +172,8 @@
     <Compile Include="Metadata\MetadataSettingsBuilder.cs" />
     <Compile Include="Metadata\MetadataFileType.cs" />
     <Compile Include="Process\ExportProcessRunner.cs" />
+    <Compile Include="Process\IExporter.cs" />
+    <Compile Include="Process\IExportProcessBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Logging\UserMessageEventArgs.cs" />
     <Compile Include="Logging\ExportUserNotification.cs" />

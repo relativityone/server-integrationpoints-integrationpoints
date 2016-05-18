@@ -8,7 +8,10 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.ScheduleQueue.Core.Logging;
+using kCura.WinEDDS.Exporters;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Installer
@@ -40,6 +43,17 @@ namespace kCura.IntegrationPoints.Agent.Installer
             container.Register(Component.For<ExportWorker>().ImplementedBy<ExportWorker>()
 				.DependsOn(Dependency.OnComponent<ISynchronizerFactory, ExportDestinationSynchronizerFactory>())
 				.LifeStyle.Transient);
-		}
+		    container.Register(
+		        Component.For<JobHistoryErrorServiceProvider>()
+		            .ImplementedBy<JobHistoryErrorServiceProvider>()
+		            .LifeStyle.BoundTo<ExportWorker>());
+
+            //TODO: FileDestinationProviderInstaller
+		    container.Register(Component.For<LoggingMediatorFactory>().ImplementedBy<LoggingMediatorFactory>());
+		    container.Register(Component.For<ILoggingMediator>().UsingFactory((LoggingMediatorFactory f) =>f.Create()));
+            container.Register(Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
+            container.Register(Component.For<IExportProcessBuilder>().ImplementedBy<ExportProcessBuilder>());
+            container.Register(Component.For<ExportProcessRunner>().ImplementedBy<ExportProcessRunner>());
+        }
 	}
 }
