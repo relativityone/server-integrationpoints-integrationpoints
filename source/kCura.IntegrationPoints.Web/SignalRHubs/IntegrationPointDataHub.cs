@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
 using Microsoft.AspNet.SignalR;
@@ -25,19 +26,23 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
         private int _intervalBetweentasks = 100;
         private IContextContainer _context;
         private IManagerFactory _managerFactory;
+	    private IHelperClassFactory _helperClassFactory;
         private ISessionService _sessionService;
         private IIntegrationPointManager _integrationPointManager;
+	    private IStateManager _stateManager;
 
         public IntegrationPointDataHub() :
-            this(new ContextContainer(ConnectionHelper.Helper()), new ManagerFactory())
+            this(new ContextContainer(ConnectionHelper.Helper()), new ManagerFactory(), new HelperClassFactory())
         {
         }
 
-        public IntegrationPointDataHub(IContextContainer context, IManagerFactory managerFactory)
+        public IntegrationPointDataHub(IContextContainer context, IManagerFactory managerFactory, IHelperClassFactory helperClassFactory)
         {
             _context = context;
             _managerFactory = managerFactory;
-            _integrationPointManager = _managerFactory.CreateIntegrationPointManager(_context);
+	        _helperClassFactory = helperClassFactory;
+			_integrationPointManager = _managerFactory.CreateIntegrationPointManager(_context);
+	        _stateManager = _managerFactory.CreateStateManager(_context);
 
             if (_tasks == null) _tasks = new SortedDictionary<string, IntegrationPointDataHubInput>();
 
@@ -82,8 +87,11 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
                     {
                         IntegrationPointDataHubInput input = _tasks[key];
                         IntegrationPointDTO integrationPointDTO = _integrationPointManager.Read(input.WorkspaceId, input.ArtifactId);
+						bool integrationPointHasErrors = integrationPointDTO.HasErrors.GetValueOrDefault(false);
+						bool sourceProviderIsRelativity = _integrationPointManager.IntegrationPointSourceProviderIsRelativity(input.WorkspaceId, integrationPointDTO);
+						PermissionCheckDTO permissionCheck = _integrationPointManager.UserHasPermissions(input.WorkspaceId, integrationPointDTO, sourceProviderIsRelativity);
 
-                        if (integrationPointDTO != null)
+						if (integrationPointDTO != null)
                         {
                             IntegrationModel model = new IntegrationModel()
                             {
@@ -91,7 +99,18 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
                                 NextRun = integrationPointDTO.NextScheduledRuntimeUTC
                             };
 
-                            Clients.Group(key).updateIntegrationPointData(model);
+	                        var buttonStates = new ButtonStateDTO();
+							var onClickEvents = new OnClickEventDTO();
+							if (sourceProviderIsRelativity)
+							{
+								IOnClickEventHelper onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, _context);
+
+		                        buttonStates = _stateManager.GetButtonState(input.WorkspaceId, input.ArtifactId, permissionCheck.Success,
+			                        integrationPointHasErrors);
+								onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(input.WorkspaceId, input.ArtifactId, buttonStates);
+
+							}
+                            Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
                         }
                         //sleep between getting each stats to get SQL Server a break
                         Thread.Sleep(_intervalBetweentasks);

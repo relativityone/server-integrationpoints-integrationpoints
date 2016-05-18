@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Castle.Components.DictionaryAdapter;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Factories.Implementations;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
@@ -14,17 +14,20 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 	{
 		private readonly IManagerFactory _managerFactory;
 		private readonly IContextContainerFactory _contextContainerFactory;
+		private readonly IHelperClassFactory _helperClassFactory;
 		
 		public ConsoleEventHandler()
 		{
 			_contextContainerFactory = new ContextContainerFactory();
 			_managerFactory = new ManagerFactory();
+			_helperClassFactory = new HelperClassFactory();
 		}
 
-		internal ConsoleEventHandler(IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory)
+		internal ConsoleEventHandler(IContextContainerFactory contextContainerFactory, IManagerFactory managerFactory, IHelperClassFactory helperClassFactory)
 		{
 			_contextContainerFactory = contextContainerFactory;
 			_managerFactory = managerFactory;
+			_helperClassFactory = helperClassFactory;
 		}
 
 		public override FieldCollection RequiredFields => new FieldCollection();
@@ -40,23 +43,30 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			
 			IContextContainer contextContainer = _contextContainerFactory.CreateContextContainer(Helper);
 			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(contextContainer);
+			IStateManager stateManager = _managerFactory.CreateStateManager(contextContainer);
+
 			IntegrationPointDTO integrationPointDto = integrationPointManager.Read(Application.ArtifactID, ActiveArtifact.ArtifactID);
 
 			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
 			bool sourceProviderIsRelativity = integrationPointManager.IntegrationPointSourceProviderIsRelativity(Application.ArtifactID, integrationPointDto);
 			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissions(Application.ArtifactID, integrationPointDto, sourceProviderIsRelativity);
 
-			ConsoleButton runNowButton = GetRunNowButton(permissionCheck.Success);
-			var buttonList = new List<ConsoleButton>()
-			{
-				runNowButton
-			};
+			IOnClickEventHelper onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory,
+				contextContainer);
+
+			var buttonList = new List<ConsoleButton>();
 
 			if (sourceProviderIsRelativity)
 			{
-				ConsoleButton retryErrorsButton = GetRetryErrorsButton(permissionCheck.Success && integrationPointHasErrors);
-				ConsoleButton viewErrorsLink = GetViewErrorsLink(contextContainer, integrationPointHasErrors);
+				ButtonStateDTO buttonState = stateManager.GetButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID,
+					permissionCheck.Success, integrationPointHasErrors);
+				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(Application.ArtifactID, ActiveArtifact.ArtifactID, buttonState);
 
+				ConsoleButton runNowButton = GetRunNowButtonRelativityProvider(buttonState.RunNowButtonEnabled, onClickEvents.RunNowOnClickEvent);
+				ConsoleButton retryErrorsButton = GetRetryErrorsButton(buttonState.RetryErrorsButtonEnabled, onClickEvents.RetryErrorsOnClickEvent);
+				ConsoleButton viewErrorsLink = GetViewErrorsLink(buttonState.ViewErrorsLinkEnabled, onClickEvents.ViewErrorsOnClickEvent);
+
+				buttonList.Add(runNowButton);
 				buttonList.Add(retryErrorsButton);
 				buttonList.Add(viewErrorsLink);
 
@@ -71,6 +81,11 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					                + "</script>";
 					console.AddScriptBlock("IPConsoleErrorDisplayScript", script);
 				}
+			}
+			else
+			{
+				ConsoleButton runNowButton = GetRunNowButton(permissionCheck.Success);
+				buttonList.Add(runNowButton);
 			}
 
 			console.ButtonList = buttonList;
@@ -89,53 +104,34 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			};
 		}
 
-		private ConsoleButton GetRetryErrorsButton(bool isEnabled)
+		private ConsoleButton GetRunNowButtonRelativityProvider(bool isEnabled, string onClickEvent)
+		{
+			return new ConsoleButton
+			{
+				DisplayText = "Run Now",
+				RaisesPostBack = false,
+				Enabled = isEnabled,
+				OnClickEvent = onClickEvent
+			};
+		}
+
+		private ConsoleButton GetRetryErrorsButton(bool isEnabled, string onClickEvent)
 		{
 			return new ConsoleButton
 			{
 				DisplayText = "Retry Errors",
 				RaisesPostBack = false,
 				Enabled = isEnabled,
-				OnClickEvent = isEnabled ? $"IP.retryJob({ActiveArtifact.ArtifactID},{Application.ArtifactID})" : String.Empty
+				OnClickEvent = onClickEvent
 			};
 		}
 
-		private ConsoleButton GetViewErrorsLink(IContextContainer contextContainer, bool hasErrors)
+		private ConsoleButton GetViewErrorsLink(bool isEnabled, string onClickEvent)
 		{
-			string onClickEvent = String.Empty;
-
-			if (hasErrors)
-			{
-				IFieldManager fieldManager = _managerFactory.CreateFieldManager(contextContainer);
-				IJobHistoryManager jobHistoryManager = _managerFactory.CreateJobHistoryManager(contextContainer);
-				IArtifactGuidManager artifactGuidManager = _managerFactory.CreateArtifactGuidManager(contextContainer);
-				IObjectTypeManager objectTypeManager = _managerFactory.CreateObjectTypeManager(contextContainer);
-
-				var errorErrorStatusFieldGuid = new Guid(JobHistoryErrorDTO.FieldGuids.ErrorStatus);
-				var jobHistoryFieldGuid = new Guid(JobHistoryErrorDTO.FieldGuids.JobHistory);
-
-				Dictionary<Guid, int> guidsAndArtifactIds = artifactGuidManager.GetArtifactIdsForGuids(Application.ArtifactID, new[]
-				{
-					JobHistoryErrorDTO.Choices.ErrorStatus.Guids.New,
-					errorErrorStatusFieldGuid,
-					jobHistoryFieldGuid
-				});
-
-				int jobHistoryErrorStatusArtifactViewFieldId = fieldManager.RetrieveArtifactViewFieldId(Application.ArtifactID, guidsAndArtifactIds[errorErrorStatusFieldGuid]).GetValueOrDefault();
-				int jobHistoryErrorStatusNewChoiceArtifactId = guidsAndArtifactIds[JobHistoryErrorDTO.Choices.ErrorStatus.Guids.New];
-				int jobHistoryErrorDescriptorArtifactTypeId = objectTypeManager.RetrieveObjectTypeDescriptorArtifactTypeId(Application.ArtifactID, new Guid(JobHistoryErrorDTO.ArtifactTypeGuid));
-				int jobHistoryArtifactViewFieldId = fieldManager.RetrieveArtifactViewFieldId(Application.ArtifactID, guidsAndArtifactIds[jobHistoryFieldGuid]).GetValueOrDefault();
-				int jobHistoryInstanceArtifactId = jobHistoryManager.GetLastJobHistoryArtifactId(Application.ArtifactID, ActiveArtifact.ArtifactID);
-
-				onClickEvent = $"window.location='../../Case/IntegrationPoints/ErrorsRedirect.aspx?ErrorStatusArtifactViewFieldID={jobHistoryErrorStatusArtifactViewFieldId}"
-						+ $"&ErrorStatusNewChoiceArtifactId={jobHistoryErrorStatusNewChoiceArtifactId}&JobHistoryErrorArtifactTypeId={jobHistoryErrorDescriptorArtifactTypeId}"
-						+ $"&JobHistoryArtifactViewFieldID={jobHistoryArtifactViewFieldId}&JobHistoryInstanceArtifactId={jobHistoryInstanceArtifactId}'; return false;";
-			}
-
 			return new ConsoleLinkButton
 			{
 				DisplayText = "View Errors",
-				Enabled = hasErrors,
+				Enabled = isEnabled,
 				RaisesPostBack = false,
 				OnClickEvent = onClickEvent
 			};

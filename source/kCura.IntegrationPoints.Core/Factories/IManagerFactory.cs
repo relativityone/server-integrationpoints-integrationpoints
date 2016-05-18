@@ -57,10 +57,17 @@ namespace kCura.IntegrationPoints.Core.Factories
 		IArtifactGuidManager CreateArtifactGuidManager(IContextContainer contextContainer);
 
 		/// <summary>
-		/// Creates Object Type manage
+		/// Creates Object Type manager.
 		/// </summary>
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>Object Type manager</returns>
 		IObjectTypeManager CreateObjectTypeManager(IContextContainer contextContainer);
+
+		/// <summary>
+		/// Create State manager.
+		/// </summary>
+		/// <param name="contextContainer">Container containing necessary contexts.</param>
+		/// <returns>State manager (for console buttons)</returns>
+		IStateManager CreateStateManager(IContextContainer contextContainer);
 	}
 }
