@@ -21,7 +21,6 @@ using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -157,7 +156,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			IFieldRepository sourcefieldRepository = repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
 			IFieldRepository destinationfieldRepository = repositoryFactory.GetFieldRepository(TargetWorkspaceArtifactId);
 
-			Helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser).Returns(Helper.CreateUserObjectQueryManager(), Helper.CreateUserObjectQueryManager());
 			ArtifactDTO sourceDto = sourcefieldRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
 			ArtifactDTO targetDto = destinationfieldRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
 
@@ -185,12 +183,27 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected void AssignJobToAgent(int agentId, long jobId)
 		{
-			string query = $" Update [{GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME}] SET [LockedByAgentID] = @agentId Where JobId = @JobId";
+			string query = $" Update [{GlobalConst.SCHEDULE_AGENT_QUEUE_TABLE_NAME}] SET [LockedByAgentID] = @agentId,  [NextRunTime] = GETUTCDATE() - 1 Where JobId = @JobId";
 
 			SqlParameter agentIdParam = new SqlParameter("@agentId", SqlDbType.BigInt) { Value = agentId };
 			SqlParameter jobIdParam = new SqlParameter("@JobId", SqlDbType.Int) { Value = jobId };
 
 			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new SqlParameter[] { agentIdParam, jobIdParam });
+		}
+
+		protected void ControlIntegrationPointAgents(bool enable)
+		{
+			string query = @" Update A
+  Set Enabled = @enabled
+  From [Agent] A
+	Inner Join [AgentType] AT
+  ON A.AgentTypeArtifactID = AT.ArtifactID
+  Where Guid = '08C0CE2D-8191-4E8F-B037-899CEAEE493D'";
+
+			SqlParameter toEnabled = new SqlParameter("@enabled", SqlDbType.Bit) { Value = enable };
+
+			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new SqlParameter[] { toEnabled });
+
 		}
 	}
 }

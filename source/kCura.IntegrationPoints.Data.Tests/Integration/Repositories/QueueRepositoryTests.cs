@@ -352,7 +352,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[Test]
 		public void OneExecutingJob_ExpectCount()
 		{
-			const int agentId = 123456;
 			Job job = null;
 			try
 			{
@@ -632,21 +631,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			{
 				_jobService.DeleteJob(job.JobId);
 			}
-		}
-
-		private void ControlIntegrationPointAgents(bool enable)
-		{
-			string query = @" Update A
-  Set Enabled = @enabled
-  From [Agent] A
-	Inner Join [AgentType] AT
-  ON A.AgentTypeArtifactID = AT.ArtifactID
-  Where Guid = '08C0CE2D-8191-4E8F-B037-899CEAEE493D'";
-
-			SqlParameter toEnabled = new SqlParameter("@enabled", SqlDbType.Bit) { Value = enable };
-
-			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new SqlParameter[] { toEnabled });
-
 		}
 
 		private int CountJobsInTheQueue()
