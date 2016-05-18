@@ -21,8 +21,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
             _userMessageNotification = Substitute.For<IUserMessageNotification>();
             _historyErrorService = Substitute.For<IJobHistoryErrorService>();
             _exporterStatusNotification = Substitute.For<IExporterStatusNotification>();
-            var jobErrorLoggingMediator = new JobErrorLoggingMediator(_userMessageNotification,
-                _exporterStatusNotification, _historyErrorService);
+            var jobErrorLoggingMediator = new JobErrorLoggingMediator(_historyErrorService);
+            jobErrorLoggingMediator.RegisterEventHandlers(_userMessageNotification, _exporterStatusNotification);
         }
 
         [Test]

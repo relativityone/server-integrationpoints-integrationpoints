@@ -6,14 +6,18 @@ using kCura.WinEDDS;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 {
-    public class JobErrorLoggingMediator
+    public class JobErrorLoggingMediator : ILoggingMediator
     {
         private readonly IJobHistoryErrorService _historyErrorService;
 
-        public JobErrorLoggingMediator(IUserMessageNotification userMessageNotification,
-            IExporterStatusNotification exporterStatusNotification, IJobHistoryErrorService historyErrorService)
+        public JobErrorLoggingMediator(IJobHistoryErrorService historyErrorService)
         {
             _historyErrorService = historyErrorService;
+        }
+
+        public void RegisterEventHandlers(IUserMessageNotification userMessageNotification,
+            IExporterStatusNotification exporterStatusNotification)
+        {
             userMessageNotification.UserMessageEvent += OnUserMessage;
             exporterStatusNotification.FatalErrorEvent += OnFatalError;
             exporterStatusNotification.StatusMessage += OnStatusMessage;
