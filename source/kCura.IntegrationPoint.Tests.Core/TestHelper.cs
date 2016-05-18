@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using NSubstitute;

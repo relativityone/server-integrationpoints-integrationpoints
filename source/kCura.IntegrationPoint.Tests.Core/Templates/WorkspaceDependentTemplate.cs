@@ -90,7 +90,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				.LifeStyle.Transient);
 
 			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));
-			Container.Register(Component.For<IPermissionRepository>().UsingFactoryMethod(k => Helper.PermissionManager));
 
 			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller() };
 			foreach (IWindsorInstaller dependency in dependencies)
