@@ -143,6 +143,7 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Integration\DeleteIPsWithSourceProviderTest.cs" />
     <Compile Include="Integration\Installers\ServiceInstallerTests.cs" />
     <Compile Include="Integration\Managers\QueueManagerTests.cs" />

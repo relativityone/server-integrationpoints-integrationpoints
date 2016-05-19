@@ -55,7 +55,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		{
 
 			IPermissionRepository sourcePermissionRepository = _repositoryFactory.GetPermissionRepository(workspaceArtifactId);
-			IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(workspaceArtifactId);
 
 			bool sourceWorkspacePermission = sourcePermissionRepository.UserHasPermissionToAccessWorkspace();
 			bool integrationPointTypeViewPermission =
