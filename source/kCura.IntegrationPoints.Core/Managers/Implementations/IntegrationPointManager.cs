@@ -117,31 +117,31 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			if (!sourceWorkspacePermission)
 			{
 				userHasAllPermissions = false;
-				errorMessages.Add("User does not have permission to access this workspace");
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.CURRENT_WORKSPACE_NO_ACCESS);
 			}
 
 			if (!integrationPointTypeViewPermission)
 			{
 				userHasAllPermissions = false;
-				errorMessages.Add("User does not have permissions to view Integration Points.");
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_VIEW);
 			}
 
 			if (!integrationPointInstanceViewPermission)
 			{
 				userHasAllPermissions = false;
-				errorMessages.Add("User does not have permission to view selected Integration Point.");
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
 			}
 
 			if (!sourceImportPermission)
 			{
 				userHasAllPermissions = false;
-				errorMessages.Add("User does not have import permissions for this workspace.");
+				errorMessages.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
 			}
 
 			if (!destinationRdoPermissions)
 			{
 				userHasAllPermissions = false;
-				errorMessages.Add("User must have destination RDO view, edit, and add permissions.");
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
 			}
 
 			if (sourceProvider == Constants.SourceProvider.Relativity)
@@ -150,37 +150,37 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				if (!destinationWorkspacePermission)
 				{
 					userHasAllPermissions = false;
-					errorMessages.Add("User does not have access to the destination workspace.");
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_ACCESS);
 				}
 
 				if (!destinationImportPermission)
 				{
 					userHasAllPermissions = false;
-					errorMessages.Add("User does not have permission to import in the destination workspace.");
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_IMPORT);
 				}
 
 				if (!exportPermission)
 				{
 					userHasAllPermissions = false;
-					errorMessages.Add("User does not have export permission in the source workspace.");
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_WORKSPACE_NO_EXPORT);
 				}
 
 				if (!sourceDocumentEditPermissions)
 				{
 					userHasAllPermissions = false;
-					errorMessages.Add("User does not have document edit permissions in source workspace");
+					errorMessages.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
 				}
 
 				if (!savedSearchPermissions)
 				{
 					userHasAllPermissions = false;
-					errorMessages.Add("User does not have access to saved search.");
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS);
 				}
 
 				if (!savedSearchIsPublic)
 				{
 					userHasAllPermissions = false;
-					errorMessages.Add("The saved search must be public.");
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NOT_PUBLIC);
 				}
 			}
 
