@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
 			kCura.IntegrationPoints.Core.Constants.SourceProvider sourceProvider = integrationPointManager.GetSourceProvider(Application.ArtifactID, integrationPointDto);
-			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissions(Application.ArtifactID, integrationPointDto, sourceProvider);
+			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissionToRunJob(Application.ArtifactID, integrationPointDto, sourceProvider);
 
 			ConsoleButton runNowButton = GetRunNowButton(permissionCheck.Success);
 			var buttonList = new List<ConsoleButton>()
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					string script = "<script type='text/javascript'>"
 					                + "$(document).ready(function () {"
 					                + "IP.message.error.raise(\""
-									+ permissionCheck.ErrorMessage
+									+ String.Join("</br>", permissionCheck.ErrorMessages)
 									+ "\", $(\".cardContainer\"));"
 					                + "});"
 					                + "</script>";

@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using Newtonsoft.Json;
 
@@ -42,43 +46,150 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return sourceProvider;
 		}
 
-		public PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null)
+		private class DestinationConfiguration
 		{
-			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(workspaceArtifactId);
+			public int artifactTypeID { get; set; }
+		}
 
-			var permissionCheck = new PermissionCheckDTO() { Success = false };
+		public PermissionCheckDTO UserHasPermissionToRunJob(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null)
+		{
 
-			if (!permissionRepository.UserCanImport())
-			{
-				permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE;
+			IPermissionRepository sourcePermissionRepository = _repositoryFactory.GetPermissionRepository(workspaceArtifactId);
+			IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(workspaceArtifactId);
 
-				return permissionCheck;
-			}
+			bool sourceWorkspacePermission = sourcePermissionRepository.UserHasPermissionToAccessWorkspace();
+			bool integrationPointTypeViewPermission =
+				sourcePermissionRepository.UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View);
+			bool integrationPointInstanceViewPermission = sourcePermissionRepository.UserHasArtifactInstancePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View);
 
-			if (!sourceProvider.HasValue)
+			DestinationConfiguration destinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPointDto.DestinationConfiguration);
+
+			bool sourceImportPermission = true;
+			bool destinationImportPermission = true;
+			bool destinationRdoPermissions = false;
+			bool destinationWorkspacePermission = true;
+			bool savedSearchPermissions = true;
+			bool savedSearchIsPublic = true;
+			bool exportPermission = true;
+			bool sourceDocumentEditPermissions = true;
+
+			if (sourceProvider.HasValue)
 			{
 				sourceProvider = this.GetSourceProvider(workspaceArtifactId, integrationPointDto);
 			}
 
 			if (sourceProvider == Constants.SourceProvider.Relativity)
 			{
-				if (!permissionRepository.UserCanEditDocuments())
-				{
-					permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS;
+				SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(integrationPointDto.SourceConfiguration);
+				int destinationWorkspaceArtifactId = sourceConfiguration.TargetWorkspaceArtifactId;
+				IPermissionRepository destinationPermissionRepository =
+					_repositoryFactory.GetPermissionRepository(destinationWorkspaceArtifactId);
+				ISavedSearchRepository savedSearchRepository = _repositoryFactory.GetSavedSearchRepository(workspaceArtifactId, sourceConfiguration.SavedSearchArtifactId);
 
-					return permissionCheck;
+				exportPermission = sourcePermissionRepository.UserCanExport();
+				destinationWorkspacePermission = destinationPermissionRepository.UserHasPermissionToAccessWorkspace();
+				destinationImportPermission = destinationPermissionRepository.UserCanImport();
+				destinationRdoPermissions = destinationPermissionRepository.UserHasArtifactTypePermissions(
+					destinationConfiguration.artifactTypeID, 
+					new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add });
+				sourceDocumentEditPermissions = sourcePermissionRepository.UserCanEditDocuments();
+
+				SavedSearchDTO savedSearch = savedSearchRepository.RetrieveSavedSearch();
+				if (savedSearch == null)
+				{
+					savedSearchPermissions = false;
+				}
+				else
+				{
+					savedSearchIsPublic = savedSearch.Owner == 0;
+				}
+			}
+			else
+			{
+				sourceImportPermission = sourcePermissionRepository.UserCanImport();
+				destinationRdoPermissions = sourcePermissionRepository.UserHasArtifactTypePermissions(
+					destinationConfiguration.artifactTypeID, 
+					new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add });
+			}
+
+			var errorMessages = new List<string>();
+			bool userHasAllPermissions = true;
+
+			if (!sourceWorkspacePermission)
+			{
+				userHasAllPermissions = false;
+				errorMessages.Add("User does not have permission to access this workspace");
+			}
+
+			if (!integrationPointTypeViewPermission)
+			{
+				userHasAllPermissions = false;
+				errorMessages.Add("User does not have permissions to view Integration Points.");
+			}
+
+			if (!integrationPointInstanceViewPermission)
+			{
+				userHasAllPermissions = false;
+				errorMessages.Add("User does not have permission to view selected Integration Point.");
+			}
+
+			if (!sourceImportPermission)
+			{
+				userHasAllPermissions = false;
+				errorMessages.Add("User does not have import permissions for this workspace.");
+			}
+
+			if (!destinationRdoPermissions)
+			{
+				userHasAllPermissions = false;
+				errorMessages.Add("User must have destination RDO view, edit, and add permissions.");
+			}
+
+			if (sourceProvider == Constants.SourceProvider.Relativity)
+			{
+				// Relativity provider specific permissions
+				if (!destinationWorkspacePermission)
+				{
+					userHasAllPermissions = false;
+					errorMessages.Add("User does not have access to the destination workspace.");
 				}
 
-				dynamic sourceConfiguration = JsonConvert.DeserializeObject(integrationPointDto.SourceConfiguration);
-				if (!permissionRepository.UserCanViewArtifact((int)ArtifactType.Search, (int)sourceConfiguration.SavedSearchArtifactId))
+				if (!destinationImportPermission)
 				{
-					permissionCheck.ErrorMessage = Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH;
+					userHasAllPermissions = false;
+					errorMessages.Add("User does not have permission to import in the destination workspace.");
+				}
 
-					return permissionCheck;
+				if (!exportPermission)
+				{
+					userHasAllPermissions = false;
+					errorMessages.Add("User does not have export permission in the source workspace.");
+				}
+
+				if (!sourceDocumentEditPermissions)
+				{
+					userHasAllPermissions = false;
+					errorMessages.Add("User does not have document edit permissions in source workspace");
+				}
+
+				if (!savedSearchPermissions)
+				{
+					userHasAllPermissions = false;
+					errorMessages.Add("User does not have access to saved search.");
+				}
+
+				if (!savedSearchIsPublic)
+				{
+					userHasAllPermissions = false;
+					errorMessages.Add("The saved search must be public.");
 				}
 			}
 
-			permissionCheck.Success = true;
+			var permissionCheck = new PermissionCheckDTO()
+			{
+				Success = userHasAllPermissions,
+				ErrorMessages = errorMessages.ToArray()
+			};
 
 			return permissionCheck;
 		}

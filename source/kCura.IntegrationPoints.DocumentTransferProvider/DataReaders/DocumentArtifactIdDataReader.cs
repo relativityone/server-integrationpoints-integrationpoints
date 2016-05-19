@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
-			ArtifactDTO[] results = _savedSearchRepository.RetrieveNext();
+			ArtifactDTO[] results = _savedSearchRepository.RetrieveNextDocuments();
 
 			return results;
 		}

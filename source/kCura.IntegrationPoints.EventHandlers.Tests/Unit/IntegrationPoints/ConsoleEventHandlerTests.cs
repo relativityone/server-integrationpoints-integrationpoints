@@ -87,10 +87,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			var permissionCheck = new PermissionCheckDTO()
 			{
 				Success = hasPermissions,
-				ErrorMessage = hasPermissions ? null : "GOBBLYGOOK!"
+				ErrorMessages = hasPermissions ? null : new[] { "GOBBLYGOOK!" }
 			};
 			Core.Constants.SourceProvider sourceProvider = isRelativitySourceProvider ? Core.Constants.SourceProvider.Relativity : Core.Constants.SourceProvider.Other;
-			_integrationPointManager.UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider)).Returns(permissionCheck);
+			_integrationPointManager.UserHasPermissionToRunJob(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider)).Returns(permissionCheck);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_managerFactory.CreateIntegrationPointManager(_contextContainer).Returns(_integrationPointManager);
 
@@ -132,7 +132,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 			// ASSERT
 			_contextContainerFactory.Received().CreateContextContainer(_helper);
-			_integrationPointManager.Received(1).UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider));
+			_integrationPointManager.Received(1).UserHasPermissionToRunJob(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider));
 			_managerFactory.Received().CreateIntegrationPointManager(_contextContainer);
 
 			Assert.IsNotNull(console);
@@ -169,7 +169,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 					string expectedScript = "<script type='text/javascript'>"
 									+ "$(document).ready(function () {"
 									+ "IP.message.error.raise(\""
-									+ permissionCheck.ErrorMessage
+									+ permissionCheck.ErrorMessages
 									+ "\", $(\".cardContainer\"));"
 									+ "});"
 									+ "</script>";

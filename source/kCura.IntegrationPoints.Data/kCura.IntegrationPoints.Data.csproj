@@ -237,7 +237,7 @@
     <Compile Include="Repositories\Implementations\KeplerDocumentRepository.cs" />
     <Compile Include="Repositories\Implementations\FieldRepository.cs" />
     <Compile Include="Adaptors\Implementations\ObjectQueryManagerAdaptor.cs" />
-    <Compile Include="Repositories\Implementations\RsapiSavedSearchRepository.cs" />
+    <Compile Include="Repositories\Implementations\SavedSearchRepository.cs" />
     <Compile Include="Adaptors\IObjectQueryManagerAdaptor.cs" />
     <Compile Include="Repositories\Implementations\RsapiSourceWorkspaceRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerWorkspaceRepository.cs" />
