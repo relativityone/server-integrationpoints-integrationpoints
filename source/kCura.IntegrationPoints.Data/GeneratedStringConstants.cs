@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.Data
 		public const string DestinationProvider = @"Destination Provider";
 		public const string JobHistory = @"Job History";
 		public const string LogErrors = @"LogErrors";
-		public const string HasErrors = "@HasErrors";
+		public const string HasErrors = @"Has Errors";
 		public const string EmailNotificationRecipients = @"EmailNotificationRecipients";
 		public const string Name = @"Name";
 	}
