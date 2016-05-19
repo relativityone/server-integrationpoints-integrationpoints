@@ -6,7 +6,7 @@
         var overlayOnlyMessage = "Only documents and their metadata with the same identifier will be overwritten.";
         var appendOverlayMesssage = "All existing documents and their metadata in the target workspace that have the same identifier will be overwritten.";
         var appendMessage = "Documents will be placed in the workspace parent folder.";
-	    var appendWithFolderPathMessage = "You may be creating folders in the destination workspace using the ";
+		var appendWithFolderPathMessage = "You may be creating folders in the destination workspace using the ";
         var expiredErrorsMessage = " Any existing errors will be marked as expired.";
         var proceedWarningMessage = " Would you still like to proceed?";
         var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
@@ -15,7 +15,7 @@
             if (IP.fieldName.length !== 0) {
                 selectedMessage = appendWithFolderPathMessage + IP.fieldName + " field.";
             } else {
-	            selectedMessage = appendMessage;
+				selectedMessage = appendMessage;
             }
         } else if (overwriteOption === "Overlay Only" ) {
             selectedMessage = overlayOnlyMessage;
@@ -23,11 +23,11 @@
             selectedMessage = appendOverlayMesssage;
         }
         var consoleContainer = $(".ConsoleControl");
-	    var hasErrors = $(consoleContainer.find(":contains('Retry Errors')")).hasClass("consoleButtonEnabled");
-	    if (hasErrors) {
+		var hasErrors = $(consoleContainer.find(":contains('Retry Errors')")).hasClass("consoleButtonEnabled");
+		if (hasErrors) {
 			selectedMessage += expiredErrorsMessage;
 		}
-	    selectedMessage += proceedWarningMessage;
+		selectedMessage += proceedWarningMessage;
 
          if (root.errorMessage.length !== 0) {
             IP.message.error.raise(root.errorMessage, $(".cardContainer"));
