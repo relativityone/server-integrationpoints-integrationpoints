@@ -13,8 +13,8 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Email;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
@@ -148,12 +148,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			IJobService jobService = new JobService(agentService, _helper);
 			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
-			IPermissionRepository permissionService = Container.Resolve<IPermissionRepository>();
+			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
 			IManagerFactory managerFactory = new ManagerFactory();
 
-			IntegrationPointService integrationPointService = new IntegrationPointService(_helper, caseServiceContext, permissionService, contextContainerFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
+			IntegrationPointService integrationPointService = new IntegrationPointService(_helper, caseServiceContext, contextContainerFactory, repositoryFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
 			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 
 			TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);

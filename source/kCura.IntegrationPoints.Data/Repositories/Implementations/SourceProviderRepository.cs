@@ -62,5 +62,33 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			return dto;
 		}
+
+		public int GetArtifactIdFromSourceProviderTypeGuidIdentifier(string sourceProviderGuidIdentifier)
+		{
+			var query = new Query<RDO>
+			{
+				ArtifactTypeGuid = new Guid(ObjectTypeGuids.SourceProvider),
+				Condition = new TextCondition(new Guid(SourceProviderFieldGuids.Identifier), TextConditionEnum.EqualTo, sourceProviderGuidIdentifier),
+				Fields = new List<FieldValue>()
+				{
+					new FieldValue("Artifact ID")
+				}
+			};
+
+			QueryResultSet<RDO> results = null;
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
+			{
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+				results = rsapiClient.Repositories.RDO.Query(query, 1);
+			}
+
+			if (!results.Success)
+			{
+				throw new Exception($"Unable to retrieve Source Provider: {results.Message}");
+			}
+
+			int sourceProviderArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).First();
+			return sourceProviderArtifactId;
+		}
 	}
 }

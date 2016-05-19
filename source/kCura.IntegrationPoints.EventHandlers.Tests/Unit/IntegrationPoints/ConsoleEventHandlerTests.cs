@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Factories;
+using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
 using NSubstitute;
 using NUnit.Framework;
@@ -21,12 +21,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		private IManagerFactory _managerFactory;
 		private IIntegrationPointManager _integrationPointManager;
 		private IContextContainerFactory _contextContainerFactory;
+		private IHelperClassFactory _helperClassFactory;
 		private IContextContainer _contextContainer;
 		private IEHHelper _helper;
-		private IFieldManager _fieldManager;
-		private IJobHistoryManager _jobHistoryManager;
-		private IArtifactGuidManager _artifactGuidManager;
-		private IObjectTypeManager _objectTypeManager;
+		private IStateManager _stateManager;
+		private IQueueManager _queueManager;
+		private IOnClickEventConstructor _onClickEventHelper;
 
 		private ConsoleEventHandler _instance;
 
@@ -36,24 +36,18 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_managerFactory = Substitute.For<IManagerFactory>();
 			_integrationPointManager = Substitute.For<IIntegrationPointManager>();
 			_contextContainerFactory = Substitute.For<IContextContainerFactory>();
+			_helperClassFactory = Substitute.For<IHelperClassFactory>();
 			_contextContainer = Substitute.For<IContextContainer>();
 			_helper = Substitute.For<IEHHelper>();
 			_helper.GetActiveCaseID().Returns(_APPLICATION_ID);
-
-			_fieldManager = Substitute.For<IFieldManager>();
-			_jobHistoryManager = Substitute.For<IJobHistoryManager>();
-			_artifactGuidManager = Substitute.For<IArtifactGuidManager>();
-			_objectTypeManager = Substitute.For<IObjectTypeManager>();
-
-			_managerFactory.CreateFieldManager(_contextContainer).Returns(_fieldManager);
-			_managerFactory.CreateJobHistoryManager(_contextContainer).Returns(_jobHistoryManager);
-			_managerFactory.CreateArtifactGuidManager(_contextContainer).Returns(_artifactGuidManager);
-			_managerFactory.CreateObjectTypeManager(_contextContainer).Returns(_objectTypeManager);
+			_stateManager = Substitute.For<IStateManager>();
+			_queueManager = Substitute.For<IQueueManager>();
+			_onClickEventHelper = Substitute.For<IOnClickEventConstructor>();
 
 			var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, null);
 			var application = new Application(_APPLICATION_ID, "", "");
 
-			_instance = new EventHandlers.IntegrationPoints.ConsoleEventHandler(_contextContainerFactory, _managerFactory)
+			_instance = new EventHandlers.IntegrationPoints.ConsoleEventHandler(_contextContainerFactory, _managerFactory, _helperClassFactory)
 			{
 				ActiveArtifact = activeArtifact,
 				Application = application,
@@ -69,15 +63,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		public void GetConsole_GoldFlow(bool isRelativitySourceProvider, bool hasPermissions)
 		{
 			// ARRANGE
-			string onClickEventForViewErrors = String.Empty;
-			const int jobHistoryErrorStatusFieldArtifactId = 1076600;
-			const int jobHistoryJobHistoryFieldArtifactId = 105055;
-			const int jobHistoryErrorStatusNewChoiceArtifactId = 106002;
-			const int jobHistoryErrorStatusArtifactViewFieldId = 500500;
-			const int jobHistoryErrorDescriptorArtifactTypeId = 100042;
-			const int jobHistoryArtifactViewFieldId = 500505;
-			const int jobHistoryInstanceArtifactId = 506070;
-
 			var integrationPointDto = new Contracts.Models.IntegrationPointDTO()
 			{
 				HasErrors = true,
@@ -93,7 +78,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_integrationPointManager.UserHasPermissionToRunJob(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider)).Returns(permissionCheck);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_managerFactory.CreateIntegrationPointManager(_contextContainer).Returns(_integrationPointManager);
+			_managerFactory.CreateStateManager().Returns(_stateManager);
+			_managerFactory.CreateQueueManager(_contextContainer).Returns(_queueManager);
 
+			_helperClassFactory.CreateOnClickEventHelper(_managerFactory, _contextContainer).Returns(_onClickEventHelper);
 
 			_integrationPointManager.Read(_APPLICATION_ID, _ARTIFACT_ID).Returns(integrationPointDto);
 			_integrationPointManager.GetSourceProvider(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
@@ -101,31 +89,27 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 			if (isRelativitySourceProvider)
 			{
-				var errorErrorStatusFieldGuid = new Guid(JobHistoryErrorDTO.FieldGuids.ErrorStatus);
-				var jobHistoryFieldGuid = new Guid(JobHistoryErrorDTO.FieldGuids.JobHistory);
-				var guidsAndArtifactIds = new Dictionary<Guid, int>()
+				bool hasJobsExecutingOrInQueue = false;
+				ButtonStateDTO buttonStates = new ButtonStateDTO()
 				{
-					{JobHistoryErrorDTO.Choices.ErrorStatus.Guids.New, jobHistoryErrorStatusNewChoiceArtifactId},
-					{errorErrorStatusFieldGuid, jobHistoryErrorStatusFieldArtifactId},
-					{jobHistoryFieldGuid, jobHistoryJobHistoryFieldArtifactId}
+					RunNowButtonEnabled = true & hasPermissions,
+					RetryErrorsButtonEnabled = true & hasPermissions,
+					ViewErrorsLinkEnabled = true
+				};
+				OnClickEventDTO onClickEvents = new OnClickEventDTO()
+				{
+					RunNowOnClickEvent = hasPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+					RetryErrorsOnClickEvent = hasPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+					ViewErrorsOnClickEvent = integrationPointDto.HasErrors.Value ? "Really long string" : String.Empty
 				};
 
-				_artifactGuidManager.GetArtifactIdsForGuids(Arg.Is(_APPLICATION_ID),
-					Arg.Is<Guid[]>(x => x.Length == 3 
-					&& x[0] == JobHistoryErrorDTO.Choices.ErrorStatus.Guids.New
-					&& x[1] == errorErrorStatusFieldGuid
-					&& x[2] == jobHistoryFieldGuid))
-				.Returns(guidsAndArtifactIds);
+				_queueManager.HasJobsExecutingOrInQueue(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasJobsExecutingOrInQueue);
 
-				_fieldManager.RetrieveArtifactViewFieldId(_APPLICATION_ID, guidsAndArtifactIds[errorErrorStatusFieldGuid]).Returns(jobHistoryErrorStatusArtifactViewFieldId);
-				_objectTypeManager.RetrieveObjectTypeDescriptorArtifactTypeId(_APPLICATION_ID, new Guid(JobHistoryErrorDTO.ArtifactTypeGuid)).Returns(jobHistoryErrorDescriptorArtifactTypeId);
-				_fieldManager.RetrieveArtifactViewFieldId(_APPLICATION_ID, guidsAndArtifactIds[jobHistoryFieldGuid]).Returns(jobHistoryArtifactViewFieldId);
-				_jobHistoryManager.GetLastJobHistoryArtifactId(_APPLICATION_ID, _ARTIFACT_ID).Returns(jobHistoryInstanceArtifactId);
-				onClickEventForViewErrors = $"window.location='../../Case/IntegrationPoints/ErrorsRedirect.aspx?ErrorStatusArtifactViewFieldID={jobHistoryErrorStatusArtifactViewFieldId}"
-						+ $"&ErrorStatusNewChoiceArtifactId={jobHistoryErrorStatusNewChoiceArtifactId}&JobHistoryErrorArtifactTypeId={jobHistoryErrorDescriptorArtifactTypeId}"
-						+ $"&JobHistoryArtifactViewFieldID={jobHistoryArtifactViewFieldId}&JobHistoryInstanceArtifactId={jobHistoryInstanceArtifactId}'; return false;";
+				_stateManager.GetButtonState(_APPLICATION_ID, _ARTIFACT_ID, hasJobsExecutingOrInQueue, hasPermissions, integrationPointDto.HasErrors.Value)
+					.Returns(buttonStates);
+				_onClickEventHelper.GetOnClickEventsForRelativityProvider(_APPLICATION_ID, _ARTIFACT_ID, buttonStates)
+					.Returns(onClickEvents);
 			}
-
 
 			// ACT
 			kCura.EventHandler.Console console = _instance.GetConsole(ConsoleEventHandler.PageEvent.Load);
@@ -147,6 +131,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 			if (isRelativitySourceProvider)
 			{
+				buttonIndex = 0;
+				ConsoleButton runNowButtonRelativityProvider = console.ButtonList[buttonIndex++];
+				Assert.AreEqual("Run Now", runNowButton.DisplayText);
+				Assert.AreEqual(hasPermissions, runNowButton.Enabled);
+				Assert.AreEqual(false, runNowButton.RaisesPostBack);
+				Assert.AreEqual(hasPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty, runNowButton.OnClickEvent);
+
 				ConsoleButton retryErrorsButton = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("Retry Errors", retryErrorsButton.DisplayText);
 				Assert.AreEqual(hasPermissions, retryErrorsButton.Enabled);
@@ -157,7 +148,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				Assert.AreEqual("View Errors", viewErrorsButtonLink.DisplayText);
 				Assert.AreEqual(true, viewErrorsButtonLink.Enabled);
 				Assert.AreEqual(false, viewErrorsButtonLink.RaisesPostBack);
-				Assert.AreEqual(onClickEventForViewErrors, viewErrorsButtonLink.OnClickEvent);
+				Assert.AreEqual("Really long string", viewErrorsButtonLink.OnClickEvent);
 
 				if (hasPermissions)
 				{

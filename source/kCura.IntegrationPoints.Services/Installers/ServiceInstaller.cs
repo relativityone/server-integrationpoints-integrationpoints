@@ -6,8 +6,6 @@ using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Installers;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.Relativity.Client;
 using Relativity.API;
 
@@ -57,7 +55,6 @@ namespace kCura.IntegrationPoints.Services
 				.LifeStyle.Transient);
 
 			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => global::Relativity.API.Services.Helper.GetServicesManager()));
-			container.Register(Component.For<IPermissionRepository>().ImplementedBy<PermissionRepository>().LifestyleTransient());
 
 			foreach (IWindsorInstaller dependency in _dependencies)
 			{

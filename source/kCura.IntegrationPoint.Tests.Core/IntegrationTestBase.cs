@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
 using kCura.IntegrationPoints.Data.Contexts;
-using NSubstitute;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -12,6 +10,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		protected IWindsorContainer Container;
 		protected IConfigurationStore ConfigurationStore;
+
 		protected IntegrationTestBase()
 		{
 			ClaimsPrincipal.ClaimsPrincipalSelector += () =>

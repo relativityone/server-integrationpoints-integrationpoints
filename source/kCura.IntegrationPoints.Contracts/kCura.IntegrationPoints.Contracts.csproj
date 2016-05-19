@@ -187,6 +187,7 @@
     <Compile Include="Models\ArtifactDTO.cs" />
     <Compile Include="Models\ArtifactFieldDTO.cs" />
     <Compile Include="Models\BaseDTO.cs" />
+    <Compile Include="Models\ButtonStateDTO.cs" />
     <Compile Include="Models\DestinationWorkspaceDTO.cs" />
     <Compile Include="Models\ExportSettings.cs" />
     <Compile Include="Models\FieldMapTypeEnum.cs" />
@@ -195,6 +196,7 @@
     <Compile Include="Models\JobHistoryErrorDTO.cs" />
     <Compile Include="Models\IntegrationPointDTO.cs" />
     <Compile Include="Models\ObjectTypeDTO.cs" />
+    <Compile Include="Models\OnClickEventDTO.cs" />
     <Compile Include="Models\PermissionCheckDTO.cs" />
     <Compile Include="Models\SavedSearchDTO.cs" />
     <Compile Include="Models\SourceProviderDTO.cs" />

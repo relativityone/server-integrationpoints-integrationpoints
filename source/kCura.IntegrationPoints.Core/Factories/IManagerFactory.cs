@@ -50,11 +50,17 @@ namespace kCura.IntegrationPoints.Core.Factories
 		IObjectTypeManager CreateObjectTypeManager(IContextContainer contextContainer);
 
 		/// <summary>
-		/// Creates a queue manager
+		/// Creates Queue Manager
 		/// </summary>
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>A queue manager</returns>
 		IQueueManager CreateQueueManager(IContextContainer contextContainer);
+		
+		/// <summary>
+		/// Create State manager.
+		/// </summary>
+		/// <returns>State manager (for console buttons)</returns>
+		IStateManager CreateStateManager();
 		
 		/// <summary>
 		/// Creates source provider manager
@@ -62,5 +68,6 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <param name="contextContainer">Container containing necessary contexts</param>
 		/// <returns>Source provider manager</returns>
 		ISourceProviderManager CreateSourceProviderManager(IContextContainer contextContainer);
+
 	}
 }
