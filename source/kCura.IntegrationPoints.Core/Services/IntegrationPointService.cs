@@ -456,7 +456,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
 			}
 
-			if (sourceWorkspacePermissionRepository.permissionRepository.UserHasArtifactInstancePermission((int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId, ArtifactPermission.View) == false)
+			if (sourceWorkspacePermissionRepository.UserHasArtifactInstancePermission((int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId, ArtifactPermission.View) == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH);	
 			}

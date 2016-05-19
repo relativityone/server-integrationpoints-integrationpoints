@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 						Core.Constants.SourceProvider sourceProvider = _integrationPointManager.GetSourceProvider(input.WorkspaceId, integrationPointDTO);
 						bool sourceProviderIsRelativity = (sourceProvider == Core.Constants.SourceProvider.Relativity);
 
-						PermissionCheckDTO permissionCheck = _integrationPointManager.UserHasPermissions(input.WorkspaceId, integrationPointDTO, sourceProvider);
+						PermissionCheckDTO permissionCheck = _integrationPointManager.UserHasPermissionToRunJob(input.WorkspaceId, integrationPointDTO, sourceProvider);
 
 						if (integrationPointDTO != null)
 						{

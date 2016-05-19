@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
 			_targetPermissionRepository.UserCanImport().Returns(true);
 			_sourcePermissionRepository.UserCanEditDocuments().Returns(true);
-			_permissionRepository.UserHasArtifactInstancePermission(Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId), Arg.Is(ArtifactPermission.View)).Returns(true);
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId), Arg.Is(ArtifactPermission.View)).Returns(true);
 			_queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(false);
 
 			// act
@@ -161,7 +161,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 
 			_targetPermissionRepository.UserCanImport().Returns(true);
 			_sourcePermissionRepository.UserCanEditDocuments().Returns(true);
-			_permissionRepository.UserHasArtifactInstancePermission(Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId), Arg.Is(ArtifactPermission.View)).Returns(true);
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId), Arg.Is(ArtifactPermission.View)).Returns(true);
 			_queueManager.HasJobsExecutingOrInQueue(_sourceWorkspaceArtifactId, _integrationPointArtifactId).Returns(true);
 
 			// act
@@ -314,7 +314,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
 			_targetPermissionRepository.UserCanImport().Returns(true);
 			_sourcePermissionRepository.UserCanEditDocuments().Returns(true);
-			_permissionRepository.UserHasArtifactInstancePermission(Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId), ArtifactPermission.View).Returns(true);
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId), ArtifactPermission.View).Returns(true);
 			_integrationPoint.HasErrors = true;
 
 			// Act
@@ -324,7 +324,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Received(1).Read(_integrationPoint.SourceProvider.Value);
 			_targetPermissionRepository.Received(1).UserCanImport();
 			_sourcePermissionRepository.Received(1).UserCanEditDocuments();
-			_permissionRepository.Received(1)
+			_sourcePermissionRepository.Received(1)
 				.UserHasArtifactInstancePermission(Arg.Is((int) kCura.Relativity.Client.ArtifactType.Search),
 					Arg.Is(_savedSearchArtifactId), ArtifactPermission.View);
 			_jobHistoryService.Received(1).CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRetryErrors, null);
@@ -338,7 +338,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_sourceProvider.Identifier = Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID;
 			_targetPermissionRepository.UserCanImport().Returns(true);
 			_sourcePermissionRepository.UserCanEditDocuments().Returns(true);
-			_permissionRepository.UserHasArtifactInstancePermission(Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId), ArtifactPermission.View).Returns(false);
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId), ArtifactPermission.View).Returns(false);
 			_integrationPoint.HasErrors = true;
 
 			// Act
@@ -348,7 +348,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary.Received(1).Read(_integrationPoint.SourceProvider.Value);
 			_targetPermissionRepository.Received(1).UserCanImport();
 			_sourcePermissionRepository.Received(1).UserCanEditDocuments();
-			_permissionRepository.Received(1).UserHasArtifactInstancePermission(Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId), ArtifactPermission.View);
+			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(Arg.Is((int)kCura.Relativity.Client.ArtifactType.Search), Arg.Is(_savedSearchArtifactId), ArtifactPermission.View);
 			_jobManager.Received(0).CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
 
