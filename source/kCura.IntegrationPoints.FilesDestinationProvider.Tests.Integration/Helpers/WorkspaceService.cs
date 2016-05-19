@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		private readonly ConfigSettings _configSettings;
 
 		private const string TemplateWorkspaceName = "kCura Starter Template";
-		private const int ControlNumberFieldArtifactId = 1003667;
+		private const int _ControlNumber_Field_ArtifactId = 1003667;
 
 		#endregion //Fileds
 
@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 				var query = new Query
 				{
 					ArtifactTypeID = (int)ArtifactType.Search,
-					Condition = new TextCondition("Name", TextConditionEnum.Like, name),
+					Condition = new TextCondition("Name", TextConditionEnum.EqualTo, name),
 				};
 
 				rsApiClient.APIOptions.WorkspaceID = workspaceId;
@@ -76,8 +76,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		{
 			ImportAPI importApi = new ImportAPI(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, _configSettings.WebApiUrl);
 
-			ImportNativeFiles(workspaceArtifactId, nativeFilesSourceDataTable.CreateDataReader(), importApi, ControlNumberFieldArtifactId);
-			ImportImagesAndExtractedText(workspaceArtifactId, imageSourceDataTable, importApi, ControlNumberFieldArtifactId);
+			ImportNativeFiles(workspaceArtifactId, nativeFilesSourceDataTable.CreateDataReader(), importApi, _ControlNumber_Field_ArtifactId);
+			ImportImagesAndExtractedText(workspaceArtifactId, imageSourceDataTable, importApi, _ControlNumber_Field_ArtifactId);
 		}
 
 		private void ImportImagesAndExtractedText(int workspaceArtifactId, DataTable dataTable, ImportAPI importApi, int identifyFieldArtifactId)

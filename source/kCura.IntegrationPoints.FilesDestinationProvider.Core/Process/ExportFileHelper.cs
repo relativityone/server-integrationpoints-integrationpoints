@@ -34,8 +34,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			expFile.LoadFilesPrefix = "Extracted Text Only";
 			expFile.LogFileFormat = LoadFileType.FileFormat.Opticon;
 			expFile.ObjectTypeName = "Document";
-			//expFile.Overwrite = true;
-		    expFile.Overwrite = exportSettings.OverwriteFiles;
+			expFile.Overwrite = exportSettings.OverwriteFiles;
             expFile.RenameFilesToIdentifier = true;
 			expFile.StartAtDocumentNumber = 0;
 			expFile.SubdirectoryDigitPadding = 3;
@@ -51,7 +50,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			expFile.VolumeInfo.VolumeMaxSize = 650;
 			expFile.VolumeInfo.SubdirectoryStartNumber = 1;
 			expFile.VolumeInfo.SubdirectoryMaxSize = 500;
-			//expFile.VolumeInfo.CopyFilesFromRepository = true;
 		    expFile.VolumeInfo.CopyFilesFromRepository = exportSettings.CopyFileFromRepository;
 
             return expFile;
