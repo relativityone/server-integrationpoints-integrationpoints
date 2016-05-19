@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using kCura.IntegrationPoints.Services;
 using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -17,9 +14,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 	using Data;
 	using Data.Factories;
 	using Data.Repositories;
-	using global::Relativity.API;
-	using global::Relativity.Services.ObjectQuery;
-	using NSubstitute;
 
 	public class ViewErrors : WorkspaceDependentTemplate
 	{
@@ -29,6 +23,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 		private IIntegrationPointService _integrationPointService;
 		private IJobHistoryService _jobHistoryService;
 		private ICaseServiceContext _caseServiceContext;
+		private IObjectTypeRepository _objectTypeRepository;
 
 
 
@@ -93,8 +88,8 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			_jobHistoryService.CreateRdo(integrationPointDto, Guid.NewGuid(), DateTime.Now);
 			//Act
 
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, 9);
-			GetErrorsFromView(integrationPointCreated.ArtifactID);
+			//_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, 9);
+			GetErrorsFromView(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID);
 			
 
 			//Assert
@@ -114,7 +109,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
-			Helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser).Returns(Helper.CreateUserObjectQueryManager());
+			_objectTypeRepository = Container.Resolve<IObjectTypeRepository>();
 		}
 
 		private DataTable GetImportTable()
@@ -129,12 +124,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			return table;
 		}
 
-		private void GetErrorsFromView(int integrationPointArtifactId)
+		private void GetErrorsFromView(int workspaceArtifactId, int integrationPointArtifactId)
 		{
 			Selenium.LogIntoRelativity(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
-			Selenium.GoToWorkspace(1062408);
-			Selenium.GoToTab("Integration Points");
-			Selenium.GoToIntegrationPoint(integrationPointArtifactId);
+			Selenium.GoToWorkspace(workspaceArtifactId);
+
+			int? artifactTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
+
+			Selenium.GoToObjectInstance(workspaceArtifactId, integrationPointArtifactId, artifactTypeId.Value);
 		}
 	}
 }
