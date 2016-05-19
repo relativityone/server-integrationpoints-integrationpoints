@@ -169,7 +169,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 					string expectedScript = "<script type='text/javascript'>"
 									+ "$(document).ready(function () {"
 									+ "IP.message.error.raise(\""
-									+ permissionCheck.ErrorMessages
+									+ String.Join("<br/>", permissionCheck.ErrorMessages)
 									+ "\", $(\".cardContainer\"));"
 									+ "});"
 									+ "</script>";
