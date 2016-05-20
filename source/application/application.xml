@@ -764,7 +764,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-05-19T05:48:14.8552922Z</ExtractionDate>
+  <ExtractionDate>2016-05-20T14:34:26.0178236Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -914,7 +914,7 @@
           <Keywords />
           <LinkType>false</LinkType>
           <MaxLength xsi:nil="true" />
-          <Notes />
+          <Notes>Folder structure and path to file from the original location identified during processing.</Notes>
           <RelationalIndexViewArtifactID xsi:nil="true" />
           <SourceFieldArtifactId xsi:nil="true" />
           <UseUnicodeEncoding>true</UseUnicodeEncoding>
@@ -927,7 +927,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.51</ApplicationVersion>
+          <ApplicationVersion>2.0.0.52</ApplicationVersion>
         </Field>
       </Fields>
       <Guid>15c36703-74ea-4ff8-9dfb-ad30ece7530d</Guid>
@@ -7382,7 +7382,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.51</ApplicationVersion>
+          <ApplicationVersion>2.0.0.52</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7889,7 +7889,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.51</ApplicationVersion>
+          <ApplicationVersion>2.0.0.52</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7941,7 +7941,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.51</ApplicationVersion>
+          <ApplicationVersion>2.0.0.52</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -7993,7 +7993,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.51</ApplicationVersion>
+          <ApplicationVersion>2.0.0.52</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8045,7 +8045,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.51</ApplicationVersion>
+          <ApplicationVersion>2.0.0.52</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8097,7 +8097,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.51</ApplicationVersion>
+          <ApplicationVersion>2.0.0.52</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8149,7 +8149,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.51</ApplicationVersion>
+          <ApplicationVersion>2.0.0.52</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -8226,7 +8226,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.3.388.10</RelativityVersion>
-  <Version>2.0.0.51</Version>
+  <Version>2.0.0.52</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>30db7baa-93da-4227-bdb1-e3df9e8edc72</OriginSignature>
   <MasterScripts />
@@ -8256,7 +8256,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.51</ApplicationVersion>
+      <ApplicationVersion>2.0.0.52</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038277</ArtifactId>
@@ -8267,7 +8267,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.51</ApplicationVersion>
+      <ApplicationVersion>2.0.0.52</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038278</ArtifactId>
@@ -8278,7 +8278,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.51</ApplicationVersion>
+      <ApplicationVersion>2.0.0.52</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038279</ArtifactId>
@@ -8289,7 +8289,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.51</ApplicationVersion>
+      <ApplicationVersion>2.0.0.52</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038393</ArtifactId>
@@ -8300,7 +8300,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.51</ApplicationVersion>
+      <ApplicationVersion>2.0.0.52</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038468</ArtifactId>
@@ -8311,7 +8311,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.51</ApplicationVersion>
+      <ApplicationVersion>2.0.0.52</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />
