@@ -6,24 +6,32 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 {
 	internal class ConfigSettings
 	{
-		private const string WorkspaceNameKey = "WorkspaceName";
-		private const string SavedSearchArtifactNameKey = "SavedSearchArtifactName";
-		private const string SelectedFieldNamesKey = "SelectedFieldNames";
-		private const string DestinationPathKey = "DestinationPath";
-		private const string WebApiUrlKey = "WebApiUrl";
+		#region Fields
 
-		public string WorkspaceName { get; } = ConfigurationManager.AppSettings[WorkspaceNameKey];
+		private const string _Workspace_Name_Key = "WorkspaceName";
+		private const string _SavedSearch_Artifact_Name_Key = "SavedSearchArtifactName";
+		private const string _Selected_Field_Names_Key = "SelectedFieldNames";
+		private const string _Destination_Path_Key = "DestinationPath";
+		private const string _WebApi_Url_Key = "WebApiUrl";
 
-		public string SavedSearchArtifactName { get; } = ConfigurationManager.AppSettings[SavedSearchArtifactNameKey];
+		#endregion //Fields
 
-		public List<string> SelectedFieldNames { get; } = ConfigurationManager.AppSettings[SelectedFieldNamesKey]
+		#region Properties
+
+		public string WorkspaceName { get; } = ConfigurationManager.AppSettings[_Workspace_Name_Key];
+
+		public string SavedSearchArtifactName { get; } = ConfigurationManager.AppSettings[_SavedSearch_Artifact_Name_Key];
+
+		public List<string> SelectedFieldNames { get; } = ConfigurationManager.AppSettings[_Selected_Field_Names_Key]
 			.Split(',')
 			.Select(name => name.Trim())
 			.ToList();
 
-		public string DestinationPath { get; } = ConfigurationManager.AppSettings[DestinationPathKey];
+		public string DestinationPath { get; } = ConfigurationManager.AppSettings[_Destination_Path_Key];
 
-		public string WebApiUrl { get; } = ConfigurationManager.AppSettings[WebApiUrlKey];
+		public string WebApiUrl { get; } = ConfigurationManager.AppSettings[_WebApi_Url_Key];
+
+		#endregion //Properties
 	}
 
 }

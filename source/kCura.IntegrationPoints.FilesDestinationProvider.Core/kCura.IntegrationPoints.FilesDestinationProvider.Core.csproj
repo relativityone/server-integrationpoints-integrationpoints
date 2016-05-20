@@ -161,16 +161,6 @@
     <Compile Include="Process\ExporterWrapper.cs" />
     <Compile Include="Process\ExportFileHelper.cs" />
     <Compile Include="Process\ExportProcessBuilder.cs" />
-    <Compile Include="Files\FileRepository.cs" />
-    <Compile Include="Files\IFileRepository.cs" />
-    <Compile Include="Metadata\Formatters\ConcordanceFormatter.cs" />
-    <Compile Include="Metadata\Formatters\IMetadataFormatter.cs" />
-    <Compile Include="Metadata\HeaderMetadata.cs" />
-    <Compile Include="Metadata\IMetadaGenerator.cs" />
-    <Compile Include="Metadata\MetadataGenerator.cs" />
-    <Compile Include="Metadata\MetadataSettings.cs" />
-    <Compile Include="Metadata\MetadataSettingsBuilder.cs" />
-    <Compile Include="Metadata\MetadataFileType.cs" />
     <Compile Include="Process\ExportProcessRunner.cs" />
     <Compile Include="Process\IExporter.cs" />
     <Compile Include="Process\IExportProcessBuilder.cs" />

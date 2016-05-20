@@ -1,13 +1,11 @@
 ﻿using System.Data;
 using System.IO;
 using System.Linq;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
-using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
@@ -56,11 +54,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		#region Tests
 
 		[Test]
-		[Ignore("Integration Test")]
+		[Explicit("Integration Test")]
 		public void it_should_export_saved_search()
 		{
+			// Arrange
+			_exportSettings.OverwriteFiles = true;
+			_exportSettings.CopyFileFromRepository = true;
+
+			// Act
 			_instanceUnderTest.StartWith(_exportSettings);
 
+			// Assert
 			ValidateResults(_exportSettings.ExportFilesLocation);
 		}
 
@@ -93,9 +97,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 		private void CreateOutputFolder()
 		{
-			if (!Directory.Exists(_configSettings.DestinationPath))
+			if (!Utility.Directory.Instance.Exists(_configSettings.DestinationPath, false))
 			{
-				Directory.CreateDirectory(_configSettings.DestinationPath);
+				Utility.Directory.Instance.CreateDirectory(_configSettings.DestinationPath);
 			}
 		}
 

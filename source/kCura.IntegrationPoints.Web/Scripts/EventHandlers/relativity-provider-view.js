@@ -5,7 +5,9 @@
         var field  =$("#destinationrdo").data().destinationrdo;;
         var overlayOnlyMessage = "Only documents and their metadata with the same identifier will be overwritten, would you still like to proceed?";
         var appendOverlayMesssage = "All existing documents and their metadata in the target workspace that have the same identifier will be overwritten, would you still like to proceed?";
-         var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
+        var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
+        var provider = $("[fafriendlyname=\"Name\"]").closest("tr").find(".dynamicViewFieldValue").text();
+        
         var selectedMessage = "";
         if (overwriteOption === "Append Only" ) {
             selectedMessage = "You may be creating folders in the destination workspace using the "+field+" field, would you still like to proceed?";
@@ -15,6 +17,11 @@
             selectedMessage = appendOverlayMesssage;
         }
 
+        //TODO:HackFS
+        if (provider === "Fileshare") {
+            selectedMessage = "Please confirm running the export from Relativity. If you set up a scheduled action export process will start at the set time";
+        }
+        
         //
         window.Dragon.dialogs.showConfirm({
             message: selectedMessage,
@@ -22,8 +29,7 @@
             showCancel: true,
             width: 450,
             success: function (calls) {
-                calls.close();
-                var ajax = IP.data.ajax({
+                calls.close();var ajax = IP.data.ajax({
                     type: 'post',
                     url: root.utils.generateWebAPIURL('Job'),
                     data: JSON.stringify({
