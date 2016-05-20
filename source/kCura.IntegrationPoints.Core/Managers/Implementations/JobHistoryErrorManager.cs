@@ -23,9 +23,42 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			List<int> jobLevelErrors = GetLastJobHistoryErrorArtifactIds(job.WorkspaceID, job.RelatedObjectArtifactID, ErrorTypeChoices.JobHistoryErrorJob);
 			List<int> itemLevelErrors = GetLastJobHistoryErrorArtifactIds(job.WorkspaceID, job.RelatedObjectArtifactID, ErrorTypeChoices.JobHistoryErrorItem);
 
-			JobHistoryErrorDTO.UpdateStatusType updateStatusType = jobHistoryErrorRepository.DetermineUpdateStatusType(jobType, jobLevelErrors.Any(), itemLevelErrors.Any());
+			JobHistoryErrorDTO.UpdateStatusType updateStatusType = DetermineUpdateStatusType(jobType, jobLevelErrors.Any(), itemLevelErrors.Any());
 
 			CreateErrorListTempTables(jobHistoryErrorRepository, jobLevelErrors, itemLevelErrors, updateStatusType, uniqueJobId);
+
+			return updateStatusType;
+		}
+
+		private JobHistoryErrorDTO.UpdateStatusType DetermineUpdateStatusType(Relativity.Client.Choice jobType, bool hasJobLevelErrors, bool hasItemLevelErrors)
+		{
+			JobHistoryErrorDTO.UpdateStatusType updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();
+
+			if (jobType.Name == JobTypeChoices.JobHistoryRetryErrors.Name)
+			{
+				updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors;
+			}
+			else
+			{
+				updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RunNow;
+			}
+
+			if (hasJobLevelErrors && hasItemLevelErrors)
+			{
+				updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem;
+			}
+			else if (hasJobLevelErrors)
+			{
+				updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly;
+			}
+			else if (hasItemLevelErrors)
+			{
+				updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly;
+			}
+			else
+			{
+				updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.None;
+			}
 
 			return updateStatusType;
 		}
@@ -54,7 +87,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 						break;
 				}
 			}
-			else
+			else //Runs for Run Now or Scheduled jobs
 			{
 				switch (updateStatusType.ErrorTypes)
 				{
