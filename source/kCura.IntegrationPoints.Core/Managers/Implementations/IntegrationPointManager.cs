@@ -63,21 +63,23 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 			DestinationConfiguration destinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPointDto.DestinationConfiguration);
 
-			bool sourceImportPermission = true;
-			bool destinationImportPermission = true;
+			bool sourceImportPermission = false;
+			bool destinationImportPermission = false;
 			bool destinationRdoPermissions = false;
-			bool destinationWorkspacePermission = true;
+			bool destinationWorkspacePermission = false;
 			bool savedSearchPermissions = false;
 			bool savedSearchIsPublic = false;
-			bool exportPermission = true;
-			bool sourceDocumentEditPermissions = true;
+			bool exportPermission = false;
+			bool sourceDocumentEditPermissions = false;
 
 			if (!sourceProvider.HasValue)
 			{
 				sourceProvider = this.GetSourceProvider(workspaceArtifactId, integrationPointDto);
 			}
 
-			if (sourceProvider == Constants.SourceProvider.Relativity)
+			bool isRelativitySourceProvider = sourceProvider == Constants.SourceProvider.Relativity;
+
+			if (isRelativitySourceProvider)
 			{
 				SourceConfiguration sourceConfiguration = JsonConvert.DeserializeObject<SourceConfiguration>(integrationPointDto.SourceConfiguration);
 				int destinationWorkspaceArtifactId = sourceConfiguration.TargetWorkspaceArtifactId;
@@ -93,6 +95,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add });
 				sourceDocumentEditPermissions = sourcePermissionRepository.UserCanEditDocuments();
 
+
+				// Important Note: If the saved search is null, that means it either doesn't exist or the current user does not have permissions to it.
+				// Make sure to never give information the user is not privy to 
+				// (i.e. if they don't have access to the saved search, don't tell them that it is also not public
 				SavedSearchDTO savedSearch = savedSearchRepository.RetrieveSavedSearch();
 				if (savedSearch != null)
 				{
@@ -109,80 +115,68 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 
 			var errorMessages = new List<string>();
-			bool userHasAllPermissions = true;
 
 			if (!sourceWorkspacePermission)
 			{
-				userHasAllPermissions = false;
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.CURRENT_WORKSPACE_NO_ACCESS);
 			}
 
 			if (!integrationPointTypeViewPermission)
 			{
-				userHasAllPermissions = false;
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_VIEW);
 			}
 
 			if (!integrationPointInstanceViewPermission)
 			{
-				userHasAllPermissions = false;
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
 			}
 
-			if (!sourceImportPermission)
+			if (!isRelativitySourceProvider && !sourceImportPermission)
 			{
-				userHasAllPermissions = false;
 				errorMessages.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
 			}
 
 			if (!destinationRdoPermissions)
 			{
-				userHasAllPermissions = false;
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
 			}
 
-			if (sourceProvider == Constants.SourceProvider.Relativity)
+			if (isRelativitySourceProvider)
 			{
 				// Relativity provider specific permissions
 				if (!destinationWorkspacePermission)
 				{
-					userHasAllPermissions = false;
 					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_ACCESS);
 				}
 
 				if (!destinationImportPermission)
 				{
-					userHasAllPermissions = false;
 					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_IMPORT);
 				}
 
 				if (!exportPermission)
 				{
-					userHasAllPermissions = false;
 					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_WORKSPACE_NO_EXPORT);
 				}
 
 				if (!sourceDocumentEditPermissions)
 				{
-					userHasAllPermissions = false;
 					errorMessages.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
 				}
 
 				if (!savedSearchPermissions)
 				{
-					userHasAllPermissions = false;
 					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS);
 				}
 				else if (!savedSearchIsPublic)
 				{
-					userHasAllPermissions = false;
 					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NOT_PUBLIC);
 				}
 			}
 
 			var permissionCheck = new PermissionCheckDTO()
 			{
-				Success = userHasAllPermissions,
+				Success = !errorMessages.Any(),
 				ErrorMessages = errorMessages.ToArray()
 			};
 

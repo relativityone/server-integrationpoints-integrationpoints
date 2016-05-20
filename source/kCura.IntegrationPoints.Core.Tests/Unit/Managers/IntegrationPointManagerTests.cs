@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 {
