@@ -67,12 +67,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			bool destinationImportPermission = true;
 			bool destinationRdoPermissions = false;
 			bool destinationWorkspacePermission = true;
-			bool savedSearchPermissions = true;
-			bool savedSearchIsPublic = true;
+			bool savedSearchPermissions = false;
+			bool savedSearchIsPublic = false;
 			bool exportPermission = true;
 			bool sourceDocumentEditPermissions = true;
 
-			if (sourceProvider.HasValue)
+			if (!sourceProvider.HasValue)
 			{
 				sourceProvider = this.GetSourceProvider(workspaceArtifactId, integrationPointDto);
 			}
@@ -94,12 +94,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				sourceDocumentEditPermissions = sourcePermissionRepository.UserCanEditDocuments();
 
 				SavedSearchDTO savedSearch = savedSearchRepository.RetrieveSavedSearch();
-				if (savedSearch == null)
+				if (savedSearch != null)
 				{
-					savedSearchPermissions = false;
-				}
-				else
-				{
+					savedSearchPermissions = true;
 					savedSearchIsPublic = savedSearch.Owner == 0;
 				}
 			}
@@ -176,8 +173,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					userHasAllPermissions = false;
 					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS);
 				}
-
-				if (!savedSearchIsPublic)
+				else if (!savedSearchIsPublic)
 				{
 					userHasAllPermissions = false;
 					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NOT_PUBLIC);
