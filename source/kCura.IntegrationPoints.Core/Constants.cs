@@ -1,4 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.CodeDom;
+using System.Text.RegularExpressions;
+using Relativity.SDK.Services.StrictMode.Translator;
 
 namespace kCura.IntegrationPoints.Core
 {
@@ -27,6 +30,24 @@ namespace kCura.IntegrationPoints.Core
 			public const string RETRY_NO_EXISTING_ERRORS = "The integration point cannot be retried as there are no errors to be retried.";
 			public static Regex InvalidMultiChoicesValueFormat = new Regex($".*{kCura.IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER}|{kCura.IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER}.*", RegexOptions.Compiled);
 			public static Regex InvalidMultiObjectsValueFormat = new Regex($".*{kCura.IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER}.*", RegexOptions.Compiled);
+
+			public static class IntegrationPoint
+			{
+				public static Guid ObjectTypeGuid = new Guid("03D4F67E-22C9-488C-BEE6-411F05C52E01");
+			}
+
+			public static class PermissionErrors
+			{
+				public const string CURRENT_WORKSPACE_NO_ACCESS = "You do not have permission to access this workspace";
+				public const string INTEGRATION_POINT_TYPE_NO_VIEW = "You do not have permission to view Integration Points";
+				public const string INTEGRATION_POINT_INSTANCE_NO_VIEW = "You do not have permission to view the Integration Point";
+				public const string MISSING_DESTINATION_RDO_PERMISSIONS = "You do not have all required destination RDO permissions. Please make sure you have view, edit, and add permissions for the destination RDO.";
+				public const string DESTINATION_WORKSPACE_NO_ACCESS = "You do not have permission to access the destination workspace.";
+				public const string DESTINATION_WORKSPACE_NO_IMPORT = "You do not have permission to import in the destination workspace.";
+				public const string SOURCE_WORKSPACE_NO_EXPORT = "You do not have permission to export in the source workspace.";
+				public const string SAVED_SEARCH_NO_ACCESS = "The saved search is no longer available or you do not have access.";
+				public const string SAVED_SEARCH_NOT_PUBLIC = "The saved search must be public.";
+			}
 		}
 
 		public enum SourceProvider

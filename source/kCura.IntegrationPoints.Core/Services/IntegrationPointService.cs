@@ -226,6 +226,7 @@ namespace kCura.IntegrationPoints.Core.Services
 					}
 
 					model.HasErrors = existingModel.HasErrors;
+					model.LastRun = existingModel.LastRun;
 
 					// check permission if we want to push
 					// needs to be here because custom page is the only place that has user context
@@ -379,7 +380,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			IntegrationPoint integrationPoint = GetRdo(integrationPointArtifactId);
 			SourceProvider sourceProvider = GetSourceProvider(integrationPoint);
 
-			CheckPermissions(integrationPoint, sourceProvider, userId);
+			CheckPermissions(workspaceArtifactId, integrationPoint, sourceProvider, userId);
 			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRunNow, workspaceArtifactId, userId);
 		}
 
@@ -393,7 +394,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new Exception(Constants.IntegrationPoints.RETRY_IS_NOT_RELATIVITY_PROVIDER);
 			}
 
-			CheckPermissions(integrationPoint, sourceProvider, userId);
+			CheckPermissions(workspaceArtifactId, integrationPoint, sourceProvider, userId);
 
 			if (integrationPoint.HasErrors.HasValue == false || integrationPoint.HasErrors.Value == false)
 			{
@@ -403,11 +404,45 @@ namespace kCura.IntegrationPoints.Core.Services
 			CreateJob(integrationPoint, sourceProvider, JobTypeChoices.JobHistoryRetryErrors, workspaceArtifactId, userId);
 		}
 
-		private void CheckPermissions(IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
+		private void CheckPermissions(int workspaceArtifactId, IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
 		{
-			if (sourceProvider.Identifier == Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
+			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(_contextContainer);
+			IntegrationPointDTO integrationPointDto = new IntegrationPointDTO
 			{
-				CheckForRelativityProviderAdditionalPermissions(integrationPoint.SourceConfiguration, userId);
+				ArtifactId = integrationPoint.ArtifactId,
+				Name = integrationPoint.Name,
+				DestinationConfiguration = integrationPoint.DestinationConfiguration,
+				DestinationProvider = integrationPoint.DestinationProvider,
+				EmailNotificationRecipients = integrationPoint.EmailNotificationRecipients,
+				EnableScheduler = integrationPoint.EnableScheduler,
+				FieldMappings = integrationPoint.FieldMappings,
+				HasErrors = integrationPoint.HasErrors,
+				JobHistory = integrationPoint.JobHistory,
+				LastRuntimeUTC = integrationPoint.LastRuntimeUTC,
+				LogErrors = integrationPoint.LogErrors,
+				SourceProvider = integrationPoint.SourceProvider,
+				SourceConfiguration = integrationPoint.SourceConfiguration,
+				NextScheduledRuntimeUTC = integrationPoint.NextScheduledRuntimeUTC,
+//				OverwriteFields = integrationPoint.OverwriteFields, -- This would require further transformation
+				ScheduleRule = integrationPoint.ScheduleRule
+			};
+
+			Constants.SourceProvider sourceProviderEnum = Constants.SourceProvider.Other;
+			if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
+			{
+				if (userId == 0)
+				{
+					throw new Exception(Constants.IntegrationPoints.NO_USERID);
+				}
+
+				sourceProviderEnum = Constants.SourceProvider.Relativity;	
+			}
+
+			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissionToRunJob(workspaceArtifactId, integrationPointDto, sourceProviderEnum);
+
+			if (!permissionCheck.Success)
+			{
+				throw new Exception(String.Join("<br/>", permissionCheck.ErrorMessages));
 			}
 		}
 
@@ -456,7 +491,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
 			}
 
-			if (sourceWorkspacePermissionRepository.UserCanViewArtifact((int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId) == false)
+			if (sourceWorkspacePermissionRepository.UserHasArtifactInstancePermission((int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId, ArtifactPermission.View) == false)
 			{
 				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH);	
 			}

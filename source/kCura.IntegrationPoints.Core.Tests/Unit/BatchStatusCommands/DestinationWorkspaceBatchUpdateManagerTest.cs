@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		}
 
 		[Test]
-		public void JobStart_CreateWorkspaceRdoAndLinkToJobHistory()
+		public void OnJobStart_CreateWorkspaceRdoAndLinkToJobHistory()
 		{
 
 			// Arrange
@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		}
 
 		[Test]
-		public void JobStart_DoesntCreateWorkspaceRdoWhenItAlreadyExists()
+		public void OnJobStart_DoesntCreateWorkspaceRdoWhenItAlreadyExists()
 		{
 
 			// Arrange
@@ -127,7 +127,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		}
 
 		[Test]
-		public void JobStart_UpdateWorkspaceInstanceName()
+		public void OnJobStart_UpdateWorkspaceInstanceName()
 		{
 
 			// Arrange
@@ -195,7 +195,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		}
 
 		[Test]
-		public void ErrorOccurDuringJobStart_OnQuery()
+		public void ErrorOccurDuringOnJobStart_OnQuery()
 		{
 			//Arrange
 			_destinationWorkspaceRepository.Query(_destinationWorkspaceId).Throws(new Exception());
@@ -217,7 +217,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		}
 
 		[Test]
-		public void ErrorOccurDuringJobStart_OnCreate()
+		public void ErrorOccurDuringOnJobStart_OnCreate()
 		{
 			//Arrange
 			_destinationWorkspaceRepository.Query(_destinationWorkspaceId).Returns(_emptyDestinationWorkspace);
@@ -241,7 +241,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 
 		[Test]
-		public void ErrorOccurDuringJobStart_LinkDestinationWorkspaceToJobHistory()
+		public void ErrorOccurDuringOnJobStart_LinkDestinationWorkspaceToJobHistory()
 		{
 			//Arrange
 			_destinationWorkspaceRepository.Query(_destinationWorkspaceId).Returns(_normalDestinationWorkspace);

@@ -148,10 +148,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
 		{
 			DocumentTransferSettings settings = GetSettings(options);
-			// TODO: DI or factory
-			IRSAPIClient rsapiClient = GetRSAPIClient(settings.SourceWorkspaceArtifactId);
-			// TODO: create constant
-			ISavedSearchRepository savedSearchRepository = new RsapiSavedSearchRepository(rsapiClient, settings.SavedSearchArtifactId, 1000);
+			ISavedSearchRepository savedSearchRepository = new SavedSearchRepository(_helper, null, settings.SourceWorkspaceArtifactId, settings.SavedSearchArtifactId, 1000);
 			IDataReader dataReader = new DocumentArtifactIdDataReader(savedSearchRepository);
 
 			return dataReader;
