@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
-using Relativity.Core.FieldMapping;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				TruncateTextFields = false,
 			};
 
-			ArtifactDTO[] results = this.RetrieveAllArtifactsAsync(query).ConfigureAwait(false).GetAwaiter().GetResult();
+			ArtifactDTO[] results = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
 
 			ArtifactDTO artifactDto = results?.FirstOrDefault();
 			SavedSearchDTO savedSearch = null;

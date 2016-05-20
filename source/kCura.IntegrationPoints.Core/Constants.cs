@@ -1,7 +1,5 @@
 ﻿using System;
-using System.CodeDom;
 using System.Text.RegularExpressions;
-using Relativity.SDK.Services.StrictMode.Translator;
 
 namespace kCura.IntegrationPoints.Core
 {

@@ -16,6 +16,10 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <returns><code>TRUE</code> if more documents can be retrieved, <code>FALSE</code> otherwise</returns>
 		bool AllDocumentsRetrieved();
 
+		/// <summary>
+		/// Retrieves the current Saved Search.
+		/// </summary>
+		/// <returns>Returns the current SavedSearchDTO.</returns>
 		SavedSearchDTO RetrieveSavedSearch();
 	}
 }

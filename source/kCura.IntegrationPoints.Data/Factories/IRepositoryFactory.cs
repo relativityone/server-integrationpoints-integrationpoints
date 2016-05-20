@@ -132,6 +132,12 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <returns>A class implementing the IWorkspaceRepository.</returns>
 		IWorkspaceRepository GetWorkspaceRepository();
 
+		/// <summary>
+		/// Returns a class impelementing the ISavedSearchRepository.
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
+		/// <param name="savedSearchArtifactId">The saved search artifact id.</param>
+		/// <returns>A class implementing the ISavedSearchRepository</returns>
 		ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId);
 	}
 }
