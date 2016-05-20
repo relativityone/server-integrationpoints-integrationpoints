@@ -226,6 +226,7 @@ namespace kCura.IntegrationPoints.Core.Services
 					}
 
 					model.HasErrors = existingModel.HasErrors;
+					model.LastRun = existingModel.LastRun;
 
 					// check permission if we want to push
 					// needs to be here because custom page is the only place that has user context

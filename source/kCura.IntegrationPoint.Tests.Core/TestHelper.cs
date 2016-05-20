@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using kCura.Config;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.Repositories;
@@ -14,7 +13,6 @@ using Relativity.Services.ObjectQuery;
 using Relativity.Services.ServiceProxy;
 using Context = kCura.Data.RowDataGateway.Context;
 using Query = Relativity.Services.ObjectQuery.Query;
-using UsernamePasswordCredentials = Relativity.Services.ServiceProxy.UsernamePasswordCredentials;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -24,9 +22,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		IPermissionRepository PermissionManager { get; }
 
-		IObjectQueryManager CreateUserObjectQueryManager();
-
 		T CreateUserProxy<T>() where T : IDisposable;
+
+		T CreateAdminProxy<T>() where T : IDisposable;
 	}
 
 	public class TestHelper : ITestHelper
@@ -40,41 +38,26 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_serviceManager = Substitute.For<IServicesMgr>();
 			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIRSAPIClient(this, ExecutionIdentity.CurrentUser));
 			_serviceManager.CreateProxy<IRSAPIClient>(ExecutionIdentity.System).Returns(new ExtendedIRSAPIClient(this, ExecutionIdentity.System));
-			_serviceManager.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser).Returns(CreateUserProxy<IPermissionManager>(), CreateUserProxy<IPermissionManager>(), CreateUserProxy<IPermissionManager>());
-
-			//_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.System).Returns(CreateUserObjectQueryManager(), managers);
-			_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIObjectQueryManager(this));
-		}
-
-		private IObjectQueryManager[] CreateKelperCalls()
-		{
-			IObjectQueryManager[] managers = new IObjectQueryManager[100];
-			for (int i = 0; i < 100; i++)
-			{
-				managers[i] = CreateUserObjectQueryManager();
-			}
-			return managers;;
-		}
-
-		public IObjectQueryManager CreateUserObjectQueryManager()
-		{
-			return CreateUserProxy<IObjectQueryManager>();
+			_serviceManager.CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIPermissionManager(this, ExecutionIdentity.CurrentUser));
+			_serviceManager.CreateProxy<IPermissionManager>(ExecutionIdentity.System).Returns(new ExtendedIPermissionManager(this, ExecutionIdentity.System));
+			_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.System).Returns(new ExtendedIObjectQueryManager(this, ExecutionIdentity.System));
+			_serviceManager.CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIObjectQueryManager(this, ExecutionIdentity.CurrentUser));
 		}
 
 		public T CreateUserProxy<T>() where T : IDisposable
 		{
-			var userCredential = new UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
+			var userCredential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
 			ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RsapiClientServiceUri, SharedVariables.RestClientServiceUri, userCredential);
 			ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
 			return userServiceFactory.CreateProxy<T>();
 		}
 
-		public IObjectQueryManager CreateAdminObjectQueryManager()
+		public T CreateAdminProxy<T>() where T : IDisposable
 		{
-			var credential = new UsernamePasswordCredentials("relativity.admin@kcura.com", "P@ssw0rd@1");
+			var credential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials("relativity.admin@kcura.com", "P@ssw0rd@1");
 			ServiceFactorySettings settings = new ServiceFactorySettings(SharedVariables.RsapiClientServiceUri, SharedVariables.RestClientServiceUri, credential);
 			ServiceFactory adminServiceFactory = new ServiceFactory(settings);
-			return adminServiceFactory.CreateProxy<IObjectQueryManager>();
+			return adminServiceFactory.CreateProxy<T>();
 		}
 
 		public void Dispose()
@@ -112,6 +95,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			return _serviceManager;
 		}
+
+		#region Extended classes
 
 		public class ExtendedIRSAPIClient : IRSAPIClient
 		{
@@ -338,7 +323,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				lock (obj)
 				{
-					IRSAPIClient newClient = Rsapi.CreateRsapiClient(_identity);
+					IRSAPIClient newClient = new ExtendedIRSAPIClient(_helper, _identity);
 					_client.Dispose();
 					_client = newClient;
 				}
@@ -363,19 +348,26 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public class ExtendedIObjectQueryManager : IObjectQueryManager
 		{
 			private readonly ITestHelper _helper;
-			private readonly IObjectQueryManager _manager;
+			private readonly ExecutionIdentity _identity;
+			private IObjectQueryManager _manager;
 
-			public ExtendedIObjectQueryManager(ITestHelper helper)
+			public ExtendedIObjectQueryManager(ITestHelper helper, ExecutionIdentity identity)
 			{
 				_helper = helper;
-				_manager = helper.CreateUserObjectQueryManager();
+				_identity = identity;
+				_manager = helper.CreateUserProxy<IObjectQueryManager>();
 			}
 
+			object _lock = new object();
 			public void Dispose()
 			{
-				// create a new kelper when itself being disposed.
-				_helper.GetServicesManager().CreateProxy<IObjectQueryManager>(ExecutionIdentity.CurrentUser).Returns(new ExtendedIObjectQueryManager(_helper));
-				_manager.Dispose();
+				lock (_lock)
+				{
+					// create a new Kepler when itself being disposed.
+					var newManager =  new ExtendedIObjectQueryManager(_helper, _identity);
+					_manager.Dispose();
+					_manager = newManager;
+				}
 			}
 
 			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, Query query, int start, int length, int[] includePermissions, string queryToken)
@@ -398,5 +390,191 @@ namespace kCura.IntegrationPoint.Tests.Core
 				return _manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions, queryToken, cancel, progress);
 			}
 		}
+
+		public class ExtendedIPermissionManager : IPermissionManager
+		{
+			private readonly ITestHelper _helper;
+			private readonly ExecutionIdentity _identity;
+			private IPermissionManager _manager;
+
+			public ExtendedIPermissionManager(ITestHelper helper, ExecutionIdentity identity)
+			{
+				_helper = helper;
+				_identity = identity;
+				_manager = _helper.CreateUserProxy<IPermissionManager>();
+			}
+
+			public async Task AddRemoveAdminGroupsAsync(GroupSelector groupSelector)
+			{
+				await _manager.AddRemoveAdminGroupsAsync(groupSelector).ConfigureAwait(false);
+			}
+
+			public async Task AddRemoveItemGroupsAsync(int workspaceArtifactID, int artifactID, GroupSelector groupSelector)
+			{
+				await _manager.AddRemoveItemGroupsAsync(workspaceArtifactID, artifactID, groupSelector).ConfigureAwait(false);
+			}
+
+			public async Task AddRemoveWorkspaceGroupsAsync(int workspaceArtifactID, GroupSelector groupSelector)
+			{
+				await _manager.AddRemoveWorkspaceGroupsAsync(workspaceArtifactID, groupSelector).ConfigureAwait(false);
+			}
+
+			public async Task<int> CreateSingleAsync(int workspaceArtifactID, global::Relativity.Services.Permission.Permission permissionDTO)
+			{
+				return await _manager.CreateSingleAsync(workspaceArtifactID, permissionDTO).ConfigureAwait(false);
+			}
+
+			public async Task DeleteSingleAsync(int workspaceArtifactID, int permissionID)
+			{
+				await _manager.DeleteSingleAsync(workspaceArtifactID, permissionID).ConfigureAwait(false);
+			}
+
+			object obj = new object();
+			public void Dispose()
+			{
+				lock (obj)
+				{
+					IPermissionManager newManager = new ExtendedIPermissionManager(_helper, _identity);
+					_manager.Dispose();
+					_manager = newManager;
+				}
+			}
+
+			public async Task<GroupPermissions> GetAdminGroupPermissionsAsync(global::Relativity.Services.Group.GroupRef group)
+			{
+				return await _manager.GetAdminGroupPermissionsAsync(group).ConfigureAwait(false);
+			}
+
+			public async Task<GroupSelector> GetAdminGroupSelectorAsync()
+			{
+				return await _manager.GetAdminGroupSelectorAsync().ConfigureAwait(false);
+			}
+
+			public async Task<List<global::Relativity.Services.User.UserRef>> GetAdminGroupUsersAsync(global::Relativity.Services.Group.GroupRef group)
+			{
+				return await _manager.GetAdminGroupUsersAsync(group).ConfigureAwait(false);
+			}
+
+			public async Task<GroupPermissions> GetItemGroupPermissionsAsync(int workspaceArtifactID, int artifactID, global::Relativity.Services.Group.GroupRef group)
+			{
+				return await _manager.GetItemGroupPermissionsAsync(workspaceArtifactID, artifactID, group).ConfigureAwait(false);
+			}
+
+			public async Task<GroupSelector> GetItemGroupSelectorAsync(int workspaceArtifactID, int artifactID)
+			{
+				return await _manager.GetItemGroupSelectorAsync(workspaceArtifactID, artifactID).ConfigureAwait(false);
+			}
+
+			public async Task<List<global::Relativity.Services.User.UserRef>> GetItemGroupUsersAsync(int workspaceArtifactID, int artifactID, global::Relativity.Services.Group.GroupRef group)
+			{
+				return await _manager.GetItemGroupUsersAsync(workspaceArtifactID, artifactID, group).ConfigureAwait(false);
+			}
+
+			public async Task<ItemLevelSecurity> GetItemLevelSecurityAsync(int workspaceArtifactID, int artifactID)
+			{
+				return await _manager.GetItemLevelSecurityAsync(workspaceArtifactID, artifactID).ConfigureAwait(false);
+			}
+
+			public async Task<Dictionary<int, ItemLevelSecurity>> GetItemLevelSecurityListAsync(int workspaceArtifactID, IEnumerable<int> artifactIDs)
+			{
+				return await _manager.GetItemLevelSecurityListAsync(workspaceArtifactID, artifactIDs).ConfigureAwait(false);
+			}
+
+			public async Task<List<PermissionValue>> GetPermissionSelectedAsync(int workspaceArtifactID, List<PermissionRef> permissions)
+			{
+				return await _manager.GetPermissionSelectedAsync(workspaceArtifactID, permissions).ConfigureAwait(false);
+			}
+
+			public async Task<List<PermissionValue>> GetPermissionSelectedAsync(int workspaceArtifactID, List<PermissionRef> permissions, int artifactID)
+			{
+				return await _manager.GetPermissionSelectedAsync(workspaceArtifactID, permissions, artifactID).ConfigureAwait(false);
+			}
+
+			public async Task<List<PermissionValue>> GetPermissionSelectedForGroupAsync(int workspaceArtifactID, List<PermissionRef> permissions, global::Relativity.Services.Group.GroupRef group)
+			{
+				return await _manager.GetPermissionSelectedForGroupAsync(workspaceArtifactID, permissions, group).ConfigureAwait(false);
+			}
+
+			public async Task<List<PermissionValue>> GetPermissionSelectedForGroupAsync(int workspaceArtifactID, List<PermissionRef> permissions, global::Relativity.Services.Group.GroupRef group, int artifactID)
+			{
+				return await _manager.GetPermissionSelectedForGroupAsync(workspaceArtifactID, permissions, group, workspaceArtifactID).ConfigureAwait(false);
+			}
+
+			public async Task<Dictionary<int, List<PermissionValue>>> GetPermissionSelectedListAsync(int workspaceArtifactID, List<PermissionRef> permissions, IEnumerable<int> artifactIDs)
+			{
+				return await _manager.GetPermissionSelectedListAsync(workspaceArtifactID, permissions, artifactIDs).ConfigureAwait(false);
+			}
+
+			public async Task<GroupPermissions> GetWorkspaceGroupPermissionsAsync(int workspaceArtifactID, global::Relativity.Services.Group.GroupRef group)
+			{
+				return await _manager.GetWorkspaceGroupPermissionsAsync(workspaceArtifactID, group).ConfigureAwait(false);
+			}
+
+			public async Task<GroupSelector> GetWorkspaceGroupSelectorAsync(int workspaceArtifactID)
+			{
+				return await _manager.GetWorkspaceGroupSelectorAsync(workspaceArtifactID).ConfigureAwait(false);
+			}
+
+			public async Task<List<global::Relativity.Services.User.UserRef>> GetWorkspaceGroupUsersAsync(int workspaceArtifactID, global::Relativity.Services.Group.GroupRef group)
+			{
+				return await _manager.GetWorkspaceGroupUsersAsync(workspaceArtifactID, group).ConfigureAwait(false);
+			}
+
+			public async Task<PermissionQueryResultSet> QueryAsync(int workspaceArtifactID, global::Relativity.Services.Query query)
+			{
+				return await _manager.QueryAsync(workspaceArtifactID, query).ConfigureAwait(false);
+			}
+
+			public async Task<PermissionQueryResultSet> QueryAsync(int workspaceArtifactID, global::Relativity.Services.Query query, int length)
+			{
+				return await _manager.QueryAsync(workspaceArtifactID, query, length).ConfigureAwait(false);
+			}
+
+			public async Task<PermissionQueryResultSet> QuerySubsetAsync(int workspaceArtifactID, string queryToken, int start, int length)
+			{
+				return await _manager.QuerySubsetAsync(workspaceArtifactID, queryToken, start, length).ConfigureAwait(false);
+			}
+
+			public async Task<global::Relativity.Services.Permission.Permission> ReadSingleAsync(int workspaceArtifactID, int permissionID)
+			{
+				return await _manager.ReadSingleAsync(workspaceArtifactID, permissionID).ConfigureAwait(false);
+			}
+
+			public async Task SetAdminGroupPermissionsAsync(GroupPermissions groupPermissions)
+			{
+				await _manager.SetAdminGroupPermissionsAsync(groupPermissions).ConfigureAwait(false);
+			}
+
+			public async Task SetItemGroupPermissionsAsync(int workspaceArtifactID, GroupPermissions groupPermissions)
+			{
+				await _manager.SetItemGroupPermissionsAsync(workspaceArtifactID, groupPermissions).ConfigureAwait(false);
+			}
+
+			public async Task SetItemLevelSecurityAsync(int workspaceArtifactID, ItemLevelSecurity itemLevelSecurity)
+			{
+				await _manager.SetItemLevelSecurityAsync(workspaceArtifactID, itemLevelSecurity).ConfigureAwait(false);
+			}
+
+			public async Task SetPermissionSelectedForGroupAsync(int workspaceArtifactID, List<PermissionValue> permissionValues, global::Relativity.Services.Group.GroupRef group)
+			{
+				await _manager.SetPermissionSelectedForGroupAsync(workspaceArtifactID, permissionValues, group).ConfigureAwait(false);
+			}
+
+			public async Task SetPermissionSelectedForGroupAsync(int workspaceArtifactID, List<PermissionValue> permissionValues, global::Relativity.Services.Group.GroupRef group, int artifactID)
+			{
+				await _manager.SetPermissionSelectedForGroupAsync(workspaceArtifactID, permissionValues, group, artifactID).ConfigureAwait(false);
+			}
+
+			public async Task SetWorkspaceGroupPermissionsAsync(int workspaceArtifactID, GroupPermissions groupPermissions)
+			{
+				await _manager.SetWorkspaceGroupPermissionsAsync(workspaceArtifactID, groupPermissions).ConfigureAwait(false);
+			}
+
+			public async Task UpdateSingleAsync(int workspaceArtifactID, global::Relativity.Services.Permission.Permission permissionDTO)
+			{
+				await _manager.UpdateSingleAsync(workspaceArtifactID, permissionDTO).ConfigureAwait(false);
+			}
+		}
+		#endregion
 	}
 }

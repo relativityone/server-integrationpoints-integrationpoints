@@ -3,21 +3,31 @@
 
     root.importNow = function (artifactId, appid) {
         
-        var overlayOnlyMessage = "Only documents and their metadata with the same identifier will be overwritten, would you still like to proceed?";
-        var appendOverlayMesssage = "All existing documents and their metadata in the target workspace that have the same identifier will be overwritten, would you still like to proceed?";
-         var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
+        var overlayOnlyMessage = "Only documents and their metadata with the same identifier will be overwritten.";
+        var appendOverlayMesssage = "All existing documents and their metadata in the target workspace that have the same identifier will be overwritten.";
+        var appendMessage = "Documents will be placed in the workspace parent folder.";
+		var appendWithFolderPathMessage = "You may be creating folders in the destination workspace using the ";
+        var expiredErrorsMessage = " Any existing errors will be marked as expired.";
+        var proceedWarningMessage = " Would you still like to proceed?";
+        var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
         var selectedMessage = "";
         if (overwriteOption === "Append Only") {
             if (IP.fieldName.length !== 0) {
-                selectedMessage = "You may be creating folders in the destination workspace using the " + IP.fieldName + " field, would you still like to proceed?";
+                selectedMessage = appendWithFolderPathMessage + IP.fieldName + " field.";
             } else {
-                selectedMessage = "Documents will be placed in the workspace parent folder. Would you still like to proceed?";
+				selectedMessage = appendMessage;
             }
         } else if (overwriteOption === "Overlay Only" ) {
             selectedMessage = overlayOnlyMessage;
         } else if (overwriteOption === "Append/Overlay") {
             selectedMessage = appendOverlayMesssage;
         }
+        var consoleContainer = $(".ConsoleControl");
+		var hasErrors = $(consoleContainer.find(":contains('Retry Errors')")).hasClass("consoleButtonEnabled");
+		if (hasErrors) {
+			selectedMessage += expiredErrorsMessage;
+		}
+		selectedMessage += proceedWarningMessage;
 
          if (root.errorMessage.length !== 0) {
             IP.message.error.raise(root.errorMessage, $(".cardContainer"));
