@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -46,11 +48,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return sourceProvider;
 		}
 
-		private class DestinationConfiguration
-		{
-			public int artifactTypeID { get; set; }
-		}
-
 		public PermissionCheckDTO UserHasPermissionToRunJob(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null)
 		{
 
@@ -91,7 +88,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				destinationWorkspacePermission = destinationPermissionRepository.UserHasPermissionToAccessWorkspace();
 				destinationImportPermission = destinationPermissionRepository.UserCanImport();
 				destinationRdoPermissions = destinationPermissionRepository.UserHasArtifactTypePermissions(
-					destinationConfiguration.artifactTypeID, 
+					destinationConfiguration.ArtifactTypeId, 
 					new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add });
 				sourceDocumentEditPermissions = sourcePermissionRepository.UserCanEditDocuments();
 
@@ -110,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			{
 				sourceImportPermission = sourcePermissionRepository.UserCanImport();
 				destinationRdoPermissions = sourcePermissionRepository.UserHasArtifactTypePermissions(
-					destinationConfiguration.artifactTypeID, 
+					destinationConfiguration.ArtifactTypeId, 
 					new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add });
 			}
 
