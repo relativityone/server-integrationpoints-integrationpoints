@@ -66,39 +66,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return results.Results.Select(result => result.Artifact.ArtifactID).ToList();
 		}
 
-		public JobHistoryErrorDTO.UpdateStatusType DetermineUpdateStatusType(Relativity.Client.Choice jobType, bool hasJobLevelErrors, bool hasItemLevelErrors)
-		{
-			JobHistoryErrorDTO.UpdateStatusType updateStatusType = new JobHistoryErrorDTO.UpdateStatusType();
-
-			if (jobType.Name == JobTypeChoices.JobHistoryRetryErrors.Name)
-			{
-				updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors;
-			}
-			else
-			{
-				updateStatusType.JobType = JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RunNow;
-			}
-
-			if (hasJobLevelErrors && hasItemLevelErrors)
-			{
-				updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem;
-			}
-			else if (hasJobLevelErrors)
-			{
-				updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly;
-			}
-			else if (hasItemLevelErrors)
-			{
-				updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly;
-			}
-			else
-			{
-				updateStatusType.ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.None;
-			}
-
-			return updateStatusType;
-		}
-
 		public void CreateErrorListTempTable(List<int> errors, string tablePrefix, string uniqueJobId)
 		{
 			try

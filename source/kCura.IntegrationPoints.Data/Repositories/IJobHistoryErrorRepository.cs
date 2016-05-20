@@ -13,15 +13,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="errorType">Error Type choice to gather job history errors for</param>
 		/// <returns>List of Artifact Ids of Job History Errors for the provided Job History and Error Type</returns>
 		List<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType);
-		
-		/// <summary>
-		/// Determines the Update Status Type that will be used to know which temp tables to create and which to use for started and completed status updates
-		/// </summary>
-		/// <param name="jobType">Job Type for the new job being run</param>
-		/// <param name="hasJobLevelErrors">Boolean of if Job-level errors exist associated with the last Job History object</param>
-		/// <param name="hasItemLevelErrors">Boolean of if Item-level errors exist associated with the last Job History object</param>
-		/// <returns>An UpdateStatusType that houses the job type and error types to make error status changes with</returns>
-		JobHistoryErrorDTO.UpdateStatusType DetermineUpdateStatusType(Relativity.Client.Choice jobType, bool hasJobLevelErrors, bool hasItemLevelErrors);
 
 		/// <summary>
 		/// Creates the unique temp tables required to make Error Status updates for currently running job
