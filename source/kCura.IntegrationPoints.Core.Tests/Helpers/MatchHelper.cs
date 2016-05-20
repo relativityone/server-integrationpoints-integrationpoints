@@ -32,33 +32,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 				object expectedValue = null;
 				object actualValue = null;
 
-				try
-				{
-					expectedValue = propertyInfo.GetValue(expected);
-				}
-				catch (Exception)
-				{
-					exceptionCount++;
-				}
-
-				try
-				{
-					actualValue = propertyInfo.GetValue(actual);
-				}
-				catch (Exception)
-				{
-					exceptionCount++;
-				}
-
-				if (exceptionCount == 2)
-				{
-					continue; // both properties have not been set on the model object
-				}
-
-				if (exceptionCount == 1)
-				{
-					return false; // one object has a property set that the other does not
-				}
+				expectedValue = propertyInfo.GetValue(expected);
+				actualValue = propertyInfo.GetValue(actual);
 
 				if (expectedValue != null && actualValue == null)
 				{
