@@ -73,9 +73,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			int newSavedSearch = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, name);
 			defaultModel.SourceConfiguration = CreateSourceConfig(newSavedSearch, SourceWorkspaceArtifactId);
 
-			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
-
-			ValidateModel(defaultModel, newModel, new[] { _SOURCECONFIG });
+			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(defaultModel), "Unable to save Integration Point: Source Configuration cannot be changed once the Integration Point has been run");
 		}
 
 		[Test]
@@ -87,9 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			defaultModel.Name = name + " 2";
 
-			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
-
-			ValidateModel(defaultModel, newModel, new[] { _NAME });
+			Assert.Throws<Exception>(() => CreateOrUpdateIntegrationPoint(defaultModel), "Unable to save Integration Point: Name cannot be changed once the Integration Point has been run");
 		}
 
 		[Test]
@@ -124,6 +120,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(expectedModel.HasErrors, actual.HasErrors);
 			Assert.AreEqual(expectedModel.ArtifactID, actual.ArtifactID);
 			Assert.AreEqual(expectedModel.DestinationProvider, actual.DestinationProvider);
+			Assert.AreEqual(expectedModel.LastRun, actual.LastRun);
 		}
 
 		private Action<object, object> DetermineAssertion(string[] updatedProperties, string property)
