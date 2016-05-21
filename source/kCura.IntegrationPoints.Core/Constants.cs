@@ -45,6 +45,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string SOURCE_WORKSPACE_NO_EXPORT = "You do not have permission to export in the source workspace.";
 				public const string SAVED_SEARCH_NO_ACCESS = "The saved search is no longer available or you do not have access.";
 				public const string SAVED_SEARCH_NOT_PUBLIC = "The saved search must be public.";
+				public const string UNABLE_TO_EXPORT = "Job was unable to export. Please make sure that you have valid export and saved search permissions.";
 			}
 		}
 
