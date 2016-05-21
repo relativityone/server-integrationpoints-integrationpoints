@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+    <metadata>
+        <id>kCura.IntegrationPoints</id>
+        <version>2.0.0.0</version>
+        <authors>kCura LLC, Relativity</authors>
+        <owners>kCura LLC, Relativity</owners>
+        <licenseUrl>https://www.kcura.com/terms-of-use/</licenseUrl>
+        <projectUrl>https://platform.kcura.com/index.html</projectUrl>
+        <requireLicenseAcceptance>true</requireLicenseAcceptance>
+        <description>Integration Points RAP</description>
+        <copyright>Copyright (c) 2016, kCura LLC</copyright>
+        <tags>kCura IntegrationPoints</tags>
+        <dependencies />
+    </metadata>
+    <files>
+        <file src="..\..\bin\Application\RelativityIntegrationPoints.Auto.rap" target="lib\" />
+    </files>
+</package>
