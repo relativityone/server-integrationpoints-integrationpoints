@@ -53,7 +53,7 @@
 	
 	<target name="NuGet_publish" description="Publishes NuGet package to server">
 		<choose>
-			<when test="${string::contains(branchDir,'default')}">
+			<when test="${string::contains(branchDir,'master')}">
 				<choose>
 					<when test="${string::contains(buildType,'GOLD')}">
 						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
