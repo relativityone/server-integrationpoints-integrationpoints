@@ -29,6 +29,11 @@
 			xpath="/package/metadata/version"
 			value="${NuGet.Version}">
 		</xmlpoke>
+		<xmlpoke
+			file="${nuspec.directory}\kCura.IntegrationPoints.nuspec"
+			xpath="/package/metadata/version"
+			value="${NuGet.Version}">
+		</xmlpoke>
 	</target>
 	
 	<target name="NuGet_pack" description="Packages and creates a new NuGet package.">	
@@ -40,6 +45,9 @@
 		</exec>
 		<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
 			<arg line="pack ${nuspec.directory}\kCura.IntegrationPoints.Services.Interfaces.Private\kCura.IntegrationPoints.Services.Interfaces.Private.nuspec" />
+		</exec>
+		<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
+			<arg line="pack ${nuspec.directory}\kCura.IntegrationPoints.nuspec" />
 		</exec>
 	</target>
 	
@@ -56,6 +64,9 @@
 						</exec>
 						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
 							<arg line="push kCura.IntegrationPoints.Services.Interfaces.Private.${NuGet.Version}.nupkg -Source ${ProGet.Server}" />
+						</exec>
+						<exec program="${NuGet_exe}" verbose="true" failonerror="true" workingdir="${nuspec.directory}">
+							<arg line="push kCura.IntegrationPoints.${NuGet.Version}.nupkg -Source ${ProGet.Server}" />
 						</exec>
 					</when>
 					<otherwise>
