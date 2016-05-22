@@ -83,6 +83,7 @@
           <Assembly>bin\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
           <Assembly>packages\RelativityCore.9.3.398.12\lib\net45\kCura.Image.Viewer.dll</Assembly>
           <Assembly>packages\RelativityCore.9.3.398.12\lib\net45\kCura.Print.dll</Assembly>
+		  <Assembly>packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>
