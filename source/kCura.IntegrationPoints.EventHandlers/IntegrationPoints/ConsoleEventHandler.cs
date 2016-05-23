@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
 			kCura.IntegrationPoints.Core.Constants.SourceProvider sourceProvider = integrationPointManager.GetSourceProvider(Application.ArtifactID, integrationPointDto);
-			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissions(Application.ArtifactID, integrationPointDto, sourceProvider);
+			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissionToRunJob(Application.ArtifactID, integrationPointDto, sourceProvider);
 
 			IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory,
 				contextContainer);
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				bool hasJobsExecutingOrInQueue= queueManager.HasJobsExecutingOrInQueue(Application.ArtifactID,
 					ActiveArtifact.ArtifactID);
-				ButtonStateDTO buttonState = stateManager.GetButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID, hasJobsExecutingOrInQueue, permissionCheck.Success, integrationPointHasErrors);
+				ButtonStateDTO buttonState = stateManager.GetButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID, hasJobsExecutingOrInQueue, integrationPointHasErrors);
 				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(Application.ArtifactID, ActiveArtifact.ArtifactID, buttonState);
 
 				ConsoleButton runNowButton = GetRunNowButtonRelativityProvider(buttonState.RunNowButtonEnabled, onClickEvents.RunNowOnClickEvent);
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					string script = "<script type='text/javascript'>"
 									+ "$(document).ready(function () {"
 									+ "IP.message.error.raise(\""
-									+ permissionCheck.ErrorMessage
+									+ String.Join("</br>", permissionCheck.ErrorMessages)
 									+ "\", $(\".cardContainer\"));"
 									+ "});"
 									+ "</script>";

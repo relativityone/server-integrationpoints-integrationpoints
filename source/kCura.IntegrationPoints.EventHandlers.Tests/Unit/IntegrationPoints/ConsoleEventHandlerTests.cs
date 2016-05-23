@@ -72,10 +72,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			var permissionCheck = new PermissionCheckDTO()
 			{
 				Success = hasPermissions,
-				ErrorMessage = hasPermissions ? null : "GOBBLYGOOK!"
+				ErrorMessages = hasPermissions ? null : new[] { "GOBBLYGOOK!" }
 			};
 			Core.Constants.SourceProvider sourceProvider = isRelativitySourceProvider ? Core.Constants.SourceProvider.Relativity : Core.Constants.SourceProvider.Other;
-			_integrationPointManager.UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider)).Returns(permissionCheck);
+			_integrationPointManager.UserHasPermissionToRunJob(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider)).Returns(permissionCheck);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 			_managerFactory.CreateIntegrationPointManager(_contextContainer).Returns(_integrationPointManager);
 			_managerFactory.CreateStateManager().Returns(_stateManager);
@@ -87,10 +87,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_integrationPointManager.GetSourceProvider(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
 				.Returns(sourceProvider);
 
+			ButtonStateDTO buttonStates = null;
 			if (isRelativitySourceProvider)
 			{
 				bool hasJobsExecutingOrInQueue = false;
-				ButtonStateDTO buttonStates = new ButtonStateDTO()
+				buttonStates = new ButtonStateDTO()
 				{
 					RunNowButtonEnabled = true & hasPermissions,
 					RetryErrorsButtonEnabled = true & hasPermissions,
@@ -105,7 +106,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 				_queueManager.HasJobsExecutingOrInQueue(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasJobsExecutingOrInQueue);
 
-				_stateManager.GetButtonState(_APPLICATION_ID, _ARTIFACT_ID, hasJobsExecutingOrInQueue, hasPermissions, integrationPointDto.HasErrors.Value)
+				_stateManager.GetButtonState(_APPLICATION_ID, _ARTIFACT_ID, hasJobsExecutingOrInQueue, integrationPointDto.HasErrors.Value)
 					.Returns(buttonStates);
 				_onClickEventHelper.GetOnClickEventsForRelativityProvider(_APPLICATION_ID, _ARTIFACT_ID, buttonStates)
 					.Returns(onClickEvents);
@@ -116,7 +117,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 			// ASSERT
 			_contextContainerFactory.Received().CreateContextContainer(_helper);
-			_integrationPointManager.Received(1).UserHasPermissions(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider));
+			_integrationPointManager.Received(1).UserHasPermissionToRunJob(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider));
 			_managerFactory.Received().CreateIntegrationPointManager(_contextContainer);
 
 			Assert.IsNotNull(console);
@@ -134,19 +135,19 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				buttonIndex = 0;
 				ConsoleButton runNowButtonRelativityProvider = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("Run Now", runNowButton.DisplayText);
-				Assert.AreEqual(hasPermissions, runNowButton.Enabled);
+				Assert.AreEqual(buttonStates.RunNowButtonEnabled, runNowButton.Enabled);
 				Assert.AreEqual(false, runNowButton.RaisesPostBack);
 				Assert.AreEqual(hasPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty, runNowButton.OnClickEvent);
 
 				ConsoleButton retryErrorsButton = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("Retry Errors", retryErrorsButton.DisplayText);
-				Assert.AreEqual(hasPermissions, retryErrorsButton.Enabled);
+				Assert.AreEqual(buttonStates.RetryErrorsButtonEnabled, retryErrorsButton.Enabled);
 				Assert.AreEqual(false, retryErrorsButton.RaisesPostBack);
 				Assert.AreEqual(hasPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty, retryErrorsButton.OnClickEvent);
 
 				ConsoleButton viewErrorsButtonLink = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("View Errors", viewErrorsButtonLink.DisplayText);
-				Assert.AreEqual(true, viewErrorsButtonLink.Enabled);
+				Assert.AreEqual(buttonStates.ViewErrorsLinkEnabled, viewErrorsButtonLink.Enabled);
 				Assert.AreEqual(false, viewErrorsButtonLink.RaisesPostBack);
 				Assert.AreEqual("Really long string", viewErrorsButtonLink.OnClickEvent);
 
@@ -160,7 +161,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 					string expectedScript = "<script type='text/javascript'>"
 									+ "$(document).ready(function () {"
 									+ "IP.message.error.raise(\""
-									+ permissionCheck.ErrorMessage
+									+ String.Join("<br/>", permissionCheck.ErrorMessages)
 									+ "\", $(\".cardContainer\"));"
 									+ "});"
 									+ "</script>";

@@ -198,6 +198,7 @@
     <Compile Include="Models\ObjectTypeDTO.cs" />
     <Compile Include="Models\OnClickEventDTO.cs" />
     <Compile Include="Models\PermissionCheckDTO.cs" />
+    <Compile Include="Models\SavedSearchDTO.cs" />
     <Compile Include="Models\SourceProviderDTO.cs" />
     <Compile Include="Models\SourceWorkspaceDTO.cs" />
     <Compile Include="Models\SourceWorkspaceJobHistoryDTO.cs" />

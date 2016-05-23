@@ -137,10 +137,8 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// </summary>
 		/// <param name="workspaceArtifactId">Workspace artifact id.</param>
 		/// <param name="savedSearchArtifactId">Saved search artifact id.</param>
-		/// <param name="pageSize">Page size to be used when working with saved searches. 
-		/// If not specified, it defaults to 1000</param>
 		/// <returns></returns>
-		ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId, int pageSize = 1000);
+		ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId);
 
 	}
 }

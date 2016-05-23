@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			Helper.PermissionManager.UserCanEditDocuments().Returns(true);
 			Helper.PermissionManager.UserCanImport().Returns(true);
-			Helper.PermissionManager.UserCanViewArtifact(Arg.Any<int>(), Arg.Any<int>()).Returns(true);
+			Helper.PermissionManager.UserHasArtifactInstancePermission(Arg.Any<int>(), Arg.Any<int>(), ArtifactPermission.View).Returns(true);
 
 			IIntegrationPointService service = Container.Resolve<IIntegrationPointService>();
 

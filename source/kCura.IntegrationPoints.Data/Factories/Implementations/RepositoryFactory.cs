@@ -150,12 +150,14 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return repository;
 		}
 
-		public ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId, int pageSize = 1000)
+		public ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId)
 		{
-			ISavedSearchRepository savedSearchRepository = new RsapiSavedSearchRepository(GetRSAPIClient(workspaceArtifactId), savedSearchArtifactId, pageSize);
-			return savedSearchRepository;
-		}
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Search);
+			ISavedSearchRepository repository = new SavedSearchRepository(_helper, objectQueryManagerAdaptor, workspaceArtifactId, savedSearchArtifactId, 1000);
 
+			return repository;
+		}
+		
 		#region Helper Methods
 
 		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
@@ -215,20 +217,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			}
 
 			return contexts;
-		}
-
-		/// <summary>
-		/// Gets RSAPI Client.
-		/// NOTE: Only use this for legacy calls that require RSAPI client as input parameter
-		/// and are not easily refactorable.
-		/// </summary>
-		/// <param name="workspaceArtifactId">Workspace artifact id</param>
-		/// <returns>RSAPI Client</returns>
-		private IRSAPIClient GetRSAPIClient(int workspaceArtifactId)
-		{
-			IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
-			rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
-			return rsapiClient;
 		}
 
 		#endregion

@@ -214,6 +214,7 @@
     <Compile Include="Integration\Queries\GetWorkspacesQueryTests.cs" />
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />
     <Compile Include="Integration\Repositories\QueueRepositoryTests.cs" />
+    <Compile Include="Transformer\JobHistoryErrorTransformerTests.cs" />
     <Compile Include="Transformer\IntegrationPointTransformerTests.cs" />
     <Compile Include="Unit\BaseRdoTests.cs" />
     <Compile Include="MockDBContext.cs" />

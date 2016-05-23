@@ -2,6 +2,13 @@
 
 namespace kCura.IntegrationPoints.Data
 {
+	public enum ArtifactPermission
+	{
+		View,
+		Edit,
+		Add	
+	}
+
 	public static class GlobalConst
 	{
 		public const string RELATIVITY_INTEGRATION_POINTS_AGENT_GUID = "08C0CE2D-8191-4E8F-B037-899CEAEE493D";

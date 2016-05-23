@@ -96,8 +96,6 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 						Core.Constants.SourceProvider sourceProvider = _integrationPointManager.GetSourceProvider(input.WorkspaceId, integrationPointDTO);
 						bool sourceProviderIsRelativity = (sourceProvider == Core.Constants.SourceProvider.Relativity);
 
-						PermissionCheckDTO permissionCheck = _integrationPointManager.UserHasPermissions(input.WorkspaceId, integrationPointDTO, sourceProvider);
-
 						if (integrationPointDTO != null)
 						{
 							IntegrationModel model = new IntegrationModel()
@@ -113,8 +111,7 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 								IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, _context);
 								bool hasJobsExecutingOrInQueue = _queueManager.HasJobsExecutingOrInQueue(input.WorkspaceId, input.ArtifactId);
 
-								buttonStates = _stateManager.GetButtonState(input.WorkspaceId, input.ArtifactId, hasJobsExecutingOrInQueue, permissionCheck.Success,
-									integrationPointHasErrors);
+								buttonStates = _stateManager.GetButtonState(input.WorkspaceId, input.ArtifactId, hasJobsExecutingOrInQueue, integrationPointHasErrors);
 								onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(input.WorkspaceId, input.ArtifactId, buttonStates);
 							}
 							Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);

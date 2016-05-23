@@ -1,4 +1,7 @@
-﻿namespace kCura.IntegrationPoints.Data.Repositories
+﻿using System;
+using System.Collections.Generic;
+
+namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface IPermissionRepository
 	{
@@ -8,18 +11,26 @@
 		/// <returns>True if the user has the permission, false otherwise.</returns>
 		bool UserCanImport();
 
+		bool UserCanExport();
+
 		/// <summary>
 		/// Determines whether or not the current user has permission to "Edit" on documents.
 		/// </summary>
 		/// <returns>True if the user has the permission, false otherwise.</returns>
 		bool UserCanEditDocuments();
 
-		/// <summary>
-		/// Determines whether or not the current user has permissions to "View" an artifact.
-		/// </summary>
-		/// <param name="artifactTypeId">The artifact type id</param>
-		/// <param name="artifactId">The artifact id of the instance to check permissions of</param>
-		/// <returns>Returns <code>TRUE</code> if the user can view the artifact, <code>FALSE</code> otherwise.</returns>
-		bool UserCanViewArtifact(int artifactTypeId, int artifactId);
+		bool UserHasArtifactTypePermissions(Guid artifactTypeGuid, IEnumerable<ArtifactPermission> artifactPermissions);
+		bool UserHasArtifactTypePermission(Guid artifactTypeGuid, ArtifactPermission artifactPermission);
+		bool UserHasArtifactInstancePermission(Guid artifactTypeGuid, int artifactId, ArtifactPermission artifactPermission);
+		bool UserHasArtifactInstancePermissions(Guid artifactTypeGuid, int artifactId,
+			IEnumerable<ArtifactPermission> artifactPermissions);
+		bool UserHasArtifactTypePermissions(int artifactTypeId, IEnumerable<ArtifactPermission> artifactPermissions);
+		bool UserHasArtifactTypePermission(int artifactTypeId, ArtifactPermission artifactPermission);
+		bool UserHasArtifactInstancePermission(int artifactTypeId, int artifactId, ArtifactPermission artifactPermission);
+		bool UserHasArtifactInstancePermissions(int artifactTypeId, int artifactId,
+			IEnumerable<ArtifactPermission> artifactPermissions);
+		bool UserHasPermissionToAccessWorkspace();
+
+
 	}
 }

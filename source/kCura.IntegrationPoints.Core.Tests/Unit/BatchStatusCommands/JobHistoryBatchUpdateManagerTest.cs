@@ -8,7 +8,7 @@ using kCura.ScheduleQueue.Core;
 using NSubstitute;
 using NUnit.Framework;
 
-namespace kCura.IntegrationPoints.Core.Tests.Unit
+namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 {
 	[TestFixture]
 	public class JobHistoryBatchUpdateManagerTest

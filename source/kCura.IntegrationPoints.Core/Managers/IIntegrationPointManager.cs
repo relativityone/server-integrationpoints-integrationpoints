@@ -30,6 +30,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <param name="integrationPointDto">The integration point dto to check.</param>
 		/// <param name="sourceProvider">The source provider for the integration point. If not supplied, the method will run queries to check.</param>
 		/// <returns>A PermissionCheckDTO object.</returns>
-		PermissionCheckDTO UserHasPermissions(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null);
+		PermissionCheckDTO UserHasPermissionToRunJob(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null);
+
 	}
 }
