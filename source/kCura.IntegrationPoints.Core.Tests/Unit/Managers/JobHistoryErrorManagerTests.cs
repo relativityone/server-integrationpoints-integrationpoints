@@ -214,8 +214,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRetryErrors, _uniqueJobId);
 
 			//Assert
-			_jobHistoryErrorRepository.Received().CreateErrorListTempTable(_sampleItemErrors, _itemErrorOnStartPrefix, _uniqueJobId);
-			_jobHistoryErrorRepository.Received().CreateErrorListTempTable(_sampleItemErrors, _itemErrorOnCompletePrefix, _uniqueJobId);
+			_jobHistoryErrorRepository.Received(0).CreateErrorListTempTable(_sampleItemErrors, _itemErrorOnStartPrefix, _uniqueJobId);
+			_jobHistoryErrorRepository.Received(0).CreateErrorListTempTable(_sampleItemErrors, _itemErrorOnCompletePrefix, _uniqueJobId);
 		}
 
 		[Test]
