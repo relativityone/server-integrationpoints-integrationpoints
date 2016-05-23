@@ -199,8 +199,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 				// act
 				Assert.IsNotNull(job, "There is no job to execute");
-				Assert.Throws<AgentDropJobException>(() => _exportManager.Execute(job),
-					"Unable to execute Integration Point job: There is already a job currently running."); // run the job
+				AgentDropJobException ex = Assert.Throws<AgentDropJobException>(() => _exportManager.Execute(job)); // run the job
+				Assert.That("Unable to execute Integration Point job: There is already a job currently running.", Is.EqualTo(ex.Message));
 
 				// assert
 				model = RefreshIntegrationModel(model);
@@ -272,15 +272,15 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 
 				// act
 				Assert.IsNotNull(job, "There is no job to execute");
-				Assert.Throws<AgentDropJobException>(() => _exportManager.Execute(fakeScheduledJob),
-					"Unable to execute Integration Point job: There is already a job currently running."); // run the job
+				AgentDropJobException ex = Assert.Throws<AgentDropJobException>(() => _exportManager.Execute(fakeScheduledJob)); // run the job
+				string exceptionMessage = String.Format("Unable to execute Integration Point job: There is already a job currently running. Job is re-scheduled for {0}.", fakeScheduledJob.NextRunTime);
+				Assert.That(exceptionMessage, Is.EqualTo(ex.Message));
 
 				// assert
 				model = RefreshIntegrationModel(model);
 				JobHistory scheduledJobhistory = jobHistoryService.GetRdo(scheduledJobParameters.BatchInstance);
 				JobHistory history = jobHistoryService.GetRdo(runNowJobParam.BatchInstance);
 
-				Assert.IsNull(scheduledJobhistory); // job history is deleted
 				Assert.IsNotNull(history); // job history is deleted
 				Assert.IsNotNull(model); // ip object does not get deleted
 				Assert.IsFalse(model.HasErrors ?? false); // expect the error being logged
