@@ -236,8 +236,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			MappedFields.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
 
 			//Load Job History Errors if any
+			string uniqueJobId = GetUniqueJobId(job);
 			IJobHistoryErrorManager jobHistoryErrorManager = _managerFactory.CreateJobHistoryErrorManager(_contextContainer);
-			string uniqueJobId = job.JobId + "_" + this._identifier;
 			_updateStatusType = jobHistoryErrorManager.StageForUpdatingErrors(job, this.JobHistoryDto.JobType, uniqueJobId);
 
 			//Load saved search for just item-level error retries
@@ -245,11 +245,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
 			{
 				ExportUsingSavedSearchSettings exportSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(IntegrationPointDto.SourceConfiguration);
-				_sourceConfiguration.SavedSearchArtifactId = jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, exportSettings.SavedSearchArtifactId);
+
+				int newSavedSearchIdForItemLevelErrors = jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, exportSettings.SavedSearchArtifactId);
+				_sourceConfiguration.SavedSearchArtifactId = newSavedSearchIdForItemLevelErrors;
+
+				jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, uniqueJobId, newSavedSearchIdForItemLevelErrors);
 			}
 
 			_batchStatus.ForEach(batch => batch.OnJobStart(job));
 		}
+
+
 
 		private void FinalizeExportService(Job job)
 		{
@@ -428,6 +434,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			jobHistoryIds.Remove(jobHistoryIdToRemove);
 			this.IntegrationPointDto.JobHistory = jobHistoryIds.ToArray();
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPointDto);
+		}
+
+		private string GetUniqueJobId(Job job)
+		{
+			return job.JobId + "_" + this._identifier;
 		}
 	}
 }

@@ -6,6 +6,7 @@ using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Transformers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
@@ -21,17 +22,56 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	{
 		private readonly IHelper _helper;
 		private readonly int _workspaceArtifactId;
+		private readonly IGenericLibrary<JobHistoryError> _jobHistoryErrorLibrary;
+		private readonly IDtoTransformer<JobHistoryErrorDTO, JobHistoryError> _dtoTransformer;
 
 		/// <summary>
-		/// To be used internally by unit tests only
+		/// Internal due to Factory and Unit Tests
 		/// </summary>
-		internal JobHistoryErrorRepository(IHelper helper, int workspaceArtifactId)
+		internal JobHistoryErrorRepository(IHelper helper, 
+			IGenericLibrary<JobHistoryError> jobHistoryErrorLibrary,
+			IDtoTransformer<JobHistoryErrorDTO, JobHistoryError> dtoTransformer,
+			int workspaceArtifactId)
 		{
 			_helper = helper;
 			_workspaceArtifactId = workspaceArtifactId;
+			_jobHistoryErrorLibrary = jobHistoryErrorLibrary;
+			_dtoTransformer = dtoTransformer;
 		}
 
 		public List<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType)
+		{
+			var fields = new List<FieldValue>
+			{
+				new FieldValue(Guid.Parse(JobHistoryErrorDTO.FieldGuids.ArtifactId))
+			};
+
+			QueryResultSet<RDO> results = RetrieveJobHistoryErrorData(jobHistoryArtifactId, errorType, fields);
+			
+			return results.Results.Select(result => result.Artifact.ArtifactID).ToList();
+		}
+
+		public Dictionary<int, string> RetrieveJobHistoryErrorIdsAndSourceUniqueIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType)
+		{
+			var fields = new List<FieldValue>
+			{
+				new FieldValue(Guid.Parse(JobHistoryErrorDTO.FieldGuids.ArtifactId)),
+				new FieldValue(Guid.Parse(JobHistoryErrorDTO.FieldGuids.SourceUniqueID))
+			};
+
+			QueryResultSet<RDO> results = RetrieveJobHistoryErrorData(jobHistoryArtifactId, errorType, fields);
+
+			Dictionary<int, string> artifactIdsAndSourceUniqueIds = new Dictionary<int, string>();
+
+			foreach (var result in results.Results)
+			{
+				artifactIdsAndSourceUniqueIds.Add(result.Artifact.ArtifactID, result.Artifact.Fields[0].Value.ToString());
+			}
+			
+			return artifactIdsAndSourceUniqueIds;
+		}
+
+		private QueryResultSet<RDO> RetrieveJobHistoryErrorData(int jobHistoryArtifactId, Relativity.Client.Choice errorType, List<FieldValue> fields)
 		{
 			QueryResultSet<RDO> results = null;
 			var query = new Query<RDO>();
@@ -40,10 +80,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var jobHistoryCondition = new WholeNumberCondition(new Guid(JobHistoryErrorDTO.FieldGuids.JobHistory), NumericConditionEnum.EqualTo, jobHistoryArtifactId);
 			var errorTypeCondition = new SingleChoiceCondition(new Guid(JobHistoryErrorDTO.FieldGuids.ErrorType), SingleChoiceConditionEnum.AnyOfThese, errorType.ArtifactGuids);
 			query.Condition = new CompositeCondition(jobHistoryCondition, CompositeConditionEnum.And, errorTypeCondition);
-			query.Fields = new List<FieldValue>
-				{
-					new FieldValue(Guid.Parse(JobHistoryErrorDTO.FieldGuids.ArtifactId))
-				};
+			query.Fields = fields;
 
 			try
 			{
@@ -63,8 +100,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception(System.String.Format(JobHistoryErrorErrors.JOB_HISTORY_ERROR_RETRIEVE_NO_RESULTS, jobHistoryArtifactId, results.Message));
 			}
 
-			return results.Results.Select(result => result.Artifact.ArtifactID).ToList();
+			return results;
 		}
+
 
 		public JobHistoryErrorDTO.UpdateStatusType DetermineUpdateStatusType(Relativity.Client.Choice jobType, bool hasJobLevelErrors, bool hasItemLevelErrors)
 		{
@@ -218,6 +256,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					DeleteItemLevelErrorsSavedSearch(workspaceArtifactId, searchArtifactId, retryAttempts + 1);
 				}
 			}
+		}
+
+		public List<JobHistoryErrorDTO> Read(IEnumerable<int> artifactIds)
+		{
+			List<JobHistoryError> jobHistories = _jobHistoryErrorLibrary.Read(artifactIds);
+			return _dtoTransformer.ConvertToDto(jobHistories);
 		}
 	}
 }

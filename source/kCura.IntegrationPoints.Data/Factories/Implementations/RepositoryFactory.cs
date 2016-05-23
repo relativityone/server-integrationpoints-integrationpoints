@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Adaptors.Implementations;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Data.Transformers;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Core;
@@ -76,7 +78,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IJobHistoryErrorRepository GetJobHistoryErrorRepository(int workspaceArtifactId)
 		{
-			IJobHistoryErrorRepository jobHistoryErrorRepository = new JobHistoryErrorRepository(_helper, workspaceArtifactId);
+			IGenericLibrary<JobHistoryError> integrationPointLibrary = new RsapiClientLibrary<JobHistoryError>(_helper, workspaceArtifactId);
+			IDtoTransformer<JobHistoryErrorDTO, JobHistoryError> dtoTransformer = new JobHistoryErrorTransformer(_helper, workspaceArtifactId);
+			IJobHistoryErrorRepository jobHistoryErrorRepository = new JobHistoryErrorRepository(_helper, integrationPointLibrary, dtoTransformer, workspaceArtifactId);
 			return jobHistoryErrorRepository;
 		}
 
@@ -146,6 +150,14 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return repository;
 		}
 
+		public ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId, int pageSize = 1000)
+		{
+			ISavedSearchRepository savedSearchRepository = new RsapiSavedSearchRepository(GetRSAPIClient(workspaceArtifactId), savedSearchArtifactId, pageSize);
+			return savedSearchRepository;
+		}
+
+		#region Helper Methods
+
 		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
 		{
 			IObjectQueryManagerAdaptor adaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, (int)artifactType);
@@ -157,8 +169,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(_helper, workspaceArtifactId, artifactType);
 			return objectQueryManagerAdaptor;
 		}
-
-		#region Helper Methods
 
 		private BaseContext GetBaseContextForWorkspace(int workspaceArtifactId)
 		{
@@ -205,6 +215,20 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			}
 
 			return contexts;
+		}
+
+		/// <summary>
+		/// Gets RSAPI Client.
+		/// NOTE: Only use this for legacy calls that require RSAPI client as input parameter
+		/// and are not easily refactorable.
+		/// </summary>
+		/// <param name="workspaceArtifactId">Workspace artifact id</param>
+		/// <returns>RSAPI Client</returns>
+		private IRSAPIClient GetRSAPIClient(int workspaceArtifactId)
+		{
+			IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System);
+			rsapiClient.APIOptions.WorkspaceID = workspaceArtifactId;
+			return rsapiClient;
 		}
 
 		#endregion

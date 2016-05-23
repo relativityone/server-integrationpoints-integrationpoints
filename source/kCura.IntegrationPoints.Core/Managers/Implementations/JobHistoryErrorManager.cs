@@ -48,9 +48,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 						break;
 
 					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
-						jobHistoryErrorRepository.CreateErrorListTempTable(itemLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
-						//ToDo: Second CreateErrorListTempTable needed when logic to split item level errors between those being retried and those no longer included is written
-						jobHistoryErrorRepository.CreateErrorListTempTable(itemLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE, uniqueJobId);
+						// This action will be performed later on. Item level errors need to be cross referenced before staging can occur.
 						break;
 				}
 			}
@@ -96,6 +94,59 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(workspaceArtifactId);
 
 			return jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointArtifactId);
+		}
+
+		public void CreateErrorListTempTablesForItemLevelErrors(Job job, string uniqueJobId, int savedSearchIdForItemLevelError)
+		{
+			var currentItemLevelErrors = new List<int>();
+			var expiredItemLevelErrors = new List<int>();
+
+			List<ArtifactDTO> documentsFromSavedSearch = GetAllFromSavedSearch(job.WorkspaceID, savedSearchIdForItemLevelError);
+
+			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(job.WorkspaceID);
+			int lastJobHistoryId = GetLastJobHistory(job.WorkspaceID, job.RelatedObjectArtifactID);
+			Dictionary<int, string> itemLevelErrorsAndSourceUniqueIds = jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, ErrorTypeChoices.JobHistoryErrorItem);
+
+			foreach (var error in itemLevelErrorsAndSourceUniqueIds)
+			{
+				if (documentsFromSavedSearch.Exists(document => document.TextIdentifier == error.Value))
+				{
+					currentItemLevelErrors.Add(error.Key);
+				}
+				else
+				{
+					expiredItemLevelErrors.Add(error.Key);
+				}
+			}
+
+			jobHistoryErrorRepository.CreateErrorListTempTable(currentItemLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
+			jobHistoryErrorRepository.CreateErrorListTempTable(currentItemLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE, uniqueJobId);
+
+			if (expiredItemLevelErrors.Count > 0)
+			{
+				jobHistoryErrorRepository.CreateErrorListTempTable(expiredItemLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER, uniqueJobId);
+			}
+		}
+
+		private List<ArtifactDTO> GetAllFromSavedSearch(int workspaceArtifactId, int savedSearchId)
+		{
+			var allArtifacts = new List<ArtifactDTO>();
+			ISavedSearchRepository savedSearchRepository = _repositoryFactory.GetSavedSearchRepository(workspaceArtifactId, savedSearchId);
+
+			while (true)
+			{
+				ArtifactDTO[] artifactDtos = savedSearchRepository.RetrieveNext();
+				if (artifactDtos != null && artifactDtos.Any())
+				{
+					allArtifacts.AddRange(artifactDtos);
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			return allArtifacts;
 		}
 	}
 }
