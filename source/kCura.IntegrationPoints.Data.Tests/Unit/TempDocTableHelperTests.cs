@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
+using Relativity.Data.Toggles;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Data.Tests.Unit
 {
@@ -27,6 +30,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 
 		private TempDocTableHelper _instance;
 		private IHelper _helper;
+		private IToggleProvider _toggleProvider;
 
 		[SetUp]
 		public void SetUp()
@@ -36,8 +40,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			_helper.GetDBContext(_sourceWorkspaceId).Returns(_caseContext);
 			_fieldRepository = Substitute.For<IFieldRepository>();
 			_documentRepository = Substitute.For<IDocumentRepository>();
-
-			_instance = new TempDocTableHelper(_helper, _tableSuffix, _sourceWorkspaceId, _fieldRepository, _documentRepository, _docIdColumn);
+			_toggleProvider = Substitute.For<IToggleProvider>();
+			_instance = new TempDocTableHelper(_helper, _tableSuffix, _sourceWorkspaceId, _fieldRepository, _documentRepository, _docIdColumn, _toggleProvider);
 
 			ArtifactDTO[] fieldArtifacts = CreateArtifactDTOs();
 			ArtifactDTO document = new ArtifactDTO(12345, 10, "Document", new ArtifactFieldDTO[] { });
@@ -56,9 +60,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			artifactIds.Add(56789);
 			string artifactIdList = "(" + String.Join("),(", artifactIds.Select(x => x.ToString())) + ")";
 
-			string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
+			string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM [EDDSRESOURCE].INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
 											BEGIN
-											CREATE TABLE [EDDSRESOURCE]..[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
+												CREATE TABLE [EDDSRESOURCE]..[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
 											END
 									INSERT INTO [EDDSRESOURCE]..[{0}] ([ArtifactID]) VALUES {1}", tableNameDestWorkspace + "_" + _tableSuffix, artifactIdList);
 
@@ -78,9 +82,9 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 			artifactIds.Add(56789);
 			string artifactIdList = "(" + String.Join("),(", artifactIds.Select(x => x.ToString())) + ")";
 
-			string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
+			string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM [EDDSRESOURCE].INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
 											BEGIN
-											CREATE TABLE [EDDSRESOURCE]..[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
+												CREATE TABLE [EDDSRESOURCE]..[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
 											END
 									INSERT INTO [EDDSRESOURCE]..[{0}] ([ArtifactID]) VALUES {1}", tableNameJobHistory + "_" + _tableSuffix, artifactIdList);
 
@@ -108,7 +112,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		public void DeleteTable_DestinationWorkspace_GoldFlow()
 		{
 			//Arrange
-			string sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
+			string sql = String.Format(@"IF EXISTS (SELECT * FROM [EDDSRESOURCE].INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
 										DROP TABLE [EDDSRESOURCE]..[{0}]", tableNameDestWorkspace + "_" + _tableSuffix);
 
 			//Act
@@ -122,7 +126,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit
 		public void DeleteTable_JobHistory_GoldFlow()
 		{
 			//Arrange
-			string sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
+			string sql = String.Format(@"IF EXISTS (SELECT * FROM [EDDSRESOURCE].INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
 										DROP TABLE [EDDSRESOURCE]..[{0}]", tableNameJobHistory + "_" + _tableSuffix);
 
 			//Act

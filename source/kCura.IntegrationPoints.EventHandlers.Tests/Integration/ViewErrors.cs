@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 	using Data.Factories;
 	using Data.Repositories;
 
+	[Explicit]
 	public class ViewErrors : WorkspaceDependentTemplate
 	{
 		private IRepositoryFactory _repositoryFactory;

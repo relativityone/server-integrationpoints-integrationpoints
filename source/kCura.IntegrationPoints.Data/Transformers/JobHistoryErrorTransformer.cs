@@ -10,23 +10,23 @@ using Relativity.API;
 namespace kCura.IntegrationPoints.Data.Transformers
 {
 	public class JobHistoryErrorTransformer : IDtoTransformer<JobHistoryErrorDTO, JobHistoryError>
-    {
-	    private readonly IRepositoryFactory _repositoryFactory;
-	    private readonly int _workspaceArtifactId;
+	{
+		private readonly IRepositoryFactory _repositoryFactory;
+		private readonly int _workspaceArtifactId;
 
-	    public JobHistoryErrorTransformer(IHelper helper, int workspaceArtifactId) 
-            : this(new RepositoryFactory(helper), workspaceArtifactId)
-	    {
-	    }
+		public JobHistoryErrorTransformer(IHelper helper, int workspaceArtifactId)
+			: this(new RepositoryFactory(helper), workspaceArtifactId)
+		{
+		}
 
-        /// <summary>
-        /// Only external usage of this constructor should be unit tests
-        /// </summary>
-	    internal JobHistoryErrorTransformer(IRepositoryFactory repositoryFactory, int workspaceArtifactId)
-	    {
-            _repositoryFactory = repositoryFactory;
-            _workspaceArtifactId = workspaceArtifactId;
-	    }
+		/// <summary>
+		/// Only external usage of this constructor should be unit tests
+		/// </summary>
+		internal JobHistoryErrorTransformer(IRepositoryFactory repositoryFactory, int workspaceArtifactId)
+		{
+			_repositoryFactory = repositoryFactory;
+			_workspaceArtifactId = workspaceArtifactId;
+		}
 
 		/// <summary>
 		/// Converts JobHistoryError object to DTO format
@@ -34,14 +34,14 @@ namespace kCura.IntegrationPoints.Data.Transformers
 		/// <param name="jobHistoryError">JobHistoryError object to be transformed</param>
 		/// <returns>JobHistoryError object in DTO form</returns>
 		public JobHistoryErrorDTO ConvertToDto(JobHistoryError jobHistoryError)
-        {
-            IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(_workspaceArtifactId);
-            Guid errorStatusChoiceGuid = artifactGuidRepository.GetGuidsForArtifactIds(new List<int> { jobHistoryError.ErrorStatus.ArtifactID })[jobHistoryError.ErrorStatus.ArtifactID];
+		{
+			IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(_workspaceArtifactId);
+			Guid errorStatusChoiceGuid = artifactGuidRepository.GetGuidsForArtifactIds(new List<int> { jobHistoryError.ErrorStatus.ArtifactID })[jobHistoryError.ErrorStatus.ArtifactID];
 			Guid errorTypeChoiceGuid = artifactGuidRepository.GetGuidsForArtifactIds(new List<int> { jobHistoryError.ErrorType.ArtifactID })[jobHistoryError.ErrorType.ArtifactID];
 
 			var dto = new JobHistoryErrorDTO()
-            {
-                ArtifactId = jobHistoryError.ArtifactId,
+			{
+				ArtifactId = jobHistoryError.ArtifactId,
 				Error = jobHistoryError.Error,
 				ErrorStatus = JobHistoryErrorDTO.Choices.ErrorStatus.GuidValues[errorStatusChoiceGuid],
 				ErrorType = JobHistoryErrorDTO.Choices.ErrorType.GuidValues[errorTypeChoiceGuid],
@@ -51,8 +51,8 @@ namespace kCura.IntegrationPoints.Data.Transformers
 				StackTrace = jobHistoryError.StackTrace,
 				TimestampUTC = jobHistoryError.TimestampUTC
 			};
-            return dto;
-        }
+			return dto;
+		}
 
 		/// <summary>
 		/// Converts JobHistoryError objects to DTO format
@@ -60,8 +60,8 @@ namespace kCura.IntegrationPoints.Data.Transformers
 		/// <param name="jobHistoryErrors">JobHistoryError objects to be transformed</param>
 		/// <returns>List of JobHistoryError objects in DTO form</returns>
 		public List<JobHistoryErrorDTO> ConvertToDto(IEnumerable<JobHistoryError> jobHistoryErrors)
-        {
-            return jobHistoryErrors.Select(ConvertToDto).ToList();
-        }
-    }
+		{
+			return jobHistoryErrors.Select(ConvertToDto).ToList();
+		}
+	}
 }

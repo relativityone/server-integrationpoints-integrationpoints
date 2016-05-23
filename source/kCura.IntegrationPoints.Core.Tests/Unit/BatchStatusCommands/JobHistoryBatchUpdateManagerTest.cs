@@ -34,15 +34,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_docTableFactory = Substitute.For<ITempDocumentTableFactory>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_onBehalfOfUserClaimsPrincipalFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
+			_tempDocHelper.GetTempTableName(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST).Returns(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST);
 
-			
+
 			_docTableFactory.GetDocTableHelper(_uniqueJobId, _sourceWorkspaceId).Returns(_tempDocHelper);
 			_onBehalfOfUserClaimsPrincipalFactory.CreateClaimsPrincipal(_submittedBy).Returns(_claimsPrincipal);
 
-			_instance = new JobHistoryBatchUpdateManager(_docTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _jobHistoryRdoId, _sourceWorkspaceId, _uniqueJobId, _submittedBy);
+			_instance = new JobHistoryBatchUpdateManager(_tempDocHelper, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _jobHistoryRdoId, _sourceWorkspaceId, _submittedBy);
 
 			_repositoryFactory.GetJobHistoryRepository(_sourceWorkspaceId).Returns(_jobHistoryRepository);
-			_docTableFactory.Received().GetDocTableHelper(_uniqueJobId, _sourceWorkspaceId);
 			_onBehalfOfUserClaimsPrincipalFactory.Received().CreateClaimsPrincipal(_submittedBy);
 		}
 
@@ -56,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST));
-			_jobHistoryRepository.Received().TagDocsWithJobHistory(_claimsPrincipal, 0, _jobHistoryRdoId, _sourceWorkspaceId, _uniqueJobId);
+			_jobHistoryRepository.Received().TagDocsWithJobHistory(_claimsPrincipal, 0, _jobHistoryRdoId, _sourceWorkspaceId, Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST);
 		}
 
 		[Test]
@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST));
-			_jobHistoryRepository.Received().TagDocsWithJobHistory(_claimsPrincipal, Arg.Any<int>(), _jobHistoryRdoId, _sourceWorkspaceId, _uniqueJobId);
+			_jobHistoryRepository.Received().TagDocsWithJobHistory(_claimsPrincipal, Arg.Any<int>(), _jobHistoryRdoId, _sourceWorkspaceId, Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST);
 		}
 
 		[Test]

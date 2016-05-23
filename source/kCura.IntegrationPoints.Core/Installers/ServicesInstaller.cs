@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
@@ -31,6 +33,9 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
+using Relativity.CustomPages;
+using Relativity.Toggles;
+using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -113,6 +118,29 @@ namespace kCura.IntegrationPoints.Core.Installers
 			container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>().LifestyleTransient());
 
 			container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>());
+
+			if (!container.Kernel.HasComponent(typeof(IToggleProvider)))
+			{
+				container.Register(Component.For<IToggleProvider>().UsingFactoryMethod(k =>
+				{
+					return new SqlServerToggleProvider(
+						() => {
+							IHelper helper = k.Resolve<IHelper>();
+							SqlConnection connection = helper.GetDBContext(-1).GetConnection(true);
+
+							return connection;
+						}, 
+						async () => {
+							Task<SqlConnection> task = Task.Run(() =>
+							{
+								IHelper helper = k.Resolve<IHelper>();
+								SqlConnection connection = helper.GetDBContext(-1).GetConnection(true);
+								return connection;
+							});
+							return await task;
+						});
+				}).LifestyleTransient());
+			}
 
 			if (container.Kernel.HasComponent(typeof(IHelper)))
 			{

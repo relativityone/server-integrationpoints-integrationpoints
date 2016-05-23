@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Data.Repositories
 {
@@ -14,13 +15,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <returns>List of Artifact Ids of Job History Errors for the provided Job History and Error Type</returns>
 		List<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType);
 
-		/// <summary>
-		/// Creates the unique temp tables required to make Error Status updates for currently running job
-		/// </summary>
-		/// <param name="errors">List of Artifact Ids of errors for the previous Job History</param>
-		/// <param name="tablePrefix">Temp table name prefix</param>
-		/// <param name="uniqueJobId">Job Id and Job Guid combined to be a suffix for the temp table</param>
-		void CreateErrorListTempTable(List<int> errors, string tablePrefix, string uniqueJobId);
 
 		/// <summary>
 		/// Mass edits the Job History Errors 

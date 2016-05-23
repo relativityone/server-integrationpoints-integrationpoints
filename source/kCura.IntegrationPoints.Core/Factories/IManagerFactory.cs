@@ -1,4 +1,6 @@
 ﻿using kCura.IntegrationPoints.Core.Managers;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 
 namespace kCura.IntegrationPoints.Core.Factories
 {
@@ -39,8 +41,9 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// Creates Job History Error manager
 		/// </summary>
 		/// <param name="contextContainer">Container containing necessary contexts</param>
+		/// <param name="helper"></param>
 		/// <returns>Job History Error manager</returns>
-		IJobHistoryErrorManager CreateJobHistoryErrorManager(IContextContainer contextContainer);
+		IJobHistoryErrorManager CreateJobHistoryErrorManager(IContextContainer contextContainer, ITempDocTableHelper helper);
 
 		/// <summary>
 		/// Creates Object Type manager

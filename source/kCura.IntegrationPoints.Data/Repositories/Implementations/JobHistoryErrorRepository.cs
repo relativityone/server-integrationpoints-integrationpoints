@@ -66,19 +66,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return results.Results.Select(result => result.Artifact.ArtifactID).ToList();
 		}
 
-		public void CreateErrorListTempTable(List<int> errors, string tablePrefix, string uniqueJobId)
-		{
-			try
-			{
-				ITempDocTableHelper tempDocTableHelper = new TempDocTableHelper(_helper, uniqueJobId);
-				tempDocTableHelper.AddArtifactIdsIntoTempTable(errors, tablePrefix);
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(JobHistoryErrorErrors.JOB_HISTORY_ERROR_TEMP_TABLE_CREATION_FAILURE, ex);
-			}
-		}
-
 		public void UpdateErrorStatuses(ClaimsPrincipal claimsPrincipal, int numberOfErrors, int jobHistoryErrorTypeId, int sourceWorkspaceId, int errorStatusArtifactId, string tableName)
 		{
 			if (numberOfErrors <= 0)

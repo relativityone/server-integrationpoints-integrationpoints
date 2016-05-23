@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
@@ -41,6 +42,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private const string _uniqueJobId = "aceVentura";
 		private const string _noResultsForObjectType = "Unable to retrieve Artifact Type Id for JobHistoryError object type.";
 		private readonly Job _job;
+		private IJobHistoryErrorManager _jobHistoryErrorManager;
+
+
+		private const string _SCRATCHTABLE_ITEMSTART = "ItemStart";
+		private const string _SCRATCHTABLE_ITEMCOMPLETE = "ItemComplete";
+		private const string _SCRATCHTABLE_JOBSTART = "JobStart";
+		private const string _SCRATCHTABLE_JOBCOMPLETE = "JobComplete";
 
 		[SetUp]
 		public void Setup()
@@ -53,14 +61,25 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_onBehalfOfUserClaimsPrincipalFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
 			_updateStatusType = Substitute.For<JobHistoryErrorDTO.UpdateStatusType>();
+			_jobHistoryErrorManager = Substitute.For<IJobHistoryErrorManager>();
 
 			_tempTableFactory.GetDocTableHelper(_uniqueJobId, _sourceWorkspaceId).Returns(_tempTableHelper);
 			_onBehalfOfUserClaimsPrincipalFactory.CreateClaimsPrincipal(_submittedBy).Returns(_claimsPrincipal);
 			_repositoryFactory.GetObjectTypeRepository(_sourceWorkspaceId).Returns(_objectTypeRepository);
 			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(_jobHistoryErrorGuid).Returns(_jobHistoryErrorTypeId);
 
-			_testInstance = new JobHistoryErrorBatchUpdateManager(_tempTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory,
-				_sourceWorkspaceId, _uniqueJobId, _submittedBy, _updateStatusType, _savedSearchArtifactId);
+			_jobHistoryErrorManager.JobHistoryErrorItemStart.Returns(Substitute.For<IScratchTableRepository>());
+			_jobHistoryErrorManager.JobHistoryErrorItemComplete.Returns(Substitute.For<IScratchTableRepository>());
+			_jobHistoryErrorManager.JobHistoryErrorJobStart.Returns(Substitute.For<IScratchTableRepository>());
+			_jobHistoryErrorManager.JobHistoryErrorJobComplete.Returns(Substitute.For<IScratchTableRepository>());
+
+			_jobHistoryErrorManager.JobHistoryErrorItemStart.GetTempTableName().Returns(_SCRATCHTABLE_ITEMSTART);
+			_jobHistoryErrorManager.JobHistoryErrorItemComplete.GetTempTableName().Returns(_SCRATCHTABLE_ITEMCOMPLETE);
+			_jobHistoryErrorManager.JobHistoryErrorJobStart.GetTempTableName().Returns(_SCRATCHTABLE_JOBSTART);
+			_jobHistoryErrorManager.JobHistoryErrorJobComplete.GetTempTableName().Returns(_SCRATCHTABLE_JOBCOMPLETE);
+
+			_testInstance = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory,
+				_sourceWorkspaceId, _submittedBy, _updateStatusType, _savedSearchArtifactId);
 
 			_repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceId).Returns(_jobHistoryErrorRepository);
 			_repositoryFactory.GetArtifactGuidRepository(_sourceWorkspaceId).Returns(_artifactGuidRepository);
@@ -71,7 +90,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_artifactGuidRepository.GetArtifactIdsForGuids(ErrorStatusChoices.JobHistoryErrorRetried.ArtifactGuids)
 				.Returns(new Dictionary<Guid, int>() { { ErrorStatusChoices.JobHistoryErrorRetried.ArtifactGuids[0], _errorStatusRetriedChoiceArtifactId } });
 
-			_tempTableFactory.Received().GetDocTableHelper(_uniqueJobId, _sourceWorkspaceId);
 			_onBehalfOfUserClaimsPrincipalFactory.Received().CreateClaimsPrincipal(_submittedBy);
 		}
 
@@ -102,8 +120,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received().UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId, _sourceWorkspaceId,
-				_errorStatusExpiredChoiceArtifactId, _jobErrorOnStartPrefix + "_" + _uniqueJobId);
-			_tempTableHelper.Received().DeleteTable(_jobErrorOnStartPrefix);
+				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_JOBSTART);
+			_jobHistoryErrorManager.JobHistoryErrorJobStart.Received(1).Dispose();
 		}
 
 		[Test]
@@ -118,11 +136,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received().UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId, _sourceWorkspaceId,
-				_errorStatusExpiredChoiceArtifactId, _jobErrorOnStartPrefix + "_" + _uniqueJobId);
-			_tempTableHelper.Received().DeleteTable(_jobErrorOnStartPrefix);
+				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_JOBSTART);
+			_jobHistoryErrorManager.JobHistoryErrorJobStart.Received(1).Dispose();
 			_jobHistoryErrorRepository.Received().UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId, _sourceWorkspaceId,
-				_errorStatusExpiredChoiceArtifactId, _itemErrorOnStartPrefix + "_" + _uniqueJobId);
-			_tempTableHelper.Received().DeleteTable(_itemErrorOnStartPrefix);
+				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_ITEMSTART);
+			_jobHistoryErrorManager.JobHistoryErrorItemStart.Received(1).Dispose();
 		}
 
 		[Test]
@@ -137,8 +155,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received().UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId, _sourceWorkspaceId,
-				_errorStatusExpiredChoiceArtifactId, _itemErrorOnStartPrefix + "_" + _uniqueJobId);
-			_tempTableHelper.Received().DeleteTable(_itemErrorOnStartPrefix);
+				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_ITEMSTART);
+			_jobHistoryErrorManager.JobHistoryErrorItemStart.Received(1).Dispose();
 		}
 
 		[Test]
@@ -168,8 +186,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received().UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId, _sourceWorkspaceId,
-				_errorStatusInProgressChoiceArtifactId, _jobErrorOnStartPrefix + "_" + _uniqueJobId);
-			_tempTableHelper.Received().DeleteTable(_jobErrorOnStartPrefix);
+				_errorStatusInProgressChoiceArtifactId, _SCRATCHTABLE_JOBSTART);
+			_jobHistoryErrorManager.JobHistoryErrorJobStart.Received(1).Dispose();
 		}
 
 		[Test]
@@ -184,11 +202,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received().UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId, _sourceWorkspaceId,
-				_errorStatusInProgressChoiceArtifactId, _jobErrorOnStartPrefix + "_" + _uniqueJobId);
-			_tempTableHelper.Received().DeleteTable(_jobErrorOnStartPrefix);
+				_errorStatusInProgressChoiceArtifactId, _SCRATCHTABLE_JOBSTART);
+			_jobHistoryErrorManager.JobHistoryErrorJobStart.Received(1).Dispose();
 			_jobHistoryErrorRepository.Received().UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId, _sourceWorkspaceId,
-				_errorStatusExpiredChoiceArtifactId, _itemErrorOnStartPrefix + "_" + _uniqueJobId);
-			_tempTableHelper.Received().DeleteTable(_itemErrorOnStartPrefix);
+				_errorStatusExpiredChoiceArtifactId, _SCRATCHTABLE_ITEMSTART);
+			_jobHistoryErrorManager.JobHistoryErrorItemStart.Received(1).Dispose();
 		}
 
 		[Test]
@@ -203,8 +221,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received().UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId, _sourceWorkspaceId,
-				_errorStatusInProgressChoiceArtifactId, _itemErrorOnStartPrefix + "_" + _uniqueJobId);
-			_tempTableHelper.Received().DeleteTable(_itemErrorOnStartPrefix);
+				_errorStatusInProgressChoiceArtifactId, _SCRATCHTABLE_ITEMSTART);
+			_jobHistoryErrorManager.JobHistoryErrorItemStart.Received(1).Dispose();
 		}
 
 		[Test]
@@ -294,8 +312,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received().UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId, _sourceWorkspaceId,
-				_errorStatusRetriedChoiceArtifactId, _jobErrorOnCompletePrefix + "_" + _uniqueJobId);
-			_tempTableHelper.Received().DeleteTable(_jobErrorOnCompletePrefix);
+				_errorStatusRetriedChoiceArtifactId, _SCRATCHTABLE_JOBCOMPLETE);
+			_jobHistoryErrorManager.JobHistoryErrorJobComplete.Received(1).Dispose();
 		}
 
 		[Test]
@@ -310,8 +328,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received().UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId, _sourceWorkspaceId,
-				_errorStatusRetriedChoiceArtifactId, _jobErrorOnCompletePrefix + "_" + _uniqueJobId);
-			_tempTableHelper.Received().DeleteTable(_jobErrorOnCompletePrefix);
+				_errorStatusRetriedChoiceArtifactId, _SCRATCHTABLE_JOBCOMPLETE);
+			_jobHistoryErrorManager.JobHistoryErrorJobComplete.Received(1).Dispose();
 		}
 
 		[Test]
@@ -326,9 +344,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_jobHistoryErrorRepository.Received().UpdateErrorStatuses(_claimsPrincipal, Arg.Any<int>(), _jobHistoryErrorTypeId, _sourceWorkspaceId,
-				_errorStatusRetriedChoiceArtifactId, _itemErrorOnCompletePrefix + "_" + _uniqueJobId);
+				_errorStatusRetriedChoiceArtifactId,_SCRATCHTABLE_ITEMCOMPLETE);
 			_jobHistoryErrorRepository.Received().DeleteItemLevelErrorsSavedSearch(_sourceWorkspaceId, _savedSearchArtifactId, 0);
-			_tempTableHelper.Received().DeleteTable(_itemErrorOnCompletePrefix);
+			_jobHistoryErrorManager.JobHistoryErrorItemComplete.Received(1).Dispose();
 		}
 
 		[Test]
@@ -338,8 +356,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(_jobHistoryErrorGuid).Returns(new int?());
 
 			//Act
-			Exception ex = Assert.Throws<Exception>(() => new JobHistoryErrorBatchUpdateManager(_tempTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory,
-				_sourceWorkspaceId, _uniqueJobId, _submittedBy, _updateStatusType, _savedSearchArtifactId));
+			Exception ex = Assert.Throws<Exception>(() => new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory,
+				_sourceWorkspaceId, _submittedBy, _updateStatusType, _savedSearchArtifactId));
 
 			//Assert
 			Assert.AreEqual(_noResultsForObjectType, ex.Message);

@@ -9,11 +9,13 @@ using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Core;
 
+
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
 {
 	public class RepositoryFactory : IRepositoryFactory
 	{
 		private readonly IHelper _helper;
+
 		private IDictionary<int, ContextContainer> ContextCache { get; }
 
 		public RepositoryFactory(IHelper helper)
@@ -76,7 +78,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IJobHistoryErrorRepository GetJobHistoryErrorRepository(int workspaceArtifactId)
 		{
-			IJobHistoryErrorRepository jobHistoryErrorRepository = new JobHistoryErrorRepository(_helper, workspaceArtifactId);
+			IJobHistoryErrorRepository jobHistoryErrorRepository = new JobHistoryErrorRepository( _helper, workspaceArtifactId);
 			return jobHistoryErrorRepository;
 		}
 
@@ -201,7 +203,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 						.ChicagoContext
 						.ThreadSafeChicagoContext;
 				}
-
 				var contextContainer = new ContextContainer()
 				{
 					BaseContext = baseContext,

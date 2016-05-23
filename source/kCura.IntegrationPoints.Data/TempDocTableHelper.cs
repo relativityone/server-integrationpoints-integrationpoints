@@ -2,11 +2,17 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using Relativity.API;
+using Relativity.Core;
+using Relativity.Data;
+using Relativity.Data.Toggles;
+using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Data
 {
@@ -16,27 +22,27 @@ namespace kCura.IntegrationPoints.Data
 		private readonly IFieldRepository _fieldRepository;
 		private readonly IDocumentRepository _documentRepository;
 		private readonly string _tableSuffix;
+		private readonly int _sourceWorkspaceId;
 		private string _docIdentifierField;
+		private readonly IToggleProvider _toggleProvider;
+		private string _database;
+		private string _tempTableName;
 
-		public TempDocTableHelper(IHelper helper, string tableSuffix, int sourceWorkspaceId, IFieldRepository fieldRepository, IDocumentRepository documentRepository)
-			: this (helper,tableSuffix, sourceWorkspaceId, fieldRepository, documentRepository, null)
+		public TempDocTableHelper(IHelper helper, string tableSuffix, int sourceWorkspaceId, IFieldRepository fieldRepository, IDocumentRepository documentRepository, IToggleProvider toggleProvider)
+			: this (helper,tableSuffix, sourceWorkspaceId, fieldRepository, documentRepository, null, toggleProvider)
 		{
-		}
-
-		public TempDocTableHelper(IHelper helper, string tableSuffix)
-		{
-			_caseContext = helper.GetDBContext(-1);
-			_tableSuffix = tableSuffix;
 		}
 
 		/// <summary>
 		/// For internal testing only
 		/// </summary>
-		internal TempDocTableHelper(IHelper helper, string tableSuffix, int sourceWorkspaceId, IFieldRepository fieldRepository, IDocumentRepository documentRepository, string docIdField)
+		internal TempDocTableHelper(IHelper helper, string tableSuffix, int sourceWorkspaceId, IFieldRepository fieldRepository, IDocumentRepository documentRepository, string docIdField, IToggleProvider toggleProvider)
 		{
 			_caseContext = helper.GetDBContext(sourceWorkspaceId);
 			_tableSuffix = tableSuffix;
+			_sourceWorkspaceId = sourceWorkspaceId;
 			_docIdentifierField = docIdField;
+			_toggleProvider = toggleProvider;
 			_fieldRepository = fieldRepository;
 			_documentRepository = documentRepository;
 		}
@@ -49,11 +55,11 @@ namespace kCura.IntegrationPoints.Data
 				string artifactIdList = String.Join("),(", artifactIds.Select(x => x.ToString()));
 				artifactIdList = $"({artifactIdList})";
 
-				string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
+				string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM {2}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
 											BEGIN
-											CREATE TABLE [EDDSRESOURCE]..[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
+												CREATE TABLE {3}[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
 											END
-									INSERT INTO [EDDSRESOURCE]..[{0}] ([ArtifactID]) VALUES {1}", fullTableName, artifactIdList);
+									INSERT INTO {3}[{0}] ([ArtifactID]) VALUES {1}", fullTableName, artifactIdList, TargetDatabaseFormat, FullDatabaseFormat);
 
 				_caseContext.ExecuteNonQuerySQLStatement(sql);
 			}
@@ -63,7 +69,7 @@ namespace kCura.IntegrationPoints.Data
 		{
 			int docId = GetErroredDocumentId(docIdentifier);
 			string fullTableName = GetTempTableName(tablePrefix);
-			string sql = String.Format(@"DELETE FROM EDDSRESOURCE..[{0}] WHERE [ArtifactID] = {1}", fullTableName, docId);
+			string sql = String.Format(@"DELETE FROM {2}[{0}] WHERE [ArtifactID] = {1}", fullTableName, docId, FullDatabaseFormat);
 
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
 		}
@@ -72,8 +78,8 @@ namespace kCura.IntegrationPoints.Data
 		{
 			string fullTableName = GetTempTableName(tablePrefix);
 
-			var sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
-										SELECT [ArtifactID] FROM [EDDSRESOURCE]..[{0}]", fullTableName);
+			var sql = String.Format(@"IF EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
+										SELECT [ArtifactID] FROM {2}[{0}]", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
 
 			return _caseContext.ExecuteSQLStatementAsReader(sql);
 		}
@@ -81,22 +87,59 @@ namespace kCura.IntegrationPoints.Data
 		public void DeleteTable(string tablePrefix)
 		{
 			string fullTableName = GetTempTableName(tablePrefix);
-			string sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
-										DROP TABLE [EDDSRESOURCE]..[{0}]", fullTableName);
-
+			string sql = String.Format(@"IF EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
+										DROP TABLE {2}[{0}]", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
+			
 			_caseContext.ExecuteNonQuerySQLStatement(sql);
+		}
+
+		public string TargetDatabaseFormat
+		{
+			get
+			{
+				if (_database == null)
+				{
+					if (_toggleProvider.IsFeatureEnabled<AOAGToggle>())
+					{
+						_database = String.Empty;
+					}
+					else
+					{
+						_database = "[EDDSRESOURCE].";
+					}
+				}
+				return _database;
+			}
+		}
+
+		public string FullDatabaseFormat
+		{
+			get { return TargetDatabaseFormat == String.Empty ? "[eddsdbo]." : "[EDDSRESOURCE].."; }
 		}
 
 		public string GetTempTableName(string tablePrefix)
 		{
-			return $"{tablePrefix}_{_tableSuffix}";
+			if (_tempTableName == null)
+			{
+				string prepend = String.Empty;
+				if (_toggleProvider.IsFeatureEnabled<AOAGToggle>())
+				{
+					prepend = $"{ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_sourceWorkspaceId)}_";
+				}
+				_tempTableName = $"{prepend}{tablePrefix}_{_tableSuffix}";
+				if (_tempTableName.Length > 128)
+				{
+					throw new Exception($"Unable to create scratch table - {_tempTableName}. The name of the table is too long. Please contract the system administrator.");
+				}
+			}
+			return _tempTableName;
 		}
 
 		public int GetTempTableCount(string tablePrefix)
 		{
 			string fullTableName = GetTempTableName(tablePrefix);
-			string sql = String.Format(@"IF EXISTS (SELECT * FROM EDDSRESOURCE.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
-										SELECT COUNT(*) FROM [EDDSRESOURCE]..[{0}]", fullTableName);
+			string sql = String.Format(@"IF EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
+										SELECT COUNT(*) FROM {2}[{0}]", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
 
 			return _caseContext.ExecuteSqlStatementAsScalar<int>(sql);
 		}

@@ -11,22 +11,20 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
 	public class JobHistoryBatchUpdateManager : IConsumeScratchTableBatchStatus
 	{
-		private readonly ITempDocTableHelper _tempDocHelper;
 		private readonly ClaimsPrincipal _claimsPrincipal;
 		private readonly int _jobHistoryInstanceId;
+		private readonly ITempDocTableHelper _tempDocTableHelper;
 		private readonly int _sourceWorkspaceArtifactId;
-		private readonly string _uniqueJobId;
 		private ScratchTableRepository _scratchTable;
 		private readonly IRepositoryFactory _repositoryFactory;
 
-		public JobHistoryBatchUpdateManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory,
-			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, int jobHistoryInstanceId, int sourceWorkspaceArtifactId, string uniqueJobId, int submittedBy)
+		public JobHistoryBatchUpdateManager(ITempDocTableHelper tempDocTableHelper, IRepositoryFactory repositoryFactory,
+			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, int jobHistoryInstanceId, int sourceWorkspaceArtifactId, int submittedBy)
 		{
+			_tempDocTableHelper = tempDocTableHelper;
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_jobHistoryInstanceId = jobHistoryInstanceId;
 			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);
-			_uniqueJobId = uniqueJobId;
-			_tempDocHelper = tempDocumentTableFactory.GetDocTableHelper(_uniqueJobId, _sourceWorkspaceArtifactId);
 			_repositoryFactory = repositoryFactory;
 		}
 
@@ -39,7 +37,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			try
 			{
 				IJobHistoryRepository jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(_sourceWorkspaceArtifactId);
-				jobHistoryRepository.TagDocsWithJobHistory(_claimsPrincipal, ScratchTableRepository.Count, _jobHistoryInstanceId, _sourceWorkspaceArtifactId, _uniqueJobId);
+				jobHistoryRepository.TagDocsWithJobHistory(_claimsPrincipal, ScratchTableRepository.Count, _jobHistoryInstanceId, _sourceWorkspaceArtifactId, ScratchTableRepository.GetTempTableName());
 			}
 			finally
 			{
@@ -53,7 +51,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			{
 				if (_scratchTable == null)
 				{
-					_scratchTable = new ScratchTableRepository(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST, _tempDocHelper, true);
+					_scratchTable = new ScratchTableRepository(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST, _tempDocTableHelper, true);
 				}
 				return _scratchTable;
 			}

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Security.Claims;
-using System.Security.Principal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
@@ -19,7 +18,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 	public class DestinationWorkspaceBatchUpdateManagerTest
 	{
 		private ITempDocTableHelper _tempDocHelper;
-		private ITempDocumentTableFactory _docTableFactory;
 		private IRepositoryFactory _repositoryFactory;
 		private IOnBehalfOfUserClaimsPrincipalFactory _onBehalfOfUserClaimsPrincipalFactory;
 		private ClaimsPrincipal _claimsPrincipal;
@@ -29,7 +27,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private readonly int _jobHistoryRdoId = 12345;
 		private readonly int _destWorkspaceInstanceId = 54321;
 		private readonly int _destinationWorkspaceId = 99999;
-		private readonly string _tableSuffix = "12-25-96";
 		private readonly string _destWorkspaceName = "Workspace X";
 		private readonly string _updatedDestWorkspaceName = "New Workspace Name";
 		private readonly int _submittedBy = 4141;
@@ -45,7 +42,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		{
 			_tempDocHelper = Substitute.For<ITempDocTableHelper>();
 			_destinationWorkspaceRepository = Substitute.For<IDestinationWorkspaceRepository>();
-			_docTableFactory = Substitute.For<ITempDocumentTableFactory>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_onBehalfOfUserClaimsPrincipalFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
 			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
@@ -76,15 +72,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_repositoryFactory.GetDestinationWorkspaceRepository(_sourceConfig.SourceWorkspaceArtifactId)
 				.Returns(_destinationWorkspaceRepository);
 			_repositoryFactory.GetWorkspaceRepository().Returns(_workspaceRepository);
-			_docTableFactory.GetDocTableHelper(_tableSuffix, _sourceConfig.SourceWorkspaceArtifactId).Returns(_tempDocHelper);
 			_onBehalfOfUserClaimsPrincipalFactory.CreateClaimsPrincipal(_submittedBy).Returns(_claimsPrincipal);
 
-			_instance = new DestinationWorkspaceBatchUpdateManager(_docTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfig,
-				_tableSuffix, _jobHistoryRdoId, _submittedBy);
+			_tempDocHelper.GetTempTableName(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS).Returns(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS);
+
+			_instance = new DestinationWorkspaceBatchUpdateManager(_tempDocHelper, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfig,
+				_jobHistoryRdoId, _submittedBy);
 
 			_repositoryFactory.Received().GetDestinationWorkspaceRepository(_sourceConfig.SourceWorkspaceArtifactId);
 			_repositoryFactory.Received().GetWorkspaceRepository();
-			_docTableFactory.Received().GetDocTableHelper(_tableSuffix, _sourceConfig.SourceWorkspaceArtifactId);
 			_onBehalfOfUserClaimsPrincipalFactory.Received().CreateClaimsPrincipal(_submittedBy);
 		}
 
@@ -153,7 +149,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 			//Assert
 			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS));
-			_destinationWorkspaceRepository.Received().TagDocsWithDestinationWorkspace(_claimsPrincipal, 0, 0, _tableSuffix,_sourceConfig.SourceWorkspaceArtifactId);
+			_destinationWorkspaceRepository.Received().TagDocsWithDestinationWorkspace(_claimsPrincipal, 0, 0, Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS, _sourceConfig.SourceWorkspaceArtifactId);
 		}
 
 		[Test]
@@ -163,7 +159,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_instance.OnJobComplete(_job);
 
 			//Assert
-			_destinationWorkspaceRepository.Received().TagDocsWithDestinationWorkspace(_claimsPrincipal, 0, 0, _tableSuffix, _sourceConfig.SourceWorkspaceArtifactId);
+			_destinationWorkspaceRepository.Received().TagDocsWithDestinationWorkspace(_claimsPrincipal, 0, 0, Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS, _sourceConfig.SourceWorkspaceArtifactId);
 			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS));
 		}
 
