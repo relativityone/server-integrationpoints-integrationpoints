@@ -192,11 +192,10 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 					DateTime.UtcNow, serializer.Serialize(new TaskParameters() { BatchInstance = Guid.NewGuid() }), 9,
 					null, null);
 
+				AssignJobToAgent(fakeAgentId, scheduledJob.JobId); // agent pick up scheduled job
 				job = GetNextInQueue(new[] { SourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID); // agent pick up job
 
-				AssignJobToAgent(fakeAgentId, scheduledJob.JobId); // agent pick up scheduled job
 				TaskParameters runNowParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
-				TaskParameters scheduledParameters = serializer.Deserialize<TaskParameters>(scheduledJob.JobDetails);
 
 				// act
 				Assert.IsNotNull(job, "There is no job to execute");
@@ -206,10 +205,8 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				// assert
 				model = RefreshIntegrationModel(model);
 				JobHistory runNowJobhistory = jobHistoryService.GetRdo(runNowParameters.BatchInstance);
-				JobHistory scheduledJobhistory = jobHistoryService.GetRdo(scheduledParameters.BatchInstance);
 
 				Assert.IsNull(runNowJobhistory); // job history is deleted
-				Assert.IsNull(scheduledJobhistory); // scheduled job history is not deleted
 				Assert.IsNotNull(model); // ip object does not get deleted
 				Assert.IsFalse(model.HasErrors ?? false);
 
@@ -230,7 +227,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 		[Test]
 		public void AgentPickUpScheduledJobJobWhenRunNowJobIsRunning()
 		{
-			Job fakScheduledJob = null;
+			Job fakeScheduledJob = null;
 			Job job = null;
 
 			try
@@ -261,7 +258,7 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				int jobId = GetLastScheduledJobId(SourceWorkspaceArtifactId, model.ArtifactID);
 				var integrationPointId = model.ArtifactID;
 
-				fakScheduledJob = _jobService.GetJob(jobId);
+				fakeScheduledJob = _jobService.GetJob(jobId);
 
 				// a person click run now
 				_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointId, 9);
@@ -269,30 +266,30 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				// run now picked up by an agent
 				job = GetNextInQueue(new[] { SourceWorkspaceDto.ResourcePoolID.Value }, model.ArtifactID);
 
-				AssignJobToAgent(fakeAgentId, fakScheduledJob.JobId); // agent pick up the scheduled job
-				TaskParameters scheduledJobParameters = serializer.Deserialize<TaskParameters>(fakScheduledJob.JobDetails);
+				AssignJobToAgent(fakeAgentId, fakeScheduledJob.JobId); // agent pick up the scheduled job
+				TaskParameters scheduledJobParameters = serializer.Deserialize<TaskParameters>(fakeScheduledJob.JobDetails);
 				TaskParameters runNowJobParam = serializer.Deserialize<TaskParameters>(job.JobDetails);
 
 				// act
 				Assert.IsNotNull(job, "There is no job to execute");
-				Assert.Throws<AgentDropJobException>(() => _exportManager.Execute(fakScheduledJob),
+				Assert.Throws<AgentDropJobException>(() => _exportManager.Execute(fakeScheduledJob),
 					"Unable to execute Integration Point job: There is already a job currently running."); // run the job
 
 				// assert
 				model = RefreshIntegrationModel(model);
-				JobHistory schedauledJobhistory = jobHistoryService.GetRdo(scheduledJobParameters.BatchInstance);
+				JobHistory scheduledJobhistory = jobHistoryService.GetRdo(scheduledJobParameters.BatchInstance);
 				JobHistory history = jobHistoryService.GetRdo(runNowJobParam.BatchInstance);
 
-				Assert.IsNull(schedauledJobhistory); // job history is deleted
+				Assert.IsNull(scheduledJobhistory); // job history is deleted
 				Assert.IsNotNull(history); // job history is deleted
 				Assert.IsNotNull(model); // ip object does not get deleted
 				Assert.IsFalse(model.HasErrors ?? false); // expect the error being logged
 			}
 			finally
 			{
-				if (fakScheduledJob != null)
+				if (fakeScheduledJob != null)
 				{
-					_jobService.DeleteJob(fakScheduledJob.JobId);
+					_jobService.DeleteJob(fakeScheduledJob.JobId);
 				}
 				if (job != null)
 				{
