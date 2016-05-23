@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data;
@@ -17,10 +18,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		private IRepositoryFactory _repositoryFactory;
 		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
 		private IJobHistoryRepository _jobHistoryRepository;
+		private ISavedSearchRepository _savedSearchRepository;
 
-		
-		private const int _workspaceArtifactId = 102448;
-		private const int _integrationPointArtifactId = 4651358;
+		private const int _WORKSPACE_ARTIFACT_ID = 102448;
+		private const int _INTEGRATION_POINT_ARTIFACT_ID = 4651358;
 		private const int _submittedByArtifactId = 2448071;
 		private const int _originalSavedSearchArtifactId = 7748963;
 		private const string _uniqueJobId = "petDetective";
@@ -39,12 +40,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_jobHistoryErrorRepository = Substitute.For<IJobHistoryErrorRepository>();
 			_jobHistoryRepository = Substitute.For<IJobHistoryRepository>();
+			_savedSearchRepository = Substitute.For<ISavedSearchRepository>();
+
 			_testInstance = new JobHistoryErrorManager(_repositoryFactory);
 
-			_repositoryFactory.GetJobHistoryErrorRepository(_workspaceArtifactId).Returns(_jobHistoryErrorRepository);
-			_repositoryFactory.GetJobHistoryRepository(_workspaceArtifactId).Returns(_jobHistoryRepository);
+			_repositoryFactory.GetJobHistoryErrorRepository(_WORKSPACE_ARTIFACT_ID).Returns(_jobHistoryErrorRepository);
+			_repositoryFactory.GetJobHistoryRepository(_WORKSPACE_ARTIFACT_ID).Returns(_jobHistoryRepository);
 			
-			_job = new Job(_workspaceArtifactId, _integrationPointArtifactId, _submittedByArtifactId);
+			_job = new Job(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, _submittedByArtifactId);
 		}
 
 		[Test]
@@ -225,9 +228,71 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_testInstance.CreateItemLevelErrorsSavedSearch(_job, _originalSavedSearchArtifactId);
 
 			//Assert
-			_jobHistoryRepository.Received().GetLastJobHistoryArtifactId(_integrationPointArtifactId);
-			_jobHistoryErrorRepository.Received().CreateItemLevelErrorsSavedSearch(_workspaceArtifactId, _integrationPointArtifactId, 
+			_jobHistoryRepository.Received().GetLastJobHistoryArtifactId(_INTEGRATION_POINT_ARTIFACT_ID);
+			_jobHistoryErrorRepository.Received().CreateItemLevelErrorsSavedSearch(_WORKSPACE_ARTIFACT_ID, _INTEGRATION_POINT_ARTIFACT_ID, 
 				_originalSavedSearchArtifactId, 0, _submittedByArtifactId);
+		}
+
+		[Test]
+		public void CreateErrorListTempTablesForItemLevelErrors_GoldFlow()
+		{
+			// ARRANGE
+			const int savedSearchId = 2321393;
+			const int artifactTypeId = 10;
+			const int documentId1 = 100501;
+			const int documentId2 = 100502;
+			const int error1 = 424324;
+			const int error2 = 234234;
+			const string controlNumber1 = "REL0000000179.0001";
+			const string controlNumber2 = "REL0000000179.0002";
+			const string controlNumber3 = "REL0000000179.0003";
+			const string uniqueJobId = "X_Y_Z";
+			const int lastJobHistoryId = 2322133;
+
+			_repositoryFactory.GetSavedSearchRepository(_WORKSPACE_ARTIFACT_ID, savedSearchId).Returns(_savedSearchRepository);
+
+			var artifactDtos = new ArtifactDTO[]
+			{
+				new ArtifactDTO(documentId1, artifactTypeId, controlNumber1, new ArtifactFieldDTO[0]),
+				new ArtifactDTO(documentId2, artifactTypeId, controlNumber2, new ArtifactFieldDTO[0]),
+			};
+
+			_savedSearchRepository.RetrieveNextDocuments().Returns(artifactDtos, new ArtifactDTO[0]);
+
+			_repositoryFactory.GetJobHistoryErrorRepository(_WORKSPACE_ARTIFACT_ID).Returns(_jobHistoryErrorRepository);
+
+			Dictionary<int, string> itemLevelErrorsAndSourceUniqueIds = new Dictionary<int, string>()
+			{
+				{ error1, controlNumber2 },
+				{ error2, controlNumber3 }
+			};
+
+			_repositoryFactory.GetJobHistoryRepository(_WORKSPACE_ARTIFACT_ID).Returns(_jobHistoryRepository);
+			_jobHistoryRepository.GetLastJobHistoryArtifactId(_INTEGRATION_POINT_ARTIFACT_ID).Returns(lastJobHistoryId);
+
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, ErrorTypeChoices.JobHistoryErrorItem)
+				.Returns(itemLevelErrorsAndSourceUniqueIds);
+
+
+			// ACT
+			_testInstance.CreateErrorListTempTablesForItemLevelErrors(_job, uniqueJobId, savedSearchId);
+
+
+			// 
+			_jobHistoryErrorRepository.Received(1).CreateErrorListTempTable(
+				Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error1),
+				Arg.Is<string>(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START),
+				Arg.Is<string>(uniqueJobId));
+
+			_jobHistoryErrorRepository.Received(1).CreateErrorListTempTable(
+				Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error1),
+				Arg.Is<string>(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE),
+				Arg.Is<string>(uniqueJobId));
+
+			_jobHistoryErrorRepository.Received(1).CreateErrorListTempTable(
+				Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error2),
+				Arg.Is<string>(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER),
+				Arg.Is<string>(uniqueJobId));
 		}
 	}
 }
