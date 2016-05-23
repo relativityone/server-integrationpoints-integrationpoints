@@ -1,18 +1,20 @@
-﻿namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
+﻿using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
+
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
-    public class ExportProcessRunner
-    {
-        private readonly IExportProcessBuilder _exportProcessBuilder;
+	public class ExportProcessRunner
+	{
+		private readonly IExportProcessBuilder _exportProcessBuilder;
 
-        public ExportProcessRunner(IExportProcessBuilder exportProcessBuilder)
-        {
-            _exportProcessBuilder = exportProcessBuilder;
-        }
+		public ExportProcessRunner(IExportProcessBuilder exportProcessBuilder)
+		{
+			_exportProcessBuilder = exportProcessBuilder;
+		}
 
-        public void StartWith(ExportSettings settings)
-        {
-            var searchExporter = _exportProcessBuilder.Create(settings);
-            searchExporter.ExportSearch();
-        }
-    }
+		public void StartWith(ExportSettings settings)
+		{
+			var searchExporter = _exportProcessBuilder.Create(settings);
+			searchExporter.ExportSearch();
+		}
+	}
 }

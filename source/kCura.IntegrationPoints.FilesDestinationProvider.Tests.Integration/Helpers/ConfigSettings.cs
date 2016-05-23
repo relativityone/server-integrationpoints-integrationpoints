@@ -14,6 +14,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		private const string _Destination_Path_Key = "DestinationPath";
 		private const string _WebApi_Url_Key = "WebApiUrl";
 
+		private const string _UserName_Key = "userName";
+		private const string _Password_Key = "password";
+
 		#endregion //Fields
 
 		#region Properties
@@ -30,6 +33,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 		public string DestinationPath { get; } = ConfigurationManager.AppSettings[_Destination_Path_Key];
 
 		public string WebApiUrl { get; } = ConfigurationManager.AppSettings[_WebApi_Url_Key];
+
+		public string UserName { get; } = ConfigurationManager.AppSettings[_UserName_Key];
+
+		public string Password { get; } = ConfigurationManager.AppSettings[_Password_Key];
 
 		#endregion //Properties
 	}

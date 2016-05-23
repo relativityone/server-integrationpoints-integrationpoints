@@ -8,6 +8,7 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.ScheduleQueue.Core.Logging;
@@ -28,7 +29,7 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<SyncCustodianManagerWorker>().ImplementedBy<SyncCustodianManagerWorker>().LifeStyle.Transient);
 			container.Register(Component.For<CreateErrorRdo>().ImplementedBy<CreateErrorRdo>().LifeStyle.Transient);
 			container.Register(Component.For<ITaskFactory>().AsFactory(x => x.SelectedWith(new TaskComponentSelector())).LifeStyle.Transient);
-			if (container.Kernel.HasComponent(typeof (Apps.Common.Utils.Serializers.ISerializer)) == false)
+			if (container.Kernel.HasComponent(typeof(Apps.Common.Utils.Serializers.ISerializer)) == false)
 			{
 				container.Register(Component.For<Apps.Common.Utils.Serializers.ISerializer>().ImplementedBy<Apps.Common.Utils.Serializers.JSONSerializer>().LifestyleTransient());
 			}
@@ -39,21 +40,22 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<SendEmailWorker>().ImplementedBy<SendEmailWorker>().LifeStyle.Transient);
 			container.Register(Component.For<JobStatisticsService>().ImplementedBy<JobStatisticsService>().LifeStyle.Transient);
 
-            container.Register(Component.For<ExportManager>().ImplementedBy<ExportManager>().LifeStyle.Transient);
-            container.Register(Component.For<ExportWorker>().ImplementedBy<ExportWorker>()
+			container.Register(Component.For<ExportManager>().ImplementedBy<ExportManager>().LifeStyle.Transient);
+			container.Register(Component.For<ExportWorker>().ImplementedBy<ExportWorker>()
 				.DependsOn(Dependency.OnComponent<ISynchronizerFactory, ExportDestinationSynchronizerFactory>())
 				.LifeStyle.Transient);
-		    container.Register(
-		        Component.For<JobHistoryErrorServiceProvider>()
-		            .ImplementedBy<JobHistoryErrorServiceProvider>()
-		            .LifeStyle.BoundTo<ExportWorker>());
+			container.Register(
+				Component.For<JobHistoryErrorServiceProvider>()
+					.ImplementedBy<JobHistoryErrorServiceProvider>()
+					.LifeStyle.BoundTo<ExportWorker>());
 
-            //TODO: FileDestinationProviderInstaller
-		    container.Register(Component.For<LoggingMediatorFactory>().ImplementedBy<LoggingMediatorFactory>());
-		    container.Register(Component.For<ILoggingMediator>().UsingFactory((LoggingMediatorFactory f) =>f.Create()));
-            container.Register(Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
-            container.Register(Component.For<IExportProcessBuilder>().ImplementedBy<ExportProcessBuilder>());
-            container.Register(Component.For<ExportProcessRunner>().ImplementedBy<ExportProcessRunner>());
-        }
+			//TODO: FileDestinationProviderInstaller
+			container.Register(Component.For<LoggingMediatorFactory>().ImplementedBy<LoggingMediatorFactory>());
+			container.Register(Component.For<ILoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()));
+			container.Register(Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
+			container.Register(Component.For<IExportProcessBuilder>().ImplementedBy<ExportProcessBuilder>());
+			container.Register(Component.For<ExportProcessRunner>().ImplementedBy<ExportProcessRunner>());
+			container.Register(Component.For<ICredentialProvider>().ImplementedBy<TokenCredentialProvider>());
+		}
 	}
 }

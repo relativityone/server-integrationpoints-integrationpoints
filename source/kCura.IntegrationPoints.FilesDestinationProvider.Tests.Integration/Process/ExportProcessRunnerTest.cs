@@ -1,7 +1,6 @@
 ﻿using System.Data;
 using System.IO;
 using System.Linq;
-using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -10,7 +9,6 @@ using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process
 {
@@ -31,7 +29,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		{
 			_configSettings = new ConfigSettings();
 		    var exportProcessBuilder = new ExportProcessBuilder(Substitute.For<ILoggingMediator>(),
-		        Substitute.For<IUserNotification>(), Substitute.For<IUserMessageNotification>());
+		        Substitute.For<IUserNotification>(), Substitute.For<IUserMessageNotification>(), new UserPasswordCredentialProvider(_configSettings));
             _instanceUnderTest = new ExportProcessRunner(exportProcessBuilder);
 			_workspaceService = new WorkspaceService(_configSettings);
 			_exportSettings = CreateExportSettings();

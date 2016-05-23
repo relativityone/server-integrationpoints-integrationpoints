@@ -28,11 +28,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			expFile.LoadFileEncoding = System.Text.Encoding.Default;
 			expFile.LoadFileExtension = "dat";
 			expFile.LoadFileIsHtml = false;
-		    expFile.LoadFilesPrefix = exportSettings.ExportedObjName;
+			expFile.LoadFilesPrefix = exportSettings.ExportedObjName;
 			expFile.LogFileFormat = LoadFileType.FileFormat.Opticon;
 			expFile.ObjectTypeName = "Document";
-		    expFile.Overwrite = exportSettings.OverwriteFiles;
-            expFile.RenameFilesToIdentifier = true;
+			expFile.Overwrite = exportSettings.OverwriteFiles;
+			expFile.RenameFilesToIdentifier = true;
 			expFile.StartAtDocumentNumber = 0;
 			expFile.SubdirectoryDigitPadding = 3;
 			expFile.TextFileEncoding = null;
@@ -47,9 +47,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			expFile.VolumeInfo.VolumeMaxSize = 650;
 			expFile.VolumeInfo.SubdirectoryStartNumber = 1;
 			expFile.VolumeInfo.SubdirectoryMaxSize = 500;
-		    expFile.VolumeInfo.CopyFilesFromRepository = exportSettings.CopyFileFromRepository;
+			expFile.VolumeInfo.CopyFilesFromRepository = exportSettings.CopyFileFromRepository;
 
-            return expFile;
+			return expFile;
 		}
 	}
 }
