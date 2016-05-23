@@ -39,6 +39,7 @@ namespace kCura.IntegrationPoints.Core
 				public const string CURRENT_WORKSPACE_NO_ACCESS = "You do not have permission to access this workspace.";
 				public const string INTEGRATION_POINT_TYPE_NO_VIEW = "You do not have permission to view Integration Points.";
 				public const string INTEGRATION_POINT_INSTANCE_NO_VIEW = "You do not have permission to view the Integration Point.";
+				public const string JOB_HISTORY_TYPE_NO_ADD = "You do not have permission to add Job History RDOs.";
 				public const string MISSING_DESTINATION_RDO_PERMISSIONS = "You do not have all required destination RDO permissions. Please make sure you have view, edit, and add permissions for the destination RDO.";
 				public const string DESTINATION_WORKSPACE_NO_ACCESS = "You do not have permission to access the destination workspace.";
 				public const string DESTINATION_WORKSPACE_NO_IMPORT = "You do not have permission to import in the destination workspace.";
