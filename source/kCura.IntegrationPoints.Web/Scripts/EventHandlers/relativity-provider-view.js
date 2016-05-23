@@ -6,7 +6,7 @@
         var overlayOnlyMessage = "Only documents and their metadata with the same identifier will be overwritten, would you still like to proceed?";
         var appendOverlayMesssage = "All existing documents and their metadata in the target workspace that have the same identifier will be overwritten, would you still like to proceed?";
         var overwriteOption = $("[fafriendlyname=\"Overwrite Fields\"]").closest("tr").find(".dynamicViewFieldValue").text();
-        var provider = $("[fafriendlyname=\"Name\"]").closest("tr").find(".dynamicViewFieldValue").text();
+        var fileshareProviderIsDefined = $("#fileshare").length === 1;
         
         var selectedMessage = "";
         if (overwriteOption === "Append Only" ) {
@@ -18,7 +18,7 @@
         }
 
         //TODO:HackFS
-        if (provider === "Fileshare") {
+        if (fileshareProviderIsDefined) {
             selectedMessage = "Please confirm running the export from Relativity. If you set up a scheduled action export process will start at the set time";
         }
         
