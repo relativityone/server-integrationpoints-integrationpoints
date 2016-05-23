@@ -79,9 +79,7 @@
             }
         });
 
-        this.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId).extend({
-            required: true
-        });
+        this.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId);
 
         this.SavedSearch = ko.observable(state.SavedSearch).extend({
             required: true
