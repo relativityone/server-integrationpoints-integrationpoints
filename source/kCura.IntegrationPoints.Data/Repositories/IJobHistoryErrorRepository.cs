@@ -45,5 +45,20 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="savedSearchArtifactId">The artifact id of the temporary saved search made.</param>
 		/// <param name="retryAttempts">The amount of times this method has been called as part of a retry recursive loop.</param>
 		void DeleteItemLevelErrorsSavedSearch(int workspaceArtifactId, int savedSearchArtifactId, int retryAttempts);
+
+		/// <summary>
+		/// Reads specified job history errors instances.
+		/// </summary>
+		/// <param name="artifactIds">Artifact ids of job history errors to read.</param>
+		/// <returns>Object representation of job history errors.</returns>
+		List<JobHistoryErrorDTO> Read(IEnumerable<int> artifactIds);
+
+		/// <summary>
+		/// Retrieves the Job History Error artifact ids and Source Unique ids
+		/// </summary>
+		/// <param name="jobHistoryArtifactId">Job History artifact id</param>
+		/// <param name="errorType">Error type choice</param>
+		/// <returns>Dictionary of Job History Error artifact ids and corresponding Source Unique ids</returns>
+		Dictionary<int, string> RetrieveJobHistoryErrorIdsAndSourceUniqueIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType);
 	}
 }

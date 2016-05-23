@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 {
@@ -77,6 +76,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			int paramCount = 6;
 			for (int i = 0; i < Math.Pow(2, paramCount); i++)
 			{
+				this.ClearAllReceivedCalls();
 				string stringVal = Convert.ToString(i, 2);
 				var numList = new List<char>();
 				int difference = paramCount - stringVal.Length;
@@ -106,6 +106,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			int paramCount = 11;
 			for (int i = 0; i < Math.Pow(2, paramCount); i++)
 			{
+				this.ClearAllReceivedCalls();
 				string stringVal = Convert.ToString(i, 2);
 				var numList = new List<char>();
 				int difference = paramCount - stringVal.Length;
@@ -127,6 +128,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 					throw new Exception(message, e);
 				}
 			}
+		}
+
+		private void ClearAllReceivedCalls()
+		{
+			_repositoryFactory.ClearReceivedCalls();
+			_integrationPointRepository.ClearReceivedCalls();
+			_sourceProviderRepository.ClearReceivedCalls();
+			_sourcePermissionRepository.ClearReceivedCalls();
+			_destinationPermissionRepository.ClearReceivedCalls();
+			_savedSearchRepository.ClearReceivedCalls();
 		}
 
 		private void UserHasPermissionToRunJob_NonRelativityProvider_GoldFlow_Cases(
@@ -201,6 +212,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			Assert.AreEqual(expectedSuccessValue, result.Success, $"The result success should be {expectedSuccessValue}.");
 			Assert.AreEqual(errorMessages, result.ErrorMessages, "The error messages should match.");
+
+			_sourcePermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View);
+			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(
+				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View);
+			_sourcePermissionRepository.Received(1).UserCanImport();
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermissions(
+				Arg.Is(_ARTIFACT_TYPE_ID),
+				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add })));
+			_sourceProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_SOURCE_PROVIDER_ID));
 		}
 
 		private void UserHasPermissionToRunJob_RelativityProvider_GoldFlow(
@@ -320,6 +341,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			Assert.AreEqual(expectedSuccessValue, result.Success, $"The result success should be {expectedSuccessValue}.");
 			Assert.AreEqual(errorMessages, result.ErrorMessages, "The error messages should match.");
+
+			_sourcePermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
+			_sourcePermissionRepository.Received(1)
+				.UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View);
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(
+				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View).Returns(integrationPointInstanceViewPermission);
+			_destinationPermissionRepository.UserHasArtifactTypePermissions(
+				Arg.Is(_ARTIFACT_TYPE_ID),
+				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add })));
+			_sourcePermissionRepository.Received(1).UserCanExport();
+			_destinationPermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
+			_destinationPermissionRepository.Received(1).UserCanImport();
+			_sourcePermissionRepository.Received(1).UserCanEditDocuments();
+			_savedSearchRepository.Received(1).RetrieveSavedSearch();
+			_sourceProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_SOURCE_PROVIDER_ID));
 		}
 	}
 }

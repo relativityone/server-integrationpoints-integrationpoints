@@ -475,6 +475,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
+		// TODO: this method should exist in the IntegrationPointManager and be renamed to only apply for Save/Edit -- biedrzycki: May 20th, 2016
 		private void CheckForRelativityProviderAdditionalPermissions(string config, int userId)
 		{
 			WorkspaceConfiguration workspaceConfiguration = JsonConvert.DeserializeObject<WorkspaceConfiguration>(config);

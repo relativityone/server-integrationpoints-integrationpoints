@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
-using Relativity.Core.FieldMapping;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -39,7 +39,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			var query = new Query<Document>
 			{
 				Condition = new SavedSearchCondition(_savedSearchId),
-				Fields = FieldValue.NoFields
+				Fields = new List<FieldValue>()
+				{
+					new FieldValue(ArtifactFieldNames.TextIdentifier)
+				}
 			};
 
 			QueryResultSet<Document> resultSet;
@@ -70,8 +73,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				ArtifactDTO[] results = resultSet.Results.Select(
 					x => new ArtifactDTO(
 						x.Artifact.ArtifactID,
-						10, // TODO: use enum but note that Relativity.ArtifactType excepts here on the agent :/
-						"Document",
+						x.Artifact.ArtifactTypeID.GetValueOrDefault(),
+						x.Artifact.TextIdentifier,
 						new ArtifactFieldDTO[0])).ToArray();
 
 				_documentsRetrieved += results.Length;
@@ -96,7 +99,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				TruncateTextFields = false,
 			};
 
-			ArtifactDTO[] results = this.RetrieveAllArtifactsAsync(query).ConfigureAwait(false).GetAwaiter().GetResult();
+			ArtifactDTO[] results = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
 
 			ArtifactDTO artifactDto = results?.FirstOrDefault();
 			SavedSearchDTO savedSearch = null;

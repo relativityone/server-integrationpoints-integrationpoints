@@ -11,8 +11,10 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
+using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Contracts.BatchReporter;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Services;
@@ -238,7 +240,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			MappedFields.ForEach(f => f.SourceField.IsIdentifier = f.FieldMapType == FieldMapTypeEnum.Identifier);
 
 			//Load Job History Errors if any
-			string uniqueJobId = job.JobId + "_" + this._identifier;
+			string uniqueJobId = GetUniqueJobId(job);
 			_docTableHelper = _tempDocumentTableFactory.GetDocTableHelper(uniqueJobId, _sourceConfiguration.SourceWorkspaceArtifactId);
 			_jobHistoryErrorManager = _managerFactory.CreateJobHistoryErrorManager(_contextContainer, _docTableHelper);
 			_updateStatusType = _jobHistoryErrorManager.StageForUpdatingErrors(job, this.JobHistoryDto.JobType);
@@ -248,11 +250,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
 			{
 				ExportUsingSavedSearchSettings exportSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(IntegrationPointDto.SourceConfiguration);
-				_sourceConfiguration.SavedSearchArtifactId = _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, exportSettings.SavedSearchArtifactId);
+
+				int newSavedSearchIdForItemLevelErrors = jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, exportSettings.SavedSearchArtifactId);
+				_sourceConfiguration.SavedSearchArtifactId = newSavedSearchIdForItemLevelErrors;
+
+				jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, uniqueJobId, newSavedSearchIdForItemLevelErrors);
 			}
 
 			_batchStatus.ForEach(batch => batch.OnJobStart(job));
 		}
+
+
 
 		private void FinalizeExportService(Job job)
 		{
@@ -429,6 +437,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			jobHistoryIds.Remove(jobHistoryIdToRemove);
 			this.IntegrationPointDto.JobHistory = jobHistoryIds.ToArray();
 			_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPointDto);
+		}
+
+		private string GetUniqueJobId(Job job)
+		{
+			return job.JobId + "_" + this._identifier;
 		}
 	}
 }

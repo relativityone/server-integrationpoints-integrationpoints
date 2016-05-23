@@ -1,4 +1,5 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 
@@ -31,5 +32,13 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <param name="originalSavedSearchArtifactId">The saved search artifact id used for the integration point job.</param>
 		/// <returns>The artifact id of the saved search to be deleted after job completion.</returns>
 		int CreateItemLevelErrorsSavedSearch(Job job, int originalSavedSearchArtifactId);
+
+		/// <summary>
+		/// Prepares the temp tables and determines the Update Status Type for updating errors at start and complete for Item Level Errors
+		/// </summary>
+		/// <param name="job">Job object representing the currently running job</param>
+		/// <param name="uniqueJobId">Job Id and Job Guid combined to be a suffix for the temp tables</param>
+		/// <param name="savedSearchIdForItemLevelErrors">Saved search artifact id for item level errors.</param>
+		void CreateErrorListTempTablesForItemLevelErrors(Job job, string uniqueJobId, int savedSearchIdForItemLevelErrors);
 	}
 }

@@ -115,7 +115,15 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
 			);
 
-			_exportJobInfo = _exporter.InitializeExport(settings.SavedSearchArtifactId, _avfIds, startAt);
+			try
+			{
+				_exportJobInfo = _exporter.InitializeExport(settings.SavedSearchArtifactId, _avfIds, startAt);
+			}
+			catch
+			{
+				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_EXPORT);				
+			}
+
 			_longTextStreamFactory = new ExportApiDataHelper.RelativityLongTextStreamFactory(_baseContext, _dataGridContext, settings.SourceWorkspaceArtifactId);
 		}
 

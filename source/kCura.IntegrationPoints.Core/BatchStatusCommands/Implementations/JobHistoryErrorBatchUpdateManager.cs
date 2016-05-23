@@ -53,6 +53,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
 						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgress);
+						UpdateStatuses(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
 						break;
 				}
 			}
@@ -71,7 +72,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
 						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
-						//ToDo: Second UpdateStatuses needed when logic to split item level errors between those being retried and those no longer included is written
 						break;
 				}
 			}

@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Adaptors.Implementations;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Data.Transformers;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Core;
@@ -78,7 +80,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IJobHistoryErrorRepository GetJobHistoryErrorRepository(int workspaceArtifactId)
 		{
-			IJobHistoryErrorRepository jobHistoryErrorRepository = new JobHistoryErrorRepository( _helper, workspaceArtifactId);
+			IGenericLibrary<JobHistoryError> integrationPointLibrary = new RsapiClientLibrary<JobHistoryError>(_helper, workspaceArtifactId);
+			IDtoTransformer<JobHistoryErrorDTO, JobHistoryError> dtoTransformer = new JobHistoryErrorTransformer(_helper, workspaceArtifactId);
+			IJobHistoryErrorRepository jobHistoryErrorRepository = new JobHistoryErrorRepository(_helper, integrationPointLibrary, dtoTransformer, workspaceArtifactId);
 			return jobHistoryErrorRepository;
 		}
 
@@ -155,6 +159,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 			return repository;
 		}
+		
+		#region Helper Methods
 
 		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
 		{
@@ -167,8 +173,6 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = new ObjectQueryManagerAdaptor(_helper, workspaceArtifactId, artifactType);
 			return objectQueryManagerAdaptor;
 		}
-
-		#region Helper Methods
 
 		private BaseContext GetBaseContextForWorkspace(int workspaceArtifactId)
 		{
