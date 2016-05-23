@@ -84,7 +84,8 @@
           <Assembly>packages\RelativityCore.9.3.398.12\lib\net45\kCura.Image.Viewer.dll</Assembly>
           <Assembly>packages\RelativityCore.9.3.398.12\lib\net45\kCura.Print.dll</Assembly>
 		  <Assembly>packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</Assembly>
-        </Assemblies>
+		  <Assembly>packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</Assembly>
+		 </Assemblies>
         <ResourceFiles />
         <CustomPages>
           <CustomPage guid="c2c93191-7b15-4a9b-aa56-6a8c2dac5494">publish\web\</CustomPage>
