@@ -15,6 +15,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 
 		IScratchTableRepository JobHistoryErrorItemComplete { get; }
 
+		IScratchTableRepository JobHistoryErrorItemStartOther { get; }
 
 		/// <summary>
 		/// Prepares the temp tables and determines the Update Status Type for updating errors at start and complete

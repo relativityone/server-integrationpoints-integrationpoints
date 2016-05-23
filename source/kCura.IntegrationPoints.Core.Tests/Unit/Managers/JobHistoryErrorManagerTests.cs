@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_jobHistoryRepository = Substitute.For<IJobHistoryRepository>();
 			_savedSearchRepository = Substitute.For<ISavedSearchRepository>();
 
-			_testInstance = new JobHistoryErrorManager(_repositoryFactory);
+			_testInstance = new JobHistoryErrorManager(_repositoryFactory, _tempDocHelper);
 
 			_repositoryFactory.GetJobHistoryErrorRepository(_WORKSPACE_ARTIFACT_ID).Returns(_jobHistoryErrorRepository);
 			_repositoryFactory.GetJobHistoryRepository(_WORKSPACE_ARTIFACT_ID).Returns(_jobHistoryRepository);
@@ -280,20 +280,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 
 			// 
-			_jobHistoryErrorRepository.Received(1).CreateErrorListTempTable(
-				Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error1),
-				Arg.Is<string>(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START),
-				Arg.Is<string>(uniqueJobId));
-
-			_jobHistoryErrorRepository.Received(1).CreateErrorListTempTable(
-				Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error1),
-				Arg.Is<string>(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE),
-				Arg.Is<string>(uniqueJobId));
-
-			_jobHistoryErrorRepository.Received(1).CreateErrorListTempTable(
-				Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error2),
-				Arg.Is<string>(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER),
-				Arg.Is<string>(uniqueJobId));
+			_tempDocHelper.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error1), Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START);
+			_tempDocHelper.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error1), Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE);
+			_tempDocHelper.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error2), Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER);
 		}
 	}
 }

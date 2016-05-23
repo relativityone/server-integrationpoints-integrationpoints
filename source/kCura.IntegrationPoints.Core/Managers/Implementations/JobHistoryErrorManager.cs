@@ -21,6 +21,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			JobHistoryErrorJobComplete = new ScratchTableRepository(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE, helper, false);
 			JobHistoryErrorItemStart = new ScratchTableRepository(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, helper, false);
 			JobHistoryErrorItemComplete = new ScratchTableRepository(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE, helper, false);
+			JobHistoryErrorItemStartOther = new ScratchTableRepository(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER, helper, false);
+
 			_repositoryFactory = repositoryFactory;
 		}
 
@@ -28,6 +30,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		public IScratchTableRepository JobHistoryErrorJobComplete { get; }
 		public IScratchTableRepository JobHistoryErrorItemStart { get; }
 		public IScratchTableRepository JobHistoryErrorItemComplete { get; }
+		public IScratchTableRepository JobHistoryErrorItemStartOther { get; }
 
 		public JobHistoryErrorDTO.UpdateStatusType StageForUpdatingErrors(Job job, Relativity.Client.Choice jobType)
 		{
@@ -170,12 +173,12 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				}
 			}
 
-			jobHistoryErrorRepository.CreateErrorListTempTable(currentItemLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
-			jobHistoryErrorRepository.CreateErrorListTempTable(currentItemLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE, uniqueJobId);
+			JobHistoryErrorItemStart.AddArtifactIdsIntoTempTable(currentItemLevelErrors);
+			JobHistoryErrorItemComplete.AddArtifactIdsIntoTempTable(currentItemLevelErrors);
 
 			if (expiredItemLevelErrors.Count > 0)
 			{
-				jobHistoryErrorRepository.CreateErrorListTempTable(expiredItemLevelErrors, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER, uniqueJobId);
+				JobHistoryErrorItemStartOther.AddArtifactIdsIntoTempTable(expiredItemLevelErrors);
 			}
 		}
 

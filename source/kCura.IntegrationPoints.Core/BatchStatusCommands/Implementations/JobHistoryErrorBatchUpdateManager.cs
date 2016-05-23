@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
 						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgress);
-						UpdateStatuses(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
+						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStartOther, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
 						break;
 				}
 			}
