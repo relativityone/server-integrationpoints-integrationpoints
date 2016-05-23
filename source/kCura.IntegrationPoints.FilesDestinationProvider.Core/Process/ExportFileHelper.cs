@@ -10,15 +10,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		internal static ExportFile CreateDefaultSetup(ExportSettings exportSettings)
 		{
 			ExportFile expFile = new ExportFile(exportSettings.ArtifactTypeId);
-			//ExportFile expFile = new ExportFile(exportSettings.ArtifactTypeId);​
 			expFile.AppendOriginalFileName = false;
 			expFile.ArtifactID = exportSettings.ExportedObjArtifactId;
 			expFile.CaseInfo = new CaseInfo();
 			expFile.CaseInfo.ArtifactID = exportSettings.WorkspaceId;
-
-			
 			expFile.ExportFullText = false;
-			expFile.ExportImages = true;
+			expFile.ExportImages = false;
 			expFile.ExportFullTextAsFile = false;
 			expFile.ExportNative = true;
 			expFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier;
@@ -31,10 +28,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			expFile.LoadFileEncoding = System.Text.Encoding.Default;
 			expFile.LoadFileExtension = "dat";
 			expFile.LoadFileIsHtml = false;
-			expFile.LoadFilesPrefix = "Extracted Text Only";
+		    expFile.LoadFilesPrefix = exportSettings.ExportedObjName;
 			expFile.LogFileFormat = LoadFileType.FileFormat.Opticon;
 			expFile.ObjectTypeName = "Document";
-			expFile.Overwrite = exportSettings.OverwriteFiles;
+		    expFile.Overwrite = exportSettings.OverwriteFiles;
             expFile.RenameFilesToIdentifier = true;
 			expFile.StartAtDocumentNumber = 0;
 			expFile.SubdirectoryDigitPadding = 3;

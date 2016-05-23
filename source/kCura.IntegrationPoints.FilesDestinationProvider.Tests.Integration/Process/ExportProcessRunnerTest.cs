@@ -85,6 +85,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			exportSettings.ExportedObjArtifactId = _workspaceService.GetSavedSearchIdBy(_configSettings.SavedSearchArtifactName,
 				exportSettings.WorkspaceId);
 
+		    exportSettings.ExportedObjName = _configSettings.SavedSearchArtifactName;
+
 			exportSettings.SelViewFieldIds = _workspaceService.GetFieldIdsBy(_configSettings.SelectedFieldNames, exportSettings.WorkspaceId).ToList();
 
 			return exportSettings;

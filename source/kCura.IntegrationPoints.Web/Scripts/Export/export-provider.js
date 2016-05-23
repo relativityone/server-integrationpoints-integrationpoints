@@ -57,51 +57,67 @@
         var state = $.extend({}, {}, m);
         var self = this;
 
-        this.workspaces = ko.observableArray(state.workspaces);
-        this.savedSearches = ko.observableArray(state.savedSearches);
+        this.workspaces = ko.observableArray(state.workspaces || []);
+        this.savedSearches = ko.observableArray(state.savedSearches || []);
 
         this.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
 
         this.selectedDestinationPath = ko.observable(state.Fileshare).extend({
-            	required: true
+            required: true
         });
 
         this.CopyFileFromRepository = ko.observable(state.CopyFileFromRepository || "false");
         this.OverwriteFiles = ko.observable(state.OverwriteFiles || "false");
 
         this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId).extend({
-        	required: true
-        });
-
-        this.TargetWorkspaceArtifactId.subscribe(function (value) {
-        	if (self.TargetWorkspaceArtifactId !== value) {
-        		self.WorkspaceHasChanged = true;
-        	}
-        });
-
-        this.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId).extend({
             required: true
         });
 
-        if (self.savedSearches.length === 0) {
+        this.TargetWorkspaceArtifactId.subscribe(function (value) {
+            if (self.TargetWorkspaceArtifactId !== value) {
+                self.WorkspaceHasChanged = true;
+            }
+        });
+
+        this.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId);
+
+        this.SavedSearch = ko.observable(state.SavedSearch).extend({
+            required: true
+        });
+
+        this.updateSelectedSavedSearch = function () {
+            var selectedSavedSearch = ko.utils.arrayFirst(self.savedSearches(), function (item) {
+                if (item.value === self.SavedSearchArtifactId()) {
+                    return item;
+                }
+            });
+
+            self.SavedSearch(selectedSavedSearch);
+        }
+
+        if (self.savedSearches().length === 0) {
             // load saved searches
             IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('SavedSearchFinder') }).then(function (result) {
                 self.savedSearches(result);
+                self.updateSelectedSavedSearch();
             });
+        } else {
+            self.updateSelectedSavedSearch();
         }
 
-        if (self.workspaces.length === 0) {
-        	// load workspaces
-        	IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('WorkspaceFinder') }).then(function (result) {
-        		self.workspaces(result);
-        	});
+        if (self.workspaces().length === 0) {
+            // load workspaces
+            IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('workspaceFinder') }).then(function (result) {
+                self.workspaces(result);
+            });
         }
 
         this.errors = ko.validation.group(this, { deep: true });
 
         this.getSelectedOption = function () {
             return {
-                "SavedSearchArtifactId": self.SavedSearchArtifactId(),
+                "SavedSearchArtifactId": self.SavedSearch().value,
+                "SavedSearch": self.SavedSearch().displayName,
                 "TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
                 "SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
                 "CopyFileFromRepository": self.CopyFileFromRepository(),

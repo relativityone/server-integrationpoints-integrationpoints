@@ -58,6 +58,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             var exportSettings = new ExportSettings
             {
                 ExportedObjArtifactId = sourceSettings.SavedSearchArtifactId,
+                ExportedObjName = sourceSettings.SavedSearch,
                 WorkspaceId = sourceSettings.SourceWorkspaceArtifactId,
                 ExportFilesLocation = sourceSettings.Fileshare,
                 OverwriteFiles = sourceSettings.OverwriteFiles,
