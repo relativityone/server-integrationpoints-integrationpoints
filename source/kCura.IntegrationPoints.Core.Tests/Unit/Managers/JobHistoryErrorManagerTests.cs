@@ -276,7 +276,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 
 			// ACT
-			_testInstance.CreateErrorListTempTablesForItemLevelErrors(_job, uniqueJobId, savedSearchId);
+			_testInstance.CreateErrorListTempTablesForItemLevelErrors(_job, savedSearchId);
 
 
 			// 
