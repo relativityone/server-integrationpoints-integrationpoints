@@ -150,7 +150,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointArtifactId);
 		}
 
-		public void CreateErrorListTempTablesForItemLevelErrors(Job job, string uniqueJobId, int savedSearchIdForItemLevelError)
+		public void CreateErrorListTempTablesForItemLevelErrors(Job job, int savedSearchIdForItemLevelError)
 		{
 			var currentItemLevelErrors = new List<int>();
 			var expiredItemLevelErrors = new List<int>();

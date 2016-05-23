@@ -38,8 +38,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// Prepares the temp tables and determines the Update Status Type for updating errors at start and complete for Item Level Errors
 		/// </summary>
 		/// <param name="job">Job object representing the currently running job</param>
-		/// <param name="uniqueJobId">Job Id and Job Guid combined to be a suffix for the temp tables</param>
 		/// <param name="savedSearchIdForItemLevelErrors">Saved search artifact id for item level errors.</param>
-		void CreateErrorListTempTablesForItemLevelErrors(Job job, string uniqueJobId, int savedSearchIdForItemLevelErrors);
+		void CreateErrorListTempTablesForItemLevelErrors(Job job, int savedSearchIdForItemLevelErrors);
 	}
 }
