@@ -73,7 +73,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		[Test]
 		public void UserHasPermissionToRunJob_NonRelativityProvider_AllCombinations()
 		{
-			int paramCount = 6;
+			int paramCount = 7;
 			for (int i = 0; i < Math.Pow(2, paramCount); i++)
 			{
 				this.ClearAllReceivedCalls();
@@ -90,7 +90,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				bool[] inputs = numList.Select(x => x == '1').ToArray();
 				try
 				{
-					this.UserHasPermissionToRunJob_NonRelativityProvider_GoldFlow_Cases(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5]);
+					this.UserHasPermissionToRunJob_NonRelativityProvider_GoldFlow_Cases(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6]);
 				}
 				catch (Exception e)
 				{
@@ -103,7 +103,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		[Test]
 		public void UserHasPermissionToRunJob_RelativityProvider_AllCombinations()
 		{
-			int paramCount = 11;
+			int paramCount = 12;
 			for (int i = 0; i < Math.Pow(2, paramCount); i++)
 			{
 				this.ClearAllReceivedCalls();
@@ -120,7 +120,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				bool[] inputs = numList.Select(x => x == '1').ToArray();
 				try
 				{
-					this.UserHasPermissionToRunJob_RelativityProvider_GoldFlow(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6], inputs[7], inputs[8], inputs[9], inputs[10]);
+					this.UserHasPermissionToRunJob_RelativityProvider_GoldFlow(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6], inputs[7], inputs[8], inputs[9], inputs[10], inputs[11]);
 				}
 				catch (Exception e)
 				{
@@ -144,6 +144,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool sourceWorkspacePermission, 
 			bool integrationPointTypeViewPermission, 
 			bool integrationPointInstanceViewPermission,
+			bool jobHistoryAddPermission,
 			bool sourceImportPermission,
 			bool destinationRdoPermissions,
 			bool sourceProviderIsProvided)
@@ -160,6 +161,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_sourcePermissionRepository.UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View).Returns(integrationPointTypeViewPermission);
 			_sourcePermissionRepository.UserHasArtifactInstancePermission(
 				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View).Returns(integrationPointInstanceViewPermission);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Add)).Returns(jobHistoryAddPermission);
 			_sourcePermissionRepository.UserCanImport().Returns(sourceImportPermission);
 			_sourcePermissionRepository.UserHasArtifactTypePermissions(
 				Arg.Is(_ARTIFACT_TYPE_ID),
@@ -179,7 +182,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool expectedSuccessValue = 
 				sourceWorkspacePermission && 
 				integrationPointTypeViewPermission &&
-			    integrationPointInstanceViewPermission && 
+			    integrationPointInstanceViewPermission &&
+				jobHistoryAddPermission &&
 				sourceImportPermission &&
 				destinationRdoPermissions;
 
@@ -199,6 +203,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
 			}
 
+			if (!jobHistoryAddPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_TYPE_NO_ADD);
+			}
+
 			if (!sourceImportPermission)
 			{
 				errorMessages.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
@@ -215,6 +224,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			_sourcePermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
 			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View);
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Add));
 			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(
 				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View);
 			_sourcePermissionRepository.Received(1).UserCanImport();
@@ -228,6 +239,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool sourceWorkspacePermission,
 			bool integrationPointTypeViewPermission,
 			bool integrationPointInstanceViewPermission,
+			bool jobHistoryAddPermission,
 			bool destinationRdoPermissions,
 			bool destinationWorkspacePermission,
 			bool destinationImportPermission,
@@ -254,6 +266,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				Arg.Is(_ARTIFACT_TYPE_ID),
 				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add })))
 				.Returns(destinationRdoPermissions);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Add)).Returns(jobHistoryAddPermission);
 			_sourcePermissionRepository.UserCanExport().Returns(exportPermission);
 			_destinationPermissionRepository.UserHasPermissionToAccessWorkspace().Returns(destinationWorkspacePermission);
 			_destinationPermissionRepository.UserCanImport().Returns(destinationImportPermission);
@@ -280,6 +294,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				sourceWorkspacePermission &&
 				integrationPointTypeViewPermission &&
 				integrationPointInstanceViewPermission &&
+				jobHistoryAddPermission &&
 				destinationRdoPermissions &&
 				destinationWorkspacePermission &&
 				destinationImportPermission &&
@@ -302,6 +317,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			if (!integrationPointInstanceViewPermission)
 			{
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
+			}
+
+			if (!jobHistoryAddPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_TYPE_NO_ADD);
 			}
 
 			if (!destinationRdoPermissions)
@@ -350,6 +370,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_destinationPermissionRepository.UserHasArtifactTypePermissions(
 				Arg.Is(_ARTIFACT_TYPE_ID),
 				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add })));
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Add));
 			_sourcePermissionRepository.Received(1).UserCanExport();
 			_destinationPermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
 			_destinationPermissionRepository.Received(1).UserCanImport();
