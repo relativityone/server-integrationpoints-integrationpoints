@@ -126,49 +126,57 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			int buttonIndex = 0;
 			ConsoleButton runNowButton = console.ButtonList[buttonIndex++];
 			Assert.AreEqual("Run Now", runNowButton.DisplayText);
-			Assert.AreEqual(hasPermissions, runNowButton.Enabled);
 			Assert.AreEqual(false, runNowButton.RaisesPostBack);
-			Assert.AreEqual(hasPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty, runNowButton.OnClickEvent);
 
 			if (isRelativitySourceProvider)
 			{
+				Assert.AreEqual(hasPermissions, runNowButton.Enabled);
+				Assert.AreEqual(hasPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+					runNowButton.OnClickEvent);
 				buttonIndex = 0;
 				ConsoleButton runNowButtonRelativityProvider = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("Run Now", runNowButton.DisplayText);
 				Assert.AreEqual(buttonStates.RunNowButtonEnabled, runNowButton.Enabled);
 				Assert.AreEqual(false, runNowButton.RaisesPostBack);
-				Assert.AreEqual(hasPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty, runNowButton.OnClickEvent);
+				Assert.AreEqual(hasPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+					runNowButton.OnClickEvent);
 
 				ConsoleButton retryErrorsButton = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("Retry Errors", retryErrorsButton.DisplayText);
 				Assert.AreEqual(buttonStates.RetryErrorsButtonEnabled, retryErrorsButton.Enabled);
 				Assert.AreEqual(false, retryErrorsButton.RaisesPostBack);
-				Assert.AreEqual(hasPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty, retryErrorsButton.OnClickEvent);
+				Assert.AreEqual(hasPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+					retryErrorsButton.OnClickEvent);
 
 				ConsoleButton viewErrorsButtonLink = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("View Errors", viewErrorsButtonLink.DisplayText);
 				Assert.AreEqual(buttonStates.ViewErrorsLinkEnabled, viewErrorsButtonLink.Enabled);
 				Assert.AreEqual(false, viewErrorsButtonLink.RaisesPostBack);
 				Assert.AreEqual("Really long string", viewErrorsButtonLink.OnClickEvent);
+			}
+			else
+			{
+				Assert.IsTrue(runNowButton.Enabled);
+				Assert.AreEqual($"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
+			}
 
-				if (hasPermissions)
-				{
-					Assert.AreEqual(0, console.ScriptBlocks.Count);
-				}
-				else
-				{
-					string expectedKey = "IPConsoleErrorDisplayScript".ToLower();
-					string expectedScript = "<script type='text/javascript'>"
-									+ "$(document).ready(function () {"
-									+ "IP.message.error.raise(\""
-									+ String.Join("<br/>", permissionCheck.ErrorMessages)
-									+ "\", $(\".cardContainer\"));"
-									+ "});"
-									+ "</script>";
-					Assert.AreEqual(1, console.ScriptBlocks.Count);
-					Assert.AreEqual(expectedKey, console.ScriptBlocks.First().Key);	
-					Assert.AreEqual(expectedScript, console.ScriptBlocks.First().Script);	
-				}
+			if (hasPermissions)
+			{
+				Assert.AreEqual(0, console.ScriptBlocks.Count);
+			}
+			else
+			{
+				string expectedKey = "IPConsoleErrorDisplayScript".ToLower();
+				string expectedScript = "<script type='text/javascript'>"
+								+ "$(document).ready(function () {"
+								+ "IP.message.error.raise(\""
+								+ String.Join("<br/>", permissionCheck.ErrorMessages)
+								+ "\", $(\".cardContainer\"));"
+								+ "});"
+								+ "</script>";
+				Assert.AreEqual(1, console.ScriptBlocks.Count);
+				Assert.AreEqual(expectedKey, console.ScriptBlocks.First().Key);
+				Assert.AreEqual(expectedScript, console.ScriptBlocks.First().Script);
 			}
 		}
 	}

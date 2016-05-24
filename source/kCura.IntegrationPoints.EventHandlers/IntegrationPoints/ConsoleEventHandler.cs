@@ -53,12 +53,22 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
 			kCura.IntegrationPoints.Core.Constants.SourceProvider sourceProvider = integrationPointManager.GetSourceProvider(Application.ArtifactID, integrationPointDto);
 			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissionToRunJob(Application.ArtifactID, integrationPointDto, sourceProvider);
+			if (!permissionCheck.Success)
+			{
+				string script = "<script type='text/javascript'>"
+								+ "$(document).ready(function () {"
+								+ "IP.message.error.raise(\""
+								+ String.Join("</br>", permissionCheck.ErrorMessages)
+								+ "\", $(\".cardContainer\"));"
+								+ "});"
+								+ "</script>";
+				console.AddScriptBlock("IPConsoleErrorDisplayScript", script);
+			}
 
 			IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory,
 				contextContainer);
 
 			var buttonList = new List<ConsoleButton>();
-
 			if (sourceProvider == kCura.IntegrationPoints.Core.Constants.SourceProvider.Relativity)
 			{
 				bool hasJobsExecutingOrInQueue= queueManager.HasJobsExecutingOrInQueue(Application.ArtifactID,
@@ -73,22 +83,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				buttonList.Add(runNowButton);
 				buttonList.Add(retryErrorsButton);
 				buttonList.Add(viewErrorsLink);
-
-				if (!permissionCheck.Success)
-				{
-					string script = "<script type='text/javascript'>"
-									+ "$(document).ready(function () {"
-									+ "IP.message.error.raise(\""
-									+ String.Join("</br>", permissionCheck.ErrorMessages)
-									+ "\", $(\".cardContainer\"));"
-									+ "});"
-									+ "</script>";
-					console.AddScriptBlock("IPConsoleErrorDisplayScript", script);
-				}
 			}
 			else
 			{
-				ConsoleButton runNowButton = GetRunNowButton(permissionCheck.Success);
+				ConsoleButton runNowButton = GetRunNowButton();
 				buttonList.Add(runNowButton);
 			}
 
@@ -97,14 +95,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			return console;
 		}
 
-		private ConsoleButton GetRunNowButton(bool isEnabled)
+		private ConsoleButton GetRunNowButton()
 		{
 			return new ConsoleButton
 			{
 				DisplayText = "Run Now",
 				RaisesPostBack = false,
-				Enabled = isEnabled,
-				OnClickEvent = isEnabled ? $"IP.importNow({ActiveArtifact.ArtifactID},{Application.ArtifactID})" : String.Empty
+				Enabled = true,
+				OnClickEvent = $"IP.importNow({ActiveArtifact.ArtifactID},{Application.ArtifactID})"
 			};
 		}
 
