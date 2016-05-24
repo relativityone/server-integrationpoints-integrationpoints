@@ -1,10 +1,7 @@
 ﻿using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
@@ -30,9 +27,9 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new JobHistoryManager(CreateRepositoryFactory(contextContainer));
 		}
 
-		public IJobHistoryErrorManager CreateJobHistoryErrorManager(IContextContainer contextContainer, ITempDocTableHelper helper)
+		public IJobHistoryErrorManager CreateJobHistoryErrorManager(IContextContainer contextContainer, int sourceWorkspaceArtifactId, string uniqueJobId)
 		{
-			return new JobHistoryErrorManager(CreateRepositoryFactory(contextContainer), helper);
+			return new JobHistoryErrorManager(CreateRepositoryFactory(contextContainer), sourceWorkspaceArtifactId, uniqueJobId);
 		}
 
 		public IObjectTypeManager CreateObjectTypeManager(IContextContainer contextContainer)

@@ -6,7 +6,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 {
 	public interface IScratchTableRepository : IDisposable
 	{
-		bool IgnoreErrorDocuments { get; }
+		bool IgnoreErrorDocuments { get; set; }
 
 		int Count { get; }
 
@@ -17,6 +17,8 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		IDataReader GetDocumentIdsDataReaderFromTable();
 
 		void DeleteTable();
+
+		new void Dispose();
 
 		string GetTempTableName();
 	}

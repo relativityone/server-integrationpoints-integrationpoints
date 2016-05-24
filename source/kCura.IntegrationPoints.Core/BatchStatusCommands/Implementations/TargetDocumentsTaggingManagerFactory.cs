@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using Newtonsoft.Json;
@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
 	public class TargetDocumentsTaggingManagerFactory
 	{
-		private readonly ITempDocTableHelper _tempTableHelper;
+		private readonly IRepositoryFactory _repositoryFactory;
 		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
 		private readonly ISourceJobManager _sourceJobManager;
 		private readonly IDocumentRepository _documentRepository;
@@ -22,9 +22,10 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly string _sourceConfig;
 		private readonly string _destinationConfig;
 		private readonly int _jobHistoryArtifactId;
+		private readonly string _uniqueJobId;
 
 		public TargetDocumentsTaggingManagerFactory(
-			ITempDocTableHelper tempTableHelper,
+			IRepositoryFactory repositoryFactory,
 			ISourceWorkspaceManager sourceWorkspaceManager,
 			ISourceJobManager sourceJobManager,
 			IDocumentRepository documentRepository,
@@ -32,9 +33,10 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			FieldMap[] fields,
 			string sourceConfig,
 			string destinationConfig,
-			int jobHistoryArtifactId)
+			int jobHistoryArtifactId,
+			string uniqueJobId)
 		{
-			_tempTableHelper = tempTableHelper;
+			_repositoryFactory = repositoryFactory;
 			_sourceWorkspaceManager = sourceWorkspaceManager;
 			_sourceJobManager = sourceJobManager;
 			_documentRepository = documentRepository;
@@ -42,6 +44,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_fields = fields;
 			_sourceConfig = sourceConfig;
 			_jobHistoryArtifactId = jobHistoryArtifactId;
+			_uniqueJobId = uniqueJobId;
 
 			// specify settings to tag
 			ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(destinationConfig);
@@ -62,7 +65,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			var synchronizer = GetSynchronizerForDocumentTagging(_destinationConfig);
 
 			IConsumeScratchTableBatchStatus tagger = new TargetDocumentsTaggingManager(
-				_tempTableHelper,
+				_repositoryFactory,
 				synchronizer,
 				_sourceWorkspaceManager,
 				_sourceJobManager,
@@ -71,7 +74,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				_destinationConfig,
 				settings.SourceWorkspaceArtifactId,
 				settings.TargetWorkspaceArtifactId,
-				_jobHistoryArtifactId);
+				_jobHistoryArtifactId,
+				_uniqueJobId);
 
 			return tagger;
 		}

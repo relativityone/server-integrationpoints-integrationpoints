@@ -1,10 +1,7 @@
 ﻿using System.Security.Claims;
-using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
@@ -13,20 +10,20 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 	{
 		private readonly ClaimsPrincipal _claimsPrincipal;
 		private readonly int _jobHistoryInstanceId;
-		private readonly ITempDocTableHelper _tempDocTableHelper;
 		private readonly int _sourceWorkspaceArtifactId;
-		private ScratchTableRepository _scratchTable;
 		private readonly IRepositoryFactory _repositoryFactory;
 
-		public JobHistoryBatchUpdateManager(ITempDocTableHelper tempDocTableHelper, IRepositoryFactory repositoryFactory,
-			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, int jobHistoryInstanceId, int sourceWorkspaceArtifactId, int submittedBy)
+		public JobHistoryBatchUpdateManager(IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory,
+			int sourceWorkspaceArtifactId, int jobHistoryInstanceId, int submittedBy, string uniqueJobId)
 		{
-			_tempDocTableHelper = tempDocTableHelper;
+			ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST, uniqueJobId);
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_jobHistoryInstanceId = jobHistoryInstanceId;
 			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);
 			_repositoryFactory = repositoryFactory;
 		}
+
+		public IScratchTableRepository ScratchTableRepository { get; }
 
 		public void OnJobStart(Job job)
 		{
@@ -42,18 +39,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			finally
 			{
 				ScratchTableRepository.Dispose();
-			}
-		}
-
-		public IScratchTableRepository ScratchTableRepository
-		{
-			get
-			{
-				if (_scratchTable == null)
-				{
-					_scratchTable = new ScratchTableRepository(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST, _tempDocTableHelper, true);
-				}
-				return _scratchTable;
 			}
 		}
 	}

@@ -1,6 +1,4 @@
 ﻿using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Data;
-using kCura.IntegrationPoints.Data.Factories;
 
 namespace kCura.IntegrationPoints.Core.Factories
 {
@@ -41,9 +39,10 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// Creates Job History Error manager
 		/// </summary>
 		/// <param name="contextContainer">Container containing necessary contexts</param>
-		/// <param name="helper"></param>
+		/// <param name="sourceWorkspaceArtifactId">Artifact id of the source workspace</param>
+		/// <param name="uniqueJobId">Unique job id created using the id of the job and the guid identifier</param>
 		/// <returns>Job History Error manager</returns>
-		IJobHistoryErrorManager CreateJobHistoryErrorManager(IContextContainer contextContainer, ITempDocTableHelper helper);
+		IJobHistoryErrorManager CreateJobHistoryErrorManager(IContextContainer contextContainer, int sourceWorkspaceArtifactId, string uniqueJobId);
 
 		/// <summary>
 		/// Creates Object Type manager

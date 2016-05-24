@@ -17,8 +17,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 	[TestFixture]
 	public class JobHistoryErrorBatchUpdateManagerTest
 	{
-		private ITempDocTableHelper _tempTableHelper;
-		private ITempDocumentTableFactory _tempTableFactory;
+		private IScratchTableRepository _scratchTableRepository;
 		private IRepositoryFactory _repositoryFactory;
 		private IOnBehalfOfUserClaimsPrincipalFactory _onBehalfOfUserClaimsPrincipalFactory;
 		private IBatchStatus _testInstance;
@@ -35,11 +34,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private const int _submittedBy = 1385796;
 		private const int _savedSearchArtifactId = 1668735;
 		private readonly Guid _jobHistoryErrorGuid = new Guid("17e7912d-4f57-4890-9a37-abc2b8a37bdb");
-		private const string _jobErrorOnStartPrefix = "IntegrationPoint_Relativity_JHE_Job1";
-		private const string _jobErrorOnCompletePrefix = "IntegrationPoint_Relativity_JHE_Job2";
-		private const string _itemErrorOnStartPrefix = "IntegrationPoint_Relativity_JHE_Item1";
-		private const string _itemErrorOnCompletePrefix = "IntegrationPoint_Relativity_JHE_Item2";
-		private const string _uniqueJobId = "aceVentura";
 		private const string _noResultsForObjectType = "Unable to retrieve Artifact Type Id for JobHistoryError object type.";
 		private readonly Job _job;
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
@@ -53,17 +47,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		[SetUp]
 		public void Setup()
 		{
-			_tempTableHelper = Substitute.For<ITempDocTableHelper>();
+			_scratchTableRepository = Substitute.For<IScratchTableRepository>();
 			_jobHistoryErrorRepository = Substitute.For<IJobHistoryErrorRepository>();
 			_objectTypeRepository = Substitute.For<IObjectTypeRepository>();
 			_artifactGuidRepository = Substitute.For<IArtifactGuidRepository>();
-			_tempTableFactory = Substitute.For<ITempDocumentTableFactory>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_onBehalfOfUserClaimsPrincipalFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
 			_updateStatusType = Substitute.For<JobHistoryErrorDTO.UpdateStatusType>();
 			_jobHistoryErrorManager = Substitute.For<IJobHistoryErrorManager>();
-
-			_tempTableFactory.GetDocTableHelper(_uniqueJobId, _sourceWorkspaceId).Returns(_tempTableHelper);
+			
 			_onBehalfOfUserClaimsPrincipalFactory.CreateClaimsPrincipal(_submittedBy).Returns(_claimsPrincipal);
 			_repositoryFactory.GetObjectTypeRepository(_sourceWorkspaceId).Returns(_objectTypeRepository);
 			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(_jobHistoryErrorGuid).Returns(_jobHistoryErrorTypeId);
