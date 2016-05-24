@@ -13,7 +13,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="jobHistoryArtifactId">Job History Artifact Id to gather job history errors for</param>
 		/// <param name="errorType">Error Type choice to gather job history errors for</param>
 		/// <returns>List of Artifact Ids of Job History Errors for the provided Job History and Error Type</returns>
-		List<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType);
+		IList<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType);
 
 
 		/// <summary>
@@ -47,11 +47,11 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		void DeleteItemLevelErrorsSavedSearch(int workspaceArtifactId, int savedSearchArtifactId, int retryAttempts);
 
 		/// <summary>
-		/// Reads specified job history errors instances.
+		/// Reads specified job history error instances.
 		/// </summary>
 		/// <param name="artifactIds">Artifact ids of job history errors to read.</param>
-		/// <returns>Object representation of job history errors.</returns>
-		List<JobHistoryErrorDTO> Read(IEnumerable<int> artifactIds);
+		/// <returns>Object representations of job history errors.</returns>
+		IList<JobHistoryErrorDTO> Read(IEnumerable<int> artifactIds);
 
 		/// <summary>
 		/// Retrieves the Job History Error artifact ids and Source Unique ids
@@ -59,6 +59,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="jobHistoryArtifactId">Job History artifact id</param>
 		/// <param name="errorType">Error type choice</param>
 		/// <returns>Dictionary of Job History Error artifact ids and corresponding Source Unique ids</returns>
-		Dictionary<int, string> RetrieveJobHistoryErrorIdsAndSourceUniqueIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType);
+		IDictionary<int, string> RetrieveJobHistoryErrorIdsAndSourceUniqueIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType);
 	}
 }

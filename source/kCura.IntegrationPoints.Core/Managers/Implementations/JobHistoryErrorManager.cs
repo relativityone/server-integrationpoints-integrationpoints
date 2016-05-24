@@ -32,8 +32,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public JobHistoryErrorDTO.UpdateStatusType StageForUpdatingErrors(Job job, Relativity.Client.Choice jobType)
 		{
-			List<int> jobLevelErrors = GetLastJobHistoryErrorArtifactIds(job.WorkspaceID, job.RelatedObjectArtifactID, ErrorTypeChoices.JobHistoryErrorJob);
-			List<int> itemLevelErrors = GetLastJobHistoryErrorArtifactIds(job.WorkspaceID, job.RelatedObjectArtifactID, ErrorTypeChoices.JobHistoryErrorItem);
+			IList<int> jobLevelErrors = GetLastJobHistoryErrorArtifactIds(job.WorkspaceID, job.RelatedObjectArtifactID, ErrorTypeChoices.JobHistoryErrorJob);
+			IList<int> itemLevelErrors = GetLastJobHistoryErrorArtifactIds(job.WorkspaceID, job.RelatedObjectArtifactID, ErrorTypeChoices.JobHistoryErrorItem);
 
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType = DetermineUpdateStatusType(jobType, jobLevelErrors.Any(), itemLevelErrors.Any());
 
@@ -75,7 +75,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return updateStatusType;
 		}
 
-		private void CreateErrorListTempTables(List<int> jobLevelErrors, List<int> itemLevelErrors, JobHistoryErrorDTO.UpdateStatusType updateStatusType)
+		private void CreateErrorListTempTables(IList<int> jobLevelErrors, IList<int> itemLevelErrors, JobHistoryErrorDTO.UpdateStatusType updateStatusType)
 		{
 			try
 			{
@@ -133,7 +133,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				originalSavedSearchArtifactId, lastJobHistoryArtifactId, job.SubmittedBy);
 		}
 
-		private List<int> GetLastJobHistoryErrorArtifactIds(int workspaceArtifactId, int integrationPointArtifactId, Relativity.Client.Choice errorType)
+		private IList<int> GetLastJobHistoryErrorArtifactIds(int workspaceArtifactId, int integrationPointArtifactId, Relativity.Client.Choice errorType)
 		{
 			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(workspaceArtifactId);
 			int lastJobHistoryArtifactId = GetLastJobHistory(workspaceArtifactId, integrationPointArtifactId);
@@ -153,52 +153,56 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			var currentItemLevelErrors = new List<int>();
 			var expiredItemLevelErrors = new List<int>();
 
-			List<ArtifactDTO> documentsFromSavedSearch = GetAllFromSavedSearch(job.WorkspaceID, savedSearchIdForItemLevelError);
-
-			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(job.WorkspaceID);
-			int lastJobHistoryId = GetLastJobHistory(job.WorkspaceID, job.RelatedObjectArtifactID);
-			Dictionary<int, string> itemLevelErrorsAndSourceUniqueIds = jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, ErrorTypeChoices.JobHistoryErrorItem);
-
-			foreach (var error in itemLevelErrorsAndSourceUniqueIds)
+			HashSet<string> documentIdentifierssFromSavedSearch = GetAllIdentifiersFromSavedSearch(job.WorkspaceID,
+					savedSearchIdForItemLevelError);
+			while(documentIdentifierssFromSavedSearch.Any())
 			{
-				if (documentsFromSavedSearch.Exists(document => document.TextIdentifier == error.Value))
-				{
-					currentItemLevelErrors.Add(error.Key);
-				}
-				else
-				{
-					expiredItemLevelErrors.Add(error.Key);
-				}
-			}
+				IJobHistoryErrorRepository jobHistoryErrorRepository =
+					_repositoryFactory.GetJobHistoryErrorRepository(job.WorkspaceID);
+				int lastJobHistoryId = GetLastJobHistory(job.WorkspaceID, job.RelatedObjectArtifactID);
+				IDictionary<int, string> itemLevelErrorsAndSourceUniqueIds =
+					jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId,
+						ErrorTypeChoices.JobHistoryErrorItem);
 
-			JobHistoryErrorItemStart.AddArtifactIdsIntoTempTable(currentItemLevelErrors);
-			JobHistoryErrorItemComplete.AddArtifactIdsIntoTempTable(currentItemLevelErrors);
+				foreach (var error in itemLevelErrorsAndSourceUniqueIds)
+				{
+					if (documentIdentifierssFromSavedSearch.Contains(error.Value))
+					{
+						currentItemLevelErrors.Add(error.Key);
+					}
+					else
+					{
+						expiredItemLevelErrors.Add(error.Key);
+					}
+				}
 
-			if (expiredItemLevelErrors.Count > 0)
-			{
-				JobHistoryErrorItemStartOther.AddArtifactIdsIntoTempTable(expiredItemLevelErrors);
+				JobHistoryErrorItemStart.AddArtifactIdsIntoTempTable(currentItemLevelErrors);
+				JobHistoryErrorItemComplete.AddArtifactIdsIntoTempTable(currentItemLevelErrors);
+
+				if (expiredItemLevelErrors.Count > 0)
+				{
+					JobHistoryErrorItemStartOther.AddArtifactIdsIntoTempTable(expiredItemLevelErrors);
+				}
+
+				documentIdentifierssFromSavedSearch = GetAllIdentifiersFromSavedSearch(job.WorkspaceID,
+					savedSearchIdForItemLevelError);
 			}
 		}
 
-		private List<ArtifactDTO> GetAllFromSavedSearch(int workspaceArtifactId, int savedSearchId)
+		private HashSet<string> GetAllIdentifiersFromSavedSearch(int workspaceArtifactId, int savedSearchId)
 		{
 			var allArtifacts = new List<ArtifactDTO>();
 			ISavedSearchRepository savedSearchRepository = _repositoryFactory.GetSavedSearchRepository(workspaceArtifactId, savedSearchId);
 
-			while (true)
+			ArtifactDTO[] artifactDtos = savedSearchRepository.RetrieveNextDocuments();
+			if (artifactDtos != null && artifactDtos.Any())
 			{
-				ArtifactDTO[] artifactDtos = savedSearchRepository.RetrieveNextDocuments();
-				if (artifactDtos != null && artifactDtos.Any())
-				{
-					allArtifacts.AddRange(artifactDtos);
-				}
-				else
-				{
-					break;
-				}
+				allArtifacts.AddRange(artifactDtos);
 			}
 
-			return allArtifacts;
+			var hashSet = new HashSet<string>(allArtifacts.Select(x => x.TextIdentifier));
+
+			return hashSet;
 		}
 	}
 }

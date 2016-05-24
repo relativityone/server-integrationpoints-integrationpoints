@@ -288,6 +288,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 
 			// Assert
+			_savedSearchRepository.Received(2).RetrieveNextDocuments();
+			_repositoryFactory.Received(2).GetSavedSearchRepository(_workspaceArtifactId, savedSearchId);
+			_repositoryFactory.Received(1).GetJobHistoryErrorRepository(_workspaceArtifactId);
 			_scratchTableRepository.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error1));
 			_scratchTableRepository.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error1));
 			_scratchTableRepository.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error2));

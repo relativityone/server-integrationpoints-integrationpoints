@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_dtoTransformer = dtoTransformer;
 		}
 
-		public List<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType)
+		public IList<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType)
 		{
 			var fields = new List<FieldValue>
 			{
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return results.Results.Select(result => result.Artifact.ArtifactID).ToList();
 		}
 
-		public Dictionary<int, string> RetrieveJobHistoryErrorIdsAndSourceUniqueIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType)
+		public IDictionary<int, string> RetrieveJobHistoryErrorIdsAndSourceUniqueIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType)
 		{
 			var fields = new List<FieldValue>
 			{
@@ -212,7 +212,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public List<JobHistoryErrorDTO> Read(IEnumerable<int> artifactIds)
+		public IList<JobHistoryErrorDTO> Read(IEnumerable<int> artifactIds)
 		{
 			List<JobHistoryError> jobHistories = _jobHistoryErrorLibrary.Read(artifactIds);
 			return _dtoTransformer.ConvertToDto(jobHistories);

@@ -276,7 +276,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			SavedSearchDTO savedSearchDto = null;
 			if (savedSearchPermissions)
 			{
-				savedSearchDto = new SavedSearchDTO() {Owner = savedSearchIsPublic ? 0 : 123};
+				savedSearchDto = new SavedSearchDTO() {Owner = savedSearchIsPublic ? String.Empty : "KWUUUUUU"};
 			}
 			_savedSearchRepository.RetrieveSavedSearch().Returns(savedSearchDto);
 

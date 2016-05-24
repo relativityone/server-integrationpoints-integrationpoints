@@ -2,6 +2,6 @@
 {
 	public class SavedSearchDTO : BaseDTO
 	{
-		public int Owner { get; set; } 
+		public string Owner { get; set; } 
 	}
 }

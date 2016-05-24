@@ -93,7 +93,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public void AddArtifactIdsIntoTempTable(List<int> artifactIds)
+		public void AddArtifactIdsIntoTempTable(IList<int> artifactIds)
 		{
 			_count += artifactIds.Count;
 
