@@ -11,8 +11,6 @@ using Relativity.API;
 using Relativity.Services.DataContracts.DTOs;
 using Relativity.Services.ObjectQuery;
 using Relativity.Services.ServiceProxy;
-using Context = kCura.Data.RowDataGateway.Context;
-using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -66,16 +64,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public IDBContext GetDBContext(int caseId)
 		{
-			Context baseContext = null;
+			kCura.Data.RowDataGateway.Context baseContext = null;
 			if (caseId == -1)
 			{
-				baseContext = new Context(SharedVariables.EddsConnectionString);
+				baseContext = new kCura.Data.RowDataGateway.Context(SharedVariables.EddsConnectionString);
 			}
 			else
 			{
 
 				string connectionString = String.Format(SharedVariables.WorkspaceConnectionStringFormat, caseId);
-				baseContext = new Context(connectionString);
+				baseContext = new kCura.Data.RowDataGateway.Context(connectionString);
 			}
 			DBContext context = new DBContext(baseContext);
 			return context;
@@ -370,22 +368,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 			}
 
-			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, Query query, int start, int length, int[] includePermissions, string queryToken)
+			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, global::Relativity.Services.ObjectQuery.Query query, int start, int length, int[] includePermissions, string queryToken)
 			{
 				return _manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions,  queryToken);
 			}
 
-			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, Query query, int start, int length, int[] includePermissions, string queryToken, IProgress<ProgressReport> progress)
+			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, global::Relativity.Services.ObjectQuery.Query query, int start, int length, int[] includePermissions, string queryToken, IProgress<ProgressReport> progress)
 			{
 				return _manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions, queryToken, progress);
 			}
 
-			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, Query query, int start, int length, int[] includePermissions, string queryToken, CancellationToken cancel)
+			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, global::Relativity.Services.ObjectQuery.Query query, int start, int length, int[] includePermissions, string queryToken, CancellationToken cancel)
 			{
 				return _manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions, queryToken, cancel);
 			}
 
-			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, Query query, int start, int length, int[] includePermissions, string queryToken, CancellationToken cancel, IProgress<ProgressReport> progress)
+			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, global::Relativity.Services.ObjectQuery.Query query, int start, int length, int[] includePermissions, string queryToken, CancellationToken cancel, IProgress<ProgressReport> progress)
 			{
 				return _manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions, queryToken, cancel, progress);
 			}

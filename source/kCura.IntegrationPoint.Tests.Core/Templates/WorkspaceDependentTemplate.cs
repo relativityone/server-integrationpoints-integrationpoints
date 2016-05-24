@@ -117,9 +117,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			IIntegrationPointService service = Container.Resolve<IIntegrationPointService>();
 
-			int integrationPointAritfactId = service.SaveIntegration(model);
+			int integrationPointArtifactId = service.SaveIntegration(model);
 
-			var rdo = service.GetRdo(integrationPointAritfactId);
+			IntegrationPoints.Data.IntegrationPoint rdo = service.GetRdo(integrationPointArtifactId);
 			IntegrationModel newModel = new IntegrationModel(rdo);
 			return newModel;
 		}
@@ -155,11 +155,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		protected string CreateDefaultFieldMap()
 		{
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
-			IFieldRepository sourcefieldRepository = repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
-			IFieldRepository destinationfieldRepository = repositoryFactory.GetFieldRepository(TargetWorkspaceArtifactId);
+			IFieldRepository sourceFieldRepository = repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
+			IFieldRepository destinationFieldRepository = repositoryFactory.GetFieldRepository(TargetWorkspaceArtifactId);
 
-			ArtifactDTO sourceDto = sourcefieldRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
-			ArtifactDTO targetDto = destinationfieldRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
+			ArtifactDTO sourceDto = sourceFieldRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
+			ArtifactDTO targetDto = destinationFieldRepository.RetrieveTheIdentifierField((int)ArtifactType.Document);
 
 			FieldMap[] map = new[]
 			{
@@ -195,12 +195,12 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected void ControlIntegrationPointAgents(bool enable)
 		{
-			string query = @" Update A
+			string query = $@" Update A
   Set Enabled = @enabled
   From [Agent] A
 	Inner Join [AgentType] AT
   ON A.AgentTypeArtifactID = AT.ArtifactID
-  Where Guid = '08C0CE2D-8191-4E8F-B037-899CEAEE493D'";
+  Where Guid = '{GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID}'";
 
 			SqlParameter toEnabled = new SqlParameter("@enabled", SqlDbType.Bit) { Value = enable };
 

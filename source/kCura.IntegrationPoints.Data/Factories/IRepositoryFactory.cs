@@ -92,6 +92,15 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IQueueRepository GetQueueRepository();
 
 		/// <summary>
+		/// Returns a class implementing the IScratchTableRepository interface.
+		/// </summary>
+		/// <param name="workspaceArtifactId">Artifact Id of the source workspace.</param>
+		/// <param name="tablePrefix">Prefix for any temp table that will be handled by this repository</param>
+		/// <param name="tableSuffix">Suffix for any temp table that will be handled by this repository</param>
+		/// <returns>A class implementing the IScratchTableRepository interface</returns>
+		IScratchTableRepository GetScratchTableRepository(int workspaceArtifactId, string tablePrefix, string tableSuffix);
+
+		/// <summary>
 		/// Returns a class implementing the ISourceJobRepository interface.
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
@@ -133,11 +142,11 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IWorkspaceRepository GetWorkspaceRepository();
 
 		/// <summary>
-		/// Returns a class implementing ISavedSearchRepository interface.
+		/// Returns a class implementing the ISavedSearchRepository interface.
 		/// </summary>
 		/// <param name="workspaceArtifactId">Workspace artifact id.</param>
 		/// <param name="savedSearchArtifactId">Saved search artifact id.</param>
-		/// <returns></returns>
+		/// <returns>A class implementing the ISavedSearchRepository interface.</returns>
 		ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId);
 
 	}
