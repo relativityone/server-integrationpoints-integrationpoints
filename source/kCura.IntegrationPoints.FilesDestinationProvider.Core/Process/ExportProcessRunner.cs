@@ -12,8 +12,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		public void StartWith(ExportSettings settings)
 		{
-			var searchExporter = _exportProcessBuilder.Create(settings);
-			searchExporter.ExportSearch();
+			var exporter = _exportProcessBuilder.Create(settings);
+			exporter.Run();
 		}
 	}
 }

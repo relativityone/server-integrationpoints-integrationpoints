@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			set { _exporter.InteractionManager = value; }
 		}
 
-		public bool ExportSearch()
+		public bool Run()
 		{
 			return _exporter.ExportSearch();
 		}
