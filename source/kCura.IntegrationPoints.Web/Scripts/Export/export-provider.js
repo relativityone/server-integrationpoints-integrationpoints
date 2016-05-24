@@ -112,6 +112,12 @@
             });
         }
 
+        this.exportImagesChecked = ko.observable(state.exportImagesChecked || "false");
+
+        this.imagesFileTypes = ["Single-page TIF/JPG", "Multi-page TIF", "PDF"];
+
+        this.selectedImageFileType = ko.observable(state.selectedImageFileType);
+
         this.errors = ko.validation.group(this, { deep: true });
 
         this.getSelectedOption = function () {
