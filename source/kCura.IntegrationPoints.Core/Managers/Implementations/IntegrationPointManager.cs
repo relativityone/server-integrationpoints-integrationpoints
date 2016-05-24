@@ -99,7 +99,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				if (savedSearch != null)
 				{
 					savedSearchPermissions = true;
-					savedSearchIsPublic = savedSearch.Owner == 0;
+					savedSearchIsPublic = String.IsNullOrEmpty(savedSearch.Owner);
 				}
 			}
 			else

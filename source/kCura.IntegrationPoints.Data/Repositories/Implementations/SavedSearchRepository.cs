@@ -109,8 +109,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				savedSearch = new SavedSearchDTO()
 				{
 					ArtifactId = artifactDto.ArtifactId,
-					Name = (string) fieldMapping["Name"].Value,
-					Owner = fieldMapping["Owner"].ArtifactId
+					Name = fieldMapping["Name"]?.Value as string,
+					Owner = fieldMapping["Owner"]?.Value as string
 				};
 			}
 
