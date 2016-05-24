@@ -47,7 +47,7 @@ namespace kCura.IntegrationPoints.Data
 			_documentRepository = documentRepository;
 		}
 
-		public void AddArtifactIdsIntoTempTable(List<int> artifactIds, string tablePrefix)
+		public void AddArtifactIdsIntoTempTable(IList<int> artifactIds, string tablePrefix)
 		{
 			if (!artifactIds.IsNullOrEmpty())
 			{

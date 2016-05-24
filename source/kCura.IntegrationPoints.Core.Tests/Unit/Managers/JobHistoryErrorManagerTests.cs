@@ -279,7 +279,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_testInstance.CreateErrorListTempTablesForItemLevelErrors(_job, savedSearchId);
 
 
-			// 
+			// ASSERT
+			_savedSearchRepository.Received(2).RetrieveNextDocuments();
+			_repositoryFactory.Received(2).GetSavedSearchRepository(_WORKSPACE_ARTIFACT_ID, savedSearchId);
+			_repositoryFactory.Received(1).GetJobHistoryErrorRepository(_WORKSPACE_ARTIFACT_ID);
 			_tempDocHelper.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error1), Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START);
 			_tempDocHelper.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error1), Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE);
 			_tempDocHelper.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<List<int>>(x => x.Count == 1 && x[0] == error2), Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER);

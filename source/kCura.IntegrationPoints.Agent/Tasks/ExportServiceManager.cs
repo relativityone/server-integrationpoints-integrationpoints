@@ -251,10 +251,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				ExportUsingSavedSearchSettings exportSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(IntegrationPointDto.SourceConfiguration);
 
-				int newSavedSearchIdForItemLevelErrors = _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, exportSettings.SavedSearchArtifactId);
-				_sourceConfiguration.SavedSearchArtifactId = newSavedSearchIdForItemLevelErrors;
+				_sourceConfiguration.SavedSearchArtifactId = _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, exportSettings.SavedSearchArtifactId);
 
-				_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, newSavedSearchIdForItemLevelErrors);
+				_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _sourceConfiguration.SavedSearchArtifactId);
 			}
 
 			_batchStatus.ForEach(batch => batch.OnJobStart(job));

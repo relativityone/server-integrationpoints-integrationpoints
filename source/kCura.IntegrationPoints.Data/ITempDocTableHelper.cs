@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Data
 		/// </summary>
 		/// <param name="artifactIds">The list of Artifact IDs being exported</param>
 		/// <param name="tableName">The name of the temp table to be created </param>
-		void AddArtifactIdsIntoTempTable(List<int> artifactIds, string tableName);
+		void AddArtifactIdsIntoTempTable(IList<int> artifactIds, string tableName);
 
 		/// <summary>
 		/// Removes a document from the temporary table if it has errored out
