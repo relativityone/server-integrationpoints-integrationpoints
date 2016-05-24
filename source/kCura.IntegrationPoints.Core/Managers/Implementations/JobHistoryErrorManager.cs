@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
@@ -14,14 +13,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
 
-		internal JobHistoryErrorManager(IRepositoryFactory repositoryFactory,
-			ITempDocTableHelper helper)
+		internal JobHistoryErrorManager(IRepositoryFactory repositoryFactory, int sourceWorkspaceArtifactId, string uniqueJobId)
 		{
-			JobHistoryErrorJobStart = new ScratchTableRepository(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, helper, false);
-			JobHistoryErrorJobComplete = new ScratchTableRepository(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE, helper, false);
-			JobHistoryErrorItemStart = new ScratchTableRepository(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, helper, false);
-			JobHistoryErrorItemComplete = new ScratchTableRepository(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE, helper, false);
-			JobHistoryErrorItemStartOther = new ScratchTableRepository(Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER, helper, false);
+			JobHistoryErrorJobStart = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START, uniqueJobId);
+			JobHistoryErrorJobComplete = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE, uniqueJobId);
+			JobHistoryErrorItemStart = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, uniqueJobId);
+			JobHistoryErrorItemComplete = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE, uniqueJobId);
+			JobHistoryErrorItemStartOther = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER, uniqueJobId);
 
 			_repositoryFactory = repositoryFactory;
 		}

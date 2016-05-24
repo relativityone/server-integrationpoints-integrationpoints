@@ -63,7 +63,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory = Container.Resolve<IOnBehalfOfUserClaimsPrincipalFactory>();
 			ISourceWorkspaceManager sourceWorkspaceManager = Container.Resolve<ISourceWorkspaceManager>();
 			ISourceJobManager sourceJobManager = Container.Resolve<ISourceJobManager>();
-			ITempDocumentTableFactory tempTableFactory = Container.Resolve<ITempDocumentTableFactory>();
 			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			IManagerFactory managerFactory = Container.Resolve<IManagerFactory>();
 			ISerializer serializer = Container.Resolve<ISerializer>();
@@ -84,7 +83,6 @@ namespace kCura.IntegrationPoints.Agent.Tests.Integration
 				onBehalfOfUserClaimsPrincipalFactory,
 				sourceWorkspaceManager,
 				sourceJobManager,
-				tempTableFactory,
 				repositoryFactory,
 				managerFactory,
 				new[] { jobHistoryUpdater },

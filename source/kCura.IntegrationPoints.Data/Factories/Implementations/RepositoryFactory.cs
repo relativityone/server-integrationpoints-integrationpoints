@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Adaptors.Implementations;
@@ -10,6 +12,8 @@ using kCura.IntegrationPoints.Data.Transformers;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Core;
+using Relativity.Toggles;
+using Relativity.Toggles.Providers;
 
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
@@ -17,12 +21,27 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 	public class RepositoryFactory : IRepositoryFactory
 	{
 		private readonly IHelper _helper;
+		private readonly IToggleProvider _toggleProvider;
 
 		private IDictionary<int, ContextContainer> ContextCache { get; }
 
 		public RepositoryFactory(IHelper helper)
 		{
 			_helper = helper;
+			_toggleProvider = new SqlServerToggleProvider(
+						() => {
+							SqlConnection connection = helper.GetDBContext(-1).GetConnection(true);
+
+							return connection;
+						},
+						async () => {
+							Task<SqlConnection> task = Task.Run(() =>
+							{
+								SqlConnection connection = helper.GetDBContext(-1).GetConnection(true);
+								return connection;
+							});
+							return await task;
+						});
 			ContextCache = new Dictionary<int, ContextContainer>();
 		}
 
@@ -108,6 +127,11 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		public IQueueRepository GetQueueRepository()
 		{
 			return new QueueRepository(_helper);
+		}
+
+		public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactId, string tablePrefix, string tableSuffix)
+		{
+			return new ScratchTableRepository(_helper, _toggleProvider, GetDocumentRepository(workspaceArtifactId), GetFieldRepository(workspaceArtifactId), tablePrefix, tableSuffix, workspaceArtifactId);
 		}
 
 		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)

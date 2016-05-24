@@ -20,9 +20,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly int _savedSearchArtifactId;
 		private readonly int _jobHistoryErrorTypeId;
 
-		public JobHistoryErrorBatchUpdateManager(IJobHistoryErrorManager jobHistoryErrorManager,
-			IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory,
-			int sourceWorkspaceArtifactId, int submittedBy,
+		public JobHistoryErrorBatchUpdateManager(IJobHistoryErrorManager jobHistoryErrorManager, IRepositoryFactory repositoryFactory, 
+			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, int sourceWorkspaceArtifactId, int submittedBy, 
 			JobHistoryErrorDTO.UpdateStatusType updateStatusType, int savedSearchArtifactId)
 		{
 			_jobHistoryErrorManager = jobHistoryErrorManager;

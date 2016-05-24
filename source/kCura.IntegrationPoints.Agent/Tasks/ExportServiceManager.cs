@@ -52,7 +52,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly ISourceJobManager _sourceJobManager;
 		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
 		private readonly ISynchronizerFactory _synchronizerFactory;
-		private readonly ITempDocumentTableFactory _tempDocumentTableFactory;
 		private readonly JobHistoryErrorService _jobHistoryErrorService;
 		private readonly IJobHistoryService _jobHistoryService;
 		private readonly JobStatisticsService _statisticsService;
@@ -61,7 +60,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private SourceConfiguration _sourceConfiguration;
 		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
-		private ITempDocTableHelper _docTableHelper;
 
 		public ExportServiceManager(IHelper helper,
 			ICaseServiceContext caseServiceContext,
@@ -71,7 +69,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			IOnBehalfOfUserClaimsPrincipalFactory onBehalfOfUserClaimsPrincipalFactory,
 			ISourceWorkspaceManager sourceWorkspaceManager,
 			ISourceJobManager sourceJobManager,
-			ITempDocumentTableFactory tempDocumentTableFactory,
 			IRepositoryFactory repositoryFactory,
 			IManagerFactory managerFactory,
 			IEnumerable<IBatchStatus> statuses,
@@ -99,7 +96,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_statisticsService = statisticsService;
 			_synchronizerFactory = synchronizerFactory;
 			_taskResult = new TaskResult();
-			_tempDocumentTableFactory = tempDocumentTableFactory;
 		}
 
 		public IntegrationPoint IntegrationPointDto { get; private set; }
@@ -241,8 +237,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			//Load Job History Errors if any
 			string uniqueJobId = GetUniqueJobId(job);
-			_docTableHelper = _tempDocumentTableFactory.GetDocTableHelper(uniqueJobId, _sourceConfiguration.SourceWorkspaceArtifactId);
-			_jobHistoryErrorManager = _managerFactory.CreateJobHistoryErrorManager(_contextContainer, _docTableHelper);
+			_jobHistoryErrorManager = _managerFactory.CreateJobHistoryErrorManager(_contextContainer, _sourceConfiguration.SourceWorkspaceArtifactId, uniqueJobId);
 			_updateStatusType = _jobHistoryErrorManager.StageForUpdatingErrors(job, this.JobHistoryDto.JobType);
 
 			//Load saved search for just item-level error retries
@@ -380,16 +375,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private List<IBatchStatus> InitializeExportServiceJobObservers(Job job, string userImportApiSettings)
 		{
 			IDocumentRepository documentRepository = _repositoryFactory.GetDocumentRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
+			string uniqueJobId = GetUniqueJobId(job);
 
-			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_docTableHelper,
-				_sourceWorkspaceManager, _sourceJobManager,
-				documentRepository, _synchronizerFactory,
-				MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration,
-				userImportApiSettings, JobHistoryDto.ArtifactId);
+			TargetDocumentsTaggingManagerFactory taggerFactory = new TargetDocumentsTaggingManagerFactory(_repositoryFactory, _sourceWorkspaceManager, 
+				_sourceJobManager, documentRepository, _synchronizerFactory, MappedFields.ToArray(), IntegrationPointDto.SourceConfiguration, 
+				userImportApiSettings, JobHistoryDto.ArtifactId, uniqueJobId);
 
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
-			IConsumeScratchTableBatchStatus sourceFieldsTaggerDestinationWorkspace = new DestinationWorkspaceBatchUpdateManager(_docTableHelper, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration, JobHistoryDto.ArtifactId, job.SubmittedBy);
-			IConsumeScratchTableBatchStatus sourceJobHistoryTagger = new JobHistoryBatchUpdateManager(_docTableHelper, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, JobHistoryDto.ArtifactId, _sourceConfiguration.SourceWorkspaceArtifactId, job.SubmittedBy);
+			destinationFieldsTagger.ScratchTableRepository.IgnoreErrorDocuments = false;
+			IConsumeScratchTableBatchStatus sourceFieldsTaggerDestinationWorkspace = new DestinationWorkspaceBatchUpdateManager(_repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration, JobHistoryDto.ArtifactId, job.SubmittedBy, uniqueJobId);
+			sourceFieldsTaggerDestinationWorkspace.ScratchTableRepository.IgnoreErrorDocuments = false;
+			IConsumeScratchTableBatchStatus sourceJobHistoryTagger = new JobHistoryBatchUpdateManager(_repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration.SourceWorkspaceArtifactId, JobHistoryDto.ArtifactId, job.SubmittedBy, uniqueJobId);
 			IBatchStatus sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration.SourceWorkspaceArtifactId, job.SubmittedBy, _updateStatusType, _sourceConfiguration.SavedSearchArtifactId);
 
 			var batchStatusCommands = new List<IBatchStatus>()

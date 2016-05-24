@@ -33,7 +33,6 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
-using Relativity.CustomPages;
 using Relativity.Toggles;
 using Relativity.Toggles.Providers;
 
@@ -154,7 +153,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 						.LifestyleTransient());
 				container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());
 				container.Register(Component.For<ISourceJobManager>().ImplementedBy<SourceJobManager>().LifestyleTransient());
-				container.Register(Component.For<ITempDocumentTableFactory>().ImplementedBy<TempDocumentTableFactory>().LifestyleSingleton());
 			}
 		}
 	}

@@ -175,7 +175,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public void TagDocsWithDestinationWorkspace(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int destinationWorkspaceInstanceId, string tableSuffix, int sourceWorkspaceId)
+		public void TagDocsWithDestinationWorkspace(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int destinationWorkspaceInstanceId, string tableName, int sourceWorkspaceId)
 		{
 			global::Relativity.Query.ArtifactType artifactType = new global::Relativity.Query.ArtifactType(global::Relativity.ArtifactType.Document);
 
@@ -203,11 +203,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			var multiObjectField = new global::Relativity.Core.DTO.Field(baseService, fieldRows[0]);
-			string fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_DEST_WS}_{tableSuffix}";
 
 			try
 			{
-				base.TagFieldsWithRdo(baseService, multiObjectField, numberOfDocs, artifactType, destinationWorkspaceInstanceId, fullTableName);
+				base.TagFieldsWithRdo(baseService, multiObjectField, numberOfDocs, artifactType, destinationWorkspaceInstanceId, tableName);
 			}
 			catch (Exception e)
 			{
