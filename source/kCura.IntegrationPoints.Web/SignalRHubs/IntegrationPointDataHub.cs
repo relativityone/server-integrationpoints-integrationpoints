@@ -110,8 +110,9 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 							{
 								IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, _context);
 								bool hasJobsExecutingOrInQueue = _queueManager.HasJobsExecutingOrInQueue(input.WorkspaceId, input.ArtifactId);
+								bool hasErrorViewPermissions = _integrationPointManager.UserHasPermissionToViewErrors(input.WorkspaceId).Success;
 
-								buttonStates = _stateManager.GetButtonState(input.WorkspaceId, input.ArtifactId, hasJobsExecutingOrInQueue, integrationPointHasErrors);
+								buttonStates = _stateManager.GetButtonState(input.WorkspaceId, input.ArtifactId, hasJobsExecutingOrInQueue, integrationPointHasErrors, hasErrorViewPermissions);
 								onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(input.WorkspaceId, input.ArtifactId, buttonStates);
 							}
 							Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);

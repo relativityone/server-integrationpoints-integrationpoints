@@ -53,17 +53,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			bool integrationPointHasErrors = integrationPointDto.HasErrors.GetValueOrDefault(false);
 			kCura.IntegrationPoints.Core.Constants.SourceProvider sourceProvider = integrationPointManager.GetSourceProvider(Application.ArtifactID, integrationPointDto);
 			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissionToRunJob(Application.ArtifactID, integrationPointDto, sourceProvider);
-			if (!permissionCheck.Success)
-			{
-				string script = "<script type='text/javascript'>"
-								+ "$(document).ready(function () {"
-								+ "IP.message.error.raise(\""
-								+ String.Join("</br>", permissionCheck.ErrorMessages)
-								+ "\", $(\".cardContainer\"));"
-								+ "});"
-								+ "</script>";
-				console.AddScriptBlock("IPConsoleErrorDisplayScript", script);
-			}
 
 			IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory,
 				contextContainer);
@@ -73,21 +62,52 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			{
 				bool hasJobsExecutingOrInQueue= queueManager.HasJobsExecutingOrInQueue(Application.ArtifactID,
 					ActiveArtifact.ArtifactID);
-				ButtonStateDTO buttonState = stateManager.GetButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID, hasJobsExecutingOrInQueue, integrationPointHasErrors);
+				PermissionCheckDTO jobHistoryErrorViewPermissionCheck = integrationPointManager.UserHasPermissionToViewErrors(Application.ArtifactID);
+				bool canViewErrors = jobHistoryErrorViewPermissionCheck.Success;
+
+				ButtonStateDTO buttonState = stateManager.GetButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID, hasJobsExecutingOrInQueue, integrationPointHasErrors, canViewErrors);
 				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(Application.ArtifactID, ActiveArtifact.ArtifactID, buttonState);
 
 				ConsoleButton runNowButton = GetRunNowButtonRelativityProvider(buttonState.RunNowButtonEnabled, onClickEvents.RunNowOnClickEvent);
 				ConsoleButton retryErrorsButton = GetRetryErrorsButton(buttonState.RetryErrorsButtonEnabled, onClickEvents.RetryErrorsOnClickEvent);
-				ConsoleButton viewErrorsLink = GetViewErrorsLink(buttonState.ViewErrorsLinkEnabled, onClickEvents.ViewErrorsOnClickEvent);
 
 				buttonList.Add(runNowButton);
 				buttonList.Add(retryErrorsButton);
-				buttonList.Add(viewErrorsLink);
+
+				if (!canViewErrors)
+				{
+					permissionCheck.Success = false;
+					var errorMessages = new List<string>(jobHistoryErrorViewPermissionCheck.ErrorMessages);
+
+					if (permissionCheck.ErrorMessages != null)
+					{
+						errorMessages.AddRange(permissionCheck.ErrorMessages);
+					}
+
+					permissionCheck.ErrorMessages = errorMessages.ToArray();
+				}
+				else
+				{
+					ConsoleButton viewErrorsLink = GetViewErrorsLink(buttonState.ViewErrorsLinkEnabled, onClickEvents.ViewErrorsOnClickEvent);
+					buttonList.Add(viewErrorsLink);
+				}
 			}
 			else
 			{
 				ConsoleButton runNowButton = GetRunNowButton();
 				buttonList.Add(runNowButton);
+			}
+
+			if (!permissionCheck.Success)
+			{
+				string script = "<script type='text/javascript'>"
+								+ "$(document).ready(function () {"
+								+ "IP.message.error.raise(\""
+								+ String.Join("<br/>", permissionCheck.ErrorMessages)
+								+ "\", $(\".cardContainer\"));"
+								+ "});"
+								+ "</script>";
+				console.AddScriptBlock("IPConsoleErrorDisplayScript", script);
 			}
 
 			console.ButtonList = buttonList;
