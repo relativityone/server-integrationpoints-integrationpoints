@@ -110,9 +110,9 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
 							{
 								IOnClickEventConstructor onClickEventHelper = _helperClassFactory.CreateOnClickEventHelper(_managerFactory, _context);
 								bool hasJobsExecutingOrInQueue = _queueManager.HasJobsExecutingOrInQueue(input.WorkspaceId, input.ArtifactId);
-								bool hasErrorViewPermissions = _integrationPointManager.UserHasPermissionToViewErrors(input.WorkspaceId).Success;
 
-								buttonStates = _stateManager.GetButtonState(input.WorkspaceId, input.ArtifactId, hasJobsExecutingOrInQueue, integrationPointHasErrors, hasErrorViewPermissions);
+								// NOTE: we are always passing true for now. Once we figure out why the ExecutionIdentity.CurrentUser isn't always the same -- biedrzycki: May 25th, 2016
+								buttonStates = _stateManager.GetButtonState(input.WorkspaceId, input.ArtifactId, hasJobsExecutingOrInQueue, integrationPointHasErrors, true);
 								onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(input.WorkspaceId, input.ArtifactId, buttonStates);
 							}
 							Clients.Group(key).updateIntegrationPointData(model, buttonStates, onClickEvents, sourceProviderIsRelativity);
