@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			catch (Exception ex)
 			{
-				throw new Exception($"Error occurred while trying to enable InjectionPointId: { injectionPointId }. { ex.InnerException }");
+				throw new Exception($"Error occurred while trying to enable InjectionPointId: { injectionPointId }. { ex.Message }");
 			}
 		}
 
@@ -62,7 +62,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			catch (Exception ex)
 			{
-				throw new Exception($"Error occurred while trying to remove InjectionPointId: { injectionPointId }. { ex.InnerException }");
+				throw new Exception($"Error occurred while trying to remove InjectionPointId: { injectionPointId }. { ex.Message }");
 			}
 		}
 
@@ -114,13 +114,13 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			catch (Exception ex)
 			{
-				throw new Exception($"Error occurred while trying to retrieve the execution count for InjectionPointId: { injectionPointId }. { ex.InnerException }");
+				throw new Exception($"Error occurred while trying to retrieve the execution count for InjectionPointId: { injectionPointId }. { ex.Message }");
 			}
 		}
 
 		private static bool IsInjectionPointEnabled(string injectionPointId)
 		{
-			string query = "SELECT Count(*) FROM [Injection] WHERE [InjectionPointID] = @injectionPoint";
+			string query = "SELECT Count(*) FROM [Injection] WHERE [InjectionPointID] = @injectionPointId";
 
 			SqlParameter[] parameters = new SqlParameter[]
 			{
@@ -135,7 +135,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 			catch (Exception ex)
 			{
-				throw new Exception($"Error occurred while trying to check if InjectionPointId: { injectionPointId } is enabled. { ex.InnerException }");
+				throw new Exception($"Error occurred while trying to check if InjectionPointId: { injectionPointId } is enabled. { ex.Message }");
 			}
 		}
 	}
