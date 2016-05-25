@@ -11,7 +11,6 @@ using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
 using Relativity.API;
-using Artifact = kCura.EventHandler.Artifact;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -73,9 +72,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 					if (targetWorkspace == null)
 					{
-						errorMessage =
-							errorMessage.Append(
-								"You do not have permissions to import to the Destination workspace. Please contact your system administrator.</br>");
 						settings.TargetWorkspaceArtifactId = 0;
 					}
 					else
@@ -103,10 +99,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					}
 					if (savedSearch == null)
 					{
-						// user does not have any access to the save search
-						errorMessage =
-							errorMessage.Append(
-								"You do not have permissions to the source saved search. Please contact your system administrator.");
 						settings.SavedSearchArtifactId = 0;
 					}
 					else
