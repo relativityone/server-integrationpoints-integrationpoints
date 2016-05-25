@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using kCura.WinEDDS;
+using System.Collections.Generic;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 {
@@ -12,5 +13,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public int ArtifactTypeId { get; set; }
 		public bool OverwriteFiles { get; set; }
 		public bool CopyFileFromRepository { get; set; }
-	}
+        public bool ExportImages { get; set; }
+        public ExportFile.ImageType ImageType { get; set; }
+    }
 }
