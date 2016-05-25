@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			expFile.TextFileEncoding = null;
 			expFile.TypeOfExport = ExportFile.ExportType.ArtifactSearch;
 			expFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Relative;
-			expFile.TypeOfImage = ExportFile.ImageType.SinglePage;
+            expFile.TypeOfImage = exportSettings.ImageType;
 			expFile.ViewID = 0;
 			expFile.VolumeDigitPadding = 3;
 			expFile.VolumeInfo = new VolumeInfo();

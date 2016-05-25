@@ -15,5 +15,7 @@
         public string Fileshare { get; set; }
         public bool CopyFileFromRepository { get; set; }
         public bool OverwriteFiles { get; set; }
-	}
+        public bool ExportImagesChecked { get; set; }
+        public string SelectedImageFileType { get; set; }
+    }
 }
