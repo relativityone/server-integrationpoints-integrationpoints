@@ -24,6 +24,13 @@ namespace kCura.IntegrationPoints.Core.Managers
 		Constants.SourceProvider GetSourceProvider(int workspaceArtifactId, IntegrationPointDTO integrationPointDto);
 
 		/// <summary>
+		/// Returns whether or not the current user can view errors.
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
+		/// <returns><code>TRUE</code> if the user can view errors, <code>FALSE</code> otherwise.</returns>
+		PermissionCheckDTO UserHasPermissionToViewErrors(int workspaceArtifactId);
+
+		/// <summary>
 		/// Determines whether or not the current user has permissions to run an integration point in the given workspace. This only applies to the Relativity source provider.
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>

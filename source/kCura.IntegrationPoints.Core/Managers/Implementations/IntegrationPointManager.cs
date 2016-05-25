@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts;
 using kCura.IntegrationPoints.Core.Contracts.Configuration;
@@ -44,6 +43,30 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			}
 
 			return sourceProvider;
+		}
+
+		public PermissionCheckDTO UserHasPermissionToViewErrors(int workspaceArtifactId)
+		{
+			IPermissionRepository permissionRepository = _repositoryFactory.GetPermissionRepository(workspaceArtifactId);
+			var errorMessages = new List<string>();
+
+			if (!permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.View))
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW);	
+			}
+
+			if (!permissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistoryError), ArtifactPermission.View))
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_ERROR_NO_VIEW);
+			}
+
+			var permissionCheck = new PermissionCheckDTO()
+			{
+				Success = !errorMessages.Any(),
+				ErrorMessages = errorMessages.ToArray()
+			};
+
+			return permissionCheck;
 		}
 
 		public PermissionCheckDTO UserHasPermissionToRunJob(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null)

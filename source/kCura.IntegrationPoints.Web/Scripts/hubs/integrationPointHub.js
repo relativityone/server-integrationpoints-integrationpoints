@@ -16,13 +16,13 @@
 				var consoleContainer = $(".ConsoleControl");
 				if (buttonStates.RunNowButtonEnabled) {
 					var runNowOnClick = onClickEvents.RunNowOnClickEvent;
-					$(consoleContainer.find(":contains('Run Now')")).removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", runNowOnClick).removeAttr('disabled');
+					$(consoleContainer.find(":contains('Run Now')")).removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", runNowOnClick).attr("title", "Run Now").removeAttr('disabled');
 				} else {
 					$(consoleContainer.find(":contains('Run Now')")).removeClass("consoleButtonEnabled").addClass("consoleButtonDisabled").removeAttr('onClick');
 				}
 				if (buttonStates.RetryErrorsButtonEnabled) {
 					var retryErrorsClick = onClickEvents.RetryErrorsOnClickEvent;
-					$(consoleContainer.find(":contains('Retry Errors')")).removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", retryErrorsClick).removeAttr('disabled');
+					$(consoleContainer.find(":contains('Retry Errors')")).removeClass("consoleButtonDisabled").addClass("consoleButtonEnabled").attr("onClick", retryErrorsClick).attr("title", "Retry Errors").removeAttr('disabled');
 				} else {
 					$(consoleContainer.find(":contains('Retry Errors')")).removeClass("consoleButtonEnabled").addClass("consoleButtonDisabled").removeAttr('onClick');
 				}

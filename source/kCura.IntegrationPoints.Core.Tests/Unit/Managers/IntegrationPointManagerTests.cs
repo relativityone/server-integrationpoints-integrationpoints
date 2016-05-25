@@ -379,5 +379,53 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_savedSearchRepository.Received(1).RetrieveSavedSearch();
 			_sourceProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_SOURCE_PROVIDER_ID));
 		}
+
+		[TestCase(true, true)]
+		[TestCase(false, true)]
+		[TestCase(true, false)]
+		[TestCase(false, false)]
+		public void UserHasPermissionToViewErrors_GoldFlow(bool hasJobHistoryViewPermission, bool hasJobHistoryErrorViewPermission)
+		{
+			// Arrange
+			_sourcePermissionRepository.UserHasArtifactTypePermission(
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)),
+				Arg.Is(ArtifactPermission.View)).
+				Returns(hasJobHistoryViewPermission);
+
+			_sourcePermissionRepository.UserHasArtifactTypePermission(
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistoryError)),
+				Arg.Is(ArtifactPermission.View)).
+				Returns(hasJobHistoryErrorViewPermission);
+
+			// Act
+			PermissionCheckDTO result = _testInstance.UserHasPermissionToViewErrors(_SOURCE_WORKSPACE_ID);
+
+			// Assert	
+			bool userHasAllPermissions = hasJobHistoryViewPermission && hasJobHistoryErrorViewPermission;
+			Assert.AreEqual(userHasAllPermissions, result.Success, $"The result Success should be {userHasAllPermissions}");
+
+			int errorCount = 0;
+			if (!hasJobHistoryViewPermission)
+			{
+				errorCount++;
+				Assert.IsTrue(result.ErrorMessages.Contains(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW), $"The error messages should contain \"{Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW}\"");
+            }
+
+			if (!hasJobHistoryErrorViewPermission)
+			{
+				errorCount++;
+				Assert.IsTrue(result.ErrorMessages.Contains(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_ERROR_NO_VIEW), $"The error messages should contain \"{Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_ERROR_NO_VIEW}\"");
+			}
+
+			Assert.AreEqual(errorCount, result.ErrorMessages.Length);
+
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)),
+				Arg.Is(ArtifactPermission.View));
+
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistoryError)),
+				Arg.Is(ArtifactPermission.View));
+		}
 	}
 }

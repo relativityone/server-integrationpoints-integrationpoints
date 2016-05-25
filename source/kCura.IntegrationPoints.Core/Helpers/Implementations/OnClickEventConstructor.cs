@@ -8,8 +8,8 @@ namespace kCura.IntegrationPoints.Core.Helpers.Implementations
 {
 	public class OnClickEventConstructor : IOnClickEventConstructor
 	{
-		private IManagerFactory _managerFactory;
-		private IContextContainer _contextContainer;
+		private readonly IManagerFactory _managerFactory;
+		private readonly IContextContainer _contextContainer;
 
 		public OnClickEventConstructor(IContextContainer contextContainer, IManagerFactory managerFactory)
 		{
