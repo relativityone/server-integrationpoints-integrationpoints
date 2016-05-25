@@ -67,6 +67,32 @@
             </div>
         </div>
     </div>
+    <div class="card">
+        <span class="label title">Images</span>
+        <div class="identifier">
+            <div class="field-row">
+                <div class="field-label required ">Export Images:</div>
+                <div class="field-value">
+                    <ul>
+                        <li>
+                            <input id="export-images-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: exportImagesChecked" />Yes
+                        </li>
+                        <li>
+                            <input id="export-images-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: exportImagesChecked" />No
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field-label required">
+                    File Type :
+                </div>
+                <div class="field-value ">
+                    <select id="imagesFileTypeSelector" data-bind="options: imagesFileTypes,optionsCaption: 'Select...', value: selectedImageFileType"></select>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
 

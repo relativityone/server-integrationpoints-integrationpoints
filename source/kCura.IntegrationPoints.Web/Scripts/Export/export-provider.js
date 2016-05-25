@@ -112,6 +112,16 @@
             });
         }
 
+        this.exportImagesChecked = ko.observable(state.exportImagesChecked || "false").extend({
+            required: true
+        });
+
+        this.imagesFileTypes = ["Single-page TIF/JPG", "Multi-page TIF", "PDF"];
+
+        this.selectedImageFileType = ko.observable(state.selectedImageFileType).extend({
+            required: true
+        });
+
         this.errors = ko.validation.group(this, { deep: true });
 
         this.getSelectedOption = function () {
@@ -122,7 +132,9 @@
                 "SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
                 "CopyFileFromRepository": self.CopyFileFromRepository(),
                 "OverwriteFiles": self.OverwriteFiles(),
-                "Fileshare": self.selectedDestinationPath()
+                "Fileshare": self.selectedDestinationPath(),
+                "ExportImagesChecked": self.exportImagesChecked(),
+                "SelectedImageFileType": self.selectedImageFileType()
             }
         }
     }
