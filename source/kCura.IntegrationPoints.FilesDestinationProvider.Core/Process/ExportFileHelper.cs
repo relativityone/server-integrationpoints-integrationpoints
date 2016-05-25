@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			expFile.CaseInfo = new CaseInfo();
 			expFile.CaseInfo.ArtifactID = exportSettings.WorkspaceId;
 			expFile.ExportFullText = false;
-			expFile.ExportImages = false;
+			expFile.ExportImages = exportSettings.ExportImages;
 			expFile.ExportFullTextAsFile = false;
 			expFile.ExportNative = true;
 			expFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier;

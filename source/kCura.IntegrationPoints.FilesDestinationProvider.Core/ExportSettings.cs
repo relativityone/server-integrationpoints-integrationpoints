@@ -12,5 +12,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public int ArtifactTypeId { get; set; }
 		public bool OverwriteFiles { get; set; }
 		public bool CopyFileFromRepository { get; set; }
-	}
+        public bool ExportImages { get; set; }
+    }
 }
