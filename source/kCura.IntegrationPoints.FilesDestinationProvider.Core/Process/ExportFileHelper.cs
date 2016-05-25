@@ -34,13 +34,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			expFile.Overwrite = exportSettings.OverwriteFiles;
 			expFile.RenameFilesToIdentifier = true;
 			expFile.StartAtDocumentNumber = 0;
-			expFile.SubdirectoryDigitPadding = 3;
+			expFile.SubdirectoryDigitPadding = 8;
 			expFile.TextFileEncoding = null;
 			expFile.TypeOfExport = ExportFile.ExportType.ArtifactSearch;
 			expFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Relative;
 			expFile.TypeOfImage = ExportFile.ImageType.SinglePage;
 			expFile.ViewID = 0;
-			expFile.VolumeDigitPadding = 3;
+			expFile.VolumeDigitPadding = 8;
 			expFile.VolumeInfo = new VolumeInfo();
 			expFile.VolumeInfo.VolumePrefix = "VOL";
 			expFile.VolumeInfo.VolumeStartNumber = 1;

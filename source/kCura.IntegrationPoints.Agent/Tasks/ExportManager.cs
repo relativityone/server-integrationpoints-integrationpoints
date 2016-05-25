@@ -26,5 +26,17 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         {
             return TaskType.ExportWorker;
         }
-    }
+
+		/// <summary>
+		/// Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
+		/// so for now we need to create only one worker job
+		/// </summary>
+		/// <param name="job"></param>
+		/// <returns>job.Id value just to trigger new worker job</returns>
+	    public override IEnumerable<string> GetUnbatchedIDs(Job job)
+		{
+			yield return job.JobId.ToString();
+		}
+
+	}
 }
