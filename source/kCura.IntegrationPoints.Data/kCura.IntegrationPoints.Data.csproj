@@ -218,6 +218,7 @@
     <Compile Include="Commands\MassEdit\RelativityMassEdit.cs" />
     <Compile Include="Factories\Implementations\RepositoryFactory.cs" />
     <Compile Include="Factories\IRepositoryFactory.cs" />
+    <Compile Include="Repositories\IErrorRepository.cs" />
     <Compile Include="Repositories\IIntegrationPointRepository.cs" />
     <Compile Include="Repositories\IJobHistoryErrorRepository.cs" />
     <Compile Include="Repositories\Implementations\IntegrationPointRepository.cs" />
@@ -226,6 +227,7 @@
     <Compile Include="Repositories\Implementations\KeplerObjectRepository.cs" />
     <Compile Include="Repositories\Implementations\PermissionRepository.cs" />
     <Compile Include="Repositories\Implementations\QueueRepository.cs" />
+    <Compile Include="Repositories\Implementations\RsapiErrorRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceProviderRepository.cs" />
     <Compile Include="Repositories\IObjectRepository.cs" />
     <Compile Include="Repositories\Implementations\KeplerCodeRepository.cs" />

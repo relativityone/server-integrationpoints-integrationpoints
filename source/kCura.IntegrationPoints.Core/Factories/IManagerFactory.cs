@@ -71,5 +71,12 @@ namespace kCura.IntegrationPoints.Core.Factories
 		/// <returns>Source provider manager</returns>
 		ISourceProviderManager CreateSourceProviderManager(IContextContainer contextContainer);
 
+		/// <summary>
+		/// Creates an error manager.
+		/// </summary>
+		/// <param name="contextContainer"></param>
+		/// <returns>Error Manager</returns>
+		IErrorManager CreateErrorManager(IContextContainer contextContainer);
+
 	}
 }

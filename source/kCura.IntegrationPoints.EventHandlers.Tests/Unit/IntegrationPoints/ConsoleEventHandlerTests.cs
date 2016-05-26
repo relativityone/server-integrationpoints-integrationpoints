@@ -29,6 +29,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		private IStateManager _stateManager;
 		private IQueueManager _queueManager;
 		private IOnClickEventConstructor _onClickEventHelper;
+		private IErrorManager _errorManager;
 
 		private ConsoleEventHandler _instance;
 
@@ -45,6 +46,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_stateManager = Substitute.For<IStateManager>();
 			_queueManager = Substitute.For<IQueueManager>();
 			_onClickEventHelper = Substitute.For<IOnClickEventConstructor>();
+			_errorManager = Substitute.For<IErrorManager>();
 
 			var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, null);
 			var application = new Application(_APPLICATION_ID, "", "");
@@ -91,6 +93,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_integrationPointManager.Read(_APPLICATION_ID, _ARTIFACT_ID).Returns(integrationPointDto);
 			_integrationPointManager.GetSourceProvider(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
 				.Returns(sourceProvider);
+
+			if (!hasRunPermissions || !hasViewErrorsPermissions)
+			{
+				_managerFactory.CreateErrorManager(_contextContainer).Returns(_errorManager);
+			}
 
 			ButtonStateDTO buttonStates = null;
 			if (isRelativitySourceProvider)
@@ -188,11 +195,22 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			}
 			else
 			{
+				var expectedError = new ErrorDTO()
+				{
+					Message = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+					FullText = $"User is missing the following permissions: {System.Environment.NewLine}" + String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)
+				};
+
+				_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => 
+				x.Count() == 1 && 
+				x.First().Message == expectedError.Message &&
+				x.First().FullText == expectedError.FullText));
+
 				string expectedKey = "IPConsoleErrorDisplayScript".ToLower();
 				string expectedScript = "<script type='text/javascript'>"
 								+ "$(document).ready(function () {"
 								+ "IP.message.error.raise(\""
-								+ String.Join("<br/>", permissionCheck.ErrorMessages ?? viewErrorMessages)
+								+ Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS
 								+ "\", $(\".cardContainer\"));"
 								+ "});"
 								+ "</script>";

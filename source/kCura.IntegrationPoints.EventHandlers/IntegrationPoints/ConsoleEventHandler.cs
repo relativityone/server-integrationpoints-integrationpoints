@@ -77,6 +77,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				if (!canViewErrors)
 				{
 					permissionCheck.Success = false;
+
 					var errorMessages = new List<string>(jobHistoryErrorViewPermissionCheck.ErrorMessages);
 
 					if (permissionCheck.ErrorMessages != null)
@@ -100,10 +101,20 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 			if (!permissionCheck.Success)
 			{
+				IErrorManager errorManager = _managerFactory.CreateErrorManager(contextContainer);
+
+				var error = new ErrorDTO()
+				{
+					Message	= Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+					FullText = $"User is missing the following permissions: {System.Environment.NewLine}" + String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)
+				};
+
+				errorManager.Create(new[] { error });
+
 				string script = "<script type='text/javascript'>"
-								+ "$(document).ready(function () {"
-								+ "IP.message.error.raise(\""
-								+ String.Join("<br/>", permissionCheck.ErrorMessages)
+				                + "$(document).ready(function () {"
+				                + "IP.message.error.raise(\""
+				                + Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS
 								+ "\", $(\".cardContainer\"));"
 								+ "});"
 								+ "</script>";
