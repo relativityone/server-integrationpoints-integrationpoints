@@ -138,8 +138,14 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <summary>
 		/// Returns a class implementing the IWorkspaceRepository interface.
 		/// </summary>
-		/// <returns>A class implementing the IWorkspaceRepository.</returns>
+		/// <returns>A class implementing the IWorkspaceRepository interface.</returns>
 		IWorkspaceRepository GetWorkspaceRepository();
+
+		/// <summary>
+		/// Returns a class implplementing the IErrorRepository interface.
+		/// </summary>
+		/// <returns>A class implementing the IErrorRepository interface.</returns>
+		IErrorRepository GetErrorRepository();
 
 		/// <summary>
 		/// Returns a class implementing the ISavedSearchRepository interface.

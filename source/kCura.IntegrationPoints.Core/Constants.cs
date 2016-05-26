@@ -37,6 +37,7 @@ namespace kCura.IntegrationPoints.Core
 			public static class PermissionErrors
 			{
 				public const string INSUFFICIENT_PERMISSIONS = "You do not have sufficient permissions. Please contact your system administrator";
+				public const string INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE = "User does not have sufficient Integration Point permissions.";
 				public const string CURRENT_WORKSPACE_NO_ACCESS = "You do not have permission to access this workspace.";
 				public const string INTEGRATION_POINT_TYPE_NO_VIEW = "You do not have permission to view Integration Points.";
 				public const string INTEGRATION_POINT_INSTANCE_NO_VIEW = "You do not have permission to view the Integration Point.";
