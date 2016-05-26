@@ -442,7 +442,7 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			if (!permissionCheck.Success)
 			{
-				throw new Exception(String.Join("<br/>", permissionCheck.ErrorMessages));
+				throw new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS);
 			}
 		}
 

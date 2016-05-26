@@ -192,7 +192,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				string expectedScript = "<script type='text/javascript'>"
 								+ "$(document).ready(function () {"
 								+ "IP.message.error.raise(\""
-								+ String.Join("<br/>", permissionCheck.ErrorMessages ?? viewErrorMessages)
+								+ Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS
 								+ "\", $(\".cardContainer\"));"
 								+ "});"
 								+ "</script>";

@@ -77,14 +77,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				if (!canViewErrors)
 				{
 					permissionCheck.Success = false;
-					var errorMessages = new List<string>(jobHistoryErrorViewPermissionCheck.ErrorMessages);
-
-					if (permissionCheck.ErrorMessages != null)
-					{
-						errorMessages.AddRange(permissionCheck.ErrorMessages);
-					}
-
-					permissionCheck.ErrorMessages = errorMessages.ToArray();
 				}
 				else
 				{
@@ -101,9 +93,9 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			if (!permissionCheck.Success)
 			{
 				string script = "<script type='text/javascript'>"
-								+ "$(document).ready(function () {"
-								+ "IP.message.error.raise(\""
-								+ String.Join("<br/>", permissionCheck.ErrorMessages)
+				                + "$(document).ready(function () {"
+				                + "IP.message.error.raise(\""
+				                + Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS
 								+ "\", $(\".cardContainer\"));"
 								+ "});"
 								+ "</script>";
