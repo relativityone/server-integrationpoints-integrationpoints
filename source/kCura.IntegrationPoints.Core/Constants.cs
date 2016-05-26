@@ -49,8 +49,8 @@ namespace kCura.IntegrationPoints.Core
 				public const string SAVED_SEARCH_NO_ACCESS = "The saved search is no longer available or you do not have access.";
 				public const string SAVED_SEARCH_NOT_PUBLIC = "The saved search must be public.";
 				public const string UNABLE_TO_EXPORT = "Job failed due to insufficient permissions. Please ensure that you have valid export and saved search permissions";
-				public const string JOB_HISTORY_NO_VIEW = "You do not have permissions to view Job History RDOs.";
-				public const string JOB_HISTORY_ERROR_NO_VIEW = "You do not have permissions to view Job History Errors RDOs.";
+				public const string JOB_HISTORY_NO_VIEW = "You do not have permission to view Job History RDOs.";
+				public const string JOB_HISTORY_ERROR_NO_VIEW = "You do not have permission to view Job History Errors RDOs.";
 			}
 		}
 
