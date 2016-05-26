@@ -24,11 +24,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public IScratchTableRepository JobHistoryErrorJobStart { get; }
-		public IScratchTableRepository JobHistoryErrorJobComplete { get; }
-		public IScratchTableRepository JobHistoryErrorItemStart { get; }
-		public IScratchTableRepository JobHistoryErrorItemComplete { get; }
-		public IScratchTableRepository JobHistoryErrorItemStartOther { get; }
+		public IScratchTableRepository JobHistoryErrorJobStart { get; internal set; }
+		public IScratchTableRepository JobHistoryErrorJobComplete { get; internal set; }
+		public IScratchTableRepository JobHistoryErrorItemStart { get; internal set; }
+		public IScratchTableRepository JobHistoryErrorItemComplete { get; internal set; }
+		public IScratchTableRepository JobHistoryErrorItemStartOther { get; internal set; }
 
 		public JobHistoryErrorDTO.UpdateStatusType StageForUpdatingErrors(Job job, Relativity.Client.Choice jobType)
 		{
@@ -150,59 +150,52 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public void CreateErrorListTempTablesForItemLevelErrors(Job job, int savedSearchIdForItemLevelError)
 		{
-			var currentItemLevelErrors = new List<int>();
-			var expiredItemLevelErrors = new List<int>();
+			var currentItemLevelErrors = new HashSet<int>();
+			var expiredItemLevelErrors = new HashSet<int>();
 
-			HashSet<string> documentIdentifierssFromSavedSearch = GetAllIdentifiersFromSavedSearch(job.WorkspaceID,
-					savedSearchIdForItemLevelError);
-			while(documentIdentifierssFromSavedSearch.Any())
+			IJobHistoryErrorRepository jobHistoryErrorRepository =
+				_repositoryFactory.GetJobHistoryErrorRepository(job.WorkspaceID);
+			int lastJobHistoryId = GetLastJobHistory(job.WorkspaceID, job.RelatedObjectArtifactID);
+			IDictionary<int, string> itemLevelErrorsAndSourceUniqueIds =
+				jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId,
+					ErrorTypeChoices.JobHistoryErrorItem);
+
+			ISavedSearchRepository savedSearchRepository = _repositoryFactory.GetSavedSearchRepository(job.WorkspaceID, savedSearchIdForItemLevelError);
+			while(!savedSearchRepository.AllDocumentsRetrieved())
 			{
-				IJobHistoryErrorRepository jobHistoryErrorRepository =
-					_repositoryFactory.GetJobHistoryErrorRepository(job.WorkspaceID);
-				int lastJobHistoryId = GetLastJobHistory(job.WorkspaceID, job.RelatedObjectArtifactID);
-				IDictionary<int, string> itemLevelErrorsAndSourceUniqueIds =
-					jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId,
-						ErrorTypeChoices.JobHistoryErrorItem);
+				var documentIdentifiersFromSavedSearch = new HashSet<string>();
+				ArtifactDTO[] artifactDtos = savedSearchRepository.RetrieveNextDocuments();
+
+				if (artifactDtos != null && artifactDtos.Any())
+				{
+					documentIdentifiersFromSavedSearch = new HashSet<string>(artifactDtos.Select(x => x.TextIdentifier));
+				}
 
 				foreach (var error in itemLevelErrorsAndSourceUniqueIds)
 				{
-					if (documentIdentifierssFromSavedSearch.Contains(error.Value))
+					if (documentIdentifiersFromSavedSearch.Contains(error.Value))
 					{
 						currentItemLevelErrors.Add(error.Key);
+						expiredItemLevelErrors.Remove(error.Key);
 					}
-					else
+					else if (!currentItemLevelErrors.Contains(error.Key))
 					{
 						expiredItemLevelErrors.Add(error.Key);
 					}
 				}
-
-				JobHistoryErrorItemStart.AddArtifactIdsIntoTempTable(currentItemLevelErrors);
-				JobHistoryErrorItemComplete.AddArtifactIdsIntoTempTable(currentItemLevelErrors);
-
-				if (expiredItemLevelErrors.Count > 0)
-				{
-					JobHistoryErrorItemStartOther.AddArtifactIdsIntoTempTable(expiredItemLevelErrors);
-				}
-
-				documentIdentifierssFromSavedSearch = GetAllIdentifiersFromSavedSearch(job.WorkspaceID,
-					savedSearchIdForItemLevelError);
 			}
-		}
 
-		private HashSet<string> GetAllIdentifiersFromSavedSearch(int workspaceArtifactId, int savedSearchId)
-		{
-			var allArtifacts = new List<ArtifactDTO>();
-			ISavedSearchRepository savedSearchRepository = _repositoryFactory.GetSavedSearchRepository(workspaceArtifactId, savedSearchId);
-
-			ArtifactDTO[] artifactDtos = savedSearchRepository.RetrieveNextDocuments();
-			if (artifactDtos != null && artifactDtos.Any())
+			if (currentItemLevelErrors.Any())
 			{
-				allArtifacts.AddRange(artifactDtos);
+				IList<int> currentItemLevelErrorList = currentItemLevelErrors.ToList();
+				JobHistoryErrorItemStart.AddArtifactIdsIntoTempTable(currentItemLevelErrorList);
+				JobHistoryErrorItemComplete.AddArtifactIdsIntoTempTable(currentItemLevelErrorList);
 			}
 
-			var hashSet = new HashSet<string>(allArtifacts.Select(x => x.TextIdentifier));
-
-			return hashSet;
+			if (expiredItemLevelErrors.Any())
+			{
+				JobHistoryErrorItemStartOther.AddArtifactIdsIntoTempTable(expiredItemLevelErrors.ToList());
+			}
 		}
 	}
 }

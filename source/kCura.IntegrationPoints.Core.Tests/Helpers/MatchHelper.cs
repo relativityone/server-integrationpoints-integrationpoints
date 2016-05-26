@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Helpers
 
 			foreach (System.Reflection.PropertyInfo propertyInfo in typeof(T).GetProperties())
 			{
-				// these tries are here because when you access fields that have not been populated, we except... -- biedrzycki May 20th, 2015
+				// these tries are here because when you access fields that have not been populated, we except... -- biedrzycki May 20th, 2016
 				int exceptionCount = 0;
 				object expectedValue = null;
 				object actualValue = null;

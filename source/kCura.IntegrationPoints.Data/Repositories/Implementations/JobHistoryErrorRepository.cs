@@ -214,8 +214,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public IList<JobHistoryErrorDTO> Read(IEnumerable<int> artifactIds)
 		{
-			List<JobHistoryError> jobHistories = _jobHistoryErrorLibrary.Read(artifactIds);
-			return _dtoTransformer.ConvertToDto(jobHistories);
+			List<JobHistoryError> jobHistoryErrors = _jobHistoryErrorLibrary.Read(artifactIds);
+			return _dtoTransformer.ConvertToDto(jobHistoryErrors);
 		}
 	}
 }
