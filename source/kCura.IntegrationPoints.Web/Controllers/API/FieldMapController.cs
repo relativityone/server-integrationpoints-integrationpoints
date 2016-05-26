@@ -1,6 +1,9 @@
-﻿using System.Net;
+﻿using System;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
@@ -15,8 +18,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		public HttpResponseMessage Get(int id)
 		{
-			var fieldsmap = _integrationPointReader.GetFieldMap(id);
-			return Request.CreateResponse(HttpStatusCode.OK, fieldsmap, Configuration.Formatters.JsonFormatter);
+			var fieldsMap = _integrationPointReader.GetFieldMap(id).ToList();
+			for(int index = 0; index < fieldsMap.Count; index++)
+			{
+				FieldMap fieldMap = fieldsMap[index];
+				if (fieldMap.FieldMapType == FieldMapTypeEnum.FolderPathInformation)
+				{
+					if (String.IsNullOrEmpty(fieldMap.DestinationField.FieldIdentifier))
+					{
+						fieldsMap.RemoveAt(index);
+					}
+				}
+			}
+			return Request.CreateResponse(HttpStatusCode.OK, fieldsMap, Configuration.Formatters.JsonFormatter);
 		}
 	}
 }

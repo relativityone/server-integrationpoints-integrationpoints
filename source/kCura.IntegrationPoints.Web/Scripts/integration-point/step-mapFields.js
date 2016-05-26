@@ -435,8 +435,12 @@ ko.validation.insertValidationMessage = function (element) {
 						self.selectedUniqueId(mapping[i].destinationField.displayName);
 					}
 				}
+
 				mapping = $.map(mapping, function (value) {
-					return (value.fieldMapType !== mapTypes.parent && value.fieldMapType !== mapTypes.native) ? value : null;
+					if (value.fieldMapType !== mapTypes.parent && value.fieldMapType !== mapTypes.native) {
+						return value;
+					}
+					return null;
 				});
 
 
