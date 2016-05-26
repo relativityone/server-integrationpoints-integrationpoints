@@ -6,7 +6,25 @@ namespace kCura.IntegrationPoints.Web
 	{
 		public static void Register(HttpConfiguration config)
 		{
-			config.Routes.MapHttpRoute(
+            config.Routes.MapHttpRoute(
+                name: "FTPdecrypt",
+                routeTemplate: "{workspaceID}/api/FtpProviderAPI/d",
+                defaults: new { controller = "FtpProviderAPI", action = "Decrypt" }
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "FTPEncrypt",
+                routeTemplate: "{workspaceID}/api/FtpProviderAPI/e",
+                defaults: new { controller = "FtpProviderAPI", action = "Encrypt" }
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "FTPViewSettings",
+                routeTemplate: "{workspaceID}/api/FtpProviderAPI/view",
+                defaults: new { controller = "FtpProviderAPI", action = "GetViewFields" }
+            );
+
+            config.Routes.MapHttpRoute(
 				name: "LDAPdecrypt",
 				routeTemplate: "{workspaceID}/api/ldap/d",
 				defaults: new { controller = "ldap", action = "Decrypt" }

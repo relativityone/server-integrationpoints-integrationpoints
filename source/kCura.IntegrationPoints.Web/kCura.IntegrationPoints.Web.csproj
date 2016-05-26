@@ -314,6 +314,7 @@
     <Compile Include="Controllers\API\ChoiceController.cs" />
     <Compile Include="Controllers\API\GetAvailableEncodingsController.cs" />
     <Compile Include="Controllers\API\FolderPathController.cs" />
+    <Compile Include="Controllers\API\FtpProviderAPIController.cs" />
     <Compile Include="Controllers\API\RelativityController.cs" />
     <Compile Include="Controllers\API\FieldMapController.cs" />
     <Compile Include="Controllers\API\JobController.cs" />
@@ -328,6 +329,7 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\API\IntegrationPointsAPIController.cs" />
     <Compile Include="Controllers\API\CustodianController.cs" />
+    <Compile Include="Controllers\FtpProviderController.cs" />
     <Compile Include="Controllers\IntegrationPointsController.cs" />
     <Compile Include="Extensions\HtmlHelperExtensions.cs" />
     <Compile Include="DataStructures\FolderTree.cs" />
@@ -443,6 +445,7 @@
     <Content Include="Scripts\core\messaging.js" />
     <Content Include="Scripts\EventHandlers\relativity-provider-view.js" />
     <Content Include="Scripts\EventHandlers\job-history.js" />
+    <Content Include="Scripts\ftpProvider\ftpProvider-edit.js" />
     <Content Include="Scripts\hubs\integrationPointHub.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.js" />
     <Content Include="Scripts\jquery.signalR-2.2.0.min.js" />
@@ -645,6 +648,7 @@
     <Content Include="Views\IntegrationPoints\NotEnoughPermission.cshtml" />
     <Content Include="Views\IntegrationPoints\RelativityProviderConfiguration.cshtml" />
     <Content Include="Views\IntegrationPoints\_IntegrationMapFieldsReversed.cshtml" />
+    <Content Include="Views\FtpProvider\GetDefaultFtpSettings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -678,9 +682,29 @@
       <Project>{22991306-a168-4d22-80a7-aaa99c9e9fd6}</Project>
       <Name>kCura.IntegrationPoints.DocumentTransferProvider.Shared</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider.Connection\kCura.IntegrationPoints.FtpProvider.Connection.csproj">
+      <Project>{fb8830ae-7369-44d1-80f7-d61760f050a6}</Project>
+      <Name>kCura.IntegrationPoints.FtpProvider.Connection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider.Helpers\kCura.IntegrationPoints.FtpProvider.Helpers.csproj">
+      <Project>{3e33dd7e-266f-48f8-86a2-3cdb836f2947}</Project>
+      <Name>kCura.IntegrationPoints.FtpProvider.Helpers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider.Parser\kCura.IntegrationPoints.FtpProvider.Parser.csproj">
+      <Project>{f49b9ffa-f3ef-4870-9e78-fed4c72b3249}</Project>
+      <Name>kCura.IntegrationPoints.FtpProvider.Parser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.FtpProvider\kCura.IntegrationPoints.FtpProvider.csproj">
+      <Project>{8a61be46-3c1d-4d31-91f0-2731a01860fc}</Project>
+      <Name>kCura.IntegrationPoints.FtpProvider</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.LDAPProvider\kCura.IntegrationPoints.LDAPProvider.csproj">
       <Project>{8398b06f-3716-4834-9593-a017f2714261}</Project>
       <Name>kCura.IntegrationPoints.LDAPProvider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
+      <Project>{e7d6a21d-acc6-4140-9e18-c2e6bca85449}</Project>
+      <Name>kCura.IntegrationPoints.Security</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>

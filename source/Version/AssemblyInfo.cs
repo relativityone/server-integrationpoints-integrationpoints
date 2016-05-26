@@ -18,6 +18,7 @@ using System.Runtime.InteropServices;
 // to COM components.  If you need to access a type in this assembly from
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
+[assembly: InternalsVisibleTo("kCura.IntegrationPoints")]  //ILMerged dll
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Agent")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Core")]
 [assembly: InternalsVisibleTo("kCura.IntegrationPoints.Core.Tests")]

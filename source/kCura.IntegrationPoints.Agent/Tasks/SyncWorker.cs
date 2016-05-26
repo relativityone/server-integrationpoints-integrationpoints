@@ -55,8 +55,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_statisticsService = statisticsService;
 		}
 
-		internal Guid BatchInstance { get; set; }
-
 		public void Execute(Job job)
 		{
 			foreach (var batchComplete in BatchStatus)

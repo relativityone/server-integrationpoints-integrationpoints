@@ -746,6 +746,42 @@
       <Name>kCura.Print.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>1022706</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Security.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1022707</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.FtpProvider.Parser.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1022708</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.FtpProvider.Helpers.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1022709</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.FtpProvider.Connection.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1022710</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.FtpProvider.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1022768</ArtifactId>
+      <Keywords />
+      <Name>Renci.SshNet.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
@@ -8245,6 +8281,17 @@
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
       <ApplicationVersion>2.0.0.47</ApplicationVersion>
+    </InstallEventHandler>
+    <InstallEventHandler>
+      <ArtifactId>3318791</ArtifactId>
+      <AssemblyArtifactId>1018550</AssemblyArtifactId>
+      <Name>kCura.IntegrationPoints.EventHandlers.Installers.RegisterFtpProvider</Name>
+      <Guid>d1578a7b-e662-4dee-bd59-c224e27f5296</Guid>
+      <Guids>b4d70af6-ba98-4346-b63a-69a8fdf3e64f</Guids>
+      <ExecutionType>8</ExecutionType>
+      <Order>2</Order>
+      <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
+      <ApplicationVersion>2.0.0.1</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />

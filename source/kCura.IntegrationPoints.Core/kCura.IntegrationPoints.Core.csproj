@@ -697,6 +697,10 @@
       <Project>{22991306-a168-4d22-80a7-aaa99c9e9fd6}</Project>
       <Name>kCura.IntegrationPoints.DocumentTransferProvider.Shared</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
+      <Project>{E7D6A21D-ACC6-4140-9E18-C2E6BCA85449}</Project>
+      <Name>kCura.IntegrationPoints.Security</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
