@@ -36,21 +36,21 @@ namespace kCura.IntegrationPoints.Core
 
 			public static class PermissionErrors
 			{
-				public const string INSUFFICIENT_PERMISSIONS = "You do not have sufficient permissions. Please contact your system administrator";
+				public const string INSUFFICIENT_PERMISSIONS = "You not have sufficient permissions. Please contact your system administrator";
 				public const string INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE = "User does not have sufficient Integration Point permissions.";
-				public const string CURRENT_WORKSPACE_NO_ACCESS = "You do not have permission to access this workspace.";
-				public const string INTEGRATION_POINT_TYPE_NO_VIEW = "You do not have permission to view Integration Points.";
-				public const string INTEGRATION_POINT_INSTANCE_NO_VIEW = "You do not have permission to view the Integration Point.";
-				public const string JOB_HISTORY_TYPE_NO_ADD = "You do not have permission to add Job History RDOs.";
-				public const string MISSING_DESTINATION_RDO_PERMISSIONS = "You do not have all required destination RDO permissions. Please make sure you have view, edit, and add permissions for the destination RDO.";
-				public const string DESTINATION_WORKSPACE_NO_ACCESS = "You do not have permission to access the destination workspace.";
-				public const string DESTINATION_WORKSPACE_NO_IMPORT = "You do not have permission to import in the destination workspace.";
-				public const string SOURCE_WORKSPACE_NO_EXPORT = "You do not have permission to export in the source workspace.";
+				public const string CURRENT_WORKSPACE_NO_ACCESS = "User does not have permission to access this workspace.";
+				public const string INTEGRATION_POINT_TYPE_NO_VIEW = "User does not have permission to view Integration Points.";
+				public const string INTEGRATION_POINT_INSTANCE_NO_VIEW = "User does not have permission to view the Integration Point.";
+				public const string JOB_HISTORY_TYPE_NO_ADD = "User does not have permission to add Job History RDOs.";
+				public const string MISSING_DESTINATION_RDO_PERMISSIONS = "User does not have all required destination RDO permissions. Please make sure you have view, edit, and add permissions for the destination RDO.";
+				public const string DESTINATION_WORKSPACE_NO_ACCESS = "User does not have permission to access the destination workspace.";
+				public const string DESTINATION_WORKSPACE_NO_IMPORT = "User does not have permission to import in the destination workspace.";
+				public const string SOURCE_WORKSPACE_NO_EXPORT = "User does not have permission to export in the source workspace.";
 				public const string SAVED_SEARCH_NO_ACCESS = "The saved search is no longer available or you do not have access.";
 				public const string SAVED_SEARCH_NOT_PUBLIC = "The saved search must be public.";
 				public const string UNABLE_TO_EXPORT = "Job failed due to insufficient permissions. Please ensure that you have valid export and saved search permissions";
-				public const string JOB_HISTORY_NO_VIEW = "You do not have permission to view Job History RDOs.";
-				public const string JOB_HISTORY_ERROR_NO_VIEW = "You do not have permission to view Job History Errors RDOs.";
+				public const string JOB_HISTORY_NO_VIEW = "User does not have permission to view Job History RDOs.";
+				public const string JOB_HISTORY_ERROR_NO_VIEW = "User does not have permission to view Job History Errors RDOs.";
 			}
 		}
 
