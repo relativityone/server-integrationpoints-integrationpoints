@@ -8,7 +8,6 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 using NSubstitute;
-using NSubstitute.ReturnsExtensions;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
