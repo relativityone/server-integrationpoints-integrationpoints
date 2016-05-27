@@ -28,8 +28,16 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             }
             return Ok(decryptedText);
         }
+		[HttpPost]
+		public IHttpActionResult GetValue([FromBody] object data)
+		{
+			var result = new List<KeyValuePair<string, string>>();
+			result.Add(new KeyValuePair<string, string>("Connection Path", "test"));
+			result.Add(new KeyValuePair<string, string>("Object Filter String", "test"));
 
-        [HttpPost]
+			return Ok(result);
+		}
+		[HttpPost]
         public IHttpActionResult Decrypt([FromBody] string message)
         {
             var decryptedText = _securityManager.Decrypt(message);

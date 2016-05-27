@@ -17,8 +17,12 @@ namespace kCura.IntegrationPoints.Web
                 routeTemplate: "{workspaceID}/api/FtpProviderAPI/e",
                 defaults: new { controller = "FtpProviderAPI", action = "Encrypt" }
             );
-
-            config.Routes.MapHttpRoute(
+			config.Routes.MapHttpRoute(
+		   name: "FTPDataRetrieve",
+		   routeTemplate: "{workspaceID}/api/FtpProviderAPI/r",
+		   defaults: new { controller = "FtpProviderAPI", action = "GetValue" }
+	   );
+			config.Routes.MapHttpRoute(
                 name: "FTPViewSettings",
                 routeTemplate: "{workspaceID}/api/FtpProviderAPI/view",
                 defaults: new { controller = "FtpProviderAPI", action = "GetViewFields" }

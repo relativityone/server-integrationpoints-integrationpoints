@@ -77,13 +77,22 @@ var ftpHelper = (function (data) {
         $('#filename_prefix').val(model.filename_prefix);
         $('#timezone_offset').val(new Date().getTimezoneOffset());
     }
-
+    var _returnValue = function (model) {
+        return IP.data.ajax({
+            cache: false,
+            data: JSON.stringify(model),
+            url: IP.utils.generateWebAPIURL('FtpProviderAPI', 'r'),
+            async: false,
+            type: 'post'
+        });
+    }
     return {
         validateSettings: _validateSettings,
         getSettingsModel: _getModel,
         setSettingsModel: _setModel,
         encryptSettings: _encrypt,
-        decryptSettings: _decrypt
+        decryptSettings: _decrypt,
+        retrieveValueFromServer: _returnValue
     }
 
 })(IP.data);
@@ -94,6 +103,9 @@ var ftpHelper = (function (data) {
 
     function validateSettings(model) {
         return helper.validateSettings(model);
+    }
+    function retrieveValueFromServer(model) {
+        return helper.retrieveValueFromServer(model);
     }
 
     function getSettingsModel() {
@@ -120,15 +132,20 @@ var ftpHelper = (function (data) {
         var self = this;
 
         //Validate that the input will connect to a valid FTP/SFTP server
-        //todo: how to do this: document.body.style.cursor = "progress"; 
+        //todo: how to do this: document.body.style.cursor = "progress";
+
         var p1 = validateSettings(localModel);
         p1.then(function () {
-            document.getElementById('validation_message').innerHTML = "";
-            self.publish("saveState", localModel);
-            //Encrypt Model for DB save
-            encryptSettings(localModel).then(function (encryptedModel) {
-                //Communicate to the host page to continue.
-                self.publish('saveComplete', encryptedModel);
+            retrieveValueFromServer(localModel).then(function (value) {
+                debugger;
+                //update model with the value returned;
+                document.getElementById('validation_message').innerHTML = "";
+                self.publish("saveState", localModel);
+                //Encrypt Model for DB save
+                encryptSettings(localModel).then(function (encryptedModel) {
+                    //Communicate to the host page to continue.
+                    self.publish('saveComplete', encryptedModel);
+                });
             });
         }, function (error) {
             document.getElementById('validation_message').innerHTML = error.statusText;
