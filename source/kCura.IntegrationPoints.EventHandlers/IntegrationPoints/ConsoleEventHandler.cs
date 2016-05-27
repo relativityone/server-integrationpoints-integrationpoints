@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					FullText = $"User is missing the following permissions: {System.Environment.NewLine}" + String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)
 				};
 
-				errorManager.Create(new[] { error });
+				errorManager.Create(Application.ArtifactID, new[] { error });
 
 				string script = "<script type='text/javascript'>"
 				                + "$(document).ready(function () {"

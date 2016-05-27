@@ -176,9 +176,9 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return repository;
 		}
 
-		public IErrorRepository GetErrorRepository()
+		public IErrorRepository GetErrorRepository(int workspaceArtifactId)
 		{
-			IErrorRepository repository = new RsapiErrorRepository(_helper);
+			IErrorRepository repository = new RsapiErrorRepository(_helper, workspaceArtifactId);
 
 			return repository;
 		}
