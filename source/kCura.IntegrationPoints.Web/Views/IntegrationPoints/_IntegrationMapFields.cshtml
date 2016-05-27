@@ -102,7 +102,7 @@
 					</ul>
 				</div>
 			</div>
-			<div class="field-row" data-bind="visible: importNativeFile() == 'true' && AllowUserToMapNativeFileField() == 'true'">
+			<div class="field-row" data-bind="visible: importNativeFile() == 'true' && AllowUserToMapNativeFileField() == true">
 				<div class="field-label required ">Native File Path:</div>
 				<div class="field-value ">
 					<select id="native-filePath" data-bind="options: nativeFilePathOption, value: nativeFilePathValue, optionsValue: 'displayName', optionsText: 'displayName', optionsCaption: 'Select...', select2: {}">
