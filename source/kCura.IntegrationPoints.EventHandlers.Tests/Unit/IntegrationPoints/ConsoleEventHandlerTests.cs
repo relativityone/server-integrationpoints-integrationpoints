@@ -198,7 +198,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				var expectedError = new ErrorDTO()
 				{
 					Message = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
-					FullText = $"User is missing the following permissions: {System.Environment.NewLine}" + String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)
+					FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)}"
 				};
 
 				_errorManager.Received(1).Create(Arg.Is(_APPLICATION_ID), Arg.Is<IEnumerable<ErrorDTO>>(

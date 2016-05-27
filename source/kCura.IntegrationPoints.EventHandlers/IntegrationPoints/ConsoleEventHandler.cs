@@ -106,7 +106,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				var error = new ErrorDTO()
 				{
 					Message	= Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
-					FullText = $"User is missing the following permissions: {System.Environment.NewLine}" + String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)
+					FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)}"
 				};
 
 				errorManager.Create(Application.ArtifactID, new[] { error });
