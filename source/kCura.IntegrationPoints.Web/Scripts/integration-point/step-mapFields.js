@@ -243,10 +243,6 @@ ko.validation.insertValidationMessage = function (element) {
 				// GetFolderPathFields only returns fixed-length text and long text fields
 				self.FolderPathFields(result);
 				self.FolderPathSourceField(model.FolderPathSourceField);
-				if (self.AllowUserToMapNativeFileField()) {
-					self.nativeFilePathOption(result);
-					self.nativeFilePathValue(model.nativeFilePathValue);
-				}
 			});
 		}
 
@@ -386,6 +382,8 @@ ko.validation.insertValidationMessage = function (element) {
 				var destinationFields = result[0],
 						sourceFields = result[1] || [],
 						mapping = result[2];
+
+				self.nativeFilePathOption(sourceFields);				
 
 				var types = mapFields(sourceFields);
 				self.overlay(destinationFields);

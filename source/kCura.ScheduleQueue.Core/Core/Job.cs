@@ -44,11 +44,12 @@ namespace kCura.ScheduleQueue.Core
 		}
 
 		//Used for internal unit tests only
-		internal Job(int workspaceArtifactId, int integrationPointArtifactId, int submittedByArtifactId)
+		internal Job(int workspaceArtifactId, int integrationPointArtifactId, int submittedByArtifactId, int jobId = 1)
 		{
 			WorkspaceID = workspaceArtifactId;
 			RelatedObjectArtifactID = integrationPointArtifactId;
 			SubmittedBy = submittedByArtifactId;
+			JobId = jobId;
 		}
 	}
 }
