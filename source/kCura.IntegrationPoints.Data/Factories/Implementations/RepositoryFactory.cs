@@ -176,6 +176,13 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return repository;
 		}
 
+		public IErrorRepository GetErrorRepository(int workspaceArtifactId)
+		{
+			IErrorRepository repository = new RsapiErrorRepository(_helper, workspaceArtifactId);
+
+			return repository;
+		}
+
 		public ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId)
 		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Search);

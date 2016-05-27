@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.Data
 		/// <remarks>
 		/// Only available for internal providers
 		/// </remarks>
-		internal ImportSettingVisibility AvailableImportSettings { set; get; }
+		public ImportSettingVisibility AvailableImportSettings { set; get; }
 
 		/// <summary>
 		/// Exclusive list of guid associate with Rdo types

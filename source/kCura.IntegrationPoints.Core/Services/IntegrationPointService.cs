@@ -442,7 +442,17 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			if (!permissionCheck.Success)
 			{
-				throw new Exception(String.Join("<br/>", permissionCheck.ErrorMessages));
+				IErrorManager errorManager = _managerFactory.CreateErrorManager(_contextContainer);
+
+				var error = new ErrorDTO()
+				{
+					Message = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+					FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)}"
+				};
+
+				errorManager.Create(workspaceArtifactId, new [] { error });
+
+				throw new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS);
 			}
 		}
 
