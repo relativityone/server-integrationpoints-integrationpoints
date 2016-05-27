@@ -60,7 +60,14 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			if (_rdo == null || _rdo.ArtifactId != artifactId)
 			{
-				_rdo = _context.RsapiService.IntegrationPointLibrary.Read(artifactId);
+				try
+				{
+					_rdo = _context.RsapiService.IntegrationPointLibrary.Read(artifactId);
+				}
+				catch (Exception ex)
+				{
+					throw new Exception(Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_INTEGRATION_POINT, ex);
+				}	
 			}
 			return _rdo;
 		}
