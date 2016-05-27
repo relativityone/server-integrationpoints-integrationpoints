@@ -24,11 +24,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public IScratchTableRepository JobHistoryErrorJobStart { get; internal set; }
-		public IScratchTableRepository JobHistoryErrorJobComplete { get; internal set; }
-		public IScratchTableRepository JobHistoryErrorItemStart { get; internal set; }
-		public IScratchTableRepository JobHistoryErrorItemComplete { get; internal set; }
-		public IScratchTableRepository JobHistoryErrorItemStartOther { get; internal set; }
+		public IScratchTableRepository JobHistoryErrorJobStart { get; }
+		public IScratchTableRepository JobHistoryErrorJobComplete { get; }
+		public IScratchTableRepository JobHistoryErrorItemStart { get; }
+		public IScratchTableRepository JobHistoryErrorItemComplete { get; }
+		public IScratchTableRepository JobHistoryErrorItemStartOther { get; }
 
 		public JobHistoryErrorDTO.UpdateStatusType StageForUpdatingErrors(Job job, Relativity.Client.Choice jobType)
 		{

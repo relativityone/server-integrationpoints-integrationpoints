@@ -49,6 +49,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		private IntegrationPointDTO _integrationPointDto;
 		private SourceProvider _sourceProvider;
 		private IIntegrationPointManager _integrationPointManager;
+		private IErrorManager _errorManager;
 
 		private IntegrationPointService _instance;
 		private IChoiceQuery _choiceQuery;
@@ -70,6 +71,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_queueManager = Substitute.For<IQueueManager>();
 			_choiceQuery = Substitute.For<IChoiceQuery>();
 			_integrationPointManager = Substitute.For<IIntegrationPointManager>();
+			_errorManager = Substitute.For<IErrorManager>();
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
 
 			_instance = Substitute.ForPartsOf<IntegrationPointService>(_helper, _caseServiceManager,
@@ -83,6 +85,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_repositoryFactory.GetPermissionRepository(_sourceWorkspaceArtifactId).Returns(_sourcePermissionRepository);
 			_repositoryFactory.GetPermissionRepository(_targetWorkspaceArtifactId).Returns(_targetPermissionRepository);
 			_managerFactory.CreateIntegrationPointManager(Arg.Is(_contextContainer)).Returns(_integrationPointManager);
+			_managerFactory.CreateErrorManager(Arg.Is(_contextContainer)).Returns(_errorManager);
 
 			_integrationPoint = new Data.IntegrationPoint { ArtifactId = _integrationPointArtifactId, EnableScheduler = false };
 
@@ -269,6 +272,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Other));
+
+			var expectedErrorMessage = new ErrorDTO()
+			{
+				Message = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+				FullText = $"User is missing the following permissions: {System.Environment.NewLine}" + String.Join(System.Environment.NewLine, errorMessages)
+			};
+
+			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new [] {expectedErrorMessage}, x)));
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRunNow, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), TaskType.SyncManager, _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
 		}
@@ -326,6 +337,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				Arg.Is(_sourceWorkspaceArtifactId),
 				Arg.Is<IntegrationPointDTO>(x => MatchHelper.Matches(_integrationPointDto, x)),
 				Arg.Is(Constants.SourceProvider.Relativity));
+
+			var expectedErrorMessage = new ErrorDTO()
+			{
+				Message = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+				FullText = $"User is missing the following permissions: {System.Environment.NewLine}" + String.Join(System.Environment.NewLine, errorMessages)
+			};
+			_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new[] { expectedErrorMessage }, x)));
 
 			_jobHistoryService.DidNotReceive().CreateRdo(_integrationPoint, Arg.Any<Guid>(), JobTypeChoices.JobHistoryRetryErrors, null);
 			_jobManager.DidNotReceive().CreateJobOnBehalfOfAUser(Arg.Any<TaskParameters>(), Arg.Any<TaskType>(), _sourceWorkspaceArtifactId, _integrationPoint.ArtifactId, _userId);
