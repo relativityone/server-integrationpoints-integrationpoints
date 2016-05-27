@@ -17,9 +17,9 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
         internal bool _disposed;
         internal TextFieldParser _parser;
         internal Stream _fileStream;
+        internal TextReader _textReader;
 
         internal String _fileLocation;
-        internal String _fieldDelimiter;
         internal String[] _columns;
         internal String[] _currentLine;
         internal Int32 _lineNumber = 0;
@@ -33,45 +33,59 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             get { return _disposed; }
         }
 
-        public DelimitedFileParser(string fileLocation, string fieldDelimiter)
+        public DelimitedFileParser(string fileLocation, ParserOptions parserOptions)
         {
             _fileLocation = fileLocation;
-            _fieldDelimiter = fieldDelimiter;
             if (SourceExists())
             {
-                _parser = new TextFieldParser(_fileLocation)
-                {
-                    TextFieldType = FieldType.Delimited,
-                    Delimiters = new String[] { _fieldDelimiter },
-                    HasFieldsEnclosedInQuotes = true,
-                    TrimWhiteSpace = true
-                };
+                _parser = new TextFieldParser(_fileLocation);
+                SetParserOptions(_parser, parserOptions);
             }
-            ParseColumns();
+
+            if (parserOptions.FirstLineContainsColumnNames)
+            {
+                ParseColumns();
+            }
         }
 
-        public DelimitedFileParser(Stream stream, String fieldDelimiter)
+        public DelimitedFileParser(Stream stream, ParserOptions parserOptions)
         {
             _fileStream = stream;
-            _fieldDelimiter = fieldDelimiter;
             if (SourceExists())
             {
-                _parser = new TextFieldParser(_fileStream, Encoding.UTF8, true)
-                {
-                    TextFieldType = FieldType.Delimited,
-                    Delimiters = new String[] { _fieldDelimiter },
-                    HasFieldsEnclosedInQuotes = true,
-                    TrimWhiteSpace = true
-                };
+                _parser = new TextFieldParser(_fileStream, Encoding.UTF8, true);
+                SetParserOptions(_parser, parserOptions);
             }
-            ParseColumns();
+            if (parserOptions.FirstLineContainsColumnNames)
+            {
+                ParseColumns();
+            }
+        }
+
+        public DelimitedFileParser(TextReader reader, ParserOptions parserOptions, List<string> columnList)
+        {
+            _textReader = reader;
+            if (SourceExists())
+            {
+                _parser = new TextFieldParser(_textReader);
+                SetParserOptions(_parser, parserOptions);
+            }
+            _columns = columnList.ToArray();
+        }
+
+        private void SetParserOptions(TextFieldParser parser, ParserOptions parserOptions)
+        {
+            parser.TextFieldType = parserOptions.TextFieldType;
+            parser.Delimiters = parserOptions.Delimiters;
+            parser.HasFieldsEnclosedInQuotes = parserOptions.HasFieldsEnclosedInQuotes;
+            parser.TrimWhiteSpace = parserOptions.HasFieldsEnclosedInQuotes;
         }
 
         public Boolean SourceExists()
         {
-            if ((_fileLocation != null && !new FileInfo(_fileLocation).Exists) && _fileStream == null)
+            if ((_fileLocation != null && !new FileInfo(_fileLocation).Exists) && _fileStream == null && _textReader == null)
             {
-                throw new Exceptions.CantAccessSourceExcepetion();
+                throw new Exceptions.CantAccessSourceException();
             }
             return true;
         }

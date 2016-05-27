@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         public void FileStreamNullWhenLocationConstructorUsed()
         {
             var location = CreateFile("Sample Text for temp file");
-            using (var parser = new DelimitedFileParser(location, ","))
+            using (var parser = new DelimitedFileParser(location, new ParserOptions() { Delimiters = new[] { "," } }))
             {
                 Assert.IsTrue(parser._fileStream == null);
             }
@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         public void FileLocationNullWhenStreamConstructorUsed()
         {
             var streamInput = StringToStream("Test String");
-            var parser = new DelimitedFileParser(streamInput, ",");
+            var parser = new DelimitedFileParser(streamInput, new ParserOptions() { Delimiters = new[] { "," } });
             Assert.IsTrue(parser._fileLocation == null);
         }
 
@@ -36,7 +36,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         public void SourceExistsValidationDetectsfile()
         {
             var location = CreateFile("Sample Text for temp file");
-            using (var parser = new DelimitedFileParser(location, ","))
+            using (var parser = new DelimitedFileParser(location, new ParserOptions() { Delimiters = new[] { "," } }))
             {
                 Assert.DoesNotThrow(() => parser.SourceExists());
             }
@@ -48,7 +48,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         {
             var location = GenerateTempLocation();
 
-            Assert.Throws<Exceptions.CantAccessSourceExcepetion>(() => new DelimitedFileParser(location, ","));
+            Assert.Throws<Exceptions.CantAccessSourceException>(
+                () => new DelimitedFileParser(location, new ParserOptions() { Delimiters = new[] { "," } }));
         }
 
         [Test, System.ComponentModel.Description("Validates that columns are parsed correctly")]
@@ -56,7 +57,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         {
             var input = @"""Column1"", ""Column2"", ""Column3""";
             var streamInput = StringToStream(input);
-            var parser = new DelimitedFileParser(streamInput, ",");
+            var parser = new DelimitedFileParser(streamInput, new ParserOptions() { Delimiters = new[] { "," } });
             var result = parser.ParseColumns();
             Assert.AreEqual(result.Count(), 3);
         }
@@ -66,7 +67,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         {
             var input = "Hello, this is a test!";
             var streamInput = StringToStream(input);
-            var parser = new DelimitedFileParser(streamInput, ",");
+            var parser = new DelimitedFileParser(streamInput, new ParserOptions() { Delimiters = new[] { "," } });
             String[] columns = { "Column1", "", "COlumn2" };
 
             Assert.Throws<Exceptions.BlankColumnExcepetion>(() => parser.ValidateColumns(columns));
@@ -77,7 +78,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
         {
             var input = "Hello, this is a test!";
             var streamInput = StringToStream(input);
-            var parser = new DelimitedFileParser(streamInput, ",");
+            var parser = new DelimitedFileParser(streamInput, new ParserOptions() { Delimiters = new[] { "," } });
             String[] columns = { "Column1", "Column1", "Column2" };
 
             Assert.Throws<Exceptions.DuplicateColumnsExistExcepetion>(() => parser.ValidateColumns(columns));
@@ -96,7 +97,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             var input = String.Join(delimiter, columns) + Environment.NewLine + String.Join(delimiter, data);
 
             var streamInput = StringToStream(input);
-            var parser = new DelimitedFileParser(streamInput, ",");
+            var parser = new DelimitedFileParser(streamInput, new ParserOptions() { Delimiters = new[] { "," } });
             var parsedData = parser.ParseData();
 
             var parsedColumns = GetDataReaderColumns(parsedData);
@@ -120,7 +121,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             var input = String.Join(delimiter, columns) + Environment.NewLine + String.Join(delimiter, data);
 
             var streamInput = StringToStream(input);
-            var parser = new DelimitedFileParser(streamInput, ",");
+            var parser = new DelimitedFileParser(streamInput, new ParserOptions() { Delimiters = new[] { "," } });
             var parsedData = parser.ParseData();
 
             var isClosed = parsedData.IsClosed;
@@ -152,7 +153,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             var input = String.Join(delimiter, columns) + Environment.NewLine + String.Join(delimiter, data);
 
             var streamInput = StringToStream(input);
-            var parser = new DelimitedFileParser(streamInput, ",");
+            var parser = new DelimitedFileParser(streamInput, new ParserOptions() { Delimiters = new[] { "," } });
             var parsedData = parser.ParseData();
 
             var isClosed = parsedData.IsClosed;

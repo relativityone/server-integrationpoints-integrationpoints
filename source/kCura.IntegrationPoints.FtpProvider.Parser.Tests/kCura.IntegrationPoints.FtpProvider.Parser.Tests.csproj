@@ -66,6 +66,7 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="EnumerableReaderTests.cs" />
     <Compile Include="DelimitedFileParserTests.cs" />
   </ItemGroup>
   <ItemGroup>

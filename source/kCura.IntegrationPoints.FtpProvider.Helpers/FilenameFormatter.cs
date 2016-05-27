@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
             var cnt = filename.Count(c => c == wildCard);
             if (cnt % 2 != 0)
             {
-                throw new Exceptions.UnevenNumberOfWildCardCharactersExcepetion();
+                throw new Exceptions.UnevenNumberOfWildCardCharactersException();
             }
             var retVal = new Int32[cnt];
             var retValCnt = 0;

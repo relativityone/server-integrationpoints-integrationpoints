@@ -1,7 +1,6 @@
 ﻿using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using Castle.Windsor.Installer;
 using kCura.IntegrationPoints.FtpProvider.Connection;
 using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
@@ -18,6 +17,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Installers
             container.Register(Component.For<IConnectorFactory>().ImplementedBy<ConnectorFactory>().LifestyleSingleton().OnlyNewServices());
             container.Register(Component.For<ISettingsManager>().ImplementedBy<SettingsManager>().LifestyleTransient().OnlyNewServices());
             container.Register(Component.For<IParserFactory>().ImplementedBy<ParserFactory>().LifestyleTransient());
+            container.Register(Component.For<IDataReaderFactory>().ImplementedBy<DataReaderFactory>().LifestyleTransient());
         }
     }
 }

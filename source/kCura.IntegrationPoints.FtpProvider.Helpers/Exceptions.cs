@@ -56,28 +56,41 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
             { }
         }
 
-        public class CantAccessSourceExcepetion : Exception
+        public class ColumnsMissmatchExcepetion : Exception
         {
-            public CantAccessSourceExcepetion()
-                : base("Source does not exist or you do not have access.")
+            public ColumnsMissmatchExcepetion()
+                : base("File contains different set or order of columns then original format.")
             { }
-            public CantAccessSourceExcepetion(string message)
+            public ColumnsMissmatchExcepetion(string message)
                 : base(message)
             { }
-            public CantAccessSourceExcepetion(string message, Exception inner)
+            public ColumnsMissmatchExcepetion(string message, Exception inner)
                 : base(message, inner)
             { }
         }
 
-        public class UnevenNumberOfWildCardCharactersExcepetion : Exception
+        public class CantAccessSourceException : Exception
         {
-            public UnevenNumberOfWildCardCharactersExcepetion()
-                : base("Please re-enter the filename, there are an uneven number of wildcard characters")
+            public CantAccessSourceException()
+                : base("Source does not exist or you do not have access.")
             { }
-            public UnevenNumberOfWildCardCharactersExcepetion(string message)
+            public CantAccessSourceException(string message)
                 : base(message)
             { }
-            public UnevenNumberOfWildCardCharactersExcepetion(string message, Exception inner)
+            public CantAccessSourceException(string message, Exception inner)
+                : base(message, inner)
+            { }
+        }
+
+        public class UnevenNumberOfWildCardCharactersException : Exception
+        {
+            public UnevenNumberOfWildCardCharactersException()
+                : base("Please re-enter the filename, there are an uneven number of wildcard characters")
+            { }
+            public UnevenNumberOfWildCardCharactersException(string message)
+                : base(message)
+            { }
+            public UnevenNumberOfWildCardCharactersException(string message, Exception inner)
                 : base(message, inner)
             { }
         }
