@@ -198,13 +198,14 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 				var expectedError = new ErrorDTO()
 				{
 					Message = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
-					FullText = $"User is missing the following permissions: {System.Environment.NewLine}" + String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)
+					FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)}"
 				};
 
-				_errorManager.Received(1).Create(Arg.Is<IEnumerable<ErrorDTO>>(x => 
-				x.Count() == 1 && 
-				x.First().Message == expectedError.Message &&
-				x.First().FullText == expectedError.FullText));
+				_errorManager.Received(1).Create(Arg.Is(_APPLICATION_ID), Arg.Is<IEnumerable<ErrorDTO>>(
+					x =>
+						x.Count() == 1 &&
+						x.First().Message == expectedError.Message &&
+						x.First().FullText == expectedError.FullText));
 
 				string expectedKey = "IPConsoleErrorDisplayScript".ToLower();
 				string expectedScript = "<script type='text/javascript'>"

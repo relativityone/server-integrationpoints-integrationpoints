@@ -10,10 +10,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	public class RsapiErrorRepository : IErrorRepository
 	{
 		private readonly IHelper _helper;
+		private readonly int _workspaceArtifactId;
 
-		public RsapiErrorRepository(IHelper helper)
+		public RsapiErrorRepository(IHelper helper, int workspaceArtifactId)
 		{
 			_helper = helper;
+			_workspaceArtifactId = workspaceArtifactId;
 		}
 
 		public void Create(IEnumerable<ErrorDTO> errors)
@@ -22,7 +24,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
-				rsapiClient.APIOptions.WorkspaceID = -1;
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
 				try
 				{
