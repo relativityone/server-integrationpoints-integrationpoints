@@ -7,7 +7,6 @@ using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -162,11 +161,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_sourcePermissionRepository.UserHasArtifactInstancePermission(
 				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View).Returns(integrationPointInstanceViewPermission);
 			_sourcePermissionRepository.UserHasArtifactTypePermission(
-				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Add)).Returns(jobHistoryAddPermission);
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Create)).Returns(jobHistoryAddPermission);
 			_sourcePermissionRepository.UserCanImport().Returns(sourceImportPermission);
 			_sourcePermissionRepository.UserHasArtifactTypePermissions(
 				Arg.Is(_ARTIFACT_TYPE_ID),
-				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add })))
+				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })))
 				.Returns(destinationRdoPermissions);
 
 			if (!sourceProviderIsProvided)
@@ -225,13 +224,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_sourcePermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
 			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View);
 			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(
-				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Add));
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Create));
 			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(
 				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View);
 			_sourcePermissionRepository.Received(1).UserCanImport();
 			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermissions(
 				Arg.Is(_ARTIFACT_TYPE_ID),
-				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add })));
+				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })));
 			_sourceProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_SOURCE_PROVIDER_ID));
 		}
 
@@ -264,10 +263,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View).Returns(integrationPointInstanceViewPermission);
 			_destinationPermissionRepository.UserHasArtifactTypePermissions(
 				Arg.Is(_ARTIFACT_TYPE_ID),
-				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add })))
+				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })))
 				.Returns(destinationRdoPermissions);
 			_sourcePermissionRepository.UserHasArtifactTypePermission(
-				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Add)).Returns(jobHistoryAddPermission);
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Create)).Returns(jobHistoryAddPermission);
 			_sourcePermissionRepository.UserCanExport().Returns(exportPermission);
 			_destinationPermissionRepository.UserHasPermissionToAccessWorkspace().Returns(destinationWorkspacePermission);
 			_destinationPermissionRepository.UserCanImport().Returns(destinationImportPermission);
@@ -369,9 +368,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View).Returns(integrationPointInstanceViewPermission);
 			_destinationPermissionRepository.UserHasArtifactTypePermissions(
 				Arg.Is(_ARTIFACT_TYPE_ID),
-				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add })));
+				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })));
 			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(
-				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Add));
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Create));
 			_sourcePermissionRepository.Received(1).UserCanExport();
 			_destinationPermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
 			_destinationPermissionRepository.Received(1).UserCanImport();

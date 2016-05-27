@@ -145,7 +145,7 @@ namespace kCura.IntegrationPoints.Core.Services
 					BatchInstance = Guid.NewGuid()
 				};
 
-				CheckForRelativityProviderAdditionalPermissions(ip.SourceConfiguration, _context.EddsUserID);
+				CheckForRelativityProviderAdditionalPermissions(ip, _context.EddsUserID);
 				task = TaskType.ExportService;
 			}
 			else
@@ -407,25 +407,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private void CheckPermissions(int workspaceArtifactId, IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
 		{
 			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(_contextContainer);
-			IntegrationPointDTO integrationPointDto = new IntegrationPointDTO
-			{
-				ArtifactId = integrationPoint.ArtifactId,
-				Name = integrationPoint.Name,
-				DestinationConfiguration = integrationPoint.DestinationConfiguration,
-				DestinationProvider = integrationPoint.DestinationProvider,
-				EmailNotificationRecipients = integrationPoint.EmailNotificationRecipients,
-				EnableScheduler = integrationPoint.EnableScheduler,
-				FieldMappings = integrationPoint.FieldMappings,
-				HasErrors = integrationPoint.HasErrors,
-				JobHistory = integrationPoint.JobHistory,
-				LastRuntimeUTC = integrationPoint.LastRuntimeUTC,
-				LogErrors = integrationPoint.LogErrors,
-				SourceProvider = integrationPoint.SourceProvider,
-				SourceConfiguration = integrationPoint.SourceConfiguration,
-				NextScheduledRuntimeUTC = integrationPoint.NextScheduledRuntimeUTC,
-//				OverwriteFields = integrationPoint.OverwriteFields, -- This would require further transformation
-				ScheduleRule = integrationPoint.ScheduleRule
-			};
+			var integrationPointDto = ConvertToIntegrationPointDto(integrationPoint);
 
 			Constants.SourceProvider sourceProviderEnum = Constants.SourceProvider.Other;
 			if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
@@ -454,6 +436,30 @@ namespace kCura.IntegrationPoints.Core.Services
 
 				throw new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS);
 			}
+		}
+
+		private static IntegrationPointDTO ConvertToIntegrationPointDto(IntegrationPoint integrationPoint)
+		{
+			IntegrationPointDTO integrationPointDto = new IntegrationPointDTO
+			{
+				ArtifactId = integrationPoint.ArtifactId,
+				Name = integrationPoint.Name,
+				DestinationConfiguration = integrationPoint.DestinationConfiguration,
+				DestinationProvider = integrationPoint.DestinationProvider,
+				EmailNotificationRecipients = integrationPoint.EmailNotificationRecipients,
+				EnableScheduler = integrationPoint.EnableScheduler,
+				FieldMappings = integrationPoint.FieldMappings,
+				HasErrors = integrationPoint.HasErrors,
+				JobHistory = integrationPoint.JobHistory,
+				LastRuntimeUTC = integrationPoint.LastRuntimeUTC,
+				LogErrors = integrationPoint.LogErrors,
+				SourceProvider = integrationPoint.SourceProvider,
+				SourceConfiguration = integrationPoint.SourceConfiguration,
+				NextScheduledRuntimeUTC = integrationPoint.NextScheduledRuntimeUTC,
+//				OverwriteFields = integrationPoint.OverwriteFields, -- This would require further transformation
+				ScheduleRule = integrationPoint.ScheduleRule
+			};
+			return integrationPointDto;
 		}
 
 		private SourceProvider GetSourceProvider(IntegrationPoint integrationPoint)
@@ -485,31 +491,35 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		// TODO: this method should exist in the IntegrationPointManager and be renamed to only apply for Save/Edit -- biedrzycki: May 20th, 2016
-		private void CheckForRelativityProviderAdditionalPermissions(string config, int userId)
+		private void CheckForRelativityProviderAdditionalPermissions(IntegrationPoint integrationPoint, int userId)
 		{
-			WorkspaceConfiguration workspaceConfiguration = JsonConvert.DeserializeObject<WorkspaceConfiguration>(config);
-			IPermissionRepository sourceWorkspacePermissionRepository = _repositoryFactory.GetPermissionRepository(workspaceConfiguration.SourceWorkspaceArtifactId);
-			IPermissionRepository targetWorkspacePermissionRepository = _repositoryFactory.GetPermissionRepository(workspaceConfiguration.TargetWorkspaceArtifactId);
+			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(_contextContainer);
+			IntegrationPointDTO integrationPointDto = ConvertToIntegrationPointDto(integrationPoint);
 
-			if (targetWorkspacePermissionRepository.UserCanImport() == false)
-			{
-				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
-			}
-
-			if (sourceWorkspacePermissionRepository.UserCanEditDocuments() == false)
-			{
-				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
-			}
-
-			if (sourceWorkspacePermissionRepository.UserHasArtifactInstancePermission((int)ArtifactType.Search, workspaceConfiguration.SavedSearchArtifactId, ArtifactPermission.View) == false)
-			{
-				throw new Exception(Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH);	
-			}
+			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissionToSaveIntegrationPoint(_context.WorkspaceID, integrationPointDto, Constants.SourceProvider.Relativity);
 
 			if (userId == 0)
 			{
-				throw new Exception(Constants.IntegrationPoints.NO_USERID);
+				permissionCheck.Success = false;
+
+				var errorMessages = new List<string>(permissionCheck.ErrorMessages ?? new string[0]);
+				errorMessages.Add(Constants.IntegrationPoints.NO_USERID);
+
+				permissionCheck.ErrorMessages = errorMessages.ToArray();
+			}
+
+			if (!permissionCheck.Success)
+			{
+				IErrorManager errorManager = _managerFactory.CreateErrorManager(_contextContainer);
+				var error = new ErrorDTO()
+				{
+					Message	= "User does not have permissions to save Integration Point.",
+					FullText = $"User does not have the following permissions required to save an Integration Point:{Environment.NewLine}{String.Join(Environment.NewLine, permissionCheck.ErrorMessages)}"
+				};
+
+				errorManager.Create(_context.WorkspaceID, new[] { error });
+
+				throw new Exception("You do not have all required permissions to save this Integration Point. Please contact your system administrator.");
 			}
 		}
 

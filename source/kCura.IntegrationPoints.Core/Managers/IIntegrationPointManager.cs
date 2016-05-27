@@ -39,5 +39,8 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <returns>A PermissionCheckDTO object.</returns>
 		PermissionCheckDTO UserHasPermissionToRunJob(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null);
 
+		PermissionCheckDTO UserHasPermissionToSaveIntegrationPoint(int sourceWorkspaceArtifactId,
+			IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null);
+
 	}
 }

@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.Relativity.Client;
 using Newtonsoft.Json;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
@@ -69,6 +70,108 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return permissionCheck;
 		}
 
+		public PermissionCheckDTO UserHasPermissionToSaveIntegrationPoint(int sourceWorkspaceArtifactId, IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null)
+		{
+			IPermissionRepository sourceWorkspacePermissionRepository = _repositoryFactory.GetPermissionRepository(sourceWorkspaceArtifactId);
+			DestinationConfiguration destinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPointDto.DestinationConfiguration);
+			var errorMessages = new List<string>();
+
+			if (!sourceWorkspacePermissionRepository.UserHasPermissionToAccessWorkspace())
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.CURRENT_WORKSPACE_NO_ACCESS);
+			}
+
+			var integrationPointObjectTypeGuid = new Guid(ObjectTypeGuids.IntegrationPoint);
+			if (!sourceWorkspacePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit))
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
+			}
+
+			if (integrationPointDto.ArtifactId > 0) // IP exists -- Edit permissions check
+			{
+				if (!sourceWorkspacePermissionRepository.UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit))
+				{
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_EDIT);
+				}
+			}
+			else // IP is new -- Create permissions check
+			{
+				if (!sourceWorkspacePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create))
+				{
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_CREATE);
+				}
+			}
+
+			var sourceProviderGuid = new Guid(ObjectTypeGuids.SourceProvider);
+			if (!sourceWorkspacePermissionRepository.UserHasArtifactTypePermission(sourceProviderGuid, ArtifactPermission.View))
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_PROVIDER_NO_VIEW);	
+			}
+
+			if (!sourceWorkspacePermissionRepository.UserHasArtifactInstancePermission(sourceProviderGuid, integrationPointDto.SourceProvider.Value, ArtifactPermission.View))
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_PROVIDER_NO_INSTANCE_VIEW);	
+			}
+
+			if (!sourceProvider.HasValue)
+			{
+				sourceProvider = this.GetSourceProvider(sourceWorkspaceArtifactId, integrationPointDto);
+			}
+
+			bool isRelativitySourceProvider = sourceProvider == Constants.SourceProvider.Relativity;
+
+			if (isRelativitySourceProvider)
+			{
+				SourceConfiguration sourceConfiguration =
+					JsonConvert.DeserializeObject<SourceConfiguration>(integrationPointDto.SourceConfiguration);
+				int targetWorkspaceArtifactId = sourceConfiguration.TargetWorkspaceArtifactId;
+				IPermissionRepository targetWorkspacePermissionRepository =
+					_repositoryFactory.GetPermissionRepository(targetWorkspaceArtifactId);
+
+				if (!targetWorkspacePermissionRepository.UserHasPermissionToAccessWorkspace())
+				{
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_ACCESS);
+				}
+
+				if (!targetWorkspacePermissionRepository.UserCanImport())
+				{
+					errorMessages.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_TARGETWORKSPACE);
+				}
+
+				if (!sourceWorkspacePermissionRepository.UserCanEditDocuments())
+				{
+					errorMessages.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
+				}
+
+				if (!sourceWorkspacePermissionRepository.UserHasArtifactInstancePermission((int) ArtifactType.Search,
+						sourceConfiguration.SavedSearchArtifactId, ArtifactPermission.View))
+				{
+					errorMessages.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_ACCESS_SAVEDSEARCH);
+				}
+
+				// TODO: double check this...
+				if (!targetWorkspacePermissionRepository.UserHasArtifactTypePermission(destinationConfiguration.ArtifactTypeId, ArtifactPermission.View))
+				{
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
+				}
+			}
+			else
+			{
+				if (!sourceWorkspacePermissionRepository.UserHasArtifactTypePermission(destinationConfiguration.ArtifactTypeId, ArtifactPermission.View))
+				{
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);		
+				}
+			}
+
+			var permissionCheck = new PermissionCheckDTO()
+			{
+				Success = !errorMessages.Any(),
+				ErrorMessages = errorMessages.ToArray()
+			};
+
+			return permissionCheck;
+		}
+
 		public PermissionCheckDTO UserHasPermissionToRunJob(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null)
 		{
 
@@ -78,7 +181,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			bool integrationPointTypeViewPermission =
 				sourcePermissionRepository.UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View);
 			bool integrationPointInstanceViewPermission = sourcePermissionRepository.UserHasArtifactInstancePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View);
-			bool jobHistoryAddPermission = sourcePermissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.Add);
+			bool jobHistoryAddPermission = sourcePermissionRepository.UserHasArtifactTypePermission(new Guid(ObjectTypeGuids.JobHistory), ArtifactPermission.Create);
 
 			DestinationConfiguration destinationConfiguration = JsonConvert.DeserializeObject<DestinationConfiguration>(integrationPointDto.DestinationConfiguration);
 
@@ -111,7 +214,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				destinationImportPermission = destinationPermissionRepository.UserCanImport();
 				destinationRdoPermissions = destinationPermissionRepository.UserHasArtifactTypePermissions(
 					destinationConfiguration.ArtifactTypeId, 
-					new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add });
+					new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create });
 				sourceDocumentEditPermissions = sourcePermissionRepository.UserCanEditDocuments();
 
 
@@ -130,7 +233,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				sourceImportPermission = sourcePermissionRepository.UserCanImport();
 				destinationRdoPermissions = sourcePermissionRepository.UserHasArtifactTypePermissions(
 					destinationConfiguration.ArtifactTypeId, 
-					new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add });
+					new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create });
 			}
 
 			var errorMessages = new List<string>();
