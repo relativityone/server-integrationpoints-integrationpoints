@@ -48,14 +48,6 @@ namespace kCura.IntegrationPoints.Agent.Installer
 				Component.For<JobHistoryErrorServiceProvider>()
 					.ImplementedBy<JobHistoryErrorServiceProvider>()
 					.LifeStyle.BoundTo<ExportWorker>());
-
-			//TODO: FileDestinationProviderInstaller
-			container.Register(Component.For<LoggingMediatorFactory>().ImplementedBy<LoggingMediatorFactory>());
-			container.Register(Component.For<ILoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()));
-			container.Register(Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
-			container.Register(Component.For<IExportProcessBuilder>().ImplementedBy<ExportProcessBuilder>());
-			container.Register(Component.For<ExportProcessRunner>().ImplementedBy<ExportProcessRunner>());
-			container.Register(Component.For<ICredentialProvider>().ImplementedBy<TokenCredentialProvider>());
 		}
 	}
 }
