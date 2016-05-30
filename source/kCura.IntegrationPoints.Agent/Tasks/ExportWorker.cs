@@ -58,6 +58,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             {
                 ExportedObjArtifactId = sourceSettings.SavedSearchArtifactId,
                 ExportedObjName = sourceSettings.SavedSearch,
+                ExportImages = sourceSettings.ExportImagesChecked,
+                ImageType = default(ExportSettings.ImageFileType),
                 WorkspaceId = sourceSettings.SourceWorkspaceArtifactId,
                 ExportFilesLocation = sourceSettings.Fileshare,
                 OverwriteFiles = sourceSettings.OverwriteFiles,
@@ -65,6 +67,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 SelViewFieldIds = fieldMap.Select(item => int.Parse(item.SourceField.FieldIdentifier)).ToList(),
                 ArtifactTypeId = destinationSettings.ArtifactTypeId
             };
+
+            ExportSettings.ImageFileType imageType;
+            if (Enum.TryParse(sourceSettings.SelectedImageFileType, true, out imageType))
+            {
+                exportSettings.ImageType = imageType;
+            }
 
             _exportProcessRunner.StartWith(exportSettings);
         }

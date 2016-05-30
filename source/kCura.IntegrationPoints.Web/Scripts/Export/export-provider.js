@@ -116,11 +116,28 @@
             required: true
         });
 
-        this.imagesFileTypes = ["Single-page TIF/JPG", "Multi-page TIF", "PDF"];
+        this.imageFileTypes = ko.observableArray([
+            { key: -1, value: "Select.." },
+            { key: 0, value: "Single page TIFF/JPEG" },
+            { key: 1, value: "Multi page TIFF/JPEG" },
+            { key: 2, value: "PDF" }
+        ]);
 
-        this.selectedImageFileType = ko.observable(state.selectedImageFileType).extend({
+        this.SelectedImageFileType = ko.observable().extend({
             required: true
         });
+
+        this.updateSelectedImageFileType = function (value) {
+            var fileType = ko.utils.arrayFirst(self.imageFileTypes(), function (item) {
+                if (item.key === value) {
+                    return item;
+                }
+            });
+
+            self.SelectedImageFileType(fileType);
+        };
+
+        self.updateSelectedImageFileType(state.selectedImageFileType);
 
         this.errors = ko.validation.group(this, { deep: true });
 
@@ -134,7 +151,7 @@
                 "OverwriteFiles": self.OverwriteFiles(),
                 "Fileshare": self.selectedDestinationPath(),
                 "ExportImagesChecked": self.exportImagesChecked(),
-                "SelectedImageFileType": self.selectedImageFileType()
+                "SelectedImageFileType": self.SelectedImageFileType().key
             }
         }
     }
