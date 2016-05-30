@@ -1,5 +1,4 @@
-﻿
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
+﻿namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
 	public class ExportProcessRunner
 	{

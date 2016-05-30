@@ -59,7 +59,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 ExportedObjArtifactId = sourceSettings.SavedSearchArtifactId,
                 ExportedObjName = sourceSettings.SavedSearch,
                 ExportImages = sourceSettings.ExportImagesChecked,
-                ImageType = default(WinEDDS.ExportFile.ImageType),
+                ImageType = default(ExportSettings.ImageFileType),
                 WorkspaceId = sourceSettings.SourceWorkspaceArtifactId,
                 ExportFilesLocation = sourceSettings.Fileshare,
                 OverwriteFiles = sourceSettings.OverwriteFiles,
@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 ArtifactTypeId = destinationSettings.ArtifactTypeId
             };
 
-            WinEDDS.ExportFile.ImageType imageType;
+            ExportSettings.ImageFileType imageType;
             if (Enum.TryParse(sourceSettings.SelectedImageFileType, true, out imageType))
             {
                 exportSettings.ImageType = imageType;
