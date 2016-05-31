@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.Windows.Process;
 using kCura.WinEDDS;
@@ -14,8 +16,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
         private readonly string _errorMessageTemplate = "Error occured: {message}. Additional info: {@additionalInfo}.";
         private readonly string _fileTransferTemplateMessage = "File transfer mode has been changed: {mode}";
 
-        private readonly string _progressMessageTemplate =
-            "Progress update: {message}. Additional info: {@additionalInfo}.";
+        private readonly string _progressMessageTemplate = "Progress update: {message}. Additional info: {@additionalInfo}.";
 
         private readonly string _statusMessageTemplate = "Status update: {message}. Additional info: {@additionalInfo}.";
         private readonly string _unexpectedEventTypeTemplate = "Unexpected EventType.{event}. EventArgs: {@eventArgs}";
@@ -40,8 +41,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
         {
             const string newMode = "new_mode";
 
-            _exporterStatusNotification.FileTransferModeChangeEvent +=
-                Raise.Event<IExporterStatusNotification.FileTransferModeChangeEventEventHandler>(newMode);
+            _exporterStatusNotification.FileTransferModeChangeEvent += Raise.Event<IExporterStatusNotification.FileTransferModeChangeEventEventHandler>(newMode);
 
             _apiLog.Received().LogInformation(_fileTransferTemplateMessage, newMode);
         }
@@ -52,8 +52,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
             const string message = "Fatal error message";
             var exception = new Exception("Fatal error occured");
 
-            _exporterStatusNotification.FatalErrorEvent +=
-                Raise.Event<IExporterStatusNotification.FatalErrorEventEventHandler>(message, exception);
+            _exporterStatusNotification.FatalErrorEvent += Raise.Event<IExporterStatusNotification.FatalErrorEventEventHandler>(message, exception);
 
             _apiLog.Received().LogFatal(exception, message);
         }
@@ -88,8 +87,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 
             RaiseStatusMessage(exportEventArgs);
 
-            _apiLog.Received()
-                .LogWarning(_warningMessageTemplate, exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+            _apiLog.Received().LogWarning(_warningMessageTemplate, exportEventArgs.Message, exportEventArgs.AdditionalInfo);
         }
 
         [Test]
@@ -99,8 +97,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 
             RaiseStatusMessage(exportEventArgs);
 
-            _apiLog.Received()
-                .LogInformation(_statusMessageTemplate, exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+            _apiLog.Received().LogInformation(_statusMessageTemplate, exportEventArgs.Message, exportEventArgs.AdditionalInfo);
         }
 
         [Test]
@@ -110,8 +107,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
 
             RaiseStatusMessage(exportEventArgs);
 
-            _apiLog.Received()
-                .LogInformation(_progressMessageTemplate, exportEventArgs.Message, exportEventArgs.AdditionalInfo);
+            _apiLog.Received().LogInformation(_progressMessageTemplate, exportEventArgs.Message, exportEventArgs.AdditionalInfo);
         }
 
         [Test]
@@ -123,10 +119,24 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
             _apiLog.Received().LogFatal(expectedMessage);
         }
 
+        [Test]
+        public void ItShouldThrowExceptionForUnknownEventType()
+        {
+            var correctValues = Enum.GetValues(typeof (EventType)).Cast<int>().ToList();
+            var incorrectValue = 1;
+            while (correctValues.Contains(incorrectValue))
+            {
+                ++incorrectValue;
+            }
+            var exportEventArgs = CreateExportEventArgs((EventType) incorrectValue);
+
+            Assert.That(() => RaiseStatusMessage(exportEventArgs),
+                Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown EventType ({incorrectValue})"));
+        }
+
         private void RaiseStatusMessage(ExportEventArgs exportEventArgs)
         {
-            _exporterStatusNotification.StatusMessage +=
-                Raise.Event<IExporterStatusNotification.StatusMessageEventHandler>(exportEventArgs);
+            _exporterStatusNotification.StatusMessage += Raise.Event<IExporterStatusNotification.StatusMessageEventHandler>(exportEventArgs);
         }
 
         private ExportEventArgs CreateExportEventArgs(EventType eventType)
