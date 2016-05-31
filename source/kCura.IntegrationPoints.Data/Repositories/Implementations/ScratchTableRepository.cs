@@ -128,7 +128,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				if (_database == null)
 				{
-					if (_toggleProvider.IsFeatureEnabled<AOAGToggle>())
+					if (_toggleProvider.IsAOAGFeatureEnabled())
 					{
 						_database = String.Empty;
 					}
@@ -151,7 +151,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			if (_tempTableName == null)
 			{
 				string prepend = String.Empty;
-				if (_toggleProvider.IsFeatureEnabled<AOAGToggle>())
+				if (_toggleProvider.IsAOAGFeatureEnabled())
 				{
 					prepend = $"{ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_workspaceId)}_";
 				}
