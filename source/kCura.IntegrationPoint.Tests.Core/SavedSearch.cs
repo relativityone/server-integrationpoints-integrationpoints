@@ -27,10 +27,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void UpdateSavedSearchCriteria(int workspaceArtifactId, int searchArtifactId, CriteriaCollection searchCriteria)
 		{
-			IKeywordSearchManager proxy = Kepler.CreateProxy<IKeywordSearchManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true);
-			KeywordSearch keywordSearch = proxy.ReadSingleAsync(workspaceArtifactId, searchArtifactId).Result;
-			keywordSearch.SearchCriteria = searchCriteria;
-			proxy.UpdateSingleAsync(workspaceArtifactId, keywordSearch).ConfigureAwait(false);
+			using (IKeywordSearchManager proxy = Kepler.CreateProxy<IKeywordSearchManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				KeywordSearch keywordSearch = proxy.ReadSingleAsync(workspaceArtifactId, searchArtifactId).Result;
+				keywordSearch.SearchCriteria = searchCriteria;
+				proxy.UpdateSingleAsync(workspaceArtifactId, keywordSearch).ConfigureAwait(false);
+			}
 		}
 	}
 }
