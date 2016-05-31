@@ -116,30 +116,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>().LifestyleTransient());
 
-			container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>());
-
-			if (!container.Kernel.HasComponent(typeof(IToggleProvider)))
-			{
-				container.Register(Component.For<IToggleProvider>().UsingFactoryMethod(k =>
-				{
-					return new SqlServerToggleProvider(
-						() => {
-							IHelper helper = k.Resolve<IHelper>();
-							SqlConnection connection = helper.GetDBContext(-1).GetConnection(true);
-
-							return connection;
-						}, 
-						async () => {
-							Task<SqlConnection> task = Task.Run(() =>
-							{
-								IHelper helper = k.Resolve<IHelper>();
-								SqlConnection connection = helper.GetDBContext(-1).GetConnection(true);
-								return connection;
-							});
-							return await task;
-						});
-				}).LifestyleTransient());
-			}
+			container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>().LifestyleTransient());
 
 			if (container.Kernel.HasComponent(typeof(IHelper)))
 			{

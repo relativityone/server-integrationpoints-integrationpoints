@@ -1,5 +1,4 @@
-﻿using kCura.Config;
-using Relativity.Data.Toggles;
+﻿using Relativity.Data.Toggles;
 using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Data.Extensions
