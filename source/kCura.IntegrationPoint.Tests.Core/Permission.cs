@@ -23,10 +23,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static bool SetMinimumRelativityProviderPermissions(int workspaceId, int groupId)
 		{
 			GroupRef groupRef = new GroupRef(groupId);
-			groupRef.Name = "Smoke Test Group";
-			string parameter1 = $"{{workspaceArtifactID:{workspaceId},group:{JsonConvert.SerializeObject(groupRef)}}}";
 
-			// Adding example of permission usage
 			IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false, true);
 			GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).Result;
 
