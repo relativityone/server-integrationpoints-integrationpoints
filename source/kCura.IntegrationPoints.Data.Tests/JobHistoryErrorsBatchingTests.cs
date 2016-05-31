@@ -1,11 +1,14 @@
 ﻿using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
 using kCura.Relativity.Client;
 using Relativity.Services.Field;
@@ -17,14 +20,22 @@ using System.Data;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
+	using Contexts;
+	using Core.BatchStatusCommands.Implementations;
+	using Core.Managers;
+	using Core.Managers.Implementations;
+
 	public class JobHistoryErrorsBatchingTests : WorkspaceDependentTemplate
 	{
 		private IIntegrationPointService _integrationPointService;
 		private ICaseServiceContext _caseServiceContext;
-		private IJobHistoryRepository _jobHistoryRepository;
+		private IJobHistoryService _jobHistoryService;
 		private IRepositoryFactory _repositoryFactory;
 		private IQueueRepository _queueRepository;
 		private IJobHistoryErrorRepository _jobHistoryErrorRepository;
+		private IJobHistoryErrorManager _jobHistoryErrorManager;
+		private IBatchStatus _batchStatus;
+		private const int _ADMIN_USER_ID = 9;
 
 		public JobHistoryErrorsBatchingTests() : base("JobHistoryErrorsSource", "JobHistoryErrorsDestination")
 		{
@@ -39,32 +50,29 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 		[Test]
 		[Explicit]
-		public void ExpectJobHistoryErrorsUpdatedWithErrorsMatchingBatchSize()
+		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsMatchingBatchSize()
 		{
 			string docPrefix = "EqualBatchDoc";
 			string expDocPrefix = "EqualBatchExp";
-
-			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(1000, 1, 2000, docPrefix, expDocPrefix);
+			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(1, 2000, docPrefix, expDocPrefix);
 		}
 
 		[Test]
 		[Explicit]
-		public void ExpectJobHistoryErrorsUpdatedWithErrorsUnderBatchSize()
+		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsUnderBatchSize()
 		{
 			string docPrefix = "LessThanBatchDoc";
 			string expDocPrefix = "LessThanBatchExp";
-
-			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(499, 3000, 999, docPrefix, expDocPrefix);
+			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(3000, 1998, docPrefix, expDocPrefix);
 		}
 
 		[Test]
 		[Explicit]
-		public void ExpectJobHistoryErrorsUpdatedWithErrorsOverBatchSize()
+		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsOverBatchSize()
 		{
 			string docPrefix = "MoreThanBatchDoc";
 			string expDocPrefix = "MoreThanBatchExp";
-
-			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(1001, 5000, 2001, docPrefix, expDocPrefix);
+			ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(5000, 2002, docPrefix, expDocPrefix);
 		}
 
 		[Test]
@@ -141,8 +149,6 @@ namespace kCura.IntegrationPoints.Data.Tests
 			};
 
 			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, 9);
-			Status.WaitForIntegrationPointJobToComplete(_queueRepository, SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID);
 
 			//Act
 			try
@@ -167,7 +173,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 		[Test]
 		[Explicit]
-		public void ExpectJobHistoryErrorUpdatedForJobLevelErrorWhenBatching()
+		public void ExpectJobLevelJobHistoryErrorUpdatedForJobLevelErrorWhenBatching()
 		{
 			//Arrange
 			string docPrefix = "JobLevelImport";
@@ -188,46 +194,118 @@ namespace kCura.IntegrationPoints.Data.Tests
 				{
 					EnableScheduler = false
 				},
+				HasErrors = true,
 				Map = CreateDefaultFieldMap()
 			};
 
+			//Create an Integration Point and assign a Job History
 			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, 9);
-			Status.WaitForIntegrationPointJobToComplete(_queueRepository, SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, 500);
+			Guid batchInstance = Guid.NewGuid();
+			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
+
+			//Create Job and temp table suffix
+			Job job = new Job(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID);
+			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
+			_jobHistoryErrorManager = new JobHistoryErrorManager(_repositoryFactory, SourceWorkspaceArtifactId, tempTableSuffix);
 
 			//Create job level error
-			int jobHistoryArtifactId = _jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointCreated.ArtifactID);
-			CreateJobHistoryError(jobHistoryArtifactId, ErrorTypeChoices.JobHistoryErrorJob, ErrorStatusChoices.JobHistoryErrorNew, null);
+			List<int> expectedJobHistoryErrorArtifactIds = CreateJobLevelHistoryError(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew);
 
 			//Act
-			DateTime startTime = DateTime.Now;
-			kCura.IntegrationPoint.Tests.Core.Injection.EnableInjectionPoint(InjectionPoints.BeforeJobHistoryErrorsStatusUpdate, kCura.IntegrationPoint.Tests.Core.Injection.InjectionBehavior.InfiniteLoop, string.Empty, string.Empty);
-			kCura.IntegrationPoint.Tests.Core.Injection.EnableInjectionPoint(InjectionPoints.BeforeJobHistoryErrorsTempTableRemoval, kCura.IntegrationPoint.Tests.Core.Injection.InjectionBehavior.InfiniteLoop, string.Empty, string.Empty);
+			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
 
-			_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, 9);
-			kCura.IntegrationPoint.Tests.Core.Injection.WaitUntilInjectionPointIsReached(InjectionPoints.BeforeJobHistoryErrorsStatusUpdate, startTime);
+			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE}_{ tempTableSuffix }";
 
-			//Get error artifactIds along with their associated doc identifier
-			List<int> jobLevelErrors = _jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(jobHistoryArtifactId,ErrorTypeChoices.JobHistoryErrorJob) as List<int>;
-			//List<int> expectedInProgressAndRetryErrors = GetExpectedInprogressAndRetriedErrors(itemLevelErrors);
+			DataTable startTempTable = GetTempTable(startTempTableName);
+			DataTable completedTempTable = GetTempTable(completeTempTableName);
 
-			//Save temp table
-			DataTable inProgressTable = GetTempTable("inprogress");
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType(), SavedSearchArtifactId);
 
-			//Verify table entries
-			//VerifyTempTableEntries(inProgressTable, expectedInProgressAndRetryErrors);
+			_batchStatus.OnJobStart(job);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorArtifactIds, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
 
-			//Check error statuses here after they are updated.
-			kCura.IntegrationPoint.Tests.Core.Injection.RemoveInjectionPoint(InjectionPoints.BeforeJobHistoryErrorsStatusUpdate);
-			kCura.IntegrationPoint.Tests.Core.Injection.WaitUntilInjectionPointIsReached(InjectionPoints.BeforeJobHistoryErrorsTempTableRemoval, startTime);
-			CompareJobHistoryErrorStatuses(inProgressTable, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
+			_batchStatus.OnJobComplete(job);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorArtifactIds, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Retried);
 
+			//Assert
+			VerifyTempTableCountAndEntries(startTempTable, startTempTableName, expectedJobHistoryErrorArtifactIds);
+			VerifyTempTableCountAndEntries(completedTempTable, completeTempTableName, expectedJobHistoryErrorArtifactIds);
 		}
 
-		private void ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(int batchNumber, int startingControlNumber, int numberOfDocuments, string documentPrefix, string expiredDocumentPrefix)
+		[Test]
+		[Explicit]
+		public void ExpectJobandItemLevelJobHistoryErrorsUpdatedWhenBatching()
 		{
 			//Arrange
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(startingControlNumber, numberOfDocuments, documentPrefix, expiredDocumentPrefix));
+			string docPrefix = "DocForItemAndJob";
+			string expiredDocPrefix = "ExpForItemAndJob";
+			DataTable importTable = GetImportTable(8000, 1000, docPrefix, expiredDocPrefix);
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
+			ModifySavedSearch(docPrefix, expiredDocPrefix, false);
+
+			IntegrationModel integrationModel = new IntegrationModel
+			{
+				Destination = CreateDefaultDestinationConfig(),
+				DestinationProvider = DestinationProvider.ArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
+				SourceConfiguration = CreateDefaultSourceConfig(),
+				LogErrors = true,
+				Name = "JobHistoryErrors" + DateTime.Now,
+				SelectedOverwrite = "Append Only",
+				Scheduler = new Scheduler()
+				{
+					EnableScheduler = false
+				},
+				Map = CreateDefaultFieldMap()
+			};
+
+			//Create an Integration Point and assign a Job History
+			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			Guid batchInstance = Guid.NewGuid();
+			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
+
+			//Create Job and temp table suffix
+			Job job = new Job(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID);
+			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
+
+			_jobHistoryErrorManager = new JobHistoryErrorManager(_repositoryFactory, SourceWorkspaceArtifactId, tempTableSuffix);
+
+			//Create item level error
+			List<int> expectedJobHistoryErrorExpired = CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
+			List<int> expectedJobHistoryErrorsForRetry = CreateJobLevelHistoryError(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew);
+
+			//Act
+			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
+
+			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE }_{ tempTableSuffix }";
+			string otherTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER }_{ tempTableSuffix }";
+
+			DataTable startTempTable = GetTempTable(startTempTableName);
+			DataTable completedTempTable = GetTempTable(completeTempTableName);
+			DataTable otherTempTable = GetTempTable(otherTempTableName);
+
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType(), SavedSearchArtifactId);
+
+			_batchStatus.OnJobStart(job);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorExpired, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Expired);
+
+			_batchStatus.OnJobComplete(job);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Retried);
+
+			//Assert
+			VerifyTempTableCountAndEntries(startTempTable, startTempTableName, expectedJobHistoryErrorsForRetry);
+			VerifyTempTableCountAndEntries(completedTempTable, completeTempTableName, expectedJobHistoryErrorsForRetry);
+			VerifyTempTableCountAndEntries(otherTempTable, otherTempTableName, expectedJobHistoryErrorExpired);
+		}
+
+		private void ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(int startingControlNumber, int numberOfDocuments, string documentPrefix, string expiredDocumentPrefix)
+		{
+			//Arrange
+			DataTable importTable = GetImportTable(startingControlNumber, numberOfDocuments, documentPrefix, expiredDocumentPrefix);
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, importTable);
 			ModifySavedSearch(documentPrefix, expiredDocumentPrefix, false);
 
 			IntegrationModel integrationModel = new IntegrationModel
@@ -246,67 +324,49 @@ namespace kCura.IntegrationPoints.Data.Tests
 				Map = CreateDefaultFieldMap()
 			};
 
-			//Cause Item Level Errors by RIPing to the same workspace
+			//Create an Integration Point and assign a Job History
 			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, 9);
-			Status.WaitForIntegrationPointJobToComplete(_queueRepository, SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, 500);
+			Guid batchInstance = Guid.NewGuid();
+			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
 
-			int jobHistoryArtifactId = _jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointCreated.ArtifactID);
-			//JobHistory jobHistory = _caseServiceContext.RsapiService.JobHistoryLibrary.Read(jobHistoryArtifactId);
+			//Create Job and temp table suffix
+			Job job = new Job(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID);
+			string tempTableSuffix = $"{ job.JobId }_{ batchInstance }";
 
-			//Exclude documents with Exp prefix to generate expired errors for cross referencing
-			ModifySavedSearch(documentPrefix, expiredDocumentPrefix, true);
+			_jobHistoryErrorManager = new JobHistoryErrorManager(_repositoryFactory, SourceWorkspaceArtifactId, tempTableSuffix);
+
+			//Create item level error
+			CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
+
+			IDictionary<int, string> expectedNonExpiredJobHistoryArtifacts =_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(jobHistory.ArtifactId, ErrorTypeChoices.JobHistoryErrorItem);
+			List<int> expectedJobHistoryErrorsForRetry = GetExpectedInprogressAndRetriedErrors(expectedNonExpiredJobHistoryArtifacts);
+			List<int> expectedJobHistoryErrorExpired = GetExpectedExpiredErrors(expectedNonExpiredJobHistoryArtifacts);
 
 			//Act
-			DateTime startTime = DateTime.Now;
-			kCura.IntegrationPoint.Tests.Core.Injection.EnableInjectionPoint(InjectionPoints.BeforeJobHistoryErrorsStatusUpdate, kCura.IntegrationPoint.Tests.Core.Injection.InjectionBehavior.InfiniteLoop, string.Empty, string.Empty);
-			kCura.IntegrationPoint.Tests.Core.Injection.EnableInjectionPoint(InjectionPoints.BeforeJobHistoryErrorsTempTableRemoval, kCura.IntegrationPoint.Tests.Core.Injection.InjectionBehavior.InfiniteLoop, string.Empty, string.Empty);
+			ModifySavedSearch(documentPrefix, expiredDocumentPrefix, true);
+			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
 
-			_integrationPointService = Container.Resolve<IIntegrationPointService>();
-			_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, 9);
-			kCura.IntegrationPoint.Tests.Core.Injection.WaitUntilInjectionPointIsReached(InjectionPoints.BeforeJobHistoryErrorsStatusUpdate, startTime);
+			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE }_{ tempTableSuffix }";
+			string otherTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER }_{ tempTableSuffix }";
 
-			//Get error artifactIds along with their associated doc identifier
-			IDictionary<int, string> itemLevelErrors = _jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(jobHistoryArtifactId, ErrorTypeChoices.JobHistoryErrorItem);
-			List<int> expectedInProgressAndRetryErrors = GetExpectedInprogressAndRetriedErrors(itemLevelErrors);
-			List<int> expectedExpiredErrors = GetExpectedExpiredErrors(itemLevelErrors);
+			DataTable startTempTable = GetTempTable(startTempTableName);
+			DataTable completedTempTable = GetTempTable(completeTempTableName);
+			DataTable otherTempTable = GetTempTable(otherTempTableName);
 
-			//Save temp tables
-			DataTable inProgressTable = GetTempTable("inprogress");
-			DataTable expiredTable = GetTempTable("expired");
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType(), SavedSearchArtifactId);
 
-			//Verify table entries
-			VerifyTempTableEntries(inProgressTable, expectedInProgressAndRetryErrors);
-			VerifyTempTableEntries(expiredTable, expectedExpiredErrors);
+			_batchStatus.OnJobStart(job);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorExpired, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Expired);
 
-			//Check error statuses here after they are updated.
-			kCura.IntegrationPoint.Tests.Core.Injection.RemoveInjectionPoint(InjectionPoints.BeforeJobHistoryErrorsStatusUpdate);
-			kCura.IntegrationPoint.Tests.Core.Injection.WaitUntilInjectionPointIsReached(InjectionPoints.BeforeJobHistoryErrorsTempTableRemoval, startTime);
-			CompareJobHistoryErrorStatuses(inProgressTable, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
-			CompareJobHistoryErrorStatuses(expiredTable, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Expired);
-
-			//Read in the finished temp table. Verify later the table count, and the entries (comparing them to the errors retrieved above)
-			startTime = DateTime.Now;
-			kCura.IntegrationPoint.Tests.Core.Injection.EnableInjectionPoint(InjectionPoints.BeforeJobHistoryErrorsStatusUpdate, kCura.IntegrationPoint.Tests.Core.Injection.InjectionBehavior.InfiniteLoop, string.Empty, string.Empty);
-			kCura.IntegrationPoint.Tests.Core.Injection.RemoveInjectionPoint(InjectionPoints.BeforeJobHistoryErrorsTempTableRemoval);
-			kCura.IntegrationPoint.Tests.Core.Injection.WaitUntilInjectionPointIsReached(InjectionPoints.BeforeJobHistoryErrorsStatusUpdate, startTime);
-			DataTable retried = GetTempTable("retried");
-
-			VerifyTempTableEntries(retried, expectedInProgressAndRetryErrors);
-			CompareJobHistoryErrorStatuses(retried, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
-
-			//Check finished error statuses in verification step
-			kCura.IntegrationPoint.Tests.Core.Injection.RemoveInjectionPoint(InjectionPoints.BeforeJobHistoryErrorsStatusUpdate);
-			Status.WaitForIntegrationPointJobToComplete(_queueRepository, SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID);
-			CompareJobHistoryErrorStatuses(retried, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Retried);
-
+			_batchStatus.OnJobComplete(job);
+			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.Retried);
 
 			//Assert
-			kCura.IntegrationPoint.Tests.Core.Injection.RemoveInjectionPoint(InjectionPoints.BeforeJobHistoryErrorsStatusUpdate);
-			kCura.IntegrationPoint.Tests.Core.Injection.RemoveInjectionPoint(InjectionPoints.BeforeJobHistoryErrorsTempTableRemoval);
-			Assert.AreEqual(inProgressTable.Rows.Count, batchNumber);
-			Assert.AreEqual(expiredTable.Rows.Count, batchNumber);
-			Assert.AreEqual(retried.Rows.Count, batchNumber);
+			VerifyTempTableCountAndEntries(startTempTable, startTempTableName, expectedJobHistoryErrorsForRetry);
+			VerifyTempTableCountAndEntries(completedTempTable, completeTempTableName, expectedJobHistoryErrorsForRetry);
+			VerifyTempTableCountAndEntries(otherTempTable, otherTempTableName, expectedJobHistoryErrorExpired);
 		}
 
 		private DataTable GetImportTable(int startingDocNumber, int numberOfDocuments, string documentPrefix, string expiredDocumentPrefix)
@@ -339,27 +399,56 @@ namespace kCura.IntegrationPoints.Data.Tests
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
 			_queueRepository = Container.Resolve<IQueueRepository>();
-			_jobHistoryRepository = _repositoryFactory.GetJobHistoryRepository(SourceWorkspaceArtifactId);
+			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 			_jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(SourceWorkspaceArtifactId);
 		}
 
-		private void CreateJobHistoryError(int jobHistoryArtifactId, Choice errorType, Choice errorStatus, string documentIdentifier)
+		private List<int> CreateItemLevelJobHistoryErrors(int jobHistoryArtifactId, Choice errorStatus, DataTable importedDocuments)
 		{
+			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>();
+
+			foreach (DataRow dataRow in importedDocuments.Rows)
+			{
+				JobHistoryError jobHistoryError = new JobHistoryError
+				{
+					ParentArtifactId = jobHistoryArtifactId,
+					JobHistory = jobHistoryArtifactId,
+					Name = Guid.NewGuid().ToString(),
+					SourceUniqueID = Convert.ToString(dataRow["Control Number"]),
+					ErrorType = ErrorTypeChoices.JobHistoryErrorItem,
+					ErrorStatus = errorStatus,
+					Error = "Inserted Error for testing.",
+					StackTrace = "Error created from JobHistoryErrorsBatchingTests",
+					TimestampUTC = DateTime.Now,
+				};
+
+				jobHistoryErrors.Add(jobHistoryError);
+			}
+
+			List<int> jobHistoryErrorArtifactIds = _caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
+			return jobHistoryErrorArtifactIds;
+		}
+
+		private List<int> CreateJobLevelHistoryError(int jobHistoryArtifactId, Choice errorStatus)
+		{
+			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>();
 			JobHistoryError jobHistoryError = new JobHistoryError
 			{
 				ParentArtifactId = jobHistoryArtifactId,
 				JobHistory = jobHistoryArtifactId,
 				Name = Guid.NewGuid().ToString(),
-				ErrorType = errorType,
+				SourceUniqueID = null,
+				ErrorType = ErrorTypeChoices.JobHistoryErrorJob,
 				ErrorStatus = errorStatus,
-				SourceUniqueID = documentIdentifier,
 				Error = "Inserted Error for testing.",
 				StackTrace = "Error created from JobHistoryErrorsBatchingTests",
-				TimestampUTC = DateTime.Now
+				TimestampUTC = DateTime.Now,
 			};
 
-			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError> { jobHistoryError };
-			_caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
+			jobHistoryErrors.Add(jobHistoryError);
+
+			List<int> jobHistoryErrorArtifactIds = _caseServiceContext.RsapiService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
+			return jobHistoryErrorArtifactIds;
 		}
 
 		private void ModifySavedSearch(string documentPrefix, string expDocumentPrefix, bool excludeExpDocs)
@@ -399,7 +488,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 		private DataTable GetTempTable(string tempTableName)
 		{
-			string query = $"SELECT * FROM EDDSResource.eddsdbo.{ tempTableName }";
+			string query = $"SELECT [ArtifactID] FROM [EDDSResource].[eddsdbo].[{ tempTableName }]";
 			try
 			{
 				DataTable tempTable = _caseServiceContext.SqlContext.ExecuteSqlStatementAsDataTable(query);
@@ -411,18 +500,8 @@ namespace kCura.IntegrationPoints.Data.Tests
 			}
 		}
 
-		private void CompareJobHistoryErrorStatuses(DataTable tempTable, JobHistoryErrorDTO.Choices.ErrorStatus.Values expectedErrorStatus)
+		private void CompareJobHistoryErrorStatuses(List<int> jobHistoryErrorArtifactIds, JobHistoryErrorDTO.Choices.ErrorStatus.Values expectedErrorStatus)
 		{
-			int[] jobHistoryErrorArtifactIds = new int[ tempTable.Rows.Count ];
-
-			int index = 0;
-			foreach (DataRow entry in tempTable.Rows)
-			{
-				int jobHistoryErrorArtifactId = (int) entry["ArtifactId"];
-				jobHistoryErrorArtifactIds[index] = jobHistoryErrorArtifactId;
-				index++;
-			}
-
 			IList<JobHistoryErrorDTO> jobHistoryErrors = _jobHistoryErrorRepository.Read(jobHistoryErrorArtifactIds);
 			foreach (JobHistoryErrorDTO jobHistoryError in jobHistoryErrors)
 			{
@@ -433,18 +512,24 @@ namespace kCura.IntegrationPoints.Data.Tests
 			}
 		}
 
-		private void VerifyTempTableEntries(DataTable tempTable, List<int> expectedJobHistoryErrorArtifacts)
+		private void VerifyTempTableCountAndEntries(DataTable tempTable, string tempTableName, List<int> expectedJobHistoryErrorArtifacts)
 		{
 			if (tempTable.Rows.Count != expectedJobHistoryErrorArtifacts.Count)
 			{
-				throw new Exception($"Error: Expected JobHistoryError ArtifactIds count does not match the temp table's count.");
+				throw new Exception($"Error: Expected { expectedJobHistoryErrorArtifacts.Count } JobHistoryError ArtifactIds. { tempTable } contains { tempTable.Rows.Count } ArtifactIds.");
             }
 
-			List<int> actualJobHistoryArtifactIds = (List<int>) tempTable.Rows.Cast<DataRow>().Select(row => (int)row["ArtifactId"]);
+			List<int> actualJobHistoryArtifactIds = new List<int>();
+			foreach (DataRow dataRow in tempTable.Rows)
+			{
+				actualJobHistoryArtifactIds.Add(Convert.ToInt32(dataRow["ArtifactID"]));
+			}
+
 			List<int> discrepancies = expectedJobHistoryErrorArtifacts.Except(actualJobHistoryArtifactIds).ToList();
+
 			if (discrepancies.Count > 0)
 			{
-				throw new Exception($"Error: temp tables is missing expected JobHistoryError ArtifactIds. ArtifactIds missing: {string.Join(",", expectedJobHistoryErrorArtifacts)}");
+				throw new Exception($"Error: { tempTableName } is missing expected JobHistoryError ArtifactIds. ArtifactIds missing: {string.Join(",", expectedJobHistoryErrorArtifacts)}");
 			}
 		}
 
@@ -472,6 +557,16 @@ namespace kCura.IntegrationPoints.Data.Tests
 				}
 			}
 			return expiredErrors;
+		}
+
+		private JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance)
+		{
+			IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
+			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRetryErrors, DateTime.Now);
+			jobHistory.EndTimeUTC = DateTime.Now;
+			jobHistory.JobStatus = JobStatusChoices.JobHistoryCompletedWithErrors;
+			_jobHistoryService.UpdateRdo(jobHistory);
+			return jobHistory;
 		}
 	}
 }

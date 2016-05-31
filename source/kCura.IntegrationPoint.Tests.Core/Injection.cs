@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 
 				Thread.Sleep(intervalInMilliseconds);
-				timeWaitedInSeconds = (intervalInMilliseconds/1000.0);
+				timeWaitedInSeconds += (intervalInMilliseconds/1000.0);
 				executionCount = GetInjectionPointCount(injectionPointId, startTime);
 			}	
 		}
