@@ -62,7 +62,7 @@
 
         this.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
 
-        this.selectedDestinationPath = ko.observable(state.Fileshare).extend({
+        this.SelectedDestinationPath = ko.observable(state.Fileshare).extend({
             required: true
         });
 
@@ -112,12 +112,11 @@
             });
         }
 
-        this.exportImagesChecked = ko.observable(state.exportImagesChecked || "false").extend({
+        this.ExportImagesChecked = ko.observable(state.ExportImagesChecked || "false").extend({
             required: true
         });
 
         this.imageFileTypes = ko.observableArray([
-            { key: -1, value: "Select.." },
             { key: 0, value: "Single page TIFF/JPEG" },
             { key: 1, value: "Multi page TIFF/JPEG" },
             { key: 2, value: "PDF" }
@@ -137,7 +136,7 @@
             self.SelectedImageFileType(fileType);
         };
 
-        self.updateSelectedImageFileType(state.selectedImageFileType);
+        self.updateSelectedImageFileType(state.SelectedImageFileType);
 
         this.errors = ko.validation.group(this, { deep: true });
 
@@ -149,8 +148,8 @@
                 "SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
                 "CopyFileFromRepository": self.CopyFileFromRepository(),
                 "OverwriteFiles": self.OverwriteFiles(),
-                "Fileshare": self.selectedDestinationPath(),
-                "ExportImagesChecked": self.exportImagesChecked(),
+                "Fileshare": self.SelectedDestinationPath(),
+                "ExportImagesChecked": self.ExportImagesChecked(),
                 "SelectedImageFileType": self.SelectedImageFileType().key
             }
         }
