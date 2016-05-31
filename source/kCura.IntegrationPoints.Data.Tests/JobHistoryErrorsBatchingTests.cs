@@ -24,6 +24,7 @@ using System.Data;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
+	[Explicit]
 	public class JobHistoryErrorsBatchingTests : WorkspaceDependentTemplate
 	{
 		private IIntegrationPointService _integrationPointService;
@@ -41,6 +42,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		[TestFixtureSetUp]
+		[Explicit]
 		public override void SetUp()
 		{
 			base.SetUp();
