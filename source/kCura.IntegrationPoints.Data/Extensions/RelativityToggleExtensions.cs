@@ -6,9 +6,9 @@ namespace kCura.IntegrationPoints.Data.Extensions
 {
 	public static class RelativityToggleExtensions
 	{
-		public static bool IsFeatureEnabled<T>(this IToggleProvider provider) where T : AOAGToggle
+		public static bool IsAOAGFeatureEnabled(this IToggleProvider provider)
 		{
-			if (provider.IsEnabled<AOAGToggle>() && Config.Config.Instance.IsCloudInstance && !Config.Config.Instance.UseEDDSResource)
+			if (provider.IsEnabled<AOAGToggle>() && (Config.Config.Instance.IsCloudInstance || !Config.Config.Instance.UseEDDSResource))
 			{
 				return true;
 			};
