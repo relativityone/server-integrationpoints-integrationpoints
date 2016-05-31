@@ -33,10 +33,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void WaitForIntegrationPointJobToComplete(IQueueRepository queueRepository,int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 300, int intervalInMilliseconds = 500)
 		{
-			string connectionString = String.Format(SharedVariables.WorkspaceConnectionStringFormat, workspaceArtifactId);
-			Context baseContext = new Context(connectionString);
-			DBContext context = new DBContext(baseContext);
-
 			double timeWaitedInSeconds = 0.0;
 			int numberOfJobsQueuedOrProgress = queueRepository.GetNumberOfJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
 
