@@ -49,7 +49,7 @@
                     Fileshare:
                 </div>
                 <div class="field-value">
-                    <input data-bind="value: selectedDestinationPath" />
+                    <input data-bind="value: SelectedDestinationPath" />
                 </div>
             </div>
             <div class="field-row">
@@ -75,10 +75,10 @@
                 <div class="field-value">
                     <ul>
                         <li>
-                            <input id="export-images-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: exportImagesChecked" />Yes
+                            <input id="export-images-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: ExportImagesChecked" />Yes
                         </li>
                         <li>
-                            <input id="export-images-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: exportImagesChecked" />No
+                            <input id="export-images-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: ExportImagesChecked" />No
                         </li>
                     </ul>
                 </div>
@@ -88,7 +88,7 @@
                     File Type :
                 </div>
                 <div class="field-value ">
-                    <select id="imageFileTypesSelector" data-bind="options: imageFileTypes, optionsText: 'value', value: SelectedImageFileType"></select>
+                    <select id="imageFileTypesSelector" data-bind="options: imageFileTypes, optionsText: 'value', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
                 </div>
             </div>
         </div>
