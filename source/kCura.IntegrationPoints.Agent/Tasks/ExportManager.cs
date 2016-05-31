@@ -28,13 +28,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
         }
 
 		/// <summary>
-		/// Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
-		/// so for now we need to create only one worker job
+		/// This method returns record (batch) ids that should be processed by ExportWorker class
 		/// </summary>
-		/// <param name="job"></param>
-		/// <returns>job.Id value just to trigger new worker job</returns>
+		/// <param name="job">Details of the export job</param>
+		/// <returns>List of batch ids to be processed</returns>
 	    public override IEnumerable<string> GetUnbatchedIDs(Job job)
 		{
+			//Currently Export Shared library (kCura.WinEDDS) is making usage of batching internalLy
+			//so for now we need to create only one worker job
 			yield return job.JobId.ToString();
 		}
 
