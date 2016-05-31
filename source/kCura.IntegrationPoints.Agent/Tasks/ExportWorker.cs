@@ -54,12 +54,15 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
             var destinationSettings = JsonConvert.DeserializeObject<ImportSettings>(destinationConfiguration);
 
-            var exportSettings = new ExportSettings
+			var imageType = default(ExportSettings.ImageFileType);
+			Enum.TryParse(sourceSettings.SelectedImageFileType, true, out imageType);
+			
+			var exportSettings = new ExportSettings
             {
                 ExportedObjArtifactId = sourceSettings.SavedSearchArtifactId,
                 ExportedObjName = sourceSettings.SavedSearch,
                 ExportImages = sourceSettings.ExportImagesChecked,
-                ImageType = default(ExportSettings.ImageFileType),
+                ImageType = imageType,
                 WorkspaceId = sourceSettings.SourceWorkspaceArtifactId,
                 ExportFilesLocation = sourceSettings.Fileshare,
                 OverwriteFiles = sourceSettings.OverwriteFiles,
@@ -67,12 +70,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 SelViewFieldIds = fieldMap.Select(item => int.Parse(item.SourceField.FieldIdentifier)).ToList(),
                 ArtifactTypeId = destinationSettings.ArtifactTypeId
             };
-
-            ExportSettings.ImageFileType imageType;
-            if (Enum.TryParse(sourceSettings.SelectedImageFileType, true, out imageType))
-            {
-                exportSettings.ImageType = imageType;
-            }
 
             _exportProcessRunner.StartWith(exportSettings);
         }
