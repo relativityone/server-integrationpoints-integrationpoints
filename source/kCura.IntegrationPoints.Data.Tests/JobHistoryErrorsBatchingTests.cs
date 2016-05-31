@@ -208,7 +208,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			_jobHistoryErrorManager = new JobHistoryErrorManager(_repositoryFactory, SourceWorkspaceArtifactId, tempTableSuffix);
 
 			//Create job level error
-			List<int> expectedJobHistoryErrorArtifactIds = CreateJobLevelHistoryError(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew);
+			List<int> expectedJobHistoryErrorArtifactIds = CreateJobLevelJobHistoryError(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew);
 
 			//Act
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
@@ -272,7 +272,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 			//Create item level error
 			List<int> expectedJobHistoryErrorExpired = CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
-			List<int> expectedJobHistoryErrorsForRetry = CreateJobLevelHistoryError(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew);
+			List<int> expectedJobHistoryErrorsForRetry = CreateJobLevelJobHistoryError(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew);
 
 			//Act
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
@@ -428,7 +428,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			return jobHistoryErrorArtifactIds;
 		}
 
-		private List<int> CreateJobLevelHistoryError(int jobHistoryArtifactId, Choice errorStatus)
+		private List<int> CreateJobLevelJobHistoryError(int jobHistoryArtifactId, Choice errorStatus)
 		{
 			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>();
 			JobHistoryError jobHistoryError = new JobHistoryError
