@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
@@ -29,7 +30,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		{
 			_configSettings = new ConfigSettings();
 		    var exportProcessBuilder = new ExportProcessBuilder(Substitute.For<ILoggingMediator>(),
-		        Substitute.For<IUserNotification>(), Substitute.For<IUserMessageNotification>(), new UserPasswordCredentialProvider(_configSettings));
+		        Substitute.For<IUserMessageNotification>(), Substitute.For<IUserNotification>(), new UserPasswordCredentialProvider(_configSettings),
+                new CaseManagerWrapperFactory(), new SearchManagerWrapperFactory(), new ExporterWrapperFactory(), new ExportFileHelper());
             _instanceUnderTest = new ExportProcessRunner(exportProcessBuilder);
 			_workspaceService = new WorkspaceService(_configSettings);
 			_exportSettings = CreateExportSettings();

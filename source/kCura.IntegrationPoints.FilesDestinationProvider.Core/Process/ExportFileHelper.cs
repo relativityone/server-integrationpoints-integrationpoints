@@ -5,9 +5,9 @@ using Relativity;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
-    class ExportFileHelper
+    internal class ExportFileHelper : IExportFileHelper
     {
-        internal static ExportFile CreateDefaultSetup(ExportSettings exportSettings)
+        public ExportFile CreateDefaultSetup(ExportSettings exportSettings)
         {
             ExportFile expFile = new ExportFile(exportSettings.ArtifactTypeId);
             expFile.AppendOriginalFileName = false;

@@ -1,83 +1,91 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
-using kCura.Windows.Process;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
-using kCura.WinEDDS.Service;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
     public class ExportProcessBuilder : IExportProcessBuilder
     {
+        private readonly ICaseManagerFactory _caseManagerFactory;
+        private readonly ICredentialProvider _credentialProvider;
+        private readonly IExporterFactory _exporterFactory;
+        private readonly IExportFileHelper _exportFileHelper;
         private readonly ILoggingMediator _loggingMediator;
+        private readonly ISearchManagerFactory _searchManagerFactory;
         private readonly IUserMessageNotification _userMessageNotification;
         private readonly IUserNotification _userNotification;
-		private readonly ICredentialProvider _credentialProvider;
 
-		public ExportProcessBuilder(ILoggingMediator loggingMediator, IUserNotification userNotification,
-            IUserMessageNotification userMessageNotification, ICredentialProvider credentialProvider)
+        public ExportProcessBuilder(ILoggingMediator loggingMediator, IUserMessageNotification userMessageNotification, IUserNotification userNotification,
+            ICredentialProvider credentialProvider, ICaseManagerFactory caseManagerFactory, ISearchManagerFactory searchManagerFactory, IExporterFactory exporterFactory,
+            IExportFileHelper exportFileHelper)
         {
             _loggingMediator = loggingMediator;
-            _userNotification = userNotification;
             _userMessageNotification = userMessageNotification;
-			_credentialProvider = credentialProvider;
-
+            _userNotification = userNotification;
+            _credentialProvider = credentialProvider;
+            _caseManagerFactory = caseManagerFactory;
+            _searchManagerFactory = searchManagerFactory;
+            _exporterFactory = exporterFactory;
+            _exportFileHelper = exportFileHelper;
         }
 
         public IExporter Create(ExportSettings settings)
         {
-            var exportFile = ExportFileHelper.CreateDefaultSetup(settings);
-            PerformLogin(exportFile, _credentialProvider);
+            var exportFile = _exportFileHelper.CreateDefaultSetup(settings);
+            PerformLogin(exportFile);
             PopulateExportFieldsSettings(exportFile, settings.SelViewFieldIds);
-            var exporter = new ExporterWrapper(new Exporter(exportFile, new Controller()));
-            AttachHandlers(exporter, _loggingMediator);
+            var exporter = _exporterFactory.Create(exportFile);
+            AttachHandlers(exporter);
             return exporter;
         }
 
-        private void AttachHandlers(IExporter exporter, ILoggingMediator loggingMediator)
-        {
-            exporter.InteractionManager = _userNotification;
-            loggingMediator.RegisterEventHandlers(_userMessageNotification, exporter);
-        }
-
-        private void PerformLogin(ExportFile exportSettings, ICredentialProvider credentialProvider)
+        private void PerformLogin(ExportFile exportFile)
         {
             var cookieContainer = new CookieContainer();
 
-			exportSettings.CookieContainer = cookieContainer;
-			exportSettings.Credential = credentialProvider.Authenticate(cookieContainer);
-		}
+            exportFile.CookieContainer = cookieContainer;
+            exportFile.Credential = _credentialProvider.Authenticate(cookieContainer);
+        }
 
         private void PopulateExportFieldsSettings(ExportFile exportFile, List<int> selectedViewFieldIds)
         {
-            using (var searchManager = new SearchManager(exportFile.Credential, exportFile.CookieContainer))
-            using (var caseManager = new CaseManager(exportFile.Credential, exportFile.CookieContainer))
+            using (var searchManager = _searchManagerFactory.Create(exportFile.Credential, exportFile.CookieContainer))
             {
-            	PopulateCaseInfo(exportFile, caseManager);
-                PopulateViewFields(exportFile, selectedViewFieldIds, searchManager);
+                using (var caseManager = _caseManagerFactory.Create(exportFile.Credential, exportFile.CookieContainer))
+                {
+                    PopulateCaseInfo(exportFile, caseManager);
+                    PopulateViewFields(exportFile, selectedViewFieldIds, searchManager);
+                }
             }
         }
 
-        private static void PopulateViewFields(ExportFile exportFile, List<int> selectedViewFieldIds,
-            SearchManager searchManager)
-        {
-            exportFile.AllExportableFields =
-                searchManager.RetrieveAllExportableViewFields(exportFile.CaseInfo.ArtifactID, exportFile.ArtifactTypeID);
 
-            exportFile.SelectedViewFields = exportFile.AllExportableFields
-                .Where(item => selectedViewFieldIds.Any(selViewFieldId => selViewFieldId == item.FieldArtifactId))
-                .ToArray();
-        }
-
-        private static void PopulateCaseInfo(ExportFile exportFile, CaseManager caseManager)
+        private static void PopulateCaseInfo(ExportFile exportFile, ICaseManager caseManager)
         {
             if (string.IsNullOrEmpty(exportFile.CaseInfo.DocumentPath))
             {
                 exportFile.CaseInfo = caseManager.Read(exportFile.CaseInfo.ArtifactID);
             }
+        }
+
+        private static void PopulateViewFields(ExportFile exportFile, List<int> selectedViewFieldIds,
+            ISearchManager searchManager)
+        {
+            exportFile.AllExportableFields = searchManager.RetrieveAllExportableViewFields(exportFile.CaseInfo.ArtifactID, exportFile.ArtifactTypeID);
+
+            exportFile.SelectedViewFields =
+                exportFile.AllExportableFields.Where(item => selectedViewFieldIds.Any(selViewFieldId => selViewFieldId == item.FieldArtifactId)).ToArray();
+        }
+
+        private void AttachHandlers(IExporter exporter)
+        {
+            exporter.InteractionManager = _userNotification;
+            _loggingMediator.RegisterEventHandlers(_userMessageNotification, exporter);
         }
     }
 }

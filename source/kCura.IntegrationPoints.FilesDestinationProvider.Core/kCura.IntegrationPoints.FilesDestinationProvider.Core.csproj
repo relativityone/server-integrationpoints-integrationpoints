@@ -169,15 +169,26 @@
     <Compile Include="Logging\JobErrorLoggingMediator.cs" />
     <Compile Include="Logging\JobHistoryErrorServiceProvider.cs" />
     <Compile Include="Logging\LoggingMediatorFactory.cs" />
-    <Compile Include="Process\ExporterWrapper.cs" />
     <Compile Include="Process\ExportFileHelper.cs" />
     <Compile Include="Process\ExportProcessBuilder.cs" />
     <Compile Include="Process\ExportProcessRunner.cs" />
-    <Compile Include="Process\IExporter.cs" />
+    <Compile Include="Process\IExportFileHelper.cs" />
     <Compile Include="Process\IExportProcessBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Logging\UserMessageEventArgs.cs" />
     <Compile Include="Logging\ExportUserNotification.cs" />
+    <Compile Include="SharedLibrary\CaseManagerWrapper.cs" />
+    <Compile Include="SharedLibrary\CaseManagerWrapperFactory.cs" />
+    <Compile Include="SharedLibrary\ExporterWrapper.cs" />
+    <Compile Include="SharedLibrary\ExporterWrapperFactory.cs" />
+    <Compile Include="SharedLibrary\ICaseManager.cs" />
+    <Compile Include="SharedLibrary\ICaseManagerFactory.cs" />
+    <Compile Include="SharedLibrary\IExporter.cs" />
+    <Compile Include="SharedLibrary\IExporterFactory.cs" />
+    <Compile Include="SharedLibrary\ISearchManager.cs" />
+    <Compile Include="SharedLibrary\ISearchManagerFactory.cs" />
+    <Compile Include="SharedLibrary\SearchManagerWrapper.cs" />
+    <Compile Include="SharedLibrary\SearchManagerWrapperFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

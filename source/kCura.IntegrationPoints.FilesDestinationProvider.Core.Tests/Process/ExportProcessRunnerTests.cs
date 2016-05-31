@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using NSubstitute;
 using NUnit.Framework;
 

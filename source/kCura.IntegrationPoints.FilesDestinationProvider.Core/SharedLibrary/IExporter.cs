@@ -1,7 +1,7 @@
 ﻿using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
     public interface IExporter : IExporterStatusNotification
     {

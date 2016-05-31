@@ -4,6 +4,7 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
+using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS.Exporters;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
@@ -12,13 +13,19 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
+            container.Register(Component.For<ICredentialProvider>().ImplementedBy<TokenCredentialProvider>());
+
             container.Register(Component.For<LoggingMediatorFactory>().ImplementedBy<LoggingMediatorFactory>());
             container.Register(Component.For<ILoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()));
-            container.Register(
-                Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
+            container.Register(Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
+
+            container.Register(Component.For<IExportFileHelper>().ImplementedBy<ExportFileHelper>());
             container.Register(Component.For<IExportProcessBuilder>().ImplementedBy<ExportProcessBuilder>());
             container.Register(Component.For<ExportProcessRunner>().ImplementedBy<ExportProcessRunner>());
-            container.Register(Component.For<ICredentialProvider>().ImplementedBy<TokenCredentialProvider>());
+
+            container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerWrapperFactory>());
+            container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterWrapperFactory>());
+            container.Register(Component.For<ISearchManagerFactory>().ImplementedBy<SearchManagerWrapperFactory>());
         }
     }
 }
