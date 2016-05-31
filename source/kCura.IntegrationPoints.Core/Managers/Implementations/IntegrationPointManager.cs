@@ -161,6 +161,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				{
 					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);		
 				}
+
+				if (!sourceWorkspacePermissionRepository.UserCanImport())
+				{
+					errorMessages.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
+				}
 			}
 
 			var permissionCheck = new PermissionCheckDTO()

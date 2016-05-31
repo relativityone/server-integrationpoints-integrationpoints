@@ -520,13 +520,13 @@ namespace kCura.IntegrationPoints.Core.Services
 				IErrorManager errorManager = _managerFactory.CreateErrorManager(_contextContainer);
 				var error = new ErrorDTO()
 				{
-					Message	= "User does not have permissions to save Integration Point.",
-					FullText = $"User does not have the following permissions required to save an Integration Point:{Environment.NewLine}{String.Join(Environment.NewLine, permissionCheck.ErrorMessages)}"
+					Message	= Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE,
+					FullText = $"{Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{String.Join(Environment.NewLine, permissionCheck.ErrorMessages)}"
 				};
 
 				errorManager.Create(_context.WorkspaceID, new[] { error });
 
-				throw new Exception("You do not have all required permissions to save this Integration Point. Please contact your system administrator.");
+				throw new Exception(Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE);
 			}
 		}
 
