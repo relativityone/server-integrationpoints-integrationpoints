@@ -447,6 +447,16 @@ namespace kCura.IntegrationPoints.Core.Services
 
 		private static IntegrationPointDTO ConvertToIntegrationPointDto(IntegrationPoint integrationPoint)
 		{
+			int[] jobHistory = null;
+			try
+			{
+				jobHistory = integrationPoint.JobHistory;
+			}
+			catch
+			{
+				// if there are no job histories (i.e. on create) there will be no results and this will except
+			}
+
 			IntegrationPointDTO integrationPointDto = new IntegrationPointDTO
 			{
 				ArtifactId = integrationPoint.ArtifactId,
@@ -457,7 +467,7 @@ namespace kCura.IntegrationPoints.Core.Services
 				EnableScheduler = integrationPoint.EnableScheduler,
 				FieldMappings = integrationPoint.FieldMappings,
 				HasErrors = integrationPoint.HasErrors,
-				JobHistory = integrationPoint.JobHistory,
+				JobHistory = jobHistory,
 				LastRuntimeUTC = integrationPoint.LastRuntimeUTC,
 				LogErrors = integrationPoint.LogErrors,
 				SourceProvider = integrationPoint.SourceProvider,
