@@ -14,6 +14,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 {
 	[TestFixture]
+	[Explicit]
 	public class IntegrationPointManagerTests
 	{
 		private IIntegrationPointManager _testInstance;

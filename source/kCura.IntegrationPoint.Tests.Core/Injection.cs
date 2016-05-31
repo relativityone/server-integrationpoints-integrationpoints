@@ -81,7 +81,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				if (timeWaitedInSeconds >= timeoutInSeconds)
 				{
-					throw new Exception($"Timed out waiting for InjectionPointId: { injectionPointId } to be reached. Waited { timeoutInSeconds } seconds.");
+					throw new Exception($"Timed out waiting for InjectionPointId: { injectionPointId } to be reached. Waited { timeWaitedInSeconds } seconds.");
 				}
 
 				Thread.Sleep(intervalInMilliseconds);
