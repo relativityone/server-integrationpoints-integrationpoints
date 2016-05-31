@@ -51,5 +51,12 @@ namespace kCura.ScheduleQueue.Core
 			SubmittedBy = submittedByArtifactId;
 			JobId = jobId;
 		}
+
+		internal Job(int workspaceArtifactId, int integrationPointArtifactId, int submittedByArtifactId)
+		{
+			WorkspaceID = workspaceArtifactId;
+			RelatedObjectArtifactID = integrationPointArtifactId;
+			SubmittedBy = submittedByArtifactId;
+		}
 	}
 }
