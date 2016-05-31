@@ -27,6 +27,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private string _tempTableName;
 		private string _docIdentifierFieldName;
 		private int _count;
+		private bool _isAOAGEnabled;
 
 		public ScratchTableRepository(IHelper helper, IToggleProvider toggleProvider, IDocumentRepository documentRepository, 
 			IFieldRepository fieldRepository, string tablePrefix, string tableSuffix, int workspaceId)
@@ -39,6 +40,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_tableSuffix = tableSuffix;
 			_workspaceId = workspaceId;
 			IgnoreErrorDocuments = true;
+			_isAOAGEnabled = _toggleProvider.IsAOAGFeatureEnabled();
 		}
 
 		public bool IgnoreErrorDocuments { get; set; }
@@ -128,14 +130,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				if (_database == null)
 				{
-					if (_toggleProvider.IsFeatureEnabled<AOAGToggle>())
-					{
-						_database = String.Empty;
-					}
-					else
-					{
-						_database = "[EDDSRESOURCE].";
-					}
+					_database = _isAOAGEnabled ? String.Empty : "[EDDSRESOURCE].";
 				}
 				return _database;
 			}
@@ -151,7 +146,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			if (_tempTableName == null)
 			{
 				string prepend = String.Empty;
-				if (_toggleProvider.IsFeatureEnabled<AOAGToggle>())
+				if (_isAOAGEnabled)
 				{
 					prepend = $"{ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_workspaceId)}_";
 				}
@@ -162,15 +157,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 			}
 			return _tempTableName;
-		}
-
-		private int GetTempTableCount()
-		{
-			string fullTableName = GetTempTableName();
-			string sql = String.Format(@"IF EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
-										SELECT COUNT(*) FROM {2}[{0}]", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
-
-			return _caseContext.ExecuteSqlStatementAsScalar<int>(sql);
 		}
 
 		private int GetErroredDocumentId(string docIdentifier)

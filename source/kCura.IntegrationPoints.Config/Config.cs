@@ -8,8 +8,6 @@ namespace kCura.IntegrationPoints.Config
 	{
 		private static readonly Lazy<Config> _instance = new Lazy<Config>(() => new Config());
 		private static IDictionary _instanceSettings;
-		private bool? _isCloudInstance;
-		private bool? _useEddsResource;
 
 		private const int _BATCH_SIZE_DEFAULT = 1000;
 		private const string _DISABLE_NATIVE_LOCATION_VALIDATION = "DisableNativeLocationValidation";
@@ -49,40 +47,30 @@ namespace kCura.IntegrationPoints.Config
 		{
 			get
 			{
-				if (!_isCloudInstance.HasValue)
+				const string setting = "CloudInstance";
+				var config = Manager.Instance.GetConfig("Relativity.Core");
+				bool isCloudInstance = false;
+				if (config.Contains(setting))
 				{
-					const string setting = "CloudInstance";
-					var config = Manager.Instance.GetConfig("Relativity.Core");
-					bool isCouldInstance = false;
-					if (config.Contains(setting))
-					{
-						Boolean.TryParse(config[setting] as string, out isCouldInstance);
-					}
-					_isCloudInstance = isCouldInstance;
+					Boolean.TryParse(config[setting] as string, out isCloudInstance);
 				}
-				return _isCloudInstance.Value;
+				return isCloudInstance;
 			}
-			internal set { _isCloudInstance = value; }
 		}
 
 		public bool UseEDDSResource
 		{
 			get
 			{
-				if (!_useEddsResource.HasValue)
+				const string setting = "UseEDDSResource";
+				var config = Manager.Instance.GetConfig("Relativity.Data");
+				bool useEddsResource = false;
+				if (config.Contains(setting))
 				{
-					const string setting = "UseEDDSResource";
-					var config = Manager.Instance.GetConfig("Relativity.Data");
-					bool useEddsResource = false;
-					if (config.Contains(setting))
-					{
-						Boolean.TryParse(config[setting] as string, out useEddsResource);
-					}
-					_useEddsResource = useEddsResource;
+					Boolean.TryParse(config[setting] as string, out useEddsResource);
 				}
-				return _useEddsResource.Value;
+				return useEddsResource;
 			}
-			internal set { _useEddsResource = value; }
 		}
 
 		private T GetValue<T>(string instanceSettingName, T defaultValue)
