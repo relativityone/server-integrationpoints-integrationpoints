@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using Castle.Core.Internal;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
@@ -52,7 +53,16 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 			const string template = "New Case Template";
 			SourceWorkspaceArtifactId = Workspace.CreateWorkspace(_sourceWorkspaceName, template);
-			TargetWorkspaceArtifactId = SourceWorkspaceArtifactId;
+
+			if (!_targetWorkspaceName.IsNullOrEmpty())
+			{
+				TargetWorkspaceArtifactId = Workspace.CreateWorkspace(_targetWorkspaceName, template);
+			}
+			else
+			{
+				TargetWorkspaceArtifactId = SourceWorkspaceArtifactId;
+			}
+
 			Workspace.ImportApplicationToWorkspace(SourceWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
 			SavedSearchArtifactId = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents");
 			Install();
@@ -111,10 +121,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected IntegrationModel CreateOrUpdateIntegrationPoint(IntegrationModel model)
 		{
-			Helper.PermissionManager.UserCanEditDocuments().Returns(true);
-			Helper.PermissionManager.UserCanImport().Returns(true);
-			Helper.PermissionManager.UserHasArtifactInstancePermission(Arg.Any<int>(), Arg.Any<int>(), ArtifactPermission.View).Returns(true);
-
 			IIntegrationPointService service = Container.Resolve<IIntegrationPointService>();
 
 			int integrationPointArtifactId = service.SaveIntegration(model);

@@ -96,7 +96,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			string parameters = JsonConvert.SerializeObject(user);
 			string response = Rest.PostRequestAsJson("Relativity/User", false, parameters);
 			JObject resultObject = JObject.Parse(response);
-			user.ArtifactId = Convert.ToInt32(resultObject["Results"][0]["ArtifactID"]);
+			user.ArtifactId = resultObject["Results"][0]["ArtifactID"].Value<int>();
 			return user;
 		}
 

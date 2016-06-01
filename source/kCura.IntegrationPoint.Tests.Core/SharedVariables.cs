@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Configuration;
+using System.Runtime.CompilerServices;
+using ContentAnalyst.Web.TextCategorizerIndexService;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -12,9 +14,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static string RsapiClientUri => $"http://{TargetHost}/Relativity.Services";
 		public static Uri RsapiClientServiceUri => new Uri($"{RsapiClientUri}/api");
 
-		public static string RelativityUserName => ConfigurationManager.AppSettings["userName"];
+		public static string RelativityUserName { get; set; } = ConfigurationManager.AppSettings["userName"];
 
-		public static string RelativityPassword => ConfigurationManager.AppSettings["password"];
+		public static string RelativityPassword { get; set; } = ConfigurationManager.AppSettings["password"];
 
 		public static string RestServer => $"http://{TargetHost}/Relativity.Rest/";
 

@@ -100,246 +100,246 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			private readonly ITestHelper _helper;
 			private readonly ExecutionIdentity _identity;
-			private IRSAPIClient _client;
+			private Lazy<IRSAPIClient> _clientWrapper;
+			private IRSAPIClient Client => _clientWrapper.Value;
 
 			public ExtendedIRSAPIClient(ITestHelper helper, ExecutionIdentity identity)
 			{
 				_helper = helper;
 				_identity = identity;
-				_client = Rsapi.CreateRsapiClient(identity);
+				_clientWrapper = new Lazy<IRSAPIClient>(() => Rsapi.CreateRsapiClient(identity));
 			}
 
 			public string Login()
 			{
-				return _client.Login();
+				return Client.Login();
 			}
 
 			public string TokenLogin(string sessionToken)
 			{
-				return _client.TokenLogin(sessionToken);
+				return Client.TokenLogin(sessionToken);
 			}
 
 			public ReadResult GenerateRelativityAuthenticationToken(APIOptions apiOpt)
 			{
-				return _client.GenerateRelativityAuthenticationToken(apiOpt);
+				return Client.GenerateRelativityAuthenticationToken(apiOpt);
 			}
 
 			public ReadResult GetAuthenticationToken(APIOptions apiOpt, string onBehalfOfUserName)
 			{
-				return _client.GetAuthenticationToken(apiOpt, onBehalfOfUserName);
+				return Client.GetAuthenticationToken(apiOpt, onBehalfOfUserName);
 			}
 
 			public void Logout(APIOptions apiOpt)
 			{
-				_client.Logout(apiOpt);
+				Client.Logout(apiOpt);
 			}
 
 			public string LoginWithCredentials(string username, string password)
 			{
-				return _client.LoginWithCredentials(username, password);
+				return Client.LoginWithCredentials(username, password);
 			}
 
 			public ResultSet Create(APIOptions apiOpt, List<ArtifactRequest> artifactRequests)
 			{
-				return _client.Create(apiOpt, artifactRequests);
+				return Client.Create(apiOpt, artifactRequests);
 			}
 
 			public ReadResultSet Read(APIOptions apiOpt, List<ArtifactRequest> artifactRequests)
 			{
-				return _client.Read(apiOpt, artifactRequests);
+				return Client.Read(apiOpt, artifactRequests);
 			}
 
 			public ResultSet Update(APIOptions apiOpt, List<ArtifactRequest> artifactRequests)
 			{
-				return _client.Update(apiOpt, artifactRequests);
+				return Client.Update(apiOpt, artifactRequests);
 			}
 
 			public ResultSet Delete(APIOptions apiOpt, List<ArtifactRequest> artifactRequests)
 			{
-				return _client.Delete(apiOpt, artifactRequests);
+				return Client.Delete(apiOpt, artifactRequests);
 			}
 
 			public Dictionary<AdminChoice, int> GetAdminChoiceTypes(APIOptions apiOpt)
 			{
-				return _client.GetAdminChoiceTypes(apiOpt);
+				return Client.GetAdminChoiceTypes(apiOpt);
 			}
 
 			public ResultSet MassDeleteAllObjects(APIOptions apiOpt, MassDeleteOptions options)
 			{
-				return _client.MassDeleteAllObjects(apiOpt, options);
+				return Client.MassDeleteAllObjects(apiOpt, options);
 			}
 
 			public ResultSet MassDeleteAllDocuments(APIOptions apiOpt, DocumentMassDeleteOptions options)
 			{
-				return _client.MassDeleteAllDocuments(apiOpt, options);
+				return Client.MassDeleteAllDocuments(apiOpt, options);
 			}
 
 			public ProcessInformation GetProcessState(APIOptions apiOpt, Guid processID)
 			{
-				return _client.GetProcessState(apiOpt, processID);
+				return Client.GetProcessState(apiOpt, processID);
 			}
 
 			public ProcessOperationResult FlagProcessForCancellationAsync(APIOptions apiOpt, Guid processID)
 			{
-				return _client.FlagProcessForCancellationAsync(apiOpt, processID);
+				return Client.FlagProcessForCancellationAsync(apiOpt, processID);
 			}
 
 			public ProcessOperationResult CreateBatchesForBatchSetAsync(APIOptions apiOpt, int batchSetArtifactID)
 			{
-				return _client.CreateBatchesForBatchSetAsync(apiOpt, batchSetArtifactID);
+				return Client.CreateBatchesForBatchSetAsync(apiOpt, batchSetArtifactID);
 			}
 
 			public ProcessOperationResult PurgeBatchesOfBatchSetAsync(APIOptions apiOpt, int batchSetArtifactID)
 			{
-				return _client.PurgeBatchesOfBatchSetAsync(apiOpt, batchSetArtifactID);
+				return Client.PurgeBatchesOfBatchSetAsync(apiOpt, batchSetArtifactID);
 			}
 
 			public SerialLicense GetLicense(APIOptions apiOpt, Guid appGuid, string password)
 			{
-				return _client.GetLicense(apiOpt, appGuid, password);
+				return Client.GetLicense(apiOpt, appGuid, password);
 			}
 
 			public ProcessOperationResult InstallApplication(APIOptions apiOpt, AppInstallRequest appInstallRequest)
 			{
-				return _client.InstallApplication(apiOpt, appInstallRequest);
+				return Client.InstallApplication(apiOpt, appInstallRequest);
 			}
 
 			public ResultSet InstallLibraryApplication(APIOptions apiOpt, AppInstallRequest appInstallRequest)
 			{
-				return _client.InstallLibraryApplication(apiOpt, appInstallRequest);
+				return Client.InstallLibraryApplication(apiOpt, appInstallRequest);
 			}
 
 			public ResultSet ExportApplication(APIOptions apiOpt, AppExportRequest appExportRequest)
 			{
-				return _client.ExportApplication(apiOpt, appExportRequest);
+				return Client.ExportApplication(apiOpt, appExportRequest);
 			}
 
 			public ResultSet PushResourceFiles(APIOptions apiOpt, List<ResourceFileRequest> rfPushRequests)
 			{
-				return _client.PushResourceFiles(apiOpt, rfPushRequests);
+				return Client.PushResourceFiles(apiOpt, rfPushRequests);
 			}
 
 			public ResultSet MassDeleteDocuments(APIOptions apiOpt, DocumentMassDeleteOptions options, List<int> artifactIDs)
 			{
-				return _client.MassDeleteDocuments(apiOpt, options, artifactIDs);
+				return Client.MassDeleteDocuments(apiOpt, options, artifactIDs);
 			}
 
 			public ResultSet MassDelete(APIOptions apiOpt, MassDeleteOptions options, List<int> artifactIDs)
 			{
-				return _client.MassDelete(apiOpt, options, artifactIDs);
+				return Client.MassDelete(apiOpt, options, artifactIDs);
 			}
 
 			public MassCreateResult MassCreateWithAPIParameters(APIOptions apiOpt, ArtifactRequest templateArtifactRequest,
 				List<ArtifactRequest> artifactRequests, List<APIParameters> apiParms)
 			{
-				return _client.MassCreateWithAPIParameters(apiOpt, templateArtifactRequest, artifactRequests, apiParms);
+				return Client.MassCreateWithAPIParameters(apiOpt, templateArtifactRequest, artifactRequests, apiParms);
 			}
 
 			public MassCreateResult MassCreateWithDetails(APIOptions apiOpt, ArtifactRequest templateArtifactRequest, List<ArtifactRequest> artifactRequests)
 			{
-				return _client.MassCreateWithDetails(apiOpt, templateArtifactRequest, artifactRequests);
+				return Client.MassCreateWithDetails(apiOpt, templateArtifactRequest, artifactRequests);
 			}
 
 			public MassCreateResult MassCreate(APIOptions apiOpt, ArtifactRequest templateArtifactRequest, List<ArtifactRequest> artifactRequests)
 			{
-				return _client.MassCreate(apiOpt, templateArtifactRequest, artifactRequests);
+				return Client.MassCreate(apiOpt, templateArtifactRequest, artifactRequests);
 			}
 
 			public MassEditResult MassEdit(APIOptions apiOpt, ArtifactRequest templateArtifactRequest, List<int> artifactIDs)
 			{
-				return _client.MassEdit(apiOpt, templateArtifactRequest, artifactIDs);
+				return Client.MassEdit(apiOpt, templateArtifactRequest, artifactIDs);
 			}
 
 			public void Clear(FileRequest fileRequest)
 			{
-				_client.Clear(fileRequest);
+				Client.Clear(fileRequest);
 			}
 
 			public KeyValuePair<DownloadResponse, Stream> Download(FileRequest fileRequest)
 			{
-				return _client.Download(fileRequest);
+				return Client.Download(fileRequest);
 			}
 
 			public DownloadResponse Download(FileRequest fileRequest, string outputPath)
 			{
-				return _client.Download(fileRequest, outputPath);
+				return Client.Download(fileRequest, outputPath);
 			}
 
 			public void Upload(UploadRequest uploadRequest)
 			{
-				_client.Upload(uploadRequest);
+				Client.Upload(uploadRequest);
 			}
 
 			public DownloadURLResponse GetFileFieldDownloadURL(DownloadURLRequest downloadUrlRequest)
 			{
-				return _client.GetFileFieldDownloadURL(downloadUrlRequest);
+				return Client.GetFileFieldDownloadURL(downloadUrlRequest);
 			}
 
-			public event CancelEventHandler Cancel { add { _client.Cancel += value; } remove { _client.Cancel -= value; } }
-			public event DownloadCompleteEventHandler DownloadComplete { add { _client.DownloadComplete += value; } remove { _client.DownloadComplete -= value; } }
-			public event FailureEventHandler Failure { add { _client.Failure += value; } remove { _client.Failure -= value; } }
-			public event ProgressEventHandler Progress { add { _client.Progress += value; } remove { _client.Progress -= value; } }
-			public event UploadCompleteEventHandler UploadComplete { add { _client.UploadComplete += value; } remove { _client.UploadComplete -= value; } }
+			public event CancelEventHandler Cancel { add { Client.Cancel += value; } remove { Client.Cancel -= value; } }
+			public event DownloadCompleteEventHandler DownloadComplete { add { Client.DownloadComplete += value; } remove { Client.DownloadComplete -= value; } }
+			public event FailureEventHandler Failure { add { Client.Failure += value; } remove { Client.Failure -= value; } }
+			public event ProgressEventHandler Progress { add { Client.Progress += value; } remove { Client.Progress -= value; } }
+			public event UploadCompleteEventHandler UploadComplete { add { Client.UploadComplete += value; } remove { Client.UploadComplete -= value; } }
 			public QueryResult Query(APIOptions apiOpt, Relativity.Client.Query queryObject, int length = 0)
 			{
-				return _client.Query(apiOpt, queryObject, length);
+				return Client.Query(apiOpt, queryObject, length);
 			}
 
 			public QueryResult QuerySubset(APIOptions apiOpt, string queryToken, int start, int length)
 			{
-				return _client.QuerySubset(apiOpt, queryToken, start, length);
+				return Client.QuerySubset(apiOpt, queryToken, start, length);
 			}
 
 			public List<RelativityScriptInputDetails> GetRelativityScriptInputs(APIOptions apiOpt, int scriptArtifactID)
 			{
-				return _client.GetRelativityScriptInputs(apiOpt, scriptArtifactID);
+				return Client.GetRelativityScriptInputs(apiOpt, scriptArtifactID);
 			}
 
 			public RelativityScriptResult ExecuteRelativityScript(APIOptions apiOpt, int scriptArtifactID, List<RelativityScriptInput> inputs)
 			{
-				return _client.ExecuteRelativityScript(apiOpt, scriptArtifactID, inputs);
+				return Client.ExecuteRelativityScript(apiOpt, scriptArtifactID, inputs);
 			}
 
 			public ExecuteBatchResultSet ExecuteBatch(APIOptions apiOpt, List<Command> commands, TransactionType transType)
 			{
-				return _client.ExecuteBatch(apiOpt, commands, transType);
+				return Client.ExecuteBatch(apiOpt, commands, transType);
 			}
 
 			public ProcessOperationResult MonitorProcessState(APIOptions apiOpt, Guid processID)
 			{
-				return _client.MonitorProcessState(apiOpt, processID);
+				return Client.MonitorProcessState(apiOpt, processID);
 			}
 
-			public event ProcessCancelEventHandler ProcessCancelled {  add { _client.ProcessCancelled += value; } remove { _client.ProcessCancelled -= value;} }
-			public event ProcessFailureEventHandler ProcessFailure { add { _client.ProcessFailure += value; } remove { _client.ProcessFailure -= value; } }
-			public event ProcessProgressEventHandler ProcessProgress { add { _client.ProcessProgress += value; } remove { _client.ProcessProgress -= value; } }
-			public event ProcessCompleteEventHandler ProcessComplete { add { _client.ProcessComplete += value; } remove { _client.ProcessComplete -= value; } }
-			public event ProcessCompleteWithErrorEventHandler ProcessCompleteWithError { add { _client.ProcessCompleteWithError += value; } remove { _client.ProcessCompleteWithError -= value; } }
+			public event ProcessCancelEventHandler ProcessCancelled {  add { Client.ProcessCancelled += value; } remove { Client.ProcessCancelled -= value;} }
+			public event ProcessFailureEventHandler ProcessFailure { add { Client.ProcessFailure += value; } remove { Client.ProcessFailure -= value; } }
+			public event ProcessProgressEventHandler ProcessProgress { add { Client.ProcessProgress += value; } remove { Client.ProcessProgress -= value; } }
+			public event ProcessCompleteEventHandler ProcessComplete { add { Client.ProcessComplete += value; } remove { Client.ProcessComplete -= value; } }
+			public event ProcessCompleteWithErrorEventHandler ProcessCompleteWithError { add { Client.ProcessCompleteWithError += value; } remove { Client.ProcessCompleteWithError -= value; } }
 
 			object obj = new object();	
 			public void Dispose()
 			{
 				lock (obj)
 				{
-					IRSAPIClient newClient = new ExtendedIRSAPIClient(_helper, _identity);
-					_client.Dispose();
-					_client = newClient;
+					Client.Dispose();
+					_clientWrapper = new Lazy<IRSAPIClient>(() => Rsapi.CreateRsapiClient(_identity));
 				}
 			}
 
 			public OperationResult ValidateEndpoint()
 			{
-				return _client.ValidateEndpoint();
+				return Client.ValidateEndpoint();
 			}
 
-			public AuthenticationType AuthType { get { return _client.AuthType; } set { _client.AuthType = value; } }
-			public Uri EndpointUri { get { return _client.EndpointUri; } set { _client.EndpointUri = value; } }
-			public APIOptions APIOptions { get { return _client.APIOptions; } set { _client.APIOptions = value; } }
-			public RepositoryGroup Repositories { get { return _client.Repositories;  } }
-			public event RSAPIClientServiceOperationFailedHandler RSAPIClientServiceOperationFailed { add { _client.RSAPIClientServiceOperationFailed += value; } remove { _client.RSAPIClientServiceOperationFailed -= value; } }
+			public AuthenticationType AuthType { get { return Client.AuthType; } set { Client.AuthType = value; } }
+			public Uri EndpointUri { get { return Client.EndpointUri; } set { Client.EndpointUri = value; } }
+			public APIOptions APIOptions { get { return Client.APIOptions; } set { Client.APIOptions = value; } }
+			public RepositoryGroup Repositories { get { return Client.Repositories;  } }
+			public event RSAPIClientServiceOperationFailedHandler RSAPIClientServiceOperationFailed { add { Client.RSAPIClientServiceOperationFailed += value; } remove { Client.RSAPIClientServiceOperationFailed -= value; } }
 			public List<RelativityScriptInput> ConvertToScriptInputList(List<RelativityScriptInputDetails> inputDetails)
 			{
-				return _client.ConvertToScriptInputList(inputDetails);
+				return Client.ConvertToScriptInputList(inputDetails);
 			}
 		}
 
@@ -347,13 +347,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			private readonly ITestHelper _helper;
 			private readonly ExecutionIdentity _identity;
-			private IObjectQueryManager _manager;
+			private Lazy<IObjectQueryManager> _managerWrapper;
+			private IObjectQueryManager Manager => _managerWrapper.Value;
 
 			public ExtendedIObjectQueryManager(ITestHelper helper, ExecutionIdentity identity)
 			{
 				_helper = helper;
 				_identity = identity;
-				_manager = helper.CreateUserProxy<IObjectQueryManager>();
+				_managerWrapper = new Lazy<IObjectQueryManager>(helper.CreateUserProxy<IObjectQueryManager>);
 			}
 
 			object _lock = new object();
@@ -362,30 +363,29 @@ namespace kCura.IntegrationPoint.Tests.Core
 				lock (_lock)
 				{
 					// create a new Kepler when itself being disposed.
-					var newManager =  new ExtendedIObjectQueryManager(_helper, _identity);
-					_manager.Dispose();
-					_manager = newManager;
+					Manager.Dispose();
+					_managerWrapper = new Lazy<IObjectQueryManager>(_helper.CreateUserProxy<IObjectQueryManager>);
 				}
 			}
 
 			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, global::Relativity.Services.ObjectQuery.Query query, int start, int length, int[] includePermissions, string queryToken)
 			{
-				return _manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions,  queryToken);
+				return Manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions,  queryToken);
 			}
 
 			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, global::Relativity.Services.ObjectQuery.Query query, int start, int length, int[] includePermissions, string queryToken, IProgress<ProgressReport> progress)
 			{
-				return _manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions, queryToken, progress);
+				return Manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions, queryToken, progress);
 			}
 
 			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, global::Relativity.Services.ObjectQuery.Query query, int start, int length, int[] includePermissions, string queryToken, CancellationToken cancel)
 			{
-				return _manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions, queryToken, cancel);
+				return Manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions, queryToken, cancel);
 			}
 
 			public Task<ObjectQueryResultSet> QueryAsync(int workspaceId, int artifactTypeId, global::Relativity.Services.ObjectQuery.Query query, int start, int length, int[] includePermissions, string queryToken, CancellationToken cancel, IProgress<ProgressReport> progress)
 			{
-				return _manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions, queryToken, cancel, progress);
+				return Manager.QueryAsync(workspaceId, artifactTypeId, query, start, length, includePermissions, queryToken, cancel, progress);
 			}
 		}
 
@@ -393,38 +393,39 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			private readonly ITestHelper _helper;
 			private readonly ExecutionIdentity _identity;
-			private IPermissionManager _manager;
+			private Lazy<IPermissionManager> _managerWrapper;
+			private IPermissionManager Manager => _managerWrapper.Value;
 
 			public ExtendedIPermissionManager(ITestHelper helper, ExecutionIdentity identity)
 			{
 				_helper = helper;
 				_identity = identity;
-				_manager = _helper.CreateUserProxy<IPermissionManager>();
+				_managerWrapper = new Lazy<IPermissionManager>(helper.CreateUserProxy<IPermissionManager>);
 			}
 
 			public async Task AddRemoveAdminGroupsAsync(GroupSelector groupSelector)
 			{
-				await _manager.AddRemoveAdminGroupsAsync(groupSelector).ConfigureAwait(false);
+				await Manager.AddRemoveAdminGroupsAsync(groupSelector).ConfigureAwait(false);
 			}
 
 			public async Task AddRemoveItemGroupsAsync(int workspaceArtifactID, int artifactID, GroupSelector groupSelector)
 			{
-				await _manager.AddRemoveItemGroupsAsync(workspaceArtifactID, artifactID, groupSelector).ConfigureAwait(false);
+				await Manager.AddRemoveItemGroupsAsync(workspaceArtifactID, artifactID, groupSelector).ConfigureAwait(false);
 			}
 
 			public async Task AddRemoveWorkspaceGroupsAsync(int workspaceArtifactID, GroupSelector groupSelector)
 			{
-				await _manager.AddRemoveWorkspaceGroupsAsync(workspaceArtifactID, groupSelector).ConfigureAwait(false);
+				await Manager.AddRemoveWorkspaceGroupsAsync(workspaceArtifactID, groupSelector).ConfigureAwait(false);
 			}
 
 			public async Task<int> CreateSingleAsync(int workspaceArtifactID, global::Relativity.Services.Permission.Permission permissionDTO)
 			{
-				return await _manager.CreateSingleAsync(workspaceArtifactID, permissionDTO).ConfigureAwait(false);
+				return await Manager.CreateSingleAsync(workspaceArtifactID, permissionDTO).ConfigureAwait(false);
 			}
 
 			public async Task DeleteSingleAsync(int workspaceArtifactID, int permissionID)
 			{
-				await _manager.DeleteSingleAsync(workspaceArtifactID, permissionID).ConfigureAwait(false);
+				await Manager.DeleteSingleAsync(workspaceArtifactID, permissionID).ConfigureAwait(false);
 			}
 
 			object obj = new object();
@@ -433,144 +434,144 @@ namespace kCura.IntegrationPoint.Tests.Core
 				lock (obj)
 				{
 					IPermissionManager newManager = new ExtendedIPermissionManager(_helper, _identity);
-					_manager.Dispose();
-					_manager = newManager;
+					_managerWrapper = new Lazy<IPermissionManager>(_helper.CreateUserProxy<IPermissionManager>);
+					Manager.Dispose();
 				}
 			}
 
 			public async Task<GroupPermissions> GetAdminGroupPermissionsAsync(global::Relativity.Services.Group.GroupRef group)
 			{
-				return await _manager.GetAdminGroupPermissionsAsync(group).ConfigureAwait(false);
+				return await Manager.GetAdminGroupPermissionsAsync(group).ConfigureAwait(false);
 			}
 
 			public async Task<GroupSelector> GetAdminGroupSelectorAsync()
 			{
-				return await _manager.GetAdminGroupSelectorAsync().ConfigureAwait(false);
+				return await Manager.GetAdminGroupSelectorAsync().ConfigureAwait(false);
 			}
 
 			public async Task<List<global::Relativity.Services.User.UserRef>> GetAdminGroupUsersAsync(global::Relativity.Services.Group.GroupRef group)
 			{
-				return await _manager.GetAdminGroupUsersAsync(group).ConfigureAwait(false);
+				return await Manager.GetAdminGroupUsersAsync(group).ConfigureAwait(false);
 			}
 
 			public async Task<GroupPermissions> GetItemGroupPermissionsAsync(int workspaceArtifactID, int artifactID, global::Relativity.Services.Group.GroupRef group)
 			{
-				return await _manager.GetItemGroupPermissionsAsync(workspaceArtifactID, artifactID, group).ConfigureAwait(false);
+				return await Manager.GetItemGroupPermissionsAsync(workspaceArtifactID, artifactID, group).ConfigureAwait(false);
 			}
 
 			public async Task<GroupSelector> GetItemGroupSelectorAsync(int workspaceArtifactID, int artifactID)
 			{
-				return await _manager.GetItemGroupSelectorAsync(workspaceArtifactID, artifactID).ConfigureAwait(false);
+				return await Manager.GetItemGroupSelectorAsync(workspaceArtifactID, artifactID).ConfigureAwait(false);
 			}
 
 			public async Task<List<global::Relativity.Services.User.UserRef>> GetItemGroupUsersAsync(int workspaceArtifactID, int artifactID, global::Relativity.Services.Group.GroupRef group)
 			{
-				return await _manager.GetItemGroupUsersAsync(workspaceArtifactID, artifactID, group).ConfigureAwait(false);
+				return await Manager.GetItemGroupUsersAsync(workspaceArtifactID, artifactID, group).ConfigureAwait(false);
 			}
 
 			public async Task<ItemLevelSecurity> GetItemLevelSecurityAsync(int workspaceArtifactID, int artifactID)
 			{
-				return await _manager.GetItemLevelSecurityAsync(workspaceArtifactID, artifactID).ConfigureAwait(false);
+				return await Manager.GetItemLevelSecurityAsync(workspaceArtifactID, artifactID).ConfigureAwait(false);
 			}
 
 			public async Task<Dictionary<int, ItemLevelSecurity>> GetItemLevelSecurityListAsync(int workspaceArtifactID, IEnumerable<int> artifactIDs)
 			{
-				return await _manager.GetItemLevelSecurityListAsync(workspaceArtifactID, artifactIDs).ConfigureAwait(false);
+				return await Manager.GetItemLevelSecurityListAsync(workspaceArtifactID, artifactIDs).ConfigureAwait(false);
 			}
 
 			public async Task<List<PermissionValue>> GetPermissionSelectedAsync(int workspaceArtifactID, List<PermissionRef> permissions)
 			{
-				return await _manager.GetPermissionSelectedAsync(workspaceArtifactID, permissions).ConfigureAwait(false);
+				return await Manager.GetPermissionSelectedAsync(workspaceArtifactID, permissions).ConfigureAwait(false);
 			}
 
 			public async Task<List<PermissionValue>> GetPermissionSelectedAsync(int workspaceArtifactID, List<PermissionRef> permissions, int artifactID)
 			{
-				return await _manager.GetPermissionSelectedAsync(workspaceArtifactID, permissions, artifactID).ConfigureAwait(false);
+				return await Manager.GetPermissionSelectedAsync(workspaceArtifactID, permissions, artifactID).ConfigureAwait(false);
 			}
 
 			public async Task<List<PermissionValue>> GetPermissionSelectedForGroupAsync(int workspaceArtifactID, List<PermissionRef> permissions, global::Relativity.Services.Group.GroupRef group)
 			{
-				return await _manager.GetPermissionSelectedForGroupAsync(workspaceArtifactID, permissions, group).ConfigureAwait(false);
+				return await Manager.GetPermissionSelectedForGroupAsync(workspaceArtifactID, permissions, group).ConfigureAwait(false);
 			}
 
 			public async Task<List<PermissionValue>> GetPermissionSelectedForGroupAsync(int workspaceArtifactID, List<PermissionRef> permissions, global::Relativity.Services.Group.GroupRef group, int artifactID)
 			{
-				return await _manager.GetPermissionSelectedForGroupAsync(workspaceArtifactID, permissions, group, workspaceArtifactID).ConfigureAwait(false);
+				return await Manager.GetPermissionSelectedForGroupAsync(workspaceArtifactID, permissions, group, workspaceArtifactID).ConfigureAwait(false);
 			}
 
 			public async Task<Dictionary<int, List<PermissionValue>>> GetPermissionSelectedListAsync(int workspaceArtifactID, List<PermissionRef> permissions, IEnumerable<int> artifactIDs)
 			{
-				return await _manager.GetPermissionSelectedListAsync(workspaceArtifactID, permissions, artifactIDs).ConfigureAwait(false);
+				return await Manager.GetPermissionSelectedListAsync(workspaceArtifactID, permissions, artifactIDs).ConfigureAwait(false);
 			}
 
 			public async Task<GroupPermissions> GetWorkspaceGroupPermissionsAsync(int workspaceArtifactID, global::Relativity.Services.Group.GroupRef group)
 			{
-				return await _manager.GetWorkspaceGroupPermissionsAsync(workspaceArtifactID, group).ConfigureAwait(false);
+				return await Manager.GetWorkspaceGroupPermissionsAsync(workspaceArtifactID, group).ConfigureAwait(false);
 			}
 
 			public async Task<GroupSelector> GetWorkspaceGroupSelectorAsync(int workspaceArtifactID)
 			{
-				return await _manager.GetWorkspaceGroupSelectorAsync(workspaceArtifactID).ConfigureAwait(false);
+				return await Manager.GetWorkspaceGroupSelectorAsync(workspaceArtifactID).ConfigureAwait(false);
 			}
 
 			public async Task<List<global::Relativity.Services.User.UserRef>> GetWorkspaceGroupUsersAsync(int workspaceArtifactID, global::Relativity.Services.Group.GroupRef group)
 			{
-				return await _manager.GetWorkspaceGroupUsersAsync(workspaceArtifactID, group).ConfigureAwait(false);
+				return await Manager.GetWorkspaceGroupUsersAsync(workspaceArtifactID, group).ConfigureAwait(false);
 			}
 
 			public async Task<PermissionQueryResultSet> QueryAsync(int workspaceArtifactID, global::Relativity.Services.Query query)
 			{
-				return await _manager.QueryAsync(workspaceArtifactID, query).ConfigureAwait(false);
+				return await Manager.QueryAsync(workspaceArtifactID, query).ConfigureAwait(false);
 			}
 
 			public async Task<PermissionQueryResultSet> QueryAsync(int workspaceArtifactID, global::Relativity.Services.Query query, int length)
 			{
-				return await _manager.QueryAsync(workspaceArtifactID, query, length).ConfigureAwait(false);
+				return await Manager.QueryAsync(workspaceArtifactID, query, length).ConfigureAwait(false);
 			}
 
 			public async Task<PermissionQueryResultSet> QuerySubsetAsync(int workspaceArtifactID, string queryToken, int start, int length)
 			{
-				return await _manager.QuerySubsetAsync(workspaceArtifactID, queryToken, start, length).ConfigureAwait(false);
+				return await Manager.QuerySubsetAsync(workspaceArtifactID, queryToken, start, length).ConfigureAwait(false);
 			}
 
 			public async Task<global::Relativity.Services.Permission.Permission> ReadSingleAsync(int workspaceArtifactID, int permissionID)
 			{
-				return await _manager.ReadSingleAsync(workspaceArtifactID, permissionID).ConfigureAwait(false);
+				return await Manager.ReadSingleAsync(workspaceArtifactID, permissionID).ConfigureAwait(false);
 			}
 
 			public async Task SetAdminGroupPermissionsAsync(GroupPermissions groupPermissions)
 			{
-				await _manager.SetAdminGroupPermissionsAsync(groupPermissions).ConfigureAwait(false);
+				await Manager.SetAdminGroupPermissionsAsync(groupPermissions).ConfigureAwait(false);
 			}
 
 			public async Task SetItemGroupPermissionsAsync(int workspaceArtifactID, GroupPermissions groupPermissions)
 			{
-				await _manager.SetItemGroupPermissionsAsync(workspaceArtifactID, groupPermissions).ConfigureAwait(false);
+				await Manager.SetItemGroupPermissionsAsync(workspaceArtifactID, groupPermissions).ConfigureAwait(false);
 			}
 
 			public async Task SetItemLevelSecurityAsync(int workspaceArtifactID, ItemLevelSecurity itemLevelSecurity)
 			{
-				await _manager.SetItemLevelSecurityAsync(workspaceArtifactID, itemLevelSecurity).ConfigureAwait(false);
+				await Manager.SetItemLevelSecurityAsync(workspaceArtifactID, itemLevelSecurity).ConfigureAwait(false);
 			}
 
 			public async Task SetPermissionSelectedForGroupAsync(int workspaceArtifactID, List<PermissionValue> permissionValues, global::Relativity.Services.Group.GroupRef group)
 			{
-				await _manager.SetPermissionSelectedForGroupAsync(workspaceArtifactID, permissionValues, group).ConfigureAwait(false);
+				await Manager.SetPermissionSelectedForGroupAsync(workspaceArtifactID, permissionValues, group).ConfigureAwait(false);
 			}
 
 			public async Task SetPermissionSelectedForGroupAsync(int workspaceArtifactID, List<PermissionValue> permissionValues, global::Relativity.Services.Group.GroupRef group, int artifactID)
 			{
-				await _manager.SetPermissionSelectedForGroupAsync(workspaceArtifactID, permissionValues, group, artifactID).ConfigureAwait(false);
+				await Manager.SetPermissionSelectedForGroupAsync(workspaceArtifactID, permissionValues, group, artifactID).ConfigureAwait(false);
 			}
 
 			public async Task SetWorkspaceGroupPermissionsAsync(int workspaceArtifactID, GroupPermissions groupPermissions)
 			{
-				await _manager.SetWorkspaceGroupPermissionsAsync(workspaceArtifactID, groupPermissions).ConfigureAwait(false);
+				await Manager.SetWorkspaceGroupPermissionsAsync(workspaceArtifactID, groupPermissions).ConfigureAwait(false);
 			}
 
 			public async Task UpdateSingleAsync(int workspaceArtifactID, global::Relativity.Services.Permission.Permission permissionDTO)
 			{
-				await _manager.UpdateSingleAsync(workspaceArtifactID, permissionDTO).ConfigureAwait(false);
+				await Manager.UpdateSingleAsync(workspaceArtifactID, permissionDTO).ConfigureAwait(false);
 			}
 		}
 		#endregion
