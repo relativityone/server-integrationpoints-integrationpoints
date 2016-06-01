@@ -33,7 +33,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 	{
 		private readonly string _sourceWorkspaceName;
 		private readonly string _targetWorkspaceName;
-		protected SourceProvider RelativityProvider;
+
+	    protected SourceProvider LdapProvider;
+        protected SourceProvider RelativityProvider;
 		protected DestinationProvider DestinationProvider;
 		protected ICaseServiceContext CaseContext;
 
@@ -71,10 +73,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			IEnumerable<SourceProvider> providers = CaseContext.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name),
 							Guid.Parse(SourceProviderFieldGuids.Identifier));
 			RelativityProvider = providers.First(provider => provider.Name == "Relativity");
-			DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
+            LdapProvider = providers.First(provider => provider.Name == "LDAP");
+            DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
 		}
 
-		protected virtual void Install()
+	    protected virtual void Install()
 		{
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
 			Container.Register(Component.For<IServiceContextHelper>()

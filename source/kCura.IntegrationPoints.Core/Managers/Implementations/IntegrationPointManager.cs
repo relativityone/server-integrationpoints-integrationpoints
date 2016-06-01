@@ -79,9 +79,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			var integrationPointObjectTypeGuid = new Guid(ObjectTypeGuids.IntegrationPoint);
 			if (integrationPointDto.ArtifactId > 0) // IP exists -- Edit permissions check
 			{
-				if (!sourceWorkspacePermissionRepository.UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit))
+				if (!sourceWorkspacePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit))
 				{
 					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_EDIT);
+				}
+
+				if (!sourceWorkspacePermissionRepository.UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit))
+				{
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCe_NO_EDIT);
 				}
 			}
 			else // IP is new -- Create permissions check

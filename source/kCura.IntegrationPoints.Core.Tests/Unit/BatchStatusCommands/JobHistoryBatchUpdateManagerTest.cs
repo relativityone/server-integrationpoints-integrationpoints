@@ -22,6 +22,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private readonly string _uniqueJobId = "12-25-96";
 		private readonly int _sourceWorkspaceId = 56879;
 		private readonly int _submittedBy = 4141;
+		private const string _scratchTableName = "IntegrationPoint_Relativity_JobHistory";
 		private readonly Job _job;
 
 		[SetUp]
@@ -31,19 +32,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_jobHistoryRepository = Substitute.For<IJobHistoryRepository>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_onBehalfOfUserClaimsPrincipalFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
-			_scratchTableRepository.GetTempTableName().Returns(Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST);
 
-			
-			_onBehalfOfUserClaimsPrincipalFactory.CreateClaimsPrincipal(_submittedBy).Returns(_claimsPrincipal);
-
-			_instance = new JobHistoryBatchUpdateManager(_repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _jobHistoryRdoId, _sourceWorkspaceId, _submittedBy, _uniqueJobId);
+			_scratchTableRepository.GetTempTableName().Returns(_scratchTableName);
+			_repositoryFactory.GetScratchTableRepository(_sourceWorkspaceId, _scratchTableName, Arg.Any<string>()).ReturnsForAnyArgs(_scratchTableRepository);
 
 			_repositoryFactory.GetJobHistoryRepository(_sourceWorkspaceId).Returns(_jobHistoryRepository);
-			_onBehalfOfUserClaimsPrincipalFactory.Received().CreateClaimsPrincipal(_submittedBy);
+			_onBehalfOfUserClaimsPrincipalFactory.CreateClaimsPrincipal(_submittedBy).Returns(_claimsPrincipal);
+
+			_instance = new JobHistoryBatchUpdateManager(_repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceWorkspaceId, _jobHistoryRdoId, _submittedBy, _uniqueJobId);
+			_onBehalfOfUserClaimsPrincipalFactory.Received(1).CreateClaimsPrincipal(_submittedBy);
 		}
 
 		[Test]
-		[Ignore]
 		public void OnJobComplete_EmptyDocuments()
 		{
 			//Arrange
@@ -52,12 +52,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_instance.OnJobComplete(_job);
 
 			//Assert
-			_scratchTableRepository.Received().DeleteTable();
-			_jobHistoryRepository.Received().TagDocsWithJobHistory(_claimsPrincipal, 0, _jobHistoryRdoId, _sourceWorkspaceId, Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST);
+			_scratchTableRepository.Received(1).Dispose();
+			_jobHistoryRepository.Received(1).TagDocsWithJobHistory(_claimsPrincipal, 0, _jobHistoryRdoId, _sourceWorkspaceId, _scratchTableName);
 		}
 
 		[Test]
-		[Ignore]
 		public void OnJobComplete_FullDocuments()
 		{
 			//Arrange
@@ -65,8 +64,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_instance.OnJobComplete(_job);
 
 			//Assert
-			_scratchTableRepository.Received().DeleteTable();
-			_jobHistoryRepository.Received().TagDocsWithJobHistory(_claimsPrincipal, Arg.Any<int>(), _jobHistoryRdoId, _sourceWorkspaceId, Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST);
+			_scratchTableRepository.Received(1).Dispose();
+			_jobHistoryRepository.Received(1).TagDocsWithJobHistory(_claimsPrincipal, Arg.Any<int>(), _jobHistoryRdoId, _sourceWorkspaceId, _scratchTableName);
 		}
 
 		[Test]

@@ -2,15 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.Contracts;
-using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client;
-using Newtonsoft.Json;
 using NSubstitute;
 using NUnit.Framework;
 
@@ -163,28 +159,28 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		[TestCase(false)]
 		public void UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_AllPermissions(bool isNew)
 		{
-			UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_GoldFlow_Cases(isNew, true, true, true, true, true, true, true, true, true, true);
+			UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_GoldFlow_Cases(isNew, true, true, true, true, true, true, true, true, true, true, true);
 		}
 
 		[TestCase(true)]
 		[TestCase(false)]
 		public void UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_NoPermissions(bool isNew)
 		{
-			UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_GoldFlow_Cases(isNew, false, false, false, false, false, false, false, false, false, false);
+			UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_GoldFlow_Cases(isNew, false, false, false, false, false, false, false, false, false, false, false);
 		}
 
 		[TestCase(true)]
 		[TestCase(false)]
 		public void UserHasPermissionToSaveIntegrationPoint_RelativityProvider_AllPermissions(bool isNew)
 		{
-			UserHasPermissionToSaveIntegrationPoint_RelativityProvider_GoldFlow_Cases(isNew, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
+			UserHasPermissionToSaveIntegrationPoint_RelativityProvider_GoldFlow_Cases(isNew, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
 		}
 
 		[TestCase(true)]
 		[TestCase(false)]
 		public void UserHasPermissionToSaveIntegrationPoint_RelativityProvider_NoPermissions(bool isNew)
 		{
-			UserHasPermissionToSaveIntegrationPoint_RelativityProvider_GoldFlow_Cases(isNew, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
+			UserHasPermissionToSaveIntegrationPoint_RelativityProvider_GoldFlow_Cases(isNew, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
 		}
 
 		private void ClearAllReceivedCalls()
@@ -199,7 +195,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 		private void UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_GoldFlow_Cases(
 			bool isNew,
-			bool integrationPointEditOrCreatePermission,
+			bool integrationPointTypeEditOrCreatePermission,
+			bool integrationPointInstanceEditOrCreatePermission,
 			bool sourceWorkspacePermission,
 			bool integrationPointTypeViewPermission,
 			bool integrationPointInstanceViewPermission,
@@ -220,11 +217,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			var integrationPointObjectTypeGuid = new Guid(ObjectTypeGuids.IntegrationPoint);
 			if (isNew)
 			{
-				_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create).Returns(integrationPointEditOrCreatePermission);
+				_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create).Returns(integrationPointTypeEditOrCreatePermission);
 			}
 			else
 			{
-				_sourcePermissionRepository.UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit).Returns(integrationPointEditOrCreatePermission);
+				_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit).Returns(integrationPointTypeEditOrCreatePermission);
+				_sourcePermissionRepository.UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit).Returns(integrationPointInstanceEditOrCreatePermission);
 			}
 
 			_sourcePermissionRepository.UserHasPermissionToAccessWorkspace().Returns(sourceWorkspacePermission);
@@ -262,21 +260,26 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				destinationRdoPermissions &&
 				sourceProviderTypeViewPermission &&
 				sourceProviderInstanceViewPermission &&
-				integrationPointEditOrCreatePermission;
+				integrationPointTypeEditOrCreatePermission &&
+				integrationPointInstanceEditOrCreatePermission;
 
 			var errorMessages = new List<string>();
 			if (isNew)
 			{
-				if (!integrationPointEditOrCreatePermission)
+				if (!integrationPointTypeEditOrCreatePermission)
 				{
 					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_CREATE);
 				}
 			}
 			else
 			{
-				if (!integrationPointEditOrCreatePermission)
+				if (!integrationPointTypeEditOrCreatePermission)
 				{
 					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_EDIT);
+				}
+				if (!integrationPointInstanceEditOrCreatePermission)
+				{
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCe_NO_EDIT);
 				}
 			}
 
@@ -324,9 +327,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			Assert.AreEqual(expectedSuccessValue, result.Success, $"The result success should be {expectedSuccessValue}.");
 			Assert.AreEqual(errorMessages, result.ErrorMessages, "The error messages should match.");
 
-
-			_sourcePermissionRepository.Received(isNew ? 0 : 1).UserHasArtifactInstancePermission(integrationPointObjectTypeGuid,
-					integrationPointDto.ArtifactId, ArtifactPermission.Edit);
+			_sourcePermissionRepository.Received(isNew ? 0 : 1).UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit);
+			_sourcePermissionRepository.Received(isNew ? 0 : 1).UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit);
 			_sourcePermissionRepository.Received(isNew ? 1 : 0).UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create);
 			_sourcePermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
 			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View);
@@ -346,7 +348,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 		private void UserHasPermissionToSaveIntegrationPoint_RelativityProvider_GoldFlow_Cases(
 			bool isNew,
-			bool integrationPointEditOrCreatePermission,
+			bool integrationPointTypeEditOrCreatePermission,
+			bool integrationPointInstanceEditOrCreatePermission,
 			bool sourceWorkspacePermission,
 			bool integrationPointTypeViewPermission,
 			bool integrationPointInstanceViewPermission,
@@ -374,11 +377,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			var integrationPointObjectTypeGuid = new Guid(ObjectTypeGuids.IntegrationPoint);
 			if (isNew)
 			{
-				_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create).Returns(integrationPointEditOrCreatePermission);
+				_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create).Returns(integrationPointTypeEditOrCreatePermission);
 			}
 			else
 			{
-				_sourcePermissionRepository.UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit).Returns(integrationPointEditOrCreatePermission);
+				_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit).Returns(integrationPointTypeEditOrCreatePermission);
+				_sourcePermissionRepository.UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit).Returns(integrationPointInstanceEditOrCreatePermission);
 			}
 
 			_sourcePermissionRepository.UserHasPermissionToAccessWorkspace().Returns(sourceWorkspacePermission);
@@ -428,21 +432,26 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				sourceDocumentEditPermissions &&
 				savedSearchPermissions &&
 				savedSearchIsPublic &&
-				integrationPointEditOrCreatePermission;
+				integrationPointTypeEditOrCreatePermission &&
+				integrationPointInstanceEditOrCreatePermission;
 
 			var errorMessages = new List<string>();
 			if (isNew)
 			{
-				if (!integrationPointEditOrCreatePermission)
+				if (!integrationPointTypeEditOrCreatePermission)
 				{
 					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_CREATE);
 				}
 			}
 			else
 			{
-				if (!integrationPointEditOrCreatePermission)
+				if (!integrationPointTypeEditOrCreatePermission)
 				{
 					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_EDIT);
+				}
+				if (!integrationPointInstanceEditOrCreatePermission)
+				{
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCe_NO_EDIT);
 				}
 			}
 
@@ -514,8 +523,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			Assert.AreEqual(expectedSuccessValue, result.Success, $"The result success should be {expectedSuccessValue}.");
 			Assert.AreEqual(errorMessages, result.ErrorMessages, "The error messages should match.");
 
-			_sourcePermissionRepository.Received(isNew ? 0 : 1).UserHasArtifactInstancePermission(integrationPointObjectTypeGuid,
-		integrationPointDto.ArtifactId, ArtifactPermission.Edit);
+			_sourcePermissionRepository.Received(isNew ? 0 : 1).UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit);
+			_sourcePermissionRepository.Received(isNew ? 0 : 1).UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit);
 			_sourcePermissionRepository.Received(isNew ? 1 : 0).UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create);
 			_sourcePermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
 			_sourcePermissionRepository.Received(1)
