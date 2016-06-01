@@ -207,7 +207,6 @@
     <Compile Include="Contexts\OnBehalfOfUserClaimsPrincipalFactory.cs" />
     <Compile Include="Extensions\ClaimsPrincipalExtension.cs" />
     <Compile Include="Extensions\ObjectQueryResultSetExtensions.cs" />
-    <Compile Include="Extensions\RelativityToggleExtensions.cs" />
     <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="Helpers\ApiHelper.cs" />
@@ -324,6 +323,7 @@
     </Compile>
     <Compile Include="SourceProviderConfiguration.cs" />
     <Compile Include="SqlObjectTypeQuery.cs" />
+    <Compile Include="Toggle\ExtendedRelativityToggle.cs" />
     <Compile Include="Transformers\IDtoTransformer.cs" />
     <Compile Include="Transformers\JobHistoryErrorTransformer.cs" />
     <Compile Include="Transformers\IntegrationPointTransformer.cs" />

@@ -7,16 +7,14 @@ using System.Threading.Tasks;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Toggle;
 using Relativity.API;
-using Relativity.Data.Toggles;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class ScratchTableRepository : IScratchTableRepository
 	{
 		private readonly IDBContext _caseContext;
-		private readonly IToggleProvider _toggleProvider;
 		private readonly IDocumentRepository _documentRepository;
 		private readonly IFieldRepository _fieldRepository;
 		private readonly string _tablePrefix;
@@ -27,20 +25,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private string _tempTableName;
 		private string _docIdentifierFieldName;
 		private int _count;
-		private bool _isAOAGEnabled;
+		private readonly bool _isAOAGEnabled;
 
-		public ScratchTableRepository(IHelper helper, IToggleProvider toggleProvider, IDocumentRepository documentRepository, 
+		public ScratchTableRepository(IHelper helper, IExtendedRelativityToggle toggleProvider, IDocumentRepository documentRepository, 
 			IFieldRepository fieldRepository, string tablePrefix, string tableSuffix, int workspaceId)
 		{
 			_caseContext = helper.GetDBContext(workspaceId);
-			_toggleProvider = toggleProvider;
 			_documentRepository = documentRepository;
 			_fieldRepository = fieldRepository;
 			_tablePrefix = tablePrefix;
 			_tableSuffix = tableSuffix;
 			_workspaceId = workspaceId;
 			IgnoreErrorDocuments = true;
-			_isAOAGEnabled = _toggleProvider.IsAOAGFeatureEnabled();
+			_isAOAGEnabled = toggleProvider.IsAOAGFeatureEnabled();
 		}
 
 		public bool IgnoreErrorDocuments { get; set; }
