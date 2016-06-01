@@ -66,9 +66,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			_service.UpdateRdo(historyRdo);
 		}
 
-		private void StatusUpdate(int importedCount, int errorCount)
+		private void StatusUpdate(int count)
 		{
-			Update(_helper.GetBatchInstance(_job), importedCount, errorCount);
+			Update(_helper.GetBatchInstance(_job), count);
 		}
 
 		/// <summary>
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		/// sp_getapplock - https://msdn.microsoft.com/en-us/library/ms189823.aspx
 		/// sp_releaseapplock - https://msdn.microsoft.com/en-us/library/ms178602.aspx
 		/// </summary>
-		public void Update(Guid identifier, int importedItem, int erroredCount)
+		public void Update(Guid identifier, int count)
 		{
 			try
 			{
@@ -90,8 +90,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				EnableMutex(identifier);
 
 				Data.JobHistory historyRdo = _service.GetRdo(_helper.GetBatchInstance(_job));
-				historyRdo.ItemsImported += importedItem;
-				historyRdo.ItemsWithErrors += erroredCount;
+				historyRdo.ItemsImported += count;
 				_service.UpdateRdo(historyRdo);
 
 				_context.CommitTransaction();
