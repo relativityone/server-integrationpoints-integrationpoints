@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using Castle.Core.Internal;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
@@ -32,7 +33,9 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 	{
 		private readonly string _sourceWorkspaceName;
 		private readonly string _targetWorkspaceName;
-		protected SourceProvider RelativityProvider;
+
+	    protected SourceProvider LdapProvider;
+        protected SourceProvider RelativityProvider;
 		protected DestinationProvider DestinationProvider;
 		protected ICaseServiceContext CaseContext;
 
@@ -52,7 +55,16 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 			const string template = "New Case Template";
 			SourceWorkspaceArtifactId = Workspace.CreateWorkspace(_sourceWorkspaceName, template);
-			TargetWorkspaceArtifactId = SourceWorkspaceArtifactId;
+
+			if (!_targetWorkspaceName.IsNullOrEmpty())
+			{
+				TargetWorkspaceArtifactId = Workspace.CreateWorkspace(_targetWorkspaceName, template);
+			}
+			else
+			{
+				TargetWorkspaceArtifactId = SourceWorkspaceArtifactId;
+			}
+
 			Workspace.ImportApplicationToWorkspace(SourceWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
 			SavedSearchArtifactId = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents");
 			Install();
@@ -61,10 +73,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			IEnumerable<SourceProvider> providers = CaseContext.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name),
 							Guid.Parse(SourceProviderFieldGuids.Identifier));
 			RelativityProvider = providers.First(provider => provider.Name == "Relativity");
-			DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
+            LdapProvider = providers.First(provider => provider.Name == "LDAP");
+            DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
 		}
 
-		protected virtual void Install()
+	    protected virtual void Install()
 		{
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
 			Container.Register(Component.For<IServiceContextHelper>()
@@ -111,10 +124,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 		protected IntegrationModel CreateOrUpdateIntegrationPoint(IntegrationModel model)
 		{
-			Helper.PermissionManager.UserCanEditDocuments().Returns(true);
-			Helper.PermissionManager.UserCanImport().Returns(true);
-			Helper.PermissionManager.UserHasArtifactInstancePermission(Arg.Any<int>(), Arg.Any<int>(), ArtifactPermission.View).Returns(true);
-
 			IIntegrationPointService service = Container.Resolve<IIntegrationPointService>();
 
 			int integrationPointArtifactId = service.SaveIntegration(model);
