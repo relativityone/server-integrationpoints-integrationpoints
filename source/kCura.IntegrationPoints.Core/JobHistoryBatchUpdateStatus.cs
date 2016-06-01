@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core
 				var query = new Query<RDO>();
 				query.Fields = new List<FieldValue> { new FieldValue(Guid.Parse(JobHistoryFieldGuids.ItemsWithErrors)) };
 				query.Condition = new TextCondition(Guid.Parse(JobHistoryFieldGuids.BatchInstance), TextConditionEnum.EqualTo, taskParameters.BatchInstance.ToString());
-				var result = _service.JobHistoryLibrary.Query(query).First();
+				JobHistory result = _service.JobHistoryLibrary.Query(query).First();
 				JobHistory = result;
 			}
 			return JobHistory;

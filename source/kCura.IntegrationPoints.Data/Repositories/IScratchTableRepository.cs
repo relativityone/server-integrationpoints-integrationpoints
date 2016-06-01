@@ -10,6 +10,8 @@ namespace kCura.IntegrationPoints.Data.Repositories
 
 		int Count { get; }
 
+		void BatchAddArtifactIdsIntoTempTable(IList<int> artifactIds, int batchSize);
+
 		void AddArtifactIdsIntoTempTable(IList<int> artifactIds);
 
 		void RemoveErrorDocument(string docIdentifier);

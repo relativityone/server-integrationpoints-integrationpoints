@@ -7,7 +7,7 @@ namespace kCura.IntegrationPoints.Core.Contracts.BatchReporter
 	public delegate void BatchCompleted(DateTime startTime, DateTime endTime, int totalRows, int errorRowCount);
 	public delegate void BatchSubmitted(int size, int batchSize);
 	public delegate void BatchCreated(int batchSize);
-	public delegate void StatusUpdate(int count);
+	public delegate void StatusUpdate(int importedCount, int errorCount);
 
 	public interface IBatchReporter
 	{

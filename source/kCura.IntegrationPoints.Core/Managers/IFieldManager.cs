@@ -6,14 +6,6 @@ namespace kCura.IntegrationPoints.Core.Managers
 	public interface IFieldManager
 	{
 		/// <summary>
-		/// Retrieves field artifact ids for the given field
-		/// </summary>
-		/// <param name="workspaceArtifactId">Workspace to retrieve from</param>
-		/// <param name="fieldGuids">Field guids to retrieve</param>
-		/// <returns>Dictionary of field artifact guids and ids</returns>
-		Dictionary<Guid, int> RetrieveFieldArtifactIds(int workspaceArtifactId, IEnumerable<Guid> fieldGuids);
-
-		/// <summary>
 		/// Retrieves the artifact view field id for the given field
 		/// </summary>
 		/// <param name="workspaceArtifactId">Workspace to retrieve from</param>

@@ -156,15 +156,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			_baseContext.DBContext.ExecuteNonQuerySQLStatement(sql, new[] { filterTypeParam, artifactViewFieldIdParam });
 		}
-		
-
-		public Dictionary<Guid, int> RetrieveFieldArtifactIds(IEnumerable<Guid> fieldGuids)
-		{
-			List<Relativity.Client.DTOs.Field> fields = RetrieveFields(fieldGuids);
-
-			Dictionary<Guid, int> result = fields.ToDictionary(field => field.Guids.First(), field => field.ArtifactID);
-			return result;
-		}
 
 		private List<Relativity.Client.DTOs.Field> RetrieveFields(IEnumerable<Guid> fieldGuids)
 		{

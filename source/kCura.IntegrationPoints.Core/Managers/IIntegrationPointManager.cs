@@ -39,5 +39,15 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// <returns>A PermissionCheckDTO object.</returns>
 		PermissionCheckDTO UserHasPermissionToRunJob(int workspaceArtifactId, IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null);
 
+		/// <summary>
+		/// Checks to see if the user has the required permissions to save an Integration Point
+		/// </summary>
+		/// <param name="sourceWorkspaceArtifactId">The workspace artifact id that the Integration Point is being saved in.</param>
+		/// <param name="integrationPointDto">The integration point to save</param>
+		/// <param name="sourceProvider">States the Integration Point's source provider type. If not provided, the method will retrieve it internally.</param>
+		/// <returns>A PermissionCheckDTO object.</returns>
+		PermissionCheckDTO UserHasPermissionToSaveIntegrationPoint(int sourceWorkspaceArtifactId,
+			IntegrationPointDTO integrationPointDto, Constants.SourceProvider? sourceProvider = null);
+
 	}
 }

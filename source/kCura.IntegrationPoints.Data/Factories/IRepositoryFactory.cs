@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Toggle;
 
 namespace kCura.IntegrationPoints.Data.Factories
 {
@@ -111,7 +112,7 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// Returns a class implementing the ISourceProviderRepository interface
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id</param>
-		/// <returns>A class impelmenting the ISourceProviderRepository interface</returns>
+		/// <returns>A class implementing the ISourceProviderRepository interface</returns>
 		ISourceProviderRepository GetSourceProviderRepository(int workspaceArtifactId);
 
 		/// <summary>
@@ -142,7 +143,7 @@ namespace kCura.IntegrationPoints.Data.Factories
 		IWorkspaceRepository GetWorkspaceRepository();
 
 		/// <summary>
-		/// Returns a class implplementing the IErrorRepository interface.
+		/// Returns a class implementing the IErrorRepository interface.
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
 		/// <returns>A class implementing the IErrorRepository interface.</returns>

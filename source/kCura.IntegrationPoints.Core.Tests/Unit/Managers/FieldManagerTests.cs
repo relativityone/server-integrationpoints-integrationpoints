@@ -29,26 +29,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
-		public void RetrieveFieldArtifactIds_GoldFlow()
-		{
-			// ARRANGE
-			var guids = new Guid[] {Guid.NewGuid(), Guid.NewGuid()};
-			var expectedResult = new Dictionary<Guid, int>()
-			{
-				{guids[0], 123123},
-				{guids[1], 324234}
-			};
-			
-			_fieldRepository.RetrieveFieldArtifactIds(guids).Returns(expectedResult);
-
-			// ACT
-			Dictionary<Guid, int> result = _testInstance.RetrieveFieldArtifactIds(_WORKSPACE_ID, guids);
-
-			// ASSERT
-			Assert.AreEqual(expectedResult, result);
-		}
-
-		[Test]
 		public void RetrieveArtifactViewFieldId_GoldFlow()
 		{
 			// ARRANGE
