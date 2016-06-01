@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using NUnit.Framework;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 {
@@ -12,6 +16,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 	public class IntegrationPointManagerTests : WorkspaceDependentTemplate
 	{
 		private IIntegrationPointService _integrationPointService;
+		private IDBContext _dbContext;
+		private int _groupId;
+		private UserModel _userModel;
 
 		public IntegrationPointManagerTests() : base("IntegrationPointManagerSource", "IntegrationPointManagerTarget")
 		{
@@ -22,15 +29,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 		public override void SetUp()
 		{
 			base.SetUp();
-			ResolveServices();
+			_integrationPointService = Container.Resolve<IIntegrationPointService>();
+			_dbContext = Helper.GetDBContext(-1);
+			CreateGroupAndUser();
 		}
 
 		[Test]
 		[Explicit]
-		public void ExampleTest()
+		public void IntegrationCreateAndSavePermissions()
 		{
 			//Arrange
-
 			IntegrationModel integrationModel = new IntegrationModel
 			{
 				Destination = CreateDefaultDestinationConfig(),
@@ -47,36 +55,54 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Managers
 				Map = CreateDefaultFieldMap()
 			};
 
-			//Create Integration Point
+			//Change user context
+			SharedVariables.RelativityUserName = _userModel.EmailAddress;
+			SharedVariables.RelativityPassword = _userModel.Password;
 
-			//Great Group and User
-			int groupId = Group.CreateGroup("Smoke Test Group");
-			bool addedGroupToTargetWorkspace = Group.AddGroupToWorkspace(TargetWorkspaceArtifactId, groupId);
-			bool addedGroupToSourceWorkspace = Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, groupId);
-
-			UserModel user = User.CreateUser("New", "Test", "permissionsTest@kcura.com", new[] { groupId });
-
-			//Assign permissions here using Permissions.cs or any private methods
+			//Permission dictionary
+			Dictionary<string, bool> permissions = new Dictionary<string, bool>();
+			//permissions.Add("");
 
 			//Act
-			
-			//Execute whatever action you are verifying permissions under the context of the user
-			SharedVariables.RelativityUserName = user.EmailAddress;
-			SharedVariables.RelativityPassword = user.Password;
 
-			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel); //Creation Example
-			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, user.ArtifactId); //Run example
-			_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, user.ArtifactId); // retry example
+
 
 			//Assert
 
 
 		}
 
-		private void ResolveServices()
+		private string GetErrorMessage (string expectedErrorMessage)
 		{
-			_integrationPointService = Container.Resolve<IIntegrationPointService>();
+			string query = "SELECT FROM [EDDS].[eddsdbo].[Error] WHERE CaseArtifactID = @caseArtifact AND Message = '@message'";
+
+			SqlParameter[] parameters = new SqlParameter[]
+			{
+				new SqlParameter("caseArtifact", SqlDbType.NVarChar) { Value = SourceWorkspaceArtifactId },
+				new SqlParameter("message", SqlDbType.NVarChar) { Value = expectedErrorMessage },
+			};
+
+			try
+			{
+				string fullMessage = _dbContext.ExecuteSqlStatementAsScalar<string>(query, parameters);
+				return fullMessage;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"An error occurred while querying for Relativity Error Message: { expectedErrorMessage } for Workspace: { SourceWorkspaceArtifactId }. Exception: { ex.Message }.");
+            }
+		}
+
+		private void AssertErrorMessage(string expectedErrorMessage, string expectedFullErrorContent, bool[] permissions)
+		{
+			string expectedFullErrorMessage = GetErrorMessage(expectedErrorMessage);
+			StringAssert.Contains(expectedFullErrorMessage, expectedFullErrorContent);
+		}
+
+		private void CreateGroupAndUser()
+		{
+			_groupId = Group.CreateGroup("Permission Test Group");
+			_userModel = User.CreateUser("New", "Test", "permissionsTest@kcura.com", new[] { _groupId });
 		}
 	}
-	
 }
