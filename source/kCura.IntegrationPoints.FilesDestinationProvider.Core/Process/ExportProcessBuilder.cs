@@ -6,6 +6,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
+using kCura.WinEDDS.Service.Export;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {

@@ -1,13 +1,14 @@
 ﻿using System.Net;
 using kCura.WinEDDS.Service;
+using kCura.WinEDDS.Service.Export;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
-    internal class SearchManagerWrapperFactory : ISearchManagerFactory
+    internal class SearchManagerFactory : ISearchManagerFactory
     {
         public ISearchManager Create(ICredentials credentials, CookieContainer cookieContainer)
         {
-            return new SearchManagerWrapper(new SearchManager(credentials, cookieContainer));
+            return new SearchManager(credentials, cookieContainer);
         }
     }
 }

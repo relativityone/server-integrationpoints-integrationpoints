@@ -31,7 +31,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			_configSettings = new ConfigSettings();
 		    var exportProcessBuilder = new ExportProcessBuilder(Substitute.For<ILoggingMediator>(),
 		        Substitute.For<IUserMessageNotification>(), Substitute.For<IUserNotification>(), new UserPasswordCredentialProvider(_configSettings),
-                new CaseManagerWrapperFactory(), new SearchManagerWrapperFactory(), new ExporterWrapperFactory(), new ExportFileHelper());
+                new CaseManagerWrapperFactory(), new SearchManagerFactory(), new ExporterWrapperFactory(), new ExportFileHelper());
             _instanceUnderTest = new ExportProcessRunner(exportProcessBuilder);
 			_workspaceService = new WorkspaceService(_configSettings);
 			_exportSettings = CreateExportSettings();

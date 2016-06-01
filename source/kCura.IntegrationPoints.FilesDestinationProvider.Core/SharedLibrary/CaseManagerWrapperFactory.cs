@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using kCura.WinEDDS.Service;
+using kCura.WinEDDS.Service.Export;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
@@ -7,7 +8,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
     {
         public ICaseManager Create(ICredentials credentials, CookieContainer cookieContainer)
         {
-            return new CaseManagerWrapper(new CaseManager(credentials, cookieContainer));
+            return new CaseManager(credentials, cookieContainer);
         }
     }
 }
