@@ -279,7 +279,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		private void ImportJob_OnDocumentError(IDictionary row)
 		{
-			_itemsImported--;
+			_itemsImported -= _itemsErrored;
 			_itemsErrored++;
 			if (Environment.TickCount - _lastJobErrorUpdate > _JOB_PROGRESS_TIMEOUT_MILLISECONDS)
 			{
