@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
@@ -31,16 +32,16 @@ namespace kCura.IntegrationPoints.FtpProvider
 
         public IEnumerable<FieldEntry> GetFields(string options)
         {
-            var retVal = new List<FieldEntry>();
-            var fileName = String.Empty;
-            var remoteLocation = String.Empty;
-            var modelOptions = GetSettingsModel(options);
+            List<FieldEntry> retVal = new List<FieldEntry>();
+            string fileName = String.Empty;
+            string remoteLocation = String.Empty;
+            Settings settings = GetSettingsModel(options);
             try
             {
-                var csvInput = AddFileExtension(modelOptions.Filename_Prefix);
-                fileName = GetDynamicFileName(Path.GetFileName(csvInput), modelOptions.Timezone_Offset);
+                var csvInput = AddFileExtension(settings.Filename_Prefix);
+                fileName = GetDynamicFileName(Path.GetFileName(csvInput), settings.Timezone_Offset);
                 remoteLocation = Path.GetDirectoryName(FormatPath(csvInput));
-                using (var client = GetClient(modelOptions))
+                using (var client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, settings.Username, settings.Password))
                 {
                     using (Stream stream = client.DownloadStream(remoteLocation, fileName, Constants.RetyCount))
                     {
@@ -75,27 +76,24 @@ namespace kCura.IntegrationPoints.FtpProvider
             IDataReader retVal;
             string fileName = String.Empty;
             string remoteLocation = String.Empty;
-            Settings modelOptions = GetSettingsModel(options);
+            Settings settings = GetSettingsModel(options);
             ParserOptions parserOptions = ParserOptions.GetDefaultParserOptions();
             try
             {
-                var csvInput = AddFileExtension(modelOptions.Filename_Prefix);
-                fileName = GetDynamicFileName(Path.GetFileName(csvInput), modelOptions.Timezone_Offset);
+                var csvInput = AddFileExtension(settings.Filename_Prefix);
+                fileName = GetDynamicFileName(Path.GetFileName(csvInput), settings.Timezone_Offset);
                 remoteLocation = Path.GetDirectoryName(FormatPath(csvInput));
-                using (var client = GetClient(modelOptions))
+                using (var client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, settings.Username, settings.Password))
                 {
                     var fileLocation = Path.GetTempPath() + Guid.NewGuid().ToString() + ".csv";
                     client.DownloadFile(fileLocation, remoteLocation, fileName, Constants.RetyCount);
                     var fileReader = _dataReaderFactory.GetFileDataReader(fileLocation);
                     if (parserOptions.FirstLineContainsColumnNames)
                     {
-                        //skip column headers row
-                        fileReader.Read();
-
                         //since column list and order is recorded at the last Integration Point save,
                         //verify that current file has the same structure
                         string columns = fileReader.GetString(0);
-                        ValidateColumns(columns, modelOptions, parserOptions);
+                        ValidateColumns(columns, settings, parserOptions);
                     }
                     retVal = fileReader;
                 }
@@ -118,15 +116,16 @@ namespace kCura.IntegrationPoints.FtpProvider
         public IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options)
         {
             IDataReader retVal;
-            var fileName = String.Empty;
-            var remoteLocation = String.Empty;
-            var modelOptions = GetSettingsModel(options);
+            string fileName = String.Empty;
+            string remoteLocation = String.Empty;
+            Settings settings = GetSettingsModel(options);
             ParserOptions parserOptions = ParserOptions.GetDefaultParserOptions();
             parserOptions.FirstLineContainsColumnNames = false;
             try
             {
+                List<string> columnList = settings.ColumnList.Select(x => x.FieldIdentifier).ToList();
                 TextReader reader = _dataReaderFactory.GetEnumerableReader(entryIds);
-                IParser parser = _parserFactory.GetDelimitedFileParser(reader, parserOptions, modelOptions.ColumnList);
+                IParser parser = _parserFactory.GetDelimitedFileParser(reader, parserOptions, columnList);
                 retVal = parser.ParseData();
             }
             catch (Exception ex)
@@ -197,20 +196,6 @@ namespace kCura.IntegrationPoints.FtpProvider
             return DateTime.UtcNow.Add(ts);
         }
 
-        internal IFtpConnector GetClient(Settings settings)
-        {
-            IFtpConnector client;
-            if (settings.Protocol == ProtocolName.FTP)
-            {
-                client = _connectorFactory.CreateFtpConnector(settings.Host, settings.Port.GetValueOrDefault(21), settings.Username, settings.Password);
-            }
-            else
-            {
-                client = _connectorFactory.CreateSftpConnector(settings.Host, settings.Port.GetValueOrDefault(22), settings.Username, settings.Password);
-            }
-            return client;
-        }
-
         internal String FormatPath(String path)
         {
             var retVal = path.Trim();
@@ -247,8 +232,7 @@ namespace kCura.IntegrationPoints.FtpProvider
         internal void ValidateColumns(string columns, Settings settings, ParserOptions parserOptions)
         {
             //must contain the same columns in the same order as it was initially when Integration Point was saved
-            columns = columns.Replace(" ", string.Empty);
-            string expectedColumns = string.Join(parserOptions.Delimiters[0], settings.ColumnList);
+            string expectedColumns = string.Join(parserOptions.Delimiters[0], settings.ColumnList.Select(x => x.FieldIdentifier).ToList());
 
             if (!expectedColumns.Equals(columns, StringComparison.InvariantCultureIgnoreCase))
             {

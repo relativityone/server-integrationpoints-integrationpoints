@@ -14,7 +14,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 
         public TextReader GetEnumerableReader(IEnumerable<string> lines)
         {
-            return new EnumerableReader( lines);
+            return new EnumerableReader(lines);
         }
     }
 }

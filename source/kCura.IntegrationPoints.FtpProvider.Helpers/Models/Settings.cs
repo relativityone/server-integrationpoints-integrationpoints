@@ -1,4 +1,5 @@
-﻿using System;
+﻿using kCura.IntegrationPoints.Contracts.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
@@ -29,7 +30,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
 
         [DisplayName("Port:")]
         [DefaultValue(21)]
-        public Int32? Port { get; set; }
+        public Int32 Port { get; set; }
 
         [DisplayName("Username:")]
         public String Username
@@ -61,7 +62,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
         [DefaultValue(0)]
         public Int32? Timezone_Offset { get; set; }
 
-        public List<string> ColumnList { get; set; }
+        public List<FieldEntry> ColumnList { get; set; }
 
 
         /// <summary>
@@ -76,6 +77,25 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers.Models
             if (Uri.CheckHostName(Host) != UriHostNameType.Unknown)
             {
                 valid = true;
+            }
+
+            return valid;
+        }
+
+        public Boolean ValidatePort()
+        {
+            var valid = true;
+
+            if (Port == 0)
+            {
+                if (Protocol.Equals(ProtocolName.FTP))
+                {
+                    Port = 21;
+                }
+                else
+                {
+                    Port = 22;
+                }
             }
 
             return valid;

@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             var input = String.Join(delimiter, columns) + Environment.NewLine + String.Join(delimiter, data);
 
             var streamInput = StringToStream(input);
-            var parser = new DelimitedFileParser(streamInput, new ParserOptions() { Delimiters = new[] { "," } });
+            var parser = new DelimitedFileParser(streamInput, new ParserOptions() { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } });
             var parsedData = parser.ParseData();
 
             var parsedColumns = GetDataReaderColumns(parsedData);
@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             var input = String.Join(delimiter, columns) + Environment.NewLine + String.Join(delimiter, data);
 
             var streamInput = StringToStream(input);
-            var parser = new DelimitedFileParser(streamInput, new ParserOptions() { Delimiters = new[] { "," } });
+            var parser = new DelimitedFileParser(streamInput, new ParserOptions() { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } });
             var parsedData = parser.ParseData();
 
             var isClosed = parsedData.IsClosed;
@@ -153,7 +153,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser.Tests
             var input = String.Join(delimiter, columns) + Environment.NewLine + String.Join(delimiter, data);
 
             var streamInput = StringToStream(input);
-            var parser = new DelimitedFileParser(streamInput, new ParserOptions() { Delimiters = new[] { "," } });
+            var parser = new DelimitedFileParser(streamInput, new ParserOptions() { FirstLineContainsColumnNames = true, Delimiters = new[] { "," } });
             var parsedData = parser.ParseData();
 
             var isClosed = parsedData.IsClosed;

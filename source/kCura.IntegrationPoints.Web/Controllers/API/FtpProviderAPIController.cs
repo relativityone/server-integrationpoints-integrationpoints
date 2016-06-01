@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
 using kCura.IntegrationPoints.Security;
@@ -12,36 +16,42 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
     {
         private IEncryptionManager _securityManager;
         private ISettingsManager _settingsManager;
-        public FtpProviderAPIController(IEncryptionManager securityManager, ISettingsManager settingsManager)
+        private IProviderFactory _providerFactory;
+
+        public FtpProviderAPIController(IEncryptionManager securityManager, ISettingsManager settingsManager, IProviderFactory providerFactory)
         {
             _securityManager = securityManager;
             _settingsManager = settingsManager;
+            _providerFactory = providerFactory;
         }
 
         [HttpPost]
         public IHttpActionResult Encrypt([FromBody] object message)
         {
-            var decryptedText = string.Empty;
+            string encryptedText = string.Empty;
             if (message != null)
             {
-                decryptedText = _securityManager.Encrypt(message.ToString());
+                encryptedText = _securityManager.Encrypt(message.ToString());
             }
-            return Ok(decryptedText);
+            return Ok(encryptedText);
         }
-		[HttpPost]
-		public IHttpActionResult GetValue([FromBody] object data)
-		{
-			var result = new List<KeyValuePair<string, string>>();
-			result.Add(new KeyValuePair<string, string>("Connection Path", "test"));
-			result.Add(new KeyValuePair<string, string>("Object Filter String", "test"));
 
-			return Ok(result);
-		}
-		[HttpPost]
+        [HttpPost]
         public IHttpActionResult Decrypt([FromBody] string message)
         {
-            var decryptedText = _securityManager.Decrypt(message);
+            string decryptedText = _securityManager.Decrypt(message);
             return Ok(decryptedText);
+        }
+
+        [HttpPost]
+        public IHttpActionResult GetColumnList([FromBody] object data)
+        {
+            string encryptedSettings = _securityManager.Encrypt(data.ToString());
+            IDataSourceProvider ftpProvider = _providerFactory.CreateProvider(Guid.Parse(FtpProvider.Helpers.Constants.Guids.FtpProviderEventHandler));
+            IEnumerable<Contracts.Models.FieldEntry> fields = ftpProvider.GetFields(encryptedSettings);
+            var result = fields.ToList();
+
+            return Ok(result);
         }
 
         [HttpPost]

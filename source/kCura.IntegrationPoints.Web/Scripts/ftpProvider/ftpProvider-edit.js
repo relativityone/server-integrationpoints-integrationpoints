@@ -77,7 +77,7 @@ var ftpHelper = (function (data) {
         $('#filename_prefix').val(model.filename_prefix);
         $('#timezone_offset').val(new Date().getTimezoneOffset());
     }
-    var _returnValue = function (model) {
+    var _getColumnList = function (model) {
         return IP.data.ajax({
             cache: false,
             data: JSON.stringify(model),
@@ -92,7 +92,7 @@ var ftpHelper = (function (data) {
         setSettingsModel: _setModel,
         encryptSettings: _encrypt,
         decryptSettings: _decrypt,
-        retrieveValueFromServer: _returnValue
+        getColumnList: _getColumnList
     }
 
 })(IP.data);
@@ -105,7 +105,7 @@ var ftpHelper = (function (data) {
         return helper.validateSettings(model);
     }
     function retrieveValueFromServer(model) {
-        return helper.retrieveValueFromServer(model);
+        return helper.getColumnList(model);
     }
 
     function getSettingsModel() {
@@ -136,8 +136,9 @@ var ftpHelper = (function (data) {
 
         var p1 = validateSettings(localModel);
         p1.then(function () {
-            retrieveValueFromServer(localModel).then(function (value) {
+            retrieveValueFromServer(localModel).then(function (columnList) {
                 debugger;
+                localModel.columnlist = columnList;
                 //update model with the value returned;
                 document.getElementById('validation_message').innerHTML = "";
                 self.publish("saveState", localModel);

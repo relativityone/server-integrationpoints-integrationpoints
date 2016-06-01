@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
         public const Int32 RetyCount = 2;
     }
 
-    public static class ProtocolName
+    public class ProtocolName
     {
         public const String FTP = "FTP - File Transfer Protocol";
         public const String SFTP = "SFTP - SSH File Transfer Protocol";

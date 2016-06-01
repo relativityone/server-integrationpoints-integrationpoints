@@ -7,28 +7,23 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 {
     public class EnumerableReader : TextReader
     {
-        private readonly char _separator;
         private readonly IEnumerator<string> _enumerator;
         private string _currentText;
         private int _pos;
-        private readonly bool _useSeperator;
         private bool _enumeratorDisposed = false;
 
-        public EnumerableReader(IEnumerable<string> lines) : this(lines, '\n')
-        {
-            _useSeperator = false;
-        }
-
-        public EnumerableReader(IEnumerable<string> lines, char separator)
+        public EnumerableReader(IEnumerable<string> lines)
         {
             _enumerator = lines.GetEnumerator();
-            _separator = separator;
-            _useSeperator = true;
         }
 
         private void SetNewLine()
         {
             _currentText = _enumerator.MoveNext() ? _enumerator.Current : null;
+            if (_currentText != null && !_currentText.EndsWith(Environment.NewLine))
+            {
+                _currentText = _currentText + Environment.NewLine;
+            }
             _pos = 0;
         }
 
@@ -40,17 +35,18 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             {
                 SetNewLine();
                 if (_currentText == null)
+                {
                     return -1;
+                }
             }
 
             if (_pos >= _currentText.Length)
             {
                 SetNewLine();
                 if (_currentText == null)
+                {
                     return -1;
-
-                if (_useSeperator)
-                    return _separator;
+                }
             }
 
             return _currentText[_pos++];
@@ -64,7 +60,9 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             {
                 SetNewLine();
                 if (_currentText == null)
+                {
                     return -1;
+                }
             }
 
             string newst = _currentText;
@@ -72,13 +70,11 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 
             if (_pos >= _currentText.Length)
             {
-                if (_useSeperator)
-                    return _separator;
-
                 SetNewLine();
                 if (_currentText == null)
+                {
                     return -1;
-
+                }
                 newst = _currentText;
                 newpos = _pos;
             }
@@ -94,12 +90,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 
         public override int Read(char[] buffer, int index, int count)
         {
-            for (int j = 0; j < index; j++)
-            {
-                //Consume chars
-                Read();
-            }
-
             int i = 0;
             while (i < count)
             {
@@ -108,7 +98,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
                 {
                     break;
                 }
-                buffer[i] = (char) val;
+                buffer[index + i] = (char)val;
                 i++;
             }
             return i;
@@ -119,11 +109,9 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
             var sb = new StringBuilder();
 
             string line;
-            bool first = true;
             while ((line = ReadLine()) != null)
             {
-                sb.Append((!first && _useSeperator) ? _separator + line : line);
-                first = false;
+                sb.Append(line);
             }
 
             return sb.ToString();

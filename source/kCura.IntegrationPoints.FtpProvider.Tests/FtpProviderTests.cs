@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
@@ -31,10 +32,15 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
         [Test, System.ComponentModel.Description("Validates columns when all match")]
         public void ValidateColumns_AllMatch()
         {
-            string columns = " AAA,bbb,  CcC";
+            string columns = "AAA,bbb,CcC";
             Settings settings = new Settings()
             {
-                ColumnList = new List<string>() { "aAa", "BBB", "CcC" }
+                ColumnList = new List<FieldEntry>()
+                {
+                    new FieldEntry() {FieldIdentifier = "aAa"},
+                    new FieldEntry() {FieldIdentifier = "BBB"},
+                    new FieldEntry() {FieldIdentifier = "CcC"}
+                }
             };
 
             FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory);
@@ -45,10 +51,15 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
         [Test, System.ComponentModel.Description("Validates columns when some missing 2 vs 3")]
         public void ValidateColumns_OneMissing()
         {
-            string columns = "AAA, bbb";
+            string columns = "AAA,bbb";
             Settings settings = new Settings()
             {
-                ColumnList = new List<string>() { "aAa", "BBB", "CcC" }
+                ColumnList = new List<FieldEntry>()                 {
+                    new FieldEntry() {FieldIdentifier = "aAa"},
+                    new FieldEntry() {FieldIdentifier = "BBB"},
+                    new FieldEntry() {FieldIdentifier = "CcC"}
+                }
+
             };
 
             FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory);
@@ -62,7 +73,13 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
             string columns = string.Empty;
             Settings settings = new Settings()
             {
-                ColumnList = new List<string>() { "aAa", "BBB", "CcC" }
+                ColumnList = new List<FieldEntry>()
+                {
+                    new FieldEntry() {FieldIdentifier = "aAa"},
+                    new FieldEntry() {FieldIdentifier = "BBB"},
+                    new FieldEntry() {FieldIdentifier = "CcC"}
+                }
+
             };
 
             FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory);
@@ -73,10 +90,16 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
         [Test, System.ComponentModel.Description("Validates columns when some missing 3 vs 4")]
         public void ValidateColumns_SomeMissing2()
         {
-            string columns = "AAA, bbb, CcC";
+            string columns = "AAA,bbb,CcC";
             Settings settings = new Settings()
             {
-                ColumnList = new List<string>() { "aAa", "BBB", "CcC", "ddd" }
+                ColumnList = new List<FieldEntry>()
+                {
+                    new FieldEntry() {FieldIdentifier = "aAa"},
+                    new FieldEntry() {FieldIdentifier = "BBB"},
+                    new FieldEntry() {FieldIdentifier = "CcC"},
+                    new FieldEntry() {FieldIdentifier = "ddd"}
+                }
             };
 
             FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory);
@@ -87,16 +110,15 @@ namespace kCura.IntegrationPoints.FtpProvider.Tests
         [Test, System.ComponentModel.Description("Validates columns when all missing in settings 3 vs 0")]
         public void ValidateColumns_SomeMissing()
         {
-            string columns = "AAA, bbb,  CcC";
+            string columns = "AAA,bbb,CcC";
             Settings settings = new Settings()
             {
-                ColumnList = new List<string>() { }
+                ColumnList = new List<FieldEntry>() { }
             };
 
             FtpProvider FtpProvider = new FtpProvider(_connectorFactory, _settingsManager, _parserFactory, _dataReaderFactory);
 
             Assert.Throws<Exceptions.ColumnsMissmatchExcepetion>(() => FtpProvider.ValidateColumns(columns, settings, _parserOptions));
         }
-
     }
 }
