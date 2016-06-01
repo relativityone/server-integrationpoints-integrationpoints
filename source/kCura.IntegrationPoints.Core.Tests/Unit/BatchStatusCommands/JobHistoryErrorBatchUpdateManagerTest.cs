@@ -344,7 +344,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		public void JobHistoryErrorBatchUpdateManagerInitializationFailure_NoMatchingObjectType()
 		{
 			//Arrange
-			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(_jobHistoryErrorGuid).Returns(new int?());
+			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(_jobHistoryErrorGuid).Returns(new int());
 
 			//Act
 			Exception ex = Assert.Throws<Exception>(() => new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory,

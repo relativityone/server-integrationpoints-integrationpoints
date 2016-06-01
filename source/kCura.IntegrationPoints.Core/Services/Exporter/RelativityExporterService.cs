@@ -55,7 +55,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			ClaimsPrincipal claimsPrincipal,
 			FieldMap[] mappedFields,
 			int startAt,
-			string config)
+			string config,
+			int savedSearchArtifactId)
 			: this(mappedFields)
 		{
 			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
@@ -117,7 +118,7 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 
 			try
 			{
-				_exportJobInfo = _exporter.InitializeExport(settings.SavedSearchArtifactId, _avfIds, startAt);
+				_exportJobInfo = _exporter.InitializeExport(savedSearchArtifactId, _avfIds, startAt);
 			}
 			catch
 			{

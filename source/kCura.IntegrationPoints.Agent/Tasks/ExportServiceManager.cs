@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		private readonly TaskResult _taskResult;
 		private SourceConfiguration _sourceConfiguration;
 		private JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
-		private int _originalSavedSearchArtifactId;
+		private int _savedSearchArtifactId;
 		private IJobHistoryErrorManager _jobHistoryErrorManager;
 
 		public ExportServiceManager(IHelper helper,
@@ -121,6 +121,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				// Push documents
 				using (IExporterService exporter = _exporterFactory.BuildExporter(MappedFields.ToArray(),
 					IntegrationPointDto.SourceConfiguration,
+					_savedSearchArtifactId,
 					job.SubmittedBy))
 				{
 					JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
@@ -147,7 +148,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			catch (Exception ex)
 			{
 				_taskResult.Status = TaskStatusEnum.Fail;
-				_jobHistoryErrorService.JobLevelErrorOccurred = true;
 				_jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 			}
 			finally
@@ -241,28 +241,34 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_jobHistoryErrorManager = _managerFactory.CreateJobHistoryErrorManager(_contextContainer, _sourceConfiguration.SourceWorkspaceArtifactId, uniqueJobId);
 			_updateStatusType = _jobHistoryErrorManager.StageForUpdatingErrors(job, this.JobHistoryDto.JobType);
 
+			ExportUsingSavedSearchSettings exportSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(IntegrationPointDto.SourceConfiguration);
+			_savedSearchArtifactId = exportSettings.SavedSearchArtifactId;
+
 			//Load saved search for just item-level error retries
 			if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
-				_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
+			    _updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
 			{
-				ExportUsingSavedSearchSettings exportSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(IntegrationPointDto.SourceConfiguration);
-				_originalSavedSearchArtifactId = exportSettings.SavedSearchArtifactId;
-				exportSettings.SavedSearchArtifactId = _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, exportSettings.SavedSearchArtifactId);
-				IntegrationPointDto.SourceConfiguration = JsonConvert.SerializeObject(exportSettings);
-
-				_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, exportSettings.SavedSearchArtifactId);
+				_savedSearchArtifactId = _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, exportSettings.SavedSearchArtifactId);
 			}
+
+			_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, exportSettings.SavedSearchArtifactId);
 
 			_batchStatus.ForEach(batch => batch.OnJobStart(job));
 		}
-
-
-
+		
 		private void FinalizeExportService(Job job)
 		{
 			try
 			{
 				_exportServiceJobObservers.OfType<IScratchTableRepository>().ForEach(observer => observer.Dispose());
+
+				//Now we can delete the temp saved search (only gets called on retry for item-level only errors)
+				if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
+					_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
+				{
+					IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
+					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_sourceConfiguration.SavedSearchArtifactId, 0);
+				}
 
 				// Finalize any In Progress Job History Errors
 				if (_jobHistoryErrorService.JobLevelErrorOccurred)
@@ -307,25 +313,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					this.IntegrationPointDto.NextScheduledRuntimeUTC = _jobService.GetJobNextUtcRunDateTime(job, _scheduleRuleFactory, _taskResult); //use this for concurrency -MNG
 				}
 
-				// Reset saved search back to original option (only gets changed on retry for item-level only errors)
-				if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
-				    _updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
-				{
-					ExportUsingSavedSearchSettings exportSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(IntegrationPointDto.SourceConfiguration);
-					_sourceConfiguration.SavedSearchArtifactId = exportSettings.SavedSearchArtifactId;
-					exportSettings.SavedSearchArtifactId = _originalSavedSearchArtifactId;
-					IntegrationPointDto.SourceConfiguration = JsonConvert.SerializeObject(exportSettings);
-				}
-
 				_caseServiceContext.RsapiService.IntegrationPointLibrary.Update(this.IntegrationPointDto);
-
-				//Now that we've updated back to the original saved search, we can delete the temp saved search (only gets called on retry for item-level only errors)
-				if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors &&
-				    _updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
-				{
-					IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
-					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_sourceConfiguration.SavedSearchArtifactId, 0);
-				}
 			}
 			catch
 			{

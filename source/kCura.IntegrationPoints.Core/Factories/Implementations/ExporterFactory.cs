@@ -18,14 +18,14 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public IExporterService BuildExporter(FieldMap[] mappedFiles, string config, int onBehalfOfUser)
+		public IExporterService BuildExporter(FieldMap[] mappedFiles, string config, int savedSearchArtifactId, int onBehalfOfUser)
 		{
 			if (onBehalfOfUser == 0)
 			{
 				onBehalfOfUser = 9;
 			}
 			ClaimsPrincipal claimsPrincipal = _claimsPrincipalFactory.CreateClaimsPrincipal(onBehalfOfUser);
-			return new RelativityExporterService(_repositoryFactory, claimsPrincipal, mappedFiles, 0, config);
+			return new RelativityExporterService(_repositoryFactory, claimsPrincipal, mappedFiles, 0, config, savedSearchArtifactId);
 		}
 	}
 }
