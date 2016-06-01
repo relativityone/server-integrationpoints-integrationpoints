@@ -16,6 +16,7 @@ using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using NSubstitute;
@@ -24,8 +25,6 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
-	using IntegrationPoints.Data.Factories.Implementations;
-
 	[TestFixture]
 	[Category("Integration Tests")]
 	[Explicit]
@@ -93,6 +92,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				.LifeStyle.Transient);
 
 			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));
+			Container.Register(Component.For<IQueueRepository>().ImplementedBy<QueueRepository>().LifestyleTransient());
 
 			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller() };
 			foreach (IWindsorInstaller dependency in dependencies)

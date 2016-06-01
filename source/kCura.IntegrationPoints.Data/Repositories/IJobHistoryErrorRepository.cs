@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="jobHistoryArtifactId">Job History Artifact Id to gather job history errors for</param>
 		/// <param name="errorType">Error Type choice to gather job history errors for</param>
 		/// <returns>List of Artifact Ids of Job History Errors for the provided Job History and Error Type</returns>
-		List<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType);
+		IList<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType);
 
 		/// <summary>
 		/// Mass edits the Job History Errors 
@@ -41,10 +41,10 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		void DeleteItemLevelErrorsSavedSearch(int savedSearchArtifactId, int retryAttempts);
 
 		/// <summary>
-		/// Reads specified job history errors instances.
+		/// Reads specified job history error instances.
 		/// </summary>
 		/// <param name="artifactIds">Artifact ids of job history errors to read.</param>
-		/// <returns>Object representation of job history errors.</returns>
+		/// <returns>Object representations of job history errors.</returns>
 		IList<JobHistoryErrorDTO> Read(IEnumerable<int> artifactIds);
 
 		/// <summary>

@@ -35,8 +35,11 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		{
 			IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceWorkspaceArtifactId);
 
+			kCura.Method.Injection.InjectionManager.Instance.Evaluate("A876A7F9-A9F8-445C-9A01-FCB0C7FD4E8B");
+
 			if (_updateStatusType.JobType == JobHistoryErrorDTO.UpdateStatusType.JobTypeChoices.RetryErrors)
 			{
+
 				switch (_updateStatusType.ErrorTypes)
 				{
 					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
@@ -72,6 +75,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 						break;
 				}
 			}
+
 		}
 
 		public void OnJobComplete(Job job)
@@ -107,6 +111,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 			finally
 			{
+				kCura.Method.Injection.InjectionManager.Instance.Evaluate("C2B46E70-20EF-4A08-8BCF-9A15274ECC55");
+
 				scratchTable.Dispose();
 			}
 		}

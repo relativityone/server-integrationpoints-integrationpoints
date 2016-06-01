@@ -7,16 +7,14 @@ using System.Threading.Tasks;
 using Castle.Core.Internal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Toggle;
 using Relativity.API;
-using Relativity.Data.Toggles;
-using Relativity.Toggles;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class ScratchTableRepository : IScratchTableRepository
 	{
 		private readonly IDBContext _caseContext;
-		private readonly IToggleProvider _toggleProvider;
 		private readonly IDocumentRepository _documentRepository;
 		private readonly IFieldRepository _fieldRepository;
 		private readonly string _tablePrefix;
@@ -27,18 +25,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private string _tempTableName;
 		private string _docIdentifierFieldName;
 		private int _count;
+		private readonly bool _isAOAGEnabled;
 
-		public ScratchTableRepository(IHelper helper, IToggleProvider toggleProvider, IDocumentRepository documentRepository, 
+		public ScratchTableRepository(IHelper helper, IExtendedRelativityToggle toggleProvider, IDocumentRepository documentRepository, 
 			IFieldRepository fieldRepository, string tablePrefix, string tableSuffix, int workspaceId)
 		{
 			_caseContext = helper.GetDBContext(workspaceId);
-			_toggleProvider = toggleProvider;
 			_documentRepository = documentRepository;
 			_fieldRepository = fieldRepository;
 			_tablePrefix = tablePrefix;
 			_tableSuffix = tableSuffix;
 			_workspaceId = workspaceId;
 			IgnoreErrorDocuments = false;
+			_isAOAGEnabled = toggleProvider.IsAOAGFeatureEnabled();
 		}
 
 		public bool IgnoreErrorDocuments { get; set; }
@@ -93,20 +92,20 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public void BatchAddArtifactIdsIntoTempTable(List<int> artifactIds, int batchSize)
+		public void BatchAddArtifactIdsIntoTempTable(IList<int> artifactIds, int batchSize)
 		{
 			if (!artifactIds.IsNullOrEmpty())
 			{
 				int numberOfBatches = (artifactIds.Count + batchSize - 1);
 				for (int batchSet = 0; batchSet < numberOfBatches; batchSet++)
 				{
-					List<int> batchedArtifactIds = artifactIds.Skip(batchSet*batchSize).Take(batchSize).ToList();
+					IList<int> batchedArtifactIds = artifactIds.Skip(batchSet*batchSize).Take(batchSize).ToList();
 					AddArtifactIdsIntoTempTable(batchedArtifactIds);
 				}
 			}
 		}
 
-		public void AddArtifactIdsIntoTempTable(List<int> artifactIds)
+		public void AddArtifactIdsIntoTempTable(IList<int> artifactIds)
 		{
 			_count += artifactIds.Count;
 
@@ -141,14 +140,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				if (_database == null)
 				{
-					if (_toggleProvider.IsFeatureEnabled<AOAGToggle>())
-					{
-						_database = String.Empty;
-					}
-					else
-					{
-						_database = "[EDDSRESOURCE].";
-					}
+					_database = _isAOAGEnabled ? String.Empty : "[EDDSRESOURCE].";
 				}
 				return _database;
 			}
@@ -164,7 +156,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			if (_tempTableName == null)
 			{
 				string prepend = String.Empty;
-				if (_toggleProvider.IsFeatureEnabled<AOAGToggle>())
+				if (_isAOAGEnabled)
 				{
 					prepend = $"{ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_workspaceId)}";
 				}
@@ -175,15 +167,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 			}
 			return _tempTableName;
-		}
-
-		private int GetTempTableCount()
-		{
-			string fullTableName = GetTempTableName();
-			string sql = String.Format(@"IF EXISTS (SELECT * FROM {1}.INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
-										SELECT COUNT(*) FROM {2}[{0}]", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
-
-			return _caseContext.ExecuteSqlStatementAsScalar<int>(sql);
 		}
 
 		private int GetErroredDocumentId(string docIdentifier)

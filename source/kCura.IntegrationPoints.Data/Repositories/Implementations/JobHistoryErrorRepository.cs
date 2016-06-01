@@ -39,7 +39,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_dtoTransformer = dtoTransformer;
 		}
 
-		public List<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
+		public IList<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
 			IEnumerable<JobHistoryErrorDTO> results = RetrieveJobHistoryErrorData(jobHistoryArtifactId, errorType);
 
@@ -147,7 +147,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			FieldRef jobHistoryFieldRef = new FieldRef(JobHistoryErrorFields.JobHistory);
 			Criteria jobHistoryArtifactIdCriteria = new Criteria
 			{
-				Condition = new CriteriaCondition(jobHistoryFieldRef, CriteriaConditionEnum.AnyOfThese, new[] { jobHistoryArtifactId }) { NotOperator = true }
+				Condition = new CriteriaCondition(jobHistoryFieldRef, CriteriaConditionEnum.AnyOfThese, new[] { jobHistoryArtifactId })
 			};
 			CriteriaCollection jobHistoryObjectCriteriaCollection = new CriteriaCollection
 			{
@@ -155,7 +155,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 			Criteria jobHistoryCriteria = new Criteria
 			{
-				Condition = new CriteriaCondition(jobHistoryFieldRef, CriteriaConditionEnum.In, jobHistoryObjectCriteriaCollection)
+				Condition = new CriteriaCondition(jobHistoryFieldRef, CriteriaConditionEnum.In, jobHistoryObjectCriteriaCollection) { NotOperator = true }
 			};
 
 			CriteriaCollection searchCondition = new CriteriaCollection

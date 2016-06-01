@@ -270,7 +270,6 @@ ko.validation.insertValidationMessage = function (element) {
 				},
 				message: 'The Native file path field is required.',
 			}
-
 		});
 		
 		this.isDocument = ko.observable("false");
@@ -384,6 +383,8 @@ ko.validation.insertValidationMessage = function (element) {
 						sourceFields = result[1] || [],
 						mapping = result[2];
 
+				self.nativeFilePathOption(sourceFields);				
+
 				var types = mapFields(sourceFields);
 				self.overlay(destinationFields);
 				$.each(self.overlay(), function () {
@@ -435,8 +436,12 @@ ko.validation.insertValidationMessage = function (element) {
 						self.selectedUniqueId(mapping[i].destinationField.displayName);
 					}
 				}
+
 				mapping = $.map(mapping, function (value) {
-					return (value.fieldMapType !== mapTypes.parent && value.fieldMapType !== mapTypes.native) ? value : null;
+					if (value.fieldMapType !== mapTypes.parent && value.fieldMapType !== mapTypes.native) {
+						return value;
+					}
+					return null;
 				});
 
 

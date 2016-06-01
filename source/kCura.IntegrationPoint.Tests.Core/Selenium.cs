@@ -3,10 +3,6 @@ using OpenQA.Selenium.Chrome;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	using System;
-	using IntegrationPoints.Data;
-	using IntegrationPoints.Data.Repositories;
-
 	public static class Selenium
 	{
 		public static IWebDriver WebDriver = new ChromeDriver();
@@ -46,15 +42,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void GoToObjectInstance(int workspaceArtifactId, int integrationPointArtifactId, int artifactTypeId)
 		{
-			//WebDriver.FindElement(By.Id("ctl00_ctl00_itemList_listTable"));
-
-
-			//WebDriver.SwitchTo().DefaultContent();
-			//WebDriver.SwitchTo().Frame("ListTemplateFrame");
-
-			//string integrationPointXpath = $"//a[contains(@href,'ArtifactID={integrationPointArtifactId})]";
-			//WebDriver.FindElement(By.XPath(integrationPointXpath)).Click();
-
 			string integrationPointUrl = $"http://{SharedVariables.TargetHost}/Relativity/Case/Mask/View.aspx?AppID={workspaceArtifactId}&ArtifactID={integrationPointArtifactId}&ArtifactTypeID={artifactTypeId}";
 			WebDriver.Navigate().GoToUrl(integrationPointUrl);
 		}

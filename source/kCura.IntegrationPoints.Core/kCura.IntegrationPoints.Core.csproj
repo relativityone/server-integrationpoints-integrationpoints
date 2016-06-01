@@ -552,6 +552,7 @@
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
     <Compile Include="Managers\IArtifactGuidManager.cs" />
+    <Compile Include="Managers\IErrorManager.cs" />
     <Compile Include="Managers\IFieldManager.cs" />
     <Compile Include="Managers\IIntegrationPointManager.cs" />
     <Compile Include="Managers\IJobHistoryErrorManager.cs" />
@@ -562,6 +563,7 @@
     <Compile Include="BatchStatusCommands\IBatchStatus.cs" />
     <Compile Include="BatchStatusCommands\Implementations\JobHistoryBatchUpdateManager.cs" />
     <Compile Include="Managers\Implementations\ArtifactGuidManager.cs" />
+    <Compile Include="Managers\Implementations\ErrorManager.cs" />
     <Compile Include="Managers\Implementations\FieldManager.cs" />
     <Compile Include="Managers\Implementations\IntegrationPointManager.cs" />
     <Compile Include="Managers\Implementations\JobHistoryManager.cs" />
@@ -687,6 +689,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Config\kCura.IntegrationPoints.Config.csproj">
+      <Project>{DEF928B5-37CE-4BF3-B663-F0B8912C9C3F}</Project>
+      <Name>kCura.IntegrationPoints.Config</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>

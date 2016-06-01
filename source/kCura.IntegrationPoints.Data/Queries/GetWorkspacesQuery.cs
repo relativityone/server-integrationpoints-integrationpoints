@@ -35,7 +35,7 @@ namespace kCura.IntegrationPoints.Data.Queries
 			return this.ExecuteWorkspaceQuery(workspaceQuery);
 		}
 
-		// I hate this with the fire of a thousand burning suns -- biedrzycki: Mar 10th, 2015
+		// I hate this with the fire of a thousand burning suns -- biedrzycki: Mar 10th, 2016
 		// Queries should be removed and replaced with repositories 
 		public virtual QueryResultSet<Workspace> ExecuteWorkspaceQuery(Query<Workspace> workspaceQuery)
 		{

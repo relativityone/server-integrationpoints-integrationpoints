@@ -1,4 +1,5 @@
 ﻿using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Toggle;
 
 namespace kCura.IntegrationPoints.Data.Factories
 {
@@ -111,7 +112,7 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// Returns a class implementing the ISourceProviderRepository interface
 		/// </summary>
 		/// <param name="workspaceArtifactId">The workspace artifact id</param>
-		/// <returns>A class impelmenting the ISourceProviderRepository interface</returns>
+		/// <returns>A class implementing the ISourceProviderRepository interface</returns>
 		ISourceProviderRepository GetSourceProviderRepository(int workspaceArtifactId);
 
 		/// <summary>
@@ -138,16 +139,22 @@ namespace kCura.IntegrationPoints.Data.Factories
 		/// <summary>
 		/// Returns a class implementing the IWorkspaceRepository interface.
 		/// </summary>
-		/// <returns>A class implementing the IWorkspaceRepository.</returns>
+		/// <returns>A class implementing the IWorkspaceRepository interface.</returns>
 		IWorkspaceRepository GetWorkspaceRepository();
 
 		/// <summary>
-		/// Returns a class implementing ISavedSearchRepository interface.
+		/// Returns a class implementing the IErrorRepository interface.
+		/// </summary>
+		/// <param name="workspaceArtifactId">The workspace artifact id.</param>
+		/// <returns>A class implementing the IErrorRepository interface.</returns>
+		IErrorRepository GetErrorRepository(int workspaceArtifactId);
+
+		/// <summary>
+		/// Returns a class implementing the ISavedSearchRepository interface.
 		/// </summary>
 		/// <param name="workspaceArtifactId">Workspace artifact id.</param>
 		/// <param name="savedSearchArtifactId">Saved search artifact id.</param>
-		/// <returns></returns>
+		/// <returns>A class implementing the ISavedSearchRepository interface.</returns>
 		ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId);
-
 	}
 }

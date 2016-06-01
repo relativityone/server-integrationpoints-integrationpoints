@@ -9,41 +9,44 @@ using kCura.IntegrationPoints.Data.Adaptors.Implementations;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Data.Toggle;
 using kCura.IntegrationPoints.Data.Transformers;
 using kCura.Relativity.Client;
 using Relativity.API;
 using Relativity.Core;
-using Relativity.Toggles;
 using Relativity.Toggles.Providers;
-
 
 namespace kCura.IntegrationPoints.Data.Factories.Implementations
 {
 	public class RepositoryFactory : IRepositoryFactory
 	{
 		private readonly IHelper _helper;
-		private readonly IToggleProvider _toggleProvider;
+		private readonly Lazy<IExtendedRelativityToggle> _toggleProvider;
 
 		private IDictionary<int, ContextContainer> ContextCache { get; }
 
 		public RepositoryFactory(IHelper helper)
 		{
 			_helper = helper;
-			_toggleProvider = new SqlServerToggleProvider(
-						() => {
-							SqlConnection connection = helper.GetDBContext(-1).GetConnection(true);
-
-							return connection;
-						},
-						async () => {
-							Task<SqlConnection> task = Task.Run(() =>
-							{
-								SqlConnection connection = helper.GetDBContext(-1).GetConnection(true);
-								return connection;
-							});
-							return await task;
-						});
 			ContextCache = new Dictionary<int, ContextContainer>();
+			_toggleProvider = new Lazy<IExtendedRelativityToggle>(() =>
+			{
+				var sqlToggleProvider = new SqlServerToggleProvider(
+				() => {
+					SqlConnection connection = _helper.GetDBContext(-1).GetConnection(true);
+
+					return connection;
+				},
+				async () => {
+					Task<SqlConnection> task = Task.Run(() =>
+					{
+						SqlConnection connection = _helper.GetDBContext(-1).GetConnection(true);
+						return connection;
+					});
+					return await task;
+				});
+				return new ExtendedRelativityToggle(sqlToggleProvider);
+			});
 		}
 
 		public IArtifactGuidRepository GetArtifactGuidRepository(int workspaceArtifactId)
@@ -139,7 +142,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		public IScratchTableRepository GetScratchTableRepository(int workspaceArtifactId, string tablePrefix, string tableSuffix)
 		{
-			return new ScratchTableRepository(_helper, _toggleProvider, GetDocumentRepository(workspaceArtifactId), GetFieldRepository(workspaceArtifactId), tablePrefix, tableSuffix, workspaceArtifactId);
+			return new ScratchTableRepository(_helper, _toggleProvider.Value, GetDocumentRepository(workspaceArtifactId), GetFieldRepository(workspaceArtifactId), tablePrefix, tableSuffix, workspaceArtifactId);
 		}
 
 		public ISourceJobRepository GetSourceJobRepository(int workspaceArtifactId)
@@ -184,6 +187,13 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return repository;
 		}
 
+		public IErrorRepository GetErrorRepository(int workspaceArtifactId)
+		{
+			IErrorRepository repository = new RsapiErrorRepository(_helper, workspaceArtifactId);
+
+			return repository;
+		}
+
 		public ISavedSearchRepository GetSavedSearchRepository(int workspaceArtifactId, int savedSearchArtifactId)
 		{
 			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, ArtifactType.Search);
@@ -191,7 +201,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 			return repository;
 		}
-		
+
 		#region Helper Methods
 
 		private IObjectQueryManagerAdaptor CreateObjectQueryManagerAdaptor(int workspaceArtifactId, ArtifactType artifactType)
@@ -252,7 +262,7 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			return contexts;
 		}
 
-		#endregion
+		#endregion Helper Methods
 
 		private class ContextContainer
 		{

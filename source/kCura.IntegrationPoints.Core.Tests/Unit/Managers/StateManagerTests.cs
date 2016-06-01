@@ -24,9 +24,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			//Arrange
 			bool hasErrors = false;
 			bool hasJobsExecutingOrInQueue = false;
+			bool hasViewPermissions = true;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors);
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions);
 
 			//Assert
 			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
@@ -40,9 +41,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			//Arrange
 			bool hasErrors = false;
 			bool hasJobsExecutingOrInQueue = true;
+			bool hasViewPermissions = false;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors);
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions);
 
 			//Assert
 			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
@@ -56,9 +58,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			//Arrange
 			bool hasErrors = true;
 			bool hasJobsExecutingOrInQueue = false;
+			bool hasViewPermissions = true;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors);
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions);
 
 			//Assert
 			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
@@ -72,13 +75,31 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			//Arrange
 			bool hasErrors = true;
 			bool hasJobsExecutingOrInQueue = true;
+			bool hasViewPermissions = false;
 
 			//Act
-			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors);
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions);
 
 			//Assert
 			Assert.IsFalse(buttonStates.RunNowButtonEnabled);
 			Assert.IsFalse(buttonStates.RetryErrorsButtonEnabled);
+			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
+		}
+
+		[Test]
+		public void GetButtonState_HasErrorsAndNoViewPermissions_NoJobsRunning()
+		{
+			//Arrange
+			bool hasErrors = true;
+			bool hasJobsExecutingOrInQueue = false;
+			bool hasViewPermissions = false;
+
+			//Act
+			ButtonStateDTO buttonStates = _instance.GetButtonState(_workspaceId, _integrationPointId, hasJobsExecutingOrInQueue, hasErrors, hasViewPermissions);
+
+			//Assert
+			Assert.IsTrue(buttonStates.RunNowButtonEnabled);
+			Assert.IsTrue(buttonStates.RetryErrorsButtonEnabled);
 			Assert.IsFalse(buttonStates.ViewErrorsLinkEnabled);
 		}
 	}	

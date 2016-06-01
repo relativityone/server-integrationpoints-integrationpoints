@@ -2,6 +2,11 @@
 <Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ArtifactViewFields>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1002469</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Alert</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001868</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>AllCustodians</ColumnName>
@@ -92,6 +97,21 @@
       <ColumnName>Company</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1002199</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Containerextension</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002197</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ContainerID</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002198</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Containername</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001901</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>ContainsEmbeddedFiles</ColumnName>
@@ -120,6 +140,26 @@
       <ArtifactViewFieldId>1001945</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>ConversationIndex</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002200</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Custodian</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002478</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>CustodianCustodianDeduplicationOrder</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002201</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>CustodianDepartment</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002202</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>CustodianEmail</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001946</ArtifactViewFieldId>
@@ -177,9 +217,64 @@
       <ColumnName>DestinationWorkspace</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1002206</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>DiscoverErrorsonChildDocuments</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002307</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>DiscoverErrorsonChildDocumentsErrorstatus</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002304</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>DiscoverErrorsonChildDocumentsMessage</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002310</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>DiscoverErrorsonChildDocumentsProcessingphase</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002371</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Docs_Languages</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002392</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Docs_LanguagesLanguage</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002394</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Docs_LanguagesPercentage</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001905</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>DocumentClass</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001995</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>DocumentEmailBCC</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1001999</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>DocumentEmailCC</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002003</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>DocumentEmailFrom</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002007</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>DocumentEmailTo</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001952</ArtifactViewFieldId>
@@ -195,6 +290,26 @@
       <ArtifactViewFieldId>1001872</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>DocumentType</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002453</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>DomainsEmailBCC</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002457</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>DomainsEmailCC</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002461</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>DomainsEmailFrom</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002465</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>DomainsEmailTo</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001873</ArtifactViewFieldId>
@@ -227,6 +342,11 @@
       <ColumnName>Edit</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1002361</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>EmailAction</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001953</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>EmailBCC</ColumnName>
@@ -242,9 +362,24 @@
       <ColumnName>EmailCC</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1002362</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>EmailDuplicateID</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002363</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>EmailDuplicateSpare</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001955</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>EmailFrom</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002471</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>EmailIdentifier</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001908</ArtifactViewFieldId>
@@ -260,6 +395,21 @@
       <ArtifactViewFieldId>1001956</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>EmailSubject</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002365</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>EmailThreadGroup</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002368</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>EmailThreadingDisplay</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002369</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>EmailThreadingID</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001957</ArtifactViewFieldId>
@@ -352,6 +502,21 @@
       <ColumnName>IncludeReason</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1002360</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>InclusiveEmail</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002376</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>InclusiveReason</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002367</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Indentation</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001626</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>JobHistory</ColumnName>
@@ -367,6 +532,11 @@
       <ColumnName>LastAccessedDateTime</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1002203</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>LastPublishedOn</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001915</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>LastSavedBy</ColumnName>
@@ -375,6 +545,11 @@
       <ArtifactViewFieldId>1001916</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>LastSavedDateTime</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002195</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Level</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001023</ArtifactViewFieldId>
@@ -462,6 +637,21 @@
       <ColumnName>OfficeRevisionNumber</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1002189</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>OriginatingProcessingDataSource</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002205</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>OriginatingProcessingSet</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002243</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>OriginatingProcessingSetRepublishrequired</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001928</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>OtherProps</ColumnName>
@@ -487,6 +677,21 @@
       <ColumnName>PrimaryDate</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1002375</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Primarylanguage</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002011</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>PrivilegeDesignation</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002194</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Processingduplicatehash</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1001887</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>ProcessingErrorDesignation</ColumnName>
@@ -500,6 +705,31 @@
       <ArtifactViewFieldId>1001893</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>ProcessingErrorDesignationReason</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002190</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProcessingErrors</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002306</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProcessingErrorsErrorstatus</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002303</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProcessingErrorsMessage</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002309</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProcessingErrorsProcessingphase</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002204</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>ProcessingFileId</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001866</ArtifactViewFieldId>
@@ -587,6 +817,11 @@
       <ColumnName>RelativityNativeType</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1002470</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>SampleIndicator</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1000185</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>AccessControlListIsInherited</ColumnName>
@@ -642,6 +877,21 @@
       <ColumnName>SystemLastModifiedOn</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
+      <ArtifactViewFieldId>1002364</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>TextualNearDuplicateGroup</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002366</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>TextualNearDuplicatePrincipal</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002370</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>TextualNearDuplicateSimilarity</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
       <ArtifactViewFieldId>1000915</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>TimeZoneField</ColumnName>
@@ -675,6 +925,11 @@
       <ArtifactViewFieldId>1001902</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>UseasExhibit</ColumnName>
+    </ArtifactViewField>
+    <ArtifactViewField>
+      <ArtifactViewFieldId>1002196</ArtifactViewFieldId>
+      <ArtifactTypeId>10</ArtifactTypeId>
+      <ColumnName>Virtualpath</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
       <ArtifactViewFieldId>1001539</ArtifactViewFieldId>
@@ -1221,7 +1476,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-05-22T23:56:40.1156352Z</ExtractionDate>
+  <ExtractionDate>2016-05-25T17:51:10.6828183Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -1333,58 +1588,6 @@
           <SiblingFieldArtifactID>1038422</SiblingFieldArtifactID>
           <AutoAddChoices>false</AutoAddChoices>
           <ApplicationVersion>2.0.0.31</ApplicationVersion>
-        </Field>
-        <Field>
-          <AllowHTML>false</AllowHTML>
-          <ArtifactId>1039089</ArtifactId>
-          <ArtifactViewFieldId>1001866</ArtifactViewFieldId>
-          <AssociativeArtifactTypeId xsi:nil="true" />
-          <Codes />
-          <CodeTypeId xsi:nil="true" />
-          <ConnectorFieldArtifactId xsi:nil="true" />
-          <DisplayName>Processing Folder Path</DisplayName>
-          <DisplayValueFalse />
-          <DisplayValueTrue />
-          <FieldArtifactTypeId>10</FieldArtifactTypeId>
-          <FieldCategoryId>0</FieldCategoryId>
-          <FieldTypeId>4</FieldTypeId>
-          <FilterType>Search</FilterType>
-          <FormatString />
-          <FriendlyName />
-          <Guids>0337bdf7-1c34-40bb-8ec5-009f50757826</Guids>
-          <Guid>0337bdf7-1c34-40bb-8ec5-009f50757826</Guid>
-          <ImportBehavior xsi:nil="true" />
-          <EnableDataGrid>false</EnableDataGrid>
-          <OverlayBehavior xsi:nil="true" />
-          <IsAdditionalFileField>false</IsAdditionalFileField>
-          <IsArtifactBaseField>false</IsArtifactBaseField>
-          <IsAvailableInChoiceTree>false</IsAvailableInChoiceTree>
-          <IsAvailableToAssociativeObjects>false</IsAvailableToAssociativeObjects>
-          <IsEditable>true</IsEditable>
-          <IsGroupByEnabled>false</IsGroupByEnabled>
-          <IsIndexEnabled>false</IsIndexEnabled>
-          <IsLinked>false</IsLinked>
-          <IsRemovable>true</IsRemovable>
-          <IsRequired>false</IsRequired>
-          <IsSortable>false</IsSortable>
-          <IsVisible>true</IsVisible>
-          <Keywords />
-          <LinkType>false</LinkType>
-          <MaxLength xsi:nil="true" />
-          <Notes>Folder structure and path to file from the original location identified during processing.</Notes>
-          <RelationalIndexViewArtifactID xsi:nil="true" />
-          <SourceFieldArtifactId xsi:nil="true" />
-          <UseUnicodeEncoding>true</UseUnicodeEncoding>
-          <Width />
-          <Wrapping>true</Wrapping>
-          <AllowPivot>false</AllowPivot>
-          <AllowGroupBy>false</AllowGroupBy>
-          <AvailableInViewer>false</AvailableInViewer>
-          <PopupPickerView xsi:nil="true" />
-          <FieldTreeView xsi:nil="true" />
-          <SiblingFieldArtifactID xsi:nil="true" />
-          <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.52</ApplicationVersion>
         </Field>
       </Fields>
       <Guid>15c36703-74ea-4ff8-9dfb-ad30ece7530d</Guid>
@@ -7839,7 +8042,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.54</ApplicationVersion>
+          <ApplicationVersion>2.0.0.55</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8346,7 +8549,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.54</ApplicationVersion>
+          <ApplicationVersion>2.0.0.55</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8398,7 +8601,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.54</ApplicationVersion>
+          <ApplicationVersion>2.0.0.55</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8450,7 +8653,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.54</ApplicationVersion>
+          <ApplicationVersion>2.0.0.55</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8502,7 +8705,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.54</ApplicationVersion>
+          <ApplicationVersion>2.0.0.55</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8554,7 +8757,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.54</ApplicationVersion>
+          <ApplicationVersion>2.0.0.55</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8606,7 +8809,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.54</ApplicationVersion>
+          <ApplicationVersion>2.0.0.55</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -8683,7 +8886,7 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.3.388.10</RelativityVersion>
-  <Version>2.0.0.54</Version>
+  <Version>2.0.0.55</Version>
   <TabDisplay>true</TabDisplay>
   <OriginSignature>30db7baa-93da-4227-bdb1-e3df9e8edc72</OriginSignature>
   <MasterScripts />
@@ -8713,7 +8916,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.54</ApplicationVersion>
+      <ApplicationVersion>2.0.0.55</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038277</ArtifactId>
@@ -8724,7 +8927,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.54</ApplicationVersion>
+      <ApplicationVersion>2.0.0.55</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038278</ArtifactId>
@@ -8735,7 +8938,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.54</ApplicationVersion>
+      <ApplicationVersion>2.0.0.55</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038279</ArtifactId>
@@ -8746,7 +8949,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.54</ApplicationVersion>
+      <ApplicationVersion>2.0.0.55</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038393</ArtifactId>
@@ -8757,7 +8960,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.54</ApplicationVersion>
+      <ApplicationVersion>2.0.0.55</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038468</ArtifactId>
@@ -8768,7 +8971,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.54</ApplicationVersion>
+      <ApplicationVersion>2.0.0.55</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />
@@ -8881,7 +9084,6 @@
     <Id>1038465</Id>
     <Id>1038479</Id>
     <Id>1038484</Id>
-    <Id>1039089</Id>
   </FieldIds>
   <ChoiceIds>
     <Id>1038345</Id>

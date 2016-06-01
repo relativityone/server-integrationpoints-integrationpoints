@@ -58,38 +58,67 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				contextContainer);
 
 			var buttonList = new List<ConsoleButton>();
-
 			if (sourceProvider == kCura.IntegrationPoints.Core.Constants.SourceProvider.Relativity)
 			{
 				bool hasJobsExecutingOrInQueue= queueManager.HasJobsExecutingOrInQueue(Application.ArtifactID,
 					ActiveArtifact.ArtifactID);
-				ButtonStateDTO buttonState = stateManager.GetButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID, hasJobsExecutingOrInQueue, integrationPointHasErrors);
+				PermissionCheckDTO jobHistoryErrorViewPermissionCheck = integrationPointManager.UserHasPermissionToViewErrors(Application.ArtifactID);
+				bool canViewErrors = jobHistoryErrorViewPermissionCheck.Success;
+
+				ButtonStateDTO buttonState = stateManager.GetButtonState(Application.ArtifactID, ActiveArtifact.ArtifactID, hasJobsExecutingOrInQueue, integrationPointHasErrors, canViewErrors);
 				OnClickEventDTO onClickEvents = onClickEventHelper.GetOnClickEventsForRelativityProvider(Application.ArtifactID, ActiveArtifact.ArtifactID, buttonState);
 
 				ConsoleButton runNowButton = GetRunNowButtonRelativityProvider(buttonState.RunNowButtonEnabled, onClickEvents.RunNowOnClickEvent);
 				ConsoleButton retryErrorsButton = GetRetryErrorsButton(buttonState.RetryErrorsButtonEnabled, onClickEvents.RetryErrorsOnClickEvent);
-				ConsoleButton viewErrorsLink = GetViewErrorsLink(buttonState.ViewErrorsLinkEnabled, onClickEvents.ViewErrorsOnClickEvent);
 
 				buttonList.Add(runNowButton);
 				buttonList.Add(retryErrorsButton);
-				buttonList.Add(viewErrorsLink);
 
-				if (!permissionCheck.Success)
+				if (!canViewErrors)
 				{
-					string script = "<script type='text/javascript'>"
-									+ "$(document).ready(function () {"
-									+ "IP.message.error.raise(\""
-									+ String.Join("</br>", permissionCheck.ErrorMessages)
-									+ "\", $(\".cardContainer\"));"
-									+ "});"
-									+ "</script>";
-					console.AddScriptBlock("IPConsoleErrorDisplayScript", script);
+					permissionCheck.Success = false;
+
+					var errorMessages = new List<string>(jobHistoryErrorViewPermissionCheck.ErrorMessages);
+
+					if (permissionCheck.ErrorMessages != null)
+					{
+						errorMessages.AddRange(permissionCheck.ErrorMessages);
+					}
+
+					permissionCheck.ErrorMessages = errorMessages.ToArray();
+				}
+				else
+				{
+					ConsoleButton viewErrorsLink = GetViewErrorsLink(buttonState.ViewErrorsLinkEnabled, onClickEvents.ViewErrorsOnClickEvent);
+					buttonList.Add(viewErrorsLink);
 				}
 			}
 			else
 			{
-				ConsoleButton runNowButton = GetRunNowButton(permissionCheck.Success);
+				ConsoleButton runNowButton = GetRunNowButton();
 				buttonList.Add(runNowButton);
+			}
+
+			if (!permissionCheck.Success)
+			{
+				IErrorManager errorManager = _managerFactory.CreateErrorManager(contextContainer);
+
+				var error = new ErrorDTO()
+				{
+					Message	= Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+					FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)}"
+				};
+
+				errorManager.Create(Application.ArtifactID, new[] { error });
+
+				string script = "<script type='text/javascript'>"
+				                + "$(document).ready(function () {"
+				                + "IP.message.error.raise(\""
+				                + Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS
+								+ "\", $(\".cardContainer\"));"
+								+ "});"
+								+ "</script>";
+				console.AddScriptBlock("IPConsoleErrorDisplayScript", script);
 			}
 
 			console.ButtonList = buttonList;
@@ -97,14 +126,14 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 			return console;
 		}
 
-		private ConsoleButton GetRunNowButton(bool isEnabled)
+		private ConsoleButton GetRunNowButton()
 		{
 			return new ConsoleButton
 			{
 				DisplayText = "Run Now",
 				RaisesPostBack = false,
-				Enabled = isEnabled,
-				OnClickEvent = isEnabled ? $"IP.importNow({ActiveArtifact.ArtifactID},{Application.ArtifactID})" : String.Empty
+				Enabled = true,
+				OnClickEvent = $"IP.importNow({ActiveArtifact.ArtifactID},{Application.ArtifactID})"
 			};
 		}
 

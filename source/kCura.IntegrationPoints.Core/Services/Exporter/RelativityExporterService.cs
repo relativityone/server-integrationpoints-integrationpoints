@@ -121,6 +121,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			}
 			catch
 			{
+				// NOTE: If we get an exception, we cannot be exactly sure what the real error is,
+				// however, it is more than likely that you do not have Export or Saved Search permissions.
 				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_EXPORT);				
 			}
 

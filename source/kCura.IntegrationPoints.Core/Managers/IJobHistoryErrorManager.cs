@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.Core.Managers
 		/// </summary>
 		/// <param name="job">Job object representing the currently running job</param>
 		/// <param name="jobType">Job Type of the currently running job</param>
-		/// <param name="uniqueJobId">Job Id and Job Guid combined to be a suffix for the temp tables</param>
 		/// <returns>An UpdateStatusType that houses the job type and error types to make error status changes with</returns>
 		JobHistoryErrorDTO.UpdateStatusType StageForUpdatingErrors(Job job, Relativity.Client.Choice jobType);
 

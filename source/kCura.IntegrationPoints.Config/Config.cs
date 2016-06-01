@@ -17,7 +17,7 @@ namespace kCura.IntegrationPoints.Config
 		private const string _BATCH_SIZE = "BatchSize";
 
 		protected Config() :
-			this(Manager.Instance.GetConfig(kCura.IntegrationPoints.Contracts.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION))
+			this(Manager.Instance.GetConfig(Contracts.Constants.INTEGRATION_POINT_INSTANCE_SETTING_SECTION))
 		{
 		}
 
@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Config
 			kCura.Apps.Common.Config.Manager.Settings.ConfigCacheTimeout = 1;
 		}
 
-		public string WebApiPath => GetValue(kCura.IntegrationPoints.Contracts.Constants.WEB_API_PATH, string.Empty);
+		public string WebApiPath => GetValue(Contracts.Constants.WEB_API_PATH, string.Empty);
 
 		public bool DisableNativeLocationValidation => GetValue(_DISABLE_NATIVE_LOCATION_VALIDATION, false);
 
@@ -53,16 +53,15 @@ namespace kCura.IntegrationPoints.Config
 				{
 					const string setting = "CloudInstance";
 					var config = Manager.Instance.GetConfig("Relativity.Core");
-					bool isCouldInstance = false;
+					bool isCloudInstance = false;
 					if (config.Contains(setting))
 					{
-						Boolean.TryParse(config[setting] as string, out isCouldInstance);
+						Boolean.TryParse(config[setting] as string, out isCloudInstance);
 					}
-					_isCloudInstance = isCouldInstance;
+					_isCloudInstance = isCloudInstance;
 				}
 				return _isCloudInstance.Value;
 			}
-			internal set { _isCloudInstance = value; }
 		}
 
 		public bool UseEDDSResource
@@ -73,7 +72,7 @@ namespace kCura.IntegrationPoints.Config
 				{
 					const string setting = "UseEDDSResource";
 					var config = Manager.Instance.GetConfig("Relativity.Data");
-					bool useEddsResource = false;
+					bool useEddsResource = true;
 					if (config.Contains(setting))
 					{
 						Boolean.TryParse(config[setting] as string, out useEddsResource);
@@ -82,7 +81,6 @@ namespace kCura.IntegrationPoints.Config
 				}
 				return _useEddsResource.Value;
 			}
-			internal set { _useEddsResource = value; }
 		}
 
 		private T GetValue<T>(string instanceSettingName, T defaultValue)

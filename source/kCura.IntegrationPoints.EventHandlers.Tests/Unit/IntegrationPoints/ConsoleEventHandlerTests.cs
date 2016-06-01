@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -7,6 +8,7 @@ using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Helpers;
 using kCura.IntegrationPoints.Core.Managers;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -27,6 +29,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 		private IStateManager _stateManager;
 		private IQueueManager _queueManager;
 		private IOnClickEventConstructor _onClickEventHelper;
+		private IErrorManager _errorManager;
 
 		private ConsoleEventHandler _instance;
 
@@ -43,6 +46,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_stateManager = Substitute.For<IStateManager>();
 			_queueManager = Substitute.For<IQueueManager>();
 			_onClickEventHelper = Substitute.For<IOnClickEventConstructor>();
+			_errorManager = Substitute.For<IErrorManager>();
 
 			var activeArtifact = new Artifact(_ARTIFACT_ID, null, 0, "", false, null);
 			var application = new Application(_APPLICATION_ID, "", "");
@@ -55,12 +59,13 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			};
 		}
 
-		[Test]
-		[TestCase(true, true)]
-		[TestCase(false, true)]
-		[TestCase(true, false)]
-		[TestCase(false, false)]
-		public void GetConsole_GoldFlow(bool isRelativitySourceProvider, bool hasPermissions)
+		[TestCase(true, true, false)]
+		[TestCase(true, true, true)]
+		[TestCase(false, true, true)]
+		[TestCase(true, false, false)]
+		[TestCase(true, false, true)]
+		[TestCase(false, false, true)]
+		public void GetConsole_GoldFlow(bool isRelativitySourceProvider, bool hasRunPermissions, bool hasViewErrorsPermissions)
 		{
 			// ARRANGE
 			var integrationPointDto = new Contracts.Models.IntegrationPointDTO()
@@ -71,9 +76,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 
 			var permissionCheck = new PermissionCheckDTO()
 			{
-				Success = hasPermissions,
-				ErrorMessages = hasPermissions ? null : new[] { "GOBBLYGOOK!" }
+				Success = hasRunPermissions,
+				ErrorMessages = hasRunPermissions ? null : new[] { "GOBBLYGOOK!" }
 			};
+
+			string[] viewErrorMessages = new[] { Core.Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_NO_VIEW };
 			Core.Constants.SourceProvider sourceProvider = isRelativitySourceProvider ? Core.Constants.SourceProvider.Relativity : Core.Constants.SourceProvider.Other;
 			_integrationPointManager.UserHasPermissionToRunJob(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider)).Returns(permissionCheck);
 			_contextContainerFactory.CreateContextContainer(_helper).Returns(_contextContainer);
@@ -87,27 +94,40 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_integrationPointManager.GetSourceProvider(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto))
 				.Returns(sourceProvider);
 
+			if (!hasRunPermissions || !hasViewErrorsPermissions)
+			{
+				_managerFactory.CreateErrorManager(_contextContainer).Returns(_errorManager);
+			}
+
 			ButtonStateDTO buttonStates = null;
 			if (isRelativitySourceProvider)
 			{
 				bool hasJobsExecutingOrInQueue = false;
 				buttonStates = new ButtonStateDTO()
 				{
-					RunNowButtonEnabled = true & hasPermissions,
-					RetryErrorsButtonEnabled = true & hasPermissions,
-					ViewErrorsLinkEnabled = true
+					RunNowButtonEnabled = hasRunPermissions,
+					RetryErrorsButtonEnabled = hasRunPermissions,
+					ViewErrorsLinkEnabled = hasViewErrorsPermissions
 				};
 				OnClickEventDTO onClickEvents = new OnClickEventDTO()
 				{
-					RunNowOnClickEvent = hasPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
-					RetryErrorsOnClickEvent = hasPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
-					ViewErrorsOnClickEvent = integrationPointDto.HasErrors.Value ? "Really long string" : String.Empty
+					RunNowOnClickEvent = hasRunPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+					RetryErrorsOnClickEvent = hasRunPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+					ViewErrorsOnClickEvent = integrationPointDto.HasErrors.Value && hasViewErrorsPermissions? "Really long string" : String.Empty,
 				};
+
+				_integrationPointManager.UserHasPermissionToViewErrors(_APPLICATION_ID).Returns(
+					new PermissionCheckDTO()
+					{
+						Success	= hasViewErrorsPermissions,
+						ErrorMessages = hasViewErrorsPermissions ? null : viewErrorMessages
+					});
 
 				_queueManager.HasJobsExecutingOrInQueue(_APPLICATION_ID, _ARTIFACT_ID).Returns(hasJobsExecutingOrInQueue);
 
-				_stateManager.GetButtonState(_APPLICATION_ID, _ARTIFACT_ID, hasJobsExecutingOrInQueue, integrationPointDto.HasErrors.Value)
+				_stateManager.GetButtonState(_APPLICATION_ID, _ARTIFACT_ID, hasJobsExecutingOrInQueue, integrationPointDto.HasErrors.Value, hasViewErrorsPermissions)
 					.Returns(buttonStates);
+
 				_onClickEventHelper.GetOnClickEventsForRelativityProvider(_APPLICATION_ID, _ARTIFACT_ID, buttonStates)
 					.Returns(onClickEvents);
 			}
@@ -119,56 +139,85 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Unit.IntegrationPoints
 			_contextContainerFactory.Received().CreateContextContainer(_helper);
 			_integrationPointManager.Received(1).UserHasPermissionToRunJob(Arg.Is(_APPLICATION_ID), Arg.Is(integrationPointDto), Arg.Is(sourceProvider));
 			_managerFactory.Received().CreateIntegrationPointManager(_contextContainer);
+			_integrationPointManager.Received(isRelativitySourceProvider ? 1 : 0).UserHasPermissionToViewErrors(_APPLICATION_ID);
 
 			Assert.IsNotNull(console);
-			Assert.AreEqual(isRelativitySourceProvider ? 3 : 1, console.ButtonList.Count);
+			if (hasViewErrorsPermissions)
+			{
+				int buttonCount = isRelativitySourceProvider ? 3 : 1;
+				Assert.AreEqual(buttonCount, console.ButtonList.Count, $"There should be {buttonCount} buttons on the console");
+			}
+			else
+			{
+				int buttonCount = isRelativitySourceProvider ? 2 : 1;
+				Assert.AreEqual(buttonCount, console.ButtonList.Count, $"There should be {buttonCount} buttons on the console");
+			}
 
 			int buttonIndex = 0;
 			ConsoleButton runNowButton = console.ButtonList[buttonIndex++];
 			Assert.AreEqual("Run Now", runNowButton.DisplayText);
-			Assert.AreEqual(hasPermissions, runNowButton.Enabled);
 			Assert.AreEqual(false, runNowButton.RaisesPostBack);
-			Assert.AreEqual(hasPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty, runNowButton.OnClickEvent);
 
 			if (isRelativitySourceProvider)
 			{
-				buttonIndex = 0;
-				ConsoleButton runNowButtonRelativityProvider = console.ButtonList[buttonIndex++];
-				Assert.AreEqual("Run Now", runNowButton.DisplayText);
+				Assert.AreEqual(hasRunPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+					runNowButton.OnClickEvent);
 				Assert.AreEqual(buttonStates.RunNowButtonEnabled, runNowButton.Enabled);
 				Assert.AreEqual(false, runNowButton.RaisesPostBack);
-				Assert.AreEqual(hasPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty, runNowButton.OnClickEvent);
+				Assert.AreEqual(hasRunPermissions ? $"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+					runNowButton.OnClickEvent);
 
 				ConsoleButton retryErrorsButton = console.ButtonList[buttonIndex++];
 				Assert.AreEqual("Retry Errors", retryErrorsButton.DisplayText);
 				Assert.AreEqual(buttonStates.RetryErrorsButtonEnabled, retryErrorsButton.Enabled);
 				Assert.AreEqual(false, retryErrorsButton.RaisesPostBack);
-				Assert.AreEqual(hasPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty, retryErrorsButton.OnClickEvent);
+				Assert.AreEqual(hasRunPermissions ? $"IP.retryJob({_ARTIFACT_ID},{_APPLICATION_ID})" : String.Empty,
+					retryErrorsButton.OnClickEvent);
 
-				ConsoleButton viewErrorsButtonLink = console.ButtonList[buttonIndex++];
-				Assert.AreEqual("View Errors", viewErrorsButtonLink.DisplayText);
-				Assert.AreEqual(buttonStates.ViewErrorsLinkEnabled, viewErrorsButtonLink.Enabled);
-				Assert.AreEqual(false, viewErrorsButtonLink.RaisesPostBack);
-				Assert.AreEqual("Really long string", viewErrorsButtonLink.OnClickEvent);
+				if (hasViewErrorsPermissions)
+				{
+					ConsoleButton viewErrorsButtonLink = console.ButtonList[buttonIndex++];
+					Assert.AreEqual("View Errors", viewErrorsButtonLink.DisplayText);
+					Assert.AreEqual(buttonStates.ViewErrorsLinkEnabled, viewErrorsButtonLink.Enabled);
+					Assert.AreEqual(false, viewErrorsButtonLink.RaisesPostBack);
+					Assert.AreEqual("Really long string", viewErrorsButtonLink.OnClickEvent);
+				}
+			}
+			else
+			{
+				Assert.IsTrue(runNowButton.Enabled);
+				Assert.AreEqual($"IP.importNow({_ARTIFACT_ID},{_APPLICATION_ID})", runNowButton.OnClickEvent);
+			}
 
-				if (hasPermissions)
+			if (hasRunPermissions && hasViewErrorsPermissions)
+			{
+				Assert.AreEqual(0, console.ScriptBlocks.Count);
+			}
+			else
+			{
+				var expectedError = new ErrorDTO()
 				{
-					Assert.AreEqual(0, console.ScriptBlocks.Count);
-				}
-				else
-				{
-					string expectedKey = "IPConsoleErrorDisplayScript".ToLower();
-					string expectedScript = "<script type='text/javascript'>"
-									+ "$(document).ready(function () {"
-									+ "IP.message.error.raise(\""
-									+ String.Join("<br/>", permissionCheck.ErrorMessages)
-									+ "\", $(\".cardContainer\"));"
-									+ "});"
-									+ "</script>";
-					Assert.AreEqual(1, console.ScriptBlocks.Count);
-					Assert.AreEqual(expectedKey, console.ScriptBlocks.First().Key);	
-					Assert.AreEqual(expectedScript, console.ScriptBlocks.First().Script);	
-				}
+					Message = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+					FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)}"
+				};
+
+				_errorManager.Received(1).Create(Arg.Is(_APPLICATION_ID), Arg.Is<IEnumerable<ErrorDTO>>(
+					x =>
+						x.Count() == 1 &&
+						x.First().Message == expectedError.Message &&
+						x.First().FullText == expectedError.FullText));
+
+				string expectedKey = "IPConsoleErrorDisplayScript".ToLower();
+				string expectedScript = "<script type='text/javascript'>"
+								+ "$(document).ready(function () {"
+								+ "IP.message.error.raise(\""
+								+ Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS
+								+ "\", $(\".cardContainer\"));"
+								+ "});"
+								+ "</script>";
+				Assert.AreEqual(1, console.ScriptBlocks.Count);
+				Assert.AreEqual(expectedKey, console.ScriptBlocks.First().Key);
+				Assert.AreEqual(expectedScript, console.ScriptBlocks.First().Script);
 			}
 		}
 	}
