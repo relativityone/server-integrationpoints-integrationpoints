@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (!objectTypeArtifactId.HasValue)
 			{
-				throw new Exception(string.Format(ObjectTypeErrors.OBJECT_TYPE_NO_ARTIFACT_TYPE_FOUND, objectType.Name));
+				throw new TypeLoadException(string.Format(ObjectTypeErrors.OBJECT_TYPE_NO_ARTIFACT_TYPE_FOUND, objectType.Name));
 			}
 
 			return objectTypeArtifactId.Value;

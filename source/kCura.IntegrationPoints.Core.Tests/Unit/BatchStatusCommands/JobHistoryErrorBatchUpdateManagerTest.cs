@@ -339,19 +339,5 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 				_errorStatusRetriedChoiceArtifactId,_SCRATCHTABLE_ITEMCOMPLETE);
 			_jobHistoryErrorManager.JobHistoryErrorItemComplete.Received(1).Dispose();
 		}
-
-		[Test]
-		public void JobHistoryErrorBatchUpdateManagerInitializationFailure_NoMatchingObjectType()
-		{
-			//Arrange
-			_objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(_jobHistoryErrorGuid).Returns(new int());
-
-			//Act
-			Exception ex = Assert.Throws<Exception>(() => new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory,
-				_sourceWorkspaceId, _submittedBy, _updateStatusType));
-
-			//Assert
-			Assert.AreEqual(_noResultsForObjectType, ex.Message);
-		}
 	}
 }

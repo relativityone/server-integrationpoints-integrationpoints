@@ -26,30 +26,37 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			IObjectTypeRepository objectTypeRepository = _repositoryFactory.GetObjectTypeRepository(destinationWorkspaceArtifactId);
 			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
 
-			// Create object type if it does not exist
-			int sourceWorkspaceDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceWorkspaceDTO.ObjectTypeGuid);
-			int sourceWorkspaceArtifactTypeId = sourceWorkspaceRepository.CreateObjectType();
-
-			// Insert entry to the ArtifactGuid table for new object type
+			int sourceWorkspaceDescriptorArtifactTypeId;
 			try
 			{
-				artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO.ObjectTypeGuid);
+				sourceWorkspaceDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceWorkspaceDTO.ObjectTypeGuid);
 			}
-			catch (Exception e)
+			catch (TypeLoadException)
 			{
-				objectTypeRepository.Delete(sourceWorkspaceArtifactTypeId);
-				throw new Exception("Unable to create Source Workspace object type: Unable to associate new object type with Artifact Guid", e);	
-			}
+				// Create object type if it does not exist
+				int sourceWorkspaceArtifactTypeId = sourceWorkspaceRepository.CreateObjectType();
 
-			// Get descriptor id
-			sourceWorkspaceDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceWorkspaceDTO.ObjectTypeGuid);
+				// Insert entry to the ArtifactGuid table for new object type
+				try
+				{
+					artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO.ObjectTypeGuid);
+				}
+				catch (Exception e)
+				{
+					objectTypeRepository.Delete(sourceWorkspaceArtifactTypeId);
+					throw new Exception("Unable to create Source Workspace object type: Unable to associate new object type with Artifact Guid", e);	
+				}
 
-			// Delete the tab if it exists (it should always exist since we're creating the object type one line above)
-			ITabRepository tabRepository = _repositoryFactory.GetTabRepository(destinationWorkspaceArtifactId);
-			int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(sourceWorkspaceDescriptorArtifactTypeId, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
-			if (sourceWorkspaceTabId.HasValue)
-			{
-				tabRepository.Delete(sourceWorkspaceTabId.Value);
+				// Get descriptor id
+				sourceWorkspaceDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceWorkspaceDTO.ObjectTypeGuid);
+
+				// Delete the tab if it exists (it should always exist since we're creating the object type one line above)
+				ITabRepository tabRepository = _repositoryFactory.GetTabRepository(destinationWorkspaceArtifactId);
+				int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(sourceWorkspaceDescriptorArtifactTypeId, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
+				if (sourceWorkspaceTabId.HasValue)
+				{
+					tabRepository.Delete(sourceWorkspaceTabId.Value);
+				}
 			}
 
 			// Create Source Workspace fields if they do not exist

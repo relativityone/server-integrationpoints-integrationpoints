@@ -251,7 +251,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				_savedSearchArtifactId = _jobHistoryErrorManager.CreateItemLevelErrorsSavedSearch(job, exportSettings.SavedSearchArtifactId);
 			}
 
-			_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, exportSettings.SavedSearchArtifactId);
+			_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, _savedSearchArtifactId);
 
 			_batchStatus.ForEach(batch => batch.OnJobStart(job));
 		}
