@@ -33,8 +33,8 @@ namespace kCura.IntegrationPoints.Data
 	public class Constants
 	{
 		public const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
-		public const string TEMPORARY_DOC_TABLE_DEST_WS = "IntegrationPoint_Relativity_DestinationWorkspace";
-		public const string TEMPORARY_DOC_TABLE_JOB_HIST = "IntegrationPoint_Relativity_JobHistory";
+		public const string TEMPORARY_DOC_TABLE_DESTINATION_WORKSPACE = "IntegrationPoint_Relativity_DestinationWorkspace";
+		public const string TEMPORARY_DOC_TABLE_JOB_HISTORY = "IntegrationPoint_Relativity_JobHistory";
 		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START = "IntegrationPoint_Relativity_JobHistoryErrors_JobStart";
 		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE = "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
 		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START = "IntegrationPoint_Relativity_JobHistoryErrorsE_ItemStart";
