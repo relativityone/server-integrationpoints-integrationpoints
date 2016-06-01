@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		private IBatchStatus _batchStatus;
 		private const int _ADMIN_USER_ID = 9;
 
-		public JobHistoryErrorsBatchingTests() : base("JobHistoryErrorsSource", "JobHistoryErrorsDestination")
+		public JobHistoryErrorsBatchingTests() : base("JobHistoryErrorsSource", null)
 		{
 		}
 
