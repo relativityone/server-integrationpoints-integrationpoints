@@ -99,17 +99,32 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			if (!artifactIds.IsNullOrEmpty())
 			{
 				string fullTableName = GetTempTableName();
-				string artifactIdList = String.Join("),(", artifactIds.Select(x => x.ToString()));
-				artifactIdList = $"({artifactIdList})";
+				List<int> tempArtifactIds = artifactIds.ToList();
+				while (tempArtifactIds.Count > 0)
+				{
+					List<int> batchIds = RetrieveBatchFromList(tempArtifactIds);
+					string artifactIdList = String.Join("),(", batchIds.Select(x => x.ToString()));
+					artifactIdList = $"({artifactIdList})";
 
-				string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM {2}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
+					string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM {2}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
 											BEGIN
 												CREATE TABLE {3}[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
 											END
 									INSERT INTO {3}[{0}] ([ArtifactID]) VALUES {1}", fullTableName, artifactIdList, TargetDatabaseFormat, FullDatabaseFormat);
 
-				_caseContext.ExecuteNonQuerySQLStatement(sql);
+					_caseContext.ExecuteNonQuerySQLStatement(sql);
+				}
 			}
+		}
+
+		private List<int> RetrieveBatchFromList(List<int> source)
+		{
+			// The INSERT statement can only have the maximum allowed number of 1000 row values. 
+			const int maxBatchSize = 1000;
+			int sizeToGet = source.Count < maxBatchSize ? source.Count : maxBatchSize;
+			List<int> result = source.GetRange(0, sizeToGet);
+			source.RemoveRange(0, sizeToGet);
+			return result;
 		}
 
 		public void DeleteTable()
