@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		private string _queryToken = null;
 		private int _documentsRetrieved = 0;
 		private int _totalDocumentsRetrieved = 0;
+		public bool StartedRetrieving = false;
 
 		public SavedSearchRepository(
 			IHelper helper,
@@ -36,6 +37,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public ArtifactDTO[] RetrieveNextDocuments()
 		{
+			StartedRetrieving = true;
+
 			var query = new Query<Document>
 			{
 				Condition = new SavedSearchCondition(_savedSearchId),
@@ -87,7 +90,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public bool AllDocumentsRetrieved()
 		{
-			return String.IsNullOrEmpty(_queryToken) || _totalDocumentsRetrieved - _documentsRetrieved == 0;
+			return StartedRetrieving && (string.IsNullOrEmpty(_queryToken) || _totalDocumentsRetrieved - _documentsRetrieved == 0);
 		}
 
 		public SavedSearchDTO RetrieveSavedSearch()

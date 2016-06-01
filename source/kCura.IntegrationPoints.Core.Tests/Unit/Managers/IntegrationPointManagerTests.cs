@@ -7,14 +7,12 @@ using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.Relativity.Client;
 using NSubstitute;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 {
 	[TestFixture]
-	[Explicit]
 	public class IntegrationPointManagerTests
 	{
 		private IIntegrationPointManager _testInstance;
@@ -72,9 +70,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
+		[Explicit("This tests every possible permission combination but takes a while")]
 		public void UserHasPermissionToRunJob_NonRelativityProvider_AllCombinations()
 		{
-			int paramCount = 7;
+			int paramCount = 9;
 			for (int i = 0; i < Math.Pow(2, paramCount); i++)
 			{
 				this.ClearAllReceivedCalls();
@@ -91,7 +90,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				bool[] inputs = numList.Select(x => x == '1').ToArray();
 				try
 				{
-					this.UserHasPermissionToRunJob_NonRelativityProvider_GoldFlow_Cases(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6]);
+					this.UserHasPermissionToRunJob_NonRelativityProvider_GoldFlow_Cases(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6], inputs[7], inputs[8]);
 				}
 				catch (Exception e)
 				{
@@ -102,9 +101,22 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
+		public void UserHasPermissionToRunJob_NonRelativityProvider_AllPermissions()
+		{
+			this.UserHasPermissionToRunJob_NonRelativityProvider_GoldFlow_Cases(true, true, true, true, true, true, true, true, true);
+		}
+
+		[Test]
+		public void UserHasPermissionToRunJob_NonRelativityProvider_NoPermissions()
+		{
+			this.UserHasPermissionToRunJob_NonRelativityProvider_GoldFlow_Cases(false, false, false, false, false, false, false, false, false);
+		}
+
+		[Test]
+		[Explicit("This tests every possible permission combination but takes a (very long) while")]
 		public void UserHasPermissionToRunJob_RelativityProvider_AllCombinations()
 		{
-			int paramCount = 12;
+			int paramCount = 14;
 			for (int i = 0; i < Math.Pow(2, paramCount); i++)
 			{
 				this.ClearAllReceivedCalls();
@@ -121,7 +133,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				bool[] inputs = numList.Select(x => x == '1').ToArray();
 				try
 				{
-					this.UserHasPermissionToRunJob_RelativityProvider_GoldFlow(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6], inputs[7], inputs[8], inputs[9], inputs[10], inputs[11]);
+					this.UserHasPermissionToRunJob_RelativityProvider_GoldFlow(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4], inputs[5], inputs[6], inputs[7], inputs[8], inputs[9], inputs[10], inputs[11], inputs[12], inputs[13]);
 				}
 				catch (Exception e)
 				{
@@ -129,6 +141,46 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 					throw new Exception(message, e);
 				}
 			}
+		}
+
+		[Test]
+		public void UserHasPermissionToRunJob_RelativityProvider_AllPermissions()
+		{
+			this.UserHasPermissionToRunJob_RelativityProvider_GoldFlow(true, true, true, true, true, true, true, true, true, true, true, true, true, true);
+		}
+
+		[Test]
+		public void UserHasPermissionToRunJob_RelativityProvider_NoPermissions()
+		{
+			this.UserHasPermissionToRunJob_RelativityProvider_GoldFlow(false, false, false, false, false, false, false, false, false, false, false, false, false, false);
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_AllPermissions(bool isNew)
+		{
+			UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_GoldFlow_Cases(isNew, true, true, true, true, true, true, true, true, true, true, true);
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_NoPermissions(bool isNew)
+		{
+			UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_GoldFlow_Cases(isNew, false, false, false, false, false, false, false, false, false, false, false);
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void UserHasPermissionToSaveIntegrationPoint_RelativityProvider_AllPermissions(bool isNew)
+		{
+			UserHasPermissionToSaveIntegrationPoint_RelativityProvider_GoldFlow_Cases(isNew, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true);
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void UserHasPermissionToSaveIntegrationPoint_RelativityProvider_NoPermissions(bool isNew)
+		{
+			UserHasPermissionToSaveIntegrationPoint_RelativityProvider_GoldFlow_Cases(isNew, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
 		}
 
 		private void ClearAllReceivedCalls()
@@ -141,6 +193,359 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_savedSearchRepository.ClearReceivedCalls();
 		}
 
+		private void UserHasPermissionToSaveIntegrationPoint_NonRelativityProvider_GoldFlow_Cases(
+			bool isNew,
+			bool integrationPointTypeEditOrCreatePermission,
+			bool integrationPointInstanceEditOrCreatePermission,
+			bool sourceWorkspacePermission,
+			bool integrationPointTypeViewPermission,
+			bool integrationPointInstanceViewPermission,
+			bool jobHistoryAddPermission,
+			bool sourceImportPermission,
+			bool destinationRdoPermissions,
+			bool sourceProviderIsProvided,
+			bool sourceProviderTypeViewPermission,
+			bool sourceProviderInstanceViewPermission)
+		{
+			var integrationPointDto = new IntegrationPointDTO()
+			{
+				ArtifactId = isNew ? 0 : INTEGRATION_POINT_ID,
+				DestinationConfiguration = $"{{ \"artifactTypeID\": {_ARTIFACT_TYPE_ID} }}",
+				SourceProvider = _SOURCE_PROVIDER_ID
+			};
+
+			var integrationPointObjectTypeGuid = new Guid(ObjectTypeGuids.IntegrationPoint);
+			if (isNew)
+			{
+				_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create).Returns(integrationPointTypeEditOrCreatePermission);
+			}
+			else
+			{
+				_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit).Returns(integrationPointTypeEditOrCreatePermission);
+				_sourcePermissionRepository.UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit).Returns(integrationPointInstanceEditOrCreatePermission);
+			}
+
+			_sourcePermissionRepository.UserHasPermissionToAccessWorkspace().Returns(sourceWorkspacePermission);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View).Returns(integrationPointTypeViewPermission);
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(
+				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View).Returns(integrationPointInstanceViewPermission);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Create)).Returns(jobHistoryAddPermission);
+			_sourcePermissionRepository.UserCanImport().Returns(sourceImportPermission);
+			_sourcePermissionRepository.UserHasArtifactTypePermissions(
+				Arg.Is(_ARTIFACT_TYPE_ID),
+				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })))
+				.Returns(destinationRdoPermissions);
+
+			var sourceProviderGuid = new Guid(ObjectTypeGuids.SourceProvider);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(Arg.Is(sourceProviderGuid), Arg.Is(ArtifactPermission.View)).Returns(sourceProviderTypeViewPermission);
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(Arg.Is(sourceProviderGuid), Arg.Is(_SOURCE_PROVIDER_ID), Arg.Is(ArtifactPermission.View)).Returns(sourceProviderInstanceViewPermission);
+
+			if (!sourceProviderIsProvided)
+			{
+				_sourceProviderRepository.Read(Arg.Is(_SOURCE_PROVIDER_ID))
+					.Returns(new SourceProviderDTO() { Identifier = _otherProviderGuid });
+			}
+
+			// ACT
+			PermissionCheckDTO result = _testInstance.UserHasPermissionToSaveIntegrationPoint(_SOURCE_WORKSPACE_ID, integrationPointDto, sourceProviderIsProvided ? Constants.SourceProvider.Other : (Constants.SourceProvider?)null);
+
+			// ASSERT	
+			bool expectedSuccessValue =
+				sourceWorkspacePermission &&
+				integrationPointTypeViewPermission &&
+				integrationPointInstanceViewPermission &&
+				jobHistoryAddPermission &&
+				sourceImportPermission &&
+				destinationRdoPermissions &&
+				sourceProviderTypeViewPermission &&
+				sourceProviderInstanceViewPermission &&
+				integrationPointTypeEditOrCreatePermission &&
+				integrationPointInstanceEditOrCreatePermission;
+
+			var errorMessages = new List<string>();
+			if (isNew)
+			{
+				if (!integrationPointTypeEditOrCreatePermission)
+				{
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_CREATE);
+				}
+			}
+			else
+			{
+				if (!integrationPointTypeEditOrCreatePermission)
+				{
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_EDIT);
+				}
+				if (!integrationPointInstanceEditOrCreatePermission)
+				{
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCe_NO_EDIT);
+				}
+			}
+
+			if (!sourceWorkspacePermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.CURRENT_WORKSPACE_NO_ACCESS);
+			}
+
+			if (!integrationPointTypeViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_VIEW);
+			}
+
+			if (!integrationPointInstanceViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
+			}
+
+			if (!sourceProviderTypeViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_PROVIDER_NO_VIEW);
+			}
+
+			if (!sourceProviderInstanceViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_PROVIDER_NO_INSTANCE_VIEW);
+			}
+
+			if (!jobHistoryAddPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_TYPE_NO_ADD);
+			}
+
+			if (!sourceImportPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE);
+			}
+
+			if (!destinationRdoPermissions)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
+			}
+
+
+			Assert.AreEqual(expectedSuccessValue, result.Success, $"The result success should be {expectedSuccessValue}.");
+			Assert.AreEqual(errorMessages, result.ErrorMessages, "The error messages should match.");
+
+			_sourcePermissionRepository.Received(isNew ? 0 : 1).UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit);
+			_sourcePermissionRepository.Received(isNew ? 0 : 1).UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit);
+			_sourcePermissionRepository.Received(isNew ? 1 : 0).UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create);
+			_sourcePermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View);
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Create));
+			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(
+				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View);
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(sourceProviderGuid, ArtifactPermission.View);
+			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(sourceProviderGuid, integrationPointDto.SourceProvider.Value, ArtifactPermission.View);
+			_sourcePermissionRepository.Received(1).UserCanImport();
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermissions(
+				Arg.Is(_ARTIFACT_TYPE_ID),
+				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })));
+			_sourceProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_SOURCE_PROVIDER_ID));
+		}
+
+
+		private void UserHasPermissionToSaveIntegrationPoint_RelativityProvider_GoldFlow_Cases(
+			bool isNew,
+			bool integrationPointTypeEditOrCreatePermission,
+			bool integrationPointInstanceEditOrCreatePermission,
+			bool sourceWorkspacePermission,
+			bool integrationPointTypeViewPermission,
+			bool integrationPointInstanceViewPermission,
+			bool jobHistoryAddPermission,
+			bool destinationRdoPermissions,
+			bool destinationWorkspacePermission,
+			bool destinationImportPermission,
+			bool exportPermission,
+			bool sourceDocumentEditPermissions,
+			bool savedSearchPermissions,
+			bool savedSearchIsPublic,
+			bool sourceProviderIsProvided,
+			bool sourceProviderTypeViewPermission,
+			bool sourceProviderInstanceViewPermission)
+		{
+			// ARRANGE
+			var integrationPointDto = new IntegrationPointDTO()
+			{
+				ArtifactId = isNew ? 0 : INTEGRATION_POINT_ID,
+				DestinationConfiguration = $"{{ \"artifactTypeID\": {_ARTIFACT_TYPE_ID} }}",
+				SourceConfiguration = $"{{ \"SavedSearchArtifactId\":{_SAVED_SEARCH_ID}, \"SourceWorkspaceArtifactId\":{_SOURCE_WORKSPACE_ID}, \"TargetWorkspaceArtifactId\":{_DESTINATION_WORKSPACE_ID} }}",
+				SourceProvider = _SOURCE_PROVIDER_ID
+			};
+
+			var integrationPointObjectTypeGuid = new Guid(ObjectTypeGuids.IntegrationPoint);
+			if (isNew)
+			{
+				_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create).Returns(integrationPointTypeEditOrCreatePermission);
+			}
+			else
+			{
+				_sourcePermissionRepository.UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit).Returns(integrationPointTypeEditOrCreatePermission);
+				_sourcePermissionRepository.UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit).Returns(integrationPointInstanceEditOrCreatePermission);
+			}
+
+			_sourcePermissionRepository.UserHasPermissionToAccessWorkspace().Returns(sourceWorkspacePermission);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View).Returns(integrationPointTypeViewPermission);
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(
+				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View).Returns(integrationPointInstanceViewPermission);
+			var sourceProviderGuid = new Guid(ObjectTypeGuids.SourceProvider);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(Arg.Is(sourceProviderGuid), Arg.Is(ArtifactPermission.View)).Returns(sourceProviderTypeViewPermission);
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(Arg.Is(sourceProviderGuid), Arg.Is(_SOURCE_PROVIDER_ID), Arg.Is(ArtifactPermission.View)).Returns(sourceProviderInstanceViewPermission);
+			_destinationPermissionRepository.UserHasArtifactTypePermissions(
+				Arg.Is(_ARTIFACT_TYPE_ID),
+				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })))
+				.Returns(destinationRdoPermissions);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Create)).Returns(jobHistoryAddPermission);
+			_sourcePermissionRepository.UserCanExport().Returns(exportPermission);
+			_destinationPermissionRepository.UserHasPermissionToAccessWorkspace().Returns(destinationWorkspacePermission);
+			_destinationPermissionRepository.UserCanImport().Returns(destinationImportPermission);
+			_sourcePermissionRepository.UserCanEditDocuments().Returns(sourceDocumentEditPermissions);
+
+			SavedSearchDTO savedSearchDto = null;
+			if (savedSearchPermissions)
+			{
+				savedSearchDto = new SavedSearchDTO() { Owner = savedSearchIsPublic ? String.Empty : "KWUUUUUU" };
+			}
+			_savedSearchRepository.RetrieveSavedSearch().Returns(savedSearchDto);
+
+			if (!sourceProviderIsProvided)
+			{
+				_sourceProviderRepository.Read(Arg.Is(_SOURCE_PROVIDER_ID))
+					.Returns(new SourceProviderDTO() { Identifier = new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID) });
+			}
+
+			// ACT
+			PermissionCheckDTO result = _testInstance.UserHasPermissionToSaveIntegrationPoint(_SOURCE_WORKSPACE_ID, integrationPointDto, sourceProviderIsProvided ? Constants.SourceProvider.Relativity : (Constants.SourceProvider?)null);
+
+			// ASSERT	
+			bool expectedSuccessValue =
+				sourceWorkspacePermission &&
+				integrationPointTypeViewPermission &&
+				integrationPointInstanceViewPermission &&
+				jobHistoryAddPermission &&
+				destinationRdoPermissions &&
+				destinationWorkspacePermission &&
+				destinationImportPermission &&
+				exportPermission &&
+				sourceDocumentEditPermissions &&
+				savedSearchPermissions &&
+				savedSearchIsPublic &&
+				integrationPointTypeEditOrCreatePermission &&
+				integrationPointInstanceEditOrCreatePermission;
+
+			var errorMessages = new List<string>();
+			if (isNew)
+			{
+				if (!integrationPointTypeEditOrCreatePermission)
+				{
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_CREATE);
+				}
+			}
+			else
+			{
+				if (!integrationPointTypeEditOrCreatePermission)
+				{
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_EDIT);
+				}
+				if (!integrationPointInstanceEditOrCreatePermission)
+				{
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCe_NO_EDIT);
+				}
+			}
+
+			if (!sourceWorkspacePermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.CURRENT_WORKSPACE_NO_ACCESS);
+			}
+
+			if (!integrationPointTypeViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_TYPE_NO_VIEW);
+			}
+
+			if (!integrationPointInstanceViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
+			}
+
+			if (!sourceProviderTypeViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_PROVIDER_NO_VIEW);
+			}
+
+			if (!sourceProviderInstanceViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_PROVIDER_NO_INSTANCE_VIEW);
+			}
+
+			if (!jobHistoryAddPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_TYPE_NO_ADD);
+			}
+
+			if (!destinationRdoPermissions)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.MISSING_DESTINATION_RDO_PERMISSIONS);
+			}
+
+			if (!destinationWorkspacePermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_ACCESS);
+			}
+
+			if (!destinationImportPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.DESTINATION_WORKSPACE_NO_IMPORT);
+			}
+
+			if (!exportPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_WORKSPACE_NO_EXPORT);
+			}
+
+			if (!sourceDocumentEditPermissions)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.NO_PERMISSION_TO_EDIT_DOCUMENTS);
+			}
+
+			if (!savedSearchPermissions)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS);
+			}
+			else if (!savedSearchIsPublic)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NOT_PUBLIC);
+			}
+
+
+			Assert.AreEqual(expectedSuccessValue, result.Success, $"The result success should be {expectedSuccessValue}.");
+			Assert.AreEqual(errorMessages, result.ErrorMessages, "The error messages should match.");
+
+			_sourcePermissionRepository.Received(isNew ? 0 : 1).UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit);
+			_sourcePermissionRepository.Received(isNew ? 0 : 1).UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit);
+			_sourcePermissionRepository.Received(isNew ? 1 : 0).UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create);
+			_sourcePermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
+			_sourcePermissionRepository.Received(1)
+				.UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View);
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(
+				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View).Returns(integrationPointInstanceViewPermission);
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(sourceProviderGuid, ArtifactPermission.View);
+			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(sourceProviderGuid, integrationPointDto.SourceProvider.Value, ArtifactPermission.View);
+			_destinationPermissionRepository.UserHasArtifactTypePermissions(
+				Arg.Is(_ARTIFACT_TYPE_ID),
+				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })));
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Create));
+			_sourcePermissionRepository.Received(1).UserCanExport();
+			_destinationPermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
+			_destinationPermissionRepository.Received(1).UserCanImport();
+			_sourcePermissionRepository.Received(1).UserCanEditDocuments();
+			_savedSearchRepository.Received(1).RetrieveSavedSearch();
+			_sourceProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_SOURCE_PROVIDER_ID));
+		}
+
 		private void UserHasPermissionToRunJob_NonRelativityProvider_GoldFlow_Cases(
 			bool sourceWorkspacePermission, 
 			bool integrationPointTypeViewPermission, 
@@ -148,7 +553,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool jobHistoryAddPermission,
 			bool sourceImportPermission,
 			bool destinationRdoPermissions,
-			bool sourceProviderIsProvided)
+			bool sourceProviderIsProvided,
+			bool sourceProviderTypeViewPermission,
+			bool sourceProviderInstanceViewPermission)
 		{
 			// ARRANGE
 			var integrationPointDto = new IntegrationPointDTO()
@@ -163,12 +570,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_sourcePermissionRepository.UserHasArtifactInstancePermission(
 				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View).Returns(integrationPointInstanceViewPermission);
 			_sourcePermissionRepository.UserHasArtifactTypePermission(
-				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Add)).Returns(jobHistoryAddPermission);
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Create)).Returns(jobHistoryAddPermission);
 			_sourcePermissionRepository.UserCanImport().Returns(sourceImportPermission);
 			_sourcePermissionRepository.UserHasArtifactTypePermissions(
 				Arg.Is(_ARTIFACT_TYPE_ID),
-				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add })))
+				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })))
 				.Returns(destinationRdoPermissions);
+
+			var sourceProviderGuid = new Guid(ObjectTypeGuids.SourceProvider);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(Arg.Is(sourceProviderGuid), Arg.Is(ArtifactPermission.View)).Returns(sourceProviderTypeViewPermission);
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(Arg.Is(sourceProviderGuid), Arg.Is(_SOURCE_PROVIDER_ID), Arg.Is(ArtifactPermission.View)).Returns(sourceProviderInstanceViewPermission);
 
 			if (!sourceProviderIsProvided)
 			{
@@ -186,7 +597,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			    integrationPointInstanceViewPermission &&
 				jobHistoryAddPermission &&
 				sourceImportPermission &&
-				destinationRdoPermissions;
+				destinationRdoPermissions && 
+				sourceProviderTypeViewPermission &&
+				sourceProviderInstanceViewPermission;
 
 			var errorMessages = new List<string>();
 			if (!sourceWorkspacePermission)
@@ -202,6 +615,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			if (!integrationPointInstanceViewPermission)
 			{
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
+			}
+
+			if (!sourceProviderTypeViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_PROVIDER_NO_VIEW);
+			}
+
+			if (!sourceProviderInstanceViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_PROVIDER_NO_INSTANCE_VIEW);
 			}
 
 			if (!jobHistoryAddPermission)
@@ -226,13 +649,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_sourcePermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
 			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View);
 			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(
-				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Add));
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Create));
 			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(
 				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View);
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(sourceProviderGuid, ArtifactPermission.View);
+			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(sourceProviderGuid, integrationPointDto.SourceProvider.Value, ArtifactPermission.View);
 			_sourcePermissionRepository.Received(1).UserCanImport();
 			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermissions(
 				Arg.Is(_ARTIFACT_TYPE_ID),
-				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add })));
+				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })));
 			_sourceProviderRepository.Received(sourceProviderIsProvided ? 0 : 1).Read(Arg.Is(_SOURCE_PROVIDER_ID));
 		}
 
@@ -248,7 +673,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			bool sourceDocumentEditPermissions,
 			bool savedSearchPermissions,
 			bool savedSearchIsPublic,
-			bool sourceProviderIsProvided)
+			bool sourceProviderIsProvided,
+			bool sourceProviderTypeViewPermission,
+			bool sourceProviderInstanceViewPermission)
 		{
 			// ARRANGE
 			var integrationPointDto = new IntegrationPointDTO()
@@ -263,12 +690,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_sourcePermissionRepository.UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View).Returns(integrationPointTypeViewPermission);
 			_sourcePermissionRepository.UserHasArtifactInstancePermission(
 				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View).Returns(integrationPointInstanceViewPermission);
+			var sourceProviderGuid = new Guid(ObjectTypeGuids.SourceProvider);
+			_sourcePermissionRepository.UserHasArtifactTypePermission(Arg.Is(sourceProviderGuid), Arg.Is(ArtifactPermission.View)).Returns(sourceProviderTypeViewPermission);
+			_sourcePermissionRepository.UserHasArtifactInstancePermission(Arg.Is(sourceProviderGuid), Arg.Is(_SOURCE_PROVIDER_ID), Arg.Is(ArtifactPermission.View)).Returns(sourceProviderInstanceViewPermission);
 			_destinationPermissionRepository.UserHasArtifactTypePermissions(
 				Arg.Is(_ARTIFACT_TYPE_ID),
-				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add })))
+				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })))
 				.Returns(destinationRdoPermissions);
 			_sourcePermissionRepository.UserHasArtifactTypePermission(
-				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Add)).Returns(jobHistoryAddPermission);
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Create)).Returns(jobHistoryAddPermission);
 			_sourcePermissionRepository.UserCanExport().Returns(exportPermission);
 			_destinationPermissionRepository.UserHasPermissionToAccessWorkspace().Returns(destinationWorkspacePermission);
 			_destinationPermissionRepository.UserCanImport().Returns(destinationImportPermission);
@@ -320,6 +750,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_VIEW);
 			}
 
+			if (!sourceProviderTypeViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_PROVIDER_NO_VIEW);
+			}
+
+			if (!sourceProviderInstanceViewPermission)
+			{
+				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.SOURCE_PROVIDER_NO_INSTANCE_VIEW);
+			}
+
 			if (!jobHistoryAddPermission)
 			{
 				errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.JOB_HISTORY_TYPE_NO_ADD);
@@ -368,11 +808,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				.UserHasArtifactTypePermission(Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, ArtifactPermission.View);
 			_sourcePermissionRepository.UserHasArtifactInstancePermission(
 				Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.View).Returns(integrationPointInstanceViewPermission);
+			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(sourceProviderGuid, ArtifactPermission.View);
+			_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(sourceProviderGuid, integrationPointDto.SourceProvider.Value, ArtifactPermission.View);
 			_destinationPermissionRepository.UserHasArtifactTypePermissions(
 				Arg.Is(_ARTIFACT_TYPE_ID),
-				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Add })));
+				Arg.Is<ArtifactPermission[]>(x => x.SequenceEqual(new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create })));
 			_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(
-				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Add));
+				Arg.Is(new Guid(ObjectTypeGuids.JobHistory)), Arg.Is(ArtifactPermission.Create));
 			_sourcePermissionRepository.Received(1).UserCanExport();
 			_destinationPermissionRepository.Received(1).UserHasPermissionToAccessWorkspace();
 			_destinationPermissionRepository.Received(1).UserCanImport();

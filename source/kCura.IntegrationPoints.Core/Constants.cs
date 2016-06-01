@@ -17,6 +17,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string NO_PERMISSION_TO_ACCESS_SAVEDSEARCH = "The saved search is no longer accessible. Please verify your settings or create a new Integration Point.";
 			public const string NO_PERMISSION_TO_EDIT_DOCUMENTS = "User does not have permission to edit documents in this workspace.";
 			public const string NO_PERMISSION_TO_IMPORT_CURRENTWORKSPACE = "User does not have permission to import in this workspace.";
+			public const string NO_PERMISSION_TO_IMPORT_TARGETWORKSPACE = "User does not have permission to import in the target workspace.";
 			public const string NO_SOURCE_PROVIDER_SPECIFIED = "A source provider was not specified for the integration point. Please create a new integration point.";
 			public const string NO_USERID = "Unable to determine the user id. Please contact your system administrator.";
 			public const string RELATIVITY_CUSTOMPAGE_GUID = "dcf6e9d1-22b6-4da3-98f6-41381e93c30c";
@@ -42,6 +43,9 @@ namespace kCura.IntegrationPoints.Core
 				public const string CURRENT_WORKSPACE_NO_ACCESS = "User does not have permission to access this workspace.";
 				public const string INTEGRATION_POINT_TYPE_NO_VIEW = "User does not have permission to view Integration Points.";
 				public const string INTEGRATION_POINT_INSTANCE_NO_VIEW = "User does not have permission to view the Integration Point.";
+				public const string INTEGRATION_POINT_TYPE_NO_EDIT = "User does not have permission to edit Integration Points.";
+				public const string INTEGRATION_POINT_INSTANCe_NO_EDIT = "User does not have permission to edit this Integration Point.";
+				public const string INTEGRATION_POINT_TYPE_NO_CREATE = "User does not have permission to create Integration Points.";
 				public const string JOB_HISTORY_TYPE_NO_ADD = "User does not have permission to add Job History RDOs.";
 				public const string MISSING_DESTINATION_RDO_PERMISSIONS = "User does not have all required destination RDO permissions. Please make sure the user has view, edit, and add permissions for the destination RDO.";
 				public const string DESTINATION_WORKSPACE_NO_ACCESS = "User does not have permission to access the destination workspace.";
@@ -52,6 +56,11 @@ namespace kCura.IntegrationPoints.Core
 				public const string UNABLE_TO_EXPORT = "Job failed due to insufficient permissions. Please ensure that you have valid export and saved search permissions";
 				public const string JOB_HISTORY_NO_VIEW = "User does not have permission to view Job History RDOs.";
 				public const string JOB_HISTORY_ERROR_NO_VIEW = "User does not have permission to view Job History Errors RDOs.";
+				public const string SOURCE_PROVIDER_NO_VIEW = "User does not have permission to view Source Provider RDOs.";
+				public const string SOURCE_PROVIDER_NO_INSTANCE_VIEW = "User does not have permission to view the Source Provider RDO.";
+				public const string INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE = "User does not have permissions to save an Integration Point.";
+				public const string INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX = "User does not have the following permissions required to save an Integration Point:";
+				public const string INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE = "You do not have all required permissions to save this Integration Point. Please contact your system administrator.";
 			}
 		}
 

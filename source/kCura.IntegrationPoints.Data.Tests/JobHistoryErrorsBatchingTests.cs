@@ -221,7 +221,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
 
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType(), SavedSearchArtifactId);
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
 
 			_batchStatus.OnJobStart(job);
 			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorArtifactIds, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
@@ -281,13 +281,13 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
 			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE }_{ tempTableSuffix }";
-			string otherTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER }_{ tempTableSuffix }";
+			string otherTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED }_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
 			DataTable otherTempTable = GetTempTable(otherTempTableName);
 
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType(), SavedSearchArtifactId);
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
 
 			_batchStatus.OnJobStart(job);
 			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
@@ -339,7 +339,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			//Create item level error
 			CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
 
-			IDictionary<int, string> expectedNonExpiredJobHistoryArtifacts =_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(jobHistory.ArtifactId, ErrorTypeChoices.JobHistoryErrorItem);
+			IDictionary<int, string> expectedNonExpiredJobHistoryArtifacts =_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(jobHistory.ArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
 			List<int> expectedJobHistoryErrorsForRetry = GetExpectedInprogressAndRetriedErrors(expectedNonExpiredJobHistoryArtifacts);
 			List<int> expectedJobHistoryErrorExpired = GetExpectedExpiredErrors(expectedNonExpiredJobHistoryArtifacts);
 
@@ -349,13 +349,13 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START }_{ tempTableSuffix }";
 			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE }_{ tempTableSuffix }";
-			string otherTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER }_{ tempTableSuffix }";
+			string otherTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED }_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
 			DataTable otherTempTable = GetTempTable(otherTempTableName);
 
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType(), SavedSearchArtifactId);
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
 
 			_batchStatus.OnJobStart(job);
 			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);

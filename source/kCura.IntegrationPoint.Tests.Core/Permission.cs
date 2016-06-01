@@ -23,24 +23,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static bool SetMinimumRelativityProviderPermissions(int workspaceId, int groupId)
 		{
 			GroupRef groupRef = new GroupRef(groupId);
-			string parameter1 = $"{{workspaceArtifactID:{workspaceId},group:{JsonConvert.SerializeObject(groupRef)}}}";
 
-			// Adding example of permission usage
 			IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false, true);
-			GroupPermissions groupPermissions1 = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).Result;
-
-			string response1 = Rest.PostRequestAsJson( "api/Relativity.Services.Permission.IPermissionModule/Permission Manager/GetWorkspaceGroupPermissionsAsync",
-				false, parameter1);
-			GroupPermissions groupPermissions = JsonConvert.DeserializeObject<GroupPermissions>(response1);
+			GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).Result;
 
 			SetObjectPermissions(groupPermissions, new List<string> {"Document", "Integration Point", "Job History", "Search"});
 			SetAdminPermissions(groupPermissions, new List<string> {"Allow Import", "Allow Export"});
 			SetTabVisibility(groupPermissions, new List<string> {"Documents", "Integration Points"});
 			SetBrowserPermissions(groupPermissions, new List<string> {"Folders", "Advanced & Saved Searches"});
 
-			string parameter2 = $"{{workspaceArtifactID:{workspaceId},groupPermissions:{JsonConvert.SerializeObject(groupPermissions)}}}";
-			string response2 = Rest.PostRequestAsJson("api/Relativity.Services.Permission.IPermissionModule/Permission Manager/SetWorkspaceGroupPermissionsAsync",
-			 false, parameter2);
+			proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions);
 
 			return true;
 		}

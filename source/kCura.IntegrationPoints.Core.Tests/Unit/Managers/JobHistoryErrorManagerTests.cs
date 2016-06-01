@@ -26,7 +26,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		private IScratchTableRepository _jobHistoryErrorItemStart;
 		private IScratchTableRepository _jobHistoryErrorItemComplete;
 		private IScratchTableRepository _jobHistoryErrorItemStartOther;
-		
+
+		private const int _batchSize = 1000;
 		private const int _workspaceArtifactId = 102448;
 		private const int _integrationPointArtifactId = 4651358;
 		private const int _submittedByArtifactId = 2448071;
@@ -61,7 +62,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_repositoryFactory.GetScratchTableRepository(_workspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE, _uniqueJobId).Returns(_jobHistoryErrorJobComplete);
 			_repositoryFactory.GetScratchTableRepository(_workspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START, _uniqueJobId).Returns(_jobHistoryErrorItemStart);
 			_repositoryFactory.GetScratchTableRepository(_workspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE, _uniqueJobId).Returns(_jobHistoryErrorItemComplete);
-			_repositoryFactory.GetScratchTableRepository(_workspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_OTHER, _uniqueJobId).Returns(_jobHistoryErrorItemStartOther);
+			_repositoryFactory.GetScratchTableRepository(_workspaceArtifactId, Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED, _uniqueJobId).Returns(_jobHistoryErrorItemStartOther);
 
 			_testInstance = new JobHistoryErrorManager(_repositoryFactory, _workspaceArtifactId, _uniqueJobId);
 
@@ -72,7 +73,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RunNow_NoErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).ReturnsForAnyArgs(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).ReturnsForAnyArgs(new List<int>());
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRunNow);
@@ -86,8 +87,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RunNow_JobError()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(_sampleJobError);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(new List<int>());
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRunNow);
@@ -101,8 +102,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RunNow_JobAndItemErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(_sampleJobError);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(_sampleItemErrors);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRunNow);
@@ -117,8 +118,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RunNow_ItemErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(new List<int>());
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(_sampleItemErrors);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 			
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRunNow);
@@ -131,7 +132,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_ScheduledRun_NoErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).ReturnsForAnyArgs(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).ReturnsForAnyArgs(new List<int>());
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryScheduledRun);
@@ -145,8 +146,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_ScheduledRun_JobError()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(_sampleJobError);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(new List<int>());
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryScheduledRun);
@@ -160,8 +161,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_ScheduledRun_JobAndItemErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(_sampleJobError);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(_sampleItemErrors);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryScheduledRun);
@@ -176,8 +177,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_ScheduledRun_ItemErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(new List<int>());
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(_sampleItemErrors);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryScheduledRun);
@@ -190,7 +191,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RetryErrors_NoErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).ReturnsForAnyArgs(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).ReturnsForAnyArgs(new List<int>());
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRetryErrors);
@@ -204,8 +205,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RetryErrors_JobError()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(_sampleJobError);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(new List<int>());
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRetryErrors);
@@ -220,8 +221,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RetryErrors_JobAndItemErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(_sampleJobError);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(_sampleItemErrors);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRetryErrors);
@@ -236,8 +237,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RetryErrors_ItemErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(new List<int>());
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(_sampleItemErrors);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRetryErrors);
@@ -255,8 +256,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			//Assert
 			_jobHistoryRepository.Received().GetLastJobHistoryArtifactId(_integrationPointArtifactId);
-			_jobHistoryErrorRepository.Received().CreateItemLevelErrorsSavedSearch(_workspaceArtifactId, _integrationPointArtifactId, 
-				_originalSavedSearchArtifactId, 0, _submittedByArtifactId);
+			_jobHistoryErrorRepository.Received().CreateItemLevelErrorsSavedSearch(_integrationPointArtifactId, _originalSavedSearchArtifactId, 0);
 		}
 
 		[Test]
@@ -297,7 +297,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_jobHistoryRepository.GetLastJobHistoryArtifactId(_integrationPointArtifactId).Returns(lastJobHistoryId);
 
 			_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId,
-				ErrorTypeChoices.JobHistoryErrorItem).Returns(itemLevelErrorsAndSourceUniqueIds);
+				JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrorsAndSourceUniqueIds);
 
 
 			// Act
@@ -345,7 +345,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			};
 
 			_jobHistoryRepository.GetLastJobHistoryArtifactId(_integrationPointArtifactId).Returns(lastJobHistoryId);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, ErrorTypeChoices.JobHistoryErrorItem).Returns(itemLevelErrorsAndSourceUniqueIds);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrorsAndSourceUniqueIds);
 			_repositoryFactory.GetSavedSearchRepository(_workspaceArtifactId, savedSearchId).Returns(_savedSearchRepository);
 			_savedSearchRepository.AllDocumentsRetrieved().Returns(false, false, true);
 			_savedSearchRepository.RetrieveNextDocuments().Returns(x => artifactDtoBatchOne, x => artifactDtoBatchTwo, x => new ArtifactDTO[0]);
@@ -357,16 +357,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_repositoryFactory.Received(1).GetJobHistoryErrorRepository(_workspaceArtifactId);
 			_repositoryFactory.Received(1).GetJobHistoryRepository(_workspaceArtifactId);
 			_jobHistoryRepository.Received(1).GetLastJobHistoryArtifactId(_integrationPointArtifactId);
-			_jobHistoryErrorRepository.Received(1).RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, ErrorTypeChoices.JobHistoryErrorItem);
+			_jobHistoryErrorRepository.Received(1).RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
 			_repositoryFactory.Received(1).GetSavedSearchRepository(_workspaceArtifactId, savedSearchId);
 			_savedSearchRepository.Received(3).AllDocumentsRetrieved();
 			_savedSearchRepository.Received(2).RetrieveNextDocuments();
 
 			_jobHistoryErrorItemStart.Received(1)
-				.AddArtifactIdsIntoTempTable(Arg.Is<IList<int>>(y => itemLevelErrorsAndSourceUniqueIds.Keys.SequenceEqual(y)));
+				.BatchAddArtifactIdsIntoTempTable(Arg.Is<IList<int>>(y => itemLevelErrorsAndSourceUniqueIds.Keys.SequenceEqual(y)), _batchSize);
 			_jobHistoryErrorItemComplete.Received(1)
-				.AddArtifactIdsIntoTempTable(Arg.Is<IList<int>>(y => itemLevelErrorsAndSourceUniqueIds.Keys.SequenceEqual(y)));
-			_jobHistoryErrorItemStartOther.DidNotReceiveWithAnyArgs().AddArtifactIdsIntoTempTable(null);
+				.BatchAddArtifactIdsIntoTempTable(Arg.Is<IList<int>>(y => itemLevelErrorsAndSourceUniqueIds.Keys.SequenceEqual(y)), _batchSize);
+			_jobHistoryErrorItemStartOther.DidNotReceiveWithAnyArgs().BatchAddArtifactIdsIntoTempTable(null, _batchSize);
 		}
 
 		[Test]
@@ -399,7 +399,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			};
 
 			_jobHistoryRepository.GetLastJobHistoryArtifactId(_integrationPointArtifactId).Returns(lastJobHistoryId);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, ErrorTypeChoices.JobHistoryErrorItem).Returns(itemLevelErrorsAndSourceUniqueIds);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrorsAndSourceUniqueIds);
 			_repositoryFactory.GetSavedSearchRepository(_workspaceArtifactId, savedSearchId).Returns(_savedSearchRepository);
 			_savedSearchRepository.AllDocumentsRetrieved().Returns(false, false, true);
 			_savedSearchRepository.RetrieveNextDocuments().Returns(x => artifactDtoBatchOne, x => artifactDtoBatchTwo, x => new ArtifactDTO[0]);
@@ -411,16 +411,16 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_repositoryFactory.Received(1).GetJobHistoryErrorRepository(_workspaceArtifactId);
 			_repositoryFactory.Received(1).GetJobHistoryRepository(_workspaceArtifactId);
 			_jobHistoryRepository.Received(1).GetLastJobHistoryArtifactId(_integrationPointArtifactId);
-			_jobHistoryErrorRepository.Received(1).RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, ErrorTypeChoices.JobHistoryErrorItem);
+			_jobHistoryErrorRepository.Received(1).RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
 			_repositoryFactory.Received(1).GetSavedSearchRepository(_workspaceArtifactId, savedSearchId);
 			_savedSearchRepository.Received(3).AllDocumentsRetrieved();
 			_savedSearchRepository.Received(2).RetrieveNextDocuments();
 
 			_jobHistoryErrorItemStart.DidNotReceiveWithAnyArgs()
-				.AddArtifactIdsIntoTempTable(null);
+				.BatchAddArtifactIdsIntoTempTable(null, _batchSize);
 			_jobHistoryErrorItemComplete.DidNotReceiveWithAnyArgs()
-				.AddArtifactIdsIntoTempTable(null);
-			_jobHistoryErrorItemStartOther.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<IList<int>>(y => itemLevelErrorsAndSourceUniqueIds.Keys.SequenceEqual(y)));
+				.BatchAddArtifactIdsIntoTempTable(null, _batchSize);
+			_jobHistoryErrorItemStartOther.Received(1).BatchAddArtifactIdsIntoTempTable(Arg.Is<IList<int>>(y => itemLevelErrorsAndSourceUniqueIds.Keys.SequenceEqual(y)), _batchSize);
 		}
 
 		[Test]
@@ -457,7 +457,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			};
 
 			_jobHistoryRepository.GetLastJobHistoryArtifactId(_integrationPointArtifactId).Returns(lastJobHistoryId);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, ErrorTypeChoices.JobHistoryErrorItem).Returns(itemLevelErrorsAndSourceUniqueIds);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrorsAndSourceUniqueIds);
 			_repositoryFactory.GetSavedSearchRepository(_workspaceArtifactId, savedSearchId).Returns(_savedSearchRepository);
 			_savedSearchRepository.AllDocumentsRetrieved().Returns(false, false, true);
 			_savedSearchRepository.RetrieveNextDocuments().Returns(x => artifactDtoBatchOne, x => artifactDtoBatchTwo, x => new ArtifactDTO[0]);
@@ -469,14 +469,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_repositoryFactory.Received(1).GetJobHistoryErrorRepository(_workspaceArtifactId);
 			_repositoryFactory.Received(1).GetJobHistoryRepository(_workspaceArtifactId);
 			_jobHistoryRepository.Received(1).GetLastJobHistoryArtifactId(_integrationPointArtifactId);
-			_jobHistoryErrorRepository.Received(1).RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, ErrorTypeChoices.JobHistoryErrorItem);
+			_jobHistoryErrorRepository.Received(1).RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
 			_repositoryFactory.Received(1).GetSavedSearchRepository(_workspaceArtifactId, savedSearchId);
 			_savedSearchRepository.Received(3).AllDocumentsRetrieved();
 			_savedSearchRepository.Received(2).RetrieveNextDocuments();
 
-			_jobHistoryErrorItemStart.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<IList<int>>(y => y.SequenceEqual(new [] {error2, error3})));
-			_jobHistoryErrorItemComplete.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<IList<int>>(y => y.SequenceEqual(new [] {error2, error3})));
-			_jobHistoryErrorItemStartOther.Received(1).AddArtifactIdsIntoTempTable(Arg.Is<IList<int>>(y => y.SequenceEqual(new [] {error1, error4})));
+			_jobHistoryErrorItemStart.Received(1).BatchAddArtifactIdsIntoTempTable(Arg.Is<IList<int>>(y => y.SequenceEqual(new [] {error2, error3})), _batchSize);
+			_jobHistoryErrorItemComplete.Received(1).BatchAddArtifactIdsIntoTempTable(Arg.Is<IList<int>>(y => y.SequenceEqual(new [] {error2, error3})), _batchSize);
+			_jobHistoryErrorItemStartOther.Received(1).BatchAddArtifactIdsIntoTempTable(Arg.Is<IList<int>>(y => y.SequenceEqual(new [] {error1, error4})), _batchSize);
 		}
 	}
 }
