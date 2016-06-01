@@ -38,6 +38,8 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 
 		private HttpResponseMessage Internal(int workspaceId, int relatedObjectArtifactId, Action<int, int, int> integrationPointServiceMethod)
 		{
+			string errorMessage = String.Empty;
+			HttpStatusCode httpStatusCode = HttpStatusCode.OK;
 			try
 			{
 				int userId = GetUserIdIfExists();
@@ -46,13 +48,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 			catch (AggregateException exception)
 			{
 				IEnumerable<string> innerExceptions = exception.InnerExceptions.Where(ex => ex != null).Select(ex => ex.Message);
-				return Request.CreateResponse(HttpStatusCode.BadRequest, String.Format("{0} : {1}", exception.Message, String.Join(",", innerExceptions)));
+				errorMessage = $"{exception.Message} : {String.Join(",", innerExceptions)}";
+				httpStatusCode = HttpStatusCode.BadRequest;
 			}
 			catch (Exception exception)
 			{
-				return Request.CreateResponse(HttpStatusCode.BadRequest, exception.Message);
+				errorMessage = exception.Message;
+				httpStatusCode = HttpStatusCode.BadRequest;
 			}
-			return Request.CreateResponse(HttpStatusCode.OK);
+
+			HttpResponseMessage response = Request.CreateResponse(httpStatusCode);
+			response.Content = new StringContent(errorMessage, System.Text.Encoding.UTF8, "text/plain");
+
+			return response;
 		}
 
 		private int GetUserIdIfExists()

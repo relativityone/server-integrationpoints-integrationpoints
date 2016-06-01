@@ -43,7 +43,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 		public void ControllerDoesNotHaveUserIdInTheHeaderWhenTryingToSubmitPushingJob_ExpectBadRequest()
 		{
 			// Arrange
-			const string expectedErrorMessage = @"""Unable to determine the user id. Please contact your system administrator.""";
+			const string expectedErrorMessage = @"Unable to determine the user id. Please contact your system administrator.";
 
 			Exception exception = new Exception("Unable to determine the user id. Please contact your system administrator.");
 			_integrationPointService.When(
@@ -67,7 +67,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers
 				new Claim("rel_uai", _userIdString)
 			};
 			_instance.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
-			const string expectedErrorMessage = @"""ABC : 123,456""";
+			const string expectedErrorMessage = @"ABC : 123,456";
 
 			AggregateException exceptionToBeThrown = new AggregateException("ABC",
 				new[] { new AccessViolationException("123"), new Exception("456") });
