@@ -17,5 +17,7 @@
         public bool OverwriteFiles { get; set; }
         public bool ExportImagesChecked { get; set; }
         public string SelectedImageFileType { get; set; }
+        public string SelectedDataFileFormat { get; set; }
+        public bool IncludeNativeFilesPath { get; set; }
     }
 }

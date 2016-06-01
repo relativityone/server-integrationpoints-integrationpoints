@@ -66,6 +66,19 @@
             required: true
         });
 
+        this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || "true");
+
+        this.dataFileFormats = [
+          { key: "Concordance (.dat)", value: "Concordance" },
+          { key: "HTML (.html)", value: "HTML" },
+          { key: "Comma-separated (.csv)", value: "CSV" }
+          //{key: "Custom (.txt)", value: "Custom"}
+        ];
+
+        this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
+            required: true
+        });
+
         this.CopyFileFromRepository = ko.observable(state.CopyFileFromRepository || "false");
         this.OverwriteFiles = ko.observable(state.OverwriteFiles || "false");
 
@@ -150,7 +163,9 @@
                 "OverwriteFiles": self.OverwriteFiles(),
                 "Fileshare": self.SelectedDestinationPath(),
                 "ExportImagesChecked": self.ExportImagesChecked(),
-                "SelectedImageFileType": self.SelectedImageFileType().key
+                "SelectedImageFileType": self.SelectedImageFileType().key,
+                "IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
+                "SelectedDataFileFormat": self.SelectedDataFileFormat()
             }
         }
     }

@@ -56,8 +56,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			var imageType = default(ExportSettings.ImageFileType);
 			Enum.TryParse(sourceSettings.SelectedImageFileType, true, out imageType);
-			
-			var exportSettings = new ExportSettings
+            ExportSettings.DataFileFormat dataFileFormat;
+            Enum.TryParse(sourceSettings.SelectedDataFileFormat, true, out dataFileFormat);
+
+            var exportSettings = new ExportSettings
             {
                 ExportedObjArtifactId = sourceSettings.SavedSearchArtifactId,
                 ExportedObjName = sourceSettings.SavedSearch,
@@ -68,7 +70,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 OverwriteFiles = sourceSettings.OverwriteFiles,
                 CopyFileFromRepository = sourceSettings.CopyFileFromRepository,
                 SelViewFieldIds = fieldMap.Select(item => int.Parse(item.SourceField.FieldIdentifier)).ToList(),
-                ArtifactTypeId = destinationSettings.ArtifactTypeId
+                ArtifactTypeId = destinationSettings.ArtifactTypeId,
+                OutputDataFileFormat = dataFileFormat,
+                IncludeNativeFilesPath = sourceSettings.IncludeNativeFilesPath
             };
 
             _exportProcessRunner.StartWith(exportSettings);

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
 using Relativity;
@@ -9,7 +10,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
     {
         public ExportFile CreateDefaultSetup(ExportSettings exportSettings)
         {
-            ExportFile expFile = new ExportFile(exportSettings.ArtifactTypeId);
+            var expFile = new ExportFile(exportSettings.ArtifactTypeId);
             expFile.AppendOriginalFileName = false;
             expFile.ArtifactID = exportSettings.ExportedObjArtifactId;
             expFile.CaseInfo = new CaseInfo();
@@ -17,17 +18,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             expFile.ExportFullText = false;
             expFile.ExportImages = exportSettings.ExportImages;
             expFile.ExportFullTextAsFile = false;
-            expFile.ExportNative = true;
+            expFile.ExportNative = exportSettings.IncludeNativeFilesPath;
             expFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier;
             expFile.FilePrefix = "";
             expFile.FolderPath = exportSettings.ExportFilesLocation;
             expFile.IdentifierColumnName = "Control Number";
-            List<Pair> imagePrecs = new List<Pair>();
+            var imagePrecs = new List<Pair>();
             imagePrecs.Add(new Pair("-1", "Original"));
             expFile.ImagePrecedence = imagePrecs.ToArray();
-            expFile.LoadFileEncoding = System.Text.Encoding.Default;
-            expFile.LoadFileExtension = "dat";
-            expFile.LoadFileIsHtml = false;
+            expFile.LoadFileEncoding = Encoding.Default;
+            expFile.LoadFileExtension = ParseDataFileFormat(exportSettings.OutputDataFileFormat);
+            expFile.LoadFileIsHtml = IsHtml(exportSettings.OutputDataFileFormat);
             expFile.LoadFilesPrefix = exportSettings.ExportedObjName;
             expFile.LogFileFormat = LoadFileType.FileFormat.Opticon;
             expFile.ObjectTypeName = "Document";
@@ -65,6 +66,28 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
                 default:
                     return null;
             }
+        }
+
+        private static string ParseDataFileFormat(ExportSettings.DataFileFormat dataFileFormat)
+        {
+            switch (dataFileFormat)
+            {
+                case ExportSettings.DataFileFormat.CSV:
+                    return "csv";
+                case ExportSettings.DataFileFormat.Concordance:
+                    return "dat";
+                case ExportSettings.DataFileFormat.HTML:
+                    return "html";
+                case ExportSettings.DataFileFormat.Custom:
+                    return "txt";
+                default:
+                    return null;
+            }
+        }
+
+        private static bool IsHtml(ExportSettings.DataFileFormat dataFileFormat)
+        {
+            return dataFileFormat == ExportSettings.DataFileFormat.HTML;
         }
     }
 }

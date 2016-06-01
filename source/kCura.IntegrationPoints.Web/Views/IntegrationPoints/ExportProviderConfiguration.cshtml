@@ -29,6 +29,32 @@
         </div>
     </div>
     <div class="card">
+        <span class="label title">Natives</span>
+        <div class="identifier">
+            <div class="field-row">
+                <div class="field-label required ">Include Native Files Path:</div>
+                <div class="field-value">
+                    <ul>
+                        <li>
+                            <input id="include-native-files-path-radio-0" type="radio" name="includeNativeFilesPath" value="true" data-bind="checked: IncludeNativeFilesPath" />Yes
+                        </li>
+                        <li>
+                            <input id="include-native-files-path-radio-1" type="radio" name="includeNativeFilesPath" value="false" data-bind="checked: IncludeNativeFilesPath" />No
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field-label required">
+                    File Type :
+                </div>
+                <div class="field-value ">
+                    <select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: dataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
         <span class="label title">Physical File Export</span>
         <div class="identifier">
             <div class="field-row">
