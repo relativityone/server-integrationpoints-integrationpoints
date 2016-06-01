@@ -188,6 +188,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			if (currentItemLevelErrors.Any())
 			{
 				IList<int> currentItemLevelErrorList = currentItemLevelErrors.ToList();
+				// TODO: if BatchAddArtifactIdsIntoTempTable took an ICollection instead of IList, 
+				// we wouldn't need to convert from the HashTable. -- biedrzycki: 6/1/2016
 				JobHistoryErrorItemStart.AddArtifactIdsIntoTempTable(currentItemLevelErrorList);
 				JobHistoryErrorItemComplete.AddArtifactIdsIntoTempTable(currentItemLevelErrorList);
 			}
