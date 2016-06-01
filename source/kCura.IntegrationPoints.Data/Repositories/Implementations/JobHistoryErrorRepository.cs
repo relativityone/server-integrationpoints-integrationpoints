@@ -175,7 +175,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				SearchResultViewFields fields = searchManager.GetFieldsForSearchResultViewAsync(_workspaceArtifactId, (int)Relativity.Client.ArtifactType.Document)
 					.GetResultsWithoutContextSync();
 
-				FieldRef field = fields.FieldsNotIncluded.First(x => x.Name == "Control Number");
+				FieldRef field = fields.FieldsNotIncluded.First(x => x.Name == "Artifact ID");
 				itemLevelSearch.Fields = new List<FieldRef>(1) { field };
 
 				int itemLevelSearchArtifactId = searchManager.CreateSingleAsync(_workspaceArtifactId, itemLevelSearch).GetResultsWithoutContextSync();
