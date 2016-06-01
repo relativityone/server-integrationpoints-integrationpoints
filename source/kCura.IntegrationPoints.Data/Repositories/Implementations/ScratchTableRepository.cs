@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_tablePrefix = tablePrefix;
 			_tableSuffix = tableSuffix;
 			_workspaceId = workspaceId;
-			IgnoreErrorDocuments = true;
+			IgnoreErrorDocuments = false;
 		}
 
 		public bool IgnoreErrorDocuments { get; set; }
@@ -90,6 +90,19 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			catch (Exception)
 			{
 				// trying to delete temp tables early, don't have worry about failing
+			}
+		}
+
+		public void BatchAddArtifactIdsIntoTempTable(List<int> artifactIds, int batchSize)
+		{
+			if (!artifactIds.IsNullOrEmpty())
+			{
+				int numberOfBatches = (artifactIds.Count + batchSize - 1);
+				for (int batchSet = 0; batchSet < numberOfBatches; batchSet++)
+				{
+					List<int> batchedArtifactIds = artifactIds.Skip(batchSet*batchSize).Take(batchSize).ToList();
+					AddArtifactIdsIntoTempTable(batchedArtifactIds);
+				}
 			}
 		}
 
@@ -153,9 +166,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				string prepend = String.Empty;
 				if (_toggleProvider.IsFeatureEnabled<AOAGToggle>())
 				{
-					prepend = $"{ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_workspaceId)}_";
+					prepend = $"{ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_workspaceId)}";
 				}
-				_tempTableName = $"{prepend}{_tablePrefix}_{_tableSuffix}";
+				_tempTableName = $"{prepend}_{_tablePrefix}_{_tableSuffix}";
 				if (_tempTableName.Length > 128)
 				{
 					throw new Exception($"Unable to create scratch table - {_tempTableName}. The name of the table is too long. Please contact the system administrator.");

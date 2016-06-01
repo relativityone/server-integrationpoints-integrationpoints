@@ -23,5 +23,19 @@ namespace kCura.IntegrationPoints.Data.Transformers
         /// <param name="transformees">Objects being transformed</param>
         /// <returns></returns>
         List<T1> ConvertToDto(IEnumerable<T2> transformees);
-    }
+
+		/// <summary>
+		/// Converts the generic Artifact DTO to DTO representation
+		/// </summary>
+		/// <param name="transformees">Objects being transformed</param>
+		/// <returns>List of new DTOs</returns>
+		T1 ConvertArtifactDtoToDto(ArtifactDTO transformees);
+
+		/// <summary>
+		/// Converts the generic Artifact DTOs to DTO representation
+		/// </summary>
+		/// <param name="transformees">Objects being transformed</param>
+		/// <returns></returns>
+		List<T1> ConvertArtifactDtoToDto(IEnumerable<ArtifactDTO> transformees);
+	}
 }

@@ -13,12 +13,14 @@ namespace kCura.IntegrationPoints.Core.Services
 		private readonly ICaseServiceContext _context;
 		private readonly List<JobHistoryError> _jobHistoryErrorList;
 		private bool _errorOccurredDuringJob;
+		public bool JobLevelErrorOccurred;
 
 		public JobHistoryErrorService(ICaseServiceContext context)
 		{
 			_context = context;
 			_jobHistoryErrorList = new List<JobHistoryError>();
 			_errorOccurredDuringJob = false;
+			JobLevelErrorOccurred = false;
 		}
 
 		public Data.JobHistory JobHistory { get; set; }

@@ -17,12 +17,11 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly ClaimsPrincipal _claimsPrincipal;
 		private readonly int _sourceWorkspaceArtifactId;
 		private readonly JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
-		private readonly int _savedSearchArtifactId;
 		private readonly int _jobHistoryErrorTypeId;
 
 		public JobHistoryErrorBatchUpdateManager(IJobHistoryErrorManager jobHistoryErrorManager, IRepositoryFactory repositoryFactory, 
 			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, int sourceWorkspaceArtifactId, int submittedBy, 
-			JobHistoryErrorDTO.UpdateStatusType updateStatusType, int savedSearchArtifactId)
+			JobHistoryErrorDTO.UpdateStatusType updateStatusType)
 		{
 			_jobHistoryErrorManager = jobHistoryErrorManager;
 			_repositoryFactory = repositoryFactory; 
@@ -30,7 +29,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);
 			_updateStatusType = updateStatusType;
 			_jobHistoryErrorTypeId = SetJobHistoryErrorArtifactTypeId(_sourceWorkspaceArtifactId);
-			_savedSearchArtifactId = savedSearchArtifactId;
 		}
 
 		public void OnJobStart(Job job)
@@ -52,7 +50,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 
 					case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
 						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStart, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorInProgress);
-						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStartOther, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
+						UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemStartExcluded, jobHistoryErrorRepository, ErrorStatusChoices.JobHistoryErrorExpired);
 						break;
 				}
 			}
@@ -86,7 +84,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				{
 					UpdateStatuses(_jobHistoryErrorManager.JobHistoryErrorItemComplete, jobHistoryErrorRepository,
 						ErrorStatusChoices.JobHistoryErrorRetried);
-					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_sourceWorkspaceArtifactId, _savedSearchArtifactId, 0);
 				}
 				else if (_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly ||
 						_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem)
@@ -105,8 +102,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(_sourceWorkspaceArtifactId);
 				int errorStatusChoiceArtifactId = artifactGuidRepository.GetArtifactIdsForGuids(errorStatus.ArtifactGuids)[errorStatus.ArtifactGuids[0]];
 
-				jobHistoryErrorRepository.UpdateErrorStatuses(_claimsPrincipal, numberOfErrors, _jobHistoryErrorTypeId,
-					_sourceWorkspaceArtifactId, errorStatusChoiceArtifactId, scratchTable.GetTempTableName());
+				jobHistoryErrorRepository.UpdateErrorStatuses(_claimsPrincipal, numberOfErrors, _jobHistoryErrorTypeId, 
+					errorStatusChoiceArtifactId, scratchTable.GetTempTableName());
 			}
 			finally
 			{

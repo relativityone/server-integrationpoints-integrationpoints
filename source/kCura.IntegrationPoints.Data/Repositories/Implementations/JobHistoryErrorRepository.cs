@@ -4,21 +4,19 @@ using System.Data;
 using System.Linq;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Transformers;
-using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Data;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
-using Relativity.Services.User;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class JobHistoryErrorRepository : RelativityMassEditBase, IJobHistoryErrorRepository
+	public class JobHistoryErrorRepository : KeplerServiceBase, IJobHistoryErrorRepository
 	{
 		private readonly IHelper _helper;
 		private readonly int _workspaceArtifactId;
@@ -28,10 +26,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		/// <summary>
 		/// Internal due to Factory and Unit Tests
 		/// </summary>
-		internal JobHistoryErrorRepository(IHelper helper, 
+		internal JobHistoryErrorRepository(IHelper helper,
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor,
 			IGenericLibrary<JobHistoryError> jobHistoryErrorLibrary,
 			IDtoTransformer<JobHistoryErrorDTO, JobHistoryError> dtoTransformer,
 			int workspaceArtifactId)
+			: base(objectQueryManagerAdaptor)
 		{
 			_helper = helper;
 			_workspaceArtifactId = workspaceArtifactId;
@@ -39,79 +39,67 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_dtoTransformer = dtoTransformer;
 		}
 
-		public List<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType)
+		public List<int> RetrieveJobHistoryErrorArtifactIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
-			var fields = new List<FieldValue>
-			{
-				new FieldValue(Guid.Parse(JobHistoryErrorDTO.FieldGuids.ArtifactId))
-			};
+			IEnumerable<JobHistoryErrorDTO> results = RetrieveJobHistoryErrorData(jobHistoryArtifactId, errorType);
 
-			QueryResultSet<RDO> results = RetrieveJobHistoryErrorData(jobHistoryArtifactId, errorType, fields);
-			
-			return results.Results.Select(result => result.Artifact.ArtifactID).ToList();
+			return results.Select(result => result.ArtifactId).ToList();
 		}
 
-		public Dictionary<int, string> RetrieveJobHistoryErrorIdsAndSourceUniqueIds(int jobHistoryArtifactId, Relativity.Client.Choice errorType)
+		public IDictionary<int, string> RetrieveJobHistoryErrorIdsAndSourceUniqueIds(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
-			var fields = new List<FieldValue>
-			{
-				new FieldValue(Guid.Parse(JobHistoryErrorDTO.FieldGuids.ArtifactId)),
-				new FieldValue(Guid.Parse(JobHistoryErrorDTO.FieldGuids.SourceUniqueID))
-			};
 
-			QueryResultSet<RDO> results = RetrieveJobHistoryErrorData(jobHistoryArtifactId, errorType, fields);
+			IEnumerable<JobHistoryErrorDTO> results = RetrieveJobHistoryErrorData(jobHistoryArtifactId, errorType);
 
 			Dictionary<int, string> artifactIdsAndSourceUniqueIds = new Dictionary<int, string>();
 
-			foreach (var result in results.Results)
+			foreach (var result in results)
 			{
-				artifactIdsAndSourceUniqueIds.Add(result.Artifact.ArtifactID, result.Artifact.Fields[0].Value.ToString());
+				artifactIdsAndSourceUniqueIds.Add(result.ArtifactId, result.SourceUniqueID);
 			}
 			
 			return artifactIdsAndSourceUniqueIds;
 		}
 
-		private QueryResultSet<RDO> RetrieveJobHistoryErrorData(int jobHistoryArtifactId, Relativity.Client.Choice errorType, List<FieldValue> fields)
+		private IEnumerable<JobHistoryErrorDTO> RetrieveJobHistoryErrorData(int jobHistoryArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values errorType)
 		{
-			QueryResultSet<RDO> results = null;
-			var query = new Query<RDO>();
-
-			query.ArtifactTypeGuid = new Guid(ObjectTypeGuids.JobHistoryError);
-			var jobHistoryCondition = new WholeNumberCondition(new Guid(JobHistoryErrorDTO.FieldGuids.JobHistory), NumericConditionEnum.EqualTo, jobHistoryArtifactId);
-			var errorTypeCondition = new SingleChoiceCondition(new Guid(JobHistoryErrorDTO.FieldGuids.ErrorType), SingleChoiceConditionEnum.AnyOfThese, errorType.ArtifactGuids);
-			query.Condition = new CompositeCondition(jobHistoryCondition, CompositeConditionEnum.And, errorTypeCondition);
-			query.Fields = fields;
+			IEnumerable<JobHistoryErrorDTO> jobHistoryErrors = new List<JobHistoryErrorDTO>();
+			var jobHistoryCondition = $"'{JobHistoryErrorDTO.FieldNames.JobHistory}' == {jobHistoryArtifactId}";
+			
+			var query = new global::Relativity.Services.ObjectQuery.Query()
+			{
+				Fields = JobHistoryErrorDTO.FieldNames.FieldNamesList.ToArray(),
+				Condition = jobHistoryCondition,
+				TruncateTextFields = true
+			};
 
 			try
 			{
-				using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+				ArtifactDTO[] results = this.RetrieveAllArtifactsAsync(query).GetResultsWithoutContextSync();
+				
+				if (results.Length > 0)
 				{
-					rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-					results = rsapiClient.Repositories.RDO.Query(query);
+					JobHistoryErrorTransformer jobHistoryErrorTransformer = new JobHistoryErrorTransformer(_helper, _workspaceArtifactId);
+					jobHistoryErrors = jobHistoryErrorTransformer.ConvertArtifactDtoToDto(results).FindAll(x => x.ErrorType == errorType);
 				}
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(System.String.Format(JobHistoryErrorErrors.JOB_HISTORY_ERROR_RETRIEVE_FAILURE, jobHistoryArtifactId), ex);
+				throw new Exception(string.Format(JobHistoryErrorErrors.JOB_HISTORY_ERROR_RETRIEVE_FAILURE, jobHistoryArtifactId), ex);
 			}
-
-			if (!results.Success)
-			{
-				throw new Exception(System.String.Format(JobHistoryErrorErrors.JOB_HISTORY_ERROR_RETRIEVE_NO_RESULTS, jobHistoryArtifactId, results.Message));
-			}
-
-			return results;
+			
+			return jobHistoryErrors;
 		}
 
 
-		public void UpdateErrorStatuses(ClaimsPrincipal claimsPrincipal, int numberOfErrors, int jobHistoryErrorTypeId, int sourceWorkspaceId, int errorStatusArtifactId, string tableName)
+		public void UpdateErrorStatuses(ClaimsPrincipal claimsPrincipal, int numberOfErrors, int jobHistoryErrorTypeId, int errorStatusArtifactId, string tableName)
 		{
 			if (numberOfErrors <= 0)
 			{
 				return;
 			}
 
-			BaseServiceContext baseService = claimsPrincipal.GetUnversionContext(sourceWorkspaceId);
+			BaseServiceContext baseService = claimsPrincipal.GetUnversionContext(_workspaceArtifactId);
 
 			Guid[] guids = { new Guid(JobHistoryErrorFieldGuids.ErrorStatus) };
 			DataRowCollection fieldRows;
@@ -135,7 +123,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			try
 			{
-				base.UpdateSingleChoiceField(baseService, singleChoiceField, numberOfErrors, jobHistoryErrorArtifactType, errorStatusArtifactId, tableName);
+				JobHistoryErrorMassEditRepository jobHistoryErrorMassEditRepository = new JobHistoryErrorMassEditRepository();
+				jobHistoryErrorMassEditRepository.UpdateSingleChoiceField(baseService, singleChoiceField, numberOfErrors, jobHistoryErrorArtifactType, errorStatusArtifactId, tableName);
 			}
 			catch (Exception e)
 			{
@@ -144,7 +133,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		}
 
-		public int CreateItemLevelErrorsSavedSearch(int workspaceArtifactId, int integrationPointArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId, int userArtifactId)
+		public int CreateItemLevelErrorsSavedSearch(int integrationPointArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId)
 		{
 			//Check for all documents that are part of the current saved search
 			FieldRef savedSearchFieldRef = new FieldRef("(Saved Search)");
@@ -176,7 +165,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			KeywordSearch itemLevelSearch = new KeywordSearch
 			{
-				Owner = new UserRef(userArtifactId),
 				Name = $"{Data.Constants.TEMPORARY_JOB_HISTORY_ERROR_SAVED_SEARCH_NAME} - {integrationPointArtifactId} - {jobHistoryArtifactId}",
 				ArtifactTypeID = (int)Relativity.Client.ArtifactType.Document,
 				SearchCriteria = searchCondition
@@ -184,38 +172,45 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			using (IKeywordSearchManager searchManager = _helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System))
 			{
-				SearchResultViewFields fields = searchManager.GetFieldsForSearchResultViewAsync(workspaceArtifactId, (int)Relativity.Client.ArtifactType.Document)
-					.ConfigureAwait(false).GetAwaiter().GetResult();
+				SearchResultViewFields fields = searchManager.GetFieldsForSearchResultViewAsync(_workspaceArtifactId, (int)Relativity.Client.ArtifactType.Document)
+					.GetResultsWithoutContextSync();
 
-				FieldRef field = fields.FieldsNotIncluded.First(x => x.Name == "Artifact ID");
+				FieldRef field = fields.FieldsNotIncluded.First(x => x.Name == "Control Number");
 				itemLevelSearch.Fields = new List<FieldRef>(1) { field };
-				
-				int itemLevelSearchArtifactId =
-					searchManager.CreateSingleAsync(workspaceArtifactId, itemLevelSearch)
-						.ConfigureAwait(false).GetAwaiter().GetResult();
+
+				int itemLevelSearchArtifactId = searchManager.CreateSingleAsync(_workspaceArtifactId, itemLevelSearch).GetResultsWithoutContextSync();
 
 				return itemLevelSearchArtifactId;
 			}
 		}
 
-		public void DeleteItemLevelErrorsSavedSearch(int workspaceArtifactId, int searchArtifactId, int retryAttempts)
+		public void DeleteItemLevelErrorsSavedSearch(int searchArtifactId, int retryAttempts)
 		{
 			using (IKeywordSearchManager searchManager = _helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System))
 			{
-				var task = searchManager.DeleteSingleAsync(workspaceArtifactId, searchArtifactId);
+				var task = searchManager.DeleteSingleAsync(_workspaceArtifactId, searchArtifactId);
 				task.ConfigureAwait(false).GetAwaiter().GetResult();
 
 				if (task.IsFaulted && retryAttempts < 3)
 				{
-					DeleteItemLevelErrorsSavedSearch(workspaceArtifactId, searchArtifactId, retryAttempts + 1);
+					DeleteItemLevelErrorsSavedSearch(searchArtifactId, retryAttempts + 1);
 				}
 			}
 		}
 
-		public List<JobHistoryErrorDTO> Read(IEnumerable<int> artifactIds)
+		public IList<JobHistoryErrorDTO> Read(IEnumerable<int> artifactIds)
 		{
-			List<JobHistoryError> jobHistories = _jobHistoryErrorLibrary.Read(artifactIds);
-			return _dtoTransformer.ConvertToDto(jobHistories);
+			List<JobHistoryError> jobHistoryErrors = _jobHistoryErrorLibrary.Read(artifactIds);
+			return _dtoTransformer.ConvertToDto(jobHistoryErrors);
+		}
+
+		private class JobHistoryErrorMassEditRepository : RelativityMassEditBase
+		{
+			public new void UpdateSingleChoiceField(BaseServiceContext baseService, global::Relativity.Core.DTO.Field singleChoiceField, int numberOfErrors,
+				global::Relativity.Query.ArtifactType jobHistoryErrorArtifactType, int errorStatusArtifactId, string tableName)
+			{
+				base.UpdateSingleChoiceField(baseService, singleChoiceField, numberOfErrors, jobHistoryErrorArtifactType, errorStatusArtifactId, tableName);
+			}
 		}
 	}
 }

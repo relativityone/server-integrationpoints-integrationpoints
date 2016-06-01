@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RunNow_NoErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).ReturnsForAnyArgs(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).ReturnsForAnyArgs(new List<int>());
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRunNow);
@@ -69,8 +69,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RunNow_JobError()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(_sampleJobError);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(new List<int>());
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRunNow);
@@ -84,8 +84,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RunNow_JobAndItemErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(_sampleJobError);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(_sampleItemErrors);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRunNow);
@@ -100,8 +100,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RunNow_ItemErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(new List<int>());
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(_sampleItemErrors);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRunNow);
@@ -114,7 +114,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_ScheduledRun_NoErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).ReturnsForAnyArgs(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).ReturnsForAnyArgs(new List<int>());
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryScheduledRun);
@@ -128,8 +128,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_ScheduledRun_JobError()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(_sampleJobError);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(new List<int>());
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryScheduledRun);
@@ -143,8 +143,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_ScheduledRun_JobAndItemErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(_sampleJobError);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(_sampleItemErrors);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryScheduledRun);
@@ -159,8 +159,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_ScheduledRun_ItemErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(new List<int>());
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(_sampleItemErrors);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryScheduledRun);
@@ -173,7 +173,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RetryErrors_NoErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).ReturnsForAnyArgs(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).ReturnsForAnyArgs(new List<int>());
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRetryErrors);
@@ -187,8 +187,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RetryErrors_JobError()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(_sampleJobError);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(new List<int>());
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRetryErrors);
@@ -203,8 +203,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RetryErrors_JobAndItemErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(_sampleJobError);
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(_sampleItemErrors);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(_sampleJobError);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRetryErrors);
@@ -219,8 +219,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		public void StageForUpdatingErrors_RetryErrors_ItemErrors()
 		{
 			//Arrange
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorJob).Returns(new List<int>());
-			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, ErrorTypeChoices.JobHistoryErrorItem).Returns(_sampleItemErrors);
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Job).Returns(new List<int>());
+			_jobHistoryErrorRepository.RetrieveJobHistoryErrorArtifactIds(0, JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(_sampleItemErrors);
 
 			//Act
 			_testInstance.StageForUpdatingErrors(_job, JobTypeChoices.JobHistoryRetryErrors);
@@ -238,8 +238,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 			//Assert
 			_jobHistoryRepository.Received().GetLastJobHistoryArtifactId(_integrationPointArtifactId);
-			_jobHistoryErrorRepository.Received().CreateItemLevelErrorsSavedSearch(_workspaceArtifactId, _integrationPointArtifactId, 
-				_originalSavedSearchArtifactId, 0, _submittedByArtifactId);
+			_jobHistoryErrorRepository.Received().CreateItemLevelErrorsSavedSearch(_integrationPointArtifactId, _originalSavedSearchArtifactId, 0);
 		}
 
 		[Test]
@@ -280,7 +279,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_jobHistoryRepository.GetLastJobHistoryArtifactId(_integrationPointArtifactId).Returns(lastJobHistoryId);
 
 			_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(lastJobHistoryId,
-				ErrorTypeChoices.JobHistoryErrorItem).Returns(itemLevelErrorsAndSourceUniqueIds);
+				JobHistoryErrorDTO.Choices.ErrorType.Values.Item).Returns(itemLevelErrorsAndSourceUniqueIds);
 
 
 			// Act
