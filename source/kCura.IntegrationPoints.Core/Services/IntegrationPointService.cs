@@ -442,7 +442,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		private void CheckPermissions(int workspaceArtifactId, IntegrationPoint integrationPoint, SourceProvider sourceProvider, int userId)
 		{
 			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(_contextContainer);
-			var integrationPointDto = ConvertToIntegrationPointDto(integrationPoint);
+			IntegrationPointDTO integrationPointDto = ConvertToIntegrationPointDto(integrationPoint);
 
 			Constants.SourceProvider sourceProviderEnum = Constants.SourceProvider.Other;
 			if (sourceProvider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
