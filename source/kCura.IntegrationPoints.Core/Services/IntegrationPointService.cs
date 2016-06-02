@@ -145,18 +145,21 @@ namespace kCura.IntegrationPoints.Core.Services
 			TaskType task;
 			TaskParameters jobDetails = null;
 			SourceProvider provider = _context.RsapiService.SourceProviderLibrary.Read(ip.SourceProvider.Value);
+
+
 			if (provider.Identifier.Equals(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID))
 			{
+				CheckForProviderAdditionalPermissions(ip, Constants.SourceProvider.Relativity, _context.EddsUserID);
 				jobDetails = new TaskParameters
 				{
 					BatchInstance = Guid.NewGuid()
 				};
 
-				CheckForRelativityProviderAdditionalPermissions(ip, _context.EddsUserID);
 				task = TaskType.ExportService;
 			}
 			else
 			{
+				CheckForProviderAdditionalPermissions(ip, Constants.SourceProvider.Other, _context.EddsUserID);
 				task = TaskType.SyncManager;
 			}
 
@@ -508,12 +511,12 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 		}
 
-		private void CheckForRelativityProviderAdditionalPermissions(IntegrationPoint integrationPoint, int userId)
+		private void CheckForProviderAdditionalPermissions(IntegrationPoint integrationPoint, Constants.SourceProvider providerType, int userId)
 		{
 			IIntegrationPointManager integrationPointManager = _managerFactory.CreateIntegrationPointManager(_contextContainer);
 			IntegrationPointDTO integrationPointDto = ConvertToIntegrationPointDto(integrationPoint);
 
-			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissionToSaveIntegrationPoint(_context.WorkspaceID, integrationPointDto, Constants.SourceProvider.Relativity);
+			PermissionCheckDTO permissionCheck = integrationPointManager.UserHasPermissionToSaveIntegrationPoint(_context.WorkspaceID, integrationPointDto, providerType);
 
 			if (userId == 0)
 			{
