@@ -27,8 +27,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		bool UserHasArtifactTypePermissions(int artifactTypeId, IEnumerable<ArtifactPermission> artifactPermissions);
 		bool UserHasArtifactTypePermission(int artifactTypeId, ArtifactPermission artifactPermission);
 		bool UserHasArtifactInstancePermission(int artifactTypeId, int artifactId, ArtifactPermission artifactPermission);
-		bool UserHasArtifactInstancePermissions(int artifactTypeId, int artifactId,
-			IEnumerable<ArtifactPermission> artifactPermissions);
 		bool UserHasPermissionToAccessWorkspace();
 
 

@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using kCura.IntegrationPoints.Data.Extensions;
 using Newtonsoft.Json;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
@@ -11,13 +14,30 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static GroupPermissions GetGroupPermissions(int workspaceId, int groupId)
 		{
 			GroupRef groupRef = new GroupRef(groupId);
-			string parameter1 = $"{{workspaceArtifactID:{workspaceId},group:{JsonConvert.SerializeObject(groupRef)}}}";
+			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				return proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).GetResultsWithoutContextSync();
+			}
+		}
 
-			string response1 = Rest.PostRequestAsJson("api/Relativity.Services.Permission.IPermissionModule/Permission Manager/GetWorkspaceGroupPermissionsAsync",
-				false, parameter1);
-			GroupPermissions groupPermissions = JsonConvert.DeserializeObject<GroupPermissions>(response1);
+		public static void SavePermission(int workspaceId, GroupPermissions permissions)
+		{
+			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, permissions).Wait(TimeSpan.FromSeconds(10));
+			}
+			Process process = System.Diagnostics.Process.Start(@"C:\Windows\System32\iisreset.exe");
+			process?.WaitForExit((int)TimeSpan.FromSeconds(30).TotalMilliseconds);
+		}
 
-			return groupPermissions;
+		public static void RemoveAddWorkspaceGroup(int workspaceId, GroupSelector groupSelector)
+		{
+			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, groupSelector).Wait(TimeSpan.FromSeconds(10));
+			}
+			Process process = Process.Start(@"C:\Windows\System32\iisreset.exe");
+			process?.WaitForExit((int)TimeSpan.FromSeconds(30).TotalMilliseconds);
 		}
 
 		public static bool SetMinimumRelativityProviderPermissions(int workspaceId, int groupId, bool obj = true, bool admin = true, bool tab = true, bool browser = true)
@@ -67,7 +87,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		private static void SetAdminPermissions(GroupPermissions groupPermissions, List<string> permissionNames)
+		public static void SetAdminPermissions(GroupPermissions groupPermissions, List<string> permissionNames)
 		{
 			IEnumerable<int> indices = groupPermissions.AdminPermissions.Select((value, index) => new { value, index })
 					  .Where(x => permissionNames.Contains(x.value.Name))

@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				}
 				catch (Exception e)
 				{
-					string message = $"UserHasPermissionsFailed with intputs {String.Join(",", inputs)}: {e.Message}";
+					string message = $"UserHasPermissionsFailed with inputs {String.Join(",", inputs)}: {e.Message}";
 					throw new Exception(message, e);
 				}
 			}

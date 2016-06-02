@@ -33,11 +33,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return HasPermissions(_workspaceArtifactId, _ALLOW_EXPORT_PERMISSION_ID);
 		}
 
-		public bool UserHasArtifactInstancePermissions(int artifactTypeId, int artifactId, IEnumerable<ArtifactPermission> artifactPermissions)
-		{
-			throw new NotImplementedException();
-		}
-
 		public bool UserHasPermissionToAccessWorkspace()
 		{
 			var permissionRef = new PermissionRef()
@@ -295,8 +290,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					hasPermission = hasPermissionValue.Selected &&
 									hasPermissionValue.PermissionID == permissionToCheck;
 				}
-				catch
+				catch(Exception exception)
 				{
+					Console.WriteLine(exception.Message);
 					// invalid IDs will cause the request to except
 					// suppress these errors and do not give the user access    
 				}
