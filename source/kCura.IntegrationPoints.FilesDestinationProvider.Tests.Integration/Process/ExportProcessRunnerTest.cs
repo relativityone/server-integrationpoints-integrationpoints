@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.IO;
 using System.Linq;
+using System.Text;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -89,6 +90,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			exportSettings.SelViewFieldIds = _workspaceService.GetFieldIdsBy(_configSettings.SelectedFieldNames, exportSettings.WorkspaceId).ToList();
 
+			exportSettings.DataFileEncoding = Encoding.Default;
+			exportSettings.OutputDataFileFormat = ExportSettings.DataFileFormat.Concordance;
+			exportSettings.IncludeNativeFilesPath = true;
 			return exportSettings;
 		}
 
