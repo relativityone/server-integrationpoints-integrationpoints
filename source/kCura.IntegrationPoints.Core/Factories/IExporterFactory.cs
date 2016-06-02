@@ -5,6 +5,6 @@ namespace kCura.IntegrationPoints.Core.Factories
 {
 	public interface IExporterFactory
 	{
-		IExporterService BuildExporter(FieldMap[] mappedFiles, string config, int onBehalfOfUser);
+		IExporterService BuildExporter(FieldMap[] mappedFiles, string config, int savedSearchArtifactId, int onBehalfOfUser);
 	}
 }

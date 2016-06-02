@@ -114,6 +114,11 @@ namespace kCura.IntegrationPoints.Core.Services
 					jobHistoryError.TimestampUTC = now;
 
 					_jobHistoryErrorList.Add(jobHistoryError);
+
+					if (errorType == ErrorTypeChoices.JobHistoryErrorJob)
+					{
+						JobLevelErrorOccurred = true;
+					}
 				}
 				else
 				{
@@ -121,6 +126,7 @@ namespace kCura.IntegrationPoints.Core.Services
 					//in such case log error into Error Tab by throwing Exception.
 					throw new System.Exception(string.Format("Type:{0}  Id:{1}  Error:{2}", errorType.Name, documentIdentifier, errorMessage));
 				}
+
 			}
 		}
 
