@@ -20,7 +20,7 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		[HttpGet]
 		public HttpResponseMessage Get()
 		{
-			var list = _rdoFilter.FilterRdo().Select(x => new { name = x.Name, value = x.DescriptorArtifactTypeID }).ToList();
+			var list = _rdoFilter.GetAllViewableRdos().Select(x => new { name = x.Name, value = x.DescriptorArtifactTypeID }).ToList();
 			return Request.CreateResponse(HttpStatusCode.OK, list);
 		}
 

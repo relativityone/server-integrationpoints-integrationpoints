@@ -55,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 				}
 			};
 
-			var actual = rdoFilter.FilterRdo().ToList();
+			var actual = rdoFilter.GetAllViewableRdos().ToList();
 
 			Assert.AreEqual(expected.Count, actual.Count());
 			for (int i = 0; i < expected.Count; i++)

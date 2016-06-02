@@ -20,17 +20,32 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return groupPermissions;
 		}
 
-		public static bool SetMinimumRelativityProviderPermissions(int workspaceId, int groupId)
+		public static bool SetMinimumRelativityProviderPermissions(int workspaceId, int groupId, bool obj = true, bool admin = true, bool tab = true, bool browser = true)
 		{
 			GroupRef groupRef = new GroupRef(groupId);
 
 			IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true);
 			GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).Result;
 
-			SetObjectPermissions(groupPermissions, new List<string> {"Document", "Integration Point", "Job History", "Search"});
-			SetAdminPermissions(groupPermissions, new List<string> {"Allow Import", "Allow Export"});
-			SetTabVisibility(groupPermissions, new List<string> {"Documents", "Integration Points"});
-			SetBrowserPermissions(groupPermissions, new List<string> {"Folders", "Advanced & Saved Searches"});
+		    if (obj)
+		    {
+		        SetObjectPermissions(groupPermissions, new List<string> {"Document", "Integration Point", "Job History", "Search"});
+		    }
+
+		    if (admin)
+		    {
+		        SetAdminPermissions(groupPermissions, new List<string> {"Allow Import", "Allow Export"});
+		    }
+
+		    if (tab)
+		    {
+		        SetTabVisibility(groupPermissions, new List<string> {"Documents", "Integration Points"});
+		    }
+
+		    if (browser)
+		    {
+		        SetBrowserPermissions(groupPermissions, new List<string> {"Folders", "Advanced & Saved Searches"});
+		    }
 
 			proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions);
 

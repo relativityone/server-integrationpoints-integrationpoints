@@ -7,7 +7,7 @@ WHERE DescriptorArtifactTypeID in
 	JOIN [EDDSDBO].[AccessControlListPermission]  acl WITH(NOLOCK) on gu.GroupArtifactID = acl.GroupID
 	JOIN [EDDSDBO].[Permission] p WITH(NOLOCK) on p.PermissionID = acl.PermissionID
 	JOIN [EDDSDBO].[ArtifactTypeGrouping] atg WITH(NOLOCK) on atg.ArtifactGroupingID = p.ArtifactGrouping
-	WHERE p.[Type] = 6
+	WHERE p.[Type] = 1
 	AND 
 	UserArtifactID in 
 	(

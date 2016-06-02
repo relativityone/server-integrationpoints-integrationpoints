@@ -151,6 +151,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.OnComplete += new IImportNotifier.OnCompleteEventHandler(ImportJob_OnComplete);
 			importJob.OnFatalException += new IImportNotifier.OnFatalExceptionEventHandler(ImportJob_OnComplete);
 
+			// DO NOT MOVE THIS INTO A METHOD
+			// ILmerge on our build server will fail - SAMO 6/1/2016
 			importJob.OnError += row =>
 			{
 				_itemsImported--;
@@ -289,23 +291,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			if (OnJobError != null)
 			{
 				OnJobError(fatalException);
-			}
-		}
-
-
-		private void ImportJob_OnDocumentError(IDictionary row)
-		{
-			_itemsImported--;
-			_itemsErrored++;
-			if (Environment.TickCount - _lastJobErrorUpdate > _JOB_PROGRESS_TIMEOUT_MILLISECONDS)
-			{
-				_lastJobErrorUpdate = Environment.TickCount;
-				if (OnStatusUpdate != null)
-				{
-					OnStatusUpdate(_itemsImported, _itemsErrored);
-					_itemsErrored = 0;
-					_itemsImported = 0;
-				}
 			}
 		}
 
