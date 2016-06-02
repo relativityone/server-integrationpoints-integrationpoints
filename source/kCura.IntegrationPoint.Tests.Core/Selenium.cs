@@ -1,9 +1,12 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public static class Selenium
+    using System;
+
+    public static class Selenium
 	{
 		public static IWebDriver WebDriver = new ChromeDriver();
 
@@ -45,5 +48,24 @@ namespace kCura.IntegrationPoint.Tests.Core
 			string integrationPointUrl = $"http://{SharedVariables.TargetHost}/Relativity/Case/Mask/View.aspx?AppID={workspaceArtifactId}&ArtifactID={integrationPointArtifactId}&ArtifactTypeID={artifactTypeId}";
 			WebDriver.Navigate().GoToUrl(integrationPointUrl);
 		}
-	}
+
+        public static bool PageShouldContain(string message)
+        {
+            return WebDriver.PageSource.Contains(message);
+        }
+
+	    public static void WaitUntilIdExists(string id, int timeSeconds)
+	    {
+	        WebDriverWait wait = new WebDriverWait(WebDriver, TimeSpan.FromSeconds(timeSeconds));
+	        wait.Until(ExpectedConditions.ElementExists(By.Id(id)));
+	    }
+
+        public static void WaitUntilXpathExists(string xpath, int timeSeconds)
+        {
+            WebDriverWait wait = new WebDriverWait(WebDriver, TimeSpan.FromSeconds(timeSeconds));
+            wait.Until(ExpectedConditions.ElementExists(By.XPath(xpath)));
+        }
+
+
+    }
 }

@@ -92,19 +92,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public void BatchAddArtifactIdsIntoTempTable(IList<int> artifactIds, int batchSize)
-		{
-			if (!artifactIds.IsNullOrEmpty())
-			{
-				int numberOfBatches = (artifactIds.Count + batchSize - 1);
-				for (int batchSet = 0; batchSet < numberOfBatches; batchSet++)
-				{
-					IList<int> batchedArtifactIds = artifactIds.Skip(batchSet*batchSize).Take(batchSize).ToList();
-					AddArtifactIdsIntoTempTable(batchedArtifactIds);
-				}
-			}
-		}
-
 		public void AddArtifactIdsIntoTempTable(IList<int> artifactIds)
 		{
 			_count += artifactIds.Count;

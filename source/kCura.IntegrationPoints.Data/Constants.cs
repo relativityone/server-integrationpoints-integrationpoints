@@ -77,6 +77,10 @@ namespace kCura.IntegrationPoints.Data
 		public const string JOB_HISTORY_ERROR_TEMP_TABLE_CREATION_FAILURE = "Unable to create temp table for Error Status updates.";
 		public const string JOB_HISTORY_ERROR_RETRIEVE_FAILURE = "Unable to query for Job History Errors associated with provided JobHistory object ({0}).";
 		public const string JOB_HISTORY_ERROR_RETRIEVE_NO_RESULTS = "No Job History Errors returned for JobHistory object ({0}): {1}.";
-		public const string JOB_HISTORY_ERROR_NO_ARTIFACT_TYPE_FOUND = "Unable to retrieve Artifact Type Id for JobHistoryError object type.";
+	}
+
+	public static class ObjectTypeErrors
+	{
+		public const string OBJECT_TYPE_NO_ARTIFACT_TYPE_FOUND = "Unable to retrieve Artifact Type Id for object type {0}.";
 	}
 }

@@ -120,14 +120,9 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private int SetJobHistoryErrorArtifactTypeId(int workspaceArtifactId)
 		{
 			IObjectTypeRepository objectTypeRepository = _repositoryFactory.GetObjectTypeRepository(workspaceArtifactId);
-			int? objectTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistoryError));
+			int objectTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistoryError));
 
-			if (!objectTypeId.HasValue)
-			{
-				throw new Exception(JobHistoryErrorErrors.JOB_HISTORY_ERROR_NO_ARTIFACT_TYPE_FOUND);
-			}
-
-			return objectTypeId.Value;
+			return objectTypeId;
 		}
 	}
 }

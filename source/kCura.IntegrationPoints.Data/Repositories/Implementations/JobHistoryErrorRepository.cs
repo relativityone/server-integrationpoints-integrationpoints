@@ -124,7 +124,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			try
 			{
 				JobHistoryErrorMassEditRepository jobHistoryErrorMassEditRepository = new JobHistoryErrorMassEditRepository();
-				jobHistoryErrorMassEditRepository.UpdateSingleChoiceField(baseService, singleChoiceField, numberOfErrors, jobHistoryErrorArtifactType, errorStatusArtifactId, tableName);
+				jobHistoryErrorMassEditRepository.UpdateErrorStatuses(baseService, singleChoiceField, numberOfErrors, jobHistoryErrorArtifactType, errorStatusArtifactId, tableName);
 			}
 			catch (Exception e)
 			{
@@ -186,15 +186,24 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public void DeleteItemLevelErrorsSavedSearch(int searchArtifactId, int retryAttempts)
 		{
-			using (IKeywordSearchManager searchManager = _helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System))
+			try
 			{
-				var task = searchManager.DeleteSingleAsync(_workspaceArtifactId, searchArtifactId);
-				task.ConfigureAwait(false).GetAwaiter().GetResult();
-
-				if (task.IsFaulted && retryAttempts < 3)
+				using (
+					IKeywordSearchManager searchManager =
+						_helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(ExecutionIdentity.System))
 				{
-					DeleteItemLevelErrorsSavedSearch(searchArtifactId, retryAttempts + 1);
+					var task = searchManager.DeleteSingleAsync(_workspaceArtifactId, searchArtifactId);
+					task.ConfigureAwait(false).GetAwaiter().GetResult();
+
+					if (task.IsFaulted && retryAttempts < 3)
+					{
+						DeleteItemLevelErrorsSavedSearch(searchArtifactId, retryAttempts + 1);
+					}
 				}
+			}
+			catch
+			{
+				//Do nothing as we don't want to throw an error at the end of the job just because we couldn't delete the temp saved search
 			}
 		}
 
@@ -206,7 +215,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		private class JobHistoryErrorMassEditRepository : RelativityMassEditBase
 		{
-			public new void UpdateSingleChoiceField(BaseServiceContext baseService, global::Relativity.Core.DTO.Field singleChoiceField, int numberOfErrors,
+			public void UpdateErrorStatuses(BaseServiceContext baseService, global::Relativity.Core.DTO.Field singleChoiceField, int numberOfErrors,
 				global::Relativity.Query.ArtifactType jobHistoryErrorArtifactType, int errorStatusArtifactId, string tableName)
 			{
 				base.UpdateSingleChoiceField(baseService, singleChoiceField, numberOfErrors, jobHistoryErrorArtifactType, errorStatusArtifactId, tableName);
