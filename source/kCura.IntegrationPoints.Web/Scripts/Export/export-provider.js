@@ -125,6 +125,35 @@
             });
         }
 
+        this.DataFileEncodingType = ko.observable(state.DataFileEncodingType).extend({
+            required: true
+        });
+
+        this.updateSelectedDataFileEncodingType = function (value) {
+            var selectedDataFileEncodingType = ko.utils.arrayFirst(self.DataFileEncodingTypeList(), function (item) {
+                return item.name === value;
+            });
+
+            self.DataFileEncodingType(selectedDataFileEncodingType.name);
+        }
+
+        this.DataFileEncodingTypeList = ko.observableArray([]);
+        if (self.DataFileEncodingTypeList.length === 0) {
+            IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
+
+                // By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
+                self.DataFileEncodingTypeList(ko.utils.arrayFilter(result,
+                    function (item) {
+                        return $.inArray(item.name, ['utf-16', 'utf-16BE', 'utf-8', 'Windows-1252']) >= 0;
+                    })
+                );
+                self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
+            });
+        }
+        else {
+            self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
+        }
+
         this.ExportImagesChecked = ko.observable(state.ExportImagesChecked || "false").extend({
             required: true
         });
@@ -165,7 +194,8 @@
                 "ExportImagesChecked": self.ExportImagesChecked(),
                 "SelectedImageFileType": self.SelectedImageFileType().key,
                 "IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
-                "SelectedDataFileFormat": self.SelectedDataFileFormat()
+                "SelectedDataFileFormat": self.SelectedDataFileFormat(),
+                "DataFileEncodingType": self.DataFileEncodingType()
             }
         }
     }

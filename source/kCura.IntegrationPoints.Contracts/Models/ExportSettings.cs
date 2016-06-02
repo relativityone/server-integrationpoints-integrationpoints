@@ -19,5 +19,7 @@
         public string SelectedImageFileType { get; set; }
         public string SelectedDataFileFormat { get; set; }
         public bool IncludeNativeFilesPath { get; set; }
+		public string DataFileEncodingType { get; set; }
+		
     }
 }

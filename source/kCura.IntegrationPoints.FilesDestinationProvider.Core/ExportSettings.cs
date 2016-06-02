@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 {
@@ -31,5 +32,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
         public ImageFileType ImageType { get; set; }
         public DataFileFormat OutputDataFileFormat { get; set; }
         public bool IncludeNativeFilesPath { get; set; }
-    }
+
+		public Encoding DataFileEncoding { get; set; }
+	}
 }

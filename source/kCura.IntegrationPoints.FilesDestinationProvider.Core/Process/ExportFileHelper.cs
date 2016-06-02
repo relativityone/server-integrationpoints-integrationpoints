@@ -26,7 +26,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             var imagePrecs = new List<Pair>();
             imagePrecs.Add(new Pair("-1", "Original"));
             expFile.ImagePrecedence = imagePrecs.ToArray();
-            expFile.LoadFileEncoding = Encoding.Default;
+            expFile.LoadFileEncoding = exportSettings.DataFileEncoding;
             expFile.LoadFileExtension = ParseDataFileFormat(exportSettings.OutputDataFileFormat);
             expFile.LoadFileIsHtml = IsHtml(exportSettings.OutputDataFileFormat);
             expFile.LoadFilesPrefix = exportSettings.ExportedObjName;

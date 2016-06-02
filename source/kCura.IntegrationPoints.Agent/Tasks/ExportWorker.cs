@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -72,7 +73,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                 SelViewFieldIds = fieldMap.Select(item => int.Parse(item.SourceField.FieldIdentifier)).ToList(),
                 ArtifactTypeId = destinationSettings.ArtifactTypeId,
                 OutputDataFileFormat = dataFileFormat,
-                IncludeNativeFilesPath = sourceSettings.IncludeNativeFilesPath
+                IncludeNativeFilesPath = sourceSettings.IncludeNativeFilesPath,
+				DataFileEncoding = Encoding.GetEncoding(sourceSettings.DataFileEncodingType)
             };
 
             _exportProcessRunner.StartWith(exportSettings);

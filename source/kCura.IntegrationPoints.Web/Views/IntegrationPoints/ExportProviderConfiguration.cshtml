@@ -46,10 +46,18 @@
             </div>
             <div class="field-row">
                 <div class="field-label required">
-                    File Type :
+                    Data File Format :
                 </div>
                 <div class="field-value ">
                     <select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: dataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat"></select>
+                </div>
+            </div>
+            <div class="field-row">
+                <div class="field-label required">
+                    Data File Encoding :
+                </div>
+                <div class="field-value">
+                    <select id="dataFileEncodingSelector" data-bind="options: DataFileEncodingTypeList, value: DataFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...'"></select>
                 </div>
             </div>
         </div>
@@ -74,7 +82,7 @@
                 <div class="field-label required">
                     Fileshare:
                 </div>
-                <div class="field-value">
+                <div class="field-value" id="fileshare-input">
                     <input data-bind="value: SelectedDestinationPath" />
                 </div>
             </div>
@@ -117,20 +125,19 @@
                     <select id="imageFileTypesSelector" data-bind="options: imageFileTypes, optionsText: 'value', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
                 </div>
             </div>
+
         </div>
     </div>
 
-</div>
 
-
-@section scripts
+    @section scripts
 {
-    <script src="~/Scripts/core/data.js"></script>
-    <script src="~/Scripts/core/utils.js"></script>
-    <script src="~/Scripts/knockout-2.2.0.js"></script>
-    <script src="~/Scripts/knockout.validation.js"></script>
-    <script src="~/Scripts/integration-point/binding.js"></script>
-    <script src="~/Scripts/jquery-postMessage.js"></script>
-    <script src="~/Scripts/frame-messaging.js"></script>
-    <script src="~/Scripts/export/export-provider.js"></script>
-}
+        <script src="~/Scripts/core/data.js"></script>
+        <script src="~/Scripts/core/utils.js"></script>
+        <script src="~/Scripts/knockout-2.2.0.js"></script>
+        <script src="~/Scripts/knockout.validation.js"></script>
+        <script src="~/Scripts/integration-point/binding.js"></script>
+        <script src="~/Scripts/jquery-postMessage.js"></script>
+        <script src="~/Scripts/frame-messaging.js"></script>
+        <script src="~/Scripts/export/export-provider.js"></script>
+    }
