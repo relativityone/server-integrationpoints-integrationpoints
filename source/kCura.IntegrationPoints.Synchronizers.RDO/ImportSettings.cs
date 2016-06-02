@@ -38,6 +38,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		#region "Public Properties"
 
+		[JsonProperty(PropertyName = "artifactTypeID")]
 		public int ArtifactTypeId { get; set; }
 		public string BulkLoadFileFieldDelimiter { get; set; }
 		public int CaseArtifactId { get; set; }

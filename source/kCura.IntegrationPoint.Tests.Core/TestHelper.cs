@@ -61,7 +61,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public T CreateAdminProxy<T>() where T : IDisposable
 		{
-			var credential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials("relativity.admin@kcura.com", "P@ssw0rd@1");
+			var credential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials("relativity.admin@kcura.com", "Test1234!");
 			ServiceFactorySettings settings = new ServiceFactorySettings(SharedVariables.RsapiClientServiceUri, SharedVariables.RestClientServiceUri, credential);
 			ServiceFactory adminServiceFactory = new ServiceFactory(settings);
 			return adminServiceFactory.CreateProxy<T>();
