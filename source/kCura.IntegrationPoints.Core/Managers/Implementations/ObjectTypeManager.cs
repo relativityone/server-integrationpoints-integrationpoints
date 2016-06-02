@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		public int RetrieveObjectTypeDescriptorArtifactTypeId(int workspaceArtifactId, Guid objectTypeGuid)
 		{
 			IObjectTypeRepository repository = _repositoryFactory.GetObjectTypeRepository(workspaceArtifactId);
-			return repository.RetrieveObjectTypeDescriptorArtifactTypeId(objectTypeGuid).GetValueOrDefault(-1);
+			return repository.RetrieveObjectTypeDescriptorArtifactTypeId(objectTypeGuid);
 		}
 	}
 }

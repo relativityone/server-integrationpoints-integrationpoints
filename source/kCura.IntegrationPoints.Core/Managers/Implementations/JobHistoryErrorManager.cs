@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	public class JobHistoryErrorManager : IJobHistoryErrorManager
 	{
 		private readonly IRepositoryFactory _repositoryFactory;
-		private const int _batchSize = 1000;
 
 		internal JobHistoryErrorManager(IRepositoryFactory repositoryFactory, int sourceWorkspaceArtifactId, string uniqueJobId)
 		{
@@ -87,7 +86,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
 							JobHistoryErrorJobStart.AddArtifactIdsIntoTempTable(jobLevelErrors);
 							JobHistoryErrorJobComplete.AddArtifactIdsIntoTempTable(jobLevelErrors);
-							JobHistoryErrorItemStart.BatchAddArtifactIdsIntoTempTable(itemLevelErrors, _batchSize);
+							JobHistoryErrorItemStart.AddArtifactIdsIntoTempTable(itemLevelErrors);
 							break;
 
 						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
@@ -106,7 +105,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					{
 						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem:
 							JobHistoryErrorJobStart.AddArtifactIdsIntoTempTable(jobLevelErrors);
-							JobHistoryErrorItemStart.BatchAddArtifactIdsIntoTempTable(itemLevelErrors, _batchSize);
+							JobHistoryErrorItemStart.AddArtifactIdsIntoTempTable(itemLevelErrors);
 							break;
 
 						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobOnly:
@@ -114,7 +113,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 							break;
 
 						case JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly:
-							JobHistoryErrorItemStart.BatchAddArtifactIdsIntoTempTable(itemLevelErrors, _batchSize);
+							JobHistoryErrorItemStart.AddArtifactIdsIntoTempTable(itemLevelErrors);
 							break;
 					}
 				}
@@ -191,13 +190,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				IList<int> currentItemLevelErrorList = currentItemLevelErrors.ToList();
 				// TODO: if BatchAddArtifactIdsIntoTempTable took an ICollection instead of IList, 
 				// we wouldn't need to convert from the HashTable. -- biedrzycki: 6/1/2016
-				JobHistoryErrorItemStart.BatchAddArtifactIdsIntoTempTable(currentItemLevelErrorList, _batchSize);
-				JobHistoryErrorItemComplete.BatchAddArtifactIdsIntoTempTable(currentItemLevelErrorList, _batchSize);
+				JobHistoryErrorItemStart.AddArtifactIdsIntoTempTable(currentItemLevelErrorList);
+				JobHistoryErrorItemComplete.AddArtifactIdsIntoTempTable(currentItemLevelErrorList);
 			}
 
 			if (expiredItemLevelErrors.Any())
 			{
-				JobHistoryErrorItemStartExcluded.BatchAddArtifactIdsIntoTempTable(expiredItemLevelErrors.ToList(), _batchSize);
+				JobHistoryErrorItemStartExcluded.AddArtifactIdsIntoTempTable(expiredItemLevelErrors.ToList());
 			}
 		}
 	}

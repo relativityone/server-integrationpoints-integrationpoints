@@ -101,7 +101,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					IRSAPIClient client = Rsapi.CreateRsapiClient();
 					client.APIOptions.WorkspaceID = SourceWorkspaceArtifactId;
 					return client;
-				})
+				}) 
 				.LifeStyle.Transient);
 
 			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));

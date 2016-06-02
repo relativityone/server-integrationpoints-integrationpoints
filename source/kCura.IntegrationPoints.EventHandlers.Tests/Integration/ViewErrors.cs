@@ -130,9 +130,9 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			Selenium.LogIntoRelativity(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
 			Selenium.GoToWorkspace(workspaceArtifactId);
 
-			int? artifactTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
+			int artifactTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
 
-			Selenium.GoToObjectInstance(workspaceArtifactId, integrationPointArtifactId, artifactTypeId.Value);
+			Selenium.GoToObjectInstance(workspaceArtifactId, integrationPointArtifactId, artifactTypeId);
 		}
 	}
 }

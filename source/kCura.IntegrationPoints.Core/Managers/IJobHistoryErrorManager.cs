@@ -7,14 +7,29 @@ namespace kCura.IntegrationPoints.Core.Managers
 {
 	public interface IJobHistoryErrorManager
 	{
+		/// <summary>
+		/// Scratch table repository for updating job-level Job History Errors at the start of a job
+		/// </summary>
 		IScratchTableRepository JobHistoryErrorJobStart { get; }
 
+		/// <summary>
+		/// Scratch table repository for updating job-level Job History Errors at the end of a job
+		/// </summary>
 		IScratchTableRepository JobHistoryErrorJobComplete { get; }
 
+		/// <summary>
+		/// Scratch table repository for updating item-level Job History Errors that are included in the retry at the start of a job
+		/// </summary>
 		IScratchTableRepository JobHistoryErrorItemStart { get; }
 
+		/// <summary>
+		/// Scratch table repository for updating item-level Job History Errors at the end of a job
+		/// </summary>
 		IScratchTableRepository JobHistoryErrorItemComplete { get; }
 
+		/// <summary>
+		/// Scratch table repository for updating item-level Job History Errors that are excluded from the retry at the start of a job
+		/// </summary>
 		IScratchTableRepository JobHistoryErrorItemStartExcluded { get; }
 
 		/// <summary>
