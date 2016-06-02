@@ -279,7 +279,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				}
 				if (!integrationPointInstanceEditOrCreatePermission)
 				{
-					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCe_NO_EDIT);
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_EDIT);
 				}
 			}
 
@@ -451,7 +451,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				}
 				if (!integrationPointInstanceEditOrCreatePermission)
 				{
-					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCe_NO_EDIT);
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_EDIT);
 				}
 			}
 

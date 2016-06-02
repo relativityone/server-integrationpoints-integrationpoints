@@ -541,6 +541,7 @@
     <Compile Include="BatchStatusCommands\Implementations\TempTableReader.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ContextContainer.cs" />
+    <Compile Include="Exceptions\PermissionException.cs" />
     <Compile Include="Factories\IExporterFactory.cs" />
     <Compile Include="Factories\IHelperClassFactory.cs" />
     <Compile Include="Factories\Implementations\ContextContainerFactory.cs" />
