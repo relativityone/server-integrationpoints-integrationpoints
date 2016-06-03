@@ -233,6 +233,7 @@
     <Compile Include="Unit\RdoGetterTest.cs" />
     <Compile Include="Unit\RelativityReaderBaseTests.cs" />
     <Compile Include="Unit\Repositories\IntegrationPointRepositoryTests.cs" />
+    <Compile Include="Unit\Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\SqlArtifactGuidRepositoryTests.cs" />
     <Compile Include="Unit\RSAPIServiceInstallerTests.cs" />
