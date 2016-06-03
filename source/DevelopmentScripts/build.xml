@@ -81,8 +81,8 @@
           <Assembly>bin\kCura.DocumentTransferProvider.dll</Assembly>
           <Assembly>bin\kCura.IntegrationPoints.Services.dll</Assembly>
           <Assembly>bin\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
-          <Assembly>packages\RelativityCore.9.3.410.2\lib\net45\kCura.Image.Viewer.dll</Assembly>
-          <Assembly>packages\RelativityCore.9.3.410.2\lib\net45\kCura.Print.dll</Assembly>
+          <Assembly>packages\RelativityCore.9.3.425.2\lib\net45\kCura.Image.Viewer.dll</Assembly>
+          <Assembly>packages\RelativityCore.9.3.425.2\lib\net45\kCura.Print.dll</Assembly>
         </Assemblies>
         <ResourceFiles />
         <CustomPages>

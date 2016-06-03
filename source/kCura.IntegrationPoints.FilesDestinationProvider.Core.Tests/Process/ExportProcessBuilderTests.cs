@@ -7,6 +7,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
+using kCura.WinEDDS.Service.Export;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;

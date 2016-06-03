@@ -48,12 +48,12 @@
     <OutputPath>bin\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.EventHandler, Version=9.3.410.2, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.EventHandler.9.3.410.2\lib\net45\kCura.EventHandler.dll</HintPath>
+    <Reference Include="kCura.EventHandler, Version=9.3.425.2, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.EventHandler.9.3.425.2\lib\net45\kCura.EventHandler.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=9.3.410.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Relativity.Client.9.3.410.2\lib\net45\kCura.Relativity.Client.dll</HintPath>
+    <Reference Include="kCura.Relativity.Client, Version=9.3.425.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Relativity.Client.9.3.425.2\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NSubstitute, Version=1.9.2.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
@@ -64,8 +64,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.API, Version=9.3.410.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.API.9.3.410.2\lib\net45\Relativity.API.dll</HintPath>
+    <Reference Include="Relativity.API, Version=9.3.425.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.API.9.3.425.2\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
