@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 
         [Explicit]
         [Test, TestCaseSource("PermissionCase")]
-        public void VerifyPermissionErrorMessage(List<string> obj, List<string> admin, List<string> browser, List<string> tab)
+        public void VerifyLdapPermissionErrorMessage(List<string> obj, List<string> admin, List<string> browser, List<string> tab)
         {
             string errorMessage = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS;
             string jobError = "//div[contains(.,'Failed to submit integration job. You do not have sufficient permissions. Please contact your system administrator.')]";
