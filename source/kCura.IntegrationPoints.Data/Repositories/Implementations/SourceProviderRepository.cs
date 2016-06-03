@@ -65,6 +65,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int GetArtifactIdFromSourceProviderTypeGuidIdentifier(string sourceProviderGuidIdentifier)
 		{
+			int sourceProviderArtifactId;
+
 			var query = new Query<RDO>
 			{
 				ArtifactTypeGuid = new Guid(ObjectTypeGuids.SourceProvider),
@@ -76,7 +78,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			};
 
 			QueryResultSet<RDO> results = null;
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.System))
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 				results = rsapiClient.Repositories.RDO.Query(query, 1);
@@ -87,7 +89,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception($"Unable to retrieve Source Provider: {results.Message}");
 			}
 
-			int sourceProviderArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).First();
+			try
+			{
+				sourceProviderArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).FirstOrDefault();
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"Unable to retrieve Source Provider ({sourceProviderGuidIdentifier}).", ex);
+			}
+
 			return sourceProviderArtifactId;
 		}
 	}
