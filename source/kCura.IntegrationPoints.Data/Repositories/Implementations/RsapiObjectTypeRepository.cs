@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -37,10 +39,27 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (!objectTypeArtifactId.HasValue)
 			{
-				throw new TypeLoadException(string.Format(ObjectTypeErrors.OBJECT_TYPE_NO_ARTIFACT_TYPE_FOUND, objectType.Name));
+				throw new TypeLoadException(string.Format(ObjectTypeErrors.OBJECT_TYPE_NO_ARTIFACT_TYPE_FOUND, objectType.Guids[0]));
 			}
 
 			return objectTypeArtifactId.Value;
+		}
+
+		public int? RetrieveObjectTypeArtifactId(string objectTypeName)
+		{
+			SqlParameter nameParameter = new SqlParameter("@objectTypeName", SqlDbType.NVarChar)
+			{
+				Value = objectTypeName
+			};
+
+			string sql = @"	SELECT [ArtifactID]
+							FROM [eddsdbo].[ObjectType]
+							WHERE [Name] = @objectTypeName";
+
+			IDBContext workspaceContext = _helper.GetDBContext(_workspaceArtifactId);
+			int? artifactId = workspaceContext.ExecuteSqlStatementAsScalar<int>(sql, nameParameter);
+
+			return artifactId > 0 ? artifactId : null;
 		}
 
 		public void Delete(int artifactId)

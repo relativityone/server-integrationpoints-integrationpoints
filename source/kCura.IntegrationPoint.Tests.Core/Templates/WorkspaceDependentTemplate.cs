@@ -119,7 +119,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
 			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
-			CloseSeleniumBrowser();
 		}
 
 		protected IntegrationModel CreateOrUpdateIntegrationPoint(IntegrationModel model)

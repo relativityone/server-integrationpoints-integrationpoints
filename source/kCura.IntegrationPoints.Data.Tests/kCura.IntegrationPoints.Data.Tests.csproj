@@ -221,6 +221,7 @@
     <Compile Include="Integration\Queries\GetSavedSearchesQueryTests..cs" />
     <Compile Include="Integration\Queries\GetWorkspacesQueryTests.cs" />
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />
+    <Compile Include="Integration\Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Integration\Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Integration\Repositories\ScratchTableRepositoryTests.cs" />
     <Compile Include="JobHistoryErrorsBatchingTests.cs" />
@@ -232,6 +233,7 @@
     <Compile Include="Unit\RdoGetterTest.cs" />
     <Compile Include="Unit\RelativityReaderBaseTests.cs" />
     <Compile Include="Unit\Repositories\IntegrationPointRepositoryTests.cs" />
+    <Compile Include="Unit\Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\SqlArtifactGuidRepositoryTests.cs" />
     <Compile Include="Unit\RSAPIServiceInstallerTests.cs" />

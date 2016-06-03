@@ -21,9 +21,18 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// Retrieves fields for an rdo
 		/// </summary>
 		/// <param name="rdoTypeId">The artifact id of the rdo's type</param>
-		/// <param name="fieldFieldsNames">The names of the fields to retrieve for the field artifact</param>
+		/// <param name="fieldNames">The names of the fields to retrieve for the field artifact</param>
 		/// <returns>An array of ArtifactDTO with populated fields for the given rdo type</returns>
-		Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, HashSet<string> fieldFieldsNames);
+		Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, HashSet<string> fieldNames);
+
+		/// <summary>
+		/// Retrieves the artifact ID of a field.
+		/// </summary>
+		/// <param name="displayName">The display name of the field.</param>
+		/// <param name="fieldArtifactTypeId">The object type artifact ID the field is associated with.</param>
+		/// <param name="fieldTypeId">The field type ID.</param>
+		/// <returns>The artifact ID for the field, <code>NULL</code> if not found.</returns>
+		int? RetrieveField(string displayName, int fieldArtifactTypeId, int fieldTypeId);
 
 		/// <summary>
 		/// Sets the overlay behavior for a field
