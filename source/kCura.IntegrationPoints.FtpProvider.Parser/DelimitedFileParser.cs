@@ -164,11 +164,11 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
 
         public bool NextResult()
         {
-            var retVal = false;
+            bool retVal = false;
             if (!_parser.EndOfData)
             {
                 _lineNumber++;
-                var data = _parser.ReadFields();
+                string[] data = _parser.ReadFields();
                 if (data != null)
                 {
                     if (_columns != null && data.Length != _columns.Length)
@@ -190,7 +190,13 @@ namespace kCura.IntegrationPoints.FtpProvider.Parser
         public DataTable GetSchemaTable()
         {
             DataTable t = new DataTable();
-            t.Rows.Add(_columns);
+            t.Columns.Add("Name");
+            for (int i = 0; i < _columns.Length; i++)
+            {
+                DataRow row = t.NewRow();
+                row["Name"] = _columns[i];
+                t.Rows.Add(row);
+            }
             return t;
         }
 
