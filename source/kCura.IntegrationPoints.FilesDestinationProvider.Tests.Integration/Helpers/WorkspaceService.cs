@@ -13,14 +13,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 {
 	internal class WorkspaceService
 	{
-		#region Fileds
+		#region Fields
 
 		private readonly ConfigSettings _configSettings;
 
 		private const string TemplateWorkspaceName = "kCura Starter Template";
 		private const int _ControlNumber_Field_ArtifactId = 1003667;
 
-		#endregion //Fileds
+		#endregion //Fields
 
 		#region Constructors
 
@@ -80,7 +80,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 			ImportImagesAndExtractedText(workspaceArtifactId, imageSourceDataTable, importApi, _ControlNumber_Field_ArtifactId);
 		}
 
-		private void ImportImagesAndExtractedText(int workspaceArtifactId, DataTable dataTable, ImportAPI importApi, int identifyFieldArtifactId)
+		private static void ImportImagesAndExtractedText(int workspaceArtifactId, DataTable dataTable, ImportAPI importApi, int identifyFieldArtifactId)
 		{
 			var importJob = importApi.NewImageImportJob();
 
@@ -140,7 +140,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		private static void ImportJobOnFatalException(JobReport jobreport)
 		{
-			if(jobreport.ErrorRows.Any())
+			if (jobreport.ErrorRows.Any())
 				jobreport.ErrorRows.ToList().ForEach(error => Console.WriteLine(error.Message));
 		}
 

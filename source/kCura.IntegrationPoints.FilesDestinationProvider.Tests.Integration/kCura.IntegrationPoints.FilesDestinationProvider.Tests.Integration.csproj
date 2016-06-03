@@ -176,11 +176,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\IExportTestCase.cs" />
     <Compile Include="Helpers\ConfigSettings.cs" />
     <Compile Include="Helpers\UserPasswordCredentialProvider.cs" />
     <Compile Include="Helpers\WorkspaceService.cs" />
     <Compile Include="Process\ExportProcessRunnerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestCases\ItShouldExportImagesAsMultiplePages.cs" />
+    <Compile Include="TestCases\ItShouldExportImagesAsPdfs.cs" />
+    <Compile Include="TestCases\ItShouldExportImagesAsSinglePages.cs" />
+    <Compile Include="TestCases\ItShouldExportImagesMetadataOnly.cs" />
+    <Compile Include="TestCases\ItShouldExportSavedSearch.cs" />
+    <Compile Include="TestCases\ItShouldExportSavedSearchMetadataOnly.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
@@ -223,7 +230,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <Content Include="TestData\NATIVES\AMEYERS_0000975.pdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

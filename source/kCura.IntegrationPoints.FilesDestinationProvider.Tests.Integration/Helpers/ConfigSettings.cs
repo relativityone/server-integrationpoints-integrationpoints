@@ -8,7 +8,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 	{
 		#region Fields
 
-		private const string _WORKSPACE_NAME_KEY = "WorkspaceName";
 		private const string _SAVEDSEARCH_ARTIFACT_NAME_KEY = "SavedSearchArtifactName";
 		private const string _SELECTED_FIELD_NAMES_KEY = "SelectedFieldNames";
 		private const string _DESTINATION_PATH_KEY = "DestinationPath";
@@ -21,7 +20,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 
 		#region Properties
 
-		public string WorkspaceName { get; } = ConfigurationManager.AppSettings[_WORKSPACE_NAME_KEY];
+		public int WorkspaceId { get; set; }
+
+		public int ExportedObjArtifactId { get; set; }
+
+		public List<int> SelViewFieldIds { get; set; }
+
+		public string WorkspaceName { get; set; }
 
 		public string SavedSearchArtifactName { get; } = ConfigurationManager.AppSettings[_SAVEDSEARCH_ARTIFACT_NAME_KEY];
 
