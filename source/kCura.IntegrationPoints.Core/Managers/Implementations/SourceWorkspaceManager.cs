@@ -19,74 +19,144 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		public SourceWorkspaceDTO InitializeWorkspace(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
 		{
-			// Set up repositories
 			ISourceWorkspaceRepository sourceWorkspaceRepository = _repositoryFactory.GetSourceWorkspaceRepository(destinationWorkspaceArtifactId);
-			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetWorkspaceRepository();
 			IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
-			IObjectTypeRepository objectTypeRepository = _repositoryFactory.GetObjectTypeRepository(destinationWorkspaceArtifactId);
+
+			int sourceWorkspaceDescriptorArtifactTypeId = CreateSourceWorkspaceObjectType(destinationWorkspaceArtifactId,
+				sourceWorkspaceRepository, artifactGuidRepository);
+
 			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
 
-			// Create object type if it does not exist
+			CreateSourceWorkspaceFields(artifactGuidRepository, fieldRepository, sourceWorkspaceRepository, sourceWorkspaceDescriptorArtifactTypeId);
+			CreateDocumentFields(sourceWorkspaceDescriptorArtifactTypeId, artifactGuidRepository, sourceWorkspaceRepository, fieldRepository);
+
+			SourceWorkspaceDTO sourceWorkspaceDto = CreateSourceWorkspaceDto(sourceWorkspaceArtifactId, sourceWorkspaceDescriptorArtifactTypeId, sourceWorkspaceRepository);
+			return sourceWorkspaceDto;
+		}
+
+		/// <summary>
+		/// Creates the Source Workspace object type in the given workspace.
+		/// </summary>
+		/// <param name="workspaceArtifactId">Workspace artifact id.</param>
+		/// <param name="sourceWorkspaceRepository">Source workspace repository.</param>
+		/// <param name="artifactGuidRepository">Artifact guid repository.</param>
+		/// <returns>The Source Workspace descriptor artifact type id.</returns>
+		private int CreateSourceWorkspaceObjectType(int workspaceArtifactId,
+			ISourceWorkspaceRepository sourceWorkspaceRepository, IArtifactGuidRepository artifactGuidRepository)
+		{
+			IObjectTypeRepository objectTypeRepository = _repositoryFactory.GetObjectTypeRepository(workspaceArtifactId);
+
+			// Check workspace for instance of the object type GUID
 			int? sourceWorkspaceDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceWorkspaceDTO.ObjectTypeGuid);
 			if (!sourceWorkspaceDescriptorArtifactTypeId.HasValue)
 			{
-				int sourceWorkspaceArtifactTypeId = sourceWorkspaceRepository.CreateObjectType();
+				// GUID doesn't exist in the workspace, so we try to see if the field name exists and assign a GUID to the field
+				int? sourceWorkspaceArtifactId =
+					objectTypeRepository.RetrieveObjectTypeArtifactId(
+						IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
 
-				// Insert entry to the ArtifactGuid table for new object type
+				sourceWorkspaceArtifactId = sourceWorkspaceArtifactId ?? sourceWorkspaceRepository.CreateObjectType();
+
+				// Associate a GUID with the newly created or existing object type
 				try
 				{
-					artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO.ObjectTypeGuid);
+					artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceArtifactId.Value, SourceWorkspaceDTO.ObjectTypeGuid);
 				}
 				catch (Exception e)
 				{
-					objectTypeRepository.Delete(sourceWorkspaceArtifactTypeId);
-					throw new Exception("Unable to create Source Workspace object type: Unable to associate new object type with Artifact Guid", e);	
+					objectTypeRepository.Delete(sourceWorkspaceArtifactId.Value);
+					throw new Exception("Unable to create Source Workspace object type: Unable to associate new object type with Artifact Guid", e);
 				}
 
-				// Get descriptor id
+				// Get descriptor artifact type id of the now existing object type
 				sourceWorkspaceDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceWorkspaceDTO.ObjectTypeGuid);
 
 				// Delete the tab if it exists (it should always exist since we're creating the object type one line above)
-				ITabRepository tabRepository = _repositoryFactory.GetTabRepository(destinationWorkspaceArtifactId);
-				int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(sourceWorkspaceDescriptorArtifactTypeId.Value, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
+				ITabRepository tabRepository = _repositoryFactory.GetTabRepository(workspaceArtifactId);
+				int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(
+					sourceWorkspaceDescriptorArtifactTypeId.Value, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
 				if (sourceWorkspaceTabId.HasValue)
 				{
 					tabRepository.Delete(sourceWorkspaceTabId.Value);
 				}
 			}
 
-			// Create Source Workspace fields if they do not exist
-			IDictionary<Guid, bool> objectTypeFields = artifactGuidRepository.GuidsExist(new []
-			{
-				SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid, SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid
-			});
+			return sourceWorkspaceDescriptorArtifactTypeId.Value;
+		}
+
+		private void CreateSourceWorkspaceFields(IArtifactGuidRepository artifactGuidRepository,
+			IFieldRepository fieldRepository, ISourceWorkspaceRepository sourceWorkspaceRepository,
+			int sourceWorkspaceDescriptorArtifactTypeId)
+		{
+			var fieldGuids = new List<Guid>(2) { SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid, SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid };
+
+			IDictionary<Guid, bool> objectTypeFields = artifactGuidRepository.GuidsExist(fieldGuids);
+
 			IList<Guid> missingFieldGuids = objectTypeFields.Where(x => x.Value == false).Select(y => y.Key).ToList();
+
 			if (missingFieldGuids.Any())
 			{
-				IDictionary<Guid, int> guidToIdDictionary = sourceWorkspaceRepository.CreateObjectTypeFields(sourceWorkspaceDescriptorArtifactTypeId.Value, missingFieldGuids);	
+				IDictionary<Guid, int> guidToArtifactId = new Dictionary<Guid, int>();
+				
+				if (missingFieldGuids.Contains(SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid))
+				{
+					int? artifactId =
+						fieldRepository.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
+							sourceWorkspaceDescriptorArtifactTypeId, (int) Relativity.Client.FieldType.WholeNumber);
+					if (artifactId.HasValue)
+					{
+						guidToArtifactId.Add(SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid, artifactId.Value);
+						missingFieldGuids.Remove(SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid);
+					}
+				}
+				if (missingFieldGuids.Contains(SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid))
+				{
+					int? artifactId =
+						fieldRepository.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
+							sourceWorkspaceDescriptorArtifactTypeId, (int)Relativity.Client.FieldType.FixedLengthText);
+					if (artifactId.HasValue)
+					{
+						guidToArtifactId.Add(SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid, artifactId.Value);
+						missingFieldGuids.Remove(SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid);
+					}
+				}
+
+				if (missingFieldGuids.Any())
+				{
+					IDictionary<Guid, int> missingGuidToArtifactId =
+						sourceWorkspaceRepository.CreateObjectTypeFields(sourceWorkspaceDescriptorArtifactTypeId, missingFieldGuids);
+
+					guidToArtifactId = guidToArtifactId.Union(missingGuidToArtifactId).ToDictionary(k => k.Key, v => v.Value);
+				}
 
 				try
 				{
-					artifactGuidRepository.InsertArtifactGuidsForArtifactIds(guidToIdDictionary);
+					artifactGuidRepository.InsertArtifactGuidsForArtifactIds(guidToArtifactId);
 				}
 				catch (Exception e)
 				{
-					fieldRepository.Delete(guidToIdDictionary.Values);
-					throw new Exception("Unable to create Source Workspace fields: Unable to associate new fields with Artifact Guids", e);	
+					fieldRepository.Delete(guidToArtifactId.Values);
+					throw new Exception("Unable to create Source Workspace fields: Unable to associate new fields with Artifact Guids", e);
 				}
 			}
+		}
 
-			// Create fields on document if they do not exist
-			bool sourceWorkspaceFieldOnDocumentExists =
-				artifactGuidRepository.GuidExists(SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid);
+		private void CreateDocumentFields(int sourceWorkspaceDescriptorArtifactTypeId, IArtifactGuidRepository artifactGuidRepository,
+			ISourceWorkspaceRepository sourceWorkspaceRepository, IFieldRepository fieldRepository)
+		{
+			bool sourceWorkspaceFieldOnDocumentExists = artifactGuidRepository.GuidExists(SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid);
 			if (!sourceWorkspaceFieldOnDocumentExists)
 			{
-				int fieldArtifactId = sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(sourceWorkspaceDescriptorArtifactTypeId.Value);
+				int? fieldArtifactId =
+						fieldRepository.RetrieveField(IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
+							(int)Relativity.Client.ArtifactType.Document, (int)Relativity.Client.FieldType.MultipleObject);
+
+				int sourceWorkspaceFieldArtifactId = fieldArtifactId ?? sourceWorkspaceRepository.CreateSourceWorkspaceFieldOnDocument(sourceWorkspaceDescriptorArtifactTypeId);
 
 				// Set the filter type
 				try
 				{
-					int? retrieveArtifactViewFieldId = fieldRepository.RetrieveArtifactViewFieldId(fieldArtifactId);
+					int? retrieveArtifactViewFieldId = fieldRepository.RetrieveArtifactViewFieldId(sourceWorkspaceFieldArtifactId);
 					if (!retrieveArtifactViewFieldId.HasValue)
 					{
 						throw new Exception("Unable to retrieve artifact view field id for field");
@@ -96,57 +166,64 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				}
 				catch (Exception e)
 				{
-					fieldRepository.Delete(new[] { fieldArtifactId });
+					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
 					throw new Exception("Unable to create Source Workspace multi-object field on Document" + e);
 				}
 
 				// Set the overlay behavior
 				try
 				{
-					fieldRepository.SetOverlayBehavior(fieldArtifactId, true);
+					fieldRepository.SetOverlayBehavior(sourceWorkspaceFieldArtifactId, true);
 				}
 				catch (Exception e)
 				{
-					fieldRepository.Delete(new[] { fieldArtifactId });
-					throw new Exception("Unable to create Source Workspace multi-object field on Document: Unable to set the default Overlay Behavior", e);
+					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
+					throw new Exception(
+						"Unable to create Source Workspace multi-object field on Document: Unable to set the default Overlay Behavior", e);
 				}
 
 				// Set the field artifact guid
 				try
 				{
-					artifactGuidRepository.InsertArtifactGuidForArtifactId(fieldArtifactId,
+					artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceFieldArtifactId,
 						SourceWorkspaceDTO.Fields.SourceWorkspaceFieldOnDocumentGuid);
 				}
 				catch (Exception e)
 				{
-					fieldRepository.Delete(new[] { fieldArtifactId });
-					throw new Exception("Unable to create Source Workspace multi-object field on Document: Unable to associate new Artifact Guids", e);
+					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
+					throw new Exception(
+						"Unable to create Source Workspace multi-object field on Document: Unable to associate new Artifact Guids", e);
 				}
 			}
+		}
+		
+		private SourceWorkspaceDTO CreateSourceWorkspaceDto(int workspaceArtifactId,
+			int sourceWorkspaceDescriptorArtifactTypeId, ISourceWorkspaceRepository sourceWorkspaceRepository)
+		{
+			IWorkspaceRepository workspaceRepository = _repositoryFactory.GetWorkspaceRepository();
+			WorkspaceDTO workspaceDto = workspaceRepository.Retrieve(workspaceArtifactId);
+			SourceWorkspaceDTO sourceWorkspaceDto = sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(workspaceArtifactId);
 
-			// Get or create instance of Source Workspace object
-			WorkspaceDTO workspaceDto = workspaceRepository.Retrieve(sourceWorkspaceArtifactId);
-			SourceWorkspaceDTO sourceWorkspaceDto = sourceWorkspaceRepository.RetrieveForSourceWorkspaceId(sourceWorkspaceArtifactId);
 			if (sourceWorkspaceDto == null)
 			{
-				sourceWorkspaceDto = new SourceWorkspaceDTO()
+				sourceWorkspaceDto = new SourceWorkspaceDTO
 				{
 					ArtifactId = -1,
-					Name = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, sourceWorkspaceArtifactId),
-					SourceCaseArtifactId = sourceWorkspaceArtifactId,
+					Name = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, workspaceArtifactId),
+					SourceCaseArtifactId = workspaceArtifactId,
 					SourceCaseName = workspaceDto.Name
 				};
-				int artifactId = sourceWorkspaceRepository.Create(sourceWorkspaceDescriptorArtifactTypeId.Value, sourceWorkspaceDto);
 
+				int artifactId = sourceWorkspaceRepository.Create(sourceWorkspaceDescriptorArtifactTypeId, sourceWorkspaceDto);
 				sourceWorkspaceDto.ArtifactId = artifactId;
 			}
 
-			sourceWorkspaceDto.ArtifactTypeId = sourceWorkspaceDescriptorArtifactTypeId.Value;
+			sourceWorkspaceDto.ArtifactTypeId = sourceWorkspaceDescriptorArtifactTypeId;
 
 			// Check to see if instance should be updated
 			if (sourceWorkspaceDto.SourceCaseName != workspaceDto.Name)
 			{
-				sourceWorkspaceDto.Name = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, sourceWorkspaceArtifactId);
+				sourceWorkspaceDto.Name = Utils.GetFormatForWorkspaceOrJobDisplay(workspaceDto.Name, workspaceArtifactId);
 				sourceWorkspaceDto.SourceCaseName = workspaceDto.Name;
 				sourceWorkspaceRepository.Update(sourceWorkspaceDto);
 			}

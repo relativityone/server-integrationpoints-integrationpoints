@@ -6,7 +6,7 @@
 		public const string SPECIAL_FOLDERPATH_FIELD = "d1d9ccdd-9773-428f-8465-4a03909192e4";
 		public const string SPECIAL_FILE_NAME_FIELD = "67F1BEA1-67CB-498E-A99D-1781D43D98AF";
 		public const string SPECIAL_SOURCEWORKSPACE_FIELD = "036DB373-5724-4C72-A073-375106DE5E73";
-		public const string SPECIAL_SOURCEWORKSPACE_FIELD_NAME = "Source Workspace";
+		public const string SPECIAL_SOURCEWORKSPACE_FIELD_NAME = "Relativity Source Case";
 		public const string SPECIAL_SOURCEJOB_FIELD = "4F632A3F-68CF-400E-BD29-FD364A5EBE58";
 		public const string SPECIAL_SOURCEJOB_FIELD_NAME = "Source Job";
 		public const string SOURCEWORKSPACE_CASEID_FIELD_NAME = "Source Workspace Artifact ID";

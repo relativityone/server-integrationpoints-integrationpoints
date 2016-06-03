@@ -73,11 +73,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return fieldDtos;
 		}
 
-		public async Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, HashSet<string> fieldFieldsNames)
+		public async Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, HashSet<string> fieldNames)
 		{
 			var fieldQuery = new global::Relativity.Services.ObjectQuery.Query()
 			{
-				Fields = fieldFieldsNames.ToArray(),
+				Fields = fieldNames.ToArray(),
 				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId}"
 			};
 
@@ -92,6 +92,25 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 
 			return fieldArtifactDtos;
+		}
+
+		public int? RetrieveField(string displayName, int fieldArtifactTypeId, int fieldTypeId)
+		{
+			string sql = @"	SELECT [ArtifactID]
+							FROM [eddsdbo].[Field]
+							WHERE [FieldArtifactTypeID] = @fieldArtifactTypeId
+								AND [FieldTypeID] = @fieldTypeId
+								AND [DisplayName] = @displayName";
+
+			SqlParameter displayNameParameter = new SqlParameter("@displayName", SqlDbType.NVarChar) { Value = displayName };
+			SqlParameter fieldArtifactTypeIdParameter = new SqlParameter("@fieldArtifactTypeId", SqlDbType.Int) { Value = fieldArtifactTypeId };
+			SqlParameter fieldTypeIdParameter = new SqlParameter("@fieldTypeId", SqlDbType.Int) { Value = fieldTypeId };
+			SqlParameter[] sqlParameters = { displayNameParameter, fieldArtifactTypeIdParameter, fieldTypeIdParameter };
+
+			IDBContext workspaceContext = _helper.GetDBContext(_workspaceArtifactId);
+			int? fieldArtifactId = workspaceContext.ExecuteSqlStatementAsScalar<int>(sql, sqlParameters);
+
+			return fieldArtifactId > 0 ? fieldArtifactId : null;
 		}
 
 		public void SetOverlayBehavior(int fieldArtifactId, bool value)
