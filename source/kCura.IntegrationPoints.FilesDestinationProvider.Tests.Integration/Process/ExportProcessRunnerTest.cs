@@ -58,7 +58,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				Substitute.For<IUserNotification>(),
 				new UserPasswordCredentialProvider(_configSettings),
 				new CaseManagerWrapperFactory(),
-				new SearchManagerWrapperFactory(),
+				new SearchManagerFactory(),
 				new ExporterWrapperFactory(),
 				new ExportFileHelper()
 			);
