@@ -10,6 +10,9 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class SourceWorkspaceManager : ISourceWorkspaceManager
 	{
+		private const string _ERROR_MESSAGE =
+			"Unable to create source workspace and job fields in the destination workspace. Please contact your system administrator.";
+
 		private readonly IRepositoryFactory _repositoryFactory;
 
 		public SourceWorkspaceManager(IRepositoryFactory repositoryFactory)
@@ -70,7 +73,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				catch (Exception e)
 				{
 					objectTypeRepository.Delete(sourceWorkspaceArtifactId.Value);
-					throw new Exception("Unable to create Source Workspace object type: Unable to associate new object type with Artifact Guid", e);
+					throw new Exception(_ERROR_MESSAGE, e);
 				}
 
 				// Get descriptor artifact type id of the now existing object type
@@ -141,7 +144,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				catch (Exception e)
 				{
 					fieldRepository.Delete(guidToArtifactId.Values);
-					throw new Exception("Unable to create Source Workspace fields: Unable to associate new fields with Artifact Guids", e);
+					throw new Exception(_ERROR_MESSAGE, e);
 				}
 			}
 		}
@@ -164,7 +167,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					int? retrieveArtifactViewFieldId = fieldRepository.RetrieveArtifactViewFieldId(sourceWorkspaceFieldArtifactId);
 					if (!retrieveArtifactViewFieldId.HasValue)
 					{
-						throw new Exception("Unable to retrieve artifact view field id for field");
+						throw new Exception(_ERROR_MESSAGE);
 					}
 
 					fieldRepository.UpdateFilterType(retrieveArtifactViewFieldId.Value, "Popup");
@@ -172,7 +175,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				catch (Exception e)
 				{
 					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
-					throw new Exception("Unable to create Source Workspace multi-object field on Document" + e);
+					throw new Exception(_ERROR_MESSAGE, e);
 				}
 
 				// Set the overlay behavior
@@ -183,8 +186,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				catch (Exception e)
 				{
 					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
-					throw new Exception(
-						"Unable to create Source Workspace multi-object field on Document: Unable to set the default Overlay Behavior", e);
+					throw new Exception(_ERROR_MESSAGE, e);
 				}
 
 				// Set the field artifact guid
@@ -196,8 +198,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				catch (Exception e)
 				{
 					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
-					throw new Exception(
-						"Unable to create Source Workspace multi-object field on Document: Unable to associate new Artifact Guids", e);
+					throw new Exception(_ERROR_MESSAGE, e);
 				}
 			}
 		}
