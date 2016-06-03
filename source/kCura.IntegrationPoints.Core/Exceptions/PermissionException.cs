@@ -2,6 +2,7 @@
 
 namespace kCura.IntegrationPoints.Core.Exceptions
 {
+	[Serializable]
 	public class PermissionException : Exception
 	{
 		public PermissionException()
@@ -15,6 +16,10 @@ namespace kCura.IntegrationPoints.Core.Exceptions
 
 		public PermissionException(string message, Exception inner)
 		: base(message, inner)
+		{
+		}
+
+		protected PermissionException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context)
 		{
 		}
 	}

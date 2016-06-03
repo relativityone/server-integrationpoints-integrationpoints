@@ -199,14 +199,9 @@ namespace kCura.IntegrationPoints.Core.Services
 			}
 			catch (Exception e)
 			{
-				IErrorManager errorManager = _managerFactory.CreateErrorManager(_contextContainer);
-				errorManager.Create(_context.WorkspaceID, new[]{
-					new ErrorDTO()
-					{
-						Message = Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE,
-						FullText = String.Join(System.Environment.NewLine, new [] {e.Message, e.StackTrace})
-					}
-				});
+				CreateRelativityError(
+					Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE,
+					String.Join(System.Environment.NewLine, new[] { e.Message, e.StackTrace }));
 
 				throw new Exception(Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE);	
 			}
@@ -459,15 +454,9 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			if (!permissionCheck.Success)
 			{
-				IErrorManager errorManager = _managerFactory.CreateErrorManager(_contextContainer);
-
-				var error = new ErrorDTO()
-				{
-					Message = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
-					FullText = $"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)}"
-				};
-
-				errorManager.Create(workspaceArtifactId, new [] { error });
+				CreateRelativityError(
+					Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS_REL_ERROR_MESSAGE,
+					$"User is missing the following permissions:{System.Environment.NewLine}{String.Join(System.Environment.NewLine, permissionCheck.ErrorMessages)}");
 
 				throw new Exception(Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS);
 			}
@@ -555,17 +544,24 @@ namespace kCura.IntegrationPoints.Core.Services
 
 			if (!permissionCheck.Success)
 			{
-				IErrorManager errorManager = _managerFactory.CreateErrorManager(_contextContainer);
-				var error = new ErrorDTO()
-				{
-					Message	= Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE,
-					FullText = $"{Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{String.Join(Environment.NewLine, permissionCheck.ErrorMessages)}"
-				};
-
-				errorManager.Create(_context.WorkspaceID, new[] { error });
+				CreateRelativityError(
+					Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE,
+					$"{Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{String.Join(Environment.NewLine, permissionCheck.ErrorMessages)}");
 
 				throw new PermissionException(Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE);
 			}
+		}
+
+		private void CreateRelativityError(string message, string fullText)
+		{
+			IErrorManager errorManager = _managerFactory.CreateErrorManager(_contextContainer);
+			var error = new ErrorDTO()
+			{
+				Message = message,
+				FullText = fullText
+			};
+
+			errorManager.Create(_context.WorkspaceID, new[] {error});
 		}
 
 		private void CheckForOtherJobsExecutingOrInQueue(SourceProvider sourceProvider, int workspaceArtifactId, int integrationPointArtifactId)

@@ -6,19 +6,13 @@ using System;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
-    using System.Collections.Generic;
-    using System.Text.RegularExpressions;
-
     using Core.Models;
     using Data;
     using Data.Repositories;
     using OpenQA.Selenium;
-    using System.Threading;
-
-    using kCura.Utility.CertificateGenerator;
-
     using OpenQA.Selenium.Chrome;
-
+    using System.Collections.Generic;
+    using System.Text.RegularExpressions;
     using Group = kCura.IntegrationPoint.Tests.Core.Group;
 
     [Explicit]
@@ -58,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 
         [Explicit]
         [Test, TestCaseSource("PermissionCase")]
-        public void VerifyPermissionErrorMessage(List<string> obj, List<string> admin, List<string> browser, List<string> tab)
+        public void VerifyLdapPermissionErrorMessage(List<string> obj, List<string> admin, List<string> browser, List<string> tab)
         {
             string errorMessage = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS;
             string jobError = "//div[contains(.,'Failed to submit integration job. You do not have sufficient permissions. Please contact your system administrator.')]";
