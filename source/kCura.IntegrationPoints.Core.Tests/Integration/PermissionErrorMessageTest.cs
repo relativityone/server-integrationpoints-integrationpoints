@@ -6,19 +6,13 @@ using System;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
-    using System.Collections.Generic;
-    using System.Text.RegularExpressions;
-
     using Core.Models;
     using Data;
     using Data.Repositories;
     using OpenQA.Selenium;
-    using System.Threading;
-
-    using kCura.Utility.CertificateGenerator;
-
     using OpenQA.Selenium.Chrome;
-
+    using System.Collections.Generic;
+    using System.Text.RegularExpressions;
     using Group = kCura.IntegrationPoint.Tests.Core.Group;
 
     [Explicit]
