@@ -183,6 +183,57 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			UserHasPermissionToSaveIntegrationPoint_RelativityProvider_GoldFlow_Cases(isNew, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false);
 		}
 
+		[TestCase(true, null)]
+		[TestCase(true, Constants.SourceProvider.Relativity)]
+		[TestCase(true, Constants.SourceProvider.Other)]
+		[TestCase(false, null)]
+		[TestCase(false, Constants.SourceProvider.Relativity)]
+		[TestCase(false, Constants.SourceProvider.Other)]
+		public void UserHasPermissionToSaveIntegrationPoint_CheckCorrectPermissions(bool isNew, Constants.SourceProvider? provider)
+		{
+			// arrange
+			var integrationPointObjectTypeGuid = new Guid(ObjectTypeGuids.IntegrationPoint);
+			var integrationPointDto = new IntegrationPointDTO()
+			{
+				ArtifactId = isNew ? 0 : INTEGRATION_POINT_ID,
+				DestinationConfiguration = $"{{ \"artifactTypeID\": {_ARTIFACT_TYPE_ID} }}",
+				SourceProvider = _SOURCE_PROVIDER_ID
+			};
+
+			var sourceProvider = new SourceProviderDTO()
+			{
+				Identifier = new Guid(Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID)
+			};
+			_sourceProviderRepository.Read(_SOURCE_PROVIDER_ID).Returns(sourceProvider);
+
+			var permissionCheckDto = new PermissionCheckDTO()
+			{
+				Success = true
+			};
+
+			IIntegrationPointManager integrationPointManager = Substitute.ForPartsOf<IntegrationPointManager>(_repositoryFactory);
+			integrationPointManager.When( manager => manager.UserHasPermissionToRunJob(_SOURCE_WORKSPACE_ID, integrationPointDto, provider)).DoNotCallBase();
+			integrationPointManager.UserHasPermissionToRunJob(_SOURCE_WORKSPACE_ID, integrationPointDto, provider).Returns(permissionCheckDto);
+
+			// act
+			integrationPointManager.UserHasPermissionToSaveIntegrationPoint(_SOURCE_WORKSPACE_ID, integrationPointDto, provider);
+
+			// assert
+			if (isNew)
+			{
+				_sourcePermissionRepository.DidNotReceive().UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Create);
+				_sourcePermissionRepository.DidNotReceive().UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit);
+
+				_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Create);
+			}
+			else
+			{
+				_sourcePermissionRepository.Received(1).UserHasArtifactInstancePermission(integrationPointObjectTypeGuid, integrationPointDto.ArtifactId, ArtifactPermission.Edit);
+				_sourcePermissionRepository.Received(1).UserHasArtifactTypePermission(integrationPointObjectTypeGuid, ArtifactPermission.Edit);
+			}
+			integrationPointManager.Received(1).UserHasPermissionToRunJob(_SOURCE_WORKSPACE_ID, integrationPointDto, provider);
+		}
+
 		private void ClearAllReceivedCalls()
 		{
 			_repositoryFactory.ClearReceivedCalls();
