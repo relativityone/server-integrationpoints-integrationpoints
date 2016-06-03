@@ -529,7 +529,16 @@ namespace kCura.IntegrationPoints.Core.Services
 				throw new Exception(Constants.IntegrationPoints.NO_SOURCE_PROVIDER_SPECIFIED);
 			}
 
-			SourceProvider sourceProvider = _context.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value);
+			SourceProvider sourceProvider = null;
+			try
+			{
+				_context.RsapiService.SourceProviderLibrary.Read(integrationPoint.SourceProvider.Value);
+			}
+			catch (Exception e)
+			{
+				throw new Exception(Core.Constants.IntegrationPoints.UNABLE_TO_RETRIEVE_SOURCE_PROVIDER, e);				
+			}
+
 			return sourceProvider;
 		}
 

@@ -28,6 +28,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string RETRY_IS_NOT_RELATIVITY_PROVIDER = "Retries are only available for the Relativity provider.";
 			public const string RETRY_NO_EXISTING_ERRORS = "The integration point cannot be retried as there are no errors to be retried.";
 			public const string UNABLE_TO_RETRIEVE_INTEGRATION_POINT = "Unable to retrieve Integration Point.";
+			public const string UNABLE_TO_RETRIEVE_SOURCE_PROVIDER = "Unable to retrieve Source Provider.";
 			public const string UNABLE_TO_RUN_INTEGRATION_POINT_USER_MESSAGE = "Unable to run this Integration Point. Please contact your system administrator.";
 			public const string UNABLE_TO_RUN_INTEGRATION_POINT_ADMIN_ERROR_MESSAGE = "Unable to run Integration Point.";
 			public const string UNABLE_TO_RETRY_INTEGRATION_POINT_USER_MESSAGE = "Unable to retry this Integration Point. Please contact your system administrator.";
