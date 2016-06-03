@@ -89,13 +89,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception($"Unable to retrieve Source Provider: {results.Message}");
 			}
 
-			try
+			sourceProviderArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).FirstOrDefault();
+
+			if (sourceProviderArtifactId == 0)
 			{
-				sourceProviderArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).FirstOrDefault();
-			}
-			catch (Exception ex)
-			{
-				throw new Exception($"Unable to retrieve Source Provider ({sourceProviderGuidIdentifier}).", ex);
+				throw new Exception($"Unable to retrieve Source Provider ({sourceProviderGuidIdentifier}).");
 			}
 
 			return sourceProviderArtifactId;
