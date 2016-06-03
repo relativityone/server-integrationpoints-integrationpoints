@@ -174,7 +174,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[TestCase(true, false, ExpectedResult = false)]
-		[TestCase(false, true, ExpectedResult = false)]
 		[TestCase(true, true, ExpectedResult = true)]
 		[TestCase(false, false, ExpectedResult = false)]
 		public bool UserHasArtifactTypePermissions_ArtifactId_MultiplePermission(bool viewSelected, bool editSelected)
