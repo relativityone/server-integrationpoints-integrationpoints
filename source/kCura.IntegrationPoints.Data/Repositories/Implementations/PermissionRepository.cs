@@ -71,7 +71,38 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public bool UserHasArtifactInstancePermission(Guid artifactTypeGuid, int artifactId, ArtifactPermission artifactPermission)
 		{
-			return UserHasArtifactTypePermissions(artifactTypeGuid, new[] { artifactPermission });
+			return UserHasArtifactInstancePermissions(artifactTypeGuid, artifactId, new[] { artifactPermission });
+		}
+
+		private bool UserHasArtifactInstancePermissions(Guid artifactTypeGuid, int artifactId, IEnumerable<ArtifactPermission> artifactPermissions)
+		{
+			List<PermissionRef> permissionRefs = artifactPermissions.Select(x => new PermissionRef()
+			{
+				ArtifactType = new ArtifactTypeIdentifier(artifactTypeGuid),
+				PermissionType = this.ArtifactPermissionToPermissinType(x)
+			}).ToList();
+
+			bool userHasViewPermissions = false;
+
+			using (IPermissionManager proxy = _helper.GetServicesManager().CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
+			{
+				try
+				{
+					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(_workspaceArtifactId, permissionRefs, artifactId);
+					List<PermissionValue> permissionValues = permissionValuesTask.Result;
+
+					if (permissionValues != null && permissionValues.Any())
+					{
+						userHasViewPermissions = permissionValues.All(x => x.Selected);
+					}
+				}
+				catch
+				{
+					// If the user does not have permissions, the kepler service throws an exception
+				}
+			}
+
+			return userHasViewPermissions;
 		}
 
 		private bool UserHasArtifactTypePermissions(ArtifactTypeIdentifier artifactTypeIdentifier, IEnumerable<ArtifactPermission> artifactPermissions)
