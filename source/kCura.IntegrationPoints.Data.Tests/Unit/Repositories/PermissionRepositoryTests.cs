@@ -339,6 +339,35 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
 		}
 
 		[Test]
+		public void UserHasArtifactTypePermissions_MultiplePermissions_PermissionRequestExcepts_ReturnsFalse()
+		{
+			// Arrange
+			const int artifactTypeId = 49203;
+
+			_permissionManager.GetPermissionSelectedAsync(
+				Arg.Is(_WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => x.Count() == 3
+						 && x[0].PermissionType == PermissionType.View
+						 && x[1].PermissionType == PermissionType.Edit
+						 && x[2].PermissionType == PermissionType.Add))
+				.Throws(new Exception("Patrick"));
+
+			// Act
+			bool result = _instance.UserHasArtifactTypePermissions(artifactTypeId, new[] { ArtifactPermission.View, ArtifactPermission.Edit, ArtifactPermission.Create });
+
+			// Assert
+			Assert.IsFalse(result);
+			_permissionManager.Received(1).GetPermissionSelectedAsync(
+				Arg.Is(_WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => x.Count() == 3
+					     && x[0].PermissionType == PermissionType.View
+					     && x[1].PermissionType == PermissionType.Edit
+					     && x[2].PermissionType == PermissionType.Add));
+		}
+
+		[Test]
 		public void UserHasArtifactTypePermission_UserHasPermissions_ReturnsTrue()
 		{
 			// Arrange
@@ -410,5 +439,169 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
 						 && x.First().PermissionType == expectedPermissionRef.PermissionType));
 		}
 
+		[Test]
+		public void UserCanImport_HasPermissions_ReturnsTrue()
+		{
+			// Arrange
+			int permissionId = 158;
+			var permissionValue = new PermissionValue()
+			{
+				PermissionID = permissionId,
+				Selected = true
+			};
+
+			_permissionManager.GetPermissionSelectedAsync(
+				Arg.Is(_WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => x.Count() == 1
+					     && x.First().PermissionID == permissionId))
+				.Returns(new List<PermissionValue>() { permissionValue });
+
+			// Act
+			bool result = _instance.UserCanImport();
+
+			// Assert
+			Assert.IsTrue(result);
+			_permissionManager.Received(1).GetPermissionSelectedAsync(
+				Arg.Is(_WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => x.Count() == 1
+					     && x.First().PermissionID == permissionId));
+		}
+
+		[Test]
+		public void UserCanImport_InvalidPermissions_ReturnsFalse()
+		{
+			// Arrange
+			int permissionId = 158;
+
+			_permissionManager.GetPermissionSelectedAsync(
+				Arg.Is(_WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => x.Count() == 1
+					     && x.First().PermissionID == permissionId))
+				.Throws(new Exception("Pearl"));
+
+			// Act
+			bool result = _instance.UserCanImport();
+
+			// Assert
+			Assert.IsFalse(result);
+			_permissionManager.Received(1).GetPermissionSelectedAsync(
+				Arg.Is(_WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => x.Count() == 1
+						 && x.First().PermissionID == permissionId));
+		}
+
+		[Test]
+		public void UserCanExport_HasPermissions_ReturnsTrue()
+		{
+			// Arrange
+			int permissionId = 159;
+			var permissionValue = new PermissionValue()
+			{
+				PermissionID = permissionId,
+				Selected = true
+			};
+
+			_permissionManager.GetPermissionSelectedAsync(
+				Arg.Is(_WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => x.Count() == 1
+						 && x.First().PermissionID == permissionId))
+				.Returns(new List<PermissionValue>() { permissionValue });
+
+			// Act
+			bool result = _instance.UserCanExport();
+
+			// Assert
+			Assert.IsTrue(result);
+			_permissionManager.Received(1).GetPermissionSelectedAsync(
+				Arg.Is(_WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => x.Count() == 1
+						 && x.First().PermissionID == permissionId));
+		}
+
+		[Test]
+		public void UserCanExport_InvalidPermissions_ReturnsFalse()
+		{
+			// Arrange
+			int permissionId = 159;
+
+			_permissionManager.GetPermissionSelectedAsync(
+				Arg.Is(_WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => x.Count() == 1
+						 && x.First().PermissionID == permissionId))
+				.Throws(new Exception("Mr. Krabs"));
+
+			// Act
+			bool result = _instance.UserCanExport();
+
+			// Assert
+			Assert.IsFalse(result);
+			_permissionManager.Received(1).GetPermissionSelectedAsync(
+				Arg.Is(_WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => x.Count() == 1
+						 && x.First().PermissionID == permissionId));
+		}
+
+		[Test]
+		public void UserCanEditDocuments_HasPermissions_ReturnsTrue()
+		{
+			// Arrange
+			int permissionId = 45;
+			var permissionValue = new PermissionValue()
+			{
+				PermissionID = permissionId,
+				Selected = true
+			};
+
+			_permissionManager.GetPermissionSelectedAsync(
+				Arg.Is(_WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => x.Count() == 1
+						 && x.First().PermissionID == permissionId))
+				.Returns(new List<PermissionValue>() { permissionValue });
+
+			// Act
+			bool result = _instance.UserCanEditDocuments();
+
+			// Assert
+			Assert.IsTrue(result);
+			_permissionManager.Received(1).GetPermissionSelectedAsync(
+				Arg.Is(_WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => x.Count() == 1
+						 && x.First().PermissionID == permissionId));
+		}
+
+		[Test]
+		public void UserCanEditDocuments_InvalidPermissions_ReturnsFalse()
+		{
+			// Arrange
+			int permissionId = 45;
+
+			_permissionManager.GetPermissionSelectedAsync(
+				Arg.Is(_WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => x.Count() == 1
+						 && x.First().PermissionID == permissionId))
+				.Throws(new Exception("Mr. Krabs"));
+
+			// Act
+			bool result = _instance.UserCanEditDocuments();
+
+			// Assert
+			Assert.IsFalse(result);
+			_permissionManager.Received(1).GetPermissionSelectedAsync(
+				Arg.Is(_WORKSPACE_ID),
+				Arg.Is<List<PermissionRef>>(
+					x => x.Count() == 1
+						 && x.First().PermissionID == permissionId));
+		}
 	}
 }

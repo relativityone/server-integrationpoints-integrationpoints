@@ -217,9 +217,8 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					hasPermission = hasPermissionValue.Selected &&
 									hasPermissionValue.PermissionID == permissionToCheck;
 				}
-				catch(Exception exception)
+				catch
 				{
-					Console.WriteLine(exception.Message);
 					// invalid IDs will cause the request to except
 					// suppress these errors and do not give the user access    
 				}
