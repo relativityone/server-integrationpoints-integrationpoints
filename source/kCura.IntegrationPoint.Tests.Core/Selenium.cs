@@ -60,6 +60,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 	        wait.Until(ExpectedConditions.ElementExists(By.Id(id)));
 	    }
 
+        public static void WaitUntilIdIsClickable(string id, int timeSeconds)
+        {
+            WebDriverWait wait = new WebDriverWait(WebDriver, TimeSpan.FromSeconds(timeSeconds));
+            wait.Until(ExpectedConditions.ElementToBeClickable(By.Id(id)));
+        }
+
         public static void WaitUntilXpathExists(string xpath, int timeSeconds)
         {
             WebDriverWait wait = new WebDriverWait(WebDriver, TimeSpan.FromSeconds(timeSeconds));

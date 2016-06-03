@@ -6,7 +6,11 @@ using Relativity.Services.Permission;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-	public static class Permission
+    using System;
+
+    using kCura.IntegrationPoints.Data.Extensions;
+
+    public static class Permission
 	{
 		public static GroupPermissions GetGroupPermissions(int workspaceId, int groupId)
 		{
@@ -20,39 +24,58 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return groupPermissions;
 		}
 
-		public static bool SetMinimumRelativityProviderPermissions(int workspaceId, int groupId, bool obj = true, bool admin = true, bool tab = true, bool browser = true)
+		public static void SetMinimumRelativityProviderPermissions(int workspaceId, int groupId)
 		{
 			GroupRef groupRef = new GroupRef(groupId);
 
 			IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true);
 			GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).Result;
 
-		    if (obj)
-		    {
-		        SetObjectPermissions(groupPermissions, new List<string> {"Document", "Integration Point", "Job History", "Search"});
-		    }
+		    SetObjectPermissions(groupPermissions, new List<string> {"Document", "Integration Point", "Job History", "Search"});
+            SetAdminPermissions(groupPermissions, new List<string> {"Allow Import", "Allow Export"});
+            SetTabVisibility(groupPermissions, new List<string> {"Documents", "Integration Points"});
+            SetBrowserPermissions(groupPermissions, new List<string> {"Folders", "Advanced & Saved Searches"});
 
-		    if (admin)
-		    {
-		        SetAdminPermissions(groupPermissions, new List<string> {"Allow Import", "Allow Export"});
-		    }
-
-		    if (tab)
-		    {
-		        SetTabVisibility(groupPermissions, new List<string> {"Documents", "Integration Points"});
-		    }
-
-		    if (browser)
-		    {
-		        SetBrowserPermissions(groupPermissions, new List<string> {"Folders", "Advanced & Saved Searches"});
-		    }
-
-			proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions);
-
-			return true;
+            proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions);
 		}
 
-		private static void SetObjectPermissions(GroupPermissions groupPermissions, List<string> permissionNames )
+        public static void SetGrouPermissions(int workspaceId, GroupPermissions groupPermissions)
+        {
+            using (
+                IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(
+                    SharedVariables.RelativityUserName,
+                    SharedVariables.RelativityPassword,
+                    true,
+                    true))
+
+            {
+                proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).Wait(TimeSpan.FromSeconds(5));
+            } 
+        }
+
+        public static void SetPermissions(int workspaceId, int groupId, PermissionProperty permissionProperty)
+        {
+            GroupRef groupRef = new GroupRef(groupId);
+
+            using (
+                IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(
+                    SharedVariables.RelativityUserName,
+                    SharedVariables.RelativityPassword,
+                    true,
+                    true))
+            {
+                GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).GetResultsWithoutContextSync();
+                
+                SetObjectPermissions(groupPermissions, permissionProperty.Obj);
+                SetAdminPermissions(groupPermissions, permissionProperty.Admin);
+                SetTabVisibility(groupPermissions, permissionProperty.Tab);
+                SetBrowserPermissions(groupPermissions, permissionProperty.Browser);
+
+                proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).Wait(TimeSpan.FromSeconds(5));
+            }
+        }
+
+        private static void SetObjectPermissions(GroupPermissions groupPermissions, List<string> permissionNames )
 		{
 			IEnumerable<int> indices = groupPermissions.ObjectPermissions.Select((value, index) => new { value, index })
 					  .Where(x => permissionNames.Contains(x.value.Name))
@@ -111,4 +134,23 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 	}
+
+    public class PermissionProperty
+    {
+        public PermissionProperty()
+        { }
+
+        public  PermissionProperty(List<string> obj, List<string> admin, List<string> tab, List<string> browser)
+        {
+            Obj = obj;
+            Admin = admin;
+            Tab = tab;
+            Browser = browser;
+        }
+        public List<string> Obj { get; set; }
+        public List<string> Admin { get; set; }
+        public List<string> Tab { get; set; }
+        public List<string> Browser { get; set; }
+
+    }
 }
