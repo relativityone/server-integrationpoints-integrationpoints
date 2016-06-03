@@ -47,8 +47,13 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			IObjectTypeRepository objectTypeRepository = _repositoryFactory.GetObjectTypeRepository(workspaceArtifactId);
 
 			// Check workspace for instance of the object type GUID
-			int? sourceWorkspaceDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceWorkspaceDTO.ObjectTypeGuid);
-			if (!sourceWorkspaceDescriptorArtifactTypeId.HasValue)
+			int sourceWorkspaceDescriptorArtifactTypeId;
+			try
+			{
+				sourceWorkspaceDescriptorArtifactTypeId =
+					objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceWorkspaceDTO.ObjectTypeGuid);
+			}
+			catch (TypeLoadException)
 			{
 				// GUID doesn't exist in the workspace, so we try to see if the field name exists and assign a GUID to the field
 				int? sourceWorkspaceArtifactId =
@@ -74,14 +79,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				// Delete the tab if it exists (it should always exist since we're creating the object type one line above)
 				ITabRepository tabRepository = _repositoryFactory.GetTabRepository(workspaceArtifactId);
 				int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(
-					sourceWorkspaceDescriptorArtifactTypeId.Value, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
+					sourceWorkspaceDescriptorArtifactTypeId, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
 				if (sourceWorkspaceTabId.HasValue)
 				{
 					tabRepository.Delete(sourceWorkspaceTabId.Value);
 				}
 			}
 
-			return sourceWorkspaceDescriptorArtifactTypeId.Value;
+			return sourceWorkspaceDescriptorArtifactTypeId;
 		}
 
 		private void CreateSourceWorkspaceFields(IArtifactGuidRepository artifactGuidRepository,
@@ -102,7 +107,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				{
 					int? artifactId =
 						fieldRepository.RetrieveField(IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
-							sourceWorkspaceDescriptorArtifactTypeId, (int) Relativity.Client.FieldType.WholeNumber);
+							sourceWorkspaceDescriptorArtifactTypeId, (int)Relativity.Client.FieldType.WholeNumber);
 					if (artifactId.HasValue)
 					{
 						guidToArtifactId.Add(SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid, artifactId.Value);

@@ -338,6 +338,7 @@ var IP = IP || {};
 		}
 
 		this.submit = function () {
+		    IP.reverseMapFields = false;
 			if (ko.utils.unwrapObservable(this.sendOn).submit) {
 				this.sendOn().submit();
 			}

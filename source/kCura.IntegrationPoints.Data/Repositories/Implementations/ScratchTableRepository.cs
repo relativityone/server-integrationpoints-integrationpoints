@@ -68,7 +68,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				string fullTableName = GetTempTableName();
 
 				var sql = String.Format(@"IF EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
-										SELECT [ArtifactID] FROM {2}[{0}]", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
+											SELECT [ArtifactID] FROM {2}[{0}]", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
 
 				_reader = _caseContext.ExecuteSQLStatementAsReader(sql);
 			}
@@ -89,19 +89,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			catch (Exception)
 			{
 				// trying to delete temp tables early, don't have worry about failing
-			}
-		}
-
-		public void BatchAddArtifactIdsIntoTempTable(IList<int> artifactIds, int batchSize)
-		{
-			if (!artifactIds.IsNullOrEmpty())
-			{
-				int numberOfBatches = (artifactIds.Count + batchSize - 1);
-				for (int batchSet = 0; batchSet < numberOfBatches; batchSet++)
-				{
-					IList<int> batchedArtifactIds = artifactIds.Skip(batchSet*batchSize).Take(batchSize).ToList();
-					AddArtifactIdsIntoTempTable(batchedArtifactIds);
-				}
 			}
 		}
 
@@ -163,7 +150,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		private string FullDatabaseFormat
 		{
-			get { return TargetDatabaseFormat == String.Empty ? "[eddsdbo]." : "[EDDSRESOURCE].."; }
+			get { return TargetDatabaseFormat == String.Empty ? "[Resource]." : "[EDDSRESOURCE].."; }
 		}
 
 		public string GetTempTableName()
@@ -173,9 +160,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				string prepend = String.Empty;
 				if (_isAOAGEnabled)
 				{
-					prepend = $"{ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_workspaceId)}";
+					prepend = $"{ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_workspaceId)}_";
 				}
-				_tempTableName = $"{prepend}_{_tablePrefix}_{_tableSuffix}";
+				_tempTableName = $"{prepend}{_tablePrefix}_{_tableSuffix}";
 				if (_tempTableName.Length > 128)
 				{
 					throw new Exception($"Unable to create scratch table - {_tempTableName}. The name of the table is too long. Please contact the system administrator.");

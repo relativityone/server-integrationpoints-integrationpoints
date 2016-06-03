@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Security.Claims;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
@@ -26,5 +27,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public ITestHelper Helper => _help.Value;
 		private readonly Lazy<ITestHelper> _help;
+
+		protected void IISReset()
+		{
+			Process process = Process.Start(@"C:\Windows\System32\iisreset.exe");
+			process?.WaitForExit((int)TimeSpan.FromSeconds(30).TotalMilliseconds);
+		}
 	}
 }

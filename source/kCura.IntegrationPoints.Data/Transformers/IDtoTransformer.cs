@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Data.Transformers
 		/// <param name="transformees">Objects being transformed</param>
 		/// <returns>List of new DTOs</returns>
 		T1 ConvertArtifactDtoToDto(ArtifactDTO transformees);
-
+		
 		/// <summary>
 		/// Converts the generic Artifact DTOs to DTO representation
 		/// </summary>

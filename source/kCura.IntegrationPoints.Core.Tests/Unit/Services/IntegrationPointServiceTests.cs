@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
-using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
@@ -15,6 +15,7 @@ using kCura.IntegrationPoints.Core.Tests.Helpers;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -81,6 +82,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService = Substitute.For<IRSAPIService>();
 			_caseServiceManager.RsapiService.IntegrationPointLibrary = Substitute.For<IGenericLibrary<Data.IntegrationPoint>>();
 			_caseServiceManager.RsapiService.SourceProviderLibrary = Substitute.For<IGenericLibrary<SourceProvider>>();
+			_caseServiceManager.WorkspaceID = _sourceWorkspaceArtifactId;
 
 			_repositoryFactory.GetPermissionRepository(_sourceWorkspaceArtifactId).Returns(_sourcePermissionRepository);
 			_repositoryFactory.GetPermissionRepository(_targetWorkspaceArtifactId).Returns(_targetPermissionRepository);
@@ -452,6 +454,260 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			_caseServiceManager.RsapiService.SourceProviderLibrary
 				.Received(1)
 				.Read(Arg.Is(model.SourceProvider));
+		}
+
+		[Test]
+		public void Save_NonPermissionExceptionIsThrown_ExceptionIsWrapped()
+		{
+			// Arrange
+			var model = new IntegrationModel()
+			{
+				ArtifactID = 123,
+				SourceProvider = 9830,
+				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = 2322 }),
+				SelectedOverwrite = "SelectedOverwrite",
+				Scheduler = new Scheduler() { EnableScheduler = false },
+				LastRun = null
+			};
+
+			// Act
+			const string errorMessage = "KHAAAAAANN!!!";
+			var exception = new Exception(errorMessage);
+			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(0).ThrowsForAnyArgs(exception);
+			_managerFactory.CreateErrorManager(_contextContainer).Returns(_errorManager);
+
+			// Assert
+			Assert.Throws<Exception>(() => _instance.SaveIntegration(model), Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE);
+
+			_errorManager.Received(1).Create(
+				Arg.Is(_sourceWorkspaceArtifactId),
+				Arg.Is<IEnumerable<ErrorDTO>>(
+					x => x.Count() == 1 
+						&& x.First().Message == Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE
+						&& x.First().FullText.Contains("Unable to save Integration Point: Unable to retrieve Integration Point")));
+
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Save_InvalidPermissions_Excepts(bool isRelativityProvider)
+		{
+			// Arrange
+			int targetWorkspaceArtifactId = 9302;
+			var model = new IntegrationModel()
+			{
+				ArtifactID = 123,
+				SourceProvider = 9830,
+				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
+				SelectedOverwrite = "SelectedOverwrite",
+				Scheduler = new Scheduler() { EnableScheduler = false },
+				LastRun = null
+			};
+
+			var existingModel = new IntegrationModel()
+			{
+				ArtifactID = model.ArtifactID,
+				SourceProvider = model.SourceProvider,
+				SourceConfiguration = model.SourceConfiguration,
+				SelectedOverwrite = model.SelectedOverwrite,
+				Scheduler = model.Scheduler,
+				LastRun = null
+			};
+
+			_instance.ReadIntegrationPoint(Arg.Is(model.ArtifactID)).Returns(existingModel);
+			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			{
+				new Choice(2343)
+				{
+					Name = model.SelectedOverwrite
+				}
+			});
+
+			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(Arg.Is(model.SourceProvider))
+				.Returns(new SourceProvider()
+				{
+					Identifier = isRelativityProvider ? Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID : System.Guid.NewGuid().ToString()
+				});
+
+			_managerFactory.CreateIntegrationPointManager(_contextContainer)
+				.Returns(_integrationPointManager);
+
+			string[] errorMessages = {"Oh", "no"};
+			_integrationPointManager.UserHasPermissionToSaveIntegrationPoint(
+				Arg.Is(_sourceWorkspaceArtifactId),
+				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
+				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other))
+				.Returns(new PermissionCheckDTO()
+				{
+					Success = false,
+					ErrorMessages = errorMessages
+				});
+
+			_managerFactory.CreateErrorManager(_contextContainer).Returns(_errorManager);
+
+			var expectedError = new ErrorDTO()
+			{
+					Message = Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_MESSAGE,
+					FullText = $"{Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_ADMIN_ERROR_FULLTEXT_PREFIX}{Environment.NewLine}{String.Join(Environment.NewLine, errorMessages.Concat(new [] { Constants.IntegrationPoints.NO_USERID }))}"
+			};
+
+			// Act
+			Assert.Throws<PermissionException>(() => _instance.SaveIntegration(model), Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE);
+
+			// Assert
+			_instance.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_caseServiceManager.RsapiService.SourceProviderLibrary
+				.Received(1)
+				.Read(Arg.Is(model.SourceProvider));
+			_integrationPointManager.Received(1).UserHasPermissionToSaveIntegrationPoint(
+				Arg.Is(_sourceWorkspaceArtifactId),
+				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
+				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other));
+			_errorManager.Received(1).Create(
+				Arg.Is(_sourceWorkspaceArtifactId),
+				Arg.Is<IEnumerable<ErrorDTO>>(x => MatchHelper.Matches(new ErrorDTO[] {expectedError}, x)));
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Save_UpdateScenario_NoSchedule_GoldFlow(bool isRelativityProvider)
+		{
+			// Arrange
+			int targetWorkspaceArtifactId = 9302;
+			var model = new IntegrationModel()
+			{
+				ArtifactID = 123,
+				SourceProvider = 9830,
+				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
+				SelectedOverwrite = "SelectedOverwrite",
+				Scheduler = new Scheduler() { EnableScheduler = false },
+				LastRun = null
+			};
+
+			var existingModel = new IntegrationModel()
+			{
+				ArtifactID = model.ArtifactID,
+				SourceProvider = model.SourceProvider,
+				SourceConfiguration = model.SourceConfiguration,
+				SelectedOverwrite = model.SelectedOverwrite,
+				Scheduler = model.Scheduler,
+				LastRun = null
+			};
+
+			_instance.ReadIntegrationPoint(Arg.Is(model.ArtifactID)).Returns(existingModel);
+			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			{
+				new Choice(2343)
+				{
+					Name = model.SelectedOverwrite
+				}
+			});
+
+			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(Arg.Is(model.SourceProvider))
+				.Returns(new SourceProvider()
+				{
+					Identifier = isRelativityProvider ? Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID : System.Guid.NewGuid().ToString()
+				});
+
+			_managerFactory.CreateIntegrationPointManager(_contextContainer)
+				.Returns(_integrationPointManager);
+
+			_integrationPointManager.UserHasPermissionToSaveIntegrationPoint(
+				Arg.Is(_sourceWorkspaceArtifactId),
+				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
+				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other))
+				.Returns(new PermissionCheckDTO()
+				{
+					Success = true
+				});
+
+			_caseServiceManager.EddsUserID = 1232;
+
+			// Act
+			int result = _instance.SaveIntegration(model);
+
+			// Assert
+			Assert.AreEqual(model.ArtifactID, result, "The resulting artifact id should match.");
+			_instance.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));
+			_caseServiceManager.RsapiService.SourceProviderLibrary
+				.Received(1)
+				.Read(Arg.Is(model.SourceProvider));
+			_integrationPointManager.Received(1).UserHasPermissionToSaveIntegrationPoint(
+				Arg.Is(_sourceWorkspaceArtifactId),
+				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
+				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other));
+			_caseServiceManager.RsapiService.IntegrationPointLibrary.Received(1).Update(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == model.ArtifactID));
+			_jobManager.Received(1).GetJob(
+				_sourceWorkspaceArtifactId, 
+				model.ArtifactID,
+				isRelativityProvider ? TaskType.ExportService.ToString() : TaskType.SyncManager.ToString());
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Save_CreateScenario_NoSchedule_GoldFlow(bool isRelativityProvider)
+		{
+			// Arrange
+			int targetWorkspaceArtifactId = 9302;
+			var model = new IntegrationModel()
+			{
+				ArtifactID = 0,
+				SourceProvider = 9830,
+				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = targetWorkspaceArtifactId }),
+				SelectedOverwrite = "SelectedOverwrite",
+				Scheduler = new Scheduler() { EnableScheduler = false },
+				LastRun = null
+			};
+
+			_choiceQuery.GetChoicesOnField(Guid.Parse(IntegrationPointFieldGuids.OverwriteFields)).Returns(new List<Choice>()
+			{
+				new Choice(2343)
+				{
+					Name = model.SelectedOverwrite
+				}
+			});
+
+			_caseServiceManager.RsapiService.SourceProviderLibrary.Read(Arg.Is(model.SourceProvider))
+				.Returns(new SourceProvider()
+				{
+					Identifier = isRelativityProvider ? Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID : System.Guid.NewGuid().ToString()
+				});
+
+			_managerFactory.CreateIntegrationPointManager(_contextContainer)
+				.Returns(_integrationPointManager);
+
+			_integrationPointManager.UserHasPermissionToSaveIntegrationPoint(
+				Arg.Is(_sourceWorkspaceArtifactId),
+				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
+				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other))
+				.Returns(new PermissionCheckDTO()
+				{
+					Success = true
+				});
+
+			const int newIntegrationPoinId = 389234;
+			_caseServiceManager.RsapiService.IntegrationPointLibrary.Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == 0))
+				.Returns(newIntegrationPoinId);
+
+			_caseServiceManager.EddsUserID = 1232;
+
+			// Act
+			int result = _instance.SaveIntegration(model);
+
+			// Assert
+			Assert.AreEqual(newIntegrationPoinId, result, "The resulting artifact id should match.");
+			_caseServiceManager.RsapiService.SourceProviderLibrary
+				.Received(1)
+				.Read(Arg.Is(model.SourceProvider));
+			_integrationPointManager.Received(1).UserHasPermissionToSaveIntegrationPoint(
+				Arg.Is(_sourceWorkspaceArtifactId),
+				Arg.Is<IntegrationPointDTO>(x => x.ArtifactId == model.ArtifactID),
+				Arg.Is(isRelativityProvider ? Constants.SourceProvider.Relativity : Constants.SourceProvider.Other));
+			_caseServiceManager.RsapiService.IntegrationPointLibrary.Received(1).Create(Arg.Is<Data.IntegrationPoint>(x => x.ArtifactId == newIntegrationPoinId));
+			_jobManager.Received(1).GetJob(
+				_sourceWorkspaceArtifactId,
+				newIntegrationPoinId,
+				isRelativityProvider ? TaskType.ExportService.ToString() : TaskType.SyncManager.ToString());
 		}
 
 		[Test]

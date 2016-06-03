@@ -106,12 +106,8 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 			IGenericLibrary<JobHistoryError> jobHistoryErrorLibrary = new RsapiClientLibrary<JobHistoryError>(_helper, workspaceArtifactId);
 			IDtoTransformer<JobHistoryErrorDTO, JobHistoryError> dtoTransformer = new JobHistoryErrorTransformer(_helper, workspaceArtifactId);
 			IObjectTypeRepository objectTypeRepository = GetObjectTypeRepository(workspaceArtifactId);
-			int? objectTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistoryError));
-			if (!objectTypeId.HasValue)
-			{
-				throw new Exception(JobHistoryErrorErrors.JOB_HISTORY_ERROR_NO_ARTIFACT_TYPE_FOUND);
-			} //I hate this so much.
-			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, objectTypeId.Value);
+			int objectTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistoryError));
+			IObjectQueryManagerAdaptor objectQueryManagerAdaptor = CreateObjectQueryManagerAdaptor(workspaceArtifactId, objectTypeId);
 			IJobHistoryErrorRepository jobHistoryErrorRepository = new JobHistoryErrorRepository(_helper, objectQueryManagerAdaptor, jobHistoryErrorLibrary, dtoTransformer, workspaceArtifactId);
 			return jobHistoryErrorRepository;
 		}

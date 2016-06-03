@@ -16,7 +16,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		public JobHistoryBatchUpdateManager(IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory,
 			int sourceWorkspaceArtifactId, int jobHistoryInstanceId, int submittedBy, string uniqueJobId)
 		{
-			ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_DOC_TABLE_JOB_HIST, uniqueJobId);
+			ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId, Data.Constants.TEMPORARY_DOC_TABLE_JOB_HISTORY, uniqueJobId);
 			_sourceWorkspaceArtifactId = sourceWorkspaceArtifactId;
 			_jobHistoryInstanceId = jobHistoryInstanceId;
 			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);

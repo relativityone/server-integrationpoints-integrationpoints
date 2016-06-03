@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_workspaceArtifactId = workspaceArtifactId;
 		}
 
-		public int? RetrieveObjectTypeDescriptorArtifactTypeId(Guid objectTypeGuid)
+		public int RetrieveObjectTypeDescriptorArtifactTypeId(Guid objectTypeGuid)
 		{
 			var objectType = new ObjectType(objectTypeGuid) {Fields = FieldValue.AllFields};
 
@@ -37,7 +37,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				objectTypeArtifactId = resultSet.Results.First().Artifact.DescriptorArtifactTypeID;
 			}
 
-			return objectTypeArtifactId;
+			if (!objectTypeArtifactId.HasValue)
+			{
+				throw new TypeLoadException(string.Format(ObjectTypeErrors.OBJECT_TYPE_NO_ARTIFACT_TYPE_FOUND, objectType.Guids[0]));
+			}
+
+			return objectTypeArtifactId.Value;
 		}
 
 		public int? RetrieveObjectTypeArtifactId(string objectTypeName)

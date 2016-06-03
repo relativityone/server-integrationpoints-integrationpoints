@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				}
 				catch (Exception e)
 				{
-					string message = $"UserHasPermissionsFailed with intputs {String.Join(",", inputs)}: {e.Message}";
+					string message = $"UserHasPermissionsFailed with inputs {String.Join(",", inputs)}: {e.Message}";
 					throw new Exception(message, e);
 				}
 			}
@@ -279,7 +279,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				}
 				if (!integrationPointInstanceEditOrCreatePermission)
 				{
-					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCe_NO_EDIT);
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_EDIT);
 				}
 			}
 
@@ -451,7 +451,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 				}
 				if (!integrationPointInstanceEditOrCreatePermission)
 				{
-					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCe_NO_EDIT);
+					errorMessages.Add(Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_INSTANCE_NO_EDIT);
 				}
 			}
 

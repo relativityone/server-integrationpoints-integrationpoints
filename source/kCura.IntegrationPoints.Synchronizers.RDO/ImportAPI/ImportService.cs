@@ -150,7 +150,25 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.Settings.SelectedIdentifierFieldName = _idToFieldDictionary[Settings.IdentityFieldId].Name;
 			importJob.OnComplete += new IImportNotifier.OnCompleteEventHandler(ImportJob_OnComplete);
 			importJob.OnFatalException += new IImportNotifier.OnFatalExceptionEventHandler(ImportJob_OnComplete);
-			importJob.OnError += ImportJob_OnDocumentError;
+
+			// DO NOT MOVE THIS INTO A METHOD
+			// ILmerge on our build server will fail - SAMO 6/1/2016
+			importJob.OnError += row =>
+			{
+				_itemsImported--;
+				_itemsErrored++;
+				if (Environment.TickCount - _lastJobErrorUpdate > _JOB_PROGRESS_TIMEOUT_MILLISECONDS)
+				{
+					_lastJobErrorUpdate = Environment.TickCount;
+					if (OnStatusUpdate != null)
+					{
+						OnStatusUpdate(_itemsImported, _itemsErrored);
+						_itemsErrored = 0;
+						_itemsImported = 0;
+					}
+				}
+			};
+
 			importJob.OnProgress += ImportJob_OnProgress;
 			ImportService_OnBatchSubmit(_batchManager.CurrentSize, _batchManager.MinimumBatchSize);
 
@@ -273,23 +291,6 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			if (OnJobError != null)
 			{
 				OnJobError(fatalException);
-			}
-		}
-
-
-		private void ImportJob_OnDocumentError(IDictionary row)
-		{
-			_itemsImported--;
-			_itemsErrored++;
-			if (Environment.TickCount - _lastJobErrorUpdate > _JOB_PROGRESS_TIMEOUT_MILLISECONDS)
-			{
-				_lastJobErrorUpdate = Environment.TickCount;
-				if (OnStatusUpdate != null)
-				{
-					OnStatusUpdate(_itemsImported, _itemsErrored);
-					_itemsErrored = 0;
-					_itemsImported = 0;
-				}
 			}
 		}
 

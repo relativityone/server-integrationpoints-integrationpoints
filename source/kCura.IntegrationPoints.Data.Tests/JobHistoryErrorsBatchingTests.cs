@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		private IBatchStatus _batchStatus;
 		private const int _ADMIN_USER_ID = 9;
 
-		public JobHistoryErrorsBatchingTests() : base("JobHistoryErrorsSource", "JobHistoryErrorsDestination")
+		public JobHistoryErrorsBatchingTests() : base("JobHistoryErrorsSource", null)
 		{
 		}
 
@@ -150,6 +150,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			};
 
 			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
+			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID);
 
 			//Act
 			try
@@ -215,8 +216,8 @@ namespace kCura.IntegrationPoints.Data.Tests
 			//Act
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
 
-			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
-			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE}_{ tempTableSuffix }";
+			string startTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
+			string completeTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE}_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -258,6 +259,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 				{
 					EnableScheduler = false
 				},
+				HasErrors = true,
 				Map = CreateDefaultFieldMap()
 			};
 
@@ -279,15 +281,20 @@ namespace kCura.IntegrationPoints.Data.Tests
 			//Act
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
 
-			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
-			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE }_{ tempTableSuffix }";
-			string otherTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED }_{ tempTableSuffix }";
+			string startTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
+			string completeTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE }_{ tempTableSuffix }";
+			string otherTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START }_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
 			DataTable otherTempTable = GetTempTable(otherTempTableName);
 
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
+			JobHistoryErrorDTO.UpdateStatusType updateStatusType = new JobHistoryErrorDTO.UpdateStatusType
+			{
+				ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.JobAndItem
+			};
+
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, updateStatusType);
 
 			_batchStatus.OnJobStart(job);
 			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
@@ -322,6 +329,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 				{
 					EnableScheduler = false
 				},
+				HasErrors = true,
 				Map = CreateDefaultFieldMap()
 			};
 
@@ -345,17 +353,22 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 			//Act
 			ModifySavedSearch(documentPrefix, expiredDocumentPrefix, true);
-			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
+			_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, SavedSearchArtifactId);
 
-			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START }_{ tempTableSuffix }";
-			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE }_{ tempTableSuffix }";
-			string otherTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED }_{ tempTableSuffix }";
+			string startTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START }_{ tempTableSuffix }";
+			string completeTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE }_{ tempTableSuffix }";
+			string otherTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED }_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
 			DataTable otherTempTable = GetTempTable(otherTempTableName);
 
-			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, new JobHistoryErrorDTO.UpdateStatusType());
+			JobHistoryErrorDTO.UpdateStatusType updateStatusType = new JobHistoryErrorDTO.UpdateStatusType
+			{
+				ErrorTypes = JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly
+			};
+
+			_batchStatus = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, new OnBehalfOfUserClaimsPrincipalFactory(), SourceWorkspaceArtifactId, _ADMIN_USER_ID, updateStatusType);
 
 			_batchStatus.OnJobStart(job);
 			CompareJobHistoryErrorStatuses(expectedJobHistoryErrorsForRetry, JobHistoryErrorDTO.Choices.ErrorStatus.Values.InProgress);
@@ -375,7 +388,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			DataTable table = new DataTable();
 			table.Columns.Add("Control Number", typeof(string));
 			int endDocNumber = startingDocNumber + numberOfDocuments - 1;
-			int halfDocCount = endDocNumber / 2;
+			int halfDocCount = endDocNumber -  (numberOfDocuments / 2);
 
 			for (int index = startingDocNumber; index <= endDocNumber; index++)
 			{
@@ -454,6 +467,15 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 		private void ModifySavedSearch(string documentPrefix, string expDocumentPrefix, bool excludeExpDocs)
 		{
+			IFieldRepository sourceFieldRepository = _repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
+			int controlNumberFieldArtifactId = sourceFieldRepository.RetrieveTheIdentifierField((int)ArtifactType.Document).ArtifactId;
+
+			FieldRef fieldRef = new FieldRef(controlNumberFieldArtifactId)
+			{
+				Name = "Control Number",
+				Guids = new List<Guid>() {new Guid("2a3f1212-c8ca-4fa9-ad6b-f76c97f05438")}
+			};
+
 			CriteriaCollection searchCriteria = new CriteriaCollection();
 
 			if (excludeExpDocs)
@@ -461,29 +483,11 @@ namespace kCura.IntegrationPoints.Data.Tests
 				Criteria criteria = new Criteria()
 				{
 					BooleanOperator = BooleanOperatorEnum.None,
-					Condition = new CriteriaCondition(new FieldRef("Control Number"), CriteriaConditionEnum.IsLike, documentPrefix),
+					Condition = new CriteriaCondition(fieldRef, CriteriaConditionEnum.IsLike, documentPrefix),
 				};
 
 				searchCriteria.Conditions.Add(criteria);
 			}
-			else
-			{
-				Criteria criteria = new Criteria()
-				{
-					BooleanOperator = BooleanOperatorEnum.Or,
-					Condition = new CriteriaCondition(new FieldRef("Control Number"), CriteriaConditionEnum.IsLike, documentPrefix),
-				};
-
-				Criteria criteria2 = new Criteria()
-				{
-					BooleanOperator = BooleanOperatorEnum.None,
-					Condition = new CriteriaCondition(new FieldRef("Control Number"), CriteriaConditionEnum.IsLike, expDocumentPrefix),
-				};
-
-				searchCriteria.Conditions.Add(criteria);
-				searchCriteria.Conditions.Add(criteria2);
-			}
-
 			SavedSearch.UpdateSavedSearchCriteria(SourceWorkspaceArtifactId, SavedSearchArtifactId, searchCriteria);
 		}
 
@@ -563,7 +567,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 		private JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance)
 		{
 			IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
-			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRetryErrors, DateTime.Now);
+			JobHistory jobHistory = _jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRunNow, DateTime.Now);
 			jobHistory.EndTimeUTC = DateTime.Now;
 			jobHistory.JobStatus = JobStatusChoices.JobHistoryCompletedWithErrors;
 			_jobHistoryService.UpdateRdo(jobHistory);
