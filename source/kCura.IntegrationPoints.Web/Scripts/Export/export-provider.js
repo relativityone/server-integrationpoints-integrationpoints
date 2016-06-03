@@ -165,7 +165,11 @@
         ]);
 
         this.SelectedImageFileType = ko.observable().extend({
-            required: true
+            required: {
+                onlyIf: function() {
+                    return self.ExportImagesChecked() === "true";
+                }
+            }
         });
 
         this.updateSelectedImageFileType = function (value) {
@@ -192,7 +196,7 @@
                 "OverwriteFiles": self.OverwriteFiles(),
                 "Fileshare": self.SelectedDestinationPath(),
                 "ExportImagesChecked": self.ExportImagesChecked(),
-                "SelectedImageFileType": self.SelectedImageFileType().key,
+                "SelectedImageFileType": self.SelectedImageFileType = self.ExportImagesChecked === "true" ? SelectedImageFileType().key : "",
                 "IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
                 "SelectedDataFileFormat": self.SelectedDataFileFormat(),
                 "DataFileEncodingType": self.DataFileEncodingType()
