@@ -33,11 +33,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return HasPermissions(_workspaceArtifactId, _ALLOW_EXPORT_PERMISSION_ID);
 		}
 
-		public bool UserHasArtifactInstancePermissions(int artifactTypeId, int artifactId, IEnumerable<ArtifactPermission> artifactPermissions)
-		{
-			throw new NotImplementedException();
-		}
-
 		public bool UserHasPermissionToAccessWorkspace()
 		{
 			var permissionRef = new PermissionRef()
@@ -79,37 +74,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return UserHasArtifactTypePermissions(artifactTypeGuid, new[] { artifactPermission });
 		}
 
-		public bool UserHasArtifactInstancePermissions(Guid artifactTypeGuid, int artifactId, IEnumerable<ArtifactPermission> artifactPermissions)
-		{
-			List<PermissionRef> permissionRefs = artifactPermissions.Select(x => new PermissionRef()
-			{
-				ArtifactType = new ArtifactTypeIdentifier(artifactTypeGuid),
-				PermissionType = this.ArtifactPermissionToPermissinType(x)
-			}).ToList();
-
-			bool userHasViewPermissions = false;
-
-			using (IPermissionManager proxy = _helper.GetServicesManager().CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
-			{
-				try
-				{
-					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(_workspaceArtifactId, permissionRefs);
-					List<PermissionValue> permissionValues = permissionValuesTask.Result;
-
-					if (permissionValues != null && permissionValues.Any())
-					{
-						userHasViewPermissions = permissionValues.All(x => x.Selected);
-					}
-				}
-				catch
-				{
-					// If the user does not have permissions, the kepler service throws an exception
-				}
-			}
-
-			return userHasViewPermissions;
-		}
-
 		private bool UserHasArtifactTypePermissions(ArtifactTypeIdentifier artifactTypeIdentifier, IEnumerable<ArtifactPermission> artifactPermissions)
 		{
 			List<PermissionRef> permissionRefs = artifactPermissions.Select(x => new PermissionRef()
@@ -141,50 +105,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return userHasViewPermissions;
 		}
 
-		private bool UserHasArtifactInstancePermissions(ArtifactTypeIdentifier artifactTypeIdentifier, int artifactId, IEnumerable<ArtifactPermission> artifactPermissions)
-		{
-			List<PermissionRef> permissionRefs = artifactPermissions.Select(x => new PermissionRef()
-			{
-				ArtifactType = artifactTypeIdentifier,
-				PermissionType = this.ArtifactPermissionToPermissinType(x)
-			}).ToList();
-
-			bool userHasViewPermissions = false;
-
-			using (IPermissionManager proxy = _helper.GetServicesManager().CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
-			{
-				try
-				{
-					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(_workspaceArtifactId, permissionRefs, artifactId);
-					List<PermissionValue> permissionValues = permissionValuesTask.Result;
-
-					if (permissionValues != null && permissionValues.Any())
-					{
-						userHasViewPermissions = permissionValues.All(x => x.Selected);
-					}
-				}
-				catch
-				{
-					// If the user does not have permissions, the kepler service throws an exception
-				}
-			}
-
-			return userHasViewPermissions;
-		}
-
 		public bool UserHasArtifactTypePermissions(int artifactTypeId, IEnumerable<ArtifactPermission> artifactPermissions)
 		{
-			return this.UserHasArtifactTypePermissions(new ArtifactTypeIdentifier(artifactTypeId), artifactPermissions);
-		}
-
-		public bool UserHasArtifactTypePermission(int artifactTypeId, ArtifactPermission artifactPermission)
-		{
-			return this.UserHasArtifactTypePermissions(new ArtifactTypeIdentifier(artifactTypeId), new[] {artifactPermission});
-		}
-
-		public bool UserHasArtifactInstancePermission(int artifactTypeId, int artifactId, ArtifactPermission artifactPermission)
-		{
-			return this.UserHasArtifactInstancePermissions(new ArtifactTypeIdentifier(artifactTypeId), artifactId, new[] {artifactPermission});
+			return UserHasArtifactTypePermissions(new ArtifactTypeIdentifier(artifactTypeId), artifactPermissions);
 		}
 
 		public bool UserHasArtifactTypePermission(Guid artifactTypeGuid, ArtifactPermission artifactPermission)
@@ -192,7 +115,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return UserHasArtifactTypePermissions(artifactTypeGuid, new[] { artifactPermission });
 		}
 
-		public bool UserHasArtifactTypePermissions(Guid artifactTypeGuid, IEnumerable<ArtifactPermission> artifactPermissions)
+		private bool UserHasArtifactTypePermissions(Guid artifactTypeGuid, IEnumerable<ArtifactPermission> artifactPermissions)
 		{
 			List<PermissionRef> permissionRefs = artifactPermissions.Select(x => new PermissionRef()
 			{
@@ -238,39 +161,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public bool UserCanViewArtifact(int artifactTypeId, int artifactId)
-		{
-			var permission = new PermissionRef()
-			{
-				ArtifactType = new ArtifactTypeIdentifier(artifactTypeId),
-				PermissionType = PermissionType.View
-			};
-
-			bool userHasViewPermissions = false;
-
-			using (IPermissionManager proxy = _helper.GetServicesManager().CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
-			{
-				try
-				{
-					Task<List<PermissionValue>> permissionValuesTask = proxy.GetPermissionSelectedAsync(_workspaceArtifactId,
-						new List<PermissionRef>() {permission}, artifactId);
-					List<PermissionValue> permissionValues = permissionValuesTask.Result;
-
-					if (permissionValues != null && permissionValues.Any())
-					{
-						userHasViewPermissions = permissionValues.First().Selected;
-					}
-				}
-				catch 
-				{
-					// If the user does not have permissions, the kepler service throws an exception
-				}
-			}
-
-			return userHasViewPermissions;
-		}
-
-		internal bool HasPermissions(int workspaceId, int permissionToCheck)
+		private bool HasPermissions(int workspaceId, int permissionToCheck)
 		{
 			using (IPermissionManager proxy = _helper.GetServicesManager().CreateProxy<IPermissionManager>(ExecutionIdentity.CurrentUser))
 			{
@@ -295,8 +186,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					hasPermission = hasPermissionValue.Selected &&
 									hasPermissionValue.PermissionID == permissionToCheck;
 				}
-				catch
+				catch(Exception exception)
 				{
+					Console.WriteLine(exception.Message);
 					// invalid IDs will cause the request to except
 					// suppress these errors and do not give the user access    
 				}
@@ -304,6 +196,5 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				return hasPermission;
 			}
 		}
-
 	}
 }

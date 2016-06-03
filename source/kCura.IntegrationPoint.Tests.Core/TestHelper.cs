@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.Repositories;
@@ -18,6 +19,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 	public interface ITestHelper : IHelper
 	{
+		string RelativityUserName { get; set; }
+
+		string RelativityPassword { get; set; }
+
 		IPermissionRepository PermissionManager { get; }
 
 		T CreateUserProxy<T>() where T : IDisposable;
@@ -28,6 +33,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 	public class TestHelper : ITestHelper
 	{
 		private readonly IServicesMgr _serviceManager;
+
+		public string RelativityUserName { get; set; } = SharedVariables.RelativityUserName;
+		public string RelativityPassword { get; set; } = SharedVariables.RelativityPassword;
+
 		public IPermissionRepository PermissionManager { get; }
 
 		public TestHelper()
@@ -44,7 +53,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public T CreateUserProxy<T>() where T : IDisposable
 		{
-			var userCredential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
+			var userCredential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials(RelativityUserName, RelativityPassword);
 			ServiceFactorySettings userSettings = new ServiceFactorySettings(SharedVariables.RsapiClientServiceUri, SharedVariables.RestClientServiceUri, userCredential);
 			ServiceFactory userServiceFactory = new ServiceFactory(userSettings);
 			return userServiceFactory.CreateProxy<T>();
@@ -52,7 +61,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public T CreateAdminProxy<T>() where T : IDisposable
 		{
-			var credential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials("relativity.admin@kcura.com", "P@ssw0rd@1");
+			var credential = new global::Relativity.Services.ServiceProxy.UsernamePasswordCredentials("relativity.admin@kcura.com", "Test1234!");
 			ServiceFactorySettings settings = new ServiceFactorySettings(SharedVariables.RsapiClientServiceUri, SharedVariables.RestClientServiceUri, credential);
 			ServiceFactory adminServiceFactory = new ServiceFactory(settings);
 			return adminServiceFactory.CreateProxy<T>();
@@ -433,9 +442,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				lock (obj)
 				{
-					IPermissionManager newManager = new ExtendedIPermissionManager(_helper, _identity);
-					_managerWrapper = new Lazy<IPermissionManager>(_helper.CreateUserProxy<IPermissionManager>);
 					Manager.Dispose();
+					_managerWrapper = new Lazy<IPermissionManager>(_helper.CreateUserProxy<IPermissionManager>);
 				}
 			}
 

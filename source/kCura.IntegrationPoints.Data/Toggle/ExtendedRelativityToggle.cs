@@ -23,11 +23,11 @@ namespace kCura.IntegrationPoints.Data.Toggle
 	{
 		private IConfig _config;
 
-		private SqlServerToggleProvider Provider { get; }
+		private IToggleProvider Provider { get; }
 
 		public IConfig Configuration { get { return _config ?? Config.Config.Instance; } set { _config = value; } }
 
-		public ExtendedRelativityToggle(SqlServerToggleProvider toggleProvider)
+		public ExtendedRelativityToggle(IToggleProvider toggleProvider)
 		{
 			Provider = toggleProvider;
 		}

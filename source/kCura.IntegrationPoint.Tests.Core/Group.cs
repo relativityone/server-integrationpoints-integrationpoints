@@ -102,5 +102,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			return true;
 		}
+
 	}
 }

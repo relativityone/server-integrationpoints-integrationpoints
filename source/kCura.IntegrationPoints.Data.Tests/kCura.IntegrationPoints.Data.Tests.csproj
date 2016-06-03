@@ -221,7 +221,9 @@
     <Compile Include="Integration\Queries\GetSavedSearchesQueryTests..cs" />
     <Compile Include="Integration\Queries\GetWorkspacesQueryTests.cs" />
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />
+    <Compile Include="Integration\Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Integration\Repositories\QueueRepositoryTests.cs" />
+    <Compile Include="Integration\Repositories\ScratchTableRepositoryTests.cs" />
     <Compile Include="JobHistoryErrorsBatchingTests.cs" />
     <Compile Include="Transformer\JobHistoryErrorTransformerTests.cs" />
     <Compile Include="Transformer\IntegrationPointTransformerTests.cs" />
@@ -234,6 +236,7 @@
     <Compile Include="Unit\Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\SqlArtifactGuidRepositoryTests.cs" />
     <Compile Include="Unit\RSAPIServiceInstallerTests.cs" />
+    <Compile Include="Unit\Toggle\ExtendedRelativityToggleTests.cs" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
