@@ -71,12 +71,85 @@
         this.dataFileFormats = [
           { key: "Concordance (.dat)", value: "Concordance" },
           { key: "HTML (.html)", value: "HTML" },
-          { key: "Comma-separated (.csv)", value: "CSV" }
-          //{key: "Custom (.txt)", value: "Custom"}
+          { key: "Comma-separated (.csv)", value: "CSV" },
+          { key: "Custom (.txt)", value: "Custom" }
         ];
 
         this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
             required: true
+        });
+
+        this.ColumnSeparator = ko.observable(state.ColumnSeparator).extend({
+            required: {
+                onlyIf: function () {
+                    return self.SelectedDataFileFormat() == "Custom";
+                }
+            }
+        });
+        this.QuoteSeparator = ko.observable(state.QuoteSeparator).extend({
+            required: {
+                onlyIf: function () {
+                    return self.SelectedDataFileFormat() == "Custom";
+                }
+            }
+        });
+        this.NewlineSeparator = ko.observable(state.NewlineSeparator).extend({
+            required: {
+                onlyIf: function () {
+                    return self.SelectedDataFileFormat() == "Custom";
+                }
+            }
+        });
+        this.MultiValueSeparator = ko.observable(state.MultiValueSeparator).extend({
+            required: {
+                onlyIf: function () {
+                    return self.SelectedDataFileFormat() == "Custom";
+                }
+            }
+        });
+        this.NestedValueSeparator = ko.observable(state.NestedValueSeparator).extend({
+            required: {
+                onlyIf: function () {
+                    return self.SelectedDataFileFormat() == "Custom";
+                }
+            }
+        });
+
+        this.isCustom = ko.observable(false);
+        this.isCustomDisabled = ko.observable(true);
+
+        this.separatorsList = function () {
+            var result = [];
+            for (var i = 0; i < 256; i++) {
+                result.push({ key: String.fromCharCode(i) + " (ASCII:" + i + ")", value: i });
+            }
+            return result;
+        }();
+
+        this.SelectedDataFileFormat.subscribe(function (value) {
+            if (value == 'Concordance') {
+                self.ColumnSeparator(20);
+                self.QuoteSeparator(254);
+                self.NewlineSeparator(174);
+                self.MultiValueSeparator(59);
+                self.NestedValueSeparator(92);
+            }
+            if (value == 'CSV') {
+                self.ColumnSeparator(44);
+                self.QuoteSeparator(34);
+                self.NewlineSeparator(10);
+                self.MultiValueSeparator(59);
+                self.NestedValueSeparator(92);
+            }
+        });
+
+        this.SelectedDataFileFormat.subscribe(function (value) {
+            self.isCustom(value == 'Custom');
+            if (value == 'Custom') {
+                self.isCustomDisabled(undefined);
+            } else {
+                self.isCustomDisabled(true);
+            }
         });
 
         this.CopyFileFromRepository = ko.observable(state.CopyFileFromRepository || "false");
@@ -166,7 +239,7 @@
 
         this.SelectedImageFileType = ko.observable(state.SelectedImageFileType).extend({
             required: {
-                onlyIf: function() {
+                onlyIf: function () {
                     return self.ExportImagesChecked() === "true";
                 }
             }
@@ -187,7 +260,12 @@
                 "SelectedImageFileType": self.ExportImagesChecked() === "true" ? self.SelectedImageFileType() : "",
                 "IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
                 "SelectedDataFileFormat": self.SelectedDataFileFormat(),
-                "DataFileEncodingType": self.DataFileEncodingType()
+                "DataFileEncodingType": self.DataFileEncodingType(),
+                "ColumnSeparator": self.ColumnSeparator(),
+                "QuoteSeparator": self.QuoteSeparator(),
+                "NewlineSeparator": self.NewlineSeparator(),
+                "MultiValueSeparator": self.MultiValueSeparator(),
+                "NestedValueSeparator": self.NestedValueSeparator()
             }
         }
     }

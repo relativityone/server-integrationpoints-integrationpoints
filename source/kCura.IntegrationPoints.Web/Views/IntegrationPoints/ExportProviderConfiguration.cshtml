@@ -46,7 +46,7 @@
             </div>
             <div class="field-row">
                 <div class="field-label required">
-                    Data File Format :
+                    Data File Format:
                 </div>
                 <div class="field-value ">
                     <select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: dataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat"></select>
@@ -54,10 +54,52 @@
             </div>
             <div class="field-row">
                 <div class="field-label required">
-                    Data File Encoding :
+                    Data File Encoding:
                 </div>
                 <div class="field-value">
                     <select id="dataFileEncodingSelector" data-bind="options: DataFileEncodingTypeList, value: DataFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...'"></select>
+                </div>
+            </div>
+            <div>
+                <div class="field-row">
+                    <div class="field-label" data-bind="css: {required: isCustom()}">
+                        Column:
+                    </div>
+                    <div class="field-value">
+                        <select id="columnSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: ColumnSeparator"></select>
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field-label" data-bind="css: {required: isCustom()}">
+                        Quote:
+                    </div>
+                    <div class="field-value">
+                        <select id="quoteSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: QuoteSeparator"></select>
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field-label" data-bind="css: {required: isCustom()}">
+                        Newline:
+                    </div>
+                    <div class="field-value">
+                        <select id="newlineSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NewlineSeparator"></select>
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field-label" data-bind="css: {required: isCustom()}">
+                        Multi-Value:
+                    </div>
+                    <div class="field-value">
+                        <select id="multivalueSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: MultiValueSeparator"></select>
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field-label" data-bind="css: {required: isCustom()}">
+                        Nested Value:
+                    </div>
+                    <div class="field-value">
+                        <select id="nestedvalueSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NestedValueSeparator"></select>
+                    </div>
                 </div>
             </div>
         </div>

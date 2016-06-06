@@ -187,6 +187,7 @@
     <Compile Include="TestCases\Base\DataFileEncodingTestCaseBase.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileAsConcordance.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileAsCsv.cs" />
+    <Compile Include="TestCases\ItShouldExportDataFileAsCustom.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileAsHTML.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithUnicodeEncoding.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithUTF8Encoding.cs" />

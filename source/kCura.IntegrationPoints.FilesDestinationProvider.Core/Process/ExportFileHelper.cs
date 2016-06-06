@@ -49,6 +49,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             expFile.VolumeInfo.SubdirectoryStartNumber = 1;
             expFile.VolumeInfo.SubdirectoryMaxSize = 500;
             expFile.VolumeInfo.CopyFilesFromRepository = exportSettings.CopyFileFromRepository;
+            expFile.RecordDelimiter = exportSettings.ColumnSeparator;
+            expFile.QuoteDelimiter = exportSettings.QuoteSeparator;
+            expFile.NewlineDelimiter = exportSettings.NewlineSeparator;
+            expFile.MultiRecordDelimiter = exportSettings.MultiValueSeparator;
+            expFile.NestedValueDelimiter = exportSettings.NestedValueSeparator;
 
             return expFile;
         }

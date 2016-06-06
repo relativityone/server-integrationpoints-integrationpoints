@@ -74,7 +74,12 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				ArtifactTypeId = destinationSettings.ArtifactTypeId,
 				OutputDataFileFormat = dataFileFormat,
 				IncludeNativeFilesPath = sourceSettings.IncludeNativeFilesPath,
-				DataFileEncoding = Encoding.GetEncoding(sourceSettings.DataFileEncodingType)
+				DataFileEncoding = Encoding.GetEncoding(sourceSettings.DataFileEncodingType),
+                ColumnSeparator = sourceSettings.ColumnSeparator,
+                MultiValueSeparator = sourceSettings.MultiValueSeparator,
+                NestedValueSeparator = sourceSettings.NestedValueSeparator,
+                NewlineSeparator = sourceSettings.NewlineSeparator,
+                QuoteSeparator = sourceSettings.QuoteSeparator
 			};
 
 			_exportProcessRunner.StartWith(exportSettings);
