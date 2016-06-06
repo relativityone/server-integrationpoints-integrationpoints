@@ -1,11 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Data.Toggle;
 using NSubstitute;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
@@ -13,138 +18,225 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 	[Explicit]
 	public class ScratchTableRepositoryTests : WorkspaceDependentTemplate
 	{
-		private IHelper _helper;
 		private IExtendedRelativityToggle _toggle;
-		private IDocumentRepository _documentsRepo;
-		private IFieldRepository _fileRepo;
-		private IDBContext _dbContext;
-		private const string _PREFIX = "prefix";
-		private const string _SURFIX = "_surfix";
+		private IRepositoryFactory _repositoryFactory;
+		private ICaseServiceContext _caseServiceContext;
+		private ICaseServiceContext _mockedCaseServiceContext;
+		private IDocumentRepository _documentRepository;
+		private IFieldRepository _fieldRepository;
+		private const string _DOC_IDENTIFIER = "SCRATCH_";
 
-		public ScratchTableRepositoryTests()
-			: base("Scratch table", null)
+		public ScratchTableRepositoryTests() : base("Scratch table", null)
 		{
 		}
 
-		[SetUp]
-		public void Setup()
+		[TestFixtureSetUp]
+		[Explicit]
+		public override void SetUp()
 		{
-			_dbContext = Substitute.For<IDBContext>();
-			_helper = Substitute.For<IHelper>();
-			_helper.GetDBContext(SourceWorkspaceArtifactId).Returns(_dbContext);
+			base.SetUp();
+			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
+			_caseServiceContext = Container.Resolve<ICaseServiceContext>();
+			_documentRepository = _repositoryFactory.GetDocumentRepository(SourceWorkspaceArtifactId);
+			_fieldRepository = _repositoryFactory.GetFieldRepository(SourceWorkspaceArtifactId);
+
 			_toggle = Substitute.For<IExtendedRelativityToggle>();
-			_documentsRepo = Substitute.For<IDocumentRepository>();
-			_fileRepo = Substitute.For<IFieldRepository>();
 		}
 
-#region SqlGeneration
-		[Test]
-		public void DeleteTable_WorkspaceScratchTable()
+		[TestCase(true, 2001)]
+		[TestCase(false, 999)]
+		[TestCase(true, 1000)]
+		[TestCase(false, 1000)]
+		[TestCase(true, 0)]
+		[Explicit]
+		public void CreateScratchTableAndVerifyEntries(bool useEDDSResource, int numberOfDocuments)
 		{
-			// arrange
-			string expectedQuery = @"IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'EDDSResource_prefix__surfix')
-										DROP TABLE [Resource].[EDDSResource_prefix__surfix]";
-			_toggle.IsAOAGFeatureEnabled().Returns(true);
-			var instance = new ScratchTableRepository(_helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SURFIX, SourceWorkspaceArtifactId);
+			//ARRANGE
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, numberOfDocuments));
+			string tablePrefix = "RKO";
+			string tableSuffix = Guid.NewGuid().ToString();
+			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
+			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
 
-			// act
-			instance.DeleteTable();
+			_toggle.IsAOAGFeatureEnabled().Returns(!useEDDSResource);
 
-			// assert
-			_dbContext.Received(1).ExecuteNonQuerySQLStatement(expectedQuery);
+			var scratchTableRepository = new ScratchTableRepository(Helper, _toggle, _documentRepository, _fieldRepository, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+
+			//ACT
+			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
+			string tableName = useEDDSResource? $"{tablePrefix}_{tableSuffix}" : $"EDDSResource_{tablePrefix}_{tableSuffix}";
+            DataTable tempTable = GetTempTable(tableName, useEDDSResource);
+
+			//ASSERT
+			VerifyTempTableCountAndEntries(tempTable, tableName, documentIds);
+
+			//CLEANUP
+			scratchTableRepository.Dispose();
+			VerifyTableDisposal(tableName, useEDDSResource);
 		}
 
-		[Test]
-		public void DeleteTable_EDDSResourceScratchTable()
+		[TestCase(true)]
+		[TestCase(false)]
+		[Explicit]
+		public void CreateScratchTableAndDeleteErroredDocuments(bool useEDDSResource)
 		{
-			// arrange
-			string expectedQuery = @"IF EXISTS (SELECT * FROM [EDDSRESOURCE].INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'prefix__surfix')
-										DROP TABLE [EDDSRESOURCE]..[prefix__surfix]";
-			_toggle.IsAOAGFeatureEnabled().Returns(false);
-			var instance = new ScratchTableRepository(_helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SURFIX, SourceWorkspaceArtifactId);
+			//ARRANGE
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 5));
+			string tablePrefix = "RKO";
+			string tableSuffix = Guid.NewGuid().ToString();
+			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
+			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
 
-			// act
-			instance.DeleteTable();
+			_toggle.IsAOAGFeatureEnabled().Returns(!useEDDSResource);
 
-			// assert
-			_dbContext.Received(1).ExecuteNonQuerySQLStatement(expectedQuery);
+			var scratchTableRepository = new ScratchTableRepository(Helper, _toggle, _documentRepository, _fieldRepository, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+
+			//ACT
+			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
+
+			string tableName = useEDDSResource ? $"{tablePrefix}_{tableSuffix}" : $"EDDSResource_{tablePrefix}_{tableSuffix}";
+			int docArtifactIdToRemove = controlNumbersByDocumentIds.Keys.ElementAt(2);
+			string docIdentifierToRemove = controlNumbersByDocumentIds[docArtifactIdToRemove];
+
+			scratchTableRepository.RemoveErrorDocument(docIdentifierToRemove);
+
+			//ASSERT
+			VerifyErroredDocumentRemoval(tableName, docArtifactIdToRemove, documentIds.Count - 1, useEDDSResource);
+
+			//CLEANUP
+			scratchTableRepository.Dispose();
 		}
 
-		[Test]
-		public void AddArtifactIdsIntoScratchTable_WorkspaceScratchTable()
+		[TestCase(true)]
+		[TestCase(false)]
+		[Explicit]
+		public void CreateScratchTableAndErroredDocumentDoesntExist(bool useEDDSResource)
 		{
-			// arrange
-			string expectedQuery = @"IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'EDDSResource_prefix__surfix')
-											BEGIN
-												CREATE TABLE [Resource].[EDDSResource_prefix__surfix] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
-											END
-									INSERT INTO [Resource].[EDDSResource_prefix__surfix] ([ArtifactID]) VALUES (1),(2)";
-			_toggle.IsAOAGFeatureEnabled().Returns(true);
-			var instance = new ScratchTableRepository(_helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SURFIX, SourceWorkspaceArtifactId);
-			var list = new List<int>() { 1, 2};
+			//ARRANGE
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 5));
+			string tablePrefix = "RKO";
+			string tableSuffix = Guid.NewGuid().ToString();
+			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
+			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
 
-			// act
-			instance.AddArtifactIdsIntoTempTable(list);
+			_toggle.IsAOAGFeatureEnabled().Returns(!useEDDSResource);
 
-			// assert
-			_dbContext.Received(1).ExecuteNonQuerySQLStatement(expectedQuery);
+			var scratchTableRepository = new ScratchTableRepository(Helper, _toggle, _documentRepository, _fieldRepository, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
 
+			//ACT
+			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
+
+			//ASSERT
+			try
+			{
+				scratchTableRepository.RemoveErrorDocument("Doesn't Exist");
+			}
+			catch (Exception ex)
+			{
+				Assert.IsTrue(ex.Message == "Unable to retrieve Document Artifact ID. Object Query failed.");
+			}
+
+			//CLEANUP
+			scratchTableRepository.Dispose();
 		}
 
-		[Test]
-		public void AddArtifactIdsIntoScratchTable_EddsResourceScratchTable()
+		private DataTable GetTempTable(string tempTableName, bool isScratchTableOnEDDSResource)
 		{
-			// arrange
-			string expectedQuery = @"IF NOT EXISTS (SELECT * FROM [EDDSRESOURCE].INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'prefix__surfix')
-											BEGIN
-												CREATE TABLE [EDDSRESOURCE]..[prefix__surfix] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
-											END
-									INSERT INTO [EDDSRESOURCE]..[prefix__surfix] ([ArtifactID]) VALUES (1),(2)";
-			_toggle.IsAOAGFeatureEnabled().Returns(false);
-			var instance = new ScratchTableRepository(_helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SURFIX, SourceWorkspaceArtifactId);
-			var list = new List<int>() { 1, 2 };
-
-			// act
-			instance.AddArtifactIdsIntoTempTable(list);
-
-			// assert
-			_dbContext.Received(1).ExecuteNonQuerySQLStatement(expectedQuery);
-
+			string targetDatabaseFormat = isScratchTableOnEDDSResource ? "[EDDSResource].." : "[Resource].";
+			string query = $"SELECT [ArtifactID] FROM {targetDatabaseFormat}[{ tempTableName }]";
+			try
+			{
+				DataTable tempTable = _caseServiceContext.SqlContext.ExecuteSqlStatementAsDataTable(query);
+				return tempTable;
+			}
+			catch (Exception ex)
+			{
+				throw new Exception($"An error occurred trying to query Temp Table:{ tempTableName }. Exception: { ex.Message }");
+			}
 		}
 
-		[Test]
-		public void GetDocumentIdsDataReaderFromTable_WorkspaceScratchTable()
+		private DataTable GetImportTable(int startingDocNumber, int numberOfDocuments)
 		{
-			// arrange
-			string expectedQuery = @"IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'EDDSResource_prefix__surfix')
-											SELECT [ArtifactID] FROM [Resource].[EDDSResource_prefix__surfix]";
-			_toggle.IsAOAGFeatureEnabled().Returns(true);
-			var instance = new ScratchTableRepository(_helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SURFIX, SourceWorkspaceArtifactId);
+			DataTable table = new DataTable();
+			table.Columns.Add("Control Number", typeof(string));
+			int endDocNumber = startingDocNumber + numberOfDocuments - 1;
 
-			// act
-			instance.GetDocumentIdsDataReaderFromTable();
-
-			// assert
-			_dbContext.Received(1).ExecuteSQLStatementAsReader(expectedQuery);
+			for (int index = startingDocNumber; index <= endDocNumber; index++)
+			{
+				string controlNumber = $"{_DOC_IDENTIFIER}{index}";
+				table.Rows.Add(controlNumber);
+			}
+			return table;
 		}
 
-		[Test]
-		public void GetDocumentIdsDataReaderFromTable_EddsResourceScratchTable()
+		private Dictionary<int, string> GetDocumentIdToControlNumberMapping()
 		{
-			// arrange
-			string expectedQuery = @"IF EXISTS (SELECT * FROM [EDDSRESOURCE].INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'prefix__surfix')
-											SELECT [ArtifactID] FROM [EDDSRESOURCE]..[prefix__surfix]";
-			_toggle.IsAOAGFeatureEnabled().Returns(false);
-			var instance = new ScratchTableRepository(_helper, _toggle, _documentsRepo, _fileRepo, _PREFIX, _SURFIX, SourceWorkspaceArtifactId);
+			string query = "SELECT [ArtifactID], [ControlNumber] FROM [Document]";
 
-			// act
-			instance.GetDocumentIdsDataReaderFromTable();
+			DataTable table = _caseServiceContext.SqlContext.ExecuteSqlStatementAsDataTable(query);
 
-			// assert
-			_dbContext.Received(1).ExecuteSQLStatementAsReader(expectedQuery);
+			Dictionary<int, string> controlNumberByDocumentId =
+				table.AsEnumerable().ToDictionary(row => row.Field<int>("ArtifactID"),
+					row => row.Field<string>("ControlNumber"));
+
+			return controlNumberByDocumentId;
 		}
 
-#endregion
+		private void VerifyTempTableCountAndEntries(DataTable tempTable, string tableName, List<int> expectedDocIds)
+		{
+			if (tempTable.Rows.Count != expectedDocIds.Count)
+			{
+				throw new Exception($"Error: Expected { expectedDocIds.Count } Document ArtifactIds. { tableName } contains { tempTable.Rows.Count } ArtifactIds.");
+			}
 
+			List<int> actualJobHistoryArtifactIds = new List<int>();
+			foreach (DataRow dataRow in tempTable.Rows)
+			{
+				actualJobHistoryArtifactIds.Add(Convert.ToInt32(dataRow["ArtifactID"]));
+			}
+
+			List<int> discrepancies = expectedDocIds.Except(actualJobHistoryArtifactIds).ToList();
+
+			if (discrepancies.Count > 0)
+			{
+				throw new Exception($"Error: { tableName } is missing expected Document ArtifactIds. ArtifactIds missing: {string.Join(",", expectedDocIds)}");
+			}
+		}
+
+		private void VerifyErroredDocumentRemoval(string tableName, int erroredDocumentArtifactId, int newCount, bool isScratchTableOnEDDSResource)
+		{
+			string targetDatabaseFormat = isScratchTableOnEDDSResource ? "[EDDSResource].." : "[Resource].";
+			string getErroredDocumentQuery =
+				$"SELECT COUNT(*) FROM {targetDatabaseFormat}[{tableName}] WHERE [ArtifactID] = {erroredDocumentArtifactId}";
+
+			bool entryExists = _caseServiceContext.SqlContext.ExecuteSqlStatementAsScalar<bool>(getErroredDocumentQuery);
+			if (entryExists)
+			{
+				throw new Exception(
+					$"Error: {tableName} still contains Document ArtifactID {erroredDocumentArtifactId}, it should have been removed.");
+			}
+
+			string scratchTableCountQuery = $"SELECT COUNT(*) FROM {targetDatabaseFormat}[{tableName}]";
+			int entryCount = _caseServiceContext.SqlContext.ExecuteSqlStatementAsScalar<int>(scratchTableCountQuery);
+
+			if (entryCount != newCount)
+			{
+				throw new Exception($"Error: {tableName} has an incorrect count. Expected: {newCount}. Actual: {entryCount}");
+			}
+		}
+
+
+		private void VerifyTableDisposal(string tableName, bool isScratchTableOnEDDSResource)
+		{
+			string targetDatabaseFormat = isScratchTableOnEDDSResource ? "[EDDSResource]." : String.Empty;
+			string query = String.Format(@"SELECT COUNT(*) FROM {0}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{1}'", targetDatabaseFormat, tableName);
+
+			bool tableExists = _caseServiceContext.SqlContext.ExecuteSqlStatementAsScalar<bool>(query);
+
+			if (tableExists)
+			{
+				throw new Exception($"Error: {tableName} still exists and was not properly disposed.");
+			}
+		}
 	}
 }
