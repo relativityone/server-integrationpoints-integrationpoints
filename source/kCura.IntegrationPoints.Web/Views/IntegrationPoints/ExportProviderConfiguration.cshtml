@@ -83,7 +83,7 @@
                     Fileshare:
                 </div>
                 <div class="field-value">
-                    <input id="fileshare-input" data-bind="value: SelectedDestinationPath" />
+                    <input id="fileshare-input" data-bind="value: Fileshare" />
                 </div>
             </div>
             <div class="field-row">
@@ -117,12 +117,12 @@
                     </ul>
                 </div>
             </div>
-            <div class="field-row">
+            <div class="field-row" data-bind="visible: ExportImagesChecked() === 'true'">
                 <div class="field-label required">
                     File Type :
                 </div>
                 <div class="field-value ">
-                    <select id="imageFileTypesSelector" data-bind="options: imageFileTypes, optionsText: 'value', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
+                    <select id="imageFileTypesSelector" data-bind="options: imageFileTypes, optionsText: 'value', optionsValue: 'key', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
                 </div>
             </div>
 

@@ -62,7 +62,7 @@
 
         this.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
 
-        this.SelectedDestinationPath = ko.observable(state.Fileshare).extend({
+        this.Fileshare = ko.observable(state.Fileshare).extend({
             required: true
         });
 
@@ -164,25 +164,13 @@
             { key: 2, value: "PDF" }
         ]);
 
-        this.SelectedImageFileType = ko.observable().extend({
+        this.SelectedImageFileType = ko.observable(state.SelectedImageFileType).extend({
             required: {
                 onlyIf: function() {
                     return self.ExportImagesChecked() === "true";
                 }
             }
         });
-
-        this.updateSelectedImageFileType = function (value) {
-            var fileType = ko.utils.arrayFirst(self.imageFileTypes(), function (item) {
-                if (item.key === value) {
-                    return item;
-                }
-            });
-
-            self.SelectedImageFileType(fileType);
-        };
-
-        self.updateSelectedImageFileType(state.SelectedImageFileType);
 
         this.errors = ko.validation.group(this, { deep: true });
 
@@ -194,9 +182,9 @@
                 "SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
                 "CopyFileFromRepository": self.CopyFileFromRepository(),
                 "OverwriteFiles": self.OverwriteFiles(),
-                "Fileshare": self.SelectedDestinationPath(),
+                "Fileshare": self.Fileshare(),
                 "ExportImagesChecked": self.ExportImagesChecked(),
-                "SelectedImageFileType": self.SelectedImageFileType = self.ExportImagesChecked === "true" ? SelectedImageFileType().key : "",
+                "SelectedImageFileType": self.ExportImagesChecked() === "true" ? self.SelectedImageFileType() : "",
                 "IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
                 "SelectedDataFileFormat": self.SelectedDataFileFormat(),
                 "DataFileEncodingType": self.DataFileEncodingType()
