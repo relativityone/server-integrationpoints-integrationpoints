@@ -158,7 +158,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			var cases = System.Reflection.Assembly
 				.GetExecutingAssembly()
 				.GetTypes()
-				.Where(t => t.GetInterfaces().Contains(typeof(IExportTestCase)))
+				.Where(t => t.GetInterfaces().Contains(typeof(IExportTestCase)) && !t.IsAbstract)
 				.Select(Activator.CreateInstance)
 				.Cast<IExportTestCase>();
 
