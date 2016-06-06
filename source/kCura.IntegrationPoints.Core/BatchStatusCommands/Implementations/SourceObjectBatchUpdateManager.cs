@@ -9,7 +9,7 @@ using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
-	public class DestinationWorkspaceBatchUpdateManager : IConsumeScratchTableBatchStatus
+	public class SourceObjectBatchUpdateManager : IConsumeScratchTableBatchStatus
 	{
 		private readonly IDestinationWorkspaceRepository _destinationWorkspaceRepository;
 		private readonly int _sourceWorkspaceId;
@@ -20,12 +20,12 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private int _destinationWorkspaceRdoId;
 		private bool _errorOccurDuringJobStart;
 
-		public DestinationWorkspaceBatchUpdateManager(IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, 
+		public SourceObjectBatchUpdateManager(IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, 
 			SourceConfiguration sourceConfig, int jobHistoryInstanceId, int submittedBy, string uniqueJobId)
 		{
 			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId);
 			_workspaceRepository = repositoryFactory.GetWorkspaceRepository();
-			ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceConfig.SourceWorkspaceArtifactId,Data.Constants.TEMPORARY_DOC_TABLE_DESTINATION_WORKSPACE, uniqueJobId);
+			ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceConfig.SourceWorkspaceArtifactId,Data.Constants.TEMPORARY_DOC_TABLE_SOURCE_OBJECTS, uniqueJobId);
 			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);
 			_sourceWorkspaceId = sourceConfig.SourceWorkspaceArtifactId;
 			_destinationWorkspaceId = sourceConfig.TargetWorkspaceArtifactId;
@@ -66,7 +66,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 				if (!_errorOccurDuringJobStart)
 				{
 					int documentCount = ScratchTableRepository.Count;
-					_destinationWorkspaceRepository.TagDocsWithDestinationWorkspace(_claimsPrincipal, documentCount, _destinationWorkspaceRdoId, ScratchTableRepository.GetTempTableName(), _sourceWorkspaceId);
+					_destinationWorkspaceRepository.TagDocsWithDestinationWorkspaceAndJobHistory(_claimsPrincipal, documentCount, _destinationWorkspaceRdoId, _jobHistoryInstanceId, ScratchTableRepository.GetTempTableName(), _sourceWorkspaceId);
 				}
 			}
 			finally

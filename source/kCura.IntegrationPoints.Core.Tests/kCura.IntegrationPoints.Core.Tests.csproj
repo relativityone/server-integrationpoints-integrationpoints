@@ -153,8 +153,7 @@
     <Compile Include="Integration\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Unit\AgentJobManagerTest.cs" />
-    <Compile Include="Unit\BatchStatusCommands\DestinationWorkspaceBatchUpdateManagerTest.cs" />
-    <Compile Include="Unit\BatchStatusCommands\JobHistoryBatchUpdateManagerTest.cs" />
+    <Compile Include="Unit\BatchStatusCommands\SourceObjectBatchUpdateManagerTest.cs" />
     <Compile Include="Unit\BatchStatusCommands\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="Unit\BatchStatusCommands\TempTableReaderTests.cs" />
     <Compile Include="Unit\DeleteHistoryServiceTest.cs" />
