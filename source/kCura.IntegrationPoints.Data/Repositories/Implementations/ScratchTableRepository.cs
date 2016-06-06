@@ -225,7 +225,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		internal int QueryForDocumentArtifactId(string docIdentifier)
 		{
 			ArtifactDTO document;
-
+			string queryFailureMessage = "Unable to retrieve Document Artifact ID. Object Query failed.";
 			try
 			{
 				Task<ArtifactDTO> documentResult = _documentRepository.RetrieveDocumentAsync(_docIdentifierFieldName, docIdentifier);
@@ -233,7 +233,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 			catch (Exception ex)
 			{
-				throw new Exception("Unable to retrieve Document Artifact ID. Object Query failed.", ex);
+				throw new Exception(queryFailureMessage, ex);
+			}
+
+			if (document == null)
+			{
+				throw new Exception(queryFailureMessage);
 			}
 
 			return document.ArtifactId;

@@ -147,6 +147,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
@@ -223,6 +224,7 @@
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />
     <Compile Include="Integration\Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Integration\Repositories\QueueRepositoryTests.cs" />
+    <Compile Include="Integration\Repositories\ScratchTableRepositorySqlTests.cs" />
     <Compile Include="Integration\Repositories\ScratchTableRepositoryTests.cs" />
     <Compile Include="JobHistoryErrorsBatchingTests.cs" />
     <Compile Include="Transformer\JobHistoryErrorTransformerTests.cs" />
