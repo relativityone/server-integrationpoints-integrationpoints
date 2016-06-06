@@ -256,7 +256,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		}
 
 		[TearDown]
-		public void TearDown()
+		public void TestTearDown()
 		{
 			_currentScratchTableRepository.Dispose();
 		}
