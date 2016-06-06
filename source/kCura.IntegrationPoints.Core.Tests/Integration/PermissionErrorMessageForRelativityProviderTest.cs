@@ -16,15 +16,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
     using Group = kCura.IntegrationPoint.Tests.Core.Group;
 
     [Explicit]
-    public class PermissionErrorMessageTest : WorkspaceDependentTemplate
+    public class PermissionErrorMessageForRelativityProviderTest : WorkspaceDependentTemplate
     {
 
         private IObjectTypeRepository _objectTypeRepository;
 
         private int _userCreated;
         private int _groupCreated;
-        public PermissionErrorMessageTest()
-            : base("Error Source", null)
+        public PermissionErrorMessageForRelativityProviderTest()
+            : base("Error Source Workspace", "Error Target Workspace")
         {
         }
 
@@ -52,7 +52,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 
         [Explicit]
         [Test, TestCaseSource("PermissionCase")]
-        public void VerifyLdapPermissionErrorMessage(List<string> obj, List<string> admin, List<string> browser, List<string> tab)
+        public void VerifyRelativityPermissionErrorMessage(List<string> obj, List<string> admin, List<string> browser, List<string> tab)
         {
             string errorMessage = Core.Constants.IntegrationPoints.PermissionErrors.INSUFFICIENT_PERMISSIONS;
             string jobError = "//div[contains(.,'Failed to submit integration job. You do not have sufficient permissions. Please contact your system administrator.')]";
@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
             Regex regex = new Regex("[^a-zA-Z0-9]");
             string tempEmail = regex.Replace(DateTime.Now.ToString(), "") + "test@kcura.com";
 
-            PermissionProperty tempP = new PermissionProperty(){};
+            PermissionProperty tempP = new PermissionProperty() { };
             tempP.Admin = admin;
             tempP.Tab = tab;
             tempP.Browser = browser;
@@ -83,8 +83,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 
             IntegrationModel model = new IntegrationModel()
             {
-                SourceProvider = LdapProvider.ArtifactId,
-                Name = "LDAP test" + DateTime.Now,
+                SourceProvider = RelativityProvider.ArtifactId,
+                Name = "RIP test" + DateTime.Now,
                 DestinationProvider = DestinationProvider.ArtifactId,
                 SourceConfiguration = CreateDefaultSourceConfig(),
                 Destination = CreateDefaultDestinationConfig(),
@@ -110,19 +110,24 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 
         }
 
-        private static object[] PermissionNoImport = new[]
+        private static object[] PermissionNoExport = new[]
                                              {
-                                                 new object[] { new List<string> {"Document", "Integration Point", "Search"}, new List<string> { }, new List<string> { }, new List<string> { "Documents", "Integration Points"}}
+                                                 new object[] {
+                                                     new List<string> {"Document", "Integration Point", "Search"},
+                                                     new List<string> {"Allow Import"},
+                                                     new List<string> {"Folders", "Advanced & Saved Searches"},
+                                                     new List<string> { "Documents", "Integration Points"}}
                                              };
 
         [Explicit]
-        [Test, TestCaseSource("PermissionNoImport")]
-        public void VerifyNoImportPermissionErrorMessage(List<string> obj, List<string> admin, List<string> browser, List<string> tab)
+        [Test, TestCaseSource("PermissionNoExport")]
+        public void VerifyNoExportPermissionErrorMessage(List<string> obj, List<string> admin, List<string> browser, List<string> tab)
         {
             //Arrange
-            string errorMessage = "You do not have permission to import. Please contact your administrator for the correct permissions.";
+            string errorMessage = Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE;
             string newIntegraionPoint = "//a[@title='New Integration Point']";
             string errorPopup = "notEnoughPermission";
+            string errorBar = "//div[contains(@class,'page-message page-error')]";
 
             string groupName = "Permission Group" + DateTime.Now;
             Regex regex = new Regex("[^a-zA-Z0-9]");
@@ -137,6 +142,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
             int groupId = Group.CreateGroup(groupName);
             _groupCreated = groupId;
             Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, groupId);
+            Group.AddGroupToWorkspace(TargetWorkspaceArtifactId, groupId);
             Permission.SetPermissions(SourceWorkspaceArtifactId, groupId, tempP);
 
             UserModel user = User.CreateUser("tester", "tester", tempEmail, new[] { groupId });
@@ -147,12 +153,41 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
             Selenium.GoToWorkspace(SourceWorkspaceArtifactId);
             Selenium.GoToTab("Integration Points");
             Selenium.WebDriver.SwitchTo().Frame("ListTemplateFrame");
-            Selenium.WaitUntilXpathExists(newIntegraionPoint, 10);
+            Selenium.WaitUntilXpathVisible(newIntegraionPoint, 10);
             Selenium.WebDriver.FindElement(By.XPath(newIntegraionPoint)).Click();
             Selenium.WebDriver.SwitchTo().Frame("_externalPage");
 
-            //Assert
-            Selenium.WaitUntilIdExists(errorPopup, 10);
+            Selenium.WaitUntilIdExists("name", 10);
+            Selenium.WebDriver.FindElement(By.Id("name")).SendKeys("ip" + DateTime.Now);
+            Selenium.SelectFromDropdownList("sourceProvider", "Relativity");
+            Selenium.SelectFromDropdownList("destinationRdo", "Document");
+            Selenium.WebDriver.FindElement(By.Id("next")).Click();
+
+            Selenium.WaitUntilIdExists("configurationFrame", 10);
+            Selenium.WebDriver.SwitchTo().Frame("configurationFrame");
+            Selenium.WaitUntilIdExists("workspaceSelector", 10);
+            string target = "Error Target Workspace" + " - " + TargetWorkspaceArtifactId;
+            Selenium.SelectFromDropdownList("workspaceSelector", target);
+            Selenium.SelectFromDropdownList("savedSearchSelector", "All documents");
+
+            Selenium.WebDriver.SwitchTo().DefaultContent();
+            Selenium.WebDriver.SwitchTo().Frame("_externalPage");
+            Selenium.WebDriver.FindElement(By.Id("next")).Click();
+
+            Selenium.WaitUntilIdExists("fieldMappings", 10);
+
+            string sourceField = "//select[@id=\"source-fields\"]/option[contains(.,'[Object Identifier]')]";
+            Selenium.WaitUntilXpathVisible(sourceField, 10);
+            Selenium.WebDriver.FindElement(By.XPath(sourceField)).Click();
+            Selenium.WebDriver.FindElement(By.Id("add-source-field")).Click();
+
+            string workspaceField = "//select[@id=\"workspace-fields\"]/option[contains(.,'[Object Identifier]')]";
+            Selenium.WebDriver.FindElement(By.XPath(workspaceField)).Click();
+            Selenium.WebDriver.FindElement(By.Id("add-workspace-field")).Click();
+
+            Selenium.WebDriver.FindElement(By.Id("save")).Click();
+
+            Selenium.WaitUntilXpathExists("//div[contains(@class,'page-message page-error')]", 10);
             Assert.IsTrue(Selenium.PageShouldContain(errorMessage));
 
         }

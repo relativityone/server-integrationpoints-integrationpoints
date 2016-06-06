@@ -5,6 +5,7 @@ using OpenQA.Selenium.Support.UI;
 namespace kCura.IntegrationPoint.Tests.Core
 {
     using System;
+    using System.Collections.ObjectModel;
 
     public static class Selenium
 	{
@@ -39,8 +40,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void GoToTab(string tabName)
 		{
-			string tabXpath = $"//a[contains(.,'{tabName}')]";
-			WebDriver.FindElement(By.XPath(tabXpath));
+            ReadOnlyCollection<IWebElement> webElementCollection = WebDriver.FindElements(By.Id("horizontal-tabstrip"));
+            IWebElement navigationList = webElementCollection[0].FindElement(By.XPath("//ul[@class='nav navbar-nav']"));
+            ReadOnlyCollection<IWebElement> listElements = navigationList.FindElements(By.TagName("li"));
+		    foreach (IWebElement listElement in listElements)
+		    {
+                ReadOnlyCollection<IWebElement> anchorCollectoin = listElement.FindElements(By.TagName("a"));
+
+                foreach (IWebElement anchor in anchorCollectoin)
+		        {
+		            if (anchor.Text.Equals(tabName))
+		            {
+                        anchor.Click();
+		                return;
+		            }
+		        }
+		    }
 		}
 
 		public static void GoToObjectInstance(int workspaceArtifactId, int integrationPointArtifactId, int artifactTypeId)
@@ -66,10 +81,30 @@ namespace kCura.IntegrationPoint.Tests.Core
             wait.Until(ExpectedConditions.ElementToBeClickable(By.Id(id)));
         }
 
+        public static void WaitUntilXpathIsClickable(string xpath, int timeSeconds)
+        {
+            WebDriverWait wait = new WebDriverWait(WebDriver, TimeSpan.FromSeconds(timeSeconds));
+            wait.Until(
+                ExpectedConditions.ElementToBeClickable(By.XPath(xpath)));
+        }
+
         public static void WaitUntilXpathExists(string xpath, int timeSeconds)
         {
             WebDriverWait wait = new WebDriverWait(WebDriver, TimeSpan.FromSeconds(timeSeconds));
             wait.Until(ExpectedConditions.ElementExists(By.XPath(xpath)));
+        }
+
+        public static void WaitUntilXpathVisible(string xpath, int timeSeconds)
+        {
+            WebDriverWait wait = new WebDriverWait(WebDriver, TimeSpan.FromSeconds(timeSeconds));
+            wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.XPath(xpath)));
+        }
+
+        public static void SelectFromDropdownList(string dropdownId, string value)
+        {
+            IWebElement dropDown = Selenium.WebDriver.FindElement(By.Id(dropdownId));
+            SelectElement selectValue = new SelectElement(dropDown);
+            selectValue.SelectByText(value);
         }
 
 
