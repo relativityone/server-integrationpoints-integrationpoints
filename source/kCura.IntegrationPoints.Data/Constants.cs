@@ -2,6 +2,13 @@
 
 namespace kCura.IntegrationPoints.Data
 {
+	public enum ArtifactPermission
+	{
+		View,
+		Edit,
+		Create	
+	}
+
 	public static class GlobalConst
 	{
 		public const string RELATIVITY_INTEGRATION_POINTS_AGENT_GUID = "08C0CE2D-8191-4E8F-B037-899CEAEE493D";
@@ -26,12 +33,14 @@ namespace kCura.IntegrationPoints.Data
 	public class Constants
 	{
 		public const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
-		public const string TEMPORARY_DOC_TABLE_DEST_WS = "IntegrationPoint_Relativity_DW";
-		public const string TEMPORARY_DOC_TABLE_JOB_HIST = "IntegrationPoint_Relativity_JH";
-		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START = "IntegrationPoint_Relativity_JHE_Job1";
-		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE = "IntegrationPoint_Relativity_JHE_Job2";
-		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START = "IntegrationPoint_Relativity_JHE_Item1";
-		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE = "IntegrationPoint_Relativity_JHE_Item2";
+		public const string TEMPORARY_DOC_TABLE_DESTINATION_WORKSPACE = "IntegrationPoint_Relativity_DestinationWorkspace";
+		public const string TEMPORARY_DOC_TABLE_JOB_HISTORY = "IntegrationPoint_Relativity_JobHistory";
+		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START = "IntegrationPoint_Relativity_JobHistoryErrors_JobStart";
+		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE = "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
+		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START = "IntegrationPoint_Relativity_JobHistoryErrorsE_ItemStart";
+		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE = "IntegrationPoint_Relativity_JobHistoryErrors_ItemComplete";
+		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED = "IntegrationPoint_Relativity_JobHistoryErrors_ItemStart_Excluded";
+		public const string TEMPORARY_JOB_HISTORY_ERROR_SAVED_SEARCH_NAME = "Temporary Retry Errors Search";
 		public const string TEMPORARY_DOC_TABLE_SOURCEWORKSPACE = "IntegrationPoint_Relativity_SourceWorkspace";
 		public static Guid RELATIVITY_SOURCEPROVIDER_GUID = new Guid("74A863B9-00EC-4BB7-9B3E-1E22323010C6");
 	}
@@ -68,6 +77,10 @@ namespace kCura.IntegrationPoints.Data
 		public const string JOB_HISTORY_ERROR_TEMP_TABLE_CREATION_FAILURE = "Unable to create temp table for Error Status updates.";
 		public const string JOB_HISTORY_ERROR_RETRIEVE_FAILURE = "Unable to query for Job History Errors associated with provided JobHistory object ({0}).";
 		public const string JOB_HISTORY_ERROR_RETRIEVE_NO_RESULTS = "No Job History Errors returned for JobHistory object ({0}): {1}.";
-		public const string JOB_HISTORY_ERROR_NO_ARTIFACT_TYPE_FOUND = "Unable to retrieve Artifact Type Id for JobHistoryError object type.";
+	}
+
+	public static class ObjectTypeErrors
+	{
+		public const string OBJECT_TYPE_NO_ARTIFACT_TYPE_FOUND = "Unable to retrieve Artifact Type Id for object type {0}.";
 	}
 }

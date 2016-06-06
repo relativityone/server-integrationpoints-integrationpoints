@@ -38,6 +38,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 
 		#region "Public Properties"
 
+		[JsonProperty(PropertyName = "artifactTypeID")]
 		public int ArtifactTypeId { get; set; }
 		public string BulkLoadFileFieldDelimiter { get; set; }
 		public int CaseArtifactId { get; set; }
@@ -158,6 +159,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 		internal kCura.Relativity.DataReaderClient.OverwriteModeEnum OverwriteMode
 		{
 			get { return (kCura.Relativity.DataReaderClient.OverwriteModeEnum)this.ImportOverwriteMode; }
+
+			set { this.ImportOverwriteMode = (ImportOverwriteModeEnum)value; }
 		}
 
 		[JsonIgnore]

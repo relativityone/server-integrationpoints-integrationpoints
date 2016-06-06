@@ -55,13 +55,11 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_statisticsService = statisticsService;
 		}
 
-		internal Guid BatchInstance { get; set; }
-
 		public void Execute(Job job)
 		{
 			foreach (var batchComplete in BatchStatus)
 			{
-				batchComplete.JobStarted(job);
+				batchComplete.OnJobStart(job);
 			}
 			ExecuteTask(job);
 		}
@@ -117,14 +115,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			{
 				TaskParameters taskParameters = _serializer.Deserialize<TaskParameters>(job.JobDetails);
 				var batchInstance = taskParameters.BatchInstance;
-				bool isJobComplete = _jobManager.CheckBatchJobComplete(job, batchInstance.ToString());
+				bool isJobComplete = _jobManager.CheckBatchOnJobComplete(job, batchInstance.ToString());
 				if (isJobComplete)
 				{
 					foreach (var completedItem in BatchStatus)
 					{
 						try
 						{
-							completedItem.JobComplete(job);
+							completedItem.OnJobComplete(job);
 						}
 						catch (Exception e)
 						{

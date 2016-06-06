@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using Relativity.Core;
 using Relativity.Core.Authentication;
+using Relativity.Data;
 
 namespace kCura.IntegrationPoints.Data.Extensions
 {
@@ -17,6 +18,21 @@ namespace kCura.IntegrationPoints.Data.Extensions
 			{
 				throw new Exception("Unable to initialize the user context.", exception);
 			}
+		}
+
+		public static string GetSchemalessResourceDataBasePrepend(this ClaimsPrincipal claimsPrincipal, int workspaceArtifactId)
+		{
+			string prepend = String.Empty;
+			BaseServiceContext context = GetUnversionContext(claimsPrincipal, workspaceArtifactId);
+			try
+			{
+				prepend = context.ChicagoContext.ThreadSafeChicagoContext.DBContext.GetSchemalessResourceDataBasePrepend();
+			}
+			catch(Exception exception)
+			{
+				throw new Exception("Unable to determine scratch table's perpend. The integration Point may be out of date.", exception);
+			}
+			return prepend;
 		}
 	}
 }

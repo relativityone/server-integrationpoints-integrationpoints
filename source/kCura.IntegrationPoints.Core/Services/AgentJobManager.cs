@@ -53,7 +53,7 @@ namespace kCura.IntegrationPoints.Core.Services
 			_tracker.CreateTrackingEntry(job, batchId);
 		}
 
-		public bool CheckBatchJobComplete(Job job, string batchId)
+		public bool CheckBatchOnJobComplete(Job job, string batchId)
 		{
 			return _tracker.CheckEntries(job, batchId);
 		}

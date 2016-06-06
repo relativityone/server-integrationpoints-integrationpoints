@@ -2,17 +2,39 @@
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Factories.Implementations;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
 	public class ManagerFactory : IManagerFactory
 	{
+		public IArtifactGuidManager CreateArtifactGuidManager(IContextContainer contextContainer)
+		{
+			return new ArtifactGuidManager(CreateRepositoryFactory(contextContainer));
+		}
+
+		public IFieldManager CreateFieldManager(IContextContainer contextContainer)
+		{
+			return new FieldManager(CreateRepositoryFactory(contextContainer));
+		}
+
 		public IIntegrationPointManager CreateIntegrationPointManager(IContextContainer contextContainer)
 		{
-			IPermissionRepository permissionRepository = new PermissionRepository(contextContainer.Helper.GetServicesManager());
-			return new IntegrationPointManager(CreateRepositoryFactory(contextContainer), permissionRepository);
+			return new IntegrationPointManager(CreateRepositoryFactory(contextContainer));
+		}
+
+		public IJobHistoryManager CreateJobHistoryManager(IContextContainer contextContainer)
+		{
+			return new JobHistoryManager(CreateRepositoryFactory(contextContainer));
+		}
+
+		public IJobHistoryErrorManager CreateJobHistoryErrorManager(IContextContainer contextContainer, int sourceWorkspaceArtifactId, string uniqueJobId)
+		{
+			return new JobHistoryErrorManager(CreateRepositoryFactory(contextContainer), sourceWorkspaceArtifactId, uniqueJobId);
+		}
+
+		public IObjectTypeManager CreateObjectTypeManager(IContextContainer contextContainer)
+		{
+			return new ObjectTypeManager(CreateRepositoryFactory(contextContainer));
 		}
 
 		public IQueueManager CreateQueueManager(IContextContainer contextContainer)
@@ -25,29 +47,14 @@ namespace kCura.IntegrationPoints.Core.Factories.Implementations
 			return new SourceProviderManager(CreateRepositoryFactory(contextContainer));
 		}
 
-		public IFieldManager CreateFieldManager(IContextContainer contextContainer)
+		public IErrorManager CreateErrorManager(IContextContainer contextContainer)
 		{
-			return new FieldManager(CreateRepositoryFactory(contextContainer));
+			return new ErrorManager(CreateRepositoryFactory(contextContainer));
 		}
 
-		public IJobHistoryManager CreateJobHistoryManager(IContextContainer contextContainer)
+		public IStateManager CreateStateManager()
 		{
-			return new JobHistoryManager(CreateRepositoryFactory(contextContainer));
-		}
-
-		public IJobHistoryErrorManager CreateJobHistoryErrorManager(IContextContainer contextContainer)
-		{
-			return new JobHistoryErrorManager(CreateRepositoryFactory(contextContainer));
-		}
-
-		public IArtifactGuidManager CreateArtifactGuidManager(IContextContainer contextContainer)
-		{
-			return new ArtifactGuidManager(CreateRepositoryFactory(contextContainer));
-		}
-
-		public IObjectTypeManager CreateObjectTypeManager(IContextContainer contextContainer)
-		{
-			return new ObjectTypeManager(CreateRepositoryFactory(contextContainer));
+			return new StateManager();
 		}
 
 		#region Private Helpers

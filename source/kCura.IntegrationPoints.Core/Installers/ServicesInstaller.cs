@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
@@ -31,6 +33,8 @@ using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
+using Relativity.Toggles;
+using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {
@@ -81,7 +85,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 					.LifeStyle.Transient);
 
 			container.Register(Component.For<IBatchStatus>().ImplementedBy<BatchEmail>().LifeStyle.Transient);
-			container.Register(Component.For<IBatchStatus>().ImplementedBy<JobHistoryStatus>().LifeStyle.Transient);
+			container.Register(Component.For<IBatchStatus>().ImplementedBy<JobHistoryBatchUpdateStatus>().LifeStyle.Transient);
 
 			container.Register(Component.For<ISourceTypeFactory>().ImplementedBy<SourceTypeFactory>().LifestyleTransient());
 			container.Register(Component.For<RsapiClientFactory>().ImplementedBy<RsapiClientFactory>().LifestyleTransient());
@@ -112,7 +116,7 @@ namespace kCura.IntegrationPoints.Core.Installers
 
 			container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterFactory>().LifestyleTransient());
 
-			container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>());
+			container.Register(Component.For<IManagerFactory>().ImplementedBy<ManagerFactory>().LifestyleTransient());
 
 			if (container.Kernel.HasComponent(typeof(IHelper)))
 			{
@@ -126,7 +130,6 @@ namespace kCura.IntegrationPoints.Core.Installers
 						.LifestyleTransient());
 				container.Register(Component.For<ISourceWorkspaceManager>().ImplementedBy<SourceWorkspaceManager>().LifestyleTransient());
 				container.Register(Component.For<ISourceJobManager>().ImplementedBy<SourceJobManager>().LifestyleTransient());
-				container.Register(Component.For<ITempDocumentTableFactory>().ImplementedBy<TempDocumentTableFactory>().LifestyleSingleton());
 			}
 		}
 	}

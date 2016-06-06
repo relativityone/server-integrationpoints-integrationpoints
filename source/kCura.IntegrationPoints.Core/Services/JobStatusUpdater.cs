@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.Core.Services
 		{
 			if (jobHistory == null)
 			{
-				throw new ArgumentNullException("jobHistory");
+				throw new ArgumentNullException("job History");
 			}
 			var recent = _service.GetJobErrorFailedStatus(jobHistory.ArtifactId);
 			if (recent != null)

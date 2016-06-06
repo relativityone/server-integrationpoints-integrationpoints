@@ -45,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			}
 			_job = job;
 			reporter.OnStatusUpdate += this.StatusUpdate;
-			reporter.OnBatchComplete += this.JobComplete;
+			reporter.OnBatchComplete += this.OnJobComplete;
 			reporter.OnDocumentError += RowError;
 		}
 
@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			_rowErrors++;
 		}
 
-		private void JobComplete(DateTime start, DateTime end, int total, int errorCount)
+		private void OnJobComplete(DateTime start, DateTime end, int total, int errorCount)
 		{
 			//skip errorCount because we do suppress some errors so RowError is a more reliable mechanism 
 			string tableName = JobTracker.GenerateJobTrackerTempTableName(_job, _helper.GetBatchInstance(_job).ToString());
@@ -66,9 +66,9 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 			_service.UpdateRdo(historyRdo);
 		}
 
-		private void StatusUpdate(int count)
+		private void StatusUpdate(int importedCount, int errorCount)
 		{
-			Update(_helper.GetBatchInstance(_job), count);
+			Update(_helper.GetBatchInstance(_job), importedCount, errorCount);
 		}
 
 		/// <summary>
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		/// sp_getapplock - https://msdn.microsoft.com/en-us/library/ms189823.aspx
 		/// sp_releaseapplock - https://msdn.microsoft.com/en-us/library/ms178602.aspx
 		/// </summary>
-		public void Update(Guid identifier, int count)
+		public void Update(Guid identifier, int importedItem, int erroredCount)
 		{
 			try
 			{
@@ -90,7 +90,8 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 				EnableMutex(identifier);
 
 				Data.JobHistory historyRdo = _service.GetRdo(_helper.GetBatchInstance(_job));
-				historyRdo.ItemsImported += count;
+				historyRdo.ItemsImported += importedItem;
+				historyRdo.ItemsWithErrors += erroredCount;
 				_service.UpdateRdo(historyRdo);
 
 				_context.CommitTransaction();

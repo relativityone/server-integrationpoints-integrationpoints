@@ -1,44 +1,39 @@
 using System;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 {
-	public class DestinationWorkspaceManager : IConsumeScratchTableBatchStatus
+	public class DestinationWorkspaceBatchUpdateManager : IConsumeScratchTableBatchStatus
 	{
-		private readonly ITempDocTableHelper _tempDocHelper;
 		private readonly IDestinationWorkspaceRepository _destinationWorkspaceRepository;
-		private readonly string _tableSuffix;
 		private readonly int _sourceWorkspaceId;
 		private readonly int _destinationWorkspaceId;
 		private readonly int _jobHistoryInstanceId;
-		private IScratchTableRepository _scratchTableRepository;
 		private readonly IWorkspaceRepository _workspaceRepository;
 		private readonly ClaimsPrincipal _claimsPrincipal;
 		private int _destinationWorkspaceRdoId;
 		private bool _errorOccurDuringJobStart;
 
-		public DestinationWorkspaceManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory,
-			IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, SourceConfiguration sourceConfig, string tableSuffix, int jobHistoryInstanceId, int submittedBy)
+		public DestinationWorkspaceBatchUpdateManager(IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory, 
+			SourceConfiguration sourceConfig, int jobHistoryInstanceId, int submittedBy, string uniqueJobId)
 		{
-			_tempDocHelper = tempDocumentTableFactory.GetDocTableHelper(tableSuffix, sourceConfig.SourceWorkspaceArtifactId);
 			_destinationWorkspaceRepository = repositoryFactory.GetDestinationWorkspaceRepository(sourceConfig.SourceWorkspaceArtifactId);
 			_workspaceRepository = repositoryFactory.GetWorkspaceRepository();
+			ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceConfig.SourceWorkspaceArtifactId,Data.Constants.TEMPORARY_DOC_TABLE_DESTINATION_WORKSPACE, uniqueJobId);
 			_claimsPrincipal = userClaimsPrincipalFactory.CreateClaimsPrincipal(submittedBy);
-			_tableSuffix = tableSuffix;
 			_sourceWorkspaceId = sourceConfig.SourceWorkspaceArtifactId;
 			_destinationWorkspaceId = sourceConfig.TargetWorkspaceArtifactId;
 			_jobHistoryInstanceId = jobHistoryInstanceId;
 		}
+		public IScratchTableRepository ScratchTableRepository { get; }
 
-		public void JobStarted(Job job)
+		public void OnJobStart(Job job)
 		{
 			try
 			{
@@ -64,14 +59,14 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			}
 		}
 
-		public void JobComplete(Job job)
+		public void OnJobComplete(Job job)
 		{
 			try
 			{
 				if (!_errorOccurDuringJobStart)
 				{
 					int documentCount = ScratchTableRepository.Count;
-					_destinationWorkspaceRepository.TagDocsWithDestinationWorkspace(_claimsPrincipal, documentCount, _destinationWorkspaceRdoId, _tableSuffix, _sourceWorkspaceId);
+					_destinationWorkspaceRepository.TagDocsWithDestinationWorkspace(_claimsPrincipal, documentCount, _destinationWorkspaceRdoId, ScratchTableRepository.GetTempTableName(), _sourceWorkspaceId);
 				}
 			}
 			finally
@@ -83,18 +78,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		internal string GetWorkspaceName()
 		{
 			return _workspaceRepository.Retrieve(_destinationWorkspaceId).Name;
-		}
-
-		public IScratchTableRepository ScratchTableRepository
-		{
-			get
-			{
-				if (_scratchTableRepository == null)
-				{
-					_scratchTableRepository = new ScratchTableRepository(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS, _tempDocHelper, false);
-				}
-				return _scratchTableRepository;
-			}
 		}
 	}
 }

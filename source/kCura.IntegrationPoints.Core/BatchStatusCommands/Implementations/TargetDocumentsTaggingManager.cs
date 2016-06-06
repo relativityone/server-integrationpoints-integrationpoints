@@ -5,9 +5,8 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Readers;
 using kCura.IntegrationPoints.Contracts.Synchronizer;
 using kCura.IntegrationPoints.Core.Managers;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
@@ -23,13 +22,12 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly ISourceWorkspaceManager _sourceWorkspaceManager;
 		private readonly IDataSynchronizer _synchronizer;
 		private readonly ISourceJobManager _sourceJobManager;
-		private readonly ITempDocTableHelper _tempTableHelper;
 		private SourceWorkspaceDTO _sourceWorkspaceDto;
 		private SourceJobDTO _sourceJobDto;
-		private IScratchTableRepository _scratchTableRepository;
 		private bool _errorOccurDuringJobStart;
 
-		public TargetDocumentsTaggingManager(ITempDocTableHelper tempTableHelper,
+		public TargetDocumentsTaggingManager(
+			IRepositoryFactory repositoryFactory,
 			IDataSynchronizer synchronizer,
 			ISourceWorkspaceManager sourceWorkspaceManager,
 			ISourceJobManager sourceJobManager,
@@ -38,9 +36,11 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			string importConfig,
 			int sourceWorkspaceArtifactId,
 			int destinationWorkspaceArtifactId,
-			int jobHistoryArtifactId)
+			int jobHistoryArtifactId, 
+			string uniqueJobId)
 		{
-			_tempTableHelper = tempTableHelper;
+			ScratchTableRepository = repositoryFactory.GetScratchTableRepository(sourceWorkspaceArtifactId,
+				Data.Constants.TEMPORARY_DOC_TABLE_SOURCEWORKSPACE, uniqueJobId);
 			_synchronizer = synchronizer;
 			_sourceWorkspaceManager = sourceWorkspaceManager;
 			_sourceJobManager = sourceJobManager;
@@ -54,7 +54,23 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			_importConfig = importConfig;
 		}
 
-		public void JobComplete(Job job)
+		public IScratchTableRepository ScratchTableRepository { get; }
+
+		public void OnJobStart(Job job)
+		{
+			try
+			{
+				_sourceWorkspaceDto = _sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId);
+				_sourceJobDto = _sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId, _jobHistoryArtifactId);
+			}
+			catch (Exception)
+			{
+				_errorOccurDuringJobStart = true;
+				throw;
+			}
+		}
+
+		public void OnJobComplete(Job job)
 		{
 			try
 			{
@@ -83,32 +99,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			finally
 			{
 				ScratchTableRepository.Dispose();
-			}
-		}
-
-		public IScratchTableRepository ScratchTableRepository
-		{
-			get
-			{
-				if (_scratchTableRepository == null)
-				{
-					_scratchTableRepository = new ScratchTableRepository(Data.Constants.TEMPORARY_DOC_TABLE_SOURCEWORKSPACE, _tempTableHelper, false);
-				}
-				return _scratchTableRepository;
-			}
-		}
-
-		public void JobStarted(Job job)
-		{
-			try
-			{
-				_sourceWorkspaceDto = _sourceWorkspaceManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId);
-				_sourceJobDto = _sourceJobManager.InitializeWorkspace(_sourceWorkspaceArtifactId, _destinationWorkspaceArtifactId, _sourceWorkspaceDto.ArtifactTypeId, _sourceWorkspaceDto.ArtifactId, _jobHistoryArtifactId);
-			}
-			catch (Exception)
-			{
-				_errorOccurDuringJobStart = true;
-				throw;
 			}
 		}
 	}

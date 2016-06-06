@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Security.Claims;
-using System.Security.Principal;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
-using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Core.Contracts.Configuration;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
@@ -16,10 +14,9 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 {
 	[TestFixture]
-	public class DestinationWorkspaceManagerTest
+	public class DestinationWorkspaceBatchUpdateManagerTest
 	{
-		private ITempDocTableHelper _tempDocHelper;
-		private ITempDocumentTableFactory _docTableFactory;
+		private IScratchTableRepository _scratchTableRepository;
 		private IRepositoryFactory _repositoryFactory;
 		private IOnBehalfOfUserClaimsPrincipalFactory _onBehalfOfUserClaimsPrincipalFactory;
 		private ClaimsPrincipal _claimsPrincipal;
@@ -29,10 +26,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private readonly int _jobHistoryRdoId = 12345;
 		private readonly int _destWorkspaceInstanceId = 54321;
 		private readonly int _destinationWorkspaceId = 99999;
-		private readonly string _tableSuffix = "12-25-96";
+		private const string _scratchTableName = "IntegrationPoint_Relativity_DestinationWorkspace";
 		private readonly string _destWorkspaceName = "Workspace X";
 		private readonly string _updatedDestWorkspaceName = "New Workspace Name";
 		private readonly int _submittedBy = 4141;
+		private readonly string _uniqueJobId = "1_SomeGuid";
 		private SourceConfiguration _sourceConfig;
 		private readonly Job _job;
 		private DestinationWorkspaceDTO _emptyDestinationWorkspace;
@@ -43,9 +41,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		[SetUp]
 		public void Setup()
 		{
-			_tempDocHelper = Substitute.For<ITempDocTableHelper>();
+			_scratchTableRepository = Substitute.For<IScratchTableRepository>();
 			_destinationWorkspaceRepository = Substitute.For<IDestinationWorkspaceRepository>();
-			_docTableFactory = Substitute.For<ITempDocumentTableFactory>();
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
 			_onBehalfOfUserClaimsPrincipalFactory = Substitute.For<IOnBehalfOfUserClaimsPrincipalFactory>();
 			_workspaceRepository = Substitute.For<IWorkspaceRepository>();
@@ -76,20 +73,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_repositoryFactory.GetDestinationWorkspaceRepository(_sourceConfig.SourceWorkspaceArtifactId)
 				.Returns(_destinationWorkspaceRepository);
 			_repositoryFactory.GetWorkspaceRepository().Returns(_workspaceRepository);
-			_docTableFactory.GetDocTableHelper(_tableSuffix, _sourceConfig.SourceWorkspaceArtifactId).Returns(_tempDocHelper);
 			_onBehalfOfUserClaimsPrincipalFactory.CreateClaimsPrincipal(_submittedBy).Returns(_claimsPrincipal);
 
-			_instance = new DestinationWorkspaceManager(_docTableFactory, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfig,
-				_tableSuffix, _jobHistoryRdoId, _submittedBy);
+			_repositoryFactory.GetScratchTableRepository(_sourceConfig.SourceWorkspaceArtifactId, _scratchTableName, Arg.Any<string>()).ReturnsForAnyArgs(_scratchTableRepository);
+			_scratchTableRepository.GetTempTableName().Returns(_scratchTableName);
+
+			_instance = new DestinationWorkspaceBatchUpdateManager(_repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfig,
+				_jobHistoryRdoId, _submittedBy, _uniqueJobId);
 
 			_repositoryFactory.Received().GetDestinationWorkspaceRepository(_sourceConfig.SourceWorkspaceArtifactId);
 			_repositoryFactory.Received().GetWorkspaceRepository();
-			_docTableFactory.Received().GetDocTableHelper(_tableSuffix, _sourceConfig.SourceWorkspaceArtifactId);
 			_onBehalfOfUserClaimsPrincipalFactory.Received().CreateClaimsPrincipal(_submittedBy);
 		}
 
 		[Test]
-		public void JobStart_CreateWorkspaceRdoAndLinkToJobHistory()
+		public void OnJobStart_CreateWorkspaceRdoAndLinkToJobHistory()
 		{
 
 			// Arrange
@@ -98,18 +96,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_workspaceRepository.Retrieve(_destinationWorkspaceId).Returns(_workspaceX); //name has not been changed
 
 			// Act
-			_instance.JobStarted(_job);
+			_instance.OnJobStart(_job);
 
 			// Assert
-			_destinationWorkspaceRepository.Received().Query(Arg.Any<int>());
-			_destinationWorkspaceRepository.Received().Create(_destinationWorkspaceId, _destWorkspaceName);
-			_destinationWorkspaceRepository.Received().LinkDestinationWorkspaceToJobHistory(_destWorkspaceInstanceId, _jobHistoryRdoId);
-			_workspaceRepository.Received().Retrieve(_destinationWorkspaceId);
+			_destinationWorkspaceRepository.Received(1).Query(Arg.Any<int>());
+			_destinationWorkspaceRepository.Received(1).Create(_destinationWorkspaceId, _destWorkspaceName);
+			_destinationWorkspaceRepository.Received(1).LinkDestinationWorkspaceToJobHistory(_destWorkspaceInstanceId, _jobHistoryRdoId);
+			_workspaceRepository.Received(1).Retrieve(_destinationWorkspaceId);
 			_destinationWorkspaceRepository.DidNotReceive().Update(Arg.Any<DestinationWorkspaceDTO>()); 
 		}
 
 		[Test]
-		public void JobStart_DoesntCreateWorkspaceRdoWhenItAlreadyExists()
+		public void OnJobStart_DoesntCreateWorkspaceRdoWhenItAlreadyExists()
 		{
 
 			// Arrange
@@ -117,17 +115,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_workspaceRepository.Retrieve(_destinationWorkspaceId).Returns(_workspaceX); //name has not been changed
 
 			// Act
-			_instance.JobStarted(_job);
+			_instance.OnJobStart(_job);
 
 			// Assert
-			_destinationWorkspaceRepository.Received().Query(_destinationWorkspaceId);
+			_destinationWorkspaceRepository.Received(1).Query(_destinationWorkspaceId);
 			_destinationWorkspaceRepository.DidNotReceive().Create(Arg.Any<int>(), Arg.Any<string>());
-			_destinationWorkspaceRepository.Received().LinkDestinationWorkspaceToJobHistory(_destWorkspaceInstanceId, _jobHistoryRdoId);
-			_workspaceRepository.Received().Retrieve(_destinationWorkspaceId);
+			_destinationWorkspaceRepository.Received(1).LinkDestinationWorkspaceToJobHistory(_destWorkspaceInstanceId, _jobHistoryRdoId);
+			_workspaceRepository.Received(1).Retrieve(_destinationWorkspaceId);
 		}
 
 		[Test]
-		public void JobStart_UpdateWorkspaceInstanceName()
+		public void OnJobStart_UpdateWorkspaceInstanceName()
 		{
 
 			// Arrange
@@ -135,36 +133,36 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			_workspaceRepository.Retrieve(_destinationWorkspaceId).Returns(_workspaceY); //name of destination case has changed
 
 			// Act
-			_instance.JobStarted(_job);
+			_instance.OnJobStart(_job);
 
 			// Assert
-			_destinationWorkspaceRepository.Received().Query(_destinationWorkspaceId);
+			_destinationWorkspaceRepository.Received(1).Query(_destinationWorkspaceId);
 			_destinationWorkspaceRepository.DidNotReceive().Create(Arg.Any<int>(), Arg.Any<string>());
-			_destinationWorkspaceRepository.Received().Update(_normalDestinationWorkspace);
-			_destinationWorkspaceRepository.Received().LinkDestinationWorkspaceToJobHistory(_destWorkspaceInstanceId, _jobHistoryRdoId);
-			_workspaceRepository.Received().Retrieve(_destinationWorkspaceId);
+			_destinationWorkspaceRepository.Received(1).Update(_normalDestinationWorkspace);
+			_destinationWorkspaceRepository.Received(1).LinkDestinationWorkspaceToJobHistory(_destWorkspaceInstanceId, _jobHistoryRdoId);
+			_workspaceRepository.Received(1).Retrieve(_destinationWorkspaceId);
 		}
 
 		[Test]
-		public void JobComplete_EmptyDocuments()
+		public void OnJobComplete_EmptyDocuments()
 		{
 			//Act
-			_instance.JobComplete(_job);
+			_instance.OnJobComplete(_job);
 
 			//Assert
-			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS));
-			_destinationWorkspaceRepository.Received().TagDocsWithDestinationWorkspace(_claimsPrincipal, 0, 0, _tableSuffix,_sourceConfig.SourceWorkspaceArtifactId);
+			_scratchTableRepository.Received(1).Dispose();
+			_destinationWorkspaceRepository.Received(1).TagDocsWithDestinationWorkspace(_claimsPrincipal, 0, 0, _scratchTableName, _sourceConfig.SourceWorkspaceArtifactId);
 		}
 
 		[Test]
-		public void JobComplete_FullDocuments()
+		public void OnJobComplete_FullDocuments()
 		{
 			//Act
-			_instance.JobComplete(_job);
+			_instance.OnJobComplete(_job);
 
 			//Assert
-			_destinationWorkspaceRepository.Received().TagDocsWithDestinationWorkspace(_claimsPrincipal, 0, 0, _tableSuffix, _sourceConfig.SourceWorkspaceArtifactId);
-			_tempDocHelper.Received().DeleteTable(Arg.Is(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS));
+			_destinationWorkspaceRepository.Received(1).TagDocsWithDestinationWorkspace(_claimsPrincipal, 0, 0, _scratchTableName, _sourceConfig.SourceWorkspaceArtifactId);
+			_scratchTableRepository.Received(1).Dispose();
 		}
 
 		[Test]
@@ -179,23 +177,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		}
 
 		[Test]
-		public void GetStratchTableRepo_UsingTheCorrectPrefix()
-		{
-			//Arrange
-			string expected = Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS;
-			_tempDocHelper.GetTempTableName(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS).Returns(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS);
-
-			//Act
-			IScratchTableRepository repository = _instance.ScratchTableRepository;
-			string name = repository.GetTempTableName();
-
-			//Assert
-			Assert.AreSame(expected, name);
-			_tempDocHelper.Received().GetTempTableName(Data.Constants.TEMPORARY_DOC_TABLE_DEST_WS);
-		}
-
-		[Test]
-		public void ErrorOccurDuringJobStart_OnQuery()
+		public void ErrorOccurDuringOnJobStart_OnQuery()
 		{
 			//Arrange
 			_destinationWorkspaceRepository.Query(_destinationWorkspaceId).Throws(new Exception());
@@ -203,21 +185,21 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			//Act
 			try
 			{
-				_instance.JobStarted(_job);
+				_instance.OnJobStart(_job);
 			}
 			catch
 			{
 			}
 
-			_instance.JobComplete(_job);
+			_instance.OnJobComplete(_job);
 
 			//Assert
-			_destinationWorkspaceRepository.Received().Query(_destinationWorkspaceId);
+			_destinationWorkspaceRepository.Received(1).Query(_destinationWorkspaceId);
 			_destinationWorkspaceRepository.DidNotReceive().TagDocsWithDestinationWorkspace(_claimsPrincipal, Arg.Any<int>(), Arg.Any<int>(), Arg.Any<String>(), Arg.Any<int>());
 		}
 
 		[Test]
-		public void ErrorOccurDuringJobStart_OnCreate()
+		public void ErrorOccurDuringOnJobStart_OnCreate()
 		{
 			//Arrange
 			_destinationWorkspaceRepository.Query(_destinationWorkspaceId).Returns(_emptyDestinationWorkspace);
@@ -226,22 +208,22 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			//Act
 			try
 			{
-				_instance.JobStarted(_job);
+				_instance.OnJobStart(_job);
 			}
 			catch
 			{
 			}
 
-			_instance.JobComplete(_job);
+			_instance.OnJobComplete(_job);
 
 			//Assert
-			_destinationWorkspaceRepository.Received().Query(_destinationWorkspaceId);
+			_destinationWorkspaceRepository.Received(1).Query(_destinationWorkspaceId);
 			_destinationWorkspaceRepository.DidNotReceive().TagDocsWithDestinationWorkspace(_claimsPrincipal, Arg.Any<int>(), Arg.Any<int>(), Arg.Any<String>(), Arg.Any<int>());
 		}
 
 
 		[Test]
-		public void ErrorOccurDuringJobStart_LinkDestinationWorkspaceToJobHistory()
+		public void ErrorOccurDuringOnJobStart_LinkDestinationWorkspaceToJobHistory()
 		{
 			//Arrange
 			_destinationWorkspaceRepository.Query(_destinationWorkspaceId).Returns(_normalDestinationWorkspace);
@@ -251,17 +233,17 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 			//Act
 			try
 			{
-				_instance.JobStarted(_job);
+				_instance.OnJobStart(_job);
 			}
 			catch
 			{
 			}
 
-			_instance.JobComplete(_job);
+			_instance.OnJobComplete(_job);
 
 			//Assert
-			_destinationWorkspaceRepository.Received().Query(_destinationWorkspaceId);
-			_destinationWorkspaceRepository.Received().When(
+			_destinationWorkspaceRepository.Received(1).Query(_destinationWorkspaceId);
+			_destinationWorkspaceRepository.Received(1).When(
 				x => x.LinkDestinationWorkspaceToJobHistory(_destWorkspaceInstanceId, _jobHistoryRdoId));
 			_destinationWorkspaceRepository.DidNotReceiveWithAnyArgs().TagDocsWithDestinationWorkspace(_claimsPrincipal, Arg.Any<int>(), Arg.Any<int>(), Arg.Any<String>(), Arg.Any<int>());
 		}

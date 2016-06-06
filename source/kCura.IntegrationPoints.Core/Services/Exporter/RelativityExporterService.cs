@@ -55,7 +55,8 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 			ClaimsPrincipal claimsPrincipal,
 			FieldMap[] mappedFields,
 			int startAt,
-			string config)
+			string config,
+			int savedSearchArtifactId)
 			: this(mappedFields)
 		{
 			var settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(config);
@@ -115,7 +116,17 @@ namespace kCura.IntegrationPoints.Core.Services.Exporter
 					global::Relativity.Core.Api.Settings.RSAPI.Config.DynamicallyLoadedDllPaths
 			);
 
-			_exportJobInfo = _exporter.InitializeExport(settings.SavedSearchArtifactId, _avfIds, startAt);
+			try
+			{
+				_exportJobInfo = _exporter.InitializeExport(savedSearchArtifactId, _avfIds, startAt);
+			}
+			catch
+			{
+				// NOTE: If we get an exception, we cannot be exactly sure what the real error is,
+				// however, it is more than likely that you do not have Export or Saved Search permissions.
+				throw new Exception(Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_EXPORT);				
+			}
+
 			_longTextStreamFactory = new ExportApiDataHelper.RelativityLongTextStreamFactory(_baseContext, _dataGridContext, settings.SourceWorkspaceArtifactId);
 		}
 

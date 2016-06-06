@@ -219,7 +219,8 @@
 			<arg line='/lib:"${source.packages.directory}\System.IdentityModel.Tokens.Jwt.4.0.1\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\SystemWrapper.Wrappers.0.7.0.0\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Thinktecture.IdentityModel.Client.4.0.1\lib\net45"' />
-			
+			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
+
 			<arg line='/lib:"${source.reference.MVCContrib.directory}"' />
 			<arg line='/lib:"${source.reference.CastleCore.directory}"' />
 			<arg line='/lib:"${source.reference.CastleWindsor.directory}"' />
@@ -242,7 +243,6 @@
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.EventHandlers.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Email.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.Shared.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
 		</exec>
@@ -305,7 +305,6 @@
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
 			<arg line='/lib:"${source.reference.NewtonsoftJson.directory}"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.dll"' />
-			<arg line='"${target.code.directory}\kCura.IntegrationPoints.DocumentTransferProvider.Shared.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
 			<arg line='/closed' />
 		</exec>
@@ -326,6 +325,8 @@
 			<arg line='/lib:"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Services.Interfaces.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\RelativityCore.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Relativity.Toggles.1.0.0.68\lib\net45"' />
+			
 			<arg line='/lib:"${source.reference.MVCContrib.directory}"' />
 			<arg line='/lib:"${source.reference.CastleCore.directory}"' />
 			<arg line='/lib:"${source.reference.CastleWindsor.directory}"' />

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace kCura.IntegrationPoints.Core.Contracts.Agent
+﻿namespace kCura.IntegrationPoints.Core.Contracts.Configuration
 {
 	public class SourceConfiguration
 	{
