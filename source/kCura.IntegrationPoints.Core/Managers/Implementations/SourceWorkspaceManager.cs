@@ -37,13 +37,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			return sourceWorkspaceDto;
 		}
 
-		/// <summary>
-		/// Creates the Source Workspace object type in the given workspace.
-		/// </summary>
-		/// <param name="workspaceArtifactId">Workspace artifact id.</param>
-		/// <param name="sourceWorkspaceRepository">Source workspace repository.</param>
-		/// <param name="artifactGuidRepository">Artifact guid repository.</param>
-		/// <returns>The Source Workspace descriptor artifact type id.</returns>
 		private int CreateSourceWorkspaceObjectType(int workspaceArtifactId,
 			ISourceWorkspaceRepository sourceWorkspaceRepository, IArtifactGuidRepository artifactGuidRepository)
 		{
@@ -59,20 +52,20 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			catch (TypeLoadException)
 			{
 				// GUID doesn't exist in the workspace, so we try to see if the field name exists and assign a GUID to the field
-				int? sourceWorkspaceArtifactId =
+				int? sourceWorkspaceObjectTypeArtifactId =
 					objectTypeRepository.RetrieveObjectTypeArtifactId(
 						IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
 
-				sourceWorkspaceArtifactId = sourceWorkspaceArtifactId ?? sourceWorkspaceRepository.CreateObjectType();
+				sourceWorkspaceObjectTypeArtifactId = sourceWorkspaceObjectTypeArtifactId ?? sourceWorkspaceRepository.CreateObjectType();
 
 				// Associate a GUID with the newly created or existing object type
 				try
 				{
-					artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceArtifactId.Value, SourceWorkspaceDTO.ObjectTypeGuid);
+					artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceObjectTypeArtifactId.Value, SourceWorkspaceDTO.ObjectTypeGuid);
 				}
 				catch (Exception e)
 				{
-					objectTypeRepository.Delete(sourceWorkspaceArtifactId.Value);
+					objectTypeRepository.Delete(sourceWorkspaceObjectTypeArtifactId.Value);
 					throw new Exception(_ERROR_MESSAGE, e);
 				}
 

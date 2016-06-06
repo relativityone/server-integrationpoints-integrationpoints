@@ -10,6 +10,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class RsapiSourceWorkspaceRepository : ISourceWorkspaceRepository
 	{
+		private const string _ERROR_MESSAGE =
+			"Unable to create source workspace and job fields in the destination workspace. Please contact your system administrator.";
+
 		private readonly IHelper _helper;
 		private readonly int _workspaceArtifactId;
 
@@ -43,7 +46,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (!resultSet.Success || !resultSet.Results.Any())
 			{
-				throw new Exception("Unable to create new Source Workspace object type: " + resultSet.Message);
+				throw new Exception(_ERROR_MESSAGE);
 			}
 
 			return resultSet.Results.First().Artifact.ArtifactID;
@@ -102,7 +105,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 				if (!fieldWriteResultSet.Success)
 				{
-					throw new Exception("Unable to create fields for the Source Workspace object type: " + fieldWriteResultSet.Message);
+					throw new Exception(_ERROR_MESSAGE);
 				}
 
 				int[] newFieldIds = fieldWriteResultSet.Results.Select(x => x.Artifact.ArtifactID).ToArray();
@@ -112,7 +115,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				if (!newFieldResultSet.Success)
 				{
 					rsapiClient.Repositories.Field.Delete(fieldsToCreate);
-					throw new Exception("Unable to create fields for the Source Workspace object type: Failed to retrieve after creation: " + newFieldResultSet.Message);
+					throw new Exception(_ERROR_MESSAGE);
 				}
 			}
 
@@ -129,7 +132,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 							return SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid;
 
 						default:
-							throw new Exception("Unexpected fields returned");
+							throw new Exception(_ERROR_MESSAGE);
 					}
 				},
 				y => y.Artifact.ArtifactID);

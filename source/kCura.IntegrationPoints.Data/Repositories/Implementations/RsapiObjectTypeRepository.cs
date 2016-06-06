@@ -52,9 +52,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				Value = objectTypeName
 			};
 
-			string sql = @"	SELECT [ArtifactID]
-							FROM [eddsdbo].[ObjectType]
-							WHERE [Name] = @objectTypeName";
+			string sql = @"
+				SELECT [ArtifactID]
+				FROM [eddsdbo].[ObjectType]
+				WHERE [Name] = @objectTypeName";
 
 			IDBContext workspaceContext = _helper.GetDBContext(_workspaceArtifactId);
 			int? artifactId = workspaceContext.ExecuteSqlStatementAsScalar<int>(sql, nameParameter);

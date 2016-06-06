@@ -19,7 +19,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 	public class FieldRepository : KeplerServiceBase, IFieldRepository
 	{
 		private readonly IHelper _helper;
-		private readonly IObjectQueryManagerAdaptor _objectQueryManagerAdaptor;
 		private readonly BaseServiceContext _serviceContext;
 		private readonly BaseContext _baseContext;
 		private readonly int _workspaceArtifactId;
@@ -34,7 +33,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			int workspaceArtifactId) : base(objectQueryManagerAdaptor)
 		{
 			_helper = helper;
-			_objectQueryManagerAdaptor = objectQueryManagerAdaptor;
 			_serviceContext = serviceContext;
 			_baseContext = baseContext;
 			_workspaceArtifactId = workspaceArtifactId;
@@ -96,11 +94,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 		public int? RetrieveField(string displayName, int fieldArtifactTypeId, int fieldTypeId)
 		{
-			string sql = @"	SELECT [ArtifactID]
-							FROM [eddsdbo].[Field]
-							WHERE [FieldArtifactTypeID] = @fieldArtifactTypeId
-								AND [FieldTypeID] = @fieldTypeId
-								AND [DisplayName] = @displayName";
+			string sql = @"
+				SELECT [ArtifactID]
+				FROM [eddsdbo].[Field]
+				WHERE [FieldArtifactTypeID] = @fieldArtifactTypeId
+					AND [FieldTypeID] = @fieldTypeId
+					AND [DisplayName] = @displayName";
 
 			SqlParameter displayNameParameter = new SqlParameter("@displayName", SqlDbType.NVarChar) { Value = displayName };
 			SqlParameter fieldArtifactTypeIdParameter = new SqlParameter("@fieldArtifactTypeId", SqlDbType.Int) { Value = fieldArtifactTypeId };
