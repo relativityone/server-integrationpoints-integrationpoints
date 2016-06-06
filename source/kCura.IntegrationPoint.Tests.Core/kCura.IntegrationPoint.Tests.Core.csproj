@@ -527,6 +527,8 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Extensions\GenericPermissionListExtension.cs" />
+    <Compile Include="Extensions\ObjectPermissionListExtension.cs" />
     <Compile Include="Injection.cs" />
     <Compile Include="InjectionPoints.cs" />
     <Compile Include="Kepler.cs" />

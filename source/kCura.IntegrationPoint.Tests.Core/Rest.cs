@@ -40,29 +40,29 @@ namespace kCura.IntegrationPoint.Tests.Core
 				httpClient.DefaultRequestHeaders.Add("X-CSRF-Header", String.Empty);
 
 				//Assign parameter if needed
-				HttpContent content = null;
-				if (parameter != null)
+				using (HttpContent content = parameter != null ? new StringContent(parameter, Encoding.UTF8, _JSON_MIME) : null)
 				{
-					content = new StringContent(parameter, Encoding.UTF8, _JSON_MIME);
-				}
-
-				string output = null;
-				try
-				{
-					HttpResponseMessage response = httpClient.PostAsync(serviceMethod, content).Result;
-					if (!response.IsSuccessStatusCode)
+					string output = null;
+					try
 					{
-						string errorMessage = string.Format("Failed submitting post request. Response Error: {0}.", response.Content.ReadAsStringAsync());
+						using (HttpResponseMessage response = httpClient.PostAsync(serviceMethod, content).Result)
+						{
+							if (!response.IsSuccessStatusCode)
+							{
+								string errorMessage = string.Format("Failed submitting post request. Response Error: {0}.",
+									response.Content.ReadAsStringAsync());
+								throw new Exception(errorMessage);
+							}
+							output = response.Content.ReadAsStringAsync().Result;
+						}
+					}
+					catch (Exception ex)
+					{
+						string errorMessage = string.Format("An error occurred when attempting to submit post request. {0}.", ex.Message);
 						throw new Exception(errorMessage);
 					}
-					output = response.Content.ReadAsStringAsync().Result;
+					return output;
 				}
-				catch (Exception ex)
-				{
-					string errorMessage = string.Format("An error occurred when attempting to submit post request. {0}.", ex.Message);
-					throw new Exception(errorMessage);
-				}
-				return output;
 			}
 		}
 

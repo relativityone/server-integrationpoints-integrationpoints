@@ -4,6 +4,7 @@ using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Contracts.Agent;
+using kCura.IntegrationPoints.Core.Exceptions;
 using kCura.IntegrationPoints.Core.Factories;
 using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Models;
@@ -455,6 +456,38 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				.Read(Arg.Is(model.SourceProvider));
 		}
 
+		[Test]
+		public void Save_NonPermissionExceptionIsThrown_ExceptionIsWrapped()
+		{
+			// Arrange
+			var model = new IntegrationModel()
+			{
+				ArtifactID = 123,
+				SourceProvider = 9830,
+				SourceConfiguration = JsonConvert.SerializeObject(new { TargetWorkspaceArtifactId = 2322 }),
+				SelectedOverwrite = "SelectedOverwrite",
+				Scheduler = new Scheduler() { EnableScheduler = false },
+				LastRun = null
+			};
+
+			// Act
+			const string errorMessage = "KHAAAAAANN!!!";
+			var exception = new Exception(errorMessage);
+			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(0).ThrowsForAnyArgs(exception);
+			_managerFactory.CreateErrorManager(_contextContainer).Returns(_errorManager);
+
+			// Assert
+			Assert.Throws<Exception>(() => _instance.SaveIntegration(model), Core.Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_USER_MESSAGE);
+
+			_errorManager.Received(1).Create(
+				Arg.Is(_sourceWorkspaceArtifactId),
+				Arg.Is<IEnumerable<ErrorDTO>>(
+					x => x.Count() == 1 
+						&& x.First().Message == Constants.IntegrationPoints.PermissionErrors.UNABLE_TO_SAVE_INTEGRATION_POINT_ADMIN_MESSAGE
+						&& x.First().FullText.Contains("Unable to save Integration Point: Unable to retrieve Integration Point")));
+
+		}
+
 		[TestCase(true)]
 		[TestCase(false)]
 		public void Save_InvalidPermissions_Excepts(bool isRelativityProvider)
@@ -519,7 +552,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 			};
 
 			// Act
-			Assert.Throws<Exception>(() => _instance.SaveIntegration(model), Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE);
+			Assert.Throws<PermissionException>(() => _instance.SaveIntegration(model), Core.Constants.IntegrationPoints.PermissionErrors.INTEGRATION_POINT_SAVE_FAILURE_USER_MESSAGE);
 
 			// Assert
 			_instance.Received(1).ReadIntegrationPoint(Arg.Is(model.ArtifactID));

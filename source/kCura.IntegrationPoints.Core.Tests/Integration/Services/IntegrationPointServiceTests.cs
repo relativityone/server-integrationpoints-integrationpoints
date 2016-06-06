@@ -13,6 +13,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 	[Explicit]
 	public class IntegrationPointServiceTests : WorkspaceDependentTemplate
 	{
+		private const string _SOURCECONFIG = "Source Config";
+		private const string _NAME = "Name";
+		private const string _FIELDMAP = "Map";
 		private DestinationProvider _destinationProvider;
 
 		public IntegrationPointServiceTests()
@@ -26,6 +29,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			base.SetUp();
 			_destinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
 		}
+
+		#region UpdateProperties
 
 		[Test]
 		public void UpdateNothing()
@@ -102,9 +107,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			ValidateModel(defaultModel, newModel, new[] { _FIELDMAP });
 		}
 
-		private const string _SOURCECONFIG = "Source Config";
-		private const string _NAME = "Name";
-		private const string _FIELDMAP = "Map";
+		#endregion
+
 
 		private void ValidateModel(IntegrationModel expectedModel, IntegrationModel actual, string[] updatedProperties)
 		{
