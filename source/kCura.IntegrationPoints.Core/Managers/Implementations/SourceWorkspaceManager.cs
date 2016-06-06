@@ -10,9 +10,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
 	public class SourceWorkspaceManager : ISourceWorkspaceManager
 	{
-		private const string _ERROR_MESSAGE =
-			"Unable to create source workspace and job fields in the destination workspace. Please contact your system administrator.";
-
 		private readonly IRepositoryFactory _repositoryFactory;
 
 		public SourceWorkspaceManager(IRepositoryFactory repositoryFactory)
@@ -66,7 +63,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				catch (Exception e)
 				{
 					objectTypeRepository.Delete(sourceWorkspaceObjectTypeArtifactId.Value);
-					throw new Exception(_ERROR_MESSAGE, e);
+					throw new Exception(Constants.RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE, e);
 				}
 
 				// Get descriptor artifact type id of the now existing object type
@@ -137,7 +134,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				catch (Exception e)
 				{
 					fieldRepository.Delete(guidToArtifactId.Values);
-					throw new Exception(_ERROR_MESSAGE, e);
+					throw new Exception(Constants.RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE, e);
 				}
 			}
 		}
@@ -160,7 +157,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					int? retrieveArtifactViewFieldId = fieldRepository.RetrieveArtifactViewFieldId(sourceWorkspaceFieldArtifactId);
 					if (!retrieveArtifactViewFieldId.HasValue)
 					{
-						throw new Exception(_ERROR_MESSAGE);
+						throw new Exception(Constants.RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE);
 					}
 
 					fieldRepository.UpdateFilterType(retrieveArtifactViewFieldId.Value, "Popup");
@@ -168,7 +165,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				catch (Exception e)
 				{
 					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
-					throw new Exception(_ERROR_MESSAGE, e);
+					throw new Exception(Constants.RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE, e);
 				}
 
 				// Set the overlay behavior
@@ -179,7 +176,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				catch (Exception e)
 				{
 					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
-					throw new Exception(_ERROR_MESSAGE, e);
+					throw new Exception(Constants.RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE, e);
 				}
 
 				// Set the field artifact guid
@@ -191,7 +188,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				catch (Exception e)
 				{
 					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
-					throw new Exception(_ERROR_MESSAGE, e);
+					throw new Exception(Constants.RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE, e);
 				}
 			}
 		}

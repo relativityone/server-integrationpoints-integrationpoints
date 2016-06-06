@@ -79,4 +79,9 @@ namespace kCura.IntegrationPoints.Data
 	{
 		public const string OBJECT_TYPE_NO_ARTIFACT_TYPE_FOUND = "Unable to retrieve Artifact Type Id for object type {0}.";
 	}
+
+	public static class RelativityProvider
+	{
+		public const string ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE = "Unable to create source workspace and job fields in the destination workspace. Please contact your system administrator.";
+	}
 }

@@ -44,13 +44,13 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 				catch (Exception e)
 				{
-					throw new Exception($"Unable to create new Source Job object type: {resultSet?.Message}", e);
+					throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE, e);
 				}
 			}
 
 			if (!resultSet.Success || !resultSet.Results.Any())
 			{
-				throw new Exception($"Unable to create new Source Job object type: {resultSet.Message}");
+				throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE);
 			}
 
 			return resultSet.Results.First().Artifact.ArtifactID;
@@ -84,7 +84,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 				catch (Exception e)
 				{
-					throw new Exception($"Unable to create new instance of Source Job: {e.Message}", e);
+					throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE, e);
 				}
 			}
 
@@ -149,12 +149,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 				catch (Exception e)
 				{
-					throw new Exception($"Unable to create fields for the Source Job object type: {e.Message}", e);					
+					throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE, e);					
 				}
 
 				if (!fieldWriteResultSet.Success)
 				{
-					throw new Exception($"Unable to create fields for the Source Job object type: {fieldWriteResultSet.Message}");
+					throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE);
 				}
 
 				int[] newFieldIds = fieldWriteResultSet.Results.Select(x => x.Artifact.ArtifactID).ToArray();
@@ -169,11 +169,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					}
 					catch (Exception e)
 					{
-						throw new Exception($"Unable to create fields for the Source Job object type: Failed to retrieve field after creation: Unable to delete field upon failure: {newFieldResultSet.Message}", e);
+						throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE, e);
 					}
 
-					throw new Exception("Unable to create fields for the Source Job object type: Failed to retrieve after creation: " +
-					                    newFieldResultSet.Message);
+					throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE);
 				}
 			}
 
@@ -189,7 +188,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 							return SourceJobDTO.Fields.JobHistoryNameFieldGuid;
 
 						default:
-							throw new Exception("Unexpected fields returned");
+							throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE);
 					}
 				},
 				y => y.Artifact.ArtifactID);
@@ -228,14 +227,14 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 				catch (Exception e)
 				{
-					throw new Exception($"Unable to create Source Job field on Document: {e.Message}", e);
+					throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE, e);
 				}
 			}
 
 			Result<kCura.Relativity.Client.DTOs.Field> field = resultSet.Results.FirstOrDefault();
 			if (!resultSet.Success || field == null)
 			{
-				throw new Exception($"Unable to create Source Job field on Document: {resultSet.Message}");
+				throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE);
 			}
 
 			int newFieldArtifactId = field.Artifact.ArtifactID;
