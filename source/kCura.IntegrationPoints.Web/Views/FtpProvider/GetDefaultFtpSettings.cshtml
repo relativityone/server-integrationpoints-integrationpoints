@@ -42,7 +42,7 @@
 
     <div class="field-row">
         @Html.LabelFor(m => model.Filename_Prefix, new { id = "filename_prefix_label", @class = "field-label required", title = "The location of the CSV file to be imported on the FTP/SFTP.  If you set the generated CSV file to always include the date, you can specify this filepath value to use date wildcards so that the latest file is always imported.  For example, a file path of /export/nightlyexport/*yyyy*-*MM*-*dd*_HRIS_export will successfully import the following file because it has the latest date in the name: 2016-04-05_HRIS_export.csv" })
-        <div class="field-value"> @Html.TextBoxFor(m => model.Filename_Prefix, new { id = "filename_prefix", placeholder = "e.g. /export/nightlyexport/*yyyy*-*MM*-*dd*_HRIS_export", style = "width: 250%;" }) </div>
+        <div class="field-value"> @Html.TextBoxFor(m => model.Filename_Prefix, new { id = "filename_prefix", placeholder = "e.g. /export/nightlyexport/*yyyy*-*MM*-*dd*_HRIS_export" }) </div>
     </div>
 
     @Html.HiddenFor(m => model.Timezone_Offset, new { id = "timezone_offset" })
