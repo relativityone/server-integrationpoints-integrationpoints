@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using NUnit.Framework;
 using kCura.IntegrationPoint.Tests.Core.Extensions;
 using kCura.IntegrationPoint.Tests.Core.Models;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Repositories;
+using Relativity.Services;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
 using Group = kCura.IntegrationPoint.Tests.Core.Group;
@@ -203,6 +208,39 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			int jobHistoryErrorTypeId = _typeRepo.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.JobHistory));
 
 			return _permissionRepo.UserHasArtifactTypePermissions(jobHistoryErrorTypeId, new ArtifactPermission[] { ArtifactPermission.Edit, ArtifactPermission.Create });
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void UserHasArtifactInstancePermission_UsingAdmin(bool useAdmin)
+		{
+			// arrange
+			Helper.RelativityUserName = SharedVariables.RelativityUserName;
+			Helper.RelativityPassword = SharedVariables.RelativityPassword;
+
+			IntegrationModel model = new IntegrationModel()
+			{
+				Destination = $"{{\"artifactTypeID\":10,\"CaseArtifactId\":{TargetWorkspaceArtifactId},\"Provider\":\"relativity\",\"DoNotUseFieldsMapCache\":true,\"ImportOverwriteMode\":\"AppendOnly\",\"importNativeFile\":\"false\",\"UseFolderPathInformation\":\"false\",\"ExtractedTextFieldContainsFilePath\":\"false\",\"ExtractedTextFileEncoding\":\"utf - 16\",\"CustodianManagerFieldContainsLink\":\"true\",\"FieldOverlayBehavior\":\"Use Field Settings\"}}",
+				DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First().ArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
+				SourceConfiguration = CreateDefaultSourceConfig(),
+				LogErrors = true,
+				Name = $"UserHasArtifactInstancePermission - {DateTime.Today}",
+				Map = "[]",
+				SelectedOverwrite = "Append Only",
+				Scheduler = new Scheduler(),
+			};
+			model = CreateOrUpdateIntegrationPoint(model);
+
+			if (useAdmin == false)
+			{
+				Group.RemoveGroupFromWorkspace(SourceWorkspaceArtifactId, _groupId);
+				Helper.RelativityUserName = _user.EmailAddress;
+				Helper.RelativityPassword = _user.Password;
+			}
+
+			IISReset();
+			Assert.AreEqual(useAdmin, _permissionRepo.UserHasArtifactInstancePermission(Core.Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, model.ArtifactID, ArtifactPermission.View ));
 		}
 	}
 }

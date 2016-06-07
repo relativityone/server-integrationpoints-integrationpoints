@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using kCura.IntegrationPoints.Data.Extensions;
 using Newtonsoft.Json;
 using Relativity.Services.Group;
@@ -15,6 +16,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 
     public static class Permission
 	{
+	    private static void IISReset()
+	    {
+			Process process = System.Diagnostics.Process.Start(@"C:\Windows\System32\iisreset.exe");
+			process?.WaitForExit((int)TimeSpan.FromSeconds(30).TotalMilliseconds);
+		}
+	
 		public static GroupPermissions GetGroupPermissions(int workspaceId, int groupId)
 		{
 			GroupRef groupRef = new GroupRef(groupId);
@@ -28,35 +35,37 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
-				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, permissions).Wait(TimeSpan.FromSeconds(10));
+				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, permissions).Wait(TimeSpan.FromSeconds(2));
 			}
-			Process process = System.Diagnostics.Process.Start(@"C:\Windows\System32\iisreset.exe");
-			process?.WaitForExit((int)TimeSpan.FromSeconds(30).TotalMilliseconds);
+			IISReset();
 		}
 
 		public static void RemoveAddWorkspaceGroup(int workspaceId, GroupSelector groupSelector)
 		{
 			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
-				proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, groupSelector).Wait(TimeSpan.FromSeconds(10));
+				proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, groupSelector).Wait(TimeSpan.FromSeconds(2));
 			}
-			Process process = Process.Start(@"C:\Windows\System32\iisreset.exe");
-			process?.WaitForExit((int)TimeSpan.FromSeconds(30).TotalMilliseconds);
+			IISReset();
 		}
 
 		public static void SetMinimumRelativityProviderPermissions(int workspaceId, int groupId)
 		{
 			GroupRef groupRef = new GroupRef(groupId);
 
-			IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true);
-			GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).Result;
+			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName,
+					SharedVariables.RelativityPassword, true, true))
+			{
+				GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).Result;
 
-		    SetObjectPermissions(groupPermissions, new List<string> {"Document", "Integration Point", "Job History", "Search"});
-            SetAdminPermissions(groupPermissions, new List<string> {"Allow Import", "Allow Export"});
-            SetTabVisibility(groupPermissions, new List<string> {"Documents", "Integration Points"});
-            SetBrowserPermissions(groupPermissions, new List<string> {"Folders", "Advanced & Saved Searches"});
+				SetObjectPermissions(groupPermissions, new List<string> { "Document", "Integration Point", "Job History", "Search" });
+				SetAdminPermissions(groupPermissions, new List<string> { "Allow Import", "Allow Export" });
+				SetTabVisibility(groupPermissions, new List<string> { "Documents", "Integration Points" });
+				SetBrowserPermissions(groupPermissions, new List<string> { "Folders", "Advanced & Saved Searches" });
 
-            proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions);
+				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions);
+			}
+			IISReset();
 		}
 
         public static void SetGrouPermissions(int workspaceId, GroupPermissions groupPermissions)
