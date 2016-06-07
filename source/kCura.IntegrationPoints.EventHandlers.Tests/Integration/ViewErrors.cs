@@ -1,9 +1,10 @@
-﻿using System;
-using System.Data;
-using kCura.IntegrationPoint.Tests.Core;
+﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using Newtonsoft.Json;
 using NUnit.Framework;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using System;
+using System.Data;
 
 namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 {
@@ -26,7 +27,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 		private ICaseServiceContext _caseServiceContext;
 		private IObjectTypeRepository _objectTypeRepository;
 
-
+		private IWebDriver _driver;
 
 		public ViewErrors() : base("ViewErrorsSource", "ViewErrorsSourceDestination")
 		{
@@ -52,6 +53,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			//	false,
 			//	false,
 			//	user);
+			_driver = new ChromeDriver();
 
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable());
 			ResolveServices();
@@ -65,7 +67,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 			//	UseFolderPathInformation = false,
 			//	FieldOverlayBehavior = "Use Field Settings"
 			//};
-
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
@@ -91,7 +92,6 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 
 			//_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, 9);
 			GetErrorsFromView(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID);
-			
 
 			//Assert
 			//Assert.IsTrue(ranIntegrationPoint);
@@ -127,12 +127,12 @@ namespace kCura.IntegrationPoints.EventHandlers.Tests.Integration
 
 		private void GetErrorsFromView(int workspaceArtifactId, int integrationPointArtifactId)
 		{
-			Selenium.LogIntoRelativity(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
-			Selenium.GoToWorkspace(workspaceArtifactId);
+			_driver.LogIntoRelativity(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword);
+			_driver.GoToWorkspace(workspaceArtifactId);
 
 			int artifactTypeId = _objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(new Guid(ObjectTypeGuids.IntegrationPoint));
 
-			Selenium.GoToObjectInstance(workspaceArtifactId, integrationPointArtifactId, artifactTypeId);
+			_driver.GoToObjectInstance(workspaceArtifactId, integrationPointArtifactId, artifactTypeId);
 		}
 	}
 }

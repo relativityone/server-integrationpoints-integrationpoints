@@ -214,15 +214,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new SqlParameter[] { toEnabled });
 
 		}
-		protected void CloseSeleniumBrowser()
-		{
-			try
-			{
-				Selenium.WebDriver.Quit();
-			}
-			catch (Exception)
-			{
-			}
-		}
+		
 	}
 }
