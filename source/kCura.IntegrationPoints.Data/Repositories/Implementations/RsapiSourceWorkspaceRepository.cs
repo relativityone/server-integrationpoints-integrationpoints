@@ -10,9 +10,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class RsapiSourceWorkspaceRepository : ISourceWorkspaceRepository
 	{
-		private const string _ERROR_MESSAGE =
-			"Unable to create source workspace and job fields in the destination workspace. Please contact your system administrator.";
-
 		private readonly IHelper _helper;
 		private readonly int _workspaceArtifactId;
 
@@ -46,7 +43,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			if (!resultSet.Success || !resultSet.Results.Any())
 			{
-				throw new Exception(_ERROR_MESSAGE);
+				throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE);
 			}
 
 			return resultSet.Results.First().Artifact.ArtifactID;
@@ -105,7 +102,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 				if (!fieldWriteResultSet.Success)
 				{
-					throw new Exception(_ERROR_MESSAGE);
+					throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE);
 				}
 
 				int[] newFieldIds = fieldWriteResultSet.Results.Select(x => x.Artifact.ArtifactID).ToArray();
@@ -115,7 +112,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				if (!newFieldResultSet.Success)
 				{
 					rsapiClient.Repositories.Field.Delete(fieldsToCreate);
-					throw new Exception(_ERROR_MESSAGE);
+					throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE);
 				}
 			}
 
@@ -132,7 +129,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 							return SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid;
 
 						default:
-							throw new Exception(_ERROR_MESSAGE);
+							throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE);
 					}
 				},
 				y => y.Artifact.ArtifactID);
@@ -171,7 +168,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			Result<kCura.Relativity.Client.DTOs.Field> field = resultSet.Results.FirstOrDefault();
 			if (!resultSet.Success || field == null)
 			{
-				throw new Exception("Unable to create Source Workspace field on Document: " + resultSet.Message);
+				throw new Exception(RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE);
 			}
 
 			int newFieldArtifactId = field.Artifact.ArtifactID;
