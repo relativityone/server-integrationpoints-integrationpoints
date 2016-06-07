@@ -19,6 +19,8 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
         private Dictionary<string, Field> _mappings;
         private readonly Dictionary<string, int> _inputMappings;
         private int _itemsImported;
+        private int _totalRowsImported = 0;
+        private int _totalRowsWithErrors = 0;
 
         private const int _JOB_PROGRESS_TIMEOUT_MILLISECONDS = 5000;
         private int _lastJobProgressUpdate = 0;
@@ -87,6 +89,10 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
                     if (sourceData != null)
                     {
                         this.KickOffImport(sourceData);
+                    }
+                    else
+                    {
+                        CompleteBatch(DateTime.Now, DateTime.Now, 0, 0);
                     }
                 }
                 finally
@@ -291,9 +297,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
         private void CompleteBatch(DateTime start, DateTime end, int totalRows, int errorRows)
         {
+            _totalRowsImported += totalRows;
+            _totalRowsWithErrors += errorRows;
             if (OnBatchComplete != null)
             {
-                OnBatchComplete(start, end, totalRows, errorRows);
+                OnBatchComplete(start, end, _totalRowsImported, _totalRowsWithErrors);
             }
         }
 
