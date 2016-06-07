@@ -18,11 +18,9 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 			int index = 0;
 			foreach (MassEditObject massEditObject in massEditObjects)
 			{
-				if (massEditObject.FieldGuid == DocumentMultiObjectFields.DESTINATION_WORKSPACE_FIELD || massEditObject.FieldGuid == DocumentMultiObjectFields.JOB_HISTORY_FIELD)
-				{
-					massEditObject.FieldToUpdate.Value = GetMultiObjectListUpdate(massEditObject.ObjectToLinkTo);
-					fields[index] = massEditObject.FieldToUpdate;
-				}
+				massEditObject.FieldToUpdate.Value = GetMultiObjectListUpdate(massEditObject.ObjectToLinkTo);
+				fields[index] = massEditObject.FieldToUpdate;
+
 				index++;
 			}
 
