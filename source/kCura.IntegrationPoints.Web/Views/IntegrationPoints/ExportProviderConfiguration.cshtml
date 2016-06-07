@@ -4,182 +4,233 @@
 }
 
 <link href="~/Content/site.css" rel="stylesheet" />
+<link href="~/Content/Styles.min.css" rel="stylesheet" />
+<link href="~/Content/buttermilk.9_2.min.css" rel="stylesheet" />
 
-<div id="exportProviderConfiguration">
-    <div class="card">
-        <span class="label title">Export Source</span>
+<div id="_main">
+    <div id="exportProviderConfiguration" class="cardContainer">
+        <div class="cardSection">
+            <h2>Export Source</h2>
 
-        <div class="field-row" style="display: none">
-            <div class="field-label required">
-                Workspace :
-            </div>
-            <div class="field-value">
-                <select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, select2: {}"></select>
-            </div>
+            <table class="fieldTable">
+                <tr style="display: none">
+                    <td class="editFieldNameRequired">
+                        Workspace :
+                    </td>
+                    <td class="editFieldValue">
+                        <select id="workspaceSelector" data-bind="options: workspaces, optionsText: 'displayName', optionsValue: 'value', value: TargetWorkspaceArtifactId, select2: {}"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="editFieldNameRequired">
+                        Saved Search :
+                    </td>
+                    <td class="editFieldValue">
+                        <select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsCaption: 'Select...', value: SavedSearch"></select>
+                    </td>
+                </tr>
+            </table>
         </div>
 
 
-        <div class="field-row">
-            <div class="field-label required">
-                Saved Search :
-            </div>
-            <div class="field-value ">
-                <select id="savedSearchSelector" data-bind="options: savedSearches, optionsText: 'displayName', optionsCaption: 'Select...', value: SavedSearch"></select>
-            </div>
+        <div class="cardSection">
+            <h2>Natives</h2>
+            <table>
+                <tr>
+                    <td class="cardColumn cardFieldLeft">
+                        <table class="fieldTable">
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Include Native Files Path:
+                                </td>
+                                <td class="editFieldValue">
+                                    <table class="RadioButtonListRelativePosition">
+                                        <tr>
+                                            <td>
+                                                <input id="include-native-files-path-radio-0" type="radio" name="includeNativeFilesPath" value="true" data-bind="checked: IncludeNativeFilesPath" />
+                                                <label>Yes</label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <input id="include-native-files-path-radio-1" type="radio" name="includeNativeFilesPath" value="false" data-bind="checked: IncludeNativeFilesPath" />
+                                                <label>No</label>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Data File Format:
+                                </td>
+                                <td class="editFieldValue">
+                                    <select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: dataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Data File Encoding:
+                                </td>
+                                <td class="editFieldValue">
+                                    <select id="dataFileEncodingSelector" data-bind="options: DataFileEncodingTypeList, value: DataFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...'"></select>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="cardColumn">
+                        <table>
+                            <td class="cardColumn">
+                                <table class="fieldTable">
+                                    <tr>
+                                        <td class="editFieldNameRequired">
+                                            Column:
+                                        </td>
+                                        <td class="editFieldValue">
+                                            <select id="columnSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: ColumnSeparator"></select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="editFieldNameRequired">
+                                            Quote:
+                                        </td>
+                                        <td class="editFieldValue">
+                                            <select id="quoteSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: QuoteSeparator"></select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="editFieldNameRequired">
+                                            Newline:
+                                        </td>
+                                        <td class="editFieldValue">
+                                            <select id="newlineSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NewlineSeparator"></select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td class="cardColumn">
+                                <table class="fieldTable">
+                                    <tr>
+                                        <td class="editFieldNameRequired">
+                                            Multi-Value:
+                                        </td>
+                                        <td class="editFieldValue">
+                                            <select id="multivalueSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: MultiValueSeparator"></select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="editFieldNameRequired">
+                                            Nested Value:
+                                        </td>
+                                        <td class="editFieldValue">
+                                            <select id="nestedvalueSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NestedValueSeparator"></select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </table>
+                    </td>
+                </tr>
+            </table>
         </div>
+
+        <div class="cardSection">
+            <h2>Physical File Export</h2>
+            <table class="fieldTable">
+                <tr>
+                    <td class="editFieldNameRequired">Copy Files from Repository:</td>
+                    <td class="editFieldValue">
+                        <table class="RadioButtonListRelativePosition">
+                            <tr>
+                                <td>
+                                    <input id="copy-file-radio-0" type="radio" name="copyFiles" value="true" data-bind="checked: CopyFileFromRepository" />
+                                    <label>Yes</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input id="copy-file-radio-1" type="radio" name="copyFiles" value="false" data-bind="checked: CopyFileFromRepository" />
+                                    <label>No</label>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="editFieldNameRequired">
+                        Fileshare:
+                    </td>
+                    <td class="editFieldValue">
+                        <input id="fileshare-input" type="text" data-bind="value: Fileshare" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="editFieldNameRequired">Overwrite files:</td>
+                    <td class="editFieldValue">
+                        <table class="RadioButtonListRelativePosition">
+                            <tr>
+                                <td>
+                                    <input id="overwrite-file-radio-0" type="radio" name="OverwriteFiles" value="true" data-bind="checked: OverwriteFiles" />
+                                    <label>Yes</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input id="overwrite-file-radio-1" type="radio" name="OverwriteFiles" value="false" data-bind="checked: OverwriteFiles" />
+                                    <label>No</label>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="cardSection">
+            <h2>Images</h2>
+            <table class="fieldTable">
+                <tr>
+                    <td class="editFieldNameRequired">Export Images:</td>
+                    <td class="editFieldValue">
+                        <table class="RadioButtonListRelativePosition">
+                            <tr>
+                                <td>
+                                    <input id="export-images-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: ExportImagesChecked" />
+                                    <label>Yes</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input id="export-images-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: ExportImagesChecked" />
+                                    <label>No</label>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr data-bind="visible: ExportImagesChecked() === 'true'">
+                    <td class="editFieldNameRequired">
+                        File Type :
+                    </td>
+                    <td class="editFieldValue">
+                        <select id="imageFileTypesSelector" data-bind="options: imageFileTypes, optionsText: 'value', optionsValue: 'key', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
     </div>
-    <div class="card">
-        <span class="label title">Natives</span>
-        <div class="identifier">
-            <div class="field-row">
-                <div class="field-label required ">Include Native Files Path:</div>
-                <div class="field-value">
-                    <ul>
-                        <li>
-                            <input id="include-native-files-path-radio-0" type="radio" name="includeNativeFilesPath" value="true" data-bind="checked: IncludeNativeFilesPath" />Yes
-                        </li>
-                        <li>
-                            <input id="include-native-files-path-radio-1" type="radio" name="includeNativeFilesPath" value="false" data-bind="checked: IncludeNativeFilesPath" />No
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="field-row">
-                <div class="field-label required">
-                    Data File Format:
-                </div>
-                <div class="field-value ">
-                    <select id="dataFileFormatSelector" data-bind="optionsText: 'key', optionsValue: 'value', options: dataFileFormats, optionsCaption: 'Select...', value: SelectedDataFileFormat"></select>
-                </div>
-            </div>
-            <div class="field-row">
-                <div class="field-label required">
-                    Data File Encoding:
-                </div>
-                <div class="field-value">
-                    <select id="dataFileEncodingSelector" data-bind="options: DataFileEncodingTypeList, value: DataFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...'"></select>
-                </div>
-            </div>
-            <div>
-                <div class="field-row">
-                    <div class="field-label" data-bind="css: {required: isCustom()}">
-                        Column:
-                    </div>
-                    <div class="field-value">
-                        <select id="columnSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: ColumnSeparator"></select>
-                    </div>
-                </div>
-                <div class="field-row">
-                    <div class="field-label" data-bind="css: {required: isCustom()}">
-                        Quote:
-                    </div>
-                    <div class="field-value">
-                        <select id="quoteSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: QuoteSeparator"></select>
-                    </div>
-                </div>
-                <div class="field-row">
-                    <div class="field-label" data-bind="css: {required: isCustom()}">
-                        Newline:
-                    </div>
-                    <div class="field-value">
-                        <select id="newlineSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NewlineSeparator"></select>
-                    </div>
-                </div>
-                <div class="field-row">
-                    <div class="field-label" data-bind="css: {required: isCustom()}">
-                        Multi-Value:
-                    </div>
-                    <div class="field-value">
-                        <select id="multivalueSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: MultiValueSeparator"></select>
-                    </div>
-                </div>
-                <div class="field-row">
-                    <div class="field-label" data-bind="css: {required: isCustom()}">
-                        Nested Value:
-                    </div>
-                    <div class="field-value">
-                        <select id="nestedvalueSeparatorSelector" data-bind="enable: isCustom(), optionsText: 'key', optionsValue: 'value', options: separatorsList, optionsCaption: 'Select...', attr: {'disabled': isCustomDisabled()}, value: NestedValueSeparator"></select>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <span class="label title">Physical File Export</span>
-        <div class="identifier">
-            <div class="field-row">
-                <div class="field-label required ">Copy Files from Repository:</div>
-                <div class="field-value">
-                    <ul>
-                        <li>
-                            <input id="copy-file-radio-0" type="radio" name="copyFiles" value="true" data-bind="checked: CopyFileFromRepository" />Yes
-                        </li>
-                        <li>
-                            <input id="copy-file-radio-1" type="radio" name="copyFiles" value="false" data-bind="checked: CopyFileFromRepository" />No
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="field-row">
-                <div class="field-label required">
-                    Fileshare:
-                </div>
-                <div class="field-value">
-                    <input id="fileshare-input" data-bind="value: Fileshare" />
-                </div>
-            </div>
-            <div class="field-row">
-                <div class="field-label required ">Overwrite files:</div>
-                <div class="field-value">
-                    <ul>
-                        <li>
-                            <input id="overwrite-file-radio-0" type="radio" name="OverwriteFiles" value="true" data-bind="checked: OverwriteFiles" />Yes
-                        </li>
-                        <li>
-                            <input id="overwrite-file-radio-1" type="radio" name="OverwriteFiles" value="false" data-bind="checked: OverwriteFiles" />No
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <span class="label title">Images</span>
-        <div class="identifier">
-            <div class="field-row">
-                <div class="field-label required ">Export Images:</div>
-                <div class="field-value">
-                    <ul>
-                        <li>
-                            <input id="export-images-radio-0" type="radio" name="exportImages" value="true" data-bind="checked: ExportImagesChecked" />Yes
-                        </li>
-                        <li>
-                            <input id="export-images-radio-1" type="radio" name="exportImages" value="false" data-bind="checked: ExportImagesChecked" />No
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="field-row" data-bind="visible: ExportImagesChecked() === 'true'">
-                <div class="field-label required">
-                    File Type :
-                </div>
-                <div class="field-value ">
-                    <select id="imageFileTypesSelector" data-bind="options: imageFileTypes, optionsText: 'value', optionsValue: 'key', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
-                </div>
-            </div>
+</div>
 
-        </div>
-    </div>
-
-
-    @section scripts
+@section scripts
 {
-        <script src="~/Scripts/core/data.js"></script>
-        <script src="~/Scripts/core/utils.js"></script>
-        <script src="~/Scripts/knockout-2.2.0.js"></script>
-        <script src="~/Scripts/knockout.validation.js"></script>
-        <script src="~/Scripts/integration-point/binding.js"></script>
-        <script src="~/Scripts/jquery-postMessage.js"></script>
-        <script src="~/Scripts/frame-messaging.js"></script>
-        <script src="~/Scripts/export/export-provider.js"></script>
-    }
+    <script src="~/Scripts/core/data.js"></script>
+    <script src="~/Scripts/core/utils.js"></script>
+    <script src="~/Scripts/knockout-2.2.0.js"></script>
+    <script src="~/Scripts/knockout.validation.js"></script>
+    <script src="~/Scripts/integration-point/binding.js"></script>
+    <script src="~/Scripts/jquery-postMessage.js"></script>
+    <script src="~/Scripts/frame-messaging.js"></script>
+    <script src="~/Scripts/export/export-provider.js"></script>
+}

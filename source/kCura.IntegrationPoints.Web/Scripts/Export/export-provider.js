@@ -82,35 +82,35 @@
         this.ColumnSeparator = ko.observable(state.ColumnSeparator).extend({
             required: {
                 onlyIf: function () {
-                    return self.SelectedDataFileFormat() == "Custom";
+                    return self.SelectedDataFileFormat() === "Custom";
                 }
             }
         });
         this.QuoteSeparator = ko.observable(state.QuoteSeparator).extend({
             required: {
                 onlyIf: function () {
-                    return self.SelectedDataFileFormat() == "Custom";
+                    return self.SelectedDataFileFormat() === "Custom";
                 }
             }
         });
         this.NewlineSeparator = ko.observable(state.NewlineSeparator).extend({
             required: {
                 onlyIf: function () {
-                    return self.SelectedDataFileFormat() == "Custom";
+                    return self.SelectedDataFileFormat() === "Custom";
                 }
             }
         });
         this.MultiValueSeparator = ko.observable(state.MultiValueSeparator).extend({
             required: {
                 onlyIf: function () {
-                    return self.SelectedDataFileFormat() == "Custom";
+                    return self.SelectedDataFileFormat() === "Custom";
                 }
             }
         });
         this.NestedValueSeparator = ko.observable(state.NestedValueSeparator).extend({
             required: {
                 onlyIf: function () {
-                    return self.SelectedDataFileFormat() == "Custom";
+                    return self.SelectedDataFileFormat() === "Custom";
                 }
             }
         });
@@ -127,14 +127,15 @@
         }();
 
         this.SelectedDataFileFormat.subscribe(function (value) {
-            if (value == 'Concordance') {
+            //default values have been taken from RDC application
+            if (value === 'Concordance') {
                 self.ColumnSeparator(20);
                 self.QuoteSeparator(254);
                 self.NewlineSeparator(174);
                 self.MultiValueSeparator(59);
                 self.NestedValueSeparator(92);
             }
-            if (value == 'CSV') {
+            if (value === 'CSV') {
                 self.ColumnSeparator(44);
                 self.QuoteSeparator(34);
                 self.NewlineSeparator(10);
@@ -144,8 +145,8 @@
         });
 
         this.SelectedDataFileFormat.subscribe(function (value) {
-            self.isCustom(value == 'Custom');
-            if (value == 'Custom') {
+            self.isCustom(value === 'Custom');
+            if (value === 'Custom') {
                 self.isCustomDisabled(undefined);
             } else {
                 self.isCustomDisabled(true);

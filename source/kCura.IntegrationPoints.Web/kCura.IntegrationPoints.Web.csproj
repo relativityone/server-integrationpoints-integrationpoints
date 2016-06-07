@@ -365,6 +365,7 @@
     <Content Include="Content\buttermilk-variables.css">
       <DependentUpon>buttermilk-variables.scss</DependentUpon>
     </Content>
+    <Content Include="Content\buttermilk.9_2.min.css" />
     <Content Include="Content\buttermilk.css">
       <DependentUpon>buttermilk.scss</DependentUpon>
     </Content>
@@ -398,6 +399,7 @@
     <Content Include="Content\step-progress-bar.css">
       <DependentUpon>step-progress-bar.scss</DependentUpon>
     </Content>
+    <Content Include="Content\Styles.min.css" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
