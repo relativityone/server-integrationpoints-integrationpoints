@@ -66,6 +66,7 @@ var ftpHelper = (function (data) {
             timezone_offset: new Date().getTimezoneOffset()
         };
         return model;
+
     }
 
     var _setModel = function (model) {
@@ -98,6 +99,14 @@ var ftpHelper = (function (data) {
 })(IP.data);
 
 (function (helper) {
+
+    $("#protocol").select2({
+        dropdownAutoWidth: false,
+        dropdownCssClass: "filter-select",
+        containerCssClass: "filter-container",
+    });
+    $("#protocol").parent().find('.filter-container span.select2-arrow').removeClass("select2-arrow").addClass("icon legal-hold icon-chevron-down");
+
     //Create a new communication object that talks to the host page.
     var message = IP.frameMessaging();
 
@@ -156,7 +165,10 @@ var ftpHelper = (function (data) {
     //An event raised when a user clicks the Back button.
     message.subscribe('back', function () {
         //Execute save logic that persists the state.
-        this.publish('saveState', getSettingsModel());
+        encryptSettings(getSettingsModel()).then(function (encryptedModel) {
+            //Communicate to the host page to continue.
+            self.publish('saveState', encryptedModel);
+        });
     });
 
     //An event raised when the host page has loaded the current settings page.
