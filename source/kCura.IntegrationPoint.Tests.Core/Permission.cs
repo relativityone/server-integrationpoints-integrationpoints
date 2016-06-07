@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			IISReset();
 		}
 
-		public static void SetGrouPermissions(int workspaceId, GroupPermissions groupPermissions)
+		public static void SetGroupPermissions(int workspaceId, GroupPermissions groupPermissions)
 		{
 			using (
 				IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(

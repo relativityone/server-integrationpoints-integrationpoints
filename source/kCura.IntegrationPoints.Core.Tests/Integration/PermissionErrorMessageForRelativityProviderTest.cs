@@ -13,7 +13,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 	using Core.Models;
 	using Data;
 	using Data.Repositories;
-	using Group = kCura.IntegrationPoint.Tests.Core.Group;
 
 	[Explicit]
 	public class PermissionErrorMessageForRelativityProviderTest : WorkspaceDependentTemplate
@@ -68,9 +67,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			tempP.Browser = browser;
 			tempP.Obj = obj;
 
-			int groupId = Group.CreateGroup(groupName);
+			int groupId = kCura.IntegrationPoint.Tests.Core.Group.CreateGroup(groupName);
 			_groupCreated = groupId;
-			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, groupId);
+			kCura.IntegrationPoint.Tests.Core.Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, groupId);
 			Permission.SetPermissions(SourceWorkspaceArtifactId, groupId, tempP);
 
 			UserModel user = User.CreateUser("tester", "tester", tempEmail, new[] { groupId });
@@ -139,10 +138,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			tempP.Browser = browser;
 			tempP.Obj = obj;
 
-			int groupId = Group.CreateGroup(groupName);
+			int groupId = kCura.IntegrationPoint.Tests.Core.Group.CreateGroup(groupName);
 			_groupCreated = groupId;
-			Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, groupId);
-			Group.AddGroupToWorkspace(TargetWorkspaceArtifactId, groupId);
+			kCura.IntegrationPoint.Tests.Core.Group.AddGroupToWorkspace(SourceWorkspaceArtifactId, groupId);
+			kCura.IntegrationPoint.Tests.Core.Group.AddGroupToWorkspace(TargetWorkspaceArtifactId, groupId);
 			Permission.SetPermissions(SourceWorkspaceArtifactId, groupId, tempP);
 
 			UserModel user = User.CreateUser("tester", "tester", tempEmail, new[] { groupId });
@@ -194,7 +193,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 		public void TearDown()
 		{
 			User.DeleteUser(_userCreated);
-			Group.DeleteGroup(_groupCreated);
+			kCura.IntegrationPoint.Tests.Core.Group.DeleteGroup(_groupCreated);
 			_webDriver.CloseSeleniumBrowser();
 		}
 	}
