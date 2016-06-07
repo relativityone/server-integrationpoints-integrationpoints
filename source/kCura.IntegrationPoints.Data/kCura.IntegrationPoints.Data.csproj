@@ -206,6 +206,7 @@
     <Compile Include="Extensions\ResultSetExtensions.cs" />
     <Compile Include="Extensions\TaskExtension.cs" />
     <Compile Include="IChoiceQuery.cs" />
+    <Compile Include="Queries\GetJobsCount.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
     <Compile Include="Commands\MassEdit\IMassEditCommand.cs" />
     <Compile Include="Commands\MassEdit\RelativityMassEditBase.cs" />
@@ -376,6 +377,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\AddWebApiConfig.sql" />
+    <Content Include="Resources\GetJobsCount.sql" />
     <Content Include="Resources\CreateJobTrackingEntry.sql" />
     <Content Include="Resources\GetJobCustodianManagerLinks.sql" />
     <Content Include="Resources\CreateCustodianManagerResourceTable.sql" />
