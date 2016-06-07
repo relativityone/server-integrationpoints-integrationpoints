@@ -1,6 +1,9 @@
 ﻿using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Repositories;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -10,10 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
-	using Core.Models;
-	using Data;
-	using Data.Repositories;
-
+	[TestFixture]
 	public class PermissionErrorMessageTest : WorkspaceDependentTemplate
 	{
 		private IObjectTypeRepository _objectTypeRepository;
