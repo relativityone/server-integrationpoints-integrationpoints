@@ -38,7 +38,7 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			try
 			{
 				DestinationWorkspaceDTO destinationWorkspace = _destinationWorkspaceRepository.Query(_destinationWorkspaceId);
-				string destinationWorkspaceName = GetWorkspaceName();
+				string destinationWorkspaceName = _workspaceRepository.Retrieve(_destinationWorkspaceId).Name;
 				if (destinationWorkspace == null)
 				{
 					destinationWorkspace = _destinationWorkspaceRepository.Create(_destinationWorkspaceId, destinationWorkspaceName);
@@ -73,11 +73,6 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 			{
 				ScratchTableRepository.Dispose();
 			}
-		}
-
-		internal string GetWorkspaceName()
-		{
-			return _workspaceRepository.Retrieve(_destinationWorkspaceId).Name;
 		}
 	}
 }
