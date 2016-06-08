@@ -139,6 +139,9 @@
   <data name="GetJobCustodianManagerLinks" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>getjobcustodianmanagerlinks.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="GetJobsCount" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>getjobscount.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="GetObjectTypes" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>getobjecttypes.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>

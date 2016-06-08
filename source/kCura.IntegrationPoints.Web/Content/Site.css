@@ -473,6 +473,26 @@ select option.hover
 {
 	text-decoration: underline;
 }
+#host {
+    width: 450px;
+	height: 26px;
+}
+#port {
+    width: 50px;
+    height: 26px;
+}
+#username {
+    width: 200px;
+    height: 26px;
+}
+#password {
+  width: 200px;
+    height: 26px;  
+}
+#filename_prefix {
+    width: 450px;
+	height: 26px;
+}
 
 	.filter-container#s2id_timeFormat {
 		width: 75px;
