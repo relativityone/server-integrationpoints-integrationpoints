@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Security.Claims;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
-using kCura.IntegrationPoints.Data.Extensions;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
-using Relativity.Core;
-using Relativity.Data;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -22,44 +17,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			_helper = helper;
 			_workspaceArtifactId = workspaceArtifactId;
-		}
-
-		public void TagDocsWithJobHistory(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int jobHistoryInstanceArtifactId, int sourceWorkspaceId, string tableName)
-		{
-			global::Relativity.Query.ArtifactType artifactType = new global::Relativity.Query.ArtifactType(global::Relativity.ArtifactType.Document);
-
-			if (numberOfDocs <= 0)
-			{
-				return;
-			}
-
-			BaseServiceContext baseService = claimsPrincipal.GetUnversionContext(sourceWorkspaceId);
-
-			Guid[] guids = { new Guid(DocumentMultiObjectFields.JOB_HISTORY_FIELD) };
-			DataRowCollection fieldRows;
-			try
-			{
-				fieldRows = FieldQuery.RetrieveAllByGuids(baseService.ChicagoContext.DBContext, guids).Table.Rows;
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(MassEditErrors.JOB_HISTORY_MO_QUERY_ERROR, ex);
-			}
-
-			if (fieldRows.Count == 0)
-			{
-				throw new Exception(MassEditErrors.JOB_HISTORY_MO_EXISTENCE_ERROR);
-			}
-
-			global::Relativity.Core.DTO.Field multiObjectField = new global::Relativity.Core.DTO.Field(baseService, fieldRows[0]);
-			try
-			{
-				base.TagFieldsWithRdo(baseService, multiObjectField, numberOfDocs, artifactType, jobHistoryInstanceArtifactId, tableName);
-			}
-			catch (Exception e)
-			{
-				throw new Exception(MassEditErrors.JOB_HISTORY_MASS_EDIT_FAILURE, e);
-			}
 		}
 
 		public int GetLastJobHistoryArtifactId(int integrationPointArtifactId)

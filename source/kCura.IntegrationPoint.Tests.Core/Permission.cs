@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using kCura.IntegrationPoints.Data.Extensions;
-using Newtonsoft.Json;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-    using System;
-
-    using kCura.IntegrationPoints.Data.Extensions;
-
-    public static class Permission
+	public static class Permission
 	{
+		private static void IISReset()
+		{
+			Process process = System.Diagnostics.Process.Start(@"C:\Windows\System32\iisreset.exe");
+			process?.WaitForExit((int)TimeSpan.FromSeconds(30).TotalMilliseconds);
+		}
+
 		public static GroupPermissions GetGroupPermissions(int workspaceId, int groupId)
 		{
 			GroupRef groupRef = new GroupRef(groupId);
@@ -28,74 +29,76 @@ namespace kCura.IntegrationPoint.Tests.Core
 		{
 			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
-				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, permissions).Wait(TimeSpan.FromSeconds(10));
+				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, permissions).Wait(TimeSpan.FromSeconds(2));
 			}
-			Process process = System.Diagnostics.Process.Start(@"C:\Windows\System32\iisreset.exe");
-			process?.WaitForExit((int)TimeSpan.FromSeconds(30).TotalMilliseconds);
+			IISReset();
 		}
 
 		public static void RemoveAddWorkspaceGroup(int workspaceId, GroupSelector groupSelector)
 		{
 			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
-				proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, groupSelector).Wait(TimeSpan.FromSeconds(10));
+				proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, groupSelector).Wait(TimeSpan.FromSeconds(2));
 			}
-			Process process = Process.Start(@"C:\Windows\System32\iisreset.exe");
-			process?.WaitForExit((int)TimeSpan.FromSeconds(30).TotalMilliseconds);
+			IISReset();
 		}
 
 		public static void SetMinimumRelativityProviderPermissions(int workspaceId, int groupId)
 		{
 			GroupRef groupRef = new GroupRef(groupId);
 
-			IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true);
-			GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).Result;
+			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName,
+					SharedVariables.RelativityPassword, true, true))
+			{
+				GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).Result;
 
-		    SetObjectPermissions(groupPermissions, new List<string> {"Document", "Integration Point", "Job History", "Search"});
-            SetAdminPermissions(groupPermissions, new List<string> {"Allow Import", "Allow Export"});
-            SetTabVisibility(groupPermissions, new List<string> {"Documents", "Integration Points"});
-            SetBrowserPermissions(groupPermissions, new List<string> {"Folders", "Advanced & Saved Searches"});
+				SetObjectPermissions(groupPermissions, new List<string> { "Document", "Integration Point", "Job History", "Search" });
+				SetAdminPermissions(groupPermissions, new List<string> { "Allow Import", "Allow Export" });
+				SetTabVisibility(groupPermissions, new List<string> { "Documents", "Integration Points" });
+				SetBrowserPermissions(groupPermissions, new List<string> { "Folders", "Advanced & Saved Searches" });
 
-            proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions);
+				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions);
+			}
+			IISReset();
 		}
 
-        public static void SetGrouPermissions(int workspaceId, GroupPermissions groupPermissions)
-        {
-            using (
-                IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(
-                    SharedVariables.RelativityUserName,
-                    SharedVariables.RelativityPassword,
-                    true,
-                    true))
+		public static void SetGroupPermissions(int workspaceId, GroupPermissions groupPermissions)
+		{
+			using (
+				IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(
+					SharedVariables.RelativityUserName,
+					SharedVariables.RelativityPassword,
+					true,
+					true))
 
-            {
-                proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).Wait(TimeSpan.FromSeconds(5));
-            } 
-        }
+			{
+				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).Wait(TimeSpan.FromSeconds(5));
+			}
+		}
 
-        public static void SetPermissions(int workspaceId, int groupId, PermissionProperty permissionProperty)
-        {
-            GroupRef groupRef = new GroupRef(groupId);
+		public static void SetPermissions(int workspaceId, int groupId, PermissionProperty permissionProperty)
+		{
+			GroupRef groupRef = new GroupRef(groupId);
 
-            using (
-                IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(
-                    SharedVariables.RelativityUserName,
-                    SharedVariables.RelativityPassword,
-                    true,
-                    true))
-            {
-                GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).GetResultsWithoutContextSync();
-                
-                SetObjectPermissions(groupPermissions, permissionProperty.Obj);
-                SetAdminPermissions(groupPermissions, permissionProperty.Admin);
-                SetTabVisibility(groupPermissions, permissionProperty.Tab);
-                SetBrowserPermissions(groupPermissions, permissionProperty.Browser);
+			using (
+				IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(
+					SharedVariables.RelativityUserName,
+					SharedVariables.RelativityPassword,
+					true,
+					true))
+			{
+				GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).GetResultsWithoutContextSync();
 
-                proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).Wait(TimeSpan.FromSeconds(5));
-            }
-        }
+				SetObjectPermissions(groupPermissions, permissionProperty.Obj);
+				SetAdminPermissions(groupPermissions, permissionProperty.Admin);
+				SetTabVisibility(groupPermissions, permissionProperty.Tab);
+				SetBrowserPermissions(groupPermissions, permissionProperty.Browser);
 
-        private static void SetObjectPermissions(GroupPermissions groupPermissions, List<string> permissionNames )
+				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).Wait(TimeSpan.FromSeconds(5));
+			}
+		}
+
+		private static void SetObjectPermissions(GroupPermissions groupPermissions, List<string> permissionNames)
 		{
 			IEnumerable<int> indices = groupPermissions.ObjectPermissions.Select((value, index) => new { value, index })
 					  .Where(x => permissionNames.Contains(x.value.Name))
@@ -155,22 +158,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 	}
 
-    public class PermissionProperty
-    {
-        public PermissionProperty()
-        { }
+	public class PermissionProperty
+	{
+		public PermissionProperty()
+		{ }
 
-        public  PermissionProperty(List<string> obj, List<string> admin, List<string> tab, List<string> browser)
-        {
-            Obj = obj;
-            Admin = admin;
-            Tab = tab;
-            Browser = browser;
-        }
-        public List<string> Obj { get; set; }
-        public List<string> Admin { get; set; }
-        public List<string> Tab { get; set; }
-        public List<string> Browser { get; set; }
+		public PermissionProperty(List<string> obj, List<string> admin, List<string> tab, List<string> browser)
+		{
+			Obj = obj;
+			Admin = admin;
+			Tab = tab;
+			Browser = browser;
+		}
 
-    }
+		public List<string> Obj { get; set; }
+		public List<string> Admin { get; set; }
+		public List<string> Tab { get; set; }
+		public List<string> Browser { get; set; }
+	}
 }

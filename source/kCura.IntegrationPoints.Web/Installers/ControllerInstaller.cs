@@ -15,7 +15,10 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.LDAPProvider;
+using kCura.IntegrationPoints.FtpProvider.Connection;
+using kCura.IntegrationPoints.FtpProvider.Connection.Interfaces;
+using kCura.IntegrationPoints.FtpProvider.Helpers;
+using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.Web.Attributes;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
@@ -82,7 +85,6 @@ namespace kCura.IntegrationPoints.Web.Installers
 
 			container.Register(Component.For<IRelativityUrlHelper>().ImplementedBy<RelativityUrlHelper>().LifeStyle.Transient);
 
-			container.Register(Component.For<IEncryptionManager>().ImplementedBy<DefaultEncryptionManager>().LifeStyle.Transient);
 			container.Register(Component.For<WebAPILoginException>().ImplementedBy<WebAPILoginException>().LifeStyle.Transient);
 
 			// TODO: we need to make use of an async GetDBContextAsync (pending Dan Wells' patch) -- biedrzycki: Feb 5th, 2016
@@ -110,6 +112,7 @@ namespace kCura.IntegrationPoints.Web.Installers
 					.ImplementedBy<KeplerWorkspaceRepository>()
 					.UsingFactoryMethod((k) => k.Resolve<IRepositoryFactory>().GetWorkspaceRepository())
 					.LifestyleTransient());
-		}
-	}
+
+        }
+    }
 }

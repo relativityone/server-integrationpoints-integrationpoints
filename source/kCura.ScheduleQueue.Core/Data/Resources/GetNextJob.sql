@@ -47,7 +47,7 @@ BEGIN
 			INSERTED.[SubmittedDate],
 			INSERTED.[SubmittedBy]
 	FROM 
-			[eddsdbo].[{0}] q WITH (UPDLOCK, READPAST, ROWLOCK)
+			[eddsdbo].[{0}] q WITH (UPDLOCK, READPAST, ROWLOCK, INDEX([IX_{0}_LockedByAgentID_AgentTypeID_NextRunTime]))
 		INNER JOIN 
 			[eddsdbo].[Case] c 
 		ON q.[WorkspaceID] = c.[ArtifactID]

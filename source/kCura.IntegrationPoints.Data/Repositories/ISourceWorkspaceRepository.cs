@@ -7,14 +7,8 @@ namespace kCura.IntegrationPoints.Data.Repositories
 	/// <summary>
 	/// Responsible for handling the Source Workspace rdo and its functionality
 	/// </summary>
-	public interface ISourceWorkspaceRepository
+	public interface ISourceWorkspaceRepository : IRelativityProviderObjectRepository
 	{
-		/// <summary>
-		/// Creates the Source Workspace object type
-		/// </summary>
-		/// <returns>The artifact type id of the new Source Workspace object type</returns>
-		int CreateObjectType();
-
 		/// <summary>
 		/// Retrieves the instance of Source Workspace for the given Source Workspace id
 		/// </summary>
@@ -29,21 +23,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="sourceWorkspaceDto">The Source Workspace to create</param>
 		/// <returns>The artifact id of the newly created instance</returns>
 		int Create(int sourceWorkspaceArtifactTypeId, SourceWorkspaceDTO sourceWorkspaceDto);
-
-		/// <summary>
-		/// Creates the fields fo the Source Workspace object type
-		/// </summary>
-		/// <param name="sourceWorkspaceObjectTypeId">The Source Workspace artifact type id</param>
-		/// <param name="fieldGuids">The guids of the fields to create</param>
-		/// <returns>A dictionary with the field guids as keys and the fields artifact ids as the values</returns>
-		IDictionary<Guid, int> CreateObjectTypeFields(int sourceWorkspaceObjectTypeId, IEnumerable<Guid> fieldGuids);
-
-		/// <summary>
-		/// Creates the Source Workspace field on the Document object
-		/// </summary>
-		/// <param name="sourceWorkspaceObjectTypeId">The Source Workspace artifact type id</param>
-		/// <returns>The artifact id of the newly created field</returns>
-		int CreateSourceWorkspaceFieldOnDocument(int sourceWorkspaceObjectTypeId);
 
 		/// <summary>
 		/// Updates the given Source Workspace rdo
