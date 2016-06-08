@@ -62,24 +62,38 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				}
 				catch (Exception e)
 				{
-					objectTypeRepository.Delete(sourceWorkspaceObjectTypeArtifactId.Value);
+					try
+					{
+						sourceWorkspaceDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(sourceWorkspaceObjectTypeArtifactId.Value);
+						DeleteObjectTypeTab(workspaceArtifactId, sourceWorkspaceDescriptorArtifactTypeId);
+						objectTypeRepository.Delete(sourceWorkspaceObjectTypeArtifactId.Value);
+					}
+					catch (Exception cleanupException)
+					{
+						throw new Exception(Constants.RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE, cleanupException);
+					}
+
 					throw new Exception(Constants.RelativityProvider.ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE, e);
 				}
 
 				// Get descriptor artifact type id of the now existing object type
 				sourceWorkspaceDescriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(SourceWorkspaceDTO.ObjectTypeGuid);
 
-				// Delete the tab if it exists (it should always exist since we're creating the object type one line above)
-				ITabRepository tabRepository = _repositoryFactory.GetTabRepository(workspaceArtifactId);
-				int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(
-					sourceWorkspaceDescriptorArtifactTypeId, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
-				if (sourceWorkspaceTabId.HasValue)
-				{
-					tabRepository.Delete(sourceWorkspaceTabId.Value);
-				}
+				DeleteObjectTypeTab(workspaceArtifactId, sourceWorkspaceDescriptorArtifactTypeId);
 			}
 
 			return sourceWorkspaceDescriptorArtifactTypeId;
+		}
+
+		private void DeleteObjectTypeTab(int workspaceArtifactId, int sourceWorkspaceDescriptorArtifactTypeId)
+		{
+			ITabRepository tabRepository = _repositoryFactory.GetTabRepository(workspaceArtifactId);
+			int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(
+				sourceWorkspaceDescriptorArtifactTypeId, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME);
+			if (sourceWorkspaceTabId.HasValue)
+			{
+				tabRepository.Delete(sourceWorkspaceTabId.Value);
+			}
 		}
 
 		private void CreateSourceWorkspaceFields(IArtifactGuidRepository artifactGuidRepository,

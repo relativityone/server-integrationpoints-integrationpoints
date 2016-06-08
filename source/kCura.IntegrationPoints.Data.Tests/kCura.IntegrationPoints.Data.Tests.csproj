@@ -238,7 +238,6 @@
     <Compile Include="Unit\Repositories\IntegrationPointRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\QueueRepositoryTests.cs" />
-    <Compile Include="Unit\Repositories\RsapiObjectTypeRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\SqlArtifactGuidRepositoryTests.cs" />
     <Compile Include="Unit\RSAPIServiceInstallerTests.cs" />
     <Compile Include="Unit\Toggle\ExtendedRelativityToggleTests.cs" />

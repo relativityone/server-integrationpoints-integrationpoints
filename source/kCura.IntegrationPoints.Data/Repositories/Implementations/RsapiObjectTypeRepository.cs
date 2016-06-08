@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
@@ -22,43 +20,64 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		public int RetrieveObjectTypeDescriptorArtifactTypeId(Guid objectTypeGuid)
 		{
 			var objectType = new ObjectType(objectTypeGuid) {Fields = FieldValue.AllFields};
+			int descriptorArtifactTypeId = RetrieveObjectTypeDescriptorArtifactTypeId(objectType);
+			return descriptorArtifactTypeId;
+		}
 
-			ResultSet<ObjectType> resultSet = null;
+		public int RetrieveObjectTypeDescriptorArtifactTypeId(int objectTypeArtifactId)
+		{
+			var objectType = new ObjectType(objectTypeArtifactId) {Fields = FieldValue.AllFields};
+			int descriptorArtifactTypeId = RetrieveObjectTypeDescriptorArtifactTypeId(objectType);
+			return descriptorArtifactTypeId;
+		}
+
+		private int RetrieveObjectTypeDescriptorArtifactTypeId(ObjectType objectType)
+		{
+			ResultSet<ObjectType> resultSet;
 			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
-				resultSet = rsapiClient.Repositories.ObjectType.Read(new[] {objectType});
+				resultSet = rsapiClient.Repositories.ObjectType.Read(objectType);
 			}
 
-			int? objectTypeArtifactId = null;
+			int? descriptorArtifactTypeId = null;
 			if (resultSet.Success && resultSet.Results.Any())
 			{
-				objectTypeArtifactId = resultSet.Results.First().Artifact.DescriptorArtifactTypeID;
+				descriptorArtifactTypeId = resultSet.Results.First().Artifact.DescriptorArtifactTypeID;
 			}
 
-			if (!objectTypeArtifactId.HasValue)
+			if (!descriptorArtifactTypeId.HasValue)
 			{
 				throw new TypeLoadException(string.Format(ObjectTypeErrors.OBJECT_TYPE_NO_ARTIFACT_TYPE_FOUND, objectType.Guids[0]));
 			}
 
-			return objectTypeArtifactId.Value;
+			return descriptorArtifactTypeId.Value;
 		}
 
 		public int? RetrieveObjectTypeArtifactId(string objectTypeName)
 		{
-			SqlParameter nameParameter = new SqlParameter("@objectTypeName", SqlDbType.NVarChar)
+			Query<ObjectType> objectTypeQuery = new Query<ObjectType>();
+
+			TextCondition objectTypeNameCondition = new TextCondition("Name", TextConditionEnum.EqualTo, objectTypeName);
+
+			objectTypeQuery.Fields.Add(new FieldValue("Artifact ID"));
+			objectTypeQuery.Condition = objectTypeNameCondition;
+
+			QueryResultSet<ObjectType> queryResults;
+
+			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
-				Value = objectTypeName
-			};
+				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
+				queryResults = rsapiClient.Repositories.ObjectType.Query(objectTypeQuery);
+			}
 
-			string sql = @"
-				SELECT [ArtifactID]
-				FROM [eddsdbo].[ObjectType]
-				WHERE [Name] = @objectTypeName";
-
-			IDBContext workspaceContext = _helper.GetDBContext(_workspaceArtifactId);
-			int? artifactId = workspaceContext.ExecuteSqlStatementAsScalar<int>(sql, nameParameter);
+			int? artifactId = 0;
+			if (queryResults != null && queryResults.Success && queryResults.Results.Any())
+			{
+				Result<ObjectType> result = queryResults.Results.First();
+				artifactId = result.Artifact.ArtifactID;
+			}
 
 			return artifactId > 0 ? artifactId : null;
 		}
@@ -71,7 +90,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
 
-				rsapiClient.Repositories.ObjectType.Delete(new[] {objectType});
+				rsapiClient.Repositories.ObjectType.Delete(objectType);
 			}
 		}
 	}
