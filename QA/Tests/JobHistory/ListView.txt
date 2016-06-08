@@ -274,7 +274,7 @@
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| List View Sort Testing
-| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 
 | | @{Step1Fields}=	| Create List	| 
 | | ... | Integration Point List View Testing	| 
@@ -283,7 +283,7 @@
 | | ... | Custodian								| 
 | | ... | No
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Integration Point List View Testing
-| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 
 | | @{Step1Fields}=	| Create List	| 
 | | ... | Integration Point Sort Testing	| 
@@ -292,7 +292,7 @@
 | | ... | Custodian							| 
 | | ... | No
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Integration Point Sort Testing
-| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 
 # --------------------------------------------------------------------------------------------------------
 

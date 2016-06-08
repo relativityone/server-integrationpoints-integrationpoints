@@ -342,7 +342,7 @@
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| Moving Up and Down tests	| Append/Overlay	| LDAP	| Custodian	| No
 | | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=testing.corp/CN=Users,DC=testing,DC=corp	| Authentication=FastBind
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| ConnectionPath=testing.corp/CN=Users,DC=testing,DC=corp	| Authentication=FastBind
 | | Proceed to the Next Step of the Integration Point wizard
 
 

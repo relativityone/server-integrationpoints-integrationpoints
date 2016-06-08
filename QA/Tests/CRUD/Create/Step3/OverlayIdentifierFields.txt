@@ -34,7 +34,7 @@
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${ObjectType} Overlay Fields Test	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${ObjectType}	| EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form	| 
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| 
 | | ... | ConnectionPath=testing.corp/CN=Users,DC=testing,DC=corp	| 
 | | ... | ObjectFilterString=(objectClass=*)		| 
 | | ... | Authentication=FastBind					| 
