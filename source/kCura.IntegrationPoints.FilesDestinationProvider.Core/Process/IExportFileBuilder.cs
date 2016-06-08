@@ -2,8 +2,8 @@
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 {
-    public interface IExportFileHelper
+    public interface IExportFileBuilder
     {
-        ExportFile CreateDefaultSetup(ExportSettings exportSettings);
+        ExportFile Create(ExportSettings exportSettings);
     }
 }

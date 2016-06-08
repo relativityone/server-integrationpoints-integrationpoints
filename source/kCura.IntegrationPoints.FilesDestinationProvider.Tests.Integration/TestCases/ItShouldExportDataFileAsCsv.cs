@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
         public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
         {
             var fileInfo = GetFileInfo(directory);
-            Assert.That(DataFileFormatHelper.FileStartWith("þControl Numberþ", fileInfo));
+            Assert.That(DataFileFormatHelper.FileStartWith("\"Control Number\"", fileInfo));
         }
 
         public override string MetadataFormat => "csv";

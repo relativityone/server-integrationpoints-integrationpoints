@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new CaseManagerWrapperFactory(),
 				new SearchManagerFactory(),
 				new ExporterWrapperFactory(),
-				new ExportFileHelper()
+				new ExportFileBuilder(new DelimitersBuilder())
 			);
 
 			_instanceUnderTest = new ExportProcessRunner(exportProcessBuilder);
