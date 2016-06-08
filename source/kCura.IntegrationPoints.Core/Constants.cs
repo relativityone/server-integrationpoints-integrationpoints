@@ -28,6 +28,15 @@ namespace kCura.IntegrationPoints.Core
 
 			public static Regex InvalidMultiObjectsValueFormat = new Regex($".*{kCura.IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER}.*", RegexOptions.Compiled);
 			public static Regex InvalidMultiChoicesValueFormat = new Regex($".*{kCura.IntegrationPoints.Contracts.Constants.MULTI_VALUE_DELIMITER}|{kCura.IntegrationPoints.Contracts.Constants.NESTED_VALUE_DELIMITER}.*", RegexOptions.Compiled);
+
+			
+
+			public class Telemetry
+			{
+				public const string TELEMETRY_CATEGORY = "Integration Points";
+
+				public const string BUCKET_EXPORT_LIB_DURATION_METRIC_COLLECTOR = "IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary";
+			}
 		}
 	}
 }
