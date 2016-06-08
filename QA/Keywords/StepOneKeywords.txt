@@ -23,7 +23,6 @@
 | | ...				| ${Reoccur}=NULL			| ${SendOn}=NULL	| ${StartDate}=NULL			| ${EndDate}=NULL			| ${ScheduledTime}=NULL
 | | Wait Until Page Contains Element	| id=name	| 10s	| The page was not on Step 1 of the Integration Point form.
 | | Run Keyword Unless	| "${IntegrationName}" == "NULL"	| Input Text	| id=name	| ${IntegrationName}
-| | Run Keyword Unless	| "${Overwrite}" == "NULL"			| Select from Select2 Dropdown	| s2id_overwrite	| ${Overwrite}
 | | Run Keyword Unless	| "${SourceProvider}" == "NULL"		| Select from Select2 Dropdown	| s2id_sourceProvider	| ${SourceProvider}
 | | Run Keyword Unless	| "${DestinationRDO}" == "NULL"		| Select from Select2 Dropdown	| s2id_destinationRdo	| ${DestinationRDO}
 

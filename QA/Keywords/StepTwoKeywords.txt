@@ -1,21 +1,18 @@
 
 *** Settings ***
-| Documentation	| This suite of keywords deals with the Integration Point object and its associated pages and actions.
-
-
-*** Variables ***
+| Documentation	| This suite of keywords deals with the second page of the Integration Point object's wizard.
 
 
 *** Keywords ***
 
 | Fill out the Following Fields of the Integration Point Step 2 form
-| | [Documentation]	| This keyword fills out the Integration Point Step 2 fields.
+| | [Documentation]	| This keyword fills out the LDAP Integration Point Step 2 fields.
 | | ... 			| The value of ${Authentication} should be Select.../Anonymous/FastBind/Secure/Secure Socket Layer/Readonly server.
 | | ... 			| The value of ${ImportNestedItems} should be Yes or No.
 | | [ARGUMENTS]		| ${ConnectionPath}=NULL		| ${ObjectFilterString}=NULL	| ${Authentication}=NULL	| 
 | | ...				| ${ConnectionUsername}=NULL	| ${ConnectionPassword}=NULL	| ${ImportNestedItems}=NULL
 | | Wait for then Select iFrame	| id=configurationFrame	| 10s	| The page was not on Step 2 of the Integration Point form.
-| | Wait Until Page Contains Element	| id=connectionPath	| 10s	| The page was not on Step 2.
+| | Wait Until Page Contains Element	| id=connectionPath	| 10s	| The page was not on the LDAP version of Step 2.
 | | Run Keyword Unless	| "${ConnectionPath}" == "NULL"		| Input Text	| id=connectionPath		| ${ConnectionPath}
 | | Run Keyword Unless	| "${ObjectFilterString}" == "NULL"	| Input Text	| id=connectionFilter	| ${ObjectFilterString}
 | | Run Keyword Unless	| "${Authentication}" == "NULL"		| Select from Select2 Dropdown	| s2id_authentication	| ${Authentication}
@@ -28,10 +25,27 @@
 | | Unselect Frame
 | | Select iFrame	| id=_externalPage
 
+| Fill out the Following Fields of the FTP Integration Point Step 2 form
+| | [Documentation]	| This keyword fills out the FTP Integration Point Step 2 fields.
+| | ... 			| The "Protocol" variable can only take either "FTP - File Transfer Protocol" or "SFTP - SSH File Transfer Protocol".
+| | [ARGUMENTS]		| ${Host}=NULL		| ${Protocol}=NULL	| ${Port}=NULL	| 
+| | ...				| ${Username}=NULL	| ${Password}=NULL	| ${Filepath}=NULL
+| | Wait for then Select iFrame	| id=configurationFrame	| 10s	| The page was not on Step 2 of the Integration Point form.
+| | Wait Until Page Contains Element	| id=host	| 10s	| The page was not on the FTP version of Step 2.
+| | Run Keyword Unless	| "${Host}" == "NULL"		| Input Text		| id=host		| ${Host}
+| | Run Keyword Unless	| "${Protocol}" == "NULL"	| Select From List	| id=protocol	| ${Protocol}
+| | Run Keyword Unless	| "${Port}" == "NULL"		| Input Text		| id=port		| ${Port}
+| | Run Keyword Unless	| "${Username}" == "NULL"	| Input Text		| id=username	| ${Username}
+| | Run Keyword Unless	| "${Password}" == "NULL"	| Input Text		| id=password	| ${Password}
+
+| | Run Keyword Unless	| "${Filepath}" == "NULL"	| Input Text		| id=filename_prefix	| ${Filepath}
+| | Unselect Frame
+| | Select iFrame	| id=_externalPage
+
+
 *** Settings ***
 | Library	| String
 | Library	| Collections
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
