@@ -19,7 +19,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
             container.Register(Component.For<ILoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()));
             container.Register(Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
 
-            container.Register(Component.For<IExportFileHelper>().ImplementedBy<ExportFileHelper>());
+            container.Register(Component.For<IDelimitersBuilder>().ImplementedBy<DelimitersBuilder>());
+            container.Register(Component.For<IExportFileBuilder>().ImplementedBy<ExportFileBuilder>());
             container.Register(Component.For<IExportProcessBuilder>().ImplementedBy<ExportProcessBuilder>());
             container.Register(Component.For<ExportProcessRunner>().ImplementedBy<ExportProcessRunner>());
 

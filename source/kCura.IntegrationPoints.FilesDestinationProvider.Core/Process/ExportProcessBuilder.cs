@@ -15,7 +15,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
         private readonly ICaseManagerFactory _caseManagerFactory;
         private readonly ICredentialProvider _credentialProvider;
         private readonly IExporterFactory _exporterFactory;
-        private readonly IExportFileHelper _exportFileHelper;
+        private readonly IExportFileBuilder _exportFileBuilder;
         private readonly ILoggingMediator _loggingMediator;
         private readonly ISearchManagerFactory _searchManagerFactory;
         private readonly IUserMessageNotification _userMessageNotification;
@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
         public ExportProcessBuilder(ILoggingMediator loggingMediator, IUserMessageNotification userMessageNotification, IUserNotification userNotification,
             ICredentialProvider credentialProvider, ICaseManagerFactory caseManagerFactory, ISearchManagerFactory searchManagerFactory, IExporterFactory exporterFactory,
-            IExportFileHelper exportFileHelper)
+            IExportFileBuilder exportFileBuilder)
         {
             _loggingMediator = loggingMediator;
             _userMessageNotification = userMessageNotification;
@@ -32,12 +32,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             _caseManagerFactory = caseManagerFactory;
             _searchManagerFactory = searchManagerFactory;
             _exporterFactory = exporterFactory;
-            _exportFileHelper = exportFileHelper;
+            _exportFileBuilder = exportFileBuilder;
         }
 
         public IExporter Create(ExportSettings settings)
         {
-            var exportFile = _exportFileHelper.CreateDefaultSetup(settings);
+            var exportFile = _exportFileBuilder.Create(settings);
             PerformLogin(exportFile);
             PopulateExportFieldsSettings(exportFile, settings.SelViewFieldIds);
             var exporter = _exporterFactory.Create(exportFile);

@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
         private IExporterFactory _exporterFactory;
 
         private ExportFile _exportFile;
-        private IExportFileHelper _exportFileHelper;
+        private IExportFileBuilder _exportFileBuilder;
 
         private ExportProcessBuilder _exportProcessBuilder;
         private ILoggingMediator _loggingMediator;
@@ -42,7 +42,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             _caseManagerFactory = Substitute.For<ICaseManagerFactory>();
             _credentialProvider = Substitute.For<ICredentialProvider>();
             _exporterFactory = Substitute.For<IExporterFactory>();
-            _exportFileHelper = Substitute.For<IExportFileHelper>();
+            _exportFileBuilder = Substitute.For<IExportFileBuilder>();
             _loggingMediator = Substitute.For<ILoggingMediator>();
             _searchManagerFactory = Substitute.For<ISearchManagerFactory>();
             _userMessageNotification = Substitute.For<IUserMessageNotification>();
@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
             MockExportFile();
 
             _exportProcessBuilder = new ExportProcessBuilder(_loggingMediator, _userMessageNotification, _userNotification, _credentialProvider, _caseManagerFactory,
-                _searchManagerFactory, _exporterFactory, _exportFileHelper);
+                _searchManagerFactory, _exporterFactory, _exportFileBuilder);
         }
 
         private void MockExportFile()
@@ -64,7 +64,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
                     ArtifactID = 2
                 }
             };
-            _exportFileHelper.CreateDefaultSetup(new ExportSettings()).ReturnsForAnyArgs(_exportFile);
+            _exportFileBuilder.Create(new ExportSettings()).ReturnsForAnyArgs(_exportFile);
         }
 
         #endregion

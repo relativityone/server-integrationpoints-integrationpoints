@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
         {
             var fileInfo = DataFileFormatHelper.GetFileInFormat("*.csv", directory);
             Assert.IsNotNull(fileInfo);
-            Assert.That(DataFileFormatHelper.FileStartWith("þControl Numberþ", fileInfo));
+            Assert.That(DataFileFormatHelper.FileStartWith("\"Control Number\"", fileInfo));
         }
     }
 }
