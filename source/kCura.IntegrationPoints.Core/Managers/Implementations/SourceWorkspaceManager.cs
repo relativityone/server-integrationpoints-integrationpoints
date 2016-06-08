@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -12,7 +11,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	public class SourceWorkspaceManager : DestinationWorkspaceFieldManagerBase, ISourceWorkspaceManager
 	{
 		public SourceWorkspaceManager(IRepositoryFactory repositoryFactory)
-			: base (repositoryFactory, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, SourceWorkspaceDTO.ObjectTypeGuid)
+			: base(repositoryFactory, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, SourceWorkspaceDTO.ObjectTypeGuid)
 		{
 		}
 
@@ -31,7 +30,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			SourceWorkspaceDTO sourceWorkspaceDto = CreateSourceWorkspaceDto(sourceWorkspaceArtifactId, sourceWorkspaceDescriptorArtifactTypeId, sourceWorkspaceRepository);
 			return sourceWorkspaceDto;
 		}
-		
+
 		private SourceWorkspaceDTO CreateSourceWorkspaceDto(int workspaceArtifactId,
 			int sourceWorkspaceDescriptorArtifactTypeId, ISourceWorkspaceRepository sourceWorkspaceRepository)
 		{
@@ -86,7 +85,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 						FieldType = Relativity.Client.FieldType.FixedLengthText
 					}
 				}
-
 			};
 		}
 	}
