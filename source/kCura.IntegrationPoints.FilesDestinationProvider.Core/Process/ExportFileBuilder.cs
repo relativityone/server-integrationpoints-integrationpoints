@@ -1,4 +1,5 @@
-﻿using kCura.WinEDDS;
+﻿using System.ComponentModel;
+using kCura.WinEDDS;
 using Relativity;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
@@ -50,10 +51,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
         private static void SetImagesSettings(ExportSettings exportSettings, ExportFile exportFile)
         {
             exportFile.ExportImages = exportSettings.ExportImages;
-            exportFile.TypeOfImage = ParseImageFileType(exportSettings.ImageType);
+            if (exportSettings.CopyFileFromRepository)
+            {
+                exportFile.TypeOfImage = ParseImageFileType(exportSettings.ImageType);
+            }
+            else
+            {
+                exportFile.TypeOfImage = ExportFile.ImageType.SinglePage;
+            }
         }
 
-        private static ExportFile.ImageType? ParseImageFileType(ExportSettings.ImageFileType fileType)
+        private static ExportFile.ImageType ParseImageFileType(ExportSettings.ImageFileType fileType)
         {
             switch (fileType)
             {
@@ -64,7 +72,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
                 case ExportSettings.ImageFileType.Pdf:
                     return ExportFile.ImageType.Pdf;
                 default:
-                    return null;
+                    throw new InvalidEnumArgumentException($"Unknown ExportSettings.ImageFileType ({fileType})");
             }
         }
 
@@ -81,7 +89,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
                 case ExportSettings.DataFileFormat.Custom:
                     return "txt";
                 default:
-                    return null;
+                    throw new InvalidEnumArgumentException($"Unknown ExportSettings.DataFileFormat ({dataFileFormat})");
             }
         }
 
