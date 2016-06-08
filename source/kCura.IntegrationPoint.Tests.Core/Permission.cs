@@ -1,20 +1,15 @@
-﻿using System;
+﻿using kCura.IntegrationPoints.Data.Extensions;
+using Relativity.Services.Group;
+using Relativity.Services.Permission;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using kCura.IntegrationPoints.Data.Extensions;
-using Newtonsoft.Json;
-using Relativity.Services.Group;
-using Relativity.Services.Permission;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
-    using System;
-
-    using kCura.IntegrationPoints.Data.Extensions;
-
-    public static class Permission
+	public static class Permission
 	{
 	    private static void IISReset()
 	    {
@@ -68,43 +63,43 @@ namespace kCura.IntegrationPoint.Tests.Core
 			IISReset();
 		}
 
-        public static void SetGrouPermissions(int workspaceId, GroupPermissions groupPermissions)
-        {
-            using (
-                IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(
-                    SharedVariables.RelativityUserName,
-                    SharedVariables.RelativityPassword,
-                    true,
-                    true))
+		public static void SetGroupPermissions(int workspaceId, GroupPermissions groupPermissions)
+		{
+			using (
+				IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(
+					SharedVariables.RelativityUserName,
+					SharedVariables.RelativityPassword,
+					true,
+					true))
 
-            {
-                proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).Wait(TimeSpan.FromSeconds(5));
-            } 
-        }
+			{
+				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).Wait(TimeSpan.FromSeconds(5));
+			}
+		}
 
-        public static void SetPermissions(int workspaceId, int groupId, PermissionProperty permissionProperty)
-        {
-            GroupRef groupRef = new GroupRef(groupId);
+		public static void SetPermissions(int workspaceId, int groupId, PermissionProperty permissionProperty)
+		{
+			GroupRef groupRef = new GroupRef(groupId);
 
-            using (
-                IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(
-                    SharedVariables.RelativityUserName,
-                    SharedVariables.RelativityPassword,
-                    true,
-                    true))
-            {
-                GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).GetResultsWithoutContextSync();
-                
-                SetObjectPermissions(groupPermissions, permissionProperty.Obj);
-                SetAdminPermissions(groupPermissions, permissionProperty.Admin);
-                SetTabVisibility(groupPermissions, permissionProperty.Tab);
-                SetBrowserPermissions(groupPermissions, permissionProperty.Browser);
+			using (
+				IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(
+					SharedVariables.RelativityUserName,
+					SharedVariables.RelativityPassword,
+					true,
+					true))
+			{
+				GroupPermissions groupPermissions = proxy.GetWorkspaceGroupPermissionsAsync(workspaceId, groupRef).GetResultsWithoutContextSync();
 
-                proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).Wait(TimeSpan.FromSeconds(5));
-            }
-        }
+				SetObjectPermissions(groupPermissions, permissionProperty.Obj);
+				SetAdminPermissions(groupPermissions, permissionProperty.Admin);
+				SetTabVisibility(groupPermissions, permissionProperty.Tab);
+				SetBrowserPermissions(groupPermissions, permissionProperty.Browser);
 
-        private static void SetObjectPermissions(GroupPermissions groupPermissions, List<string> permissionNames )
+				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions).Wait(TimeSpan.FromSeconds(5));
+			}
+		}
+
+		private static void SetObjectPermissions(GroupPermissions groupPermissions, List<string> permissionNames)
 		{
 			IEnumerable<int> indices = groupPermissions.ObjectPermissions.Select((value, index) => new { value, index })
 					  .Where(x => permissionNames.Contains(x.value.Name))
@@ -164,22 +159,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 		}
 	}
 
-    public class PermissionProperty
-    {
-        public PermissionProperty()
-        { }
+	public class PermissionProperty
+	{
+		public PermissionProperty()
+		{ }
 
-        public  PermissionProperty(List<string> obj, List<string> admin, List<string> tab, List<string> browser)
-        {
-            Obj = obj;
-            Admin = admin;
-            Tab = tab;
-            Browser = browser;
-        }
-        public List<string> Obj { get; set; }
-        public List<string> Admin { get; set; }
-        public List<string> Tab { get; set; }
-        public List<string> Browser { get; set; }
+		public PermissionProperty(List<string> obj, List<string> admin, List<string> tab, List<string> browser)
+		{
+			Obj = obj;
+			Admin = admin;
+			Tab = tab;
+			Browser = browser;
+		}
 
-    }
+		public List<string> Obj { get; set; }
+		public List<string> Admin { get; set; }
+		public List<string> Tab { get; set; }
+		public List<string> Browser { get; set; }
+	}
 }

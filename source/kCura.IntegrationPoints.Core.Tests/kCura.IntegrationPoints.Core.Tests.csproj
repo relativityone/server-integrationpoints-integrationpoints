@@ -149,6 +149,7 @@
     <Compile Include="Integration\Installers\ServiceInstallerTests.cs" />
     <Compile Include="Integration\Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Integration\Managers\QueueManagerTests.cs" />
+    <Compile Include="Integration\PermissionErrorMessageForRelativityProviderTest.cs" />
     <Compile Include="Integration\PermissionErrorMessageTest.cs" />
     <Compile Include="Integration\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="JobHelper.cs" />

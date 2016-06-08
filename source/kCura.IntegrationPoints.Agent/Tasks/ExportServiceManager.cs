@@ -266,7 +266,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
 				{
 					IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
-					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_sourceConfiguration.SavedSearchArtifactId, 0);
+					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_savedSearchArtifactId, 0);
 				}
 
 				// Finalize any In Progress Job History Errors
