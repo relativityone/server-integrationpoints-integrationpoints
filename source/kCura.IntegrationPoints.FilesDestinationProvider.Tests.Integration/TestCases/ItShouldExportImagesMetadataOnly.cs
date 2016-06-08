@@ -7,32 +7,21 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-	internal class ItShouldExportImagesMetadataOnly : IExportTestCase
-	{
-		private const string _IMAGE_METADATA_FORMAT = "opt";
-
-		private string _expectedMetadataFilename;
-
-		public ExportSettings Prepare(ExportSettings settings)
+	internal class ItShouldExportImagesMetadataOnly : BaseMetadataExportTestCase
+    {
+		public override ExportSettings Prepare(ExportSettings settings)
 		{
-			settings.ExportFilesLocation += $"_{nameof(ItShouldExportImagesMetadataOnly)}";
-
 			settings.ExportImages = true;
 			settings.CopyFileFromRepository = false;
 
-			_expectedMetadataFilename = $"{settings.ExportedObjName}_export.{_IMAGE_METADATA_FORMAT}";
-
-			return settings;
+			return base.Prepare(settings);
 		}
 
-		public void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
 		{
 			// verify that metadata file was created
-			var actual = directory.EnumerateFiles($"*.{_IMAGE_METADATA_FORMAT}", SearchOption.TopDirectoryOnly)
-				.FirstOrDefault();
-
-			Assert.That(actual, Is.Not.Null);
-			Assert.That(actual?.Name, Is.EqualTo(_expectedMetadataFilename));
+			var actual = GetFileInfo(directory);
+            Assert.That(actual?.Name, Is.EqualTo($"{_exportSettings.ExportedObjName}_export.{MetadataFormat}"));
 			Assert.That(actual?.Length, Is.Positive);
 
 			// verify that no images were exported
@@ -43,5 +32,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
 			Assert.That(numberOfImages, Is.EqualTo(0));
 		}
+		
+		public override string MetadataFormat => "opt";
 	}
 }

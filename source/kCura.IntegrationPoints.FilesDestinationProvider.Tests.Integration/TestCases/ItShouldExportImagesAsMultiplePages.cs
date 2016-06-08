@@ -7,20 +7,18 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-	internal class ItShouldExportImagesAsMultiplePages : IExportTestCase
+	internal class ItShouldExportImagesAsMultiplePages : BaseExportTestCase
 	{
-		public ExportSettings Prepare(ExportSettings settings)
+		public override ExportSettings Prepare(ExportSettings settings)
 		{
-			settings.ExportFilesLocation += $"_{nameof(ItShouldExportImagesAsMultiplePages)}";
-
 			settings.ExportImages = true;
 			settings.CopyFileFromRepository = true;
 			settings.ImageType = ExportSettings.ImageFileType.MultiPage;
 
-			return settings;
+			return base.Prepare(settings);
 		}
 
-		public void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
 		{
 			var actualFiles = directory.EnumerateDirectories("IMAGES", SearchOption.AllDirectories)
 				.SelectMany(d => d.EnumerateFiles("*", SearchOption.AllDirectories))

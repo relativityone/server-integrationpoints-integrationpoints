@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-    internal class ItShouldExportDataFileAsCustom : IExportTestCase
+    internal class ItShouldExportDataFileAsCustom : BaseMetadataExportTestCase
     {
         private int _columnCount;
         private char _columnSeparator;
@@ -18,10 +18,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
         private char _newLineSeparator;
         private char _quoteSeparator;
 
-        public ExportSettings Prepare(ExportSettings settings)
+        public override ExportSettings Prepare(ExportSettings settings)
         {
-            settings.ExportFilesLocation += $"_{GetType().Name}";
-
             settings.OutputDataFileFormat = ExportSettings.DataFileFormat.Custom;
 
             settings.ColumnSeparator = _columnSeparator = Convert.ToChar(200);
@@ -32,14 +30,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
             _columnCount = settings.SelViewFieldIds.Count;
 
-            return settings;
+            return base.Prepare(settings);
         }
 
-        public void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+        public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
         {
-            var fileInfo = DataFileFormatHelper.GetFileInFormat("*.txt", directory);
-
-            Assert.IsNotNull(fileInfo);
+            var fileInfo = GetFileInfo(directory);
             var fileLines = File.ReadLines(fileInfo.FullName);
 
             var firstFileLine = fileLines.First();
@@ -55,5 +51,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
                 Assert.That(column.EndsWith(_quoteSeparator.ToString()));
             }
         }
+
+        public override string MetadataFormat => "txt";
     }
 }

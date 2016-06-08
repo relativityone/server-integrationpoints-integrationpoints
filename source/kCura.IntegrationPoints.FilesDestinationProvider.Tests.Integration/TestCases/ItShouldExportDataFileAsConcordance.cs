@@ -7,22 +7,21 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-    internal class ItShouldExportDataFileAsConcordance : IExportTestCase
+    internal class ItShouldExportDataFileAsConcordance : BaseMetadataExportTestCase
     {
-        public ExportSettings Prepare(ExportSettings settings)
+        public override ExportSettings Prepare(ExportSettings settings)
         {
-            settings.ExportFilesLocation += $"_{GetType().Name}";
-
             settings.OutputDataFileFormat = ExportSettings.DataFileFormat.Concordance;
 
-            return settings;
+            return base.Prepare(settings);
         }
 
-        public void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+        public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
         {
-            var fileInfo = DataFileFormatHelper.GetFileInFormat("*.dat", directory);
-            Assert.IsNotNull(fileInfo);
+            var fileInfo = GetFileInfo(directory);
             Assert.That(DataFileFormatHelper.FileStartWith("þControl Numberþ", fileInfo));
         }
+
+        public override string MetadataFormat => "dat";
     }
 }

@@ -20,6 +20,7 @@
 		public string SelectedDataFileFormat { get; set; }
 		public bool IncludeNativeFilesPath { get; set; }
 		public string DataFileEncodingType { get; set; }
+		public string SelectedImageDataFileFormat { get; set; }
         public char ColumnSeparator { get; set; }
         public char QuoteSeparator { get; set; }
         public char NewlineSeparator { get; set; }
