@@ -126,13 +126,13 @@
 | | ... | Department	| department	| 
 | | ... | UniqueID		| objectguid
 
-| | Create Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| UniqueID
+| | Create LDAP Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| UniqueID
 
 #------------------------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=	| Create List	| ${IntegrationPoint2}	| Append	| LDAP	| Custodian	| No
 
-| | Create Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| UniqueID
+| | Create LDAP Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| UniqueID
 | | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Integration Points created in this Suite then Close All Browsers

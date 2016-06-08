@@ -43,7 +43,7 @@
 | | ... | (department=Questionnaire)	| FastBind	| testing\\rellockdown	| P@ssw0rd@1
 | | @{Step3Mapping}=	| Create List	| Name [Object Identifier]	| givenname
 
-| | Create Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Name [Object Identifier]
+| | Create LDAP Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Name [Object Identifier]
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}
 

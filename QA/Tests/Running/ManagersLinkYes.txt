@@ -214,7 +214,7 @@
 | | ... | Manager       | manager       | 
 | | ... | UniqueID		| objectguid
 
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}  
 
