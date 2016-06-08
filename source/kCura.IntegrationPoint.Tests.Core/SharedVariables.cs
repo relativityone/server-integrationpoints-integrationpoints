@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using System.Runtime.CompilerServices;
-using ContentAnalyst.Web.TextCategorizerIndexService;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {

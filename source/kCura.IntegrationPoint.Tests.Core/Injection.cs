@@ -1,8 +1,8 @@
-﻿using kCura.Data.RowDataGateway;
-using System;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading;
+using kCura.Data.RowDataGateway;
 using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
@@ -85,9 +85,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 
 				Thread.Sleep(intervalInMilliseconds);
-				timeWaitedInSeconds += (intervalInMilliseconds/1000.0);
+				timeWaitedInSeconds += (intervalInMilliseconds / 1000.0);
 				executionCount = GetInjectionPointCount(injectionPointId, startTime);
-			}	
+			}
 		}
 
 		private static IDBContext GetDbContext()

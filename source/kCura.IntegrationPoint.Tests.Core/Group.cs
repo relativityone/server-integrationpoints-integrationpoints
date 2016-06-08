@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Group
 	{
-
 		public static int CreateGroup(string name)
 		{
 			// STEP 1: Create a DTO and set its properties.
@@ -21,7 +20,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			};
 
 			// STEP 2: Create a WriteResultSet. It provide details after the create operation completes.
-			WriteResultSet< kCura.Relativity.Client.DTOs.Group> resultSet;
+			WriteResultSet<kCura.Relativity.Client.DTOs.Group> resultSet;
 
 			// STEP 3: Create the new Group.
 			try
@@ -102,9 +101,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			string parameter = $"{{workspaceArtifactID:{workspaceId},groupSelector:{JsonConvert.SerializeObject(groupSelector)}}}";
 			Rest.PostRequestAsJson(_ADD_REMOVE_WORKSPACE_GROUPS, false, parameter);
-			
 		}
-
 
 		public static void RemoveGroupFromWorkspace(int workspaceId, int groupId)
 		{

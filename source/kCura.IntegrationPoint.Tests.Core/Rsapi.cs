@@ -1,7 +1,6 @@
-﻿using Relativity.API;
-
-using System;
+﻿using System;
 using kCura.Relativity.Client;
+using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {

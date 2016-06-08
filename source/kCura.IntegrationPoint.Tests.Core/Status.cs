@@ -2,8 +2,6 @@
 using System.Threading;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
-using kCura.Data.RowDataGateway;
-using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -31,7 +29,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static void WaitForIntegrationPointJobToComplete(IQueueRepository queueRepository,int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 300, int intervalInMilliseconds = 500)
+		public static void WaitForIntegrationPointJobToComplete(IQueueRepository queueRepository, int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 300, int intervalInMilliseconds = 500)
 		{
 			double timeWaitedInSeconds = 0.0;
 			int numberOfJobsQueuedOrProgress = queueRepository.GetNumberOfJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
