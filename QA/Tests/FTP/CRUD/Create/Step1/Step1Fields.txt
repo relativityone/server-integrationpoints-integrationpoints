@@ -17,6 +17,14 @@
 
 *** Test Cases ***
 
+| The Source Provider dropdown contains the FTP Object
+| | [Documentation]	| Verify that the Source Provider dropdown has the FTP object.
+| | ...				| 
+#| | [Tags]			| untested
+| | Select from select2 Dropdown	| ${Destination RDO Drop Down}	| FTP (CSV File)
+| | Verify that the following select2 Dropdown currently has the following value selected	| ${Destination RDO Drop Down}	| FTP (CSV File)
+
+
 | The Destination RDO dropdown has the correct values for Admins
 | | [Documentation]	| Verify that the Destination RDO Dropdown has the correct options when you are a user with Admin permissions.
 | | ...				| The expected values are Select..., followed by an alphabetized list of every non-System object type
