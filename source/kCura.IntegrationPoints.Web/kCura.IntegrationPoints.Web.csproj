@@ -380,6 +380,8 @@
     <Content Include="Content\header.css">
       <DependentUpon>header.scss</DependentUpon>
     </Content>
+    <Content Include="Content\Images\grey_close.png" />
+    <Content Include="Content\Images\help_icon.png" />
     <Content Include="Content\Images\loading.gif" />
     <Content Include="Content\Images\sprite.png" />
     <Content Include="Content\integration-points-fonts.css" />

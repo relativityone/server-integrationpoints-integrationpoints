@@ -169,6 +169,7 @@ var ftpHelper = (function (data) {
             //Communicate to the host page to continue.
             self.publish('saveState', encryptedModel);
         });
+        //this.publish('saveState', JSON.stringify(ko.toJS(getSettingsModel())));
     });
 
     //An event raised when the host page has loaded the current settings page.
@@ -209,7 +210,40 @@ function validate_model(model) {
 function protocol_onchange() {
     toggle_port();
 }
+(function () {
 
+    var modal = $('#contextualHelpModal');
+
+    // Get the button that opens the modal
+    var btn = $("#contextualHelp");
+    var topSpace = btn.offset().top;
+    var leftSpace = btn.offset().left+25;
+    // When the user clicks on the button, open the modal 
+    btn.click(function () {
+        modal.css({
+            display: 'block',
+            marginLeft: leftSpace + 'px',
+            marginTop: topSpace + 'px'
+        });
+
+    });
+    // When the user clicks on <span> (x), close the modal
+    $(".close").click(function() {
+        debugger;
+        modal.css({
+            display: 'none'
+        });
+    });
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.css({
+                display: 'none'
+            });
+        }
+    }
+})();
 //toggle port based on protocol if it's not modified by the user
 function toggle_port() {
     var port_selected = document.getElementById("port").value;
