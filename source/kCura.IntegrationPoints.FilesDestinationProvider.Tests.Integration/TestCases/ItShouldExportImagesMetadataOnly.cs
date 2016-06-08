@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
-using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
@@ -21,7 +21,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		{
 			// verify that metadata file was created
 			var actual = GetFileInfo(directory);
-            Assert.That(actual?.Name, Is.EqualTo($"{_exportSettings.ExportedObjName}_export.{MetadataFormat}"));
+            Assert.That(actual?.Name, Is.EqualTo($"{ExportSettings.ExportedObjName}_export.{MetadataFormat}"));
 			Assert.That(actual?.Length, Is.Positive);
 
 			// verify that no images were exported

@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
-using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases;
-using NUnit.Framework;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 
-namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract
+namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base
 {
     public abstract class BaseMetadataExportTestCase : BaseExportTestCase
     {

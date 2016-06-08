@@ -16,10 +16,8 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
-using kCura.WinEDDS;
 using Newtonsoft.Json;
 using Relativity.API;
-using ExportSettings = kCura.IntegrationPoints.FilesDestinationProvider.Core.ExportSettings;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -56,37 +54,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			var destinationSettings = JsonConvert.DeserializeObject<ImportSettings>(destinationConfiguration);
 
-			var imageType = default(ExportSettings.ImageFileType);
-			Enum.TryParse(sourceSettings.SelectedImageFileType, true, out imageType);
-			ExportSettings.DataFileFormat dataFileFormat;
-			Enum.TryParse(sourceSettings.SelectedDataFileFormat, true, out dataFileFormat);
-			LoadFileType.FileFormat imageDataFileFormat;
-			Enum.TryParse(sourceSettings.SelectedImageDataFileFormat, true, out imageDataFileFormat);
-
-			var exportSettings = new ExportSettings
-			{
-				ExportedObjArtifactId = sourceSettings.SavedSearchArtifactId,
-				ExportedObjName = sourceSettings.SavedSearch,
-				ExportImages = sourceSettings.ExportImagesChecked,
-				ImageType = imageType,
-				WorkspaceId = sourceSettings.SourceWorkspaceArtifactId,
-				ExportFilesLocation = sourceSettings.Fileshare,
-				OverwriteFiles = sourceSettings.OverwriteFiles,
-				CopyFileFromRepository = sourceSettings.CopyFileFromRepository,
-				SelViewFieldIds = fieldMap.Select(item => int.Parse(item.SourceField.FieldIdentifier)).ToList(),
-				ArtifactTypeId = destinationSettings.ArtifactTypeId,
-				OutputDataFileFormat = dataFileFormat,
-				IncludeNativeFilesPath = sourceSettings.IncludeNativeFilesPath,
-				DataFileEncoding = Encoding.GetEncoding(sourceSettings.DataFileEncodingType),
-				SelectedImageDataFileFormat = imageDataFileFormat,
-                ColumnSeparator = sourceSettings.ColumnSeparator,
-                MultiValueSeparator = sourceSettings.MultiValueSeparator,
-                NestedValueSeparator = sourceSettings.NestedValueSeparator,
-                NewlineSeparator = sourceSettings.NewlineSeparator,
-                QuoteSeparator = sourceSettings.QuoteSeparator
-			};
-
-			_exportProcessRunner.StartWith(exportSettings);
+			_exportProcessRunner.StartWith(sourceSettings, fieldMap, destinationSettings.ArtifactTypeId);
 		}
 	}
 }

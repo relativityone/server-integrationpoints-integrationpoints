@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Data;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
-using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
+using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			Assert.That(nativeFileInfos.Any(item => expectedFileNames.Exists(name => name == item.Name)));
 
 			var datFileInfo = GetFileInfo(directory);
-            Assert.That(datFileInfo?.Name, Is.EqualTo($"{_exportSettings.ExportedObjName}_export.{MetadataFormat}"));
+			Assert.That(datFileInfo?.Name, Is.EqualTo($"{ExportSettings.ExportedObjName}_export.{MetadataFormat}"));
 			Assert.That(datFileInfo?.Length, Is.GreaterThan(0));
 		}
 
