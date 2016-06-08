@@ -4,7 +4,6 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using FieldType = kCura.Relativity.Client.FieldType;
 
 namespace kCura.IntegrationPoints.Core.Managers.Implementations
 {
@@ -63,14 +62,14 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 					SourceJobDTO.Fields.JobHistoryIdFieldGuid, new FieldDefinition()
 					{
 						FieldName = IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYID_FIELD_NAME,
-						FieldType = FieldType.WholeNumber
+						FieldType = Relativity.Client.FieldType.WholeNumber
 					}
 				},
 				{
 					SourceJobDTO.Fields.JobHistoryNameFieldGuid, new FieldDefinition()
 					{
 						FieldName = IntegrationPoints.Contracts.Constants.SOURCEJOB_JOBHISTORYNAME_FIELD_NAME,
-						FieldType = FieldType.FixedLengthText
+						FieldType = Relativity.Client.FieldType.FixedLengthText
 					}
 				}
 			};
