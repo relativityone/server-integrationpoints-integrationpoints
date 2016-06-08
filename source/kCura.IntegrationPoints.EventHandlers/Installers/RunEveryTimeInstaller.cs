@@ -1,5 +1,6 @@
 ﻿using kCura.EventHandler;
 using System.Runtime.InteropServices;
+using kCura.IntegrationPoints.Core.Telemetry;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Migrations;
 
@@ -14,6 +15,10 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 		{
 			
 			new MigrationRunner(new EddsContext(Helper.GetDBContext(-1)), new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID()))).Run();
+
+			var telemetryManger = new TelemetryManager(base.Helper);
+			telemetryManger.AddMetricProviders(new ExportTelemetryMetricProvider());
+			telemetryManger.InstallMetrics();
 			return new Response { Success = true };
 		}
 	}

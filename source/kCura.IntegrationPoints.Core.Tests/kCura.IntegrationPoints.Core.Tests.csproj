@@ -540,6 +540,7 @@
     <Compile Include="Unit\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="Unit\Services\JobHistory\JobHistoryErrorServiceTest.cs" />
     <Compile Include="Unit\Services\JobHistory\JobHistoryServiceTest.cs" />
+    <Compile Include="Unit\Telemetry\TelemetryMangerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">
