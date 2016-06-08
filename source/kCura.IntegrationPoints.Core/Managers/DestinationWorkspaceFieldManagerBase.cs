@@ -105,11 +105,6 @@ namespace kCura.IntegrationPoints.Core.Managers
 				}
 				catch (Exception e)
 				{
-					try
-					{
-						fieldRepository.Delete(guidToArtifactId.Values);
-					}
-					catch { }
 					throw new Exception(errorMessage, e);
 				}
 			}
@@ -142,7 +137,6 @@ namespace kCura.IntegrationPoints.Core.Managers
 				}
 				catch (Exception e)
 				{
-					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
 					throw new Exception(errorMessage, e);
 				}
 
@@ -153,7 +147,6 @@ namespace kCura.IntegrationPoints.Core.Managers
 				}
 				catch (Exception e)
 				{
-					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
 					throw new Exception(errorMessage, e);
 				}
 
@@ -164,7 +157,6 @@ namespace kCura.IntegrationPoints.Core.Managers
 				}
 				catch (Exception e)
 				{
-					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
 					throw new Exception(errorMessage, e);
 				}
 			}
