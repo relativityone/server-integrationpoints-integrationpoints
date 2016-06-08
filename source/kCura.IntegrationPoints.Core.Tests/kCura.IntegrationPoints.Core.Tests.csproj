@@ -169,6 +169,7 @@
     <Compile Include="Unit\Managers\JobHistoryManagerTests.cs" />
     <Compile Include="Unit\Managers\ObjectTypeManagerTests.cs" />
     <Compile Include="Unit\Managers\QueueManagerTests.cs" />
+    <Compile Include="Unit\Managers\SourceJobManagerTests.cs" />
     <Compile Include="Unit\Managers\StateManagerTests.cs" />
     <Compile Include="Unit\RdoFilterTest.cs" />
     <Compile Include="Unit\Services\Domain\RelativityFeaturePathServiceTests.cs" />

@@ -198,6 +198,15 @@ namespace kCura.IntegrationPoints.Data.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SELECT COUNT(JobID) FROM {0} WHERE (JobID = @RootJobID OR RootJobID=@RootJobID).
+        /// </summary>
+        internal static string GetJobsCount {
+            get {
+                return ResourceManager.GetString("GetJobsCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SELECT ot.DescriptorArtifactTypeID, ot.Name
         ///FROM [EDDSDBO].ObjectType ot WITH(NOLOCK)
         ///WHERE DescriptorArtifactTypeID in

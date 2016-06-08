@@ -11,7 +11,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Group
 	{
-
 		public static int CreateGroup(string name)
 		{
 			// STEP 1: Create a DTO and set its properties.
@@ -21,7 +20,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			};
 
 			// STEP 2: Create a WriteResultSet. It provide details after the create operation completes.
-			WriteResultSet< kCura.Relativity.Client.DTOs.Group> resultSet;
+			WriteResultSet<kCura.Relativity.Client.DTOs.Group> resultSet;
 
 			// STEP 3: Create the new Group.
 			try
@@ -90,27 +89,28 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return true;
 		}
 
+		private const string _GET_WORKSPACE_GROUP = "api/Relativity.Services.Permission.IPermissionModule/Permission Manager/GetWorkspaceGroupSelectorAsync";
+		private const string _ADD_REMOVE_WORKSPACE_GROUPS = "api/Relativity.Services.Permission.IPermissionModule/Permission Manager/AddRemoveWorkspaceGroupsAsync";
+
 		public static void AddGroupToWorkspace(int workspaceId, int groupId)
 		{
-			string response1 = Rest.PostRequestAsJson("api/Relativity.Services.Permission.IPermissionModule/Permission Manager/GetWorkspaceGroupSelectorAsync", false, $"{{workspaceArtifactID:{workspaceId}}}");
-			GroupSelector groupSelector = JsonConvert.DeserializeObject<GroupSelector>(response1);
+			string response = Rest.PostRequestAsJson(_GET_WORKSPACE_GROUP, false, $"{{workspaceArtifactID:{workspaceId}}}");
+			GroupSelector groupSelector = JsonConvert.DeserializeObject<GroupSelector>(response);
 			groupSelector.DisabledGroups = new List<GroupRef>();
 			groupSelector.EnabledGroups = new List<GroupRef> { new GroupRef(groupId) };
 
 			string parameter = $"{{workspaceArtifactID:{workspaceId},groupSelector:{JsonConvert.SerializeObject(groupSelector)}}}";
-			Rest.PostRequestAsJson("api/Relativity.Services.Permission.IPermissionModule/Permission Manager/AddRemoveWorkspaceGroupsAsync", false, parameter);
-			
+			Rest.PostRequestAsJson(_ADD_REMOVE_WORKSPACE_GROUPS, false, parameter);
 		}
-
 
 		public static void RemoveGroupFromWorkspace(int workspaceId, int groupId)
 		{
-			string response1 = Rest.PostRequestAsJson("api/Relativity.Services.Permission.IPermissionModule/Permission Manager/GetWorkspaceGroupSelectorAsync", false, $"{{workspaceArtifactID:{workspaceId}}}");
-			GroupSelector groupSelector = JsonConvert.DeserializeObject<GroupSelector>(response1);
+			string response = Rest.PostRequestAsJson(_GET_WORKSPACE_GROUP, false, $"{{workspaceArtifactID:{workspaceId}}}");
+			GroupSelector groupSelector = JsonConvert.DeserializeObject<GroupSelector>(response);
 			groupSelector.DisabledGroups = new List<GroupRef> { new GroupRef(groupId) };
 
 			string parameter = $"{{workspaceArtifactID:{workspaceId},groupSelector:{JsonConvert.SerializeObject(groupSelector)}}}";
-			Rest.PostRequestAsJson("api/Relativity.Services.Permission.IPermissionModule/Permission Manager/AddRemoveWorkspaceGroupsAsync", false, parameter);
+			Rest.PostRequestAsJson(_ADD_REMOVE_WORKSPACE_GROUPS, false, parameter);
 		}
 	}
 }

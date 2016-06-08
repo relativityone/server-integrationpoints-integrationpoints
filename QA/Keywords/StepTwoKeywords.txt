@@ -1,0 +1,37 @@
+
+*** Settings ***
+| Documentation	| This suite of keywords deals with the Integration Point object and its associated pages and actions.
+
+
+*** Variables ***
+
+
+*** Keywords ***
+
+| Fill out the Following Fields of the Integration Point Step 2 form
+| | [Documentation]	| This keyword fills out the Integration Point Step 2 fields.
+| | ... 			| The value of ${Authentication} should be Select.../Anonymous/FastBind/Secure/Secure Socket Layer/Readonly server.
+| | ... 			| The value of ${ImportNestedItems} should be Yes or No.
+| | [ARGUMENTS]		| ${ConnectionPath}=NULL		| ${ObjectFilterString}=NULL	| ${Authentication}=NULL	| 
+| | ...				| ${ConnectionUsername}=NULL	| ${ConnectionPassword}=NULL	| ${ImportNestedItems}=NULL
+| | Wait for then Select iFrame	| id=configurationFrame	| 10s	| The page was not on Step 2 of the Integration Point form.
+| | Wait Until Page Contains Element	| id=connectionPath	| 10s	| The page was not on Step 2.
+| | Run Keyword Unless	| "${ConnectionPath}" == "NULL"		| Input Text	| id=connectionPath		| ${ConnectionPath}
+| | Run Keyword Unless	| "${ObjectFilterString}" == "NULL"	| Input Text	| id=connectionFilter	| ${ObjectFilterString}
+| | Run Keyword Unless	| "${Authentication}" == "NULL"		| Select from Select2 Dropdown	| s2id_authentication	| ${Authentication}
+| | Run Keyword Unless	| "${ConnectionUsername}" == "NULL"	| Input Text	| id=connectionUsername	| ${ConnectionUsername}
+| | Run Keyword Unless	| "${ConnectionPassword}" == "NULL"	| Input Text	| id=connectionPassword	| ${ConnectionPassword}
+
+| | Run Keyword If		| "${ImportNestedItems.lower()}" == "yes"	| Select Radio Button	| enable	| true	| 
+| | ... | ELSE IF		| "${ImportNestedItems.lower()}" == "no"	| Select Radio Button	| enable	| false	| 
+| | ... | ELSE IF		| "${ImportNestedItems.lower()}" != "null"	| Fail	| The variable "ImportNestedItems" expected "Yes", "No", or "NULL", but got "${ImportNestedItems}".
+| | Unselect Frame
+| | Select iFrame	| id=_externalPage
+
+*** Settings ***
+| Library	| String
+| Library	| Collections
+| Library 	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt

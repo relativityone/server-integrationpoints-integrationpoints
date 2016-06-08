@@ -212,6 +212,7 @@
     <Compile Include="Helpers\ApiHelper.cs" />
     <Compile Include="IChoiceQuery.cs" />
     <Compile Include="Models\MassEditObject.cs" />
+    <Compile Include="Queries\GetJobsCount.cs" />
     <Compile Include="Repositories\IArtifactGuidRepository.cs" />
     <Compile Include="Commands\MassEdit\IMassEditCommand.cs" />
     <Compile Include="Commands\MassEdit\RelativityMassEditBase.cs" />
@@ -252,6 +253,7 @@
     <Compile Include="Repositories\Implementations\SourceWorkspaceJobHistoryRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceJobRepository.cs" />
     <Compile Include="Repositories\IPermissionRepository.cs" />
+    <Compile Include="Repositories\IRelativityProviderObjectRepository.cs" />
     <Compile Include="Repositories\IScratchTableRepository.cs" />
     <Compile Include="Repositories\ISourceProviderRepository.cs" />
     <Compile Include="Repositories\ISourceWorkspaceJobHistoryRepository.cs" />
@@ -381,6 +383,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\AddWebApiConfig.sql" />
+    <Content Include="Resources\GetJobsCount.sql" />
     <Content Include="Resources\CreateJobTrackingEntry.sql" />
     <Content Include="Resources\GetJobCustodianManagerLinks.sql" />
     <Content Include="Resources\CreateCustodianManagerResourceTable.sql" />

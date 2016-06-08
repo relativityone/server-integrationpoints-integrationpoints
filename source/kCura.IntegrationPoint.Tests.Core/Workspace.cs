@@ -82,13 +82,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void DeleteWorkspace(int workspaceArtifactId)
 		{
-			if(workspaceArtifactId == 0) return;
+			if (workspaceArtifactId == 0) return;
 			//Create workspace DTO
 			using (IRSAPIClient proxy = Rsapi.CreateRsapiClient())
 			{
 				try
 				{
-
 					proxy.Repositories.Workspace.Delete(workspaceArtifactId);
 				}
 				catch (Exception ex)
@@ -105,7 +104,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				try
 				{
-
 					ResultSet<Relativity.Client.DTOs.Workspace> result = proxy.Repositories.Workspace.Read(workspaceArtifactId);
 					if (result.Success == false)
 					{
@@ -123,7 +121,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 					throw new Exception($"An error occurred while deleting workspace [{workspaceArtifactId}]. Error Message: {ex.Message}");
 				}
 			}
-
 		}
 
 		public static QueryResultSet<Relativity.Client.DTOs.Workspace> QueryWorkspace(Query<Relativity.Client.DTOs.Workspace> query, int results)

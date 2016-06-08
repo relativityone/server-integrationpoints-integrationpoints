@@ -19,12 +19,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_workspaceArtifactId = workspaceArtifactId;
 		}
 
-		public int CreateObjectType(int sourceWorkspaceArtifactTypeId)
+		public int CreateObjectType(int parentArtifactTypeId)
 		{
 			var objectType = new ObjectType(SourceJobDTO.ObjectTypeGuid)
 			{
 				Name = Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
-				ParentArtifactTypeID = sourceWorkspaceArtifactTypeId,
+				ParentArtifactTypeID = parentArtifactTypeId,
 				CopyInstancesOnParentCopy = false,
 				CopyInstancesOnWorkspaceCreation = false,
 				SnapshotAuditingEnabledOnDelete = false,
@@ -133,8 +133,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				}
 			};
 
-			kCura.Relativity.Client.DTOs.Field[] fieldsToCreate =
-				jobHistoryFields.Where(x => fieldGuids.Contains(x.Guids.First())).ToArray();
+			kCura.Relativity.Client.DTOs.Field[] fieldsToCreate = jobHistoryFields.Where(x => fieldGuids.Contains(x.Guids.First())).ToArray();
 
 			ResultSet<kCura.Relativity.Client.DTOs.Field> newFieldResultSet = null;
 			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
@@ -196,7 +195,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return guidToIdDictionary;
 		}
 
-		public int CreateSourceJobFieldOnDocument(int sourceJobArtifactTypeId)
+		public int CreateFieldOnDocument(int sourceJobArtifactTypeId)
 		{
 			var documentObjectType = new ObjectType() { DescriptorArtifactTypeID = 10 };
 			var jobHistoryObjectType = new ObjectType() { DescriptorArtifactTypeID = sourceJobArtifactTypeId };

@@ -1,22 +1,21 @@
-﻿using kCura.IntegrationPoints.Data.Extensions;
-using Relativity.Services.Group;
-using Relativity.Services.Permission;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
+using kCura.IntegrationPoints.Data.Extensions;
+using Relativity.Services.Group;
+using Relativity.Services.Permission;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Permission
 	{
-	    private static void IISReset()
-	    {
+		private static void IISReset()
+		{
 			Process process = System.Diagnostics.Process.Start(@"C:\Windows\System32\iisreset.exe");
 			process?.WaitForExit((int)TimeSpan.FromSeconds(30).TotalMilliseconds);
 		}
-	
+
 		public static GroupPermissions GetGroupPermissions(int workspaceId, int groupId)
 		{
 			GroupRef groupRef = new GroupRef(groupId);
