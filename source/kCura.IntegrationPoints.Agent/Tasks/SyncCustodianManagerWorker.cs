@@ -130,7 +130,9 @@ namespace kCura.IntegrationPoints.Agent.Tasks
                   (x.SourceField.FieldIdentifier.Equals(fieldEntryCustodianIdentifier.FieldIdentifier) ||
                    x.SourceField.FieldIdentifier.Equals(fieldEntryManagerIdentifier.FieldIdentifier)));
                 IDataSynchronizer dataSynchronizer = base.GetDestinationProvider(_destinationProviderRdo, newDestinationConfiguration, job);
-                base.SetupSubscriptions(dataSynchronizer, job);
+
+                base.SetupJobHistoryErrorSubscriptions(dataSynchronizer, job);
+
                 dataSynchronizer.SyncData(sourceData, managerLinkMap, newDestinationConfiguration);
 
                 if (missingManagers.Any())
