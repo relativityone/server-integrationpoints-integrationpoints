@@ -229,7 +229,7 @@ function protocol_onchange() {
     });
     // When the user clicks on <span> (x), close the modal
     $(".close").click(function() {
-        debugger;
+      
         modal.css({
             display: 'none'
         });
