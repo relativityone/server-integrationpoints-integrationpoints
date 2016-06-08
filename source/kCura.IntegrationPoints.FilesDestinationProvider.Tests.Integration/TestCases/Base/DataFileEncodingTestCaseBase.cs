@@ -9,11 +9,9 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base
 {
-	abstract class DataFileEncodingTestCaseBase : IExportTestCase
-	{
+	abstract class DataFileEncodingTestCaseBase : BaseMetadataExportTestCase
+    {
 		#region Fields
-
-		private const string _METADATA_FORMAT = "dat";
 
 		private readonly Encoding _expectedEncoding;
 
@@ -24,24 +22,20 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			_expectedEncoding = expectedEncoding;
 		}
 
-		public ExportSettings Prepare(ExportSettings settings)
+		public override ExportSettings Prepare(ExportSettings settings)
 		{
-			settings.ExportFilesLocation += $"_{GetType().Name}";
-
 			settings.OutputDataFileFormat = ExportSettings.DataFileFormat.Concordance;
 			settings.DataFileEncoding = _expectedEncoding;
 
-			return settings;
+			return base.Prepare(settings);
 		}
 		
-		public void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
 		{
-			var datFileInfo = directory.EnumerateFiles($"*.{_METADATA_FORMAT}", SearchOption.TopDirectoryOnly)
-				.FirstOrDefault();
-
-			Assert.IsNotNull(datFileInfo);
-			Assert.That(FileEncodingDetectionHelper.GetFileEncoding(datFileInfo.FullName), Is.EqualTo(_expectedEncoding));
+			var datFileInfo = GetFileInfo(directory);
+            Assert.That(FileEncodingDetectionHelper.GetFileEncoding(datFileInfo.FullName), Is.EqualTo(_expectedEncoding));
 		}
 
+	    public override string MetadataFormat => "dat";
 	}
 }

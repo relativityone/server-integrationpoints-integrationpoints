@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using kCura.WinEDDS;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 {
@@ -33,6 +34,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public DataFileFormat OutputDataFileFormat { get; set; }
 		public bool IncludeNativeFilesPath { get; set; }
 		public Encoding DataFileEncoding { get; set; }
+		public LoadFileType.FileFormat SelectedImageDataFileFormat { get; set; }
         public char ColumnSeparator { get; set; }
         public char QuoteSeparator { get; set; }
         public char NewlineSeparator { get; set; }

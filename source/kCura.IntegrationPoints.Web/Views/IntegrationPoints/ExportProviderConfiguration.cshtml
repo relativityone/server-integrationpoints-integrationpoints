@@ -211,6 +211,15 @@
 
                 <tr data-bind="visible: ExportImagesChecked() === 'true'">
                     <td class="editFieldNameRequired">
+                        Data File Format:
+                    </td>
+                    <td class="editFieldValue">
+                        <select id="imageDataFileFormatSelector" data-bind="options: imageDataFileFormats, optionsText: 'value', optionsValue: 'key', optionsCaption: 'Select...', value: SelectedImageDataFileFormat"></select>
+                    </td>
+                </tr>
+		
+                <tr data-bind="visible: ExportImagesChecked() === 'true'">
+                    <td class="editFieldNameRequired">
                         File Type :
                     </td>
                     <td class="editFieldValue">

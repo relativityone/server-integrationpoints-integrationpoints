@@ -7,22 +7,21 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-    internal class ItShouldExportDataFileAsCsv : IExportTestCase
+    internal class ItShouldExportDataFileAsCsv : BaseMetadataExportTestCase
     {
-        public ExportSettings Prepare(ExportSettings settings)
+        public override ExportSettings Prepare(ExportSettings settings)
         {
-            settings.ExportFilesLocation += $"_{GetType().Name}";
-
             settings.OutputDataFileFormat = ExportSettings.DataFileFormat.CSV;
 
-            return settings;
+            return base.Prepare(settings);
         }
 
-        public void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+        public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
         {
-            var fileInfo = DataFileFormatHelper.GetFileInFormat("*.csv", directory);
-            Assert.IsNotNull(fileInfo);
+            var fileInfo = GetFileInfo(directory);
             Assert.That(DataFileFormatHelper.FileStartWith("þControl Numberþ", fileInfo));
         }
+
+        public override string MetadataFormat => "csv";
     }
 }

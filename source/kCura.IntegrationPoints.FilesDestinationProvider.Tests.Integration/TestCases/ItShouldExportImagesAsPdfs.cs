@@ -7,20 +7,18 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-	internal class ItShouldExportImagesAsPdfs : IExportTestCase
-	{
-		public ExportSettings Prepare(ExportSettings settings)
+	internal class ItShouldExportImagesAsPdfs : BaseExportTestCase
+    {
+		public override ExportSettings Prepare(ExportSettings settings)
 		{
-			settings.ExportFilesLocation += $"_{nameof(ItShouldExportImagesAsPdfs)}";
-
 			settings.ExportImages = true;
 			settings.CopyFileFromRepository = true;
 			settings.ImageType = ExportSettings.ImageFileType.Pdf;
 
-			return settings;
+			return base.Prepare(settings);
 		}
 
-		public void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
 		{
 			var actualFiles = directory.EnumerateDirectories("IMAGES", SearchOption.AllDirectories)
 				.SelectMany(d => d.EnumerateFiles("*", SearchOption.AllDirectories))

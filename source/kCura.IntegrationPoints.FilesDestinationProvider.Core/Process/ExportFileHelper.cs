@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             expFile.LoadFileExtension = ParseDataFileFormat(exportSettings.OutputDataFileFormat);
             expFile.LoadFileIsHtml = IsHtml(exportSettings.OutputDataFileFormat);
             expFile.LoadFilesPrefix = exportSettings.ExportedObjName;
-            expFile.LogFileFormat = LoadFileType.FileFormat.Opticon;
+            expFile.LogFileFormat = exportSettings.SelectedImageDataFileFormat;
             expFile.ObjectTypeName = "Document";
             expFile.Overwrite = exportSettings.OverwriteFiles;
             expFile.RenameFilesToIdentifier = true;

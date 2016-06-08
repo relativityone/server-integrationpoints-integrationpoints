@@ -7,25 +7,17 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-	internal class ItShouldExportSavedSearch : IExportTestCase
+	internal class ItShouldExportSavedSearch : BaseMetadataExportTestCase
 	{
-		private const string _METADATA_FORMAT = "dat";
-
-		private string _expectedMetadataFilename;
-
-		public ExportSettings Prepare(ExportSettings settings)
+		public override ExportSettings Prepare(ExportSettings settings)
 		{
-			settings.ExportFilesLocation += $"_{nameof(ItShouldExportSavedSearch)}";
-
 			settings.CopyFileFromRepository = true;
 			settings.IncludeNativeFilesPath = true;
 
-			_expectedMetadataFilename = $"{settings.ExportedObjName}_export.{_METADATA_FORMAT}";
-
-			return settings;
+			return base.Prepare(settings);
 		}
 
-		public void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
+		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
 		{
 			var nativeDirectories = directory.EnumerateDirectories("NATIVES", SearchOption.AllDirectories);
 			var nativeFileInfos = nativeDirectories
@@ -40,12 +32,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 			Assert.AreEqual(expectedFileNames.Count, nativeFileInfos.Count, "Exported Native File count is not like expected!");
 			Assert.That(nativeFileInfos.Any(item => expectedFileNames.Exists(name => name == item.Name)));
 
-			var datFileInfo = directory.EnumerateFiles($"*.{_METADATA_FORMAT}", SearchOption.TopDirectoryOnly)
-				.FirstOrDefault();
-
-			Assert.That(datFileInfo, Is.Not.Null);
-			Assert.That(datFileInfo?.Name, Is.EqualTo(_expectedMetadataFilename));
+			var datFileInfo = GetFileInfo(directory);
+            Assert.That(datFileInfo?.Name, Is.EqualTo($"{_exportSettings.ExportedObjName}_export.{MetadataFormat}"));
 			Assert.That(datFileInfo?.Length, Is.GreaterThan(0));
 		}
+
+		public override string MetadataFormat => "dat";
 	}
 }

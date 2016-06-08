@@ -232,6 +232,20 @@
             required: true
         });
 
+        this.imageDataFileFormats = ko.observableArray([
+            { key: 0, value: "Opticon" },
+            { key: 1, value: "IPRO" },
+            { key: 2, value: "IPRO (FullText)" }
+        ]);
+
+        this.SelectedImageDataFileFormat = ko.observable(state.SelectedImageDataFileFormat).extend({
+            required: {
+                onlyIf: function () {
+                    return self.ExportImagesChecked() === "true";
+                }
+            }
+        });
+
         this.imageFileTypes = ko.observableArray([
             { key: 0, value: "Single page TIFF/JPEG" },
             { key: 1, value: "Multi page TIFF/JPEG" },
@@ -262,6 +276,7 @@
                 "IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
                 "SelectedDataFileFormat": self.SelectedDataFileFormat(),
                 "DataFileEncodingType": self.DataFileEncodingType(),
+                "SelectedImageDataFileFormat": self.SelectedImageDataFileFormat(),
                 "ColumnSeparator": self.ColumnSeparator(),
                 "QuoteSeparator": self.QuoteSeparator(),
                 "NewlineSeparator": self.NewlineSeparator(),

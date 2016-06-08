@@ -176,6 +176,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\BaseExportTestCase.cs" />
+    <Compile Include="Abstract\BaseMetadataExportTestCase.cs" />
     <Compile Include="Abstract\IExportTestCase.cs" />
     <Compile Include="Helpers\ConfigSettings.cs" />
     <Compile Include="Helpers\DataFileFormatHelper.cs" />
@@ -191,6 +193,9 @@
     <Compile Include="TestCases\ItShouldExportDataFileAsHTML.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithUnicodeEncoding.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithUTF8Encoding.cs" />
+    <Compile Include="TestCases\ItShouldExportImageDataFileAsIPROFullText.cs" />
+    <Compile Include="TestCases\ItShouldExportImageDataFileAsIPRO.cs" />
+    <Compile Include="TestCases\ItShouldExportImageDataFileAsOpticon.cs" />
     <Compile Include="TestCases\ItShouldExportImagesAsMultiplePages.cs" />
     <Compile Include="TestCases\ItShouldExportImagesAsPdfs.cs" />
     <Compile Include="TestCases\ItShouldExportImagesAsSinglePages.cs" />
