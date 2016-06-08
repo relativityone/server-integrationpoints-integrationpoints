@@ -22,7 +22,6 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class SyncWorker : IntegrationPointTaskBase, ITask
 	{
-		internal IJobHistoryService _jobHistoryService;
 		private JobStatisticsService _statisticsService;
 		private IEnumerable<Core.IBatchStatus> _batchStatus;
 

@@ -28,7 +28,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 
 		private FieldMap[] _fieldMaps;
 		private TargetDocumentsTaggingManager _instance;
-		private Job _job;
+		private Job _job = null;
 
 		readonly SourceWorkspaceDTO _sourceWorkspaceDto = new SourceWorkspaceDTO()
 		{

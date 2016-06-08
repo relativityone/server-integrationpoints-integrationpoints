@@ -17,14 +17,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit
 		private ITempDocumentTableFactory _docTableFactory;
 		private IRepositoryFactory _repositoryFactory;
 		private IOnBehalfOfUserClaimsPrincipalFactory _onBehalfOfUserClaimsPrincipalFactory;
-		private ClaimsPrincipal _claimsPrincipal;
+		private ClaimsPrincipal _claimsPrincipal = null;
 		private IConsumeScratchTableBatchStatus _instance;
 		private IJobHistoryRepository _jobHistoryRepository;
 		private readonly int _jobHistoryRdoId = 12345;
 		private readonly string _uniqueJobId = "12-25-96";
 		private readonly int _sourceWorkspaceId = 56879;
 		private readonly int _submittedBy = 4141;
-		private readonly Job _job;
+		private readonly Job _job = null;
 
 		[SetUp]
 		public void Setup()

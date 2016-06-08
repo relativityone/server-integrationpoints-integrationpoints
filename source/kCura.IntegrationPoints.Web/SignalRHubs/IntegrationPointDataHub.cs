@@ -25,7 +25,6 @@ namespace kCura.IntegrationPoints.Web.SignalRHubs
         private int _intervalBetweentasks = 100;
         private IContextContainer _context;
         private IManagerFactory _managerFactory;
-        private ISessionService _sessionService;
         private IIntegrationPointManager _integrationPointManager;
 
         public IntegrationPointDataHub() :

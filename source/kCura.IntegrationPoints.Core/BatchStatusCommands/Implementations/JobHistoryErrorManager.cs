@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
@@ -17,10 +16,8 @@ namespace kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations
 		private readonly int _sourceWorkspaceArtifactId;
 		private readonly string _uniqueJobId;
 		private readonly ITempDocTableHelper _tempTableHelper;
-		private ScratchTableRepository _scratchTable;
 		private readonly JobHistoryErrorDTO.UpdateStatusType _updateStatusType;
 		private int _jobHistoryErrorTypeId;
-		private string _tempTableName;
 
 		public JobHistoryErrorManager(ITempDocumentTableFactory tempDocumentTableFactory, IRepositoryFactory repositoryFactory, IOnBehalfOfUserClaimsPrincipalFactory userClaimsPrincipalFactory,
 			int sourceWorkspaceArtifactId, string uniqueJobId, int submittedBy, JobHistoryErrorDTO.UpdateStatusType updateStatusType)

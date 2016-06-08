@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 		private const int _WORKSPACE_ID = 23432;
 
 		[SetUp]
-		public void TestFixtureSetUp()
+		public new void TestFixtureSetUp()
 		{
 			_caseServiceContext = this.GetMock<ICaseServiceContext>();
 			_permissionRepository = this.GetMock<IPermissionRepository>();

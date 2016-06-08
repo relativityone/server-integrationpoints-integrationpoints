@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private ITempDocumentTableFactory _docTableFactory;
 		private IRepositoryFactory _repositoryFactory;
 		private IOnBehalfOfUserClaimsPrincipalFactory _onBehalfOfUserClaimsPrincipalFactory;
-		private ClaimsPrincipal _claimsPrincipal;
+		private ClaimsPrincipal _claimsPrincipal = null;
 		private IWorkspaceRepository _workspaceRepository;
 		private IConsumeScratchTableBatchStatus _instance;
 		private IDestinationWorkspaceRepository _destinationWorkspaceRepository;
@@ -34,7 +34,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.BatchStatusCommands
 		private readonly string _updatedDestWorkspaceName = "New Workspace Name";
 		private readonly int _submittedBy = 4141;
 		private SourceConfiguration _sourceConfig;
-		private readonly Job _job;
+		private readonly Job _job = null;
 		private DestinationWorkspaceDTO _emptyDestinationWorkspace;
 		private DestinationWorkspaceDTO _normalDestinationWorkspace;
 		private WorkspaceDTO _workspaceX;
