@@ -14,7 +14,8 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 		public SourceJobManager(IRepositoryFactory repositoryFactory)
 			: base(repositoryFactory,
 				  IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEJOB_FIELD_NAME,
-				  SourceJobDTO.ObjectTypeGuid)
+				  SourceJobDTO.ObjectTypeGuid,
+				  "Unable to create Relativity Source Job object. Please contact the system administrator.")
 		{
 			_repositoryFactory = repositoryFactory;
 		}
@@ -32,11 +33,10 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			IArtifactGuidRepository artifactGuidRepository = _repositoryFactory.GetArtifactGuidRepository(destinationWorkspaceArtifactId);
 			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(destinationWorkspaceArtifactId);
 
-			const string errorMessage = "Unable to create Relativity Source Job object. Please contact the system administrator.";
-			int sourceJobDescriptorArtifactTypeId = CreateObjectType(destinationWorkspaceArtifactId, sourceJobRepository, artifactGuidRepository, sourceWorkspaceArtifactTypeId, errorMessage);
+			int sourceJobDescriptorArtifactTypeId = CreateObjectType(destinationWorkspaceArtifactId, sourceJobRepository, artifactGuidRepository, sourceWorkspaceArtifactTypeId);
 			var fieldGuids = new List<Guid>(2) { SourceJobDTO.Fields.JobHistoryIdFieldGuid, SourceJobDTO.Fields.JobHistoryNameFieldGuid };
-			CreateObjectFields(fieldGuids, artifactGuidRepository, sourceJobRepository, fieldRepository, sourceJobDescriptorArtifactTypeId, errorMessage);
-			CreateDocumentsFields(sourceJobDescriptorArtifactTypeId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid, artifactGuidRepository, sourceJobRepository, fieldRepository, errorMessage);
+			CreateObjectFields(fieldGuids, artifactGuidRepository, sourceJobRepository, fieldRepository, sourceJobDescriptorArtifactTypeId);
+			CreateDocumentsFields(sourceJobDescriptorArtifactTypeId, SourceJobDTO.Fields.JobHistoryFieldOnDocumentGuid, artifactGuidRepository, sourceJobRepository, fieldRepository);
 
 			// Create instance of Job History object
 			SourceWorkspaceJobHistoryDTO sourceWorkspaceJobHistoryDto = sourceWorkspaceJobHistoryRepository.Retrieve(jobHistoryArtifactId);
