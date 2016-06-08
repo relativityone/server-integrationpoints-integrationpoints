@@ -11,9 +11,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 	public class SourceWorkspaceManager : DestinationWorkspaceFieldManagerBase, ISourceWorkspaceManager
 	{
 		public SourceWorkspaceManager(IRepositoryFactory repositoryFactory)
-			: base(repositoryFactory, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, SourceWorkspaceDTO.ObjectTypeGuid)
-		{
-		}
+			: base(repositoryFactory, IntegrationPoints.Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME, SourceWorkspaceDTO.ObjectTypeGuid) { }
 
 		public SourceWorkspaceDTO InitializeWorkspace(int sourceWorkspaceArtifactId, int destinationWorkspaceArtifactId)
 		{
@@ -67,11 +65,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		protected override IDictionary<Guid, FieldDefinition> GetObjectFieldDefinitions()
 		{
-			return new Dictionary<Guid, FieldDefinition>()
+			return new Dictionary<Guid, FieldDefinition>
 			{
 				{
 					SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid,
-					new FieldDefinition()
+					new FieldDefinition
 					{
 						FieldName = IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
 						FieldType = Relativity.Client.FieldType.WholeNumber
@@ -79,7 +77,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				},
 				{
 					SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid,
-					new FieldDefinition()
+					new FieldDefinition
 					{
 						FieldName = IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
 						FieldType = Relativity.Client.FieldType.FixedLengthText

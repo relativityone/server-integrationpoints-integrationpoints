@@ -5,7 +5,6 @@ using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
