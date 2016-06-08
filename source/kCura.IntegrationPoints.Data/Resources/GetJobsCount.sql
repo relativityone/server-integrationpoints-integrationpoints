@@ -1,0 +1,1 @@
+﻿SELECT COUNT(JobID) FROM [{0}] WHERE (JobID = @RootJobID OR RootJobID=@RootJobID)

@@ -8,12 +8,14 @@ namespace kCura.IntegrationPoints.Core.Managers
 {
 	public abstract class DestinationWorkspaceFieldManagerBase
 	{
+		private string ErrorMassage { get; }
 		protected readonly IRepositoryFactory RepositoryFactory;
 		protected readonly string FieldName;
 		protected readonly Guid FieldGuid;
 
-		protected DestinationWorkspaceFieldManagerBase(IRepositoryFactory repositoryFactory, string fieldName, Guid fieldGuid)
+		protected DestinationWorkspaceFieldManagerBase(IRepositoryFactory repositoryFactory, string fieldName, Guid fieldGuid, string errorMassage)
 		{
+			ErrorMassage = errorMassage;
 			RepositoryFactory = repositoryFactory;
 			FieldName = fieldName;
 			FieldGuid = fieldGuid;
@@ -22,8 +24,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		protected int CreateObjectType(int workspaceArtifactId,
 			IRelativityProviderObjectRepository relativityObjectRepository,
 			IArtifactGuidRepository artifactGuidRepository,
-			int parentArtifactTypeId,
-			string errorWhenAddingGuid)
+			int parentArtifactTypeId)
 		{
 			IObjectTypeRepository objectTypeRepository = RepositoryFactory.GetObjectTypeRepository(workspaceArtifactId);
 
@@ -48,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 				}
 				catch (Exception e)
 				{
-					throw new Exception(errorWhenAddingGuid, e);
+					throw new Exception(ErrorMassage, e);
 				}
 
 				// Get descriptor artifact type id of the now existing object type
@@ -74,8 +75,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 			IArtifactGuidRepository artifactGuidRepository,
 			IRelativityProviderObjectRepository relativityObjectRepository,
 			IFieldRepository fieldRepository,
-			int descriptorArtifactTypeId,
-			string errorMessage)
+			int descriptorArtifactTypeId)
 		{
 			IDictionary<Guid, bool> objectTypeFields = artifactGuidRepository.GuidsExist(fieldGuids);
 			IList<Guid> missingFieldGuids = objectTypeFields.Where(x => x.Value == false).Select(y => y.Key).ToList();
@@ -109,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 				}
 				catch (Exception e)
 				{
-					throw new Exception(errorMessage, e);
+					throw new Exception(ErrorMassage, e);
 				}
 			}
 		}
@@ -118,8 +118,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 			Guid documentFieldGuid,
 			IArtifactGuidRepository artifactGuidRepository,
 			IRelativityProviderObjectRepository relativityObjectRepository,
-			IFieldRepository fieldRepository,
-			string errorMessage)
+			IFieldRepository fieldRepository)
 		{
 			bool sourceWorkspaceFieldOnDocumentExists = artifactGuidRepository.GuidExists(documentFieldGuid);
 			if (!sourceWorkspaceFieldOnDocumentExists)
@@ -133,7 +132,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 					int? retrieveArtifactViewFieldId = fieldRepository.RetrieveArtifactViewFieldId(sourceWorkspaceFieldArtifactId);
 					if (!retrieveArtifactViewFieldId.HasValue)
 					{
-						throw new Exception(errorMessage);
+						throw new Exception(ErrorMassage);
 					}
 
 					// Set the filter type
@@ -145,7 +144,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 				}
 				catch (Exception e)
 				{
-					throw new Exception(errorMessage, e);
+					throw new Exception(ErrorMassage, e);
 				}
 			}
 		}

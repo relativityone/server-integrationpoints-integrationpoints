@@ -102,7 +102,7 @@
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
 
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
 
 | | @{Step1Fields}  | Create list | ${IntegrationName2} | Append/Overlay |
 | | ... | LDAP | Custodian | no
@@ -115,7 +115,7 @@
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
 
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
 
 | | @{Step1Fields}  | Create list | ${IntegrationName3} | Append/Overlay |
 | | ... | LDAP | Custodian | no
@@ -128,7 +128,7 @@
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
 
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
 
 | | [Teardown] | Drop connection to the relativity services api
 

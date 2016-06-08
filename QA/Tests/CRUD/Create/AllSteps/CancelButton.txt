@@ -54,7 +54,7 @@
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Cancellation Test	| Append/Overlay | LDAP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form | ConnectionPath=${ConnectionPath}	| Authentication=${Authentication}
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form | ConnectionPath=${ConnectionPath}	| Authentication=${Authentication}
 | | Click	| Cancel
 | | Select iFrame	| id=ListTemplateFrame
 
@@ -74,7 +74,7 @@
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| Step 3 Cancellation Test	| Append/Overlay | LDAP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}	| Authentication=${Authentication}
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}	| Authentication=${Authentication}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Map the Following Fields on the Integration Point Step 3 form	| 
 | | ... | Email			| mail			| 

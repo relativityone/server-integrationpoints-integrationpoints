@@ -113,7 +113,7 @@
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| Progress Bar Button Testing	| Append/Overlay | LDAP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}	| Authentication=${Authentication}
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}	| Authentication=${Authentication}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Proceed to the Previous Step of the Integration Point wizard
 
@@ -127,7 +127,7 @@
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| Progress Bar Button Testing	| Append/Overlay | LDAP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}	| Authentication=${Authentication}
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}	| Authentication=${Authentication}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Proceed to the Previous Step of the Integration Point wizard
 
@@ -141,7 +141,7 @@
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| Progress Bar Button Testing	| Append/Overlay | LDAP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}	| Authentication=${Authentication}
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}	| Authentication=${Authentication}
 | | Proceed to the Next Step of the Integration Point wizard
 
 | | Verify that the following Progress Bar Button is Enabled	| ${Back Button}
@@ -154,7 +154,7 @@
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| Progress Bar Button Testing	| Append/Overlay | LDAP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}	| Authentication=${Authentication}
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}	| Authentication=${Authentication}
 | | Proceed to the Next Step of the Integration Point wizard
 
 | | Verify that the following Progress Bar Button is Enabled	| ${Save Button}

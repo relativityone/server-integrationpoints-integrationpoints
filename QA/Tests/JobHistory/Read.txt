@@ -163,7 +163,7 @@
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint1}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint1}
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationPoint1}
 | | [Teardown]		| Drop connection to the relativity services api

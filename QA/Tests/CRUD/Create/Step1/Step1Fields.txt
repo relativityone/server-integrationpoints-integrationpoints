@@ -27,7 +27,7 @@
 | | [Documentation]	| Verify that clicking New Integration Point from the List view Shows the Create Integration Point Detail screen.
 | | ...				| [id] 0f5a4c80-a89f-11e4-9811-b8ca3a83048f
 | | [Tags]			| automated
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Header has the following text | Create Integration Point
+| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that the Header has the following text | Create LDAP Integration Point
 
 
 | The Set Integration Details sections are in the correct order

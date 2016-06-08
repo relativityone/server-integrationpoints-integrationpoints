@@ -1,0 +1,117 @@
+
+*** Settings ***
+| Documentation 	| Verify that the Connect to Source step (Step 2) of the Integration Point creation process shows the correct fields and data when using FTP.
+| Metadata			| Authors	| Daniel Oliver	| William Sehy
+| Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
+| Suite Setup		| Open and Log in to Method
+| Test Setup		| Go to Step 2 of the Create Integration Point Process
+| Test Teardown 	| Capture Screenshot If Test Fails
+| Suite Teardown	| Close All Browsers
+
+
+*** Variables ***
+
+| ${WorkspaceName}	| LDAP Sync
+
+
+*** Test Cases ***
+
+| The Source Connection section's fields are in the correct order
+| | [Documentation]	| Verify that the fields in the Source Connection section are sorted correctly.
+| | ...				| 
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | Verify that the Card contains the following fields:
+| | ... | - Host
+| | ... | - Protocol
+| | ... | - Port
+| | ... | - Username
+| | ... | - Password
+| | ... | - CSV Filepath
+
+
+| The correct fields have the Required Field Indicator
+| | [Documentation]	| Verify that the Required Field indicator is present for the correct fields.
+| | ...				| 
+| | [Tags]			| untested
+| | Run Keyword And Continue On Failure	| Verify that the following field is required		| Host:
+| | Run Keyword And Continue On Failure	| Verify that the following field is required		| Protocol:
+| | Run Keyword And Continue On Failure	| Verify that the following field is not required	| Port:
+| | Run Keyword And Continue On Failure	| Verify that the following field is not required	| Username:
+| | Run Keyword And Continue On Failure	| Verify that the following field is not required	| Password:
+| | Run Keyword And Continue On Failure	| Verify that the following field is required		| CSV Filepath:
+
+
+| The Protocol list's default value is FTP
+| | [Documentation]	| Verify that the Protocol Field's default value is "FTP - File Transfer Protocol".
+| | ...				| 
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | Verify that the Protocol dropdown is set to: FTP - File Transfer Protocol
+
+
+| The Protocol list has the correct values
+| | [Documentation]	| Verify that the Protocol List has the correct options.
+| | ...				| 
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | Verify that the Protocol dropdown contains the following options:
+| | ... | - FTP - File Transfer Protocol
+| | ... | - SFTP - SSH File Transfer Protocol
+
+
+| The Port Field's default value is 21 for FTP
+| | [Documentation]	| Verify that the The Port Field's default value is 21 when the Protocol Field's value is "FTP - File Transfer Protocol".
+| | ...				| 
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Select Protocol: FTP - File Transfer Protocol
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Port field has the following value: 21
+
+
+| The Port Field's default value is 22 for SFTP
+| | [Documentation]	| Verify that the The Port Field's default value is 22 when the Protocol Field's value is "SFTP - SSH File Transfer Protocol".
+| | ...				| 
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Select Protocol: SFTP - SSH File Transfer Protocol
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the Port field has the following value: 22
+
+
+| The CSV Filepath has the correct placeholder Text
+| | [Documentation]	| Verify that the CSV Filepath field has the correct placeholder Text.
+| | ...				| 
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Expected Results:
+| | ... | Verify that the CSV Filepath field has the following placeholder text: e.g. /export/nightlyexport/*yyyy*-*MM*-*dd*_HRIS_export
+
+
+
+*** Keywords *** 
+
+| Go to Step 2 of the Create Integration Point Process
+| | Open Create Integration Point
+| | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Testing | Append/Overlay | FTP (CSV File) | Custodian | No
+| | Proceed to the Next Step of the Integration Point wizard
+| | Wait for then Select iFrame	| id=configurationFrame	| 10s	| The page was not on Step 2 of the Integration Point form.
+
+
+*** Settings ***
+| Library   | Collections
+#| Library	| ${KEYWORD_DIR}/ManualKeywords.py
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/FormKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource  | ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

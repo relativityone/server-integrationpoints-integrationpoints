@@ -86,13 +86,15 @@ namespace kCura.IntegrationPoints.Contracts
 
 		private bool FilterByAllowedAssemblyNames(AssemblyName assemblyName)
 		{
-			string[] allowedInstallerAssemblies = new[]
+            //AK: perhaps the filter should be a little more generic to cover all related binaries - kCura.IntegrationPoints.*
+            string[] allowedInstallerAssemblies = new[]
 			{
 				"kCura.IntegrationPoints",
 				"kCura.IntegrationPoints.Contracts",
 				"kCura.IntegrationPoints.Core",
-				"kCura.IntegrationPoints.Data"
-			};
+				"kCura.IntegrationPoints.Data",
+                "kCura.IntegrationPoints.FtpProvider"
+            };
 
 			if (allowedInstallerAssemblies.Contains(assemblyName.Name))
 			{
@@ -105,10 +107,10 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <summary>
 		/// Gets the provider in the app domain from the specific identifier
 		/// </summary>
-		/// <param name="identifer">The identifier that represents the provider</param>
+		/// <param name="identifier">The identifier that represents the provider</param>
 		/// <param name="helper">Optional IHelper object to use for resolving classes</param>
 		/// <returns>A Data source provider to retrieve data and pass along to the source.</returns>
-		public Provider.IDataSourceProvider GetProvider(Guid identifer, IHelper helper)
+		public Provider.IDataSourceProvider GetProvider(Guid identifier, IHelper helper)
 		{
 			if (_windsorContainer == null)
 			{
@@ -136,7 +138,7 @@ namespace kCura.IntegrationPoints.Contracts
 				}
 			}
 
-			return new ProviderWrapper(_providerFactory.CreateProvider(identifer));
+			return new ProviderWrapper(_providerFactory.CreateProvider(identifier));
 		}
 	}
 }

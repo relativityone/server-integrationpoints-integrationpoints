@@ -32,9 +32,9 @@ namespace kCura.IntegrationPoints.Core.Domain
 			"kCura.IntegrationPoints.EventHandlers",
 			"kCura.IntegrationPoints.Agent",
 			"kCura.IntegrationPoints.Agent",
-			"kCura.IntegrationPoints.Email",
-			"kCura.IntegrationPoints.DocumentTransferProvider.Shared"
-		};
+            "kCura.IntegrationPoints.Email",
+            "kCura.IntegrationPoints.DocumentTransferProvider.Shared"
+        };
 
 		/// <summary>
 		/// Loads assembly the current app domain.
