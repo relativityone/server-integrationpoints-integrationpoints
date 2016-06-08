@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
 	[TestFixture]
+	[Explicit]
 	public class PermissionErrorMessageForRelativityProviderTest : WorkspaceDependentTemplate
 	{
 		private IObjectTypeRepository _objectTypeRepository;
