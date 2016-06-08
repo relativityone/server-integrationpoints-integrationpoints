@@ -647,7 +647,7 @@
       <ColumnName>MessageType</ColumnName>
     </ArtifactViewField>
     <ArtifactViewField>
-      <ArtifactViewFieldId>1001924</ArtifactViewFieldId>
+      <ArtifactViewFieldId>1002494</ArtifactViewFieldId>
       <ArtifactTypeId>10</ArtifactTypeId>
       <ColumnName>NativeFile</ColumnName>
     </ArtifactViewField>
@@ -1531,7 +1531,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-06-01T18:47:06.8289317Z</ExtractionDate>
+  <ExtractionDate>2016-06-07T18:31:56.2261958Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -4391,9 +4391,14 @@
           </ViewFields>
           <ViewOrders>
             <ViewOrder>
-              <ArtifactViewFieldId>1001542</ArtifactViewFieldId>
-              <Direction>ASC</Direction>
+              <ArtifactViewFieldId>1001578</ArtifactViewFieldId>
+              <Direction>DESC</Direction>
               <Order>0</Order>
+            </ViewOrder>
+            <ViewOrder>
+              <ArtifactViewFieldId>1001539</ArtifactViewFieldId>
+              <Direction>DESC</Direction>
+              <Order>1</Order>
             </ViewOrder>
           </ViewOrders>
           <VisualizationType>0</VisualizationType>
@@ -4401,7 +4406,7 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>2.0.0.35</ApplicationVersion>
+          <ApplicationVersion>2.0.0.57</ApplicationVersion>
         </View>
       </Views>
       <ApplicationVersion>0.0.0.1</ApplicationVersion>
@@ -8097,7 +8102,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.56</ApplicationVersion>
+          <ApplicationVersion>2.0.0.57</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8604,7 +8609,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.56</ApplicationVersion>
+          <ApplicationVersion>2.0.0.57</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8656,7 +8661,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.56</ApplicationVersion>
+          <ApplicationVersion>2.0.0.57</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8708,7 +8713,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.56</ApplicationVersion>
+          <ApplicationVersion>2.0.0.57</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8760,7 +8765,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.56</ApplicationVersion>
+          <ApplicationVersion>2.0.0.57</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8812,7 +8817,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.56</ApplicationVersion>
+          <ApplicationVersion>2.0.0.57</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8864,7 +8869,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.56</ApplicationVersion>
+          <ApplicationVersion>2.0.0.57</ApplicationVersion>
         </SystemField>
       </SystemFields>
       <SystemLayouts />
@@ -8941,9 +8946,9 @@
   </Objects>
   <ParentTabs />
   <RelativityVersion>9.3.388.10</RelativityVersion>
-  <Version>2.0.0.56</Version>
+  <Version>2.0.0.57</Version>
   <TabDisplay>true</TabDisplay>
-  <OriginSignature>822363B1-5445-471E-AF4F-61384A89304F</OriginSignature>
+  <OriginSignature>822363b1-5445-471e-af4f-61384a89304f</OriginSignature>
   <MasterScripts />
   <ApplicationScripts />
   <CustomPages>
@@ -8971,7 +8976,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.56</ApplicationVersion>
+      <ApplicationVersion>2.0.0.57</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038277</ArtifactId>
@@ -8982,7 +8987,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.56</ApplicationVersion>
+      <ApplicationVersion>2.0.0.57</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038278</ArtifactId>
@@ -8993,7 +8998,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>1</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.56</ApplicationVersion>
+      <ApplicationVersion>2.0.0.57</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038279</ArtifactId>
@@ -9004,7 +9009,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>5</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.56</ApplicationVersion>
+      <ApplicationVersion>2.0.0.57</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038393</ArtifactId>
@@ -9015,7 +9020,7 @@
       <ExecutionType>14</ExecutionType>
       <Order>60</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.56</ApplicationVersion>
+      <ApplicationVersion>2.0.0.57</ApplicationVersion>
     </InstallEventHandler>
     <InstallEventHandler>
       <ArtifactId>1038468</ArtifactId>
@@ -9026,7 +9031,7 @@
       <ExecutionType>10</ExecutionType>
       <Order>80</Order>
       <AssemblyName>kCura.IntegrationPoints.dll</AssemblyName>
-      <ApplicationVersion>2.0.0.56</ApplicationVersion>
+      <ApplicationVersion>2.0.0.57</ApplicationVersion>
     </InstallEventHandler>
   </InstallEventHandlers>
   <SavedSearches />

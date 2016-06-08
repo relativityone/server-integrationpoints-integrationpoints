@@ -252,6 +252,7 @@
     <Compile Include="Repositories\Implementations\SourceWorkspaceJobHistoryRepository.cs" />
     <Compile Include="Repositories\Implementations\SourceJobRepository.cs" />
     <Compile Include="Repositories\IPermissionRepository.cs" />
+    <Compile Include="Repositories\IRelativityProviderObjectRepository.cs" />
     <Compile Include="Repositories\IScratchTableRepository.cs" />
     <Compile Include="Repositories\ISourceProviderRepository.cs" />
     <Compile Include="Repositories\ISourceWorkspaceJobHistoryRepository.cs" />

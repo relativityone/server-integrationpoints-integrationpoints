@@ -133,6 +133,36 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 		[TestCase(true)]
 		[TestCase(false)]
+		public void CreateScratchTableAndInsertDuplicateEntries(bool useEDDSResource)
+		{
+			//ARRANGE
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable(1, 5));
+			string tablePrefix = "RKO";
+			string tableSuffix = Guid.NewGuid().ToString();
+			Dictionary<int, string> controlNumbersByDocumentIds = GetDocumentIdToControlNumberMapping();
+			List<int> documentIds = controlNumbersByDocumentIds.Keys.ToList();
+
+			_toggle.IsAOAGFeatureEnabled().Returns(!useEDDSResource);
+
+			var scratchTableRepository = new ScratchTableRepository(Helper, _toggle, _documentRepository, _fieldRepository, tablePrefix, tableSuffix, SourceWorkspaceArtifactId);
+			_currentScratchTableRepository = scratchTableRepository;
+
+			//ACT
+			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
+
+			//ASSERT
+			try
+			{
+				scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
+			}
+			catch (Exception ex)
+			{
+				Assert.IsTrue(ex.InnerException.Message.Contains("Cannot insert duplicate key in object"));
+			}
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
 		public void DeletionOfScratchTable(bool useEDDSResource)
 		{
 			//ARRANGE

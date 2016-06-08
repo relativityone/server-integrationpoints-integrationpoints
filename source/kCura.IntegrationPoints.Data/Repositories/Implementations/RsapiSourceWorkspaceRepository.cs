@@ -19,12 +19,12 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_workspaceArtifactId = workspaceArtifactId;
 		}
 
-		public int CreateObjectType()
+		public int CreateObjectType(int parentArtifactTypeId)
 		{
 			var objectType = new ObjectType(SourceWorkspaceDTO.ObjectTypeGuid)
 			{
 				Name = Contracts.Constants.SPECIAL_SOURCEWORKSPACE_FIELD_NAME,
-				ParentArtifactTypeID = (int)ArtifactType.Case,
+				ParentArtifactTypeID = parentArtifactTypeId,
 				CopyInstancesOnParentCopy = false,
 				CopyInstancesOnWorkspaceCreation = false,
 				SnapshotAuditingEnabledOnDelete = false,
@@ -137,7 +137,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return guidToIdDictionary;
 		}
 
-		public int CreateSourceWorkspaceFieldOnDocument(int sourceWorkspaceObjectTypeId)
+		public int CreateFieldOnDocument(int sourceWorkspaceObjectTypeId)
 		{
 			var documentObjectType = new ObjectType() { DescriptorArtifactTypeID = (int)ArtifactType.Document };
 			var sourceWorkspaceObjectType = new ObjectType() { DescriptorArtifactTypeID = sourceWorkspaceObjectTypeId };
