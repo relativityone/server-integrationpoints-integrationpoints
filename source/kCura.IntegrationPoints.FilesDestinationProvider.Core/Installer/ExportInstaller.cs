@@ -9,24 +9,25 @@ using kCura.WinEDDS.Exporters;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer
 {
-    public class ExportInstaller : IWindsorInstaller
-    {
-        public void Install(IWindsorContainer container, IConfigurationStore store)
-        {
-            container.Register(Component.For<ICredentialProvider>().ImplementedBy<TokenCredentialProvider>());
+	public class ExportInstaller : IWindsorInstaller
+	{
+		public void Install(IWindsorContainer container, IConfigurationStore store)
+		{
+			container.Register(Component.For<ICredentialProvider>().ImplementedBy<TokenCredentialProvider>());
 
-            container.Register(Component.For<LoggingMediatorFactory>().ImplementedBy<LoggingMediatorFactory>());
-            container.Register(Component.For<ILoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()));
-            container.Register(Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
+			container.Register(Component.For<LoggingMediatorFactory>().ImplementedBy<LoggingMediatorFactory>());
+			container.Register(Component.For<ILoggingMediator>().UsingFactory((LoggingMediatorFactory f) => f.Create()));
+			container.Register(Component.For<IUserMessageNotification, IUserNotification>().ImplementedBy<ExportUserNotification>());
 
-            container.Register(Component.For<IDelimitersBuilder>().ImplementedBy<DelimitersBuilder>());
-            container.Register(Component.For<IExportFileBuilder>().ImplementedBy<ExportFileBuilder>());
-            container.Register(Component.For<IExportProcessBuilder>().ImplementedBy<ExportProcessBuilder>());
-            container.Register(Component.For<ExportProcessRunner>().ImplementedBy<ExportProcessRunner>());
+			container.Register(Component.For<IDelimitersBuilder>().ImplementedBy<DelimitersBuilder>());
+			container.Register(Component.For<IExportFileBuilder>().ImplementedBy<ExportFileBuilder>());
+			container.Register(Component.For<IExportProcessBuilder>().ImplementedBy<ExportProcessBuilder>());
+			container.Register(Component.For<IExportSettingsBuilder>().ImplementedBy<ExportSettingsBuilder>());
+			container.Register(Component.For<ExportProcessRunner>().ImplementedBy<ExportProcessRunner>());
 
-            container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerWrapperFactory>());
-            container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterWrapperFactory>());
-            container.Register(Component.For<ISearchManagerFactory>().ImplementedBy<SearchManagerFactory>());
-        }
-    }
+			container.Register(Component.For<ICaseManagerFactory>().ImplementedBy<CaseManagerWrapperFactory>());
+			container.Register(Component.For<IExporterFactory>().ImplementedBy<ExporterWrapperFactory>());
+			container.Register(Component.For<ISearchManagerFactory>().ImplementedBy<SearchManagerFactory>());
+		}
+	}
 }

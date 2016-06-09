@@ -162,6 +162,7 @@
     <Compile Include="Process\DefaultExportSettingsFactory.cs" />
     <Compile Include="Process\DelimitersBuilderTests.cs" />
     <Compile Include="Process\ExportFileBuilderTests.cs" />
+    <Compile Include="Process\ExportSettingsBuilderTests.cs" />
     <Compile Include="Process\ViewFieldInfoMockFactory.cs" />
     <Compile Include="Process\ExportProcessBuilderTests.cs" />
     <Compile Include="Process\ExportProcessRunnerTests.cs" />
@@ -172,6 +173,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
+      <Project>{0CEDB7AF-DB89-47DE-9587-8CCD58621F2F}</Project>
+      <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{A1AE667B-1B6E-4BB9-AF1D-912620292283}</Project>
       <Name>kCura.IntegrationPoints.Core</Name>

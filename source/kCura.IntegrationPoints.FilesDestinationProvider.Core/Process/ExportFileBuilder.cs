@@ -51,7 +51,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private static void SetImagesSettings(ExportSettings exportSettings, ExportFile exportFile)
 		{
 			exportFile.ExportImages = exportSettings.ExportImages;
-			exportFile.LogFileFormat = exportSettings.SelectedImageDataFileFormat;
+			exportFile.LogFileFormat = ParseImageImageDataFileFormat(exportSettings.SelectedImageDataFileFormat);
 			if (exportSettings.CopyFileFromRepository)
 			{
 				exportFile.TypeOfImage = ParseImageFileType(exportSettings.ImageType);
@@ -97,6 +97,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		private static bool IsHtml(ExportSettings.DataFileFormat dataFileFormat)
 		{
 			return dataFileFormat == ExportSettings.DataFileFormat.HTML;
+		}
+
+		private static LoadFileType.FileFormat ParseImageImageDataFileFormat(ExportSettings.ImageDataFileFormat imageDataFileFormat)
+		{
+			switch (imageDataFileFormat)
+			{
+				case ExportSettings.ImageDataFileFormat.Opticon:
+					return LoadFileType.FileFormat.Opticon;
+				case ExportSettings.ImageDataFileFormat.IPRO:
+					return LoadFileType.FileFormat.IPRO;
+				case ExportSettings.ImageDataFileFormat.IPRO_FullText:
+					return LoadFileType.FileFormat.IPRO_FullText;
+				default:
+					throw new InvalidEnumArgumentException($"Unknown ExportSettings.ImageDataFileFormat ({imageDataFileFormat})");
+			}
 		}
 	}
 }

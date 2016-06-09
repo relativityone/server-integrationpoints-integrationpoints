@@ -87,6 +87,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
+		public void ItShouldThrowExceptionForUnknownImageDataFileFormatTypeWhenCopyingFromRepository()
+		{
+			_exportSettings.CopyFileFromRepository = true;
+
+			var incorrectEnumValue = Enum.GetValues(typeof(ExportSettings.ImageDataFileFormat)).Cast<ExportSettings.ImageDataFileFormat>().Max() + 1;
+			_exportSettings.SelectedImageDataFileFormat = incorrectEnumValue;
+
+			Assert.That(() => _exportFileBuilder.Create(_exportSettings),
+				Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown ExportSettings.ImageDataFileFormat ({incorrectEnumValue})"));
+		}
+
+		[Test]
 		public void ItShouldThrowExceptionForUnknownDataFileFormat()
 		{
 			var incorrectEnumValue = Enum.GetValues(typeof (ExportSettings.DataFileFormat)).Cast<ExportSettings.DataFileFormat>().Max() + 1;

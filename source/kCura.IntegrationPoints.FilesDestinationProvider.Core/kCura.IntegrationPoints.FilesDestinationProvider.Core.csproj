@@ -174,9 +174,11 @@
     <Compile Include="Process\ExportFileHelper.cs" />
     <Compile Include="Process\ExportProcessBuilder.cs" />
     <Compile Include="Process\ExportProcessRunner.cs" />
+    <Compile Include="Process\ExportSettingsBuilder.cs" />
     <Compile Include="Process\IDelimitersBuilder.cs" />
     <Compile Include="Process\IExportFileBuilder.cs" />
     <Compile Include="Process\IExportProcessBuilder.cs" />
+    <Compile Include="Process\IExportSettingsBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Logging\UserMessageEventArgs.cs" />
     <Compile Include="Logging\ExportUserNotification.cs" />

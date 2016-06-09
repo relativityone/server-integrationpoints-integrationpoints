@@ -8,11 +8,8 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Core.Services.Synchronizer;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Authentication;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
-using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.ScheduleQueue.Core.Logging;
-using kCura.WinEDDS.Exporters;
 using Relativity.API;
 
 namespace kCura.IntegrationPoints.Agent.Installer

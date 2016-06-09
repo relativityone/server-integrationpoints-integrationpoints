@@ -3,7 +3,6 @@ using System.IO;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base;
-using kCura.WinEDDS;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
@@ -13,7 +12,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
 			settings.ExportImages = true;
-			settings.SelectedImageDataFileFormat = LoadFileType.FileFormat.IPRO;
+			settings.SelectedImageDataFileFormat = ExportSettings.ImageDataFileFormat.IPRO;
 
 			return base.Prepare(settings);
 		}

@@ -63,7 +63,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new ExportFileBuilder(new DelimitersBuilder())
 			);
 
-			_instanceUnderTest = new ExportProcessRunner(exportProcessBuilder);
+			var exportSettingsBuilder= new ExportSettingsBuilder(); 
+
+			_instanceUnderTest = new ExportProcessRunner(exportProcessBuilder, exportSettingsBuilder);
 		}
 
 		[TestFixtureTearDown]
