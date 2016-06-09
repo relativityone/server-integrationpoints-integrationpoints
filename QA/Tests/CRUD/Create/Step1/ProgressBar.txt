@@ -22,8 +22,8 @@
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
+| | ... | 1. Go to the Tab: Integration Points
+| | ... | 2. Click: New Integration Point
 | | ... | 
 | | ... | Expected Results
 | | ... | 1. Verify that Step 1's heading is "Set Integration Details"
@@ -37,8 +37,8 @@
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
+| | ... | 1. Go to the Tab: Integration Points
+| | ... | 2. Click: New Integration Point
 | | ... | 
 | | ... | Expected Results
 | | ... | 1. Verify that Step 1's heading and number are in blue font 
@@ -52,10 +52,10 @@
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
+| | ... | 1. Go to the Tab: Integration Points
+| | ... | 2. Click: New Integration Point
 | | ... | 3. Complete the required fields 
-| | ... | 4. Click	| Next Step
+| | ... | 4. Click: Next Step
 | | ... | 
 | | ... | Expected Results
 | | ... | 1. Verify that Step 1's heading uses grey font 
@@ -70,12 +70,12 @@
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click | New Integration Point
+| | ... | 1. Go to the Tab: Integration Points
+| | ... | 2. Click: New Integration Point
 | | ... | 3. Complete the required fields 
-| | ... | 4. Click	| Next Step
+| | ... | 4. Click: Next Step
 | | ... | 5. Complete the required fields 
-| | ... | 6. Click	| Next Step
+| | ... | 6. Click: Next Step
 | | ... | 
 | | ... | Expected Results
 | | ... | 1. Verify that Step 1's heading uses grey font 

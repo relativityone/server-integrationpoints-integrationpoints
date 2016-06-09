@@ -44,7 +44,7 @@
 | | [Documentation] | Verify that new Custodians are Appended when getting both  the suppressed Append encountering existing Objects
 | | ...				| errors and a different type of error.
 | | [Tags]			| automated
-| | Go to the Method Tab	| Custodian
+| | Go to the Tab	| Custodian
 | | Filter the following Grid on the following Column by the following Value	| ${Custodians Grid}	| Department	| Multi Error Test
 
 | | @{Header}=	| Create List	| Name
@@ -56,7 +56,7 @@
 | | [Documentation] | Verify that existing Custodians are not updated when getting both the suppressed Append encountering existing Objects
 | | ...				| errors and a different type of error.
 | | [Tags]			| automated
-| | Go to the Method Tab	| Custodian
+| | Go to the Tab	| Custodian
 | | Filter the following Grid on the following Column by the following Value	| ${Custodians Grid}	| Department	| Multi Error Test
 
 | | @{Header}=	| Create List	| Name
@@ -77,15 +77,15 @@
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${ExistingNoChangeObject}	|
-| | ... | Email			| eUser@lh.kcura.com		|
+| | ... | Full Name		| ${ExistingNoChangeObject}
+| | ... | Email			| eUser@lh.kcura.com
 | | ... | Department	| Multi Error Test
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingAndUpdatedObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${ExistingAndUpdatedObject}	|
-| | ... | Email			| uUser@lh.kcura.com			|
+| | ... | Full Name		| ${ExistingAndUpdatedObject}
+| | ... | Email			| uUser@lh.kcura.com
 | | ... | Department	| Multi Error Test
 
 #------------------------------------------------------------------------------------------------------------------------
