@@ -3,10 +3,8 @@
 | Documentation		| This suite of tests verifies the Destination Provider RDO used within the LDAP Sync application.
 | Metadata			| Authors	| William Sehy
 | Force Tags		| rdo	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Go to the Fields tab and use the Automated RDO Checking view then filter to the following object type	| Destination Provider
-#| Test Setup 		| NONE
-| Test Teardown		| Run Keyword if Test Failed	| Capture Page Screenshot
-| Suite Teardown	| Close All Browsers
+| Suite Setup		| Clear Then Set Filter Value	| Object Type	| Destination Provider
+| Suite Teardown	| Run Keyword If Any Tests Failed	| Capture Page Screenshot
 
 
 *** Variables ***
