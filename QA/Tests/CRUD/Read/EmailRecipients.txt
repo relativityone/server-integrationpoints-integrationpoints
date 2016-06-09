@@ -129,7 +129,7 @@
 
 | | @{Step1Fields}=		| Create List	| 
 | | ... | ${IntegrationPoint1}	| 
-| | ... | Append/Overlay		| 
+| | ... | Junk Data 
 | | ... | LDAP					| 
 | | ... | Custodian				| 
 | | ... | No
@@ -149,7 +149,7 @@
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
 
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay	| UniqueID
 
 # --------------------------------------------------------------------------------------------------------
 
@@ -174,7 +174,7 @@
 | | ... | ${EMPTY}				| 
 | | ... | ${ImportNestedItems}
 
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 | | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
@@ -200,7 +200,7 @@
 | Resource	| ${KEYWORD_DIR}/Relativity/Processing/Processing/Relativity_Keywords_General.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/Layouts/LayoutKeywords.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/RelativityKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

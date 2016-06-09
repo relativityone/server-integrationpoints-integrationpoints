@@ -256,7 +256,7 @@
 
 | | @{Step1Fields}=		| Create List	| 
 | | ... | List View Sort Testing	| 
-| | ... | Append/Overlay			|
+| | ... | Junk Data
 | | ... | LDAP						| 
 | | ... | Custodian					| 
 | | ... | No
@@ -274,25 +274,25 @@
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| List View Sort Testing
-| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 
 | | @{Step1Fields}=	| Create List	| 
 | | ... | Integration Point List View Testing	| 
-| | ... | Append/Overlay						| 
+| | ... | Junk Data
 | | ... | LDAP									| 
 | | ... | Custodian								| 
 | | ... | No
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Integration Point List View Testing
-| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 
 | | @{Step1Fields}=	| Create List	| 
 | | ... | Integration Point Sort Testing	| 
-| | ... | Append/Overlay					|
+| | ... | Junk Data
 | | ... | LDAP								| 
 | | ... | Custodian							| 
 | | ... | No
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Integration Point Sort Testing
-| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 
 # --------------------------------------------------------------------------------------------------------
 
