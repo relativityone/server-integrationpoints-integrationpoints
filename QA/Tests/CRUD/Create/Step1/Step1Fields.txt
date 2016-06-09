@@ -214,8 +214,8 @@
 | | ... | - The System RDOs are never shown (See "Get a List of All Non-System Object Types in the Workspace" for a list of the System RDOs). 
 | | ... |
 | | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click	| New Integration Point
+| | ... | 1. Go to the Tab: Integration Points
+| | ... | 2. Click: New Integration Point
 | | ... | 3. Click Destination RDO Dropdown
 | | ... | 
 | | ... | Expected Results:
