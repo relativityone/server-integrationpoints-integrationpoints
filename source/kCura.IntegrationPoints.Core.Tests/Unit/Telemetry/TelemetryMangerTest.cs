@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using kCura.IntegrationPoints.Core.Telemetry;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.InternalMetricsCollection;
@@ -10,15 +12,20 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Telemetry
 {
 	public class TelemetryMangerTest
 	{
+		#region Fields
+
 		private TelemetryManager _instanceUnderTest;
 
 		private IHelper _mockHelper;
 		private IServicesMgr _mockServicesMgr;
 		private IInternalMetricsCollectionManager _mockInternalMetricsCollectionManager;
+		private ITelemetryMetricProvider _mockTelemetryMetricProviderBase;
 
 		private Category _category;
 		private CategoryTarget _categoryTarget;
 		private List<CategoryTarget> _categoryTargets;
+
+		#endregion //Fields
 
 		[SetUp]
 		public void Init()
@@ -26,6 +33,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Telemetry
 			_mockHelper = Substitute.For<IHelper>();
 			_mockServicesMgr = Substitute.For<IServicesMgr>();
 			_mockInternalMetricsCollectionManager = Substitute.For<IInternalMetricsCollectionManager>();
+			_mockTelemetryMetricProviderBase = Substitute.For<ITelemetryMetricProvider>();
 
 			_mockHelper.GetServicesManager().Returns(_mockServicesMgr);
 
@@ -47,6 +55,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Telemetry
 			_categoryTargets = new List<CategoryTarget>(new[] { _categoryTarget });
 		}
 
+		#region Tests
+
 		[Test]
 		public void ItShouldAddIntegrationPointCategory()
 		{
@@ -66,19 +76,82 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Telemetry
 
 			// Assert
 
-			_mockInternalMetricsCollectionManager.Received().UpdateCategoryTargetsAsync(_categoryTargets);
+			_mockInternalMetricsCollectionManager
+				.Received(1)
+				.CreateCategoryAsync(Arg.Is<Category>(item => item.Name == Constants.IntegrationPoints.Telemetry.TELEMETRY_CATEGORY), false);
+
+			_mockInternalMetricsCollectionManager
+				.Received()
+				.UpdateCategoryTargetsAsync(_categoryTargets);
+
+			_mockTelemetryMetricProviderBase
+				.DidNotReceive()
+				.Run(Arg.Any<Category>(), Arg.Any<IHelper>());
+		}
+
+		[Test]
+		[ExpectedException(typeof(Exception))]
+		public void ItShouldThrowExceptionOnCategoryCreation()
+		{
+			// Arrange
+
+			_mockInternalMetricsCollectionManager
+				.CreateCategoryAsync(Arg.Any<Category>(), false)
+				.Throws<AggregateException>();
+
+			// Act
+
+			_instanceUnderTest.InstallMetrics();
+		}
+
+		[Test]
+		public void ItShouldEnabledCategoryMetrics()
+		{
+			// Arrange
+
+			_mockInternalMetricsCollectionManager
+				.CreateCategoryAsync(Arg.Any<Category>(), false)
+				.Returns(Task.FromResult(_category.ID));
+
+			_mockInternalMetricsCollectionManager
+				.GetCategoryTargetsAsync()
+				.Returns(Task.FromResult(_categoryTargets));
+
+			// Act
+
+			_instanceUnderTest.InstallMetrics();
+
+			// Assert
 
 			Assert.That(_categoryTargets.Count, Is.EqualTo(1));
 			Assert.That(_categoryTargets[0].IsCategoryMetricTargetEnabled[CategoryMetricTarget.APM]);
 			Assert.That(_categoryTargets[0].IsCategoryMetricTargetEnabled[CategoryMetricTarget.SUM]);
 		}
 
+
+		[Test]
+		[ExpectedException(typeof(Exception))]
+		public void ItShouldThrowExceptionOnMetricEnabled()
+		{
+			// Arrange
+
+			_mockInternalMetricsCollectionManager
+				.CreateCategoryAsync(Arg.Any<Category>(), Arg.Any<bool>())
+				.Returns(Task.FromResult(_category.ID));
+
+			_mockInternalMetricsCollectionManager
+				.GetCategoryTargetsAsync()
+				.Throws<AggregateException>();
+
+			// Act
+
+			_instanceUnderTest.InstallMetrics();
+		}
+
 		[Test]
 		public void ItShouldAddMetricsIdentifier()
 		{
 			// Arrange
-
-			var mockTelemetryMetricProviderBase = Substitute.For<ITelemetryMetricProvider>();
 
 			_mockInternalMetricsCollectionManager
 				.CreateCategoryAsync(Arg.Any<Category>(), Arg.Any<bool>())
@@ -90,12 +163,44 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Telemetry
 
 			// Act
 
-			_instanceUnderTest.AddMetricProviders(mockTelemetryMetricProviderBase);
+			_instanceUnderTest.AddMetricProviders(_mockTelemetryMetricProviderBase);
 			_instanceUnderTest.InstallMetrics();
 
 			// Assert
 
-			mockTelemetryMetricProviderBase.Received(1).Run(Arg.Any<Category>(), _mockHelper);
+			_mockTelemetryMetricProviderBase
+				.Received(1)
+				.Run(Arg.Is<Category>(item => item.Name == Constants.IntegrationPoints.Telemetry.TELEMETRY_CATEGORY), _mockHelper);
 		}
+
+		[Test]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void ItShouldThrowExceptionOnAddNullMetricProvider()
+		{
+			// Act
+
+			_instanceUnderTest.AddMetricProviders(null);
+		}
+
+		[Test]
+		[ExpectedException(typeof(Exception))]
+		public void ItShouldThrowExceptionOnNotFoundCategory()
+		{
+			// Arrange
+
+			_mockInternalMetricsCollectionManager
+				.CreateCategoryAsync(Arg.Any<Category>(), false)
+				.Returns(Task.FromResult(_category.ID));
+
+			_mockInternalMetricsCollectionManager
+				.GetCategoryTargetsAsync()
+				.Returns(Task.FromResult(new List<CategoryTarget>()));
+
+			// Act
+
+			_instanceUnderTest.InstallMetrics();
+		}
+
+		#endregion //Tests
 	}
 }

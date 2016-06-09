@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base
 {
-	abstract class DataFileEncodingTestCaseBase : BaseMetadataExportTestCase
+	internal abstract class DataFileEncodingTestCaseBase : BaseMetadataExportTestCase
     {
 		#region Fields
 

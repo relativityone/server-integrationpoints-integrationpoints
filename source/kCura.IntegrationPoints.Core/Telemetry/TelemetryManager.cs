@@ -29,6 +29,10 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 
 		public void AddMetricProviders(ITelemetryMetricProvider metricProvider)
 		{
+			if (metricProvider == null)
+			{
+				throw new ArgumentNullException(nameof(metricProvider));
+			}
 			_metricProviders.Add(metricProvider);
 		}
 
@@ -51,8 +55,12 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 				using (IInternalMetricsCollectionManager internalMetricsCollectionManager = _helper.GetServicesManager().CreateProxy<IInternalMetricsCollectionManager>(ExecutionIdentity.System))
 				{
 					List<CategoryTarget> targets = Task.Run(async () => await internalMetricsCollectionManager.GetCategoryTargetsAsync()).ConfigureAwait(false).GetAwaiter().GetResult();
-					CategoryTarget ipCategoryTarget = targets.FirstOrDefault(x => x.Category.Name == Constants.IntegrationPoints.Telemetry.TELEMETRY_CATEGORY);
+					CategoryTarget ipCategoryTarget = targets.FirstOrDefault(x => x.Category.Name == category.Name);
 
+					if (ipCategoryTarget == null)
+					{
+						throw new Exception($"Can not find category target for telemetry category ${category.Name}");
+					}
 					ipCategoryTarget.IsCategoryMetricTargetEnabled[CategoryMetricTarget.APM] = true;
 					ipCategoryTarget.IsCategoryMetricTargetEnabled[CategoryMetricTarget.SUM] = true;
 
@@ -61,7 +69,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 			}
 			catch (AggregateException ex)
 			{
-				throw new Exception($"Failed to set target category metrics for telemetry category {Constants.IntegrationPoints.Telemetry.TELEMETRY_CATEGORY}", ex.InnerException);
+				throw new Exception($"Failed to set target category metrics for telemetry category {category.Name}", ex.InnerException);
 			}
 		}
 
@@ -88,7 +96,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 			}
 			catch (AggregateException ex)
 			{
-				throw new Exception($"Failed to add telemetry category {Constants.IntegrationPoints.Telemetry.TELEMETRY_CATEGORY}", ex.InnerException);
+				throw new Exception($"Failed to add telemetry category {categoryName}", ex.InnerException);
 			}
 		}
 
