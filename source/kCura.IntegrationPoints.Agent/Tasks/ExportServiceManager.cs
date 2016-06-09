@@ -398,15 +398,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 				userImportApiSettings, JobHistoryDto.ArtifactId, uniqueJobId);
 
 			IConsumeScratchTableBatchStatus destinationFieldsTagger = taggerFactory.BuildDocumentsTagger();
-			IConsumeScratchTableBatchStatus sourceFieldsTaggerDestinationWorkspace = new DestinationWorkspaceBatchUpdateManager(_repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration, JobHistoryDto.ArtifactId, job.SubmittedBy, uniqueJobId);
-			IConsumeScratchTableBatchStatus sourceJobHistoryTagger = new JobHistoryBatchUpdateManager(_repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration.SourceWorkspaceArtifactId, JobHistoryDto.ArtifactId, job.SubmittedBy, uniqueJobId);
+			IConsumeScratchTableBatchStatus sourceFieldsTagger = new SourceObjectBatchUpdateManager(_repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration, JobHistoryDto.ArtifactId, job.SubmittedBy, uniqueJobId);
 			IBatchStatus sourceJobHistoryErrorUpdater = new JobHistoryErrorBatchUpdateManager(_jobHistoryErrorManager, _repositoryFactory, _onBehalfOfUserClaimsPrincipalFactory, _sourceConfiguration.SourceWorkspaceArtifactId, job.SubmittedBy, _updateStatusType);
 
 			var batchStatusCommands = new List<IBatchStatus>()
 			{
 				destinationFieldsTagger,
-				sourceFieldsTaggerDestinationWorkspace,
-				sourceJobHistoryTagger,
+				sourceFieldsTagger,
 				sourceJobHistoryErrorUpdater
 			};
 			return batchStatusCommands;

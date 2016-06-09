@@ -33,8 +33,7 @@ namespace kCura.IntegrationPoints.Data
 	public class Constants
 	{
 		public const string OBJECT_IDENTIFIER_APPENDAGE_TEXT = " [Object Identifier]";
-		public const string TEMPORARY_DOC_TABLE_DESTINATION_WORKSPACE = "IntegrationPoint_Relativity_DestinationWorkspace";
-		public const string TEMPORARY_DOC_TABLE_JOB_HISTORY = "IntegrationPoint_Relativity_JobHistory";
+		public const string TEMPORARY_DOC_TABLE_SOURCE_OBJECTS = "IntegrationPoint_Relativity_DestinationWorkspace_JobHistory";
 		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START = "IntegrationPoint_Relativity_JobHistoryErrors_JobStart";
 		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE = "IntegrationPoint_Relativity_JobHistoryErrors_JobComplete";
 		public const string TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START = "IntegrationPoint_Relativity_JobHistoryErrorsE_ItemStart";
@@ -61,12 +60,9 @@ namespace kCura.IntegrationPoints.Data
 
 	public static class MassEditErrors
 	{
-		public const string DEST_WORKSPACE_MO_QUERY_ERROR = "Unable to query for multi-object field on Document associated with DestinationWorkspace object.";
-		public const string DEST_WORKSPACE_MO_EXISTENCE_ERROR = "Multi-object field on Document associated with Destination Workspace object does not exist.";
-		public const string DEST_WORKSPACE_MASS_EDIT_FAILURE = "Tagging Documents with DestinationWorkspace object failed - Mass Edit failure.";
-		public const string JOB_HISTORY_MO_QUERY_ERROR = "Unable to query for multi-object field on Document associated with JobHistory object.";
-		public const string JOB_HISTORY_MO_EXISTENCE_ERROR = "Multi-object field on Document associated with JobHistory object does not exist.";
-		public const string JOB_HISTORY_MASS_EDIT_FAILURE = "Tagging Documents with JobHistory object failed - Mass Edit failure.";
+		public const string SOURCE_OBJECT_MO_QUERY_ERROR = "Unable to query for multi-object field on Document associated with DestinationWorkspace or JobHistory object.";
+		public const string SOURCE_OBJECT_MO_EXISTENCE_ERROR = "Multi-object field on Document associated with Destination Workspace or JobHistory object does not exist.";
+		public const string SOURCE_OBJECT_MASS_EDIT_FAILURE = "Tagging Documents with DestinationWorkspace and JobHistory object failed - Mass Edit failure.";
 		public const string JOB_HISTORY_ERROR_STATUS_QUERY_ERROR = "Unable to query for Error Status field on Job History Error.";
 		public const string JOB_HISTORY_ERROR_STATUS_EXISTENCE_ERROR = "Error Status field on Job History Error does not exist.";
 		public const string JOB_HISTORY_ERROR_MASS_EDIT_FAILURE = "Mass Edit Error Status in JobHistoryError object failed - Mass Edit failure.";
@@ -82,5 +78,10 @@ namespace kCura.IntegrationPoints.Data
 	public static class ObjectTypeErrors
 	{
 		public const string OBJECT_TYPE_NO_ARTIFACT_TYPE_FOUND = "Unable to retrieve Artifact Type Id for object type {0}.";
+	}
+
+	public static class RelativityProvider
+	{
+		public const string ERROR_CREATE_SOURCE_CASE_FIELDS_ON_DESTINATION_CASE = "Unable to create source workspace and job fields in the destination workspace. Please contact your system administrator.";
 	}
 }

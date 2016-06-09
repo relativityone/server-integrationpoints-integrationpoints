@@ -549,17 +549,17 @@
     <Compile Include="Helpers\IOnClickEventConstructor.cs" />
     <Compile Include="IContextContainer.cs" />
     <Compile Include="Factories\IContextContainerFactory.cs" />
+    <Compile Include="Managers\DestinationWorkspaceFieldManagerBase.cs" />
     <Compile Include="Managers\IArtifactGuidManager.cs" />
     <Compile Include="Managers\IErrorManager.cs" />
     <Compile Include="Managers\IFieldManager.cs" />
     <Compile Include="Managers\IIntegrationPointManager.cs" />
     <Compile Include="Managers\IJobHistoryErrorManager.cs" />
     <Compile Include="Managers\IJobHistoryManager.cs" />
-    <Compile Include="BatchStatusCommands\Implementations\DestinationWorkspaceBatchUpdateManager.cs" />
+    <Compile Include="BatchStatusCommands\Implementations\SourceObjectBatchUpdateManager.cs" />
     <Compile Include="Installers\KeywordInstaller.cs" />
     <Compile Include="JobHistoryBatchUpdateStatus.cs" />
     <Compile Include="BatchStatusCommands\IBatchStatus.cs" />
-    <Compile Include="BatchStatusCommands\Implementations\JobHistoryBatchUpdateManager.cs" />
     <Compile Include="Managers\Implementations\ArtifactGuidManager.cs" />
     <Compile Include="Managers\Implementations\ErrorManager.cs" />
     <Compile Include="Managers\Implementations\FieldManager.cs" />
@@ -702,6 +702,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
+      <Project>{E7D6A21D-ACC6-4140-9E18-C2E6BCA85449}</Project>
+      <Name>kCura.IntegrationPoints.Security</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{b91cc4ed-abf3-4409-8df3-46a3c26eb4aa}</Project>

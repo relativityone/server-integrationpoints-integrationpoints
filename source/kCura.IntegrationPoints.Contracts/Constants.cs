@@ -8,7 +8,7 @@
 		public const string SPECIAL_SOURCEWORKSPACE_FIELD = "036DB373-5724-4C72-A073-375106DE5E73";
 		public const string SPECIAL_SOURCEWORKSPACE_FIELD_NAME = "Relativity Source Case";
 		public const string SPECIAL_SOURCEJOB_FIELD = "4F632A3F-68CF-400E-BD29-FD364A5EBE58";
-		public const string SPECIAL_SOURCEJOB_FIELD_NAME = "Source Job";
+		public const string SPECIAL_SOURCEJOB_FIELD_NAME = "Relativity Source Job";
 		public const string SOURCEWORKSPACE_CASEID_FIELD_NAME = "Source Workspace Artifact ID";
 		public const string SOURCEWORKSPACE_CASENAME_FIELD_NAME = "Source Workspace Name";
 		public const string SOURCEWORKSPACE_NAME_FIELD_NAME = "Name";
