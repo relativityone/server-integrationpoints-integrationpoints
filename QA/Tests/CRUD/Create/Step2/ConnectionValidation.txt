@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the fields of Step 2 on the Create Integration Point wizard have the correct validation.
 | Metadata		    | Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Method
+| Suite Setup		| Open and Log in to Legal Hold
 | Test Setup		| Go to Step 2 of the Create Integration Point Process
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Close All Browsers

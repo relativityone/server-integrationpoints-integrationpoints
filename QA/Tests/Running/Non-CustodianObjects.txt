@@ -29,7 +29,7 @@
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | ${QuestionnaireExists}=	| Determine if the Following Questionnaire Exists in the current Workspace	| Imported Questionnaire

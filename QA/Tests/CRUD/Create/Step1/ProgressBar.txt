@@ -4,7 +4,7 @@
 | Metadata		    | Authors	| Daniel Oliver
 | Force Tags		| manual	| in-progress	| team.game_of_holds	| feature.integration_points
 #| Suite Setup		| Log	| This is the suite setup keyword.
-#| Test Setup		| Open and Log in to Method
+#| Test Setup		| Open and Log in to Legal Hold
 #| Test Teardown 	| Close All Browsers
 #| Suite Teardown	| Log	| This is the suite teardown keyword.
 

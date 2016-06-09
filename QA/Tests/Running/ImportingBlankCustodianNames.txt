@@ -45,7 +45,7 @@
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 
 | | Update a User's Show Filter Value	| ${USERNAME}	| Visible
 

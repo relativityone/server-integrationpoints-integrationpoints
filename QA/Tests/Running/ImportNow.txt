@@ -100,7 +100,7 @@
 | | [Documentation]	| Opens the browser and then creates both of the Integration Points used in this suite.
 | | ...				| Run as the Suite Setup.
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 #------------------------------------------------------------------------------------------------------------------------

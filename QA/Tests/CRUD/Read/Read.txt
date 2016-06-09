@@ -321,7 +321,7 @@
 | Suite Setup Keyword
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 | | Enable Strict Mode for Layouts	| # Makes 'Verify the current layout has the following fields' ensure that only the given fields are present
 

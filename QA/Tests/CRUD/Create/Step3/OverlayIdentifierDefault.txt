@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Overlay Identifier dropdown has correct default field selected for each Object Type.
 | Metadata		    | Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Run Keywords	| Open and Log in to Method	| Make the Object Type List a Suite Variable
+| Suite Setup		| Run Keywords	| Open and Log in to Legal Hold	| Make the Object Type List a Suite Variable
 #| Test Setup		| Go to Step 3 of the Create Integration Point Process
 | Test Teardown 	| Capture screenshot if test fails
 | Suite Teardown	| Close All Browsers
