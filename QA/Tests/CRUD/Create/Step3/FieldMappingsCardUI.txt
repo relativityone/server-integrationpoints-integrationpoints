@@ -116,7 +116,7 @@
 | | | Element Should Be Visible	| ${ExpectedXpath} | The icon with the ID "${ExpectedIconIDs[${i}]}" was out of order.
 
 | Go to Step 3 of the Create Integration Point Process
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| 
 | | ... | IntegrationName=Field Mapping Card Testing	| 
@@ -137,6 +137,6 @@
 
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

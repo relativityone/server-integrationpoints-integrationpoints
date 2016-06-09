@@ -50,7 +50,7 @@
 | Suite Setup Keyword
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPointName}
@@ -58,7 +58,7 @@
 
 | | @{Step1Fields}=		| Create List | 
 | | ... | ${IntegrationPointName}	| 
-| | ... | Append/Overlay			|
+| | ... | Junk Data
 | | ... | LDAP						| 
 | | ... | Custodian					| 
 | | ... | No
@@ -75,7 +75,7 @@
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 | | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers

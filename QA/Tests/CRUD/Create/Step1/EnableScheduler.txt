@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Enable Scheduler field on Step 1 of the Create Integration Point wizard functions correctly.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Method
+| Suite Setup		| Open and Log in to Legal Hold
 | Test Setup		| Open Create Integration Point
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Close All Browsers
@@ -73,6 +73,6 @@
 
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

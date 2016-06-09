@@ -133,7 +133,7 @@
 | Suite Setup Keyword
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 | | Enable Strict Mode for Layouts	| # Makes 'Verify the current layout has the following fields' ensure that only the given fields are present
 
@@ -141,7 +141,7 @@
 
 | | @{Step1Fields}=		| Create List	| 
 | | ... | ${IntegrationPoint1}	| 
-| | ... | Append/Overlay		| 
+| | ... | Junk Data 
 | | ... | LDAP					| 
 | | ... | Custodian				| 
 | | ... | No
@@ -163,7 +163,7 @@
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPoint1}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPoint1}
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationPoint1}
 | | [Teardown]		| Drop connection to the relativity services api
@@ -186,7 +186,7 @@
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/Layouts/LayoutKeywords.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/RelativityKeywords.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/Views/ItemListKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

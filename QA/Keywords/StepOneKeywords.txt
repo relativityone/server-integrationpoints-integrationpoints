@@ -1,16 +1,12 @@
 
 *** Settings ***
-| Documentation	| This suite of keywords deals with the Integration Point object and its associated pages and actions.
-
-
-*** Variables ***
+| Documentation	| This suite of keywords deals with Step 1 of the Integration Point object's Wizard and its associated actions.
 
 
 *** Keywords ***
 
 | Fill out the Following Fields of the Integration Point Step 1 form
 | | [Documentation]	| This keyword fills out the Integration Point Step 1 fields.
-| | ... 			| The value of ${Overwrite} should be Append or Append/Overlay.
 | | ... 			| The value of ${Frequency} should be Select.../Daily/Weekly/Monthly.
 | | ... 			| The acceptable values ${SendOn} vary by the selected ${Frequency}.
 | | ... 			| - When ${Frequency} is 'Weekly' then ${SendOn} should be a semicolon seperated list of the desired days of the week (Note: Each day of the week should begin with a capital letter).
@@ -122,6 +118,5 @@
 | Library	| String
 | Library	| Collections
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt

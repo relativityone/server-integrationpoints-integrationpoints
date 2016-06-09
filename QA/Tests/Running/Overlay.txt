@@ -80,7 +80,7 @@
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingAndUpdatedObject}
@@ -103,7 +103,7 @@
 | | ... | Email			| ltime@gameofholdstesting.corp	| 
 | | ... | Department	| Time
 
-| | @{Step1Fields}=		| Create List	| ${IntegrationName}	| Overlay Only	| LDAP	| Custodian	| No
+| | @{Step1Fields}=		| Create List	| ${IntegrationName}	| Junk Data	| LDAP	| Custodian	| No
 | | @{Step2Fields}=		| Create List	| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp	| (department=Time)	| 
 | | ... | FastBind	| testing\\rellockdown	| P@ssw0rd@1
 | | @{Step3Mapping}=	| Create List	|
@@ -112,7 +112,7 @@
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
-| | Create LDAP Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Email
+| | Create LDAP Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping} | Overlay Only	| Email
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}
 | | [Teardown]		| Drop connection to the relativity services api
@@ -140,6 +140,6 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

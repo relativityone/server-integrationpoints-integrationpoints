@@ -165,7 +165,7 @@
 | | [Setup]			| NONE
 | | @{Step1Fields}=	| Create List	| 
 | | ... | ${IntegrationPoint3}	| 
-| | ... | Append/Overlay		| 
+| | ... | Junk Data
 | | ... | LDAP					| 
 | | ... | Custodian				| 
 | | ... | Yes					| 
@@ -191,7 +191,7 @@
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
 
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 
 | | View Integration Point	| ${IntegrationPoint3}
 
@@ -230,7 +230,7 @@
 | | [Setup]			| NONE
 | | @{Step1Fields}=	| Create List	| 
 | | ... | ${IntegrationPoint4}	| 
-| | ... | Append/Overlay		| 
+| | ... | Junk Data
 | | ... | LDAP					| 
 | | ... | Custodian				| 
 | | ... | Yes					| 
@@ -256,7 +256,7 @@
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
 
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 
 | | View Integration Point	| ${IntegrationPoint4}
 
@@ -321,7 +321,7 @@
 | Suite Setup Keyword
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 | | Enable Strict Mode for Layouts	| # Makes 'Verify the current layout has the following fields' ensure that only the given fields are present
 
@@ -343,7 +343,7 @@
 
 | | @{Step1Fields}=		| Create List	| 
 | | ... | ${IntegrationPoint1}	| 
-| | ... | Append/Overlay		| 
+| | ... | Junk Data 
 | | ... | LDAP					| 
 | | ... | Custodian				| 
 | | ... | No
@@ -363,13 +363,13 @@
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
 
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 
 # --------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=	| Create List	| 
 | | ... | ${IntegrationPoint2}	| 
-| | ... | Append/Overlay		| 
+| | ... | Junk Data
 | | ... | LDAP					| 
 | | ... | Custodian				| 
 | | ... | Yes					| 
@@ -388,7 +388,7 @@
 | | ... | ${EMPTY}				| 
 | | ... | ${ImportNestedItems}
 
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 | | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
@@ -414,7 +414,7 @@
 | Resource	| ${KEYWORD_DIR}/Relativity/Processing/Processing/Relativity_Keywords_General.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/Layouts/LayoutKeywords.txt
 | Resource	| ${KEYWORD_DIR}/Relativity/Shared/RelativityKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

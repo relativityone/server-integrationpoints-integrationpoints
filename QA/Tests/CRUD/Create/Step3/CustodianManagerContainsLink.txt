@@ -2,7 +2,7 @@
 | Documentation 	| Verify that the Custodian Manager Contains Link field appears and functions correctly. 
 | Metadata		    | Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Method and Go to Step 3 using the Custodian Destination RDO
+| Suite Setup		| Open and Log in to Legal Hold and Go to Step 3 using the Custodian Destination RDO
 #| Test Setup		| NONE
 | Test Teardown 	| Capture screenshot if test fails
 | Suite Teardown	| Close All Browsers
@@ -67,8 +67,8 @@
 
 *** Keywords *** 
 
-| Open and Log in to Method and Go to Step 3 using the Custodian Destination RDO
-| | Open and Log in to Method
+| Open and Log in to Legal Hold and Go to Step 3 using the Custodian Destination RDO
+| | Open and Log in to Legal Hold
 | | Go to Step 3 of the Integration Point wizard using the following Destination RDO	| Custodian
 
 | Go to Step 3 of the Integration Point wizard using the following Destination RDO
@@ -89,7 +89,7 @@
 
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource  | ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
 | Resource  | ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

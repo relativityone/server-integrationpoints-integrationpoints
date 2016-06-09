@@ -70,11 +70,11 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 
 		protected override IDictionary<Guid, FieldDefinition> GetObjectFieldDefinitions()
 		{
-			return new Dictionary<Guid, FieldDefinition>()
+			return new Dictionary<Guid, FieldDefinition>
 			{
 				{
 					SourceWorkspaceDTO.Fields.CaseIdFieldNameGuid,
-					new FieldDefinition()
+					new FieldDefinition
 					{
 						FieldName = IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_CASEID_FIELD_NAME,
 						FieldType = Relativity.Client.FieldType.WholeNumber
@@ -82,7 +82,7 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 				},
 				{
 					SourceWorkspaceDTO.Fields.CaseNameFieldNameGuid,
-					new FieldDefinition()
+					new FieldDefinition
 					{
 						FieldName = IntegrationPoints.Contracts.Constants.SOURCEWORKSPACE_CASENAME_FIELD_NAME,
 						FieldType = Relativity.Client.FieldType.FixedLengthText

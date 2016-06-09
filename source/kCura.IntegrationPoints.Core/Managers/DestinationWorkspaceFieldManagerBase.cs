@@ -49,7 +49,6 @@ namespace kCura.IntegrationPoints.Core.Managers
 				}
 				catch (Exception e)
 				{
-					objectTypeRepository.Delete(objectTypeArtifactId.Value);
 					throw new Exception(ErrorMassage, e);
 				}
 
@@ -57,14 +56,19 @@ namespace kCura.IntegrationPoints.Core.Managers
 				descriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(FieldGuid);
 
 				// Delete the tab if it exists (it should always exist since we're creating the object type one line above)
-				ITabRepository tabRepository = RepositoryFactory.GetTabRepository(workspaceArtifactId);
-				int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(descriptorArtifactTypeId, FieldName);
-				if (sourceWorkspaceTabId.HasValue)
-				{
-					tabRepository.Delete(sourceWorkspaceTabId.Value);
-				}
+				DeleteObjectTypeTab(workspaceArtifactId, descriptorArtifactTypeId);
 			}
 			return descriptorArtifactTypeId;
+		}
+
+		private void DeleteObjectTypeTab(int workspaceArtifactId, int objectDescriptorArtifactTypeId)
+		{
+			ITabRepository tabRepository = RepositoryFactory.GetTabRepository(workspaceArtifactId);
+			int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(objectDescriptorArtifactTypeId, FieldName);
+			if (sourceWorkspaceTabId.HasValue)
+			{
+				tabRepository.Delete(sourceWorkspaceTabId.Value);
+			}
 		}
 
 		protected void CreateObjectFields(List<Guid> fieldGuids,
@@ -123,7 +127,6 @@ namespace kCura.IntegrationPoints.Core.Managers
 
 				int sourceWorkspaceFieldArtifactId = fieldArtifactId ?? relativityObjectRepository.CreateFieldOnDocument(sourceWorkspaceDescriptorArtifactTypeId);
 
-				// Set the filter type
 				try
 				{
 					int? retrieveArtifactViewFieldId = fieldRepository.RetrieveArtifactViewFieldId(sourceWorkspaceFieldArtifactId);
@@ -132,26 +135,11 @@ namespace kCura.IntegrationPoints.Core.Managers
 						throw new Exception(ErrorMassage);
 					}
 
+					// Set the filter type
 					fieldRepository.UpdateFilterType(retrieveArtifactViewFieldId.Value, "Popup");
-				}
-				catch (Exception e)
-				{
-					throw new Exception(ErrorMassage, e);
-				}
-
-				// Set the overlay behavior
-				try
-				{
+					// Set the overlay behavior
 					fieldRepository.SetOverlayBehavior(sourceWorkspaceFieldArtifactId, true);
-				}
-				catch (Exception e)
-				{
-					throw new Exception(ErrorMassage, e);
-				}
-
-				// Set the field artifact guid
-				try
-				{
+					// Set the field artifact guid
 					artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceFieldArtifactId, documentFieldGuid);
 				}
 				catch (Exception e)
@@ -165,7 +153,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 
 		protected sealed class FieldDefinition
 		{
-			public String FieldName;
+			public string FieldName;
 			public Relativity.Client.FieldType FieldType;
 		}
 	}

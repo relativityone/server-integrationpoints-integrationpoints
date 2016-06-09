@@ -11,10 +11,10 @@
 *** Variables ***
 
 | ${WorkspaceName}				| LDAP Sync
-| ${IntegrationName}			| Append and Overlay
-| ${NewObject}					| Sun, Early
-| ${ExistingAndUpdatedObject}	| Sun, Midday
-| ${ExistingNoChangeObject}		| Sun, Rise 
+| ${IntegrationName}			| Append and Overlay FTP
+| ${NewObject}					| SunFTP, Set
+| ${ExistingAndUpdatedObject}	| SunFTP, Midday
+| ${ExistingNoChangeObject}		| SunFTP, Rise 
 | ${Custodians Grid}	| gbox_custodianGrid
 
 
@@ -27,7 +27,7 @@
 | | Go to the Tab | Custodian
 | | Filter the following Grid on the following Columns by the following Values | ${Custodians Grid} | 
 | | ... | Name			| ${NewObject}	| 
-| | ... | Department	| AppendAndOverlay
+| | ... | Department	| AppendAndOverlayFTP
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
@@ -40,7 +40,7 @@
 | | Go to the Tab | Custodian
 | | Filter the following Grid on the following Columns by the following Values | ${Custodians Grid} | 
 | | ... | Name			| ${ExistingAndUpdatedObject}	| 
-| | ... | Department	| AppendAndOverlay
+| | ... | Department	| AppendAndOverlayFTP
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
@@ -67,37 +67,36 @@
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
 | | Create a Custodian using API	| 
 | | ... | Full Name		| ${ExistingNoChangeObject}		|
-| | ... | Email			| rsun@gameofholdstesting.corp	|
-| | ... | Department	| AppendAndOverlay
+| | ... | Email			| rsunftp@gameofholdstesting.corp	|
+| | ... | Department	| AppendAndOverlayFTP
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingAndUpdatedObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
 | | Create a Custodian using API	| 
 | | ... | Full Name		| ${ExistingAndUpdatedObject}	|
-| | ... | Email			| msun@gameofholdstesting.corp	|
-| | ... | Department	| AppendAndOverla
+| | ... | Email			| msunftp@gameofholdstesting.corp	|
+| | ... | Department	| AppendAndOverlayFT
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
 
-| | @{Step1Fields}=		| Create list | 
-| | ... | ${IntegrationName} | Append/Overlay | LDAP | Custodian | No
-| | @{Step2Fields}=		| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
-| | ... | (department=AppendAndOverlay) | FastBind | testing\\rellockdown | P@ssw0rd@1
+| | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
+| | @{Step2Fields}=	| filetransfer.kcura.com | FTP - File Transfer Protocol | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendOverlayFTP.csv
 | | @{Step3Mapping}=	| Create List	|
-| | ... | Email			| mail			| 
-| | ... | Department	| department	| 
-| | ... | First Name	| givenname		| 
-| | ... | Last Name		| sn			| 
-| | ... | UniqueID		| objectguid
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
+| | ... | Department	| Department 
+| | ... | Email			| Email		 
+| | ... | First Name	| FirstName 
+| | ... | Last Name		| LastName	 
+| | ... | UniqueID		| uniquie_id
+
+| | Create FTP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}
 | | [Teardown]		| Drop connection to the relativity services api
@@ -118,6 +117,6 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

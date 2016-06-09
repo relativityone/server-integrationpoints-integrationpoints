@@ -128,7 +128,7 @@
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 #-----------------------------------------------------------
@@ -200,7 +200,7 @@
 
 #-----------------------------------------------------------
 
-| | @{Step1Fields}=	| Create list | ${IntegrationName} | Append/Overlay |
+| | @{Step1Fields}=	| Create list | ${IntegrationName} | Junk Data	|
 | | ... | LDAP | Custodian | No
 
 | | @{Step2Fields}=	| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
@@ -214,7 +214,7 @@
 | | ... | Manager       | manager       | 
 | | ... | UniqueID		| objectguid
 
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}  
 
@@ -238,7 +238,7 @@
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/FormKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
 
