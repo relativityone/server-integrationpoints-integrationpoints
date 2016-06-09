@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Set Intergration Details step of Integration Points shows the correct fields and data.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Method
+| Suite Setup		| Open and Log in to Legal Hold
 | Test Setup		| Open Create Integration Point
 | Test Teardown 	| Capture screenshot if test fails
 | Suite Teardown	| Close all browsers
@@ -214,8 +214,8 @@
 | | ... | - The System RDOs are never shown (See "Get a List of All Non-System Object Types in the Workspace" for a list of the System RDOs). 
 | | ... |
 | | ... | Steps:
-| | ... | 1. Go to the Method Tab	| Integration Points
-| | ... | 2. Click	| New Integration Point
+| | ... | 1. Go to the Tab: Integration Points
+| | ... | 2. Click: New Integration Point
 | | ... | 3. Click Destination RDO Dropdown
 | | ... | 
 | | ... | Expected Results:

@@ -50,15 +50,14 @@
 | Suite Setup Keyword
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationPointName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPointName}
 
 | | @{Step1Fields}=		| Create List | 
-| | ... | ${IntegrationPointName}	| 
-| | ... | Junk Data
+| | ... | ${IntegrationPointName}
 | | ... | LDAP						| 
 | | ... | Custodian					| 
 | | ... | No

@@ -295,7 +295,7 @@
 | | [Documentation]	| 
 | | [ARGUMENTS] 	| ${IntegrationPointName}	| ${DestinationRDO}
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${IntegrationPointName}	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${DestinationRDO}	| EnableScheduler=No
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${IntegrationPointName}	| SourceProvider=LDAP	| DestinationRDO=${DestinationRDO}	| EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| 
 | | ... | ConnectionPath=testing.corp/CN=Users,DC=testing,DC=corp	| 
@@ -310,7 +310,7 @@
 | | [Documentation]	| Opens the browser and then deletes any of the Integration Points used in this suite that already exist in the workspace.
 | | ...				| Run as the Suite Setup.
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 #------------------------------------------------------------------------------------------------------------------------

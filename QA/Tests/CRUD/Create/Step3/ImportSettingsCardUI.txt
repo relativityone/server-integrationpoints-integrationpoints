@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Map Fields step of Integration Points shows the correct fields, card, and icons.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Method
+| Suite Setup		| Open and Log in to Legal Hold
 #| Test Setup		| NONE
 | Test Teardown 	| Capture Screenshot If Test Fails
 | Suite Teardown	| Close All Browsers
@@ -23,7 +23,7 @@
 | The Map Fields screen has a card with the Title Import Settings
 | | [Documentation]	| Verify that the Map Fields screen has a card with the title text "Import Settings".
 | | [Tags]			| automated
-| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Append/Overlay	| Questionnaire Question
+| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Questionnaire Question
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that a Card with the following Title Text is Visible	| Import Settings
 | | [Teardown]		| Run Keyword If Test Failed	| Fatal Error	| The Import Settings card was not found. Cancelling the remainder of the Suite.
 
@@ -59,7 +59,7 @@
 | | [Documentation]	| Verify that the fields on the Import Settings card are sorted correctly 
 | | ...				| when an Overwrite value of "Append" was selected on Step 1.
 | | [Tags]			| automated	| dan641
-| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Append	| Questionnaire Question
+| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Questionnaire Question
 | | Verify that the following Card contains the following Fields in Order | Import Settings | 
 | | ... | Unique Identifier:	| 
 | | ... | Parent Attribute:
@@ -69,7 +69,7 @@
 | | [Documentation]	| Verify that the fields on the Import Settings card are sorted correctly 
 | | ...				| when an Overwrite value of "Overlay Only" was selected on Step 1.
 | | [Tags]			| automated	| dan641
-| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Overlay Only	| Questionnaire Question
+| | [Setup]			| Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value	| Questionnaire Question
 | | Verify that the following Card contains the following Fields in Order | Import Settings | 
 | | ... | Unique Identifier:	| 
 | | ... | Parent Attribute:
@@ -122,13 +122,12 @@
 *** Keywords *** 
 
 | Go to Step 3 of the Create Integration Point Wizard using the following Overwrite value
-| | [ARGUMENTS]		| ${OverwriteValue}	| ${DestinationRDOValue}
+| | [ARGUMENTS]		| ${DestinationRDOValue}
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| 
-| | ... | IntegrationName=Import Settings Card Testing	| 
-| | ... | Overwrite=${OverwriteValue}					| 
-| | ... | SourceProvider=LDAP							| 
-| | ... | DestinationRDO=${DestinationRDOValue}			| 
+| | ... | IntegrationName=Import Settings Card Testing
+| | ... | SourceProvider=LDAP
+| | ... | DestinationRDO=${DestinationRDOValue}
 | | ... | EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| 

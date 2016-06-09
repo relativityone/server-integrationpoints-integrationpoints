@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Integration Points tab's List View is correct.
 | Metadata		    | Authors	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Method
+| Suite Setup		| Open and Log in to Legal Hold
 #| Test Setup		| NONE
 | Test Teardown 	| Capture Screenshot If Test Fails
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
@@ -110,11 +110,11 @@
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | @{Step1Fields}=		| Create List	| 
-| | ... | List View Sort Testing	| 
-| | ... | Junk Data
-| | ... | LDAP						| 
-| | ... | Custodian					| 
+| | ... | List View Sort Testing
+| | ... | LDAP
+| | ... | Custodian
 | | ... | No
+
 | | @{Step2Fields}=		| Create List | 
 | | ... | ${ConnectionPath}		| 
 | | ... | ${ObjectFilterString}	| 
@@ -122,30 +122,36 @@
 | | ... | ${ConnectionUsername}	| 
 | | ... | ${ConnectionPassword}	| 
 | | ... | ${ImportNestedItems}
+
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Email			| mail			| 
 | | ... | Department	| countrycode	| 
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
+
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| List View Sort Testing
 | | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 
+#------------------------------------------------------------------------------------------------------------------------
+
 | | @{Step1Fields}=	| Create List	| 
-| | ... | Integration Point List View Testing	| 
-| | ... | Junk Data
-| | ... | LDAP									| 
-| | ... | Custodian								| 
+| | ... | Integration Point List View Testing
+| | ... | LDAP
+| | ... | Custodian
 | | ... | No
+
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Integration Point List View Testing
 | | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 
+#------------------------------------------------------------------------------------------------------------------------
+
 | | @{Step1Fields}=	| Create List	| 
-| | ... | Integration Point Sort Testing	| 
-| | ... | Junk Data
-| | ... | LDAP								| 
-| | ... | Custodian							| 
+| | ... | Integration Point Sort Testing
+| | ... | LDAP
+| | ... | Custodian
 | | ... | No
+
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Integration Point Sort Testing
 | | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 | | [Teardown]		| Drop connection to the relativity services api

@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Connect to Source step of Integration Points field validation works correctly.
 | Metadata		    | Authors	| Daniel Oliver
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Method
+| Suite Setup		| Open and Log in to Legal Hold
 | Test Setup        | Go to Step 2 of the Create Integration Point Process
 | Test Teardown 	| Capture screenshot if test fails
 | Suite Teardown	| Close all browsers
@@ -86,7 +86,7 @@
 
 | Go to Step 2 of the Create Integration Point Process
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form	| Step 2 Testing	| Append/Overlay	| LDAP	| Custodian	| No
+| | Fill out the Following Fields of the Integration Point Step 1 form	| Step 2 Testing	| LDAP	| Custodian	| No
 | | Proceed to the Next Step of the Integration Point wizard
 
 | Verify the following Integration Point Field does not have the following Error

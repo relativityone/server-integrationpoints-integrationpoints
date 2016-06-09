@@ -15,8 +15,8 @@
 | ${NewObject}					| Man, Cat
 | ${ExistingAndUpdatedObject}	| Man, Dog
 | ${ExistingNoChangeObject}		| Man, Bird 
-| ${Manager}                 | Man, Bigdog
-| ${Custodians Grid}	| gbox_custodianGrid
+| ${Manager}					| Man, Bigdog
+| ${Custodians Grid}			| gbox_custodianGrid
 
 
 *** Test Cases ***
@@ -25,19 +25,21 @@
 | | [Documentation] | Verify that when an Append RIP is run which has new Source objects, that it creates new objects in the Target RDO.
 | | ...				| [id] 9632b8ae-b203-11e4-8099-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Method Tab | Custodian
+| | Go to the Tab	| Custodian
 | | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Email | catman@gameofholdstesting.corp
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
 
+
 | An Append imports will Overlay Managers
 | | [Documentation] | Verify that Append imports will Overlay Manager information by linking an Existing Custodians to a new Manager.
-| | ... | [id] 65ef890f-e46e-11e4-8722-90b11c6c5ae4
+| | ...				| [id] 65ef890f-e46e-11e4-8722-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Method Tab	| Custodian
+| | Go to the Tab	| Custodian
 | | View Custodian	| ${ExistingAndUpdatedObject} 
 
 | | Verify that the current Custodian has the Following Manager	| ${Manager}
+
 
 | An Append import Creates new History objects
 | | [Documentation] | Verify that when an Append RIP is run which has new source recods, 
@@ -94,7 +96,8 @@
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | Go to the Method Tab	| Job History
+| | ... | Go to the Tab: Job History
+| | ... | 
 | | ... | Expected Results:
 | | ... | Verify that the newest entry for "${IntegrationName}" has no Errors
 
@@ -104,8 +107,10 @@
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
+
+# --------------------------------------------------------------------------------------------------------
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
@@ -121,10 +126,17 @@
 | | ... | Email			| dogman@gameofholdstesting.corp	|
 | | ... | Department	| Append
 
-| | @{Step1Fields}=		| Create list | ${IntegrationName} | Junk Data |
-| | ... | LDAP | Custodian | No
+# --------------------------------------------------------------------------------------------------------
+
+| | @{Step1Fields}=	| Create List	|
+| | ... | ${IntegrationName}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
+
 | | @{Step2Fields}=		| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
 | | ... | (department=Append) | FastBind | testing\\rellockdown | P@ssw0rd@1
+
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Email			| mail			| 
 | | ... | Department	| department	| 

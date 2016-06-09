@@ -35,8 +35,8 @@
 | | [Documentation] | Verify that an imported Custodian who has a manager is linked to the Manager on the Custodian Detail View.
 | | ...				| [id] b8e6c261-b605-11e4-aaf4-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Method Tab | Custodian
-| | View Custodian | ${Custodian1} 
+| | Go to the Tab	| Custodian
+| | View Custodian	| ${Custodian1} 
 
 | | Click Section Tab	| Detail
 | | Verify that the following Fields have the Following Values	| Manager:	| ${Manager1}
@@ -46,7 +46,7 @@
 | | [Documentation] | Verify that new Managers have their own Custodian record created.
 | | ...				| [id] bb77584f-b605-11e4-8ae0-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Method Tab | Custodian
+| | Go to the Tab	| Custodian
 | | Filter the following Grid on the following Column by the following Value | ${CustodianGrid}  | Email | alphamanager@gameofholds.testing.corp
 
 | | Verify that the following Grid contains the following number of Rows | ${CustodianGrid}  | 1
@@ -56,15 +56,15 @@
 | | [Documentation] | Verify that newly imported Managers have the correct name format on their own Custodian record.
 | | ...				| [id] bf3068b0-b605-11e4-8b69-90b11c6c5ae4
 | | [Tags]			| automated 
-| | Go to the Method Tab | Custodian
-| | View Custodian | ${Manager1} 
+| | Go to the Tab	| Custodian
+| | View Custodian	| ${Manager1} 
 
 | | Click Section Tab	| Detail
 | | Verify that the following Fields have the Following Values	| 
-| | ... | First Name:	| Alpha			| 
-| | ... | Last Name:	| Manager		| 
-| | ... | Email:		| alphamanager@gameofholds.testing.corp	| 
-| | ... | Department:	| ${Department}	| 
+| | ... | First Name:	| Alpha
+| | ... | Last Name:	| Manager
+| | ... | Email:		| alphamanager@gameofholds.testing.corp
+| | ... | Department:	| ${Department}
 | | ... | Manager:		| ${EMPTY}
 
 
@@ -72,8 +72,8 @@
 | | [Documentation] | Verify that a Manager who already existed is linked to their Reports on the Custodian Detail View.
 | | ...				| [id] c28279de-b605-11e4-b74f-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Method Tab | Custodian
-| | View Custodian | ${Custodian2} 
+| | Go to the Tab	| Custodian
+| | View Custodian	| ${Custodian2} 
 
 | | Click Section Tab	| Detail
 | | Verify that the following Fields have the Following Values	| Manager:	| ${Manager2}
@@ -83,8 +83,8 @@
 | | [Documentation] | Verify that Existing Custodians can become Managers to New Custodians.
 | | ...				| [id] c7a41aee-b605-11e4-91e0-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Method Tab | Custodian
-| | View Custodian | ${Custodian3} 
+| | Go to the Tab	| Custodian
+| | View Custodian	| ${Custodian3} 
 
 | | Click Section Tab	| Detail
 | | Verify that the following Fields have the Following Values	| Manager:	| ${Manager3}
@@ -94,8 +94,8 @@
 | | [Documentation] | Verify that Existing Custodians can become Managers of Existing Custodians.
 | | ...				| [id] cab886de-b605-11e4-bdd1-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Method Tab | Custodian
-| | View Custodian | ${Custodian4} 
+| | Go to the Tab	| Custodian
+| | View Custodian	| ${Custodian4} 
 
 | | Click Section Tab	| Detail
 | | Verify that the following Fields have the Following Values	| Manager:	| ${Manager4}
@@ -105,8 +105,8 @@
 | | [Documentation] | Verify that Existing Custodians can be linked to Newly created Managers.
 | | ...				| [id] cf715400-b605-11e4-a0ec-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Method Tab | Custodian
-| | View Custodian | ${Custodian5} 
+| | Go to the Tab	| Custodian
+| | View Custodian	| ${Custodian5} 
 
 | | Click Section Tab	| Detail
 | | Verify that the following Fields have the Following Values	| Manager:	| ${Manager1}
@@ -116,8 +116,8 @@
 | | [Documentation] | Verify that Existing Custodians can be given new existing Managers.
 | | ...				| [id]  d20656c0-b605-11e4-8c82-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Method Tab | Custodian
-| | View Custodian | ${Custodian6} 
+| | Go to the Tab	| Custodian
+| | View Custodian	| ${Custodian6} 
 
 | | Click Section Tab	| Detail
 | | Verify that the following Fields have the Following Values	| Manager:	| ${Manager7}
@@ -128,7 +128,7 @@
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 #-----------------------------------------------------------
@@ -136,89 +136,97 @@
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Manager2}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Manager2}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${Manager2}	|
-| | ... | Email			| bm@gameofholds.testing.corp |
+| | ... | Full Name		| ${Manager2}
+| | ... | Email			| bm@gameofholds.testing.corp
 | | ... | Department	| ${Department}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Manager7}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Manager7}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${Manager7}	|
-| | ... | Email			| FoxtrotManager@gameofholds.testing.corp |
+| | ... | Full Name		| ${Manager7}
+| | ... | Email			| FoxtrotManager@gameofholds.testing.corp
 | | ... | Department	| ${Department}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Custodian5}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Custodian5}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${Custodian5}	|
-| | ... | Email			| AlphaTwoWorker@gameofholds.testing.corp |
+| | ... | Full Name		| ${Custodian5}
+| | ... | Email			| AlphaTwoWorker@gameofholds.testing.corp
 | | ... | Department	| ${Department}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${CustodianB2}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${CustodianB2}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${CustodianB2}	|
-| | ... | Email			| BravoTwoWorker@gameofholds.testing.corp |
-| | ... | Manager       | ${Manager2}	|
+| | ... | Full Name		| ${CustodianB2}
+| | ... | Email			| BravoTwoWorker@gameofholds.testing.corp
+| | ... | Manager       | ${Manager2}
 | | ... | Department	| ${Department}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Manager3}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Manager3}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${Manager3}	|
-| | ... | Email			| CharlieManager@gameofholds.testing.corp |
+| | ... | Full Name		| ${Manager3}
+| | ... | Email			| CharlieManager@gameofholds.testing.corp
 | | ... | Department	| ${Department}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Custodian4}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Custodian4}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${Custodian4}	|
-| | ... | Email			| DeltaWorker@gameofholds.testing.corp |
+| | ... | Full Name		| ${Custodian4}
+| | ... | Email			| DeltaWorker@gameofholds.testing.corp
 | | ... | Department	| ${Department}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Manager4}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Manager4}
-| | Create a Custodian using API	| 
-| | ... | Full Name		| ${Manager4}	|
-| | ... | Email			| DeltaManager@gameofholds.testing.corp |
+| | Create a Custodian using API	|
+| | ... | Full Name		| ${Manager4}
+| | ... | Email			| DeltaManager@gameofholds.testing.corp
 | | ... | Department	| ${Department}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Custodian6}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Custodian6}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${Custodian6}	|
-| | ... | Email			| EchoWorker@gameofholds.testing.corp |
-| | ... | Manager       | ${Manager7}	|
+| | ... | Full Name		| ${Custodian6}
+| | ... | Email			| EchoWorker@gameofholds.testing.corp
+| | ... | Manager       | ${Manager7}
 | | ... | Department	| ${Department}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Manager6}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Manager6}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${Manager6}	|
-| | ... | Email			| EchoManager@gameofholds.testing.corp |
+| | ... | Full Name		| ${Manager6}
+| | ... | Email			| EchoManager@gameofholds.testing.corp
 | | ... | Department	| ${Department}
 
 #-----------------------------------------------------------
 
-| | @{Step1Fields}=	| Create list | ${IntegrationName} | Junk Data	|
-| | ... | LDAP | Custodian | No
+| | @{Step1Fields}=	| Create List	| 
+| | ... | ${IntegrationName}
+| | ... | Junk Data
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
 
-| | @{Step2Fields}=	| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
-| | ... | (department=${Department}) | FastBind | testing\\rellockdown | P@ssw0rd@1
+| | @{Step2Fields}=	| Create List	| 
+| | ... | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
+| | ... | (department=${Department})
+| | ... | FastBind
+| | ... | testing\\rellockdown
+| | ... | P@ssw0rd@1
 
 | | @{Step3Mapping}=	| Create List	|
-| | ... | Email			| mail			| 
-| | ... | Department	| department	| 
-| | ... | First Name	| givenname		| 
-| | ... | Last Name		| sn			| 
-| | ... | Manager       | manager       | 
+| | ... | Email			| mail
+| | ... | Department	| department
+| | ... | First Name	| givenname
+| | ... | Last Name		| sn
+| | ... | Manager       | manager
 | | ... | UniqueID		| objectguid
 
 | | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}  
 
-| | Go to the Method Tab | Custodian
+| | Go to the Tab | Custodian
 | | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers

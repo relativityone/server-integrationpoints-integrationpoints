@@ -25,9 +25,9 @@
 | | [Documentation] | Verify that when an Append and Overlay RIP is run which has new Source records, that it creates new records in the Target RDO.
 | | ...				| [id] 130ad15e-a89f-11e4-9aa5-b8ca3a83048f
 | | [Tags]			| automated
-| | Go to the Method Tab | Custodian
+| | Go to the Tab	| Custodian
 | | Filter the following Grid on the following Columns by the following Values | ${Custodians Grid} | 
-| | ... | Name			| ${NewObject}	| 
+| | ... | Name			| ${NewObject} 
 | | ... | Department	| AppendAndOverlay
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
@@ -38,9 +38,9 @@
 | | ...				| that it does update the existing records in the Target RDO. In this test, the Custodian's Department has been updated.
 | | ...				| [id] 130fda6e-a89f-11e4-8313-b8ca3a83048f
 | | [Tags]			| automated
-| | Go to the Method Tab | Custodian
+| | Go to the Tab	| Custodian
 | | Filter the following Grid on the following Columns by the following Values | ${Custodians Grid} | 
-| | ... | Name			| ${ExistingAndUpdatedObject}	| 
+| | ... | Name			| ${ExistingAndUpdatedObject}
 | | ... | Department	| AppendAndOverlay
 
 | | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
@@ -68,8 +68,10 @@
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
+
+# --------------------------------------------------------------------------------------------------------
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
@@ -85,11 +87,16 @@
 | | ... | Email			| msun@gameofholdstesting.corp	|
 | | ... | Department	| AppendAndOverla
 
+# --------------------------------------------------------------------------------------------------------
+
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
 
-| | @{Step1Fields}=		| Create list | 
-| | ... | ${IntegrationName} | Junk Data | LDAP | Custodian | No
+| | @{Step1Fields}=	| Create List | 
+| | ... | ${IntegrationName}
+| | ... | LDAP
+| | ... | Custodian 
+| | ... | No
 | | @{Step2Fields}=		| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
 | | ... | (department=AppendAndOverlay) | FastBind | testing\\rellockdown | P@ssw0rd@1
 | | @{Step3Mapping}=	| Create List	|

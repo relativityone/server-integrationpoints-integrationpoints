@@ -3,7 +3,7 @@
 | Documentation 	| Verify that Next and Back buttons on the Integration Point Wizard affect the data correctly.
 | Metadata			| Authors	| William Sehy	| Daniel Oliver
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Run Keywords	| Setup connection to the relativity database	| Open and Log in to Method
+| Suite Setup		| Run Keywords	| Setup connection to the relativity database	| Open and Log in to Legal Hold
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Close All Browsers
 
@@ -29,7 +29,7 @@
 | | [Documentation]	| Verify that if you fill out steps 1 through 3, go back to step 1, then return to step 3, that all of the previously entered data on step 3 will still be present.
 | | ...				| [id] 0ed034ee-a89f-11e4-93a5-b8ca3a83048f
 | | [Tags]			| automated
-| | @{Step1Fields}=		| Create List	| ${IntegrationName1}	| Junk Data	| LDAP	| Custodian	| No
+| | @{Step1Fields}=		| Create List	| ${IntegrationName1}	| LDAP	| Custodian	| No
 | | @{Step2Fields}=		| Create List	| ${ConnectionPath1}	| ${ObjectFilterString}	| ${Authentication}	| ${IPUsername}	| ${IPPassword}
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Email			| mail			
@@ -52,7 +52,7 @@
 | | ...				| will still be correctly mapped with the Workspace Fields selections. Also the Unique Identifier dropdown value will be saved.
 | | ...				| [id] 0ed0830f-a89f-11e4-9c79-b8ca3a83048f
 | | [Tags]			| automated	| dan682
-| | @{Step1Fields}=		| Create List	| ${IntegrationName1}	| Junk Data	| LDAP	| Custodian	| No
+| | @{Step1Fields}=		| Create List	| ${IntegrationName1}	| LDAP	| Custodian	| No
 | | @{Step2Fields}=		| Create List	| ${ConnectionPath1}	| ${ObjectFilterString}	| ${Authentication}	| ${IPUsername}	| ${IPPassword}
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Department	| objectguid	|
@@ -74,7 +74,7 @@
 | | ...				| all of the Workspace Fields selections and the dropdowns will be reset, but the Source Attribute selections will be saved.
 | | ...				| [id] 0ed08310-a89f-11e4-ae95-b8ca3a83048f
 | | [Tags]			| automated
-| | @{Step1Fields}=		| Create List	| ${IntegrationName1}	| Junk Data	| LDAP	| Custodian	| No
+| | @{Step1Fields}=		| Create List	| ${IntegrationName1}	| LDAP	| Custodian	| No
 | | @{Step2Fields}=		| Create List	| ${ConnectionPath1}	| ${ObjectFilterString}	| ${Authentication}	| ${IPUsername}	| ${IPPassword}
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Department	| objectguid	|

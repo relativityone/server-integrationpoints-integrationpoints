@@ -100,7 +100,7 @@
 | | [Documentation]	| Opens the browser and then creates both of the Integration Points used in this suite.
 | | ...				| Run as the Suite Setup.
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 #------------------------------------------------------------------------------------------------------------------------
@@ -113,8 +113,17 @@
 
 #------------------------------------------------------------------------------------------------------------------------
 
-| | @{Step1Fields}=	| Create List	| ${IntegrationPoint1}	| Junk Data		| LDAP	| Custodian	| 
-| | ...	| Yes		| Daily	| NULL	| NULL	| 02/25/2035	| 02/26/2045	| 11:25 AM
+| | @{Step1Fields}=	| Create List	| 
+| | ...	| ${IntegrationPoint1}
+| | ...	| LDAP
+| | ...	| Custodian
+| | ...	| Yes
+| | ...	| Daily
+| | ...	| NULL
+| | ...	| NULL
+| | ...	| 02/25/2035
+| | ...	| 02/26/2045
+| | ...	| 11:25 AM
 
 | | @{Step2Fields}=	| Create List	| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp	| 
 | | ... | (department=Import Now Tester)	| FastBind	| testing\\rellockdown	| P@ssw0rd@1
@@ -130,7 +139,11 @@
 
 #------------------------------------------------------------------------------------------------------------------------
 
-| | @{Step1Fields}=	| Create List	| ${IntegrationPoint2}	| Junk Data	| LDAP	| Custodian	| No
+| | @{Step1Fields}=	| Create List	| 
+| | ...	| ${IntegrationPoint2}
+| | ...	| LDAP
+| | ...	| Custodian
+| | ...	| No
 
 | | Create LDAP Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping} | Append Only	| UniqueID
 | | [Teardown]		| Drop connection to the relativity services api

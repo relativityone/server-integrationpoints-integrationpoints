@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the fields of Step 2 on the Create Integration Point wizard have the correct validation.
 | Metadata		    | Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Method
+| Suite Setup		| Open and Log in to Legal Hold
 | Test Setup		| Go to Step 2 of the Create Integration Point Process
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Close All Browsers
@@ -84,7 +84,7 @@
 
 | Go to Step 2 of the Create Integration Point Process
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Validation Testing | Append/Overlay | LDAP | Custodian | No
+| | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Validation Testing | LDAP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
 
 

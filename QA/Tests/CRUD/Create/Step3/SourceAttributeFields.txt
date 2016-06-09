@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Map Fields step of the Integration Points wizard populates the correct Source Attributes.
 | Metadata			| Authors	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Method
+| Suite Setup		| Open and Log in to Legal Hold
 #| Test Setup		| 
 | Test Teardown 	| Capture screenshot if test fails
 | Suite Teardown	| Close All Browsers
