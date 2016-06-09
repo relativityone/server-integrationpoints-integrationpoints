@@ -20,11 +20,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
-using System.Threading.Tasks;
-using Relativity.Services;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
+	[TestFixture]
 	[Explicit]
 	public class JobHistoryErrorsBatchingTests : WorkspaceDependentTemplate
 	{
@@ -41,8 +40,6 @@ namespace kCura.IntegrationPoints.Data.Tests
 		{
 		}
 
-		[TestFixtureSetUp]
-		[Explicit]
 		public override void SetUp()
 		{
 			base.SetUp();
@@ -50,7 +47,6 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		[Test]
-		[Explicit]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsMatchingBatchSize()
 		{
 			string docPrefix = "EqualBatchDoc";
@@ -59,7 +55,6 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		[Test]
-		[Explicit]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsUnderBatchSize()
 		{
 			string docPrefix = "LessThanBatchDoc";
@@ -68,7 +63,6 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		[Test]
-		[Explicit]
 		public void ExpectItemLevelJobHistoryErrorsUpdatedWithErrorsOverBatchSize()
 		{
 			string docPrefix = "MoreThanBatchDoc";
@@ -77,7 +71,6 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		[Test]
-		[Explicit]
 		public void ExpectErrorWhenRetryingErrorsOnIpWithoutAJobHistory()
 		{
 			//Arrange
@@ -123,7 +116,6 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		[Test]
-		[Explicit]
 		public void ExpectErrorWhenRetryingErrorsOnIpWithoutJobHistoryErrors()
 		{
 			//Arrange
@@ -174,7 +166,6 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		[Test]
-		[Explicit]
 		public void ExpectJobLevelJobHistoryErrorUpdatedForJobLevelErrorWhenBatching()
 		{
 			//Arrange
@@ -216,8 +207,8 @@ namespace kCura.IntegrationPoints.Data.Tests
 			//Act
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
 
-			string startTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
-			string completeTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE}_{ tempTableSuffix }";
+			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE}_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -236,7 +227,6 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		[Test]
-		[Explicit]
 		public void ExpectJobandItemLevelJobHistoryErrorsUpdatedWhenBatching()
 		{
 			//Arrange
@@ -281,9 +271,9 @@ namespace kCura.IntegrationPoints.Data.Tests
 			//Act
 			_jobHistoryErrorManager.StageForUpdatingErrors(job, JobTypeChoices.JobHistoryRetryErrors);
 
-			string startTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
-			string completeTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE }_{ tempTableSuffix }";
-			string otherTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START }_{ tempTableSuffix }";
+			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_START }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_JOB_COMPLETE }_{ tempTableSuffix }";
+			string otherTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START }_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
@@ -310,7 +300,6 @@ namespace kCura.IntegrationPoints.Data.Tests
 		}
 
 		[Test]
-		[Explicit]
 		public void ExpectTempSavedSearchCreatedAndDeleted()
 		{
 			//Arrange
@@ -398,12 +387,12 @@ namespace kCura.IntegrationPoints.Data.Tests
 			List<int> expectedJobHistoryErrorExpired = GetExpectedExpiredErrors(expectedNonExpiredJobHistoryArtifacts);
 
 			//Act
-			ModifySavedSearch(documentPrefix, false);
+			ModifySavedSearch(documentPrefix, true);
 			_jobHistoryErrorManager.CreateErrorListTempTablesForItemLevelErrors(job, SavedSearchArtifactId);
 
-			string startTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START }_{ tempTableSuffix }";
-			string completeTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE }_{ tempTableSuffix }";
-			string otherTempTableName = $"_{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED }_{ tempTableSuffix }";
+			string startTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START }_{ tempTableSuffix }";
+			string completeTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_COMPLETE }_{ tempTableSuffix }";
+			string otherTempTableName = $"{ Constants.TEMPORARY_JOB_HISTORY_ERROR_TABLE_ITEM_START_EXCLUDED }_{ tempTableSuffix }";
 
 			DataTable startTempTable = GetTempTable(startTempTableName);
 			DataTable completedTempTable = GetTempTable(completeTempTableName);
