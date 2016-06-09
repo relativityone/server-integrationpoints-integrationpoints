@@ -146,7 +146,7 @@ var ftpHelper = (function (data) {
         var p1 = validateSettings(localModel);
         p1.then(function () {
             retrieveValueFromServer(localModel).then(function (columnList) {
-                debugger;
+                
                 localModel.columnlist = columnList;
                 //update model with the value returned;
                 document.getElementById('validation_message').innerHTML = "";
