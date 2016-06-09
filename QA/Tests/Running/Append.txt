@@ -121,8 +121,8 @@
 | | ... | Email			| dogman@gameofholdstesting.corp	|
 | | ... | Department	| Append
 
-| | @{Step1Fields}=		| Create list | ${IntegrationName} | Append |
-| | ... | LDAP | Custodian | no
+| | @{Step1Fields}=		| Create list | ${IntegrationName} | Junk Data |
+| | ... | LDAP | Custodian | No
 | | @{Step2Fields}=		| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
 | | ... | (department=Append) | FastBind | testing\\rellockdown | P@ssw0rd@1
 | | @{Step3Mapping}=	| Create List	|
@@ -132,7 +132,7 @@
 | | ... | Last Name		| sn			| 
 | | ... | Manager       | manager       | 
 | | ... | UniqueID		| objectguid
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | Email
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}
 | | [Teardown]		| Run Keywords | Drop connection to the relativity services api | Capture Page Screenshot
@@ -153,6 +153,6 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

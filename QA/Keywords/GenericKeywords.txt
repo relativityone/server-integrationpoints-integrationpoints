@@ -65,11 +65,12 @@
 
 | Create LDAP Integration Point
 | | [Documentation] | A keyword that creates an LDAP Integration Point. 
-| | ...				| The value of ${Step1Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 1 form".
-| | ...				| The value of ${Step2Fields} are the arguments from "Fill out the Following Fields of the LDAP Integration Point Step 2 form".
-| | ...				| The value of ${Step3Mapping} are the arguments from "Map the Following Fields on the Integration Point Step 3 form".
-| | ...				| The value of ${ParentAttribute} is the Parent RDO for the Destination RDO, which should be NULL or not entered when there is no Parent.
-| | [ARGUMENTS]		| ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | ${Step3UniqueID} | ${ParentAttribute}=NULL
+| | ...				| The value of Step1Fields should be the arguments from "Fill out the Following Fields of the Integration Point Step 1 form" in a list variable.
+| | ...				| The value of Step2Fields should be the arguments from "Fill out the Following Fields of the LDAP Integration Point Step 2 form" in a list variable.
+| | ...				| The value of Step3Mapping should be the arguments from "Map the Following Fields on the Integration Point Step 3 form" in a list variable.
+| | ... 			| The value of Overwrite should be "Append Only", "Overlay Only", or "ppend/Overlay".
+| | ...				| The value of ParentAttribute is the Parent RDO for the Destination RDO, which should be NULL or not entered when there is no Parent.
+| | [ARGUMENTS]		| ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | ${Step3Overwrite} | ${Step3UniqueID} | ${ParentAttribute}=NULL
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form | @{Step1Fields}
 | | Proceed to the Next Step of the Integration Point wizard
@@ -79,18 +80,20 @@
 | | Wait Until Element Is Visible	| xpath=//select[@id='source-fields']/child::option	| 15s	| No Attribute fields were found.
 
 | | Map the Following Fields on the Integration Point Step 3 form | @{Step3Mapping}
+| | Select from select2 Dropdown	| s2id_overwrite | ${Step3Overwrite}
 | | Select from select2 Dropdown	| s2id_overlay-identifier | ${Step3UniqueID}
 | | Run Keyword Unless	| '${ParentAttribute}'=='NULL' | Select from select2 Dropdown | s2id_parent-identifier | ${ParentAttribute}
 | | Click | id=save
 | | Wait Until Keyword Succeeds	| 30s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${Step1Fields[0]}
 
 | Create FTP Integration Point
-| | [Documentation] | A keyword that creates an FTP Integration Point. 
-| | ...				| The value of ${Step1Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 1 form".
-| | ...				| The value of ${Step2Fields} are the arguments from "Fill out the Following Fields of the FTP Integration Point Step 2 form".
-| | ...				| The value of ${Step3Mapping} are the arguments from "Map the Following Fields on the Integration Point Step 3 form".
-| | ...				| The value of ${ParentAttribute} is the Parent RDO for the Destination RDO, which should be NULL or not entered when there is no Parent.
-| | [ARGUMENTS]		| ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | ${Step3UniqueID} | ${ParentAttribute}=NULL
+| | [Documentation] | A keyword that creates an FTP Integration Point.
+| | ...				| The value of Step1Fields should be the arguments from "Fill out the Following Fields of the Integration Point Step 1 form" in a list variable.
+| | ...				| The value of Step2Fields should be the arguments from "Fill out the Following Fields of the FTP Integration Point Step 2 form" in a list variable.
+| | ...				| The value of Step3Mapping should be the arguments from "Map the Following Fields on the Integration Point Step 3 form" in a list variable.
+| | ... 			| The value of Overwrite should be "Append Only", "Overlay Only", or "Append/Overlay".
+| | ...				| The value of ParentAttribute is the Parent RDO for the Destination RDO, which should be NULL or not entered when there is no Parent.
+| | [ARGUMENTS]		| ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | ${Step3Overwrite} | ${Step3UniqueID} | ${ParentAttribute}=NULL
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form | @{Step1Fields}
 | | Proceed to the Next Step of the Integration Point wizard
@@ -100,7 +103,8 @@
 | | Wait Until Element Is Visible	| xpath=//select[@id='source-fields']/child::option	| 15s	| No Attribute fields were found.
 
 | | Map the Following Fields on the Integration Point Step 3 form | @{Step3Mapping}
-| | Select from select2 Dropdown	| s2id_overlay-identifier | ${Step3UniqueID}
+| | Select from select2 Dropdown	| s2id_overwrite			| ${Step3Overwrite}
+| | Select from select2 Dropdown	| s2id_overlay-identifier	| ${Step3UniqueID}
 | | Run Keyword Unless	| '${ParentAttribute}'=='NULL' | Select from select2 Dropdown | s2id_parent-identifier | ${ParentAttribute}
 | | Click | id=save
 | | Wait Until Keyword Succeeds	| 30s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${Step1Fields[0]}

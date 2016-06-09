@@ -89,7 +89,7 @@
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
 
-| | @{Step1Fields}=		| Create List | ${IntegrationName} | Append/Overlay |
+| | @{Step1Fields}=		| Create List | ${IntegrationName} | Junk Data	|
 | | ... | LDAP | Custodian | No
 | | @{Step2Fields}=		| Create List | testing.corp/OU=Testing - Users,DC=testing,DC=corp |
 | | ... | (department=Nested) | FastBind | testing\\rellockdown | P@ssw0rd@1 | Yes
@@ -101,7 +101,7 @@
 | | ... | UniqueID		| objectguid	| 
 | | ... | Manager		| manager
 
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}
 | | [Teardown]		| Run Keywords | Drop connection to the relativity services api | Capture Page Screenshot
@@ -124,7 +124,7 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/QuestionnaireKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
