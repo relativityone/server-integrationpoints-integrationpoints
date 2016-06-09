@@ -3,9 +3,6 @@
 | Documentation	| This suite of keywords deals with the Integration Point object and its associated pages and actions.
 
 
-*** Variables ***
-
-
 *** Keywords ***
 
 | Proceed to the Next Step of the Integration Point wizard
@@ -38,8 +35,8 @@
 | | [Documentation] | A keyword that runs an RIP import; can be called from anywhere.
 | | [ARGUMENTS]		| ${IntegrationPoint} 
 | | View Integration Point	| ${IntegrationPoint} 
-| | Page Should Contain Element	| xpath=//a[@class='consoleButtonEnabled' and text()='Import Now']	| The Import Now button was disabled for the Integration Point "${IntegrationPoint}".
-| | Click	| Import Now
+| | Page Should Contain Element	| xpath=//a[@class='consoleButtonEnabled' and text()='Run Now']	| The Import Now button was disabled for the Integration Point "${IntegrationPoint}".
+| | Click	| Run Now
 | | Click	| xpath=//span[@class='ui-button-text' and text()='OK'] 
 | | Wait Until Integration Point Job Runs	| ${IntegrationPoint}	| 60S
 
@@ -66,23 +63,48 @@
 | | View Integration Point	| ${IntegrationPoint} 
 | | Delete this object
 
-| Create Integration Point
-| | [Documentation] | A keyword that creates an Integration Point. 
-| | ...				| The value of ${Step1Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 1 form".
-| | ...				| The value of ${Step2Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 2 form".
-| | ...				| The value of ${Step3Mapping} are the arguments from "Map the Following Fields on the Integration Point Step 3 form".
-| | ...				| The value of ${ParentAttribute} is the Parent RDO for the Destination RDO, which should be NULL or not entered when there is no Parent.
-| | [ARGUMENTS]		| ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | ${Step3UniqueID} | ${ParentAttribute}=NULL
+| Create LDAP Integration Point
+| | [Documentation] | A keyword that creates an LDAP Integration Point. 
+| | ...				| The value of Step1Fields should be the arguments from "Fill out the Following Fields of the Integration Point Step 1 form" in a list variable.
+| | ...				| The value of Step2Fields should be the arguments from "Fill out the Following Fields of the LDAP Integration Point Step 2 form" in a list variable.
+| | ...				| The value of Step3Mapping should be the arguments from "Map the Following Fields on the Integration Point Step 3 form" in a list variable.
+| | ... 			| The value of Overwrite should be "Append Only", "Overlay Only", or "ppend/Overlay".
+| | ...				| The value of ParentAttribute is the Parent RDO for the Destination RDO, which should be NULL or not entered when there is no Parent.
+| | [ARGUMENTS]		| ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | ${Step3Overwrite} | ${Step3UniqueID} | ${ParentAttribute}=NULL
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form | @{Step1Fields}
 | | Proceed to the Next Step of the Integration Point wizard
 
-| | Fill out the Following Fields of the Integration Point Step 2 form | @{Step2Fields}
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form | @{Step2Fields}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Element Is Visible	| xpath=//select[@id='source-fields']/child::option	| 15s	| No Attribute fields were found.
 
 | | Map the Following Fields on the Integration Point Step 3 form | @{Step3Mapping}
+| | Select from select2 Dropdown	| s2id_overwrite | ${Step3Overwrite}
 | | Select from select2 Dropdown	| s2id_overlay-identifier | ${Step3UniqueID}
+| | Run Keyword Unless	| '${ParentAttribute}'=='NULL' | Select from select2 Dropdown | s2id_parent-identifier | ${ParentAttribute}
+| | Click | id=save
+| | Wait Until Keyword Succeeds	| 30s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${Step1Fields[0]}
+
+| Create FTP Integration Point
+| | [Documentation] | A keyword that creates an FTP Integration Point.
+| | ...				| The value of Step1Fields should be the arguments from "Fill out the Following Fields of the Integration Point Step 1 form" in a list variable.
+| | ...				| The value of Step2Fields should be the arguments from "Fill out the Following Fields of the FTP Integration Point Step 2 form" in a list variable.
+| | ...				| The value of Step3Mapping should be the arguments from "Map the Following Fields on the Integration Point Step 3 form" in a list variable.
+| | ... 			| The value of Overwrite should be "Append Only", "Overlay Only", or "Append/Overlay".
+| | ...				| The value of ParentAttribute is the Parent RDO for the Destination RDO, which should be NULL or not entered when there is no Parent.
+| | [ARGUMENTS]		| ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | ${Step3Overwrite} | ${Step3UniqueID} | ${ParentAttribute}=NULL
+| | Open Create Integration Point
+| | Fill out the Following Fields of the Integration Point Step 1 form | @{Step1Fields}
+| | Proceed to the Next Step of the Integration Point wizard
+
+| | Fill out the Following Fields of the FTP Integration Point Step 2 form | @{Step2Fields}
+| | Proceed to the Next Step of the Integration Point wizard
+| | Wait Until Element Is Visible	| xpath=//select[@id='source-fields']/child::option	| 15s	| No Attribute fields were found.
+
+| | Map the Following Fields on the Integration Point Step 3 form | @{Step3Mapping}
+| | Select from select2 Dropdown	| s2id_overwrite			| ${Step3Overwrite}
+| | Select from select2 Dropdown	| s2id_overlay-identifier	| ${Step3UniqueID}
 | | Run Keyword Unless	| '${ParentAttribute}'=='NULL' | Select from select2 Dropdown | s2id_parent-identifier | ${ParentAttribute}
 | | Click | id=save
 | | Wait Until Keyword Succeeds	| 30s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${Step1Fields[0]}
@@ -202,10 +224,13 @@
 | | Log	| Actual Fields: ${ActualFields}
 | | Lists Should Be Equal	| ${ExpectedFields}	| ${ActualFields}
 
+
 *** Settings ***
 | Library	| String
 | Library	| Collections
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepThreeKeywords.txt

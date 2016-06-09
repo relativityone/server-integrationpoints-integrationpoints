@@ -116,16 +116,16 @@
 | | | Element Should Be Visible	| ${ExpectedXpath} | The icon with the ID "${ExpectedIconIDs[${i}]}" was out of order.
 
 | Go to Step 3 of the Create Integration Point Process
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
+
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| 
-| | ... | IntegrationName=Field Mapping Card Testing	| 
-| | ... | Overwrite=Append/Overlay						| 
-| | ... | SourceProvider=LDAP							| 
-| | ... | DestinationRDO=Questionnaire Question			| 
+| | ... | IntegrationName=Field Mapping Card Testing
+| | ... | SourceProvider=LDAP
+| | ... | DestinationRDO=Questionnaire Question
 | | ... | EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
-| | Fill out the Following Fields of the Integration Point Step 2 form	| 
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| 
 | | ... | ConnectionPath=testing.corp/CN=Users,DC=testing,DC=corp	| 
 | | ... | ObjectFilterString=(objectClass=*)		| 
 | | ... | Authentication=FastBind					| 
@@ -137,6 +137,6 @@
 
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

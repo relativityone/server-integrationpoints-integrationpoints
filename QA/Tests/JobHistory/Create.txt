@@ -22,39 +22,47 @@
 | | Run Import Now on the Following Integration Point | ${IntegrationName}  
 | | Go to the tab  | Job History
 | | Set Filter  | Integration Point | ${IntegrationName}
+
 | | Run the following manual steps:
 | | ... | Expected Results:
-| | ... | 1. Verify that there is a Job History object for ${IntegrationName} that was just run
+| | ... | Verify that there is a Job History object for ${IntegrationName} that was just run
 
 | Scheduled RIP imports generate a History record
 | | [Documentation] | Verify that when a Scheduled RIP import starts, that a History record is created.
 | | ...				| [id] ec04abf0-b932-11e4-93a4-90b11c6c5ae4
 | | [Tags]          | manual  | automatable
 | | View Integration Point | ${IntegrationName}  
+
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Edit the Integration Point
 | | ... | 2. Allocate a schedule to run a few minutes from now
 | | ... | 3. Save the Integration Point
-| | ... | 4. Go to the tab  | Job History
+| | ... | 4. Go to the tab: Job History
 | | ... | 5. Set Filter  | Integration Point | ${IntegrationName}
 | | ... |
 | | ... | Expected Results:
-| | ... | 1. Verify that there is a Job History object for ${IntegrationName} that was just run
+| | ... | Verify that there is a Job History object for ${IntegrationName} that was just run
+
 
 *** Keywords *** 
 
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
+
+# --------------------------------------------------------------------------------------------------------
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
 
-| | @{Step1Fields}  | Create list | ${IntegrationName} | Append/Overlay |
-| | ... | LDAP | Custodian | no
+| | @{Step1Fields}=  | Create List	| 
+| | ... | ${IntegrationName}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
 | | @{Step2Fields}  | Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
 | | ... | (department=${IntegrationName}) | FastBind | testing\\rellockdown | P@ssw0rd@1
 | | @{Step3Mapping}=	| Create List	|
@@ -63,9 +71,9 @@
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
 
-| | [Teardown] | Drop connection to the relativity services api
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
+| | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
@@ -77,11 +85,12 @@
 | | Drop connection to the relativity services api
 | | Close All Browsers
 
+
 *** Settings ***
 | Library	| Collections
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
