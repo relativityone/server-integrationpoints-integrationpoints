@@ -68,8 +68,10 @@
 | Create Suite Setup Data
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
+
+# --------------------------------------------------------------------------------------------------------
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
@@ -85,11 +87,16 @@
 | | ... | Email			| msun@gameofholdstesting.corp	|
 | | ... | Department	| AppendAndOverla
 
+# --------------------------------------------------------------------------------------------------------
+
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
 
-| | @{Step1Fields}=		| Create list | 
-| | ... | ${IntegrationName} | Append/Overlay | LDAP | Custodian | No
+| | @{Step1Fields}=	| Create List | 
+| | ... | ${IntegrationName}
+| | ... | LDAP
+| | ... | Custodian 
+| | ... | No
 | | @{Step2Fields}=		| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
 | | ... | (department=AppendAndOverlay) | FastBind | testing\\rellockdown | P@ssw0rd@1
 | | @{Step3Mapping}=	| Create List	|
@@ -98,7 +105,7 @@
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
-| | Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Email
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}
 | | [Teardown]		| Drop connection to the relativity services api
@@ -119,6 +126,6 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

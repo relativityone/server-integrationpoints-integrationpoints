@@ -80,9 +80,9 @@ namespace kCura.IntegrationPoints.Contracts
 
 				provider = _windsorContainer.Resolve<IDataSourceProvider>(assemblyQualifiedName);
 			} 
-			catch
+			catch (Exception ex)
 			{
-				throw new Exception(string.Format(Properties.Resources.CouldNotCreateProvider, providerType));
+			    throw new Exception(string.Format(Properties.Resources.CouldNotCreateProvider, providerType));
 			}
 
 			// TODO: check if provider can be null -- biedrzycki: Jan 25, 2016
