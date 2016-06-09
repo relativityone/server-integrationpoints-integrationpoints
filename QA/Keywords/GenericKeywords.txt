@@ -3,9 +3,6 @@
 | Documentation	| This suite of keywords deals with the Integration Point object and its associated pages and actions.
 
 
-*** Variables ***
-
-
 *** Keywords ***
 
 | Proceed to the Next Step of the Integration Point wizard
@@ -67,7 +64,7 @@
 | | Delete this object
 
 | Create LDAP Integration Point
-| | [Documentation] | A keyword that creates an Integration Point. 
+| | [Documentation] | A keyword that creates an LDAP Integration Point. 
 | | ...				| The value of ${Step1Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 1 form".
 | | ...				| The value of ${Step2Fields} are the arguments from "Fill out the Following Fields of the LDAP Integration Point Step 2 form".
 | | ...				| The value of ${Step3Mapping} are the arguments from "Map the Following Fields on the Integration Point Step 3 form".
@@ -78,6 +75,27 @@
 | | Proceed to the Next Step of the Integration Point wizard
 
 | | Fill out the Following Fields of the LDAP Integration Point Step 2 form | @{Step2Fields}
+| | Proceed to the Next Step of the Integration Point wizard
+| | Wait Until Element Is Visible	| xpath=//select[@id='source-fields']/child::option	| 15s	| No Attribute fields were found.
+
+| | Map the Following Fields on the Integration Point Step 3 form | @{Step3Mapping}
+| | Select from select2 Dropdown	| s2id_overlay-identifier | ${Step3UniqueID}
+| | Run Keyword Unless	| '${ParentAttribute}'=='NULL' | Select from select2 Dropdown | s2id_parent-identifier | ${ParentAttribute}
+| | Click | id=save
+| | Wait Until Keyword Succeeds	| 30s	| 2s	| Verify that the Following Integration Point Exists in the current Workspace	| ${Step1Fields[0]}
+
+| Create FTP Integration Point
+| | [Documentation] | A keyword that creates an FTP Integration Point. 
+| | ...				| The value of ${Step1Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 1 form".
+| | ...				| The value of ${Step2Fields} are the arguments from "Fill out the Following Fields of the FTP Integration Point Step 2 form".
+| | ...				| The value of ${Step3Mapping} are the arguments from "Map the Following Fields on the Integration Point Step 3 form".
+| | ...				| The value of ${ParentAttribute} is the Parent RDO for the Destination RDO, which should be NULL or not entered when there is no Parent.
+| | [ARGUMENTS]		| ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | ${Step3UniqueID} | ${ParentAttribute}=NULL
+| | Open Create Integration Point
+| | Fill out the Following Fields of the Integration Point Step 1 form | @{Step1Fields}
+| | Proceed to the Next Step of the Integration Point wizard
+
+| | Fill out the Following Fields of the FTP Integration Point Step 2 form | @{Step2Fields}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Element Is Visible	| xpath=//select[@id='source-fields']/child::option	| 15s	| No Attribute fields were found.
 
@@ -168,7 +186,7 @@
 | | [Documentation]	| Verifies that you are on the given step of the Create Integration Point process.
 | | ...				| Currently, the acceptable values are: "Set Integration Details", "Connect to Source", and "Map Fields"
 | | [ARGUMENTS] 	| ${ExpectedStep}
-| | Verify that the Header has the Following Text	| Create LDAP Integration Point
+| | Verify that the Header has the Following Text	| Create Integration Point
 | | ${ActualStep}=	| Determine the current Step of the Create Integration Point Process
 | | Run Keyword Unless	| "${ExpectedStep}" == "${ActualStep}"	| Fail	| The current step was not "${ExpectedStep}", it was "${ActualStep}".
 
@@ -202,10 +220,13 @@
 | | Log	| Actual Fields: ${ActualFields}
 | | Lists Should Be Equal	| ${ExpectedFields}	| ${ActualFields}
 
+
 *** Settings ***
 | Library	| String
 | Library	| Collections
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepThreeKeywords.txt

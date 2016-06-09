@@ -1,6 +1,6 @@
 
 *** Settings ***
-| Documentation	| This suite of keywords deals with the second page of the Integration Point object's wizard.
+| Documentation	| This suite of keywords deals with the second page of the Integration Point object's Wizard and its associated actions.
 
 
 *** Keywords ***
@@ -47,5 +47,5 @@
 | Library	| String
 | Library	| Collections
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt

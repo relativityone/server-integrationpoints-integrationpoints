@@ -1,9 +1,6 @@
 
 *** Settings ***
-| Documentation	| This suite of keywords deals with the Integration Point object and its associated pages and actions.
-
-
-*** Variables ***
+| Documentation	| This suite of keywords deals with Step 3 of the Integration Point object's Wizard and its associated actions.
 
 
 *** Keywords ***
@@ -131,10 +128,10 @@
 | | @{ActualFields}=	| Get Element Text	| xpath=//select[@id='selected-source-fields']/child::option | False 
 | | Lists should be Equal	| ${ActualFields}	| ${ExpectedFields}
 
+
 *** Settings ***
 | Library	| String
 | Library	| Collections
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
