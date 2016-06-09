@@ -3,7 +3,6 @@ using System.Data;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Readers;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.DocumentTransferProvider.Repositories;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 {
@@ -12,14 +11,14 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider.DataReaders
 		private readonly ISavedSearchRepository _savedSearchRepository;
 
 		public DocumentArtifactIdDataReader(ISavedSearchRepository savedSearchRepository) :
-			base(new[] { new DataColumn(Shared.Constants.ARTIFACT_ID_FIELD_NAME) })
+			base(new[] { new DataColumn(Constants.ARTIFACT_ID_FIELD_NAME) })
 		{
 			_savedSearchRepository = savedSearchRepository;
 		}
 
 		protected override ArtifactDTO[] FetchArtifactDTOs()
 		{
-			ArtifactDTO[] results = _savedSearchRepository.RetrieveNext();
+			ArtifactDTO[] results = _savedSearchRepository.RetrieveNextDocuments();
 
 			return results;
 		}

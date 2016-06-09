@@ -102,7 +102,7 @@
 					</ul>
 				</div>
 			</div>
-			<div class="field-row" data-bind="visible: importNativeFile() == 'true' && AllowUserToMapNativeFileField() == 'true'">
+			<div class="field-row" data-bind="visible: importNativeFile() == 'true' && AllowUserToMapNativeFileField() == true">
 				<div class="field-label required ">Native File Path:</div>
 				<div class="field-value ">
 					<select id="native-filePath" data-bind="options: nativeFilePathOption, value: nativeFilePathValue, optionsValue: 'displayName', optionsText: 'displayName', optionsCaption: 'Select...', select2: {}">
@@ -120,25 +120,6 @@
 						<li>
 							<input type="radio" name="enable" value="false" data-bind="checked: CustodianManagerFieldContainsLink">No</li>
 					</ul>
-				</div>
-			</div>
-			<div class="field-row" data-bind="visible: isDocument() == 'true' && SelectedOverwrite() == 'Append Only'">
-				<div class="field-label required ">Use Folder Path Information:</div>
-				<div class="field-value">
-					<ul>
-						<li>
-							<input id="folder-path-radio-0" type="radio" name="import_createFolder" value="true" data-bind="checked: UseFolderPathInformation">Yes
-						</li>
-						<li>
-							<input id="folder-path-radio-1" type="radio" name="import_createFolder" value="false" data-bind="checked: UseFolderPathInformation">No
-						</li>
-					</ul>
-				</div>
-			</div>
-			<div class="field-row" data-bind="visible: UseFolderPathInformation() == 'true'">
-				<div class="field-label required ">Folder Path Information:</div>
-				<div class="field-value ">
-					<select id="folderPath" data-bind="options: FolderPathFields, value: FolderPathSourceField, optionsText: 'actualName', optionsValue: 'fieldIdentifier', optionsCaption: 'Select...' ,select2: {}"></select>
 				</div>
 			</div>
 		</div>

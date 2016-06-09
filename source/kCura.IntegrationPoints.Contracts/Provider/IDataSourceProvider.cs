@@ -10,7 +10,7 @@ namespace kCura.IntegrationPoints.Contracts.Provider
 	public interface IDataSourceProvider : IFieldProvider
 	{
 		/// <summary>
-		/// Retreives data from a data source and imports it into the system.
+		/// Retrieves data from a data source and imports it into the system.
 		/// </summary>
 		/// <param name="fields">The fields requested from the data source.</param>
 		/// <param name="entryIds">The IDs for the requested fields.</param>
@@ -19,7 +19,7 @@ namespace kCura.IntegrationPoints.Contracts.Provider
 		IDataReader GetData(IEnumerable<FieldEntry> fields, IEnumerable<string> entryIds, string options);
 		
 		/// <summary>
-		/// Retreives the IDs from the source data used as identifiers for workspace fields.
+		/// Retrieves the IDs from the source data used as identifiers for workspace fields.
 		/// </summary>
 		/// <param name="identifier">The identifier field used for batching jobs.</param>
 		/// <param name="options">The options on a source provider that a user has set.</param>

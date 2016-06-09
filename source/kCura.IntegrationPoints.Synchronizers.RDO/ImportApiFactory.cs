@@ -18,10 +18,17 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO
 			{
 				if (RelativityVersion.IsRelativityVersion93OrGreater)
 				{
-					string username = _RELATIVITY_BEARER_USERNAME;
-					string token =
-						System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
-					importAPI = new ExtendedImportAPI(username, token, settings.WebServiceURL);
+					if (settings.RelativityUsername != null && settings.RelativityPassword != null)
+					{
+						importAPI = new ExtendedImportAPI(settings.RelativityUsername, settings.RelativityPassword, settings.WebServiceURL);
+					}
+					else
+					{
+						string username = _RELATIVITY_BEARER_USERNAME;
+						string token = System.Security.Claims.ClaimsPrincipal.Current.Claims.Single(x => x.Type.Equals("access_token")).Value;
+						importAPI = new ExtendedImportAPI(username, token, settings.WebServiceURL);
+					}
+				
 				}
 				else
 				{

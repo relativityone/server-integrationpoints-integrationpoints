@@ -7,20 +7,18 @@ using System.Threading.Tasks;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Helpers;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Core.Service;
-using Field = Relativity.Core.DTO.Field;
-using Query = Relativity.Services.ObjectQuery.Query;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
 	public class FieldRepository : KeplerServiceBase, IFieldRepository
 	{
 		private readonly IHelper _helper;
-		private readonly IObjectQueryManagerAdaptor _objectQueryManagerAdaptor;
 		private readonly BaseServiceContext _serviceContext;
 		private readonly BaseContext _baseContext;
 		private readonly int _workspaceArtifactId;
@@ -35,7 +33,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			int workspaceArtifactId) : base(objectQueryManagerAdaptor)
 		{
 			_helper = helper;
-			_objectQueryManagerAdaptor = objectQueryManagerAdaptor;
 			_serviceContext = serviceContext;
 			_baseContext = baseContext;
 			_workspaceArtifactId = workspaceArtifactId;
@@ -46,7 +43,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 		{
 			const string longTextFieldName = "Long Text";
 
-			var longTextFieldsQuery = new Query()
+			var longTextFieldsQuery = new global::Relativity.Services.ObjectQuery.Query()
 			{
 				Condition = String.Format("'Object Type Artifact Type ID' == {0} AND 'Field Type' == '{1}'", rdoTypeId, longTextFieldName),
 			};
@@ -74,11 +71,11 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return fieldDtos;
 		}
 
-		public async Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, HashSet<string> fieldFieldsNames)
+		public async Task<ArtifactDTO[]> RetrieveFieldsAsync(int rdoTypeId, HashSet<string> fieldNames)
 		{
-			var fieldQuery = new Query()
+			var fieldQuery = new global::Relativity.Services.ObjectQuery.Query()
 			{
-				Fields = fieldFieldsNames.ToArray(),
+				Fields = fieldNames.ToArray(),
 				Condition = $"'Object Type Artifact Type ID' == {rdoTypeId}"
 			};
 
@@ -95,9 +92,29 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return fieldArtifactDtos;
 		}
 
+		public int? RetrieveField(string displayName, int fieldArtifactTypeId, int fieldTypeId)
+		{
+			string sql = @"
+				SELECT [ArtifactID]
+				FROM [eddsdbo].[Field]
+				WHERE [FieldArtifactTypeID] = @fieldArtifactTypeId
+					AND [FieldTypeID] = @fieldTypeId
+					AND [DisplayName] = @displayName";
+
+			SqlParameter displayNameParameter = new SqlParameter("@displayName", SqlDbType.NVarChar) { Value = displayName };
+			SqlParameter fieldArtifactTypeIdParameter = new SqlParameter("@fieldArtifactTypeId", SqlDbType.Int) { Value = fieldArtifactTypeId };
+			SqlParameter fieldTypeIdParameter = new SqlParameter("@fieldTypeId", SqlDbType.Int) { Value = fieldTypeId };
+			SqlParameter[] sqlParameters = { displayNameParameter, fieldArtifactTypeIdParameter, fieldTypeIdParameter };
+
+			IDBContext workspaceContext = _helper.GetDBContext(_workspaceArtifactId);
+			int? fieldArtifactId = workspaceContext.ExecuteSqlStatementAsScalar<int>(sql, sqlParameters);
+
+			return fieldArtifactId > 0 ? fieldArtifactId : null;
+		}
+
 		public void SetOverlayBehavior(int fieldArtifactId, bool value)
 		{
-			Field fieldDto = FieldManager.Read(_serviceContext, fieldArtifactId);
+			global::Relativity.Core.DTO.Field fieldDto = FieldManager.Read(_serviceContext, fieldArtifactId);
 			fieldDto.OverlayBehavior = value;
 			FieldManager.Update(_serviceContext, fieldDto, fieldDto.DisplayName, fieldDto.IsArtifactBaseField);
 		}
@@ -157,31 +174,16 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			_baseContext.DBContext.ExecuteNonQuerySQLStatement(sql, new[] { filterTypeParam, artifactViewFieldIdParam });
 		}
-		
-
-		public Dictionary<Guid, int> RetrieveFieldArtifactIds(IEnumerable<Guid> fieldGuids)
-		{
-			List<Relativity.Client.DTOs.Field> fields = RetrieveFields(fieldGuids);
-
-			Dictionary<Guid, int> result = fields.ToDictionary(field => field.Guids.First(), field => field.ArtifactID);
-			return result;
-		}
 
 		private List<Relativity.Client.DTOs.Field> RetrieveFields(IEnumerable<Guid> fieldGuids)
 		{
-			ResultSet<Relativity.Client.DTOs.Field> result;
+			ResultSet<Relativity.Client.DTOs.Field> result = null;
 			List<Relativity.Client.DTOs.Field> fields = fieldGuids.Select(fieldGuid => new Relativity.Client.DTOs.Field(fieldGuid)).ToList();
 
-			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
+			ApiHelper.ExecuteRsapi(_helper, _workspaceArtifactId, func =>
 			{
-				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-				result = rsapiClient.Repositories.Field.Read(fields);
-			}
-
-			if (!result.Success)
-			{
-				throw new Exception($"Unable to retrieve fields. Error message: {result.Message}");
-			}
+				result = func.Repositories.Field.Read(fields).CheckResult();
+			});
 
 			List<Relativity.Client.DTOs.Field> resultFields = result.Results.Select(resultField => resultField.Artifact).ToList();
 			return resultFields;

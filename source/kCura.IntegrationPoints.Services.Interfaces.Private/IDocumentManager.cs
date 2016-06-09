@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoints.Services
 		Task<CurrentPromotionStatusModel> GetCurrentPromotionStatusAsync(CurrentPromotionStatusRequest request);
 
 		/// <summary>
-		/// Gets the number of documents for each choice of the designation field for each day
+		/// Gets the number of documents for each choice of the designation field for the last thirty days
 		/// </summary>
 		/// <param name="request">A <see cref="HistoricalPromotionStatusRequest"/></param>
 		/// <returns>Returns a <see cref="HistoricalPromotionStatusSummaryModel"/></returns>

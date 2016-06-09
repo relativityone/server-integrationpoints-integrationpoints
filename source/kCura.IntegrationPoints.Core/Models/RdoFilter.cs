@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Core.Models
 			}
 		}
 
-		public IEnumerable<ObjectType> FilterRdo()
+		public IEnumerable<ObjectType> GetAllViewableRdos()
 		{
 			var list = _rdoQuery.GetAllTypes(_serviceContext.WorkspaceUserID);
 			return list.Where(ot => !systemRdo.Contains(ot.Name));

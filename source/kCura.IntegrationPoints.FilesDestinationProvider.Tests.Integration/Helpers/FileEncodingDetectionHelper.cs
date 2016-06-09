@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers
 {
-	static class FileEncodingDetectionHelper
+	internal static class FileEncodingDetectionHelper
 	{
 		/// <summary>
 		/// Method that performs simple check of the file encoding based on BOM 

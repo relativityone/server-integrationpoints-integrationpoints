@@ -13,8 +13,6 @@ using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors;
 using kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations;
 using kCura.IntegrationPoints.DocumentTransferProvider.DataReaders;
-using kCura.IntegrationPoints.DocumentTransferProvider.Repositories;
-using kCura.IntegrationPoints.DocumentTransferProvider.Repositories.Implementation;
 using kCura.Relativity.Client;
 using kCura.Relativity.ImportAPI;
 using Newtonsoft.Json;
@@ -31,7 +29,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public bool ExtractedTextFieldContainsFilePath;
 	}
 
-	[Contracts.DataSourceProvider(Shared.Constants.RELATIVITY_PROVIDER_GUID)]
+	[Contracts.DataSourceProvider(Contracts.Constants.RELATIVITY_PROVIDER_GUID)]
 	public class DocumentTransferProvider : IDataSourceProvider, IEmailBodyData
 	{
 		private readonly IHelper _helper;
@@ -66,13 +64,13 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 				rdoTypeId,
 				new HashSet<string>(new[]
 				{
-					Shared.Constants.Fields.Name,
-					Shared.Constants.Fields.Choices,
-					Shared.Constants.Fields.ObjectTypeArtifactTypeId,
-					Shared.Constants.Fields.FieldType,
-					Shared.Constants.Fields.FieldTypeId,
-					Shared.Constants.Fields.IsIdentifier,
-					Shared.Constants.Fields.FieldTypeName,
+					Constants.Fields.Name,
+					Constants.Fields.Choices,
+					Constants.Fields.ObjectTypeArtifactTypeId,
+					Constants.Fields.FieldType,
+					Constants.Fields.FieldTypeId,
+					Constants.Fields.IsIdentifier,
+					Constants.Fields.FieldTypeName,
 			})).ConfigureAwait(false).GetAwaiter().GetResult();
 
 			HashSet<string> ignoreFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -98,11 +96,11 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 
 				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
 				{
-					if (field.Name == Shared.Constants.Fields.Name)
+					if (field.Name == Constants.Fields.Name)
 					{
 						fieldName = field.Value as string;
 					}
-					else if (field.Name == Shared.Constants.Fields.IsIdentifier)
+					else if (field.Name == Constants.Fields.IsIdentifier)
 					{
 						try
 						{
@@ -118,7 +116,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 				bool isIdentifier = isIdentifierFieldValue > 0;
 				if (isIdentifier)
 				{
-					fieldName += Shared.Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT;
+					fieldName += Constants.OBJECT_IDENTIFIER_APPENDAGE_TEXT;
 				}
 
 				yield return new FieldEntry()
@@ -150,10 +148,7 @@ namespace kCura.IntegrationPoints.DocumentTransferProvider
 		public IDataReader GetBatchableIds(FieldEntry identifier, string options)
 		{
 			DocumentTransferSettings settings = GetSettings(options);
-			// TODO: DI or factory
-			IRSAPIClient rsapiClient = GetRSAPIClient(settings.SourceWorkspaceArtifactId);
-			// TODO: create constant
-			ISavedSearchRepository savedSearchRepository = new RsapiSavedSearchRepository(rsapiClient, settings.SavedSearchArtifactId, 1000);
+			ISavedSearchRepository savedSearchRepository = new SavedSearchRepository(_helper, null, settings.SourceWorkspaceArtifactId, settings.SavedSearchArtifactId, 1000);
 			IDataReader dataReader = new DocumentArtifactIdDataReader(savedSearchRepository);
 
 			return dataReader;

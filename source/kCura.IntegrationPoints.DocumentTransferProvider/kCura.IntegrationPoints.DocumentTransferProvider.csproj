@@ -169,12 +169,11 @@
     </Compile>
     <Compile Include="Adaptors\Implementations\ConfigAdapter.cs" />
     <Compile Include="Adaptors\IIntegrationPointsConfig.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="DataReaders\DocumentArtifactIdDataReader.cs" />
     <Compile Include="DataReaders\FieldValueLoader.cs" />
     <Compile Include="DocumentTransferProvider.cs" />
     <Compile Include="DocumentTransferSettings.cs" />
-    <Compile Include="Repositories\Implementation\RsapiSavedSearchRepository.cs" />
-    <Compile Include="Repositories\ISavedSearchRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
@@ -184,10 +183,6 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\kCura.IntegrationPoints.DocumentTransferProvider.Shared\kCura.IntegrationPoints.DocumentTransferProvider.Shared.csproj">
-      <Project>{22991306-a168-4d22-80a7-aaa99c9e9fd6}</Project>
-      <Name>kCura.IntegrationPoints.DocumentTransferProvider.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

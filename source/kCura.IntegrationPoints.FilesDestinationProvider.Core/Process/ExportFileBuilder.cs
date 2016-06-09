@@ -37,7 +37,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private static void SetCaseInfo(ExportSettings exportSettings, ExportFile exportFile)
 		{
-			exportFile.CaseInfo = new CaseInfo { ArtifactID = exportSettings.WorkspaceId };
+			exportFile.CaseInfo = new CaseInfo {ArtifactID = exportSettings.WorkspaceId};
 		}
 
 		private static void SetMetadataFileSettings(ExportSettings exportSettings, ExportFile exportFile)
@@ -52,6 +52,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 		{
 			exportFile.ExportImages = exportSettings.ExportImages;
 			exportFile.LogFileFormat = ParseImageImageDataFileFormat(exportSettings.SelectedImageDataFileFormat);
+			SetTypeOfImage(exportSettings, exportFile);
+		}
+
+		private static void SetTypeOfImage(ExportSettings exportSettings, ExportFile exportFile)
+		{
 			if (exportSettings.CopyFileFromRepository)
 			{
 				exportFile.TypeOfImage = ParseImageFileType(exportSettings.ImageType);

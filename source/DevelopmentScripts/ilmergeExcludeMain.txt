@@ -10,3 +10,5 @@ kCura.EDDS.WebAPI
 kCura.IntegrationPoints.Services
 kCura.IntegrationPoints.Services.Interfaces.Private
 kCura.IntegrationPoints.FilesDestinationProvider.Core.Installer.ExportInstaller
+Relativity.Core.DTO.ViewCriteria
+Relativity.Core.ArtifactView
