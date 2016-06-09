@@ -68,9 +68,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\kCuraCore.9.3.398.12\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.EDDS.DocumentCompareGateway, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
+    <Reference Include="kCura.EDDS.DocumentCompareGateway">
+      <HintPath>..\packages\RelativityCore.9.4.205.3\lib\net45\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -79,8 +78,8 @@
     <Reference Include="kCura.Method.Injection">
       <HintPath>..\Dependencies\Injection\kCura.Method.Injection.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Relativity.Client.9.3.398.12\lib\net45\kCura.Relativity.Client.dll</HintPath>
+    <Reference Include="kCura.Relativity.Client, Version=9.4.205.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Relativity.Client.9.4.205.3\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Utility">
@@ -99,17 +98,16 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.API, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.API.9.3.398.12\lib\net45\Relativity.API.dll</HintPath>
+    <Reference Include="Relativity.API, Version=9.4.205.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.API.9.4.205.3\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core, Version=9.3.398.12, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.Core.9.3.398.12\lib\net45\Relativity.Core.dll</HintPath>
+    <Reference Include="Relativity.Core, Version=9.4.205.3, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.Core.9.4.205.3\lib\net45\Relativity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core.Api, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\Relativity.Core.Api.dll</HintPath>
+    <Reference Include="Relativity.Core.Api">
+      <HintPath>..\packages\RelativityCore.9.4.205.3\lib\net45\Relativity.Core.Api.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.163, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.1.0.1.163\lib\net45\Relativity.Kepler.dll</HintPath>
