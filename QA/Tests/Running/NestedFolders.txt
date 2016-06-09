@@ -80,25 +80,37 @@
 | | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
+#------------------------------------------------------------------------------------------------------------------------
+
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${NestedCustodian}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${NestedCustodian}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${RootCustodian}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${RootCustodian}
 
+#------------------------------------------------------------------------------------------------------------------------
+
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
 
-| | @{Step1Fields}=		| Create List | ${IntegrationName} | Junk Data	|
-| | ... | LDAP | Custodian | No
-| | @{Step2Fields}=		| Create List | testing.corp/OU=Testing - Users,DC=testing,DC=corp |
-| | ... | (department=Nested) | FastBind | testing\\rellockdown | P@ssw0rd@1 | Yes
+| | @{Step1Fields}=	| Create List | 
+| | ... | ${IntegrationName}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
+| | @{Step2Fields}=		| Create List | 
+| | ... | testing.corp/OU=Testing - Users,DC=testing,DC=corp
+| | ... | (department=Nested)
+| | ... | FastBind
+| | ... | testing\\rellockdown
+| | ... | P@ssw0rd@1
+| | ... | Yes
 | | @{Step3Mapping}=	| Create List	| 
-| | ... | Email			| mail			| 
-| | ... | First Name	| givenname		| 
-| | ... | Last Name		| sn			| 
-| | ... | Department	| department	| 
-| | ... | UniqueID		| objectguid	| 
+| | ... | Email			| mail
+| | ... | First Name	| givenname
+| | ... | Last Name		| sn
+| | ... | Department	| department
+| | ... | UniqueID		| objectguid
 | | ... | Manager		| manager
 
 | | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email

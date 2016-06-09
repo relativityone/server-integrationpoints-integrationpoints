@@ -57,8 +57,7 @@
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| ${IntegrationPointName}
 
 | | @{Step1Fields}=		| Create List | 
-| | ... | ${IntegrationPointName}	| 
-| | ... | Junk Data
+| | ... | ${IntegrationPointName}
 | | ... | LDAP						| 
 | | ... | Custodian					| 
 | | ... | No

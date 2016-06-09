@@ -128,10 +128,9 @@
 # --------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=		| Create List	| 
-| | ... | ${IntegrationPoint1}	| 
-| | ... | Junk Data 
-| | ... | LDAP					| 
-| | ... | Custodian				| 
+| | ... | ${IntegrationPoint1}
+| | ... | LDAP
+| | ... | Custodian
 | | ... | No
 
 | | @{Step2Fields}=		| Create List	| 
@@ -154,16 +153,15 @@
 # --------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=	| Create List	| 
-| | ... | ${IntegrationPoint2}	| 
-| | ... | Append/Overlay		| 
-| | ... | LDAP					| 
-| | ... | Custodian				| 
-| | ... | Yes					| 
-| | ... | Daily					| 
-| | ... | NULL					| 
-| | ... | NULL					| 
-| | ... | 2/15/2025				| 
-| | ... | 2/16/2025				| 
+| | ... | ${IntegrationPoint2}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | Yes
+| | ... | Daily
+| | ... | NULL
+| | ... | NULL
+| | ... | 2/15/2025
+| | ... | 2/16/2025
 | | ... | 12:30 PM
 
 | | @{Step2Fields}=	| Create List	| 

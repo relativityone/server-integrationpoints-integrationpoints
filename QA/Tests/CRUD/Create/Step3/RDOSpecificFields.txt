@@ -31,7 +31,7 @@
 | | [Documentation]	| Goes through the Integration Point wizard to get to step 3, choosing the given Object Type as the Destination RDO on Step 1, 
 | | ...				| then verifies that the correct fields are listed in the Unassigned Workspace Fields listbox on Step 3.
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${ObjectType} Step 3 Test	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=${ObjectType}	| EnableScheduler=No
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=${ObjectType} Step 3 Test	| SourceProvider=LDAP	| DestinationRDO=${ObjectType}	| EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| 
 | | ... | ConnectionPath=testing.corp/CN=Users,DC=testing,DC=corp	| 

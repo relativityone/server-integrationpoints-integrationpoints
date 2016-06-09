@@ -83,6 +83,8 @@
 | | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
+#------------------------------------------------------------------------------------------------------------------------
+
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingAndUpdatedObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
 | | Create a Custodian using API	| 
@@ -103,15 +105,28 @@
 | | ... | Email			| ltime@gameofholdstesting.corp	| 
 | | ... | Department	| Time
 
-| | @{Step1Fields}=		| Create List	| ${IntegrationName}	| Junk Data	| LDAP	| Custodian	| No
-| | @{Step2Fields}=		| Create List	| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp	| (department=Time)	| 
-| | ... | FastBind	| testing\\rellockdown	| P@ssw0rd@1
+#------------------------------------------------------------------------------------------------------------------------
+
+| | @{Step1Fields}=	| Create List	| 
+| | ... | ${IntegrationName}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
+
+| | @{Step2Fields}=	| Create List	| 
+| | ... | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp
+| | ... | (department=Time)	| 
+| | ... | FastBind
+| | ... | testing\\rellockdown
+| | ... | P@ssw0rd@1
+
 | | @{Step3Mapping}=	| Create List	|
-| | ... | Email			| mail			| 
-| | ... | Department	| department	| 
-| | ... | First Name	| givenname		| 
-| | ... | Last Name		| sn			| 
+| | ... | Email			| mail
+| | ... | Department	| department
+| | ... | First Name	| givenname
+| | ... | Last Name		| sn
 | | ... | UniqueID		| objectguid
+
 | | Create LDAP Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping} | Overlay Only	| Email
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}

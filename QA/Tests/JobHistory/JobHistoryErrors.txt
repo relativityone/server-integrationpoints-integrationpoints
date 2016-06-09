@@ -95,6 +95,7 @@
 
 | | ... | [teardown] | Revert your change from step 1
 
+
 *** Keywords *** 
 
 | Create Suite Setup Data
@@ -103,8 +104,14 @@
 | | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
-| | @{Step1Fields}  | Create list | ${IntegrationName} | Junk Data | LDAP | Custodian | No
-| | @{Step2Fields}  | Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
+# --------------------------------------------------------------------------------------------------------
+
+| | @{Step1Fields}=	| Create List	| 
+| | ... | ${IntegrationName}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
+| | @{Step2Fields}=	| Create List	| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
 | | ... | (department=${Department}) | FastBind | testing\\rellockdown | P@ssw0rd@1
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Email			| mail			| 
@@ -112,11 +119,11 @@
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| manager
+
 | | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Department
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}  
-
-| | [Teardown] | Drop connection to the relativity services api
+| | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
@@ -127,6 +134,7 @@
 | | Drop connection to the relativity services api
 | | Close All Browsers
 
+
 *** Settings ***
 | Library	| Collections
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
@@ -135,4 +143,3 @@
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
-

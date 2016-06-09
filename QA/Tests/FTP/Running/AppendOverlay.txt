@@ -70,6 +70,8 @@
 | | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
+# --------------------------------------------------------------------------------------------------------
+
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
 | | Create a Custodian using API	| 
@@ -84,10 +86,16 @@
 | | ... | Email			| msunftp@gameofholdstesting.corp	|
 | | ... | Department	| AppendAndOverlayFT
 
+# --------------------------------------------------------------------------------------------------------
+
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
 
-| | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
+| | @{Step1Fields}=	| Create List	| 
+| | ... | ${IntegrationName}
+| | ... | FTP (CSV File)
+| | ... | Custodian
+| | ... | No
 | | @{Step2Fields}=	| filetransfer.kcura.com | FTP - File Transfer Protocol | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendOverlayFTP.csv
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Department	| Department 

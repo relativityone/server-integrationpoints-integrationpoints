@@ -200,25 +200,33 @@
 
 #-----------------------------------------------------------
 
-| | @{Step1Fields}=	| Create list | ${IntegrationName} | Junk Data	|
-| | ... | LDAP | Custodian | No
+| | @{Step1Fields}=	| Create List	| 
+| | ... | ${IntegrationName}
+| | ... | Junk Data
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
 
-| | @{Step2Fields}=	| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
-| | ... | (department=${Department}) | FastBind | testing\\rellockdown | P@ssw0rd@1
+| | @{Step2Fields}=	| Create List	| 
+| | ... | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp 
+| | ... | (department=${Department})
+| | ... | FastBind
+| | ... | testing\\rellockdown
+| | ... | P@ssw0rd@1
 
 | | @{Step3Mapping}=	| Create List	|
-| | ... | Email			| mail			| 
-| | ... | Department	| department	| 
-| | ... | First Name	| givenname		| 
-| | ... | Last Name		| sn			| 
-| | ... | Manager       | manager       | 
+| | ... | Email			| mail
+| | ... | Department	| department
+| | ... | First Name	| givenname
+| | ... | Last Name		| sn
+| | ... | Manager       | manager
 | | ... | UniqueID		| objectguid
 
 | | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}  
 
-| | Go to the Method Tab | Custodian
+| | Go to the Tab | Custodian
 | | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers

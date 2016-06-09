@@ -72,6 +72,8 @@
 | | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
+#------------------------------------------------------------------------------------------------------------------------
+
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
 | | Create a Custodian using API	| 
@@ -86,16 +88,24 @@
 | | ... | Email			| uUser@lh.kcura.com			|
 | | ... | Department	| Multi Error Test
 
-| | @{Step1Fields}=		| Create list | 
-| | ... | ${IntegrationName} | Junk Data | LDAP | Custodian | No
+#------------------------------------------------------------------------------------------------------------------------
+
+| | @{Step1Fields}=	| Create list | 
+| | ... | ${IntegrationName}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
+
 | | @{Step2Fields}=		| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
 | | ... | (department=Multi Error Test)	| FastBind | testing\\rellockdown | P@ssw0rd@1
+
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Email			| mail			| 
 | | ... | Department	| department	| 
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
+
 | | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | Email
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}

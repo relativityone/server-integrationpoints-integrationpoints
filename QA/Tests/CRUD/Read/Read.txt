@@ -164,16 +164,15 @@
 | | [Tags]			| manual	| partially_automated	| field_placement
 | | [Setup]			| NONE
 | | @{Step1Fields}=	| Create List	| 
-| | ... | ${IntegrationPoint3}	| 
-| | ... | Junk Data
-| | ... | LDAP					| 
-| | ... | Custodian				| 
-| | ... | Yes					| 
-| | ... | Weekly				| 
-| | ... | 3						| 
-| | ... | Monday; Friday		| 
-| | ... | 2/10/2035				| 
-| | ... | 2/18/2035				| 
+| | ... | ${IntegrationPoint3}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | Yes
+| | ... | Weekly
+| | ... | 3
+| | ... | Monday; Friday
+| | ... | 2/10/2035
+| | ... | 2/18/2035
 | | ... | 12:30 PM
 
 | | @{Step2Fields}=		| Create List	| 
@@ -229,16 +228,15 @@
 | | [Tags]			| manual	| partially_automated	| field_placement
 | | [Setup]			| NONE
 | | @{Step1Fields}=	| Create List	| 
-| | ... | ${IntegrationPoint4}	| 
-| | ... | Junk Data
-| | ... | LDAP					| 
-| | ... | Custodian				| 
-| | ... | Yes					| 
-| | ... | Monthly				| 
-| | ... | 3						| 
-| | ... | Day 15 of the month	| 
-| | ... | 2/15/2035				| 
-| | ... | 2/16/2035				| 
+| | ... | ${IntegrationPoint4}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | Yes
+| | ... | Monthly
+| | ... | 3
+| | ... | Day 15 of the month
+| | ... | 2/15/2035
+| | ... | 2/16/2035
 | | ... | 12:30 PM
 
 | | @{Step2Fields}=		| Create List	| 
@@ -342,10 +340,9 @@
 # --------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=		| Create List	| 
-| | ... | ${IntegrationPoint1}	| 
-| | ... | Junk Data 
-| | ... | LDAP					| 
-| | ... | Custodian				| 
+| | ... | ${IntegrationPoint1}
+| | ... | LDAP
+| | ... | Custodian
 | | ... | No
 
 | | @{Step2Fields}=		| Create List	| 
@@ -368,16 +365,15 @@
 # --------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=	| Create List	| 
-| | ... | ${IntegrationPoint2}	| 
-| | ... | Junk Data
-| | ... | LDAP					| 
-| | ... | Custodian				| 
-| | ... | Yes					| 
-| | ... | Daily					| 
-| | ... | NULL					| 
-| | ... | NULL					| 
-| | ... | 2/15/2035				| 
-| | ... | 2/16/2035				| 
+| | ... | ${IntegrationPoint2}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | Yes
+| | ... | Daily
+| | ... | NULL
+| | ... | NULL
+| | ... | 2/15/2035
+| | ... | 2/16/2035
 | | ... | 12:30 PM
 
 | | @{Step2Fields}=	| Create List	| 
