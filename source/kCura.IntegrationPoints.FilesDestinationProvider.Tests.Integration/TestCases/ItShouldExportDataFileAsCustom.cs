@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-    internal class ItShouldExportDataFileAsCustom : BaseMetadataExportTestCase
+    internal class ItShouldExportDataFileAsCustom : MetadataExportTestCaseBase
     {
         private int _columnCount;
         private char _columnSeparator;

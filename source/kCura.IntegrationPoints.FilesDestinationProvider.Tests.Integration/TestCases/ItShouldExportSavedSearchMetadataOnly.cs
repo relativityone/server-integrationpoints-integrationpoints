@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-    internal class ItShouldExportSavedSearchMetadataOnly : BaseMetadataExportTestCase
+    internal class ItShouldExportSavedSearchMetadataOnly : MetadataExportTestCaseBase
     {
         public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
         {

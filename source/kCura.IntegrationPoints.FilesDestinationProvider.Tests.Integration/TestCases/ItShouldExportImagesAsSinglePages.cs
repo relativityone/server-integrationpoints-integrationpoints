@@ -8,8 +8,8 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-	internal class ItShouldExportImagesAsSinglePages : BaseExportTestCase
-    {
+	internal class ItShouldExportImagesAsSinglePages : ExportTestCaseBase
+	{
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
 			settings.ExportImages = true;

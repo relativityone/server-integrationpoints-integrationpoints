@@ -7,8 +7,8 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-	internal class ItShouldExportImagesAsPdfs : BaseExportTestCase
-    {
+	internal class ItShouldExportImagesAsPdfs : ExportTestCaseBase
+	{
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
 			settings.ExportImages = true;

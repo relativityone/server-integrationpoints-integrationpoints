@@ -5,7 +5,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstrac
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base
 {
-	public abstract class BaseExportTestCase : IExportTestCase
+	public abstract class ExportTestCaseBase : IExportTestCase
 	{
 		protected ExportSettings ExportSettings { get; private set; }
 

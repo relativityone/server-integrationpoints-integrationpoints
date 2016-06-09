@@ -4,7 +4,7 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCas
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases.Base
 {
-    public abstract class BaseMetadataExportTestCase : BaseExportTestCase
+    public abstract class MetadataExportTestCaseBase : ExportTestCaseBase
     {
         public abstract string MetadataFormat { get; }
 

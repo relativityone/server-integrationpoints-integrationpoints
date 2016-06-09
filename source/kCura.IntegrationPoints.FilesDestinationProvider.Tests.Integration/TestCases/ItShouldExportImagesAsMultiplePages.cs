@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.TestCases
 {
-	internal class ItShouldExportImagesAsMultiplePages : BaseExportTestCase
+	internal class ItShouldExportImagesAsMultiplePages : ExportTestCaseBase
 	{
 		public override ExportSettings Prepare(ExportSettings settings)
 		{
