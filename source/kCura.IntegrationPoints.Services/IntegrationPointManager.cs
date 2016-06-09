@@ -6,6 +6,8 @@ using Castle.Windsor;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Data.Factories;
+using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Services.Interfaces.Private.Extensions;
 
@@ -136,6 +138,18 @@ namespace kCura.IntegrationPoints.Services
 
 		public void Dispose()
 		{
+		}
+
+		public async Task<int> GetSourceProviderArtifactIdAsync(int workspaceArtifactId, string sourceProviderGuidIdentifier)
+		{
+			using (IWindsorContainer container = await GetDependenciesContainerAsync(workspaceArtifactId).ConfigureAwait(false))
+			{
+				IRepositoryFactory repositoryFactory = container.Resolve<IRepositoryFactory>();
+				ISourceProviderRepository sourceProviderRepository = repositoryFactory.GetSourceProviderRepository(workspaceArtifactId);
+				int artifactId = sourceProviderRepository.GetArtifactIdFromSourceProviderTypeGuidIdentifier(sourceProviderGuidIdentifier);
+
+				return artifactId;
+			}
 		}
 
 		public async Task<int> GetIntegrationPointArtifactTypeIdAsync(int workspaceArtifactId)

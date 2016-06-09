@@ -63,6 +63,33 @@ namespace kCura.IntegrationPoints.Contracts.Models
 		}
 
 		/// <summary>
+		/// Column names for Job History Error table
+		/// </summary>
+		public class FieldNames
+		{
+			public const string Error = "Error";
+			public const string ErrorStatus = "ErrorStatus";
+			public const string ErrorType = "ErrorType";
+			public const string JobHistory = "JobHistory";
+			public const string SourceUniqueID = "SourceUniqueID";
+			public const string StackTrace = "StackTrace";
+			public const string TimestampUTC = "TimestampUTC";
+
+			public static IEnumerable<string> FieldNamesList = new[]
+			{
+				"ArtifactID",
+				Error,
+				ErrorStatus,
+				ErrorType,
+				JobHistory,
+				"Name",
+				SourceUniqueID,
+				StackTrace,
+				TimestampUTC
+			};
+		}
+
+		/// <summary>
 		/// Choices for Job History Error object
 		/// </summary>
 		public static class Choices
@@ -87,6 +114,14 @@ namespace kCura.IntegrationPoints.Contracts.Models
 					public static readonly Guid New = new Guid("F881B199-8A67-4D49-B1C1-F9E68658FB5A");
 					public static readonly Guid Retried = new Guid("7D3D393D-384F-434E-9776-F9966550D29A");
 				}
+
+				public static IEnumerable<Guid> GuidList = new Guid[]
+				{
+					Guids.Expired,
+					Guids.InProgress,
+					Guids.New,
+					Guids.Retried
+				};
 
 				public static readonly Dictionary<Guid, Values> GuidValues = new Dictionary<Guid, Values>()
 				{
@@ -113,6 +148,12 @@ namespace kCura.IntegrationPoints.Contracts.Models
 					public static readonly Guid Item = new Guid("9DDC4914-FEF3-401F-89B7-2967CD76714B");
 					public static readonly Guid Job = new Guid("FA8BB625-05E6-4BF7-8573-012146BAF19B");
 				}
+
+				public static IEnumerable<Guid> GuidList = new Guid[]
+				{
+					Guids.Item,
+					Guids.Job
+				};
 
 				public static readonly Dictionary<Guid, Values> GuidValues = new Dictionary<Guid, Values>()
 				{

@@ -42,5 +42,21 @@ namespace kCura.ScheduleQueue.Core
 			ScheduleRuleType = row.Field<string>("ScheduleRuleType");
 			SerializedScheduleRule = row.Field<string>("ScheduleRule");
 		}
+
+		//Used for internal unit tests only
+		internal Job(int workspaceArtifactId, int integrationPointArtifactId, int submittedByArtifactId, int jobId)
+		{
+			WorkspaceID = workspaceArtifactId;
+			RelatedObjectArtifactID = integrationPointArtifactId;
+			SubmittedBy = submittedByArtifactId;
+			JobId = jobId;
+		}
+
+		internal Job(int workspaceArtifactId, int integrationPointArtifactId, int submittedByArtifactId)
+		{
+			WorkspaceID = workspaceArtifactId;
+			RelatedObjectArtifactID = integrationPointArtifactId;
+			SubmittedBy = submittedByArtifactId;
+		}
 	}
 }

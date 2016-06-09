@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.Core.Services.JobHistory
 		/// <param name="integrationPoint">The integration point object.</param>
 		/// <param name="batchInstance">The batch instance guid.</param>
 		/// <param name="jobType">The job type.</param>
-		/// <param name="startTimeUtc">The job start time in UTC format.</param>
+		/// <param name="startTimeUtc">The job start time in UTC zone.</param>
 		/// <returns>The job history object of the integration point.</returns>
 		Data.JobHistory CreateRdo(Data.IntegrationPoint integrationPoint, Guid batchInstance, Relativity.Client.Choice jobType, DateTime? startTimeUtc);
 

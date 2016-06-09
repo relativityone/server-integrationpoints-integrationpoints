@@ -1,6 +1,5 @@
 ﻿using Relativity.Core;
 using Relativity.Core.DTO;
-using ArtifactType = Relativity.Query.ArtifactType;
 
 namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 {
@@ -11,7 +10,7 @@ namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 		private readonly int _count;
 		private readonly int _rdoArtifactId;
 		private readonly string _tempTableDataSource;
-		private readonly ArtifactType _artifactType = new ArtifactType(global::Relativity.ArtifactType.Document);
+		private readonly global::Relativity.Query.ArtifactType _artifactType = new global::Relativity.Query.ArtifactType(global::Relativity.ArtifactType.Document);
 
 		public RelativityMassEdit(BaseServiceContext context, Field field, int count, int rdoArtifactId, string tempTableDataSource)
 		{

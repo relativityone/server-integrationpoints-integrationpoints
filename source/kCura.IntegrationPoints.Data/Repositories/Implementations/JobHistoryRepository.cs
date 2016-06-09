@@ -10,8 +10,6 @@ using kCura.Relativity.Client.DTOs;
 using Relativity.API;
 using Relativity.Core;
 using Relativity.Data;
-using Field = Relativity.Core.DTO.Field;
-using ArtifactType = Relativity.Query.ArtifactType;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
@@ -26,9 +24,9 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			_workspaceArtifactId = workspaceArtifactId;
 		}
 
-		public void TagDocsWithJobHistory(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int jobHistoryInstanceArtifactId, int sourceWorkspaceId, string tableSuffix)
+		public void TagDocsWithJobHistory(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int jobHistoryInstanceArtifactId, int sourceWorkspaceId, string tableName)
 		{
-			ArtifactType artifactType = new ArtifactType(global::Relativity.ArtifactType.Document);
+			global::Relativity.Query.ArtifactType artifactType = new global::Relativity.Query.ArtifactType(global::Relativity.ArtifactType.Document);
 
 			if (numberOfDocs <= 0)
 			{
@@ -53,11 +51,10 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception(MassEditErrors.JOB_HISTORY_MO_EXISTENCE_ERROR);
 			}
 
-			Field multiObjectField = new Field(baseService, fieldRows[0]);
-			string fullTableName = $"{Constants.TEMPORARY_DOC_TABLE_JOB_HIST}_{tableSuffix}";
+			global::Relativity.Core.DTO.Field multiObjectField = new global::Relativity.Core.DTO.Field(baseService, fieldRows[0]);
 			try
 			{
-				base.TagFieldsWithRdo(baseService, multiObjectField, numberOfDocs, artifactType, jobHistoryInstanceArtifactId, fullTableName);
+				base.TagFieldsWithRdo(baseService, multiObjectField, numberOfDocs, artifactType, jobHistoryInstanceArtifactId, tableName);
 			}
 			catch (Exception e)
 			{
@@ -65,12 +62,15 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public List<int> GetLastTwoJobHistoryArtifactId(int integrationPointArtifactId)
+		public int GetLastJobHistoryArtifactId(int integrationPointArtifactId)
 		{
+			ObjectsCondition integrationPointCondition = new ObjectsCondition(new Guid(JobHistoryFieldGuids.IntegrationPoint), ObjectsConditionEnum.AnyOfThese, new List<int>() {integrationPointArtifactId});
+			DateTimeCondition notRunningCondition = new DateTimeCondition(new Guid(JobHistoryFieldGuids.EndTimeUTC), DateTimeConditionEnum.IsSet);
+
 			var query = new Query<RDO>
 			{
 				ArtifactTypeGuid = new Guid(ObjectTypeGuids.JobHistory),
-				Condition = new ObjectsCondition(new Guid(JobHistoryFieldGuids.IntegrationPoint), ObjectsConditionEnum.AnyOfThese, new List<int>(){integrationPointArtifactId}),
+				Condition = new CompositeCondition(integrationPointCondition, CompositeConditionEnum.And, notRunningCondition),
 				Fields = new List<FieldValue>()
 				{
 					new FieldValue(new Guid(JobHistoryFieldGuids.IntegrationPoint))
@@ -79,7 +79,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				{
 					new Sort()
 					{
-						Field = "ArtifactID",
+						Field = JobHistoryFields.EndTimeUTC,
 						Direction = SortEnum.Descending
 					}
 				}
@@ -89,7 +89,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			using (IRSAPIClient rsapiClient = _helper.GetServicesManager().CreateProxy<IRSAPIClient>(ExecutionIdentity.CurrentUser))
 			{
 				rsapiClient.APIOptions.WorkspaceID = _workspaceArtifactId;
-				results = rsapiClient.Repositories.RDO.Query(query, 2);
+				results = rsapiClient.Repositories.RDO.Query(query, 1);
 			}
 
 			if (!results.Success)
@@ -97,7 +97,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 				throw new Exception($"Unable to retrieve Job Hisory: {results.Message}");
 			}
 
-			List<int> lastJobHistoryArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).ToList();
+			int lastJobHistoryArtifactId = results.Results.Select(result => result.Artifact.ArtifactID).FirstOrDefault();
 			return lastJobHistoryArtifactId;
 		}
 	}

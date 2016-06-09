@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 		private const int _WORKSPACE_ID = 100532;
 
-		[TestFixtureSetUp]
+		[SetUp]
 		public void Setup()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
@@ -29,18 +29,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
-		public void GetLastJobHistoryArtifactIdTests()
+		public void GetLastJobHistoryArtifactId_GoldFlow()
 		{
 			// ARRANGE
 			int integrationPointArtifactId = 1322131;
-			List<int> expectedLastTwoJobHistoryIds = new List<int>() { 234242, 234241 };
-			_jobHistoryRepository.GetLastTwoJobHistoryArtifactId(integrationPointArtifactId).Returns(expectedLastTwoJobHistoryIds);
+			int expectedLastTwoJobHistoryIds = 234242;
+			_jobHistoryRepository.GetLastJobHistoryArtifactId(integrationPointArtifactId).Returns(expectedLastTwoJobHistoryIds);
 
 			// ACT
 			int result = _testInstance.GetLastJobHistoryArtifactId(_WORKSPACE_ID, integrationPointArtifactId);
 
 			// ASSERT
-			Assert.AreEqual(expectedLastTwoJobHistoryIds[0], result);
+			Assert.AreEqual(expectedLastTwoJobHistoryIds, result);
 		}
 
 

@@ -14,11 +14,6 @@ namespace kCura.IntegrationPoints.Core.Managers.Implementations
 			_repositoryFactory = repositoryFactory;
 		}
 
-		public Dictionary<Guid, int> RetrieveFieldArtifactIds(int workspaceArtifactId, IEnumerable<Guid> fieldGuids)
-		{
-			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(workspaceArtifactId);
-			return fieldRepository.RetrieveFieldArtifactIds(fieldGuids);
-		}
 		public int? RetrieveArtifactViewFieldId(int workspaceArtifactId, int fieldArtifactId)
 		{
 			IFieldRepository fieldRepository = _repositoryFactory.GetFieldRepository(workspaceArtifactId);

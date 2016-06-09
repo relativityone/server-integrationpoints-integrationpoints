@@ -6,11 +6,11 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Newtonsoft.Json;
 using Relativity.API;
-using Artifact = kCura.EventHandler.Artifact;
 
 namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
@@ -41,17 +41,25 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 				int sourceProvider = (int)this.ActiveArtifact.Fields[IntegrationPointFields.SourceProvider].Value.Value;
 				// Integration Point Specific Error Handling 
 				if (base.ServiceContext.RsapiService.SourceProviderLibrary.Read(Int32.Parse(sourceProvider.ToString())).Name ==
-					DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_NAME)
+					Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME)
 				{
 
 					StringBuilder errorMessage = new StringBuilder("");
-
-					string sourceConfiguration =
-						this.ActiveArtifact.Fields[IntegrationPointFields.SourceConfiguration].Value.Value.ToString();
-					ExportUsingSavedSearchSettings settings =
-						JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(sourceConfiguration);
+					StringBuilder folderPathInformation = new StringBuilder("");
+					string  destinationConfiguration = (string)this.ActiveArtifact.Fields[IntegrationPointFields.DestinationConfiguration].Value.Value;
+					ImportSettings importSettings = JsonConvert.DeserializeObject<ImportSettings>(destinationConfiguration);
+					IntegrationPointDestinationConfiguration integrationPointDestinationConfiguration = JsonConvert.DeserializeObject<IntegrationPointDestinationConfiguration>(destinationConfiguration);
+					if (importSettings.ImportOverwriteMode == ImportOverwriteModeEnum.AppendOnly && integrationPointDestinationConfiguration.UseFolderPathInformation == true)
+					{
+						var sqlString = $"SELECT TextIdentifier FROM Artifact WHERE ArtifactID = {integrationPointDestinationConfiguration.FolderPathSourceField}";
+							folderPathInformation.Append(base.ServiceContext.SqlContext.ExecuteSqlStatementAsDataTable(sqlString).Rows[0].ItemArray[0].ToString());
+					}
+					string sourceConfiguration =this.ActiveArtifact.Fields[IntegrationPointFields.SourceConfiguration].Value.Value.ToString();
+					ExportUsingSavedSearchSettings settings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(sourceConfiguration);
 					Result<Workspace> sourceWorkspace;
 					Result<Workspace> targetWorkspace;
+
+					
 					using (IRSAPIClient currentClient = GetRSAPIClient(-1))
 					{
 						QueryResultSet<Workspace> workspaces = new GetWorkspacesQuery(currentClient).ExecuteQuery();
@@ -64,9 +72,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
 					if (targetWorkspace == null)
 					{
-						errorMessage =
-							errorMessage.Append(
-								"You do not have permissions to import to the Destination workspace. Please contact your system administrator.</br>");
 						settings.TargetWorkspaceArtifactId = 0;
 					}
 					else
@@ -94,10 +99,6 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					}
 					if (savedSearch == null)
 					{
-						// user does not have any access to the save search
-						errorMessage =
-							errorMessage.Append(
-								"You do not have permissions to the source saved search. Please contact your system administrator.");
 						settings.SavedSearchArtifactId = 0;
 					}
 					else
@@ -107,8 +108,7 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 					using (TagBuilder Relativityprovider = new TagBuilder("script"))
 					{
 						Relativityprovider.Attributes.Add("type", "text/javascript");
-						Relativityprovider.InnerHtml = String.Format(@" var IP = IP || {{}};$(function(){{IP.errorMessage = '{0}';}});",
-							errorMessage.ToString());
+						Relativityprovider.InnerHtml = String.Format(" var IP = IP || {{}};$(function(){{IP.errorMessage = '{0}';IP.fieldName ='{1}';}});", errorMessage, folderPathInformation);
 						scripts.Append(Relativityprovider);
 					}
 					response.Message = scripts.ToString();
@@ -154,5 +154,10 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 		{
 			get { return new FieldCollection(); }
 		}
+	}
+	internal class IntegrationPointDestinationConfiguration
+	{
+		public bool UseFolderPathInformation;
+		public int FolderPathSourceField;
 	}
 }

@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 
 		private const int _WORKSPACE_ID = 100532;
 
-		[TestFixtureSetUp]
+		[SetUp]
 		public void Setup()
 		{
 			_repositoryFactory = Substitute.For<IRepositoryFactory>();
@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
-		public void GetGuidsForArtifactIdsTest()
+		public void GetGuidsForArtifactIds_GoldFlow()
 		{
 			// ARRANGE
 			var artifactIds = new int[] {123456, 988767};
@@ -49,7 +49,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 		}
 
 		[Test]
-		public void GetArtifactIdsForGuidsTest()
+		public void GetArtifactIdsForGuids_GoldFlow()
 		{
 			// ARRANGE
 			var guids = new Guid[] { Guid.NewGuid(), Guid.NewGuid() };

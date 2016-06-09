@@ -486,6 +486,7 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Serialization" />
+    <Reference Include="WebDriver, Version=2.53.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="SystemInterface, Version=0.7.0.0, Culture=neutral, PublicKeyToken=fbc3a63dd3cf8960, processorArchitecture=MSIL">
       <HintPath>..\packages\SystemWrapper.Interfaces.0.7.0.0\lib\net45\SystemInterface.dll</HintPath>
       <Private>True</Private>
@@ -511,24 +512,32 @@
     <Compile Include="..\Version\AssemblyInfo.cs">
       <Link>AssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Helpers\MatchHelper.cs" />
     <Compile Include="Integration\DeleteIPsWithSourceProviderTest.cs" />
     <Compile Include="Integration\Installers\ServiceInstallerTests.cs" />
+    <Compile Include="Integration\Managers\IntegrationPointManagerTests.cs" />
+    <Compile Include="Integration\Managers\QueueManagerTests.cs" />
+    <Compile Include="Integration\PermissionErrorMessageTest.cs" />
     <Compile Include="Integration\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Unit\AgentJobManagerTest.cs" />
-    <Compile Include="Unit\BatchStatusCommands\DestinationWorkspaceManagerTest.cs" />
+    <Compile Include="Unit\BatchStatusCommands\DestinationWorkspaceBatchUpdateManagerTest.cs" />
+    <Compile Include="Unit\BatchStatusCommands\JobHistoryBatchUpdateManagerTest.cs" />
     <Compile Include="Unit\BatchStatusCommands\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="Unit\BatchStatusCommands\TempTableReaderTests.cs" />
     <Compile Include="Unit\DeleteHistoryServiceTest.cs" />
-    <Compile Include="Unit\BatchStatusCommands\JobHistoryManagerTest.cs" />
+    <Compile Include="Unit\BatchStatusCommands\JobHistoryErrorBatchUpdateManagerTest.cs" />
+    <Compile Include="Unit\Helpers\OnClickEventConstructorTests.cs" />
     <Compile Include="Unit\JobStatusUpdaterTests.cs" />
     <Compile Include="Unit\Managers\ArtifactGuidManagerTests.cs" />
     <Compile Include="Unit\Managers\FieldManagerTests.cs" />
     <Compile Include="Unit\Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Unit\Keywords\KeywordConverterTests.cs" />
+    <Compile Include="Unit\Managers\JobHistoryErrorManagerTests.cs" />
     <Compile Include="Unit\Managers\JobHistoryManagerTests.cs" />
     <Compile Include="Unit\Managers\ObjectTypeManagerTests.cs" />
     <Compile Include="Unit\Managers\QueueManagerTests.cs" />
+    <Compile Include="Unit\Managers\StateManagerTests.cs" />
     <Compile Include="Unit\RdoFilterTest.cs" />
     <Compile Include="Unit\Services\Domain\RelativityFeaturePathServiceTests.cs" />
     <Compile Include="Unit\Services\Export\ArgumentMatcher.cs" />

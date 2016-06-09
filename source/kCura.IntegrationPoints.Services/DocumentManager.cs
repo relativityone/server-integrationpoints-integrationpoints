@@ -219,9 +219,9 @@ namespace kCura.IntegrationPoints.Services
 			WHERE ArtifactGuid = @artifactGuid";
 
 		private const string _DOCUMENT_VOLUME_SQL = @"
-			SELECT [Date], [DocumentsIncluded], [DocumentsExcluded], [DocumentsUntagged]
-			FROM [DocumentVolume] WITH (NOLOCK)
-			ORDER BY [Date] ASC";
+			SELECT TOP(30) [Date], [DocumentsIncluded], [DocumentsExcluded], [DocumentsUntagged]
+			FROM [eddsdbo].[DocumentVolume] WITH (NOLOCK)
+			ORDER BY [Date] DESC";
 
 		#endregion
 	}

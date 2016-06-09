@@ -21,11 +21,11 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 			return new Dictionary<Guid, SourceProvider>()
 			{
 				{
-					new Guid(DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_GUID),
+					new Guid(Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_GUID),
 					new SourceProvider()
 					{
-						Name = DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_NAME,
-						Url = String.Format("/%applicationpath%/CustomPages/{0}/IntegrationPoints/{1}/",  DocumentTransferProvider.Shared.Constants.RELATIVITY_CUSTOMPAGE_GUID,  DocumentTransferProvider.Shared.Constants.RELATIVITY_PROVIDER_CONFIGURATION),
+						Name = Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_NAME,
+						Url = String.Format("/%applicationpath%/CustomPages/{0}/IntegrationPoints/{1}/",  Core.Constants.IntegrationPoints.RELATIVITY_CUSTOMPAGE_GUID,  Core.Constants.IntegrationPoints.RELATIVITY_PROVIDER_CONFIGURATION),
 						ViewDataUrl = String.Format("/%applicationpath%/CustomPages/DCF6E9D1-22B6-4DA3-98F6-41381E93C30C/%appId%/api/relativity/view"),
 						Configuration = new SourceProviderConfiguration()
 						{
@@ -33,7 +33,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 							AlwaysImportNativeFileNames = true,
 							CompatibleRdoTypes = new List<Guid>()
 							{
-								new Guid(DocumentTransferProvider.Shared.Constants.DOC_OBJ_GUID)
+								new Guid(Core.Constants.IntegrationPoints.DOC_OBJ_GUID)
 							},
 							AvailableImportSettings = new ImportSettingVisibility()
 							{

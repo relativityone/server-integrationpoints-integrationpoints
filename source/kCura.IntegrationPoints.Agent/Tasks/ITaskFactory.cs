@@ -13,8 +13,8 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Contexts;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Queries;
-using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Email;
 using kCura.Relativity.Client;
 using kCura.ScheduleQueue.AgentBase;
@@ -148,42 +148,42 @@ namespace kCura.IntegrationPoints.Agent.Tasks
             IEddsServiceContext eddsServiceContext = Container.Resolve<IEddsServiceContext>();
 
 			IChoiceQuery choiceQuery = new ChoiceQuery(rsapiClient);
-            JobResourceTracker jobResourceTracker = new JobResourceTracker(workspaceDbContext);
-            JobTracker jobTracker = new JobTracker(jobResourceTracker);
-            IAgentService agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
+			JobResourceTracker jobResourceTracker = new JobResourceTracker(workspaceDbContext);
+			JobTracker jobTracker = new JobTracker(jobResourceTracker);
+			IAgentService agentService = new AgentService(_helper, new Guid(GlobalConst.RELATIVITY_INTEGRATION_POINTS_AGENT_GUID));
 
-            IJobService jobService = new JobService(agentService, _helper);
-            IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
-			IPermissionRepository permissionService = Container.Resolve<IPermissionRepository>();
-            IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
+			IJobService jobService = new JobService(agentService, _helper);
+			IJobManager jobManager = new AgentJobManager(eddsServiceContext, jobService, serializer, jobTracker);
+			IRepositoryFactory repositoryFactory = Container.Resolve<IRepositoryFactory>();
+			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
 			IContextContainerFactory contextContainerFactory = Container.Resolve<IContextContainerFactory>();
-            IManagerFactory managerFactory = new ManagerFactory();
+			IManagerFactory managerFactory = new ManagerFactory();
 
-			IntegrationPointService integrationPointService = new IntegrationPointService(_helper, caseServiceContext, permissionService, contextContainerFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
-            IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
+			IntegrationPointService integrationPointService = new IntegrationPointService(_helper, caseServiceContext, contextContainerFactory, repositoryFactory, serializer, choiceQuery, jobManager, jobHistoryService, managerFactory);
+			IntegrationPoint integrationPoint = integrationPointService.GetRdo(job.RelatedObjectArtifactID);
 
-            TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
-            JobHistory jobHistory = jobHistoryService.GetRdo(taskParameters.BatchInstance);
+			TaskParameters taskParameters = serializer.Deserialize<TaskParameters>(job.JobDetails);
+			JobHistory jobHistory = jobHistoryService.GetRdo(taskParameters.BatchInstance);
 
-            if (integrationPoint == null || jobHistory == null)
-            {
-                throw new NullReferenceException(
-                  $"Unable to retrieve the integration point or job history information for the following job batch: {taskParameters.BatchInstance}");
-            }
+			if (integrationPoint == null || jobHistory == null)
+			{
+				throw new NullReferenceException(
+				  $"Unable to retrieve the integration point or job history information for the following job batch: {taskParameters.BatchInstance}");
+			}
 
-            JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext)
-            {
-                IntegrationPoint = integrationPoint,
-                JobHistory = jobHistory
-            };
+			JobHistoryErrorService jobHistoryErrorService = new JobHistoryErrorService(caseServiceContext)
+			{
+				IntegrationPoint = integrationPoint,
+				JobHistory = jobHistory
+			};
 
-            jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
-            jobHistoryErrorService.CommitErrors();
+			jobHistoryErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, e);
+			jobHistoryErrorService.CommitErrors();
 
-            jobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
-            jobHistoryService.UpdateRdo(jobHistory);
+			jobHistory.JobStatus = JobStatusChoices.JobHistoryErrorJobFailed;
+			jobHistoryService.UpdateRdo(jobHistory);
 
-            // No updates to IP since the job history error service handles IP updates
-        }
-    }
+			// No updates to IP since the job history error service handles IP updates
+		}
+	}
 }

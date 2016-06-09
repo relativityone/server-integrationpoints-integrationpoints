@@ -1,12 +1,12 @@
 ﻿namespace kCura.IntegrationPoints.Contracts
 {
-	public class Constants
+	public static class Constants
 	{
 		public const string SPECIAL_NATIVE_FILE_LOCATION_FIELD = "fb83020a-1853-4a14-8e92-accb6dbd2ef1";
 		public const string SPECIAL_FOLDERPATH_FIELD = "d1d9ccdd-9773-428f-8465-4a03909192e4";
 		public const string SPECIAL_FILE_NAME_FIELD = "67F1BEA1-67CB-498E-A99D-1781D43D98AF";
 		public const string SPECIAL_SOURCEWORKSPACE_FIELD = "036DB373-5724-4C72-A073-375106DE5E73";
-		public const string SPECIAL_SOURCEWORKSPACE_FIELD_NAME = "Source Workspace";
+		public const string SPECIAL_SOURCEWORKSPACE_FIELD_NAME = "Relativity Source Case";
 		public const string SPECIAL_SOURCEJOB_FIELD = "4F632A3F-68CF-400E-BD29-FD364A5EBE58";
 		public const string SPECIAL_SOURCEJOB_FIELD_NAME = "Source Job";
 		public const string SOURCEWORKSPACE_CASEID_FIELD_NAME = "Source Workspace Artifact ID";
@@ -22,7 +22,7 @@
 		public const string INTEGRATION_POINT_INSTANCE_SETTING_SECTION = "kCura.IntegrationPoints";
 		public const string WEB_API_PATH = "WebAPIPath";
 		public const string SOURCEPROVIDER_ARTIFACTID_FIELD = "4A091F69-D750-441C-A4F0-24C990D208AE";
-		
+		public const string RELATIVITY_PROVIDER_GUID = "423b4d43-eae9-4e14-b767-17d629de4bb2";
 		public const char MULTI_VALUE_DELIMITER = ';';
 		public const char NESTED_VALUE_DELIMITER = '/';
 	}

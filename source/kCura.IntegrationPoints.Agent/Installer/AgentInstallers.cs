@@ -29,12 +29,11 @@ namespace kCura.IntegrationPoints.Agent.Installer
 			container.Register(Component.For<SyncCustodianManagerWorker>().ImplementedBy<SyncCustodianManagerWorker>().LifeStyle.Transient);
 			container.Register(Component.For<CreateErrorRdo>().ImplementedBy<CreateErrorRdo>().LifeStyle.Transient);
 			container.Register(Component.For<ITaskFactory>().AsFactory(x => x.SelectedWith(new TaskComponentSelector())).LifeStyle.Transient);
-			if (container.Kernel.HasComponent(typeof(Apps.Common.Utils.Serializers.ISerializer)) == false)
+			if (container.Kernel.HasComponent(typeof (Apps.Common.Utils.Serializers.ISerializer)) == false)
 			{
 				container.Register(Component.For<Apps.Common.Utils.Serializers.ISerializer>().ImplementedBy<Apps.Common.Utils.Serializers.JSONSerializer>().LifestyleTransient());
 			}
 			container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(f => f.Resolve<IHelper>().GetServicesManager()));
-			container.Register(Component.For<IPermissionRepository>().ImplementedBy<PermissionRepository>().LifestyleTransient());
 
 			container.Register(Component.For<SendEmailManager>().ImplementedBy<SendEmailManager>().LifeStyle.Transient);
 			container.Register(Component.For<SendEmailWorker>().ImplementedBy<SendEmailWorker>().LifeStyle.Transient);

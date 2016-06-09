@@ -27,7 +27,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
         }
 
         [Test]
-        public void GetGuidsForArtifactIdsTest()
+        public void GetGuidsForArtifactIds_GoldFlow()
         {
             // ARRANGE
             int artifactId1 = 123456;
@@ -60,7 +60,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
         }
 
 		[Test]
-		public void GetArtifactIdsForGuidsTest()
+		public void GetArtifactIdsForGuids_GoldFlow()
 		{
 			// ARRANGE
 			int artifactId1 = 123456;

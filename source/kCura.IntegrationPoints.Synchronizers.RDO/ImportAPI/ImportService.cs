@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -19,9 +20,11 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		private Dictionary<string, Field> _mappings;
 		private readonly Dictionary<string, int> _inputMappings;
 		private int _itemsImported;
+		private int _itemsErrored;
 
 		private const int _JOB_PROGRESS_TIMEOUT_MILLISECONDS = 5000;
 		private int _lastJobProgressUpdate = 0;
+		private int _lastJobErrorUpdate = 0;
 
 		public event StatusUpdate OnStatusUpdate;
 		public event BatchCompleted OnBatchComplete;
@@ -147,6 +150,25 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			importJob.Settings.SelectedIdentifierFieldName = _idToFieldDictionary[Settings.IdentityFieldId].Name;
 			importJob.OnComplete += new IImportNotifier.OnCompleteEventHandler(ImportJob_OnComplete);
 			importJob.OnFatalException += new IImportNotifier.OnFatalExceptionEventHandler(ImportJob_OnComplete);
+
+			// DO NOT MOVE THIS INTO A METHOD
+			// ILmerge on our build server will fail - SAMO 6/1/2016
+			importJob.OnError += row =>
+			{
+				_itemsImported--;
+				_itemsErrored++;
+				if (Environment.TickCount - _lastJobErrorUpdate > _JOB_PROGRESS_TIMEOUT_MILLISECONDS)
+				{
+					_lastJobErrorUpdate = Environment.TickCount;
+					if (OnStatusUpdate != null)
+					{
+						OnStatusUpdate(_itemsImported, _itemsErrored);
+						_itemsErrored = 0;
+						_itemsImported = 0;
+					}
+				}
+			};
+
 			importJob.OnProgress += ImportJob_OnProgress;
 			ImportService_OnBatchSubmit(_batchManager.CurrentSize, _batchManager.MinimumBatchSize);
 
@@ -251,7 +273,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 
 		private void ImportJob_OnComplete(JobReport jobReport)
 		{
-			ImportJob_OnDocumentError(jobReport.ErrorRows);
+			SaveDocumentsError(jobReport.ErrorRows);
 
 			if (jobReport.FatalException != null)
 			{
@@ -272,7 +294,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 			}
 		}
 
-		private void ImportJob_OnDocumentError(IList<JobReport.RowError> errors)
+		private void SaveDocumentsError(IList<JobReport.RowError> errors)
 		{
 			if (OnDocumentError != null)
 			{
@@ -299,7 +321,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 				_lastJobProgressUpdate = Environment.TickCount;
 				if (OnStatusUpdate != null)
 				{
-					OnStatusUpdate(_itemsImported);
+					OnStatusUpdate(_itemsImported, 0);
 					_itemsImported = 0;
 				}
 			}
@@ -323,6 +345,7 @@ namespace kCura.IntegrationPoints.Synchronizers.RDO.ImportAPI
 		}
 
 		private Workspace _currentWorkspace;
+
 		private Workspace CurrentWorkspace
 		{
 			get

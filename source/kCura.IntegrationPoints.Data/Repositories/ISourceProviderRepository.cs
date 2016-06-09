@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using kCura.IntegrationPoints.Contracts.Models;
 
 namespace kCura.IntegrationPoints.Data.Repositories
@@ -14,5 +15,13 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		/// <param name="artifactId">Artifact id of Source Provider instance</param>
 		/// <returns>SourceProviderDTO object</returns>
 		SourceProviderDTO Read(int artifactId);
+
+
+		/// <summary>
+		/// Gets the Source Provider artifact id given a guid identifier
+		/// </summary>
+		/// <param name="sourceProviderGuidIdentifier">Guid identifier of Source Provider type</param>
+		/// <returns>Artifact id of the Source Provider</returns>
+		int GetArtifactIdFromSourceProviderTypeGuidIdentifier(string sourceProviderGuidIdentifier);
 	}
 }
