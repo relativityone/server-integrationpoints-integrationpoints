@@ -52,8 +52,8 @@
 	</assemblyfileset>
 	
 	<assemblyfileset id="unitTestAssembliesX64">
-		<include asis="true" name="${path::combine(testDirectory, 'kCura.ScheduleQueue.Core.Tests\bin\kCura.ScheduleQueue.Core.Tests.dll')}" />
-		<include asis="true" name="${path::combine('C:\SourceCode\integrationpoints\source\bin\UnitTests', 'kCura.IntegrationPoints.Data.Tests\bin\kCura.IntegrationPoints.Data.Tests.dll')}" />
+		<include asis="true" name="${path::combine('C:\SourceCode\integrationpoints\source\bin\UnitTests', 'kCura.ScheduleQueue.Core.Tests\kCura.ScheduleQueue.Core.Tests.dll')}" />
+		<include asis="true" name="${path::combine('C:\SourceCode\integrationpoints\source\bin\UnitTests', 'kCura.IntegrationPoints.Data.Tests\kCura.IntegrationPoints.Data.Tests.dll')}" />
 		<include asis="true" name="${path::combine('C:\SourceCode\integrationpoints\source\bin\UnitTests', 'kCura.IntegrationPoints.Core.Tests\kCura.IntegrationPoints.Core.Tests.dll')}" />
 		<include asis="true" name="${path::combine('C:\SourceCode\integrationpoints\source\bin\UnitTests', 'kCura.IntegrationPoints.Synchronizers.RDO.Tests\kCura.IntegrationPoints.Synchronizers.RDO.Tests.dll')}" />
 		<include asis="true" name="${path::combine('C:\SourceCode\integrationpoints\source\bin\UnitTests', 'kCura.IntegrationPoints.Agent.Tests\kCura.IntegrationPoints.Agent.Tests.dll')}" />
