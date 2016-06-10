@@ -42,7 +42,7 @@
 	<property name="ncover.install.directory" value="${environment::get-variable('ProgramW6432')}\NCover" />
 	<property name="ncover.output.directory" value="D:\NCover" unless="${property::exists('ncover.output.directory')}" />
 	<property name="caseId" value="" unless="${property::exists('caseId')}" />
-	<property name="relativityDependencyVersion" value="9.3.425.2" />
+	<property name="relativityDependencyVersion" value="9.3.433.7" />
 	
 	<!-- Microsoft .NET folders -->
 	<property name="microsoft.net.directory" value="${environment::get-variable('windir')}\Microsoft.NET\Framework\v4.0.30319" unless="${property::exists('microsoft.net.directory')}" />
