@@ -25,7 +25,7 @@
 | | [Documentation] | Verify that when an Append and Overlay RIP is run which has new Source records, that it creates new records in the Target RDO.
 | | ...				| [id] 130ad15e-a89f-11e4-9aa5-b8ca3a83048f
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
+| | Go to the Tab	| Custodians
 | | Filter the following Grid on the following Columns by the following Values | ${Custodians Grid} | 
 | | ... | Name			| ${NewObject} 
 | | ... | Department	| AppendAndOverlay
