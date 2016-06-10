@@ -7,7 +7,7 @@ $BUILDFILE = [System.IO.Path]::Combine($root, 'DevelopmentScripts', 'Build.build
 
 $BUILDCONFIG = "Debug"
 $BUILDTYPE = "DEV"
-$VERSION = "2.0.0.0"
+$VERSION = "9.4.0.0"
 $VERBOSE = "minimal"
 $BUILD = $true
 $TEST = $false
