@@ -60,11 +60,11 @@ namespace kCura.IntegrationPoints.FtpProvider
             {
                 if (ex is SftpPathNotFoundException || (ex is System.Net.WebException && ex.ToString().Contains("(550) File unavailable")))
                 {
-                    retVal.Add(new FieldEntry { DisplayName = "Unable to access: " + remoteLocation + fileName + " " + ex.ToString() });
+                    throw new Exception("Unable to access: " + remoteLocation + fileName + " " + ex.ToString()); 
                 }
                 else
                 {
-                    retVal.Add(new FieldEntry { DisplayName = ex.ToString() });
+					throw new Exception(ex.ToString() );
                 }
             }
 
