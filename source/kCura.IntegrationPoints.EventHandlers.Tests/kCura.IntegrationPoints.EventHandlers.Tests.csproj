@@ -196,7 +196,6 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LICENSE.txt" />
     <Content Include="..\packages\Selenium.WebDriver.ChromeDriver.2.21.0.0\driver\chromedriver.exe">
       <Link>chromedriver.exe</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

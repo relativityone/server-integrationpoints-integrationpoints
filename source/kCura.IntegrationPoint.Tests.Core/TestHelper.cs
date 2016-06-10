@@ -101,20 +101,20 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return _serviceManager;
 		}
 
-	    public string ResourceDBPrepend()
-	    {
-	        throw new NotImplementedException();
-	    }
+        public string ResourceDBPrepend()
+        {
+            throw new NotImplementedException();
+        }
 
-	    public string ResourceDBPrepend(IDBContext context)
-	    {
-	        throw new NotImplementedException();
-	    }
+        public string ResourceDBPrepend(IDBContext context)
+        {
+            throw new NotImplementedException();
+        }
 
-	    public string GetSchemalessResourceDataBasePrepend(IDBContext context)
-	    {
-	        throw new NotImplementedException();
-	    }
+        public string GetSchemalessResourceDataBasePrepend(IDBContext context)
+        {
+            throw new NotImplementedException();
+        }
 
 		#region Extended classes
 
