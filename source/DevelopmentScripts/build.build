@@ -53,7 +53,7 @@
 	<property name="msbuild" value="${environment::get-variable('ProgramFiles(x86)')}\MSBuild\14.0\Bin\msbuild.exe" unless="${property::exists('msbuild')}" />
 	
 	<!-- Version properties -->
-	<property name="CCNetLabel" value="2.0.0.0" unless="${property::exists('CCNetLabel')}" />
+	<property name="CCNetLabel" value="9.4.0.0" unless="${property::exists('CCNetLabel')}" />
 	<property name="Product.Version" value="${CCNetLabel}" unless="${property::exists('Product.Version')}" />	
 	<property name="Product.Version.Triplex" value="${Product.Version}" />	
 	<property name="ILMerge.DLL.Version" value="9.3.0.0" />	
