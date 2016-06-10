@@ -11,7 +11,7 @@
 	<property name="NUnit" value="${nunit.tools.location}\nunit-console-x86.exe" unless="${property::exists('NUnit')}" />
 	<property name="NUnit64" value="${nunit.tools.location}\nunit-console.exe" unless="${property::exists('NUnit64')}" />
 	
-	<property name="testDirectory" value="${source.code.directory}" />
+	<property name="testDirectory" value="${source.code.directory}\bin\UnitTests" />
 	
 	<target name="start_tests" description="Run automated tests on the LDAPSync codebase." depends="test_initialize, run_tests64" />
 	
@@ -52,13 +52,13 @@
 	</assemblyfileset>
 	
 	<assemblyfileset id="unitTestAssembliesX64">
-		<include asis="true" name="${path::combine('C:\SourceCode\integrationpoints\source\bin\UnitTests', 'kCura.ScheduleQueue.Core.Tests\kCura.ScheduleQueue.Core.Tests.dll')}" />
-		<include asis="true" name="${path::combine('C:\SourceCode\integrationpoints\source\bin\UnitTests', 'kCura.IntegrationPoints.Data.Tests\kCura.IntegrationPoints.Data.Tests.dll')}" />
-		<include asis="true" name="${path::combine('C:\SourceCode\integrationpoints\source\bin\UnitTests', 'kCura.IntegrationPoints.Core.Tests\kCura.IntegrationPoints.Core.Tests.dll')}" />
-		<include asis="true" name="${path::combine('C:\SourceCode\integrationpoints\source\bin\UnitTests', 'kCura.IntegrationPoints.Synchronizers.RDO.Tests\kCura.IntegrationPoints.Synchronizers.RDO.Tests.dll')}" />
-		<include asis="true" name="${path::combine('C:\SourceCode\integrationpoints\source\bin\UnitTests', 'kCura.IntegrationPoints.Agent.Tests\kCura.IntegrationPoints.Agent.Tests.dll')}" />
-		<include asis="true" name="${path::combine('C:\SourceCode\integrationpoints\source\bin\UnitTests', 'kCura.IntegrationPoints.EventHandlers.Tests\kCura.IntegrationPoints.EventHandlers.Tests.dll')}" />
-		<include asis="true" name="${path::combine('C:\SourceCode\integrationpoints\source\bin\UnitTests', 'kCura.IntegrationPoints.DocumentTransferProvider.Tests\kCura.IntegrationPoints.DocumentTransferProvider.Tests.dll')}" />
-		<include asis="true" name="${path::combine('C:\SourceCode\integrationpoints\source\bin\UnitTests', 'kCura.IntegrationPoints.Web.Tests\kCura.IntegrationPoints.Web.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.ScheduleQueue.Core.Tests\kCura.ScheduleQueue.Core.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Data.Tests\kCura.IntegrationPoints.Data.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Core.Tests\kCura.IntegrationPoints.Core.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Synchronizers.RDO.Tests\kCura.IntegrationPoints.Synchronizers.RDO.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Agent.Tests\kCura.IntegrationPoints.Agent.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.EventHandlers.Tests\kCura.IntegrationPoints.EventHandlers.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.DocumentTransferProvider.Tests\kCura.IntegrationPoints.DocumentTransferProvider.Tests.dll')}" />
+		<include asis="true" name="${path::combine(testDirectory, 'kCura.IntegrationPoints.Web.Tests\kCura.IntegrationPoints.Web.Tests.dll')}" />
 	</assemblyfileset>
 </project>
