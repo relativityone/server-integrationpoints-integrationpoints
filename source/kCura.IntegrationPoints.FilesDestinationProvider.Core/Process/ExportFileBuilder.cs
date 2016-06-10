@@ -67,8 +67,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			}
 		}
 
-		private static ExportFile.ImageType ParseImageFileType(ExportSettings.ImageFileType fileType)
+		private static ExportFile.ImageType? ParseImageFileType(ExportSettings.ImageFileType? fileType)
 		{
+			if (!fileType.HasValue)
+				return null;
+
 			switch (fileType)
 			{
 				case ExportSettings.ImageFileType.SinglePage:
@@ -104,8 +107,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			return dataFileFormat == ExportSettings.DataFileFormat.HTML;
 		}
 
-		private static LoadFileType.FileFormat ParseImageImageDataFileFormat(ExportSettings.ImageDataFileFormat imageDataFileFormat)
+		private static LoadFileType.FileFormat? ParseImageImageDataFileFormat(ExportSettings.ImageDataFileFormat? imageDataFileFormat)
 		{
+			if (!imageDataFileFormat.HasValue)
+				return null;
+
 			switch (imageDataFileFormat)
 			{
 				case ExportSettings.ImageDataFileFormat.Opticon:

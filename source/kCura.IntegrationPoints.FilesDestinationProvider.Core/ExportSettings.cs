@@ -36,11 +36,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public bool OverwriteFiles { get; set; }
 		public bool CopyFileFromRepository { get; set; }
 		public bool ExportImages { get; set; }
-		public ImageFileType ImageType { get; set; }
+		public ImageFileType? ImageType { get; set; }
 		public DataFileFormat OutputDataFileFormat { get; set; }
 		public bool IncludeNativeFilesPath { get; set; }
 		public Encoding DataFileEncoding { get; set; }
-		public ImageDataFileFormat SelectedImageDataFileFormat { get; set; }
+		public ImageDataFileFormat? SelectedImageDataFileFormat { get; set; }
         public char ColumnSeparator { get; set; }
         public char QuoteSeparator { get; set; }
         public char NewlineSeparator { get; set; }

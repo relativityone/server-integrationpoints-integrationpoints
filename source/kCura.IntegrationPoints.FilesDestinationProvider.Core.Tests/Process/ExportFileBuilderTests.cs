@@ -25,6 +25,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		[TestCase(ExportSettings.ImageFileType.SinglePage, ExportFile.ImageType.SinglePage)]
 		[TestCase(ExportSettings.ImageFileType.MultiPage, ExportFile.ImageType.MultiPageTiff)]
 		[TestCase(ExportSettings.ImageFileType.Pdf, ExportFile.ImageType.Pdf)]
+		[TestCase(null, null)]
 		public void ItShouldSetCorrectImageTypeWhenCopyingFilesFromRepository(ExportSettings.ImageFileType givenSetting, ExportFile.ImageType expectedSetting)
 		{
 			_exportSettings.CopyFileFromRepository = true;
@@ -87,6 +88,31 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
+		public void ItShouldNotThrowExceptionForImageFileBeingNullWhenCopyingFromRepository()
+		{
+			_exportSettings.CopyFileFromRepository = true;
+
+			_exportSettings.ImageType = null;
+
+			Assert.That(() => _exportFileBuilder.Create(_exportSettings), Throws.Nothing);
+		}
+
+		[Test]
+		[TestCase(ExportSettings.ImageDataFileFormat.Opticon, LoadFileType.FileFormat.Opticon)]
+		[TestCase(ExportSettings.ImageDataFileFormat.IPRO, LoadFileType.FileFormat.IPRO)]
+		[TestCase(ExportSettings.ImageDataFileFormat.IPRO_FullText, LoadFileType.FileFormat.IPRO_FullText)]
+		[TestCase(null, null)]
+		public void ItShouldSetCorrectImageDataFileFormatWhenCopyingFilesFromRepository(ExportSettings.ImageDataFileFormat givenSetting, LoadFileType.FileFormat expectedSetting)
+		{
+			_exportSettings.CopyFileFromRepository = true;
+			_exportSettings.SelectedImageDataFileFormat = givenSetting;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.AreEqual(expectedSetting, exportFile.LogFileFormat);
+		}
+
+		[Test]
 		public void ItShouldThrowExceptionForUnknownImageDataFileFormatTypeWhenCopyingFromRepository()
 		{
 			_exportSettings.CopyFileFromRepository = true;
@@ -96,6 +122,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 			Assert.That(() => _exportFileBuilder.Create(_exportSettings),
 				Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown ExportSettings.ImageDataFileFormat ({incorrectEnumValue})"));
+		}
+
+		[Test]
+		public void ItShouldThrowExceptionForImageDataFileFormatBeingNullWhenCopyingFromRepository()
+		{
+			_exportSettings.CopyFileFromRepository = true;
+
+			_exportSettings.SelectedImageDataFileFormat = null;
+
+			Assert.That(() => _exportFileBuilder.Create(_exportSettings), Throws.Nothing);
 		}
 
 		[Test]

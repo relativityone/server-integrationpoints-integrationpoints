@@ -272,7 +272,7 @@
                 "OverwriteFiles": self.OverwriteFiles(),
                 "Fileshare": self.Fileshare(),
                 "ExportImagesChecked": self.ExportImagesChecked(),
-                "SelectedImageFileType": self.ExportImagesChecked() === "true" ? self.SelectedImageFileType() : "",
+                "SelectedImageFileType": self.SelectedImageFileType(),
                 "IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
                 "SelectedDataFileFormat": self.SelectedDataFileFormat(),
                 "DataFileEncodingType": self.DataFileEncodingType(),

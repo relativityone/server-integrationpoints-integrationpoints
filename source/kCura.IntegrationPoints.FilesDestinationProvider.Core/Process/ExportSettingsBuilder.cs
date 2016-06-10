@@ -11,14 +11,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 	{
 		public ExportSettings Create(ExportUsingSavedSearchSettings sourceSettings, IEnumerable<FieldMap> fieldMap, int artifactTypeId)
 		{
-			ExportSettings.ImageFileType imageType;
-			Parse(sourceSettings.SelectedImageFileType, out imageType);
+			ExportSettings.ImageFileType? imageType;
+			EnumHelper.TryParse(sourceSettings.SelectedImageFileType, out imageType);
 
 			ExportSettings.DataFileFormat dataFileFormat;
-			Parse(sourceSettings.SelectedDataFileFormat, out dataFileFormat);
+			EnumHelper.Parse(sourceSettings.SelectedDataFileFormat, out dataFileFormat);
 
-			ExportSettings.ImageDataFileFormat imageDataFileFormat;
-			Parse(sourceSettings.SelectedImageDataFileFormat, out imageDataFileFormat);
+			ExportSettings.ImageDataFileFormat? imageDataFileFormat;
+			EnumHelper.TryParse(sourceSettings.SelectedImageDataFileFormat, out imageDataFileFormat);
 
 			var exportSettings = new ExportSettings
 			{
@@ -46,12 +46,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			return exportSettings;
 		}
 
-		private void Parse<T>(string value, out T output) where T : struct
-		{
-			if (!(Enum.TryParse(value, true, out output) && Enum.IsDefined(typeof (T), output)))
-			{
-				throw new InvalidEnumArgumentException($"Unknown {typeof(T).Name} ({value})");
-			}			
-		}
+
 	}
 }

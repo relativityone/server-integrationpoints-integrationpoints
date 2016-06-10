@@ -25,9 +25,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 
 			var sourceSettings = CreateSourceSettings();
 			sourceSettings.SelectedImageFileType = ((int) incorrectEnumValue).ToString();
-						
-			Assert.That(() => _exportSettingsBuilder.Create(sourceSettings, new List<FieldMap>(), 1),
-				Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown ImageFileType ({incorrectEnumValue})"));
+
+			var exportSettings = _exportSettingsBuilder.Create(sourceSettings, new List<FieldMap>(), 1);
+
+			Assert.That(exportSettings.ImageType, Is.Null);
 		}
 
 		[Test]
@@ -51,8 +52,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			var sourceSettings = CreateSourceSettings();
 			sourceSettings.SelectedImageDataFileFormat = ((int)incorrectEnumValue).ToString();
 
-			Assert.That(() => _exportSettingsBuilder.Create(sourceSettings, new List<FieldMap>(), 1),
-				Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown ImageDataFileFormat ({incorrectEnumValue})"));
+			var exportSettings = _exportSettingsBuilder.Create(sourceSettings, new List<FieldMap>(), 1);
+
+			Assert.That(exportSettings.SelectedImageDataFileFormat, Is.Null);
 		}
 
 		[Test]
