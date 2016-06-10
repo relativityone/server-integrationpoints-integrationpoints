@@ -116,10 +116,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 					Owner = fieldMapping["Owner"]?.Value as string
 				};
 			}
-			else
-			{
-				throw new Exception($"The saved search is no longer accessible. Please verify your settings or create a new Integration Point.");
-			}
 
 			return savedSearch;
 		}

@@ -97,14 +97,13 @@
 
 | Go to Step 2 of the Create Integration Point Process
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Testing | Append/Overlay | LDAP | Custodian | no
+| | Fill out the Following Fields of the Integration Point Step 1 form	| Step 2 Testing	| LDAP | Custodian	| No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait for then Select iFrame	| id=configurationFrame	| 10s	| The page was not on Step 2 of the Integration Point form.
 
 
 *** Settings ***
 | Library   | Collections
-#| Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/FormKeywords.txt

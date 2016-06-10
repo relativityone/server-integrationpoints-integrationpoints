@@ -86,7 +86,7 @@
 
 | Go to Step 2 of the Create Integration Point Process
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form	| Step 2 Testing	| Append/Overlay	| LDAP	| Custodian	| No
+| | Fill out the Following Fields of the Integration Point Step 1 form	| Step 2 Testing	| LDAP	| Custodian	| No
 | | Proceed to the Next Step of the Integration Point wizard
 
 | Verify the following Integration Point Field does not have the following Error

@@ -3,16 +3,15 @@
 | Documentation		| This suite of tests verifies the Integration Point RDO used within the LDAP Sync application.
 | Metadata			| Authors	| William Sehy
 | Force Tags		| rdo	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Go to the Fields tab and use the Automated RDO Checking view then filter to the following object type	| Integration Point
-#| Test Setup 		| NONE
-| Test Teardown		| Run Keyword if Test Failed	| Capture Page Screenshot
+| Suite Setup		| Clear Then Set Filter Value	| Object Type	| Integration Point
+| Suite Teardown	| Run Keyword If Any Tests Failed	| Capture Page Screenshot
 | Suite Teardown	| Close All Browsers
 
 
 *** Variables ***
 
 | ${WorkspaceName}	| LDAP Sync
-| ${FieldCount}		| 19
+| ${FieldCount}		| 20
 
 
 *** Test Cases ***
@@ -74,6 +73,14 @@
 | | Find A Row With The Following Data	|
 | | ... | Name						| Field Mappings	|
 | | ... | Field Type				| Long Text			|
+| | ... | Is Required				| No				|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Has Errors
+| | Find A Row With The Following Data	|
+| | ... | Name						| Has Errors		|
+| | ... | Field Type				| Yes/No			|
 | | ... | Is Required				| No				|
 | | ... | Associative Object Type	| ${EMPTY}
 

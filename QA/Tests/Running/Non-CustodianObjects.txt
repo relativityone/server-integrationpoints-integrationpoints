@@ -32,22 +32,37 @@
 | | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
+#------------------------------------------------------------------------------------------------------------------------
+
 | | ${QuestionnaireExists}=	| Determine if the Following Questionnaire Exists in the current Workspace	| Imported Questionnaire
 | | Run Keyword If 	| ${${QuestionnaireExists}}	| Delete the Following Questionnaire using API	| Imported Questionnaire
+
+#------------------------------------------------------------------------------------------------------------------------
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
 
-| | @{Step1Fields}=	| Create List	| ${IntegrationName}	| Junk Data	| LDAP	| Questionnaire	| No
-| | @{Step2Fields}=	| Create List	| gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp	| 
-| | ... | (department=Questionnaire)	| FastBind	| testing\\rellockdown	| P@ssw0rd@1
-| | @{Step3Mapping}=	| Create List	| Name [Object Identifier]	| givenname
+| | @{Step1Fields}=	| Create List	| 
+| | ... | ${IntegrationName}
+| | ... | LDAP
+| | ... | Questionnaire
+| | ... | No
+
+| | @{Step2Fields}=	| Create List	| 
+| | ... | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp
+| | ... | (department=Questionnaire)
+| | ... | FastBind
+| | ... | testing\\rellockdown
+| | ... | P@ssw0rd@1
+
+| | @{Step3Mapping}=	| Create List	| 
+| | ... | Name [Object Identifier]	| givenname
 
 | | Create LDAP Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping} | Append Only	| Name [Object Identifier]
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}
 
-| | Go to the Method Tab	| Questionnaires
+| | Go to the Tab	| Questionnaires
 | | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers

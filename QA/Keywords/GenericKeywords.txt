@@ -35,8 +35,8 @@
 | | [Documentation] | A keyword that runs an RIP import; can be called from anywhere.
 | | [ARGUMENTS]		| ${IntegrationPoint} 
 | | View Integration Point	| ${IntegrationPoint} 
-| | Page Should Contain Element	| xpath=//a[@class='consoleButtonEnabled' and text()='Import Now']	| The Import Now button was disabled for the Integration Point "${IntegrationPoint}".
-| | Click	| Import Now
+| | Page Should Contain Element	| xpath=//a[@class='consoleButtonEnabled' and text()='Run Now']	| The Import Now button was disabled for the Integration Point "${IntegrationPoint}".
+| | Click	| Run Now
 | | Click	| xpath=//span[@class='ui-button-text' and text()='OK'] 
 | | Wait Until Integration Point Job Runs	| ${IntegrationPoint}	| 60S
 

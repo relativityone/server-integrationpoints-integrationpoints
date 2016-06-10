@@ -1,4 +1,5 @@
-﻿using Relativity.Services.Search;
+﻿using System;
+using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -32,7 +33,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				KeywordSearch keywordSearch = proxy.ReadSingleAsync(workspaceArtifactId, searchArtifactId).Result;
 				keywordSearch.SearchCriteria = searchCriteria;
-				proxy.UpdateSingleAsync(workspaceArtifactId, keywordSearch).ConfigureAwait(false);
+				proxy.UpdateSingleAsync(workspaceArtifactId, keywordSearch).Wait((int) TimeSpan.FromSeconds(5).TotalMilliseconds);
 			}
 		}
 	}

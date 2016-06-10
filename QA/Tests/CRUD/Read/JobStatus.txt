@@ -104,21 +104,27 @@
 | | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
-| | @{Step1Fields}=  | Create List | ${IntegrationName1} | Junk Data |
-| | ... | LDAP | Custodian | no
+| | @{Step1Fields}=  | Create List	| 
+| | ... | ${IntegrationName1}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
 | | @{Step2Fields}=  | Create List | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
 | | ... | (department=${Department1}) | FastBind | testing\\rellockdown | P@ssw0rd@1
 | | @{Step3Mapping}=	| Create List	|
-| | ... | Email			| mail			| 
-| | ... | Department	| department	| 
-| | ... | First Name	| givenname		| 
-| | ... | Last Name		| sn			| 
+| | ... | Email			| mail 
+| | ... | Department	| department
+| | ... | First Name	| givenname
+| | ... | Last Name		| sn
 | | ... | UniqueID		| objectguid
 
 | | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
 
-| | @{Step1Fields}=  | Create List | ${IntegrationName2} | Junk Data |
-| | ... | LDAP | Custodian | No
+| | @{Step1Fields}=  | Create List	| 
+| | ... | ${IntegrationName2}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
 | | @{Step2Fields}=  | Create List | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
 | | ... | (department=${Department2}) | FastBind | testing\\rellockdown | P@ssw0rd@1
 | | @{Step3Mapping}=	| Create List	|
@@ -130,8 +136,11 @@
 
 | | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
 
-| | @{Step1Fields}=  | Create List | ${IntegrationName3} | Junk Data |
-| | ... | LDAP | Custodian | No
+| | @{Step1Fields}=  | Create List	| 
+| | ... | ${IntegrationName3}
+| | ... | LDAP
+| | ... | Custodian
+| | ... | No
 | | @{Step2Fields}=  | Create List | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
 | | ... | (department=${Department3}) | FastBind | testing\\rellockdown | P@ssw0rd@1
 | | @{Step3Mapping}=	| Create List	|
@@ -142,8 +151,7 @@
 | | ... | UniqueID		| objectguid
 
 | | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
-
-| | [Teardown] | Drop connection to the relativity services api
+| | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
