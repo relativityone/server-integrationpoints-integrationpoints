@@ -7,8 +7,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		public static string TargetHost => ConfigurationManager.AppSettings["targetHost"];
 
-		public static int WorkspaceArtifactId => Convert.ToInt32(ConfigurationManager.AppSettings["workspaceArtifactId"]);
-
 		public static string RsapiClientUri => $"http://{TargetHost}/Relativity.Services";
 		public static Uri RsapiClientServiceUri => new Uri($"{RsapiClientUri}/api");
 
@@ -24,7 +22,18 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static string RelativityWebApiUrl => $"http://{TargetHost}/RelativityWebAPI/";
 
-		public static string RapFileLocation => ConfigurationManager.AppSettings["rapFileLocation"];
+		public static string RapFileLocation
+		{
+			get
+			{
+				string value = Environment.GetEnvironmentVariable("rapFileLocation");
+				if (value == null)
+				{
+					value = @"C:\SourceCode\IntegrationPoints\source\bin\Application\RelativityIntegrationPoints.Auto.rap";
+				}
+				return value;
+			}
+		}
 
 		public static string EddsConnectionString => ConfigurationManager.AppSettings["connectionStringEDDS"];
 
