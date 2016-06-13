@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
@@ -46,10 +47,19 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [HttpPost]
         public IHttpActionResult GetColumnList([FromBody] object data)
         {
-            string encryptedSettings = _securityManager.Encrypt(data.ToString());
-            IDataSourceProvider ftpProvider = _providerFactory.CreateProvider(Guid.Parse(FtpProvider.Helpers.Constants.Guids.FtpProviderEventHandler));
-            IEnumerable<Contracts.Models.FieldEntry> fields = ftpProvider.GetFields(encryptedSettings);
-            var result = fields.ToList();
+	        List<FieldEntry> result = null;
+	        try
+	        {
+				string encryptedSettings = _securityManager.Encrypt(data.ToString());
+				IDataSourceProvider ftpProvider = _providerFactory.CreateProvider(Guid.Parse(FtpProvider.Helpers.Constants.Guids.FtpProviderEventHandler));
+				IEnumerable<Contracts.Models.FieldEntry> fields = ftpProvider.GetFields(encryptedSettings);
+				result = fields.ToList();
+			}
+	        catch (Exception ex)
+	        {
+		        return Content(HttpStatusCode.BadRequest, ex.Message);
+			}
+           
 
             return Ok(result);
         }

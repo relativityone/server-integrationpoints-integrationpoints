@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Core.Managers;
 using kCura.IntegrationPoints.Core.Managers.Implementations;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -72,6 +73,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Managers
 			_sourceWorkspaceJobHistory = new SourceWorkspaceJobHistoryDTO() { Name = "MassEditMike" };
 			_sourceWorkspaceJobHistoryRepo.Retrieve(_jobHistoryArtifactId).Returns(_sourceWorkspaceJobHistory);
 			_instance = new SourceJobManager(_repositoryFactory);
+
+			Assert.IsTrue(_instance is DestinationWorkspaceFieldManagerBase, "if the base class changed, the expectation in these tests are probably wrong.");
 		}
 
 		[Test]

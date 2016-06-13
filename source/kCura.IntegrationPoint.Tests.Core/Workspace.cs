@@ -30,7 +30,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 						throw new Exception(string.Format("Failed to install application file: {0} to workspace: {1}.", applicationFilePath, workspaceId));
 					}
 
-					Status.WaitForProcessToComplete(proxy, result.ProcessID, 300, 500);
+					Status.WaitForProcessToComplete(proxy, result.ProcessID, (int)TimeSpan.FromMinutes(2).TotalSeconds, 500);
 				}
 				catch (Exception ex)
 				{
@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 					if (!result.Success)
 					{
-						throw new Exception(string.Format("Failed creating workspace {0}. Result Message: {1}", workspaceName, result.Message));
+						throw new Exception(string.Format("Failed creating workspace {0}. Result Message: {1} [{2}]",  workspaceName, result.Message, Environment.CurrentDirectory));
 					}
 
 					Status.WaitForProcessToComplete(proxy, result.ProcessID);
