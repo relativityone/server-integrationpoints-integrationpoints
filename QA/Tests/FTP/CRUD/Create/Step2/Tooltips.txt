@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Connect to Source step (Step 2) Fields have the correct Tooltips when using FTP.
 | Metadata			| Authors	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points	| automateable
-| Suite Setup		| Open and Log in to Method
+| Suite Setup		| Open and Log in to Legal Hold
 | Test Setup		| Go to Step 2 of the Create Integration Point Process
 | Test Teardown 	| Capture Screenshot If Test Fails
 | Suite Teardown	| Close All Browsers
@@ -93,7 +93,7 @@
 
 | Go to Step 2 of the Create Integration Point Process
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Testing | Append/Overlay | FTP (CSV File) | Custodian | No
+| | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Testing	| FTP (CSV File) | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait for then Select iFrame	| id=configurationFrame	| 10s	| The page was not on Step 2 of the Integration Point form.
 
@@ -104,6 +104,6 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/FormKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource  | ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

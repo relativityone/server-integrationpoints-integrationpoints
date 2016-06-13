@@ -1,7 +1,7 @@
 
 *** Settings ***
-| Documentation 	| Verify that running an Overlay RIP updates existing records but does not creates new records.
-| Metadata			| Authors	| Daniel Oliver	| William Sehy
+| Documentation 	| Verify that running an Overlay FTP import updates existing records but does not creates new records.
+| Metadata			| Authors | Daniel Oliver
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
 | Suite Setup		| Create Suite Setup Data
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
@@ -11,57 +11,43 @@
 *** Variables ***
 
 | ${WorkspaceName}				| LDAP Sync
-| ${IntegrationName}			| Overlay 
-| ${ExistingAndUpdatedObject}	| Time, Night
-| ${NewObject}					| Time, Sleep
-| ${ExistingNoChangeObject}		| Time, Day
-| ${ExistingObjectNulled}		| Time, Lunch
-| ${Custodians Grid}	| gbox_custodianGrid
-
+| ${IntegrationName}			| OverlayFTP
+| ${ExistingAndUpdatedObject}	| TimeFTP, Night
+| ${NewObject}					| TimeFTP, Sleep
+| ${ExistingNoChangeObject}		| TimeFTP, Day
+| ${ExistingObjectNulled}		| TimeFTP, Lunch
 
 *** Test Cases ***
 
 | An Overlay import updates existing modified records
-| | [Documentation]	| Verify that when an Overlay RIP is run with an existing record in the Target RDO with updated details in the Source, 
+| | [Documentation]	| Verify that when an Overlay FTP Impoty is run with an existing record in the Target RDO with updated details in the Source, 
 | | ...				| that it does update the existing records in the Target RDO. In this test, the Custodian's Department is updated.
-| | ...				| [id] 139cff40-a89f-11e4-975e-b8ca3a83048f
+| | ...				| [id] 512b9b4f-2e81-11e6-ac4c-989096e24b46
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
-| | Filter the following Grid on the following Columns by the following Values	| ${Custodians Grid}	| 
-| | ... | Name			| ${ExistingAndUpdatedObject}	| 
-| | ... | Department	| Time
-
-| | Verify that the following Grid contains the following number of Rows	| ${Custodians Grid}	| 1
-
+| | Go to the Tab | Custodians
+| | View Custodian | ${ExistingAndUpdatedObject}
+| | Verify the current layout has fields with the following values | First Name | Night | Last Name | TimeFTP | Department | TimeFTP | Email | ntimeFTP@gameofholdstesting.corp 
 
 | An Overlay import does not Create new records
-| | [Documentation]	| Verify that when an Overlay RIP is run with an existing record in the Target RDO with identical details in the Source, 
+| | [Documentation]	| Verify that when an Overlay FTP Impotrt is run with an existing record in the Target RDO with identical details in the Source, 
 | | ...				| that it does not update the existing record in the Target RDO.
-| | ...				| [id] 13a00c80-a89f-11e4-a4a8-b8ca3a83048f
+| | ...				| [id] 5515a6c0-2e81-11e6-8d3f-989096e24b46
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
-| | Filter the following Grid on the following Column by the following Value	| ${Custodians Grid}	| Name	| ${NewObject}
-
-| | Verify that the following Grid contains the following number of Rows	| ${Custodians Grid}	| 0
-
+| | Verify that the Following Custodian does not Exist in the current Workspace | ${NewObject}
 
 | Updates a Value to Null
 | | [Documentation]	| Verify that when an Overlay RIP is run with an existing record in the Target RDO with one field popuplated, 
 | | ...				| that it does update the existing record in the Target RDO to Null.
-| | ...				| [id] 13a00c83-a89f-11e4-b392-b8ca3a83048f
+| | ...				| [id] 58b25580-2e81-11e6-be4e-989096e24b46
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
-| | Filter the following Grid on the following Columns by the following Values	| ${Custodians Grid}	| Name	| ${ExistingObjectNulled}
-
-| | @{Headers}=	| Create List	| Name						| Department
-| | @{Values}=	| Create List	| ${ExistingObjectNulled} 	| ${EMPTY}
-| | Verify that the following grid with the following headers does not have the following rows	| ${Custodians Grid}	| ${Headers}	| ${Values}
-
+| | Go to the Tab	| Custodians
+| | View Custodian | ${ExistingObjectNulled}	
+| | Verify the current layout has fields with the following values | First Name | Lunch | Last Name | TimeFTP | Department | ${EMPTY} | Email | ltimeFTP@gameofholdstesting.corp
 
 | Does not Update when there are no Changes
 | | [Documentation]	| Verify that when an Overlay RIP is run with an existing record in the Target RDO with identical details in the Source, 
 | | ...				| that it does not update the existing record in the Target RDO.
-| | ...				| [id] 13a00c81-a89f-11e4-8795-b8ca3a83048f
+| | ...				| [id] 6081d880-2e81-11e6-aec0-989096e24b46
 | | [Tags]			| manual
 | | Go to the Tab	| History
 
@@ -73,7 +59,6 @@
 | | ... | Expected Results:
 | | ... | Verify that the "Update - Import" entry for the Custodian "${ExistingNoChangeObject}" did not change the existing values to new values, 
 | | ... | they just changed from the existing values to the same existing values (except for UniqueID which may or may not have updated).
-
 
 *** Keywords *** 
 
@@ -89,45 +74,33 @@
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
 | | Create a Custodian using API	| 
 | | ... | Full Name		| ${ExistingAndUpdatedObject}
-| | ... | Email			| ntime@gameofholdstesting.corp 
+| | ... | Email			| ntimeFTP@gameofholdstesting.corp 
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
 | | Create a Custodian using API	| 
 | | ... | Full Name		| ${ExistingNoChangeObject}
-| | ... | Email			| dtime@gameofholdstesting.corp
-| | ... | Department	| Time
+| | ... | Email			| dtimeFTP@gameofholdstesting.corp
+| | ... | Department	| TimeFTP
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingObjectNulled}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingObjectNulled}
 | | Create a Custodian using API	| 
 | | ... | Full Name		| ${ExistingObjectNulled}
-| | ... | Email			| ltime@gameofholdstesting.corp
-| | ... | Department	| Time
+| | ... | Email			| ltimeFTP@gameofholdstesting.corp
+| | ... | Department	| TimeFTP
 
 #------------------------------------------------------------------------------------------------------------------------
-
-| | @{Step1Fields}=	| Create List	| 
-| | ... | ${IntegrationName}
-| | ... | LDAP
-| | ... | Custodian
-| | ... | No
-
-| | @{Step2Fields}=	| Create List	| 
-| | ... | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp
-| | ... | (department=Time) 
-| | ... | FastBind
-| | ... | testing\\rellockdown
-| | ... | P@ssw0rd@1
+| | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
+| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP - File Transfer Protocol | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/OverlayFTP.csv
 
 | | @{Step3Mapping}=	| Create List	|
-| | ... | Email			| mail
-| | ... | Department	| department
-| | ... | First Name	| givenname
-| | ... | Last Name		| sn
+| | ... | Department	| Department 
+| | ... | Email			| Email		 
+| | ... | First Name	| FirstName 
+| | ... | Last Name		| LastName	 
 | | ... | UniqueID		| objectguid
-
-| | Create LDAP Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping} | Overlay Only	| Email
+| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Overlay Only | Email
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}
 | | [Teardown]		| Drop connection to the relativity services api
@@ -136,15 +109,15 @@
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
-| | Delete the following Integration Point using API	| ${IntegrationName}
-
-| | Delete the Custodians in the Following Department using API	| Time
+| | Delete the Custodians in the Following Department using API	| TimeFTP
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingObjectNulled}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingObjectNulled}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingAndUpdatedObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
+
+| | Delete the following Integration Point using API	| ${IntegrationName}
 
 | | Drop connection to the relativity services api
 | | Close All Browsers

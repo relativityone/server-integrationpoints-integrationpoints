@@ -8,12 +8,14 @@ namespace kCura.IntegrationPoints.Core.Managers
 {
 	public abstract class DestinationWorkspaceFieldManagerBase
 	{
+		private string ErrorMassage { get; }
 		protected readonly IRepositoryFactory RepositoryFactory;
 		protected readonly string FieldName;
 		protected readonly Guid FieldGuid;
 
-		protected DestinationWorkspaceFieldManagerBase(IRepositoryFactory repositoryFactory, string fieldName, Guid fieldGuid)
+		protected DestinationWorkspaceFieldManagerBase(IRepositoryFactory repositoryFactory, string fieldName, Guid fieldGuid, string errorMassage)
 		{
+			ErrorMassage = errorMassage;
 			RepositoryFactory = repositoryFactory;
 			FieldName = fieldName;
 			FieldGuid = fieldGuid;
@@ -22,8 +24,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 		protected int CreateObjectType(int workspaceArtifactId,
 			IRelativityProviderObjectRepository relativityObjectRepository,
 			IArtifactGuidRepository artifactGuidRepository,
-			int parentArtifactTypeId,
-			string errorWhenAddingGuid)
+			int parentArtifactTypeId)
 		{
 			IObjectTypeRepository objectTypeRepository = RepositoryFactory.GetObjectTypeRepository(workspaceArtifactId);
 
@@ -48,30 +49,33 @@ namespace kCura.IntegrationPoints.Core.Managers
 				}
 				catch (Exception e)
 				{
-					objectTypeRepository.Delete(objectTypeArtifactId.Value);
-					throw new Exception(errorWhenAddingGuid, e);
+					throw new Exception(ErrorMassage, e);
 				}
 
 				// Get descriptor artifact type id of the now existing object type
 				descriptorArtifactTypeId = objectTypeRepository.RetrieveObjectTypeDescriptorArtifactTypeId(FieldGuid);
 
 				// Delete the tab if it exists (it should always exist since we're creating the object type one line above)
-				ITabRepository tabRepository = RepositoryFactory.GetTabRepository(workspaceArtifactId);
-				int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(descriptorArtifactTypeId, FieldName);
-				if (sourceWorkspaceTabId.HasValue)
-				{
-					tabRepository.Delete(sourceWorkspaceTabId.Value);
-				}
+				DeleteObjectTypeTab(workspaceArtifactId, descriptorArtifactTypeId);
 			}
 			return descriptorArtifactTypeId;
+		}
+
+		private void DeleteObjectTypeTab(int workspaceArtifactId, int objectDescriptorArtifactTypeId)
+		{
+			ITabRepository tabRepository = RepositoryFactory.GetTabRepository(workspaceArtifactId);
+			int? sourceWorkspaceTabId = tabRepository.RetrieveTabArtifactId(objectDescriptorArtifactTypeId, FieldName);
+			if (sourceWorkspaceTabId.HasValue)
+			{
+				tabRepository.Delete(sourceWorkspaceTabId.Value);
+			}
 		}
 
 		protected void CreateObjectFields(List<Guid> fieldGuids,
 			IArtifactGuidRepository artifactGuidRepository,
 			IRelativityProviderObjectRepository relativityObjectRepository,
 			IFieldRepository fieldRepository,
-			int descriptorArtifactTypeId,
-			string errorMessage)
+			int descriptorArtifactTypeId)
 		{
 			IDictionary<Guid, bool> objectTypeFields = artifactGuidRepository.GuidsExist(fieldGuids);
 			IList<Guid> missingFieldGuids = objectTypeFields.Where(x => x.Value == false).Select(y => y.Key).ToList();
@@ -105,12 +109,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 				}
 				catch (Exception e)
 				{
-					try
-					{
-						fieldRepository.Delete(guidToArtifactId.Values);
-					}
-					catch { }
-					throw new Exception(errorMessage, e);
+					throw new Exception(ErrorMassage, e);
 				}
 			}
 		}
@@ -119,8 +118,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 			Guid documentFieldGuid,
 			IArtifactGuidRepository artifactGuidRepository,
 			IRelativityProviderObjectRepository relativityObjectRepository,
-			IFieldRepository fieldRepository,
-			string errorMessage)
+			IFieldRepository fieldRepository)
 		{
 			bool sourceWorkspaceFieldOnDocumentExists = artifactGuidRepository.GuidExists(documentFieldGuid);
 			if (!sourceWorkspaceFieldOnDocumentExists)
@@ -129,43 +127,24 @@ namespace kCura.IntegrationPoints.Core.Managers
 
 				int sourceWorkspaceFieldArtifactId = fieldArtifactId ?? relativityObjectRepository.CreateFieldOnDocument(sourceWorkspaceDescriptorArtifactTypeId);
 
-				// Set the filter type
 				try
 				{
 					int? retrieveArtifactViewFieldId = fieldRepository.RetrieveArtifactViewFieldId(sourceWorkspaceFieldArtifactId);
 					if (!retrieveArtifactViewFieldId.HasValue)
 					{
-						throw new Exception(errorMessage);
+						throw new Exception(ErrorMassage);
 					}
 
+					// Set the filter type
 					fieldRepository.UpdateFilterType(retrieveArtifactViewFieldId.Value, "Popup");
-				}
-				catch (Exception e)
-				{
-					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
-					throw new Exception(errorMessage, e);
-				}
-
-				// Set the overlay behavior
-				try
-				{
+					// Set the overlay behavior
 					fieldRepository.SetOverlayBehavior(sourceWorkspaceFieldArtifactId, true);
-				}
-				catch (Exception e)
-				{
-					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
-					throw new Exception(errorMessage, e);
-				}
-
-				// Set the field artifact guid
-				try
-				{
+					// Set the field artifact guid
 					artifactGuidRepository.InsertArtifactGuidForArtifactId(sourceWorkspaceFieldArtifactId, documentFieldGuid);
 				}
 				catch (Exception e)
 				{
-					fieldRepository.Delete(new[] { sourceWorkspaceFieldArtifactId });
-					throw new Exception(errorMessage, e);
+					throw new Exception(ErrorMassage, e);
 				}
 			}
 		}
@@ -174,7 +153,7 @@ namespace kCura.IntegrationPoints.Core.Managers
 
 		protected sealed class FieldDefinition
 		{
-			public String FieldName;
+			public string FieldName;
 			public Relativity.Client.FieldType FieldType;
 		}
 	}

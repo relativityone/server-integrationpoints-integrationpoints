@@ -242,6 +242,13 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 			_updateStatusType = _jobHistoryErrorManager.StageForUpdatingErrors(job, this.JobHistoryDto.JobType);
 
 			ExportUsingSavedSearchSettings exportSettings = JsonConvert.DeserializeObject<ExportUsingSavedSearchSettings>(IntegrationPointDto.SourceConfiguration);
+			//Quick check to see if saved search is still available before using it for the job
+			ISavedSearchRepository savedSearchRepository = _repositoryFactory.GetSavedSearchRepository(_sourceConfiguration.SourceWorkspaceArtifactId, exportSettings.SavedSearchArtifactId);
+			SavedSearchDTO savedSearch = savedSearchRepository.RetrieveSavedSearch();
+			if (savedSearch == null)
+			{
+				throw new Exception(Core.Constants.IntegrationPoints.PermissionErrors.SAVED_SEARCH_NO_ACCESS);
+			}
 			_savedSearchArtifactId = exportSettings.SavedSearchArtifactId;
 
 			//Load saved search for just item-level error retries
