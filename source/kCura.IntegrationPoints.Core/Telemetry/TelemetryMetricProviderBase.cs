@@ -29,7 +29,7 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 			}
 			catch (AggregateException ex)
 			{
-				throw new Exception($"Failed to add telemetry metric identifiers for {ProviderName} provider!", ex.InnerException);
+				throw new Exception($"Failed to add telemetry metric identifiers for {ProviderName}!", ex.InnerException);
 			}
 		}
 

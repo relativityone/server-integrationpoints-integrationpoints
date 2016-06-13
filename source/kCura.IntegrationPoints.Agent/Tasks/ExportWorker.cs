@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -23,7 +21,19 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 {
 	public class ExportWorker : SyncWorker
 	{
+		#region Fields
+
 		private readonly ExportProcessRunner _exportProcessRunner;
+
+		#endregion //Fields
+
+		#region Properties
+
+		protected override string TelemetryMetricIdentifier => Core.Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_WORKER_EXEC_DURATION_METRIC_COLLECTOR;
+
+		#endregion //Properties
+
+		#region Constructor
 
 		public ExportWorker(ICaseServiceContext caseServiceContext, IHelper helper,
 			IDataProviderFactory dataProviderFactory, ISerializer serializer,
@@ -36,6 +46,10 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 		{
 			_exportProcessRunner = exportProcessRunner;
 		}
+
+		#endregion //Constructor
+
+		#region Methods
 
 		protected override IDataSynchronizer GetDestinationProvider(DestinationProvider destinationProviderRdo,
 			string configuration, Job job)
@@ -56,5 +70,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 			_exportProcessRunner.StartWith(sourceSettings, fieldMap, destinationSettings.ArtifactTypeId);
 		}
+
+		#endregion //Methods
 	}
 }

@@ -20,6 +20,7 @@ namespace kCura.IntegrationPoints.EventHandlers.Installers
 				new MigrationRunner(new EddsContext(Helper.GetDBContext(-1)), new WorkspaceContext(base.Helper.GetDBContext(base.Helper.GetActiveCaseID()))).Run();
 
 				var telemetryManger = new TelemetryManager(base.Helper);
+				telemetryManger.AddMetricProviders(new TelemetryMetricProvider());
 				telemetryManger.AddMetricProviders(new ExportTelemetryMetricProvider());
 				telemetryManger.InstallMetrics();
 			}

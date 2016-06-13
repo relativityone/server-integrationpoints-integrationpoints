@@ -9,14 +9,17 @@ namespace kCura.IntegrationPoints.Core.Telemetry
 	/// <remarks>
 	/// This class should be part of seperate export provider installers when we be ready to merge application.xml file
 	/// </remarks>
-	public class ExportTelemetryMetricProvider : TelemetryMetricProviderBase
+	internal class ExportTelemetryMetricProvider : TelemetryMetricProviderBase
 	{
-		// TODO: Implementation is a part of another story
 		public static readonly List<MetricIdentifier> ExportMetricIdentifiers = new List<MetricIdentifier>()
 		{
 			new MetricIdentifier()
-				{	Name = Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_LIB_DURATION_METRIC_COLLECTOR,
+				{	Name = Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_LIB_EXEC_DURATION_METRIC_COLLECTOR,
 					Description = "Length of time (in milliseconds) that Integration Points takes to run Export Shared Library"},
+
+			new MetricIdentifier()
+				{   Name = Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_WORKER_EXEC_DURATION_METRIC_COLLECTOR,
+					Description = "Length of time (in milliseconds) that Integration Points takes to run Export Worker job"},
 		};
 
 		protected override List<MetricIdentifier> GetMetricIdentifiers()
