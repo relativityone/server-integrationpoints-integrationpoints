@@ -27,7 +27,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	[Explicit]
 	public class WorkspaceDependentTemplate : IntegrationTestBase
 	{
 		private readonly string _sourceWorkspaceName;

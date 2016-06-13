@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
 	[TestFixture]
-	[Explicit]
+	[Category("Integration Tests")]
 	public class IntegrationPointServiceTests : WorkspaceDependentTemplate
 	{
 		private const string _SOURCECONFIG = "Source Config";

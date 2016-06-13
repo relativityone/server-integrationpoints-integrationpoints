@@ -21,8 +21,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
 
     public class ProtocolName
     {
-        public const String FTP = "FTP - File Transfer Protocol";
-        public const String SFTP = "SFTP - SSH File Transfer Protocol";
+        public const String FTP = "FTP";
+        public const String SFTP = "SFTP";
         public static readonly List<String> All = new List<String>() { FTP, SFTP };
     }
 

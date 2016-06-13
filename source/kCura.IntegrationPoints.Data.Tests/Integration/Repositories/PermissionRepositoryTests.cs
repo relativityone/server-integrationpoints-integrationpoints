@@ -16,7 +16,6 @@ using Relativity.Services.Permission;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
-	[Explicit]
 	[Category("Integration Tests")]
 	public class PermissionRepositoryTests : WorkspaceDependentTemplate
 	{
@@ -107,7 +106,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[Test]
 		public void UserHasPermissionToAccessWorkspace_DoHavePermission()
 		{
-			IISReset();
 			Assert.IsTrue(_permissionRepo.UserHasPermissionToAccessWorkspace());
 		}
 
@@ -116,7 +114,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void UserHasPermissionToAccessWorkspace_DoNotHavePermission()
 		{
 			// arrange
-			IISReset();
 			GroupSelector selector = new GroupSelector()
 			{
 				EnabledGroups = new List<GroupRef>(),
@@ -235,7 +232,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				Helper.RelativityPassword = _user.Password;
 			}
 
-			IISReset();
 			Assert.AreEqual(useAdmin, _permissionRepo.UserHasArtifactInstancePermission(Core.Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, model.ArtifactID, ArtifactPermission.View));
 		}
 	}
