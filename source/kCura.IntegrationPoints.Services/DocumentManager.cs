@@ -140,22 +140,18 @@ namespace kCura.IntegrationPoints.Services
 			IList<HistoricalPromotionStatusModel> historicalPromotionStatus = await GetHistoricalDocumentModelAsync(request.WorkspaceArtifactId);
 
 			bool currentPromotionStatusUpdated = false;
+			DateTime currentDate = currentPromotionStatus.Date.Date;
 
-			if (historicalPromotionStatus.Any())
+			for (int i = 0; i < historicalPromotionStatus.Count; i++)
 			{
-				DateTime currentDate = currentPromotionStatus.Date.Date;
-
-				for (int i = 0; i < historicalPromotionStatus.Count; i++)
+				if (historicalPromotionStatus[i].Date.Date == currentDate)
 				{
-					if (historicalPromotionStatus[i].Date.Date == currentDate)
-					{
-						historicalPromotionStatus[i] = currentPromotionStatus;
-						currentPromotionStatusUpdated = true;
-						break;
-					}
+					historicalPromotionStatus[i] = currentPromotionStatus;
+					currentPromotionStatusUpdated = true;
+					break;
 				}
 			}
-			
+
 			if (!currentPromotionStatusUpdated)
 			{
 				historicalPromotionStatus.Add(currentPromotionStatus);
