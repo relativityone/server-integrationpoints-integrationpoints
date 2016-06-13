@@ -3,16 +3,14 @@
 | Documentation		| This suite of tests verifies the Source Provider RDO used within the LDAP Sync application.
 | Metadata			| Authors	| William Sehy
 | Force Tags		| rdo	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Go to the Fields tab and use the Automated RDO Checking view then filter to the following object type	| Source Provider
-#| Test Setup 		| NONE
-| Test Teardown		| Run Keyword if Test Failed	| Capture Page Screenshot
-| Suite Teardown	| Close All Browsers
+| Suite Setup		| Clear Then Set Filter Value	| Object Type	| Source Provider
+| Suite Teardown	| Run Keyword If Any Tests Failed	| Capture Page Screenshot
 
 
 *** Variables ***
 
 | ${WorkspaceName}	| LDAP Sync
-| ${FieldCount}		| 10
+| ${FieldCount}		| 11
 
 
 *** Test Cases ***
@@ -28,18 +26,26 @@
 | Application Identifier
 | | [Documentation] | [id] 11ccfa30-a89f-11e4-b57f-b8ca3a83048f
 | | Find A Row With The Following Data	|
-| | ... | Name						| Application Identifier 	|
-| | ... | Field Type				| Fixed-Length Text			|
-| | ... | Is Required				| No						|
+| | ... | Name						| Application Identifier
+| | ... | Field Type				| Fixed-Length Text
+| | ... | Is Required				| No
 | | ... | Associative Object Type	| ${EMPTY}
 
 
 | Artifact ID
 | | [Documentation] | [id] 11ccfa31-a89f-11e4-a6ec-b8ca3a83048f
 | | Find A Row With The Following Data	|
-| | ... | Name						| Artifact ID 	|
-| | ... | Field Type				| Whole Number	|
-| | ... | Is Required				| No			|
+| | ... | Name						| Artifact ID
+| | ... | Field Type				| Whole Number
+| | ... | Is Required				| No
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Configuration
+| | Find A Row With The Following Data	|
+| | ... | Name						| Configuration
+| | ... | Field Type				| Long Text
+| | ... | Is Required				| No
 | | ... | Associative Object Type	| ${EMPTY}
 
 
@@ -50,6 +56,7 @@
 | | ... | Field Type				| Fixed-Length Text	|
 | | ... | Is Required				| Yes				|
 | | ... | Associative Object Type	| ${EMPTY}
+
 
 | Name
 | | [Documentation] | [id] 11cd4852-a89f-11e4-87e4-b8ca3a83048f

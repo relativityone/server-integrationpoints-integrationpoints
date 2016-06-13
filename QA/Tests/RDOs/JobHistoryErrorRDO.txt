@@ -3,10 +3,8 @@
 | Documentation		| This suite of tests verifies the Job History Error RDO used within the LDAP Sync application.
 | Metadata			| Authors	| William Sehy
 | Force Tags		| rdo	| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Go to the Fields tab and use the Automated RDO Checking view then filter to the following object type	| Job History Error
-#| Test Setup 		| NONE
-| Test Teardown		| Run Keyword if Test Failed	| Capture Page Screenshot
-| Suite Teardown	| Close All Browsers
+| Suite Setup		| Clear Then Set Filter Value	| Object Type	| Job History Error
+| Suite Teardown	| Run Keyword If Any Tests Failed	| Capture Page Screenshot
 
 
 *** Variables ***
@@ -19,7 +17,7 @@
 | The Correct Number of Fields have an Object Type of Job History Error
 | | [Documentation]	| This test verifies that the correct number of fields exist with an Object Type of Job History Error.
 | | ${Fields}=		| Get the Number of Items in the ItemList
-| | Run Keyword Unless	| '${Fields}' == '11'	| Fail	| There should have been 11 fields, but instead there were ${Fields}.
+| | Run Keyword Unless	| '${Fields}' == '13'	| Fail	| There should have been 11 fields, but instead there were ${Fields}.
 
 # The below tests each verify that a Field with the given data is present on the table.
 
@@ -39,6 +37,14 @@
 | | ... | Associative Object Type	| ${EMPTY}
 
 
+| Error Status
+| | Find A Row With The Following Data	|
+| | ... | Name						| Error Status
+| | ... | Field Type				| Single Choice
+| | ... | Is Required				| No
+| | ... | Associative Object Type	| ${EMPTY}
+
+
 | Error Type
 | | Find A Row With The Following Data	|
 | | ... | Name						| Error Type	|
@@ -47,11 +53,11 @@
 | | ... | Associative Object Type	| ${EMPTY}
 
 
-| JobHistory
+| Job History
 | | Find A Row With The Following Data	|
-| | ... | Name						| JobHistory	|
-| | ... | Field Type				| Single Object	|
-| | ... | Is Required				| Yes			|
+| | ... | Name						| Job History
+| | ... | Field Type				| Single Object
+| | ... | Is Required				| Yes
 | | ... | Associative Object Type	| JobHistory
 
 
@@ -68,6 +74,14 @@
 | | ... | Name						| Source Unique ID	|
 | | ... | Field Type				| Fixed-Length Text	|
 | | ... | Is Required				| No				|
+| | ... | Associative Object Type	| ${EMPTY}
+
+
+| Stack Trace
+| | Find A Row With The Following Data	|
+| | ... | Name						| Stack Trace
+| | ... | Field Type				| Long Text
+| | ... | Is Required				| No
 | | ... | Associative Object Type	| ${EMPTY}
 
 

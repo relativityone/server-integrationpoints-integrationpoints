@@ -3,7 +3,7 @@
 | Documentation 	| Verify that the Enable Scheduler field on Step 1 of the Create Integration Point wizard functions correctly.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| team.game_of_holds	| feature.integration_points
-| Suite Setup		| Open and Log in to Method
+| Suite Setup		| Open and Log in to Legal Hold
 | Test Setup		| Open Create Integration Point
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Close All Browsers
@@ -45,7 +45,7 @@
 | | [Documentation]	| Verify that Step 2 can be shown after filling out the required fields and leaving the Scheduler set to No.
 | | ...				| [id] 0eefcadf-a89f-11e4-a8b3-b8ca3a83048f
 | | [Tags]			| automated
-| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append	| SourceProvider=LDAP	| DestinationRDO=Communication	| EnableScheduler=No
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| SourceProvider=LDAP	| DestinationRDO=Communication	| EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
@@ -54,7 +54,7 @@
 | | [Documentation]	| Verify that Step 2 can be shown after filling out the required fields and providing valid Scheduler settings.
 | | ...				| [id] 0eefcae0-a89f-11e4-8d1c-b8ca3a83048f
 | | [Tags]			| automated
-| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| DestinationRDO=Communication	| 
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| SourceProvider=LDAP	| DestinationRDO=Communication	| 
 | | ... 																| EnableScheduler=Yes	| Frequency=Daily	| StartDate=11/23/2030	| EndDate=04/15/2031	| ScheduledTime=11:32 PM
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
@@ -64,8 +64,8 @@
 | | [Documentation]	| Verify that Step 2 can be shown after filling out some, but not all, of the Scheduler's required fields, and then disabling the Scheduler.
 | | ...				| [id] 0eefcae1-a89f-11e4-a60b-b8ca3a83048f
 | | [Tags]			| automated
-| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| Overwrite=Append		| SourceProvider=LDAP	| 
-| | ... 																| DestinationRDO=Communication				| EnableScheduler=Yes	| Frequency=Daily
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| SourceProvider=LDAP	| DestinationRDO=Communication	| 
+| | ... 																| EnableScheduler=Yes	| Frequency=Daily
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
@@ -73,6 +73,6 @@
 
 *** Settings ***
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt

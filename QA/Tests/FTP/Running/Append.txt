@@ -1,8 +1,8 @@
 
 *** Settings ***
-| Documentation 	| Verify that running an Append RIP creates new objects, but does not update existing objects.
-| Metadata			| Authors	| Daniel Oliver	| William Sehy
-| Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
+| Documentation 	| Verify that running an Append FTP import creates new objects, but does not update existing objects.
+| Metadata			| Authors	| Daniel Oliver
+| Force Tags		| in-progress | team.game_of_holds	| feature.integration_points
 | Suite Setup		| Create Suite Setup Data
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
@@ -11,11 +11,11 @@
 *** Variables ***
 
 | ${WorkspaceName}				| LDAP Sync
-| ${IntegrationName}			| Append
-| ${NewObject}					| Man, Cat
-| ${ExistingAndUpdatedObject}	| Man, Dog
-| ${ExistingNoChangeObject}		| Man, Bird 
-| ${Manager}					| Man, Bigdog
+| ${IntegrationName}			| Append FTP
+| ${NewObject}					| ManFTP, Cat
+| ${ExistingAndUpdatedObject}	| ManFTP, Dog
+| ${ExistingNoChangeObject}		| ManFTP, Bird 
+| ${Manager}					| ManFTP, Bigdog
 | ${Custodians Grid}			| gbox_custodianGrid
 
 
@@ -23,28 +23,25 @@
 
 | An Append import Creates new objects
 | | [Documentation] | Verify that when an Append RIP is run which has new Source objects, that it creates new objects in the Target RDO.
-| | ...				| [id] 9632b8ae-b203-11e4-8099-90b11c6c5ae4
+| | ...	| [id] 5994fc0f-2e7b-11e6-b4a3-989096e24b46
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
-| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Email | catman@gameofholdstesting.corp
-
-| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
-
+| | Go to the Tab | Custodians
+| | View Custodian | ${NewObject}	
+| | Verify the current layout has fields with the following values | First Name | Cat | Last Name | ManFTP | Department | AppendFTP | Email | cmanftp@gameofholdstesting.corp
 
 | An Append imports will Overlay Managers
 | | [Documentation] | Verify that Append imports will Overlay Manager information by linking an Existing Custodians to a new Manager.
-| | ...				| [id] 65ef890f-e46e-11e4-8722-90b11c6c5ae4
+| | ...				| [id] e1208a00-2e7b-11e6-8fa2-989096e24b46
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
-| | View Custodian	| ${ExistingAndUpdatedObject} 
+| | Go to the Tab | Custodians
+| | View Custodian | ${ExistingAndUpdatedObject} 
 
-| | Verify that the current Custodian has the Following Manager	| ${Manager}
-
+| | Verify the current layout has fields with the following values | Manager | ${Manager}
 
 | An Append import Creates new History objects
 | | [Documentation] | Verify that when an Append RIP is run which has new source recods, 
 | | ...				| that there are history entries for the newly created objects in the target RDO.
-| | ...				| [id] 12e9dbe1-a89f-11e4-b55e-b8ca3a83048f
+| | ...				| [id] 7f9c4930-2e7c-11e6-aa89-989096e24b46
 | | [Tags]			| manual
 | | Go to the Tab	| History
 
@@ -56,11 +53,10 @@
 | | ... | Expected Results:
 | | ... | Verify that there is an entry for the Custodian "${NewObject}" with the Action of "Update - Import"
 
-
 | An Append import does not update existing objects
 | | [Documentation] | Verify that when an Append RIP is run which has updated Source objects that match to existing objects, 
 | | ...				| that it does not update the existing objects in the target RDO.
-| | ...				| [id] 12ea02f0-a89f-11e4-b98c-b8ca3a83048f
+| | ...				| [id] 83486140-2e7c-11e6-a9b4-989096e24b46
 | | [Tags]			| manual
 | | Go to the Tab	| History
 
@@ -72,11 +68,10 @@
 | | ... | Expected Results:
 | | ... | Verify that there is no entry for "${ExistingAndUpdatedObject}" with the Action of "Update - Import"
 
-
 | An Append import does not update existing unmodified objects
 | | [Documentation] | Verify that when an Append RIP is run which has Source objects that match to existing objects with no changes, 
 | | ...				| that it does not update the existing objects in the target RDO.
-| | ...				| [id] 12ea02f1-a89f-11e4-a719-b8ca3a83048f
+| | ...				| [id] 87597cb0-2e7c-11e6-83f1-989096e24b46
 | | [Tags]			| manual
 | | Go to the Tab	| History
 
@@ -88,11 +83,10 @@
 | | ... | Expected Results:
 | | ... | Verify that there is no entry for "${ExistingNoChangeObject}" with the Action of "Update - Import"
 
-
 | An Append import's Job History does not fail when there are Existing Objects
 | | [Documentation] | Verify that when an Append RIP is run which has Source objects that match to existing objects,
 | | ...				| that the Import's Job History has not errors.
-| | ...				| 
+| | ...				| [id] 8dd7c791-2e7c-11e6-b1f6-989096e24b46
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps:
@@ -115,34 +109,28 @@
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${ExistingNoChangeObject}			|
-| | ... | Email			| birdman@gameofholdstesting.corp	|
-| | ... | Department	| Append
+| | ... | Full Name		| ${ExistingNoChangeObject}
+| | ... | Email			| BirdManFTP@gameofholdstesting.corp
+| | ... | Department	| AppendFTP
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingAndUpdatedObject}
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
 | | Create a Custodian using API	| 
-| | ... | Full Name		| ${ExistingAndUpdatedObject}		|
-| | ... | Email			| dogman@gameofholdstesting.corp	|
-| | ... | Department	| Append
+| | ... | Full Name		| ${ExistingAndUpdatedObject}		
+| | ... | Email			| DogManFTP@gameofholdstesting.corp
+| | ... | Department	| AppendFTP
 
 # --------------------------------------------------------------------------------------------------------
 
-| | @{Step1Fields}=	| Create List	|
-| | ... | ${IntegrationName}
-| | ... | LDAP
-| | ... | Custodian
-| | ... | No
-
-| | @{Step2Fields}=		| Create list | gameofholds.testing.corp/CN=Users,DC=gameofholds,DC=testing,DC=corp | 
-| | ... | (department=Append) | FastBind | testing\\rellockdown | P@ssw0rd@1
+| | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
+| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP - File Transfer Protocol | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendFTP.csv
 
 | | @{Step3Mapping}=	| Create List	|
-| | ... | Email			| mail			| 
-| | ... | Department	| department	| 
-| | ... | First Name	| givenname		| 
-| | ... | Last Name		| sn			| 
-| | ... | Manager       | manager       | 
+| | ... | Department	| Department 
+| | ... | Email			| Email		 
+| | ... | First Name	| FirstName 
+| | ... | Last Name		| LastName	 
+| | ... | Manager       | Manager
 | | ... | UniqueID		| objectguid
 | | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | Email
 
@@ -153,8 +141,8 @@
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
+| | Delete the Custodians in the Following Department using API	| AppendFTP
 | | Delete the following Integration Point using API | ${IntegrationName}
-| | Delete the Custodians in the Following Department using API	| Append
 
 | | Drop connection to the relativity services api
 | | Close All Browsers

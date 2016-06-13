@@ -146,7 +146,7 @@ var ftpHelper = (function (data) {
         var p1 = validateSettings(localModel);
         p1.then(function () {
             retrieveValueFromServer(localModel).then(function (columnList) {
-                debugger;
+                
                 localModel.columnlist = columnList;
                 //update model with the value returned;
                 document.getElementById('validation_message').innerHTML = "";
@@ -156,9 +156,14 @@ var ftpHelper = (function (data) {
                     //Communicate to the host page to continue.
                     self.publish('saveComplete', encryptedModel);
                 });
+            }, function(data) {
+           
+        	if(data.status == '400'){
+		IP.frameMessaging().dFrame.IP.message.error.raise("File not found.");
+		}   
             });
         }, function (error) {
-            document.getElementById('validation_message').innerHTML = error.statusText;
+            IP.frameMessaging().dFrame.IP.message.error.raise(error.statusText);
         });
     });
 
@@ -200,7 +205,7 @@ function validate_model(model) {
 		    valid = true;
 		})
 		.fail(function (error) {
-		    document.getElementById('validation_message').innerHTML = error.statusText;
+		    IP.frameMessaging().dFrame.IP.message.error.raise(error.statusText);
 		});
 
     return valid;
@@ -254,7 +259,7 @@ function toggle_port() {
 
     // If user has entered something else, will not toggle
     if (port_selected === '' || port_selected === '21' || port_selected === '22') {
-        if (protocol_selected === 'FTP - File Transfer Protocol') {
+        if (protocol_selected === 'FTP') {
             $('#port').val(21);
         }
         else {
