@@ -1,29 +1,28 @@
-﻿using Relativity.Core;
-using Relativity.Core.DTO;
+﻿using System.Collections.Generic;
+using kCura.IntegrationPoints.Data.Models;
+using Relativity.Core;
 
 namespace kCura.IntegrationPoints.Data.Commands.MassEdit
 {
 	public class RelativityMassEdit : RelativityMassEditBase, IMassEditCommand
 	{
 		private readonly BaseServiceContext _context;
-		private readonly Field _field;
+		private readonly List<MassEditObject> _massEditObjects;
 		private readonly int _count;
-		private readonly int _rdoArtifactId;
 		private readonly string _tempTableDataSource;
 		private readonly global::Relativity.Query.ArtifactType _artifactType = new global::Relativity.Query.ArtifactType(global::Relativity.ArtifactType.Document);
 
-		public RelativityMassEdit(BaseServiceContext context, Field field, int count, int rdoArtifactId, string tempTableDataSource)
+		public RelativityMassEdit(BaseServiceContext context, List<MassEditObject> massEditObjects, int count, string tempTableDataSource)
 		{
 			_context = context;
-			_field = field;
+			_massEditObjects = massEditObjects;
 			_count = count;
-			_rdoArtifactId = rdoArtifactId;
 			_tempTableDataSource = tempTableDataSource;
 		}
 
 		public void Execute()
 		{
-			base.TagFieldsWithRdo(_context, _field, _count, _artifactType, _rdoArtifactId, _tempTableDataSource);
+			base.TagFieldsWithRdo(_context, _massEditObjects, _count, _artifactType, _tempTableDataSource);
 		}
 	}
 }

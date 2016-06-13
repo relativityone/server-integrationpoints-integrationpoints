@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Security.Claims;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Data.Commands.MassEdit;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Models;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
 using Relativity.API;
@@ -175,7 +177,7 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			}
 		}
 
-		public void TagDocsWithDestinationWorkspace(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int destinationWorkspaceInstanceId, string tableName, int sourceWorkspaceId)
+		public void TagDocsWithDestinationWorkspaceAndJobHistory(ClaimsPrincipal claimsPrincipal, int numberOfDocs, int destinationWorkspaceInstanceId, int jobHistoryInstanceId, string tableName, int sourceWorkspaceId)
 		{
 			global::Relativity.Query.ArtifactType artifactType = new global::Relativity.Query.ArtifactType(global::Relativity.ArtifactType.Document);
 
@@ -186,32 +188,58 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			BaseServiceContext baseService = claimsPrincipal.GetUnversionContext(sourceWorkspaceId);
 
-			Guid[] guids = { new Guid(DocumentMultiObjectFields.DESTINATION_WORKSPACE_FIELD) };
+			global::Relativity.Core.DTO.Field destinationWorkspaceField = GetFieldToEdit(baseService, DocumentMultiObjectFields.DESTINATION_WORKSPACE_FIELD);
+			global::Relativity.Core.DTO.Field jobHistoryField = GetFieldToEdit(baseService, DocumentMultiObjectFields.JOB_HISTORY_FIELD);
+
+			List<MassEditObject> massEditObjects = new List<MassEditObject>()
+			{
+				new MassEditObject()
+				{
+					FieldGuid = DocumentMultiObjectFields.DESTINATION_WORKSPACE_FIELD,
+					FieldToUpdate = destinationWorkspaceField,
+					ObjectToLinkTo = destinationWorkspaceInstanceId
+				},
+				new MassEditObject()
+				{
+					FieldGuid = DocumentMultiObjectFields.JOB_HISTORY_FIELD,
+					FieldToUpdate = jobHistoryField,
+					ObjectToLinkTo = jobHistoryInstanceId
+				}
+			};
+
+			try
+			{
+				base.TagFieldsWithRdo(baseService, massEditObjects, numberOfDocs, artifactType, tableName);
+			}
+			catch (Exception e)
+			{
+				throw new Exception(MassEditErrors.SOURCE_OBJECT_MASS_EDIT_FAILURE, e);
+			}
+		}
+
+		private global::Relativity.Core.DTO.Field GetFieldToEdit(BaseServiceContext baseServiceContext, string fieldGuid)
+		{
+			Guid[] guids =
+			{
+				new Guid(fieldGuid)
+			};
+
 			DataRowCollection fieldRows;
 			try
 			{
-				fieldRows = FieldQuery.RetrieveAllByGuids(baseService.ChicagoContext.DBContext, guids).Table.Rows;
+				fieldRows = FieldQuery.RetrieveAllByGuids(baseServiceContext.ChicagoContext.DBContext, guids).Table.Rows;
 			}
 			catch (Exception ex)
 			{
-				throw new Exception(MassEditErrors.DEST_WORKSPACE_MO_QUERY_ERROR, ex);
+				throw new Exception(MassEditErrors.SOURCE_OBJECT_MO_QUERY_ERROR, ex);
 			}
 
 			if (fieldRows.Count == 0)
 			{
-				throw new Exception(MassEditErrors.DEST_WORKSPACE_MO_EXISTENCE_ERROR);
+				throw new Exception(MassEditErrors.SOURCE_OBJECT_MO_EXISTENCE_ERROR);
 			}
 
-			var multiObjectField = new global::Relativity.Core.DTO.Field(baseService, fieldRows[0]);
-
-			try
-			{
-				base.TagFieldsWithRdo(baseService, multiObjectField, numberOfDocs, artifactType, destinationWorkspaceInstanceId, tableName);
-			}
-			catch (Exception e)
-			{
-				throw new Exception(MassEditErrors.DEST_WORKSPACE_MASS_EDIT_FAILURE, e);
-			}
+			return new global::Relativity.Core.DTO.Field(baseServiceContext, fieldRows[0]);
 		}
 	}
 }

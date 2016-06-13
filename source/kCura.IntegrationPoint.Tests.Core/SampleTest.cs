@@ -1,8 +1,6 @@
-﻿using System;
-using kCura.IntegrationPoint.Tests.Core.Models;
-using kCura.IntegrationPoint.Tests.Core.Templates;
+﻿using kCura.IntegrationPoint.Tests.Core.Templates;
+
 //using kCura.IntegrationPoints.Services;
-using Newtonsoft.Json;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoint.Tests.Core

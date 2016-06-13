@@ -1,0 +1,121 @@
+
+*** Settings ***
+| Documentation 	| Verify that running an Append/Overlay for FTP files creates new objects, updates existing modified objects and ignores existing unmodified objects. 
+| Metadata			| Authors | Daniel Oliver
+| Force Tags		| in-progress	| team.game_of_holds | feature.integration_points
+| Suite Setup		| Create Suite Setup Data
+| Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
+| Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
+
+
+*** Variables ***
+
+| ${WorkspaceName}				| LDAP Sync
+| ${IntegrationName}			| Append and Overlay FTP
+| ${NewObject}					| SunFTP, Set
+| ${ExistingAndUpdatedObject}	| SunFTP, Midday
+| ${ExistingNoChangeObject}		| SunFTP, Rise 
+| ${Custodians Grid}	| gbox_custodianGrid
+
+
+*** Test Cases ***
+
+| An Append and Overlay import Creates new records
+| | [Documentation] | Verify that when an Append and Overlay RIP is run which has new Source records, that it creates new records in the Target RDO.
+| | ...				| [id] 5b2347d1-2db8-11e6-bce7-989096e24b46
+| | [Tags]			| automated
+| | Go to the Tab | Custodians
+| | View Custodian | SunFTP, Set
+| | Verify the current layout has fields with the following values | First Name | Set | Last Name | SunFTP | Department | AppendAndOverlayFTP | Email | ssunftp@gameofholdstesting.corp
+
+
+| An Append and Overlay import updates existing modified records
+| | [Documentation] | Verify that when an Append and Overlay RIP is run with an existing record in the Target RDO with updated details in the Source, 
+| | ...				| that it does update the existing records in the Target RDO. In this test, the Custodian's Department has been updated.
+| | ...				| [id] 5d8f3ec0-2db8-11e6-a67c-989096e24b46
+| | [Tags]			| automated
+| | Go to the Tab | Custodians
+| | View Custodian | SunFTP, Midday
+| | Verify the current layout has fields with the following values | First Name | Midday | Last Name | SunFTP | Department | AppendAndOverlayFTP | Email | msunftp@gameofholdstesting.corp
+
+| An Append and Overlay import does not update existing unmodified records
+| | [Documentation] | Verify that when an Append and Overlay RIP is run with an existing record in the Target RDO with identical details in the Source, 
+| | ...				| that it does not update the existing record in the Target RDO.
+| | ...				| [id] 606ff080-2db8-11e6-8f57-989096e24b46
+| | [Tags]			| manual
+| | [Setup]			| Require Test Case	| An Append and Overlay import Creates new records
+| | Go to the Tab	| History
+
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Change to the All History View
+| | ... | 2. View the History records for the "${ExistingNoChangeObject}" Custodian
+| | ... |
+| | ... | Expected Results:
+| | ... | Verify that the "Update - Import" entry for the Custodian "${ExistingNoChangeObject}" does not modify the data to different values (it just updates to the existing values), except for uniquid which is changed from blank to a value.
+
+
+*** Keywords *** 
+
+| Create Suite Setup Data
+| | [Documentation]	| Create the Suite Preconditions
+| | Setup connection to the relativity database
+| | Open and Log in to Legal Hold
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
+
+# --------------------------------------------------------------------------------------------------------
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingNoChangeObject}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingNoChangeObject}
+| | Create a Custodian using API	| 
+| | ... | Full Name		| ${ExistingNoChangeObject}		|
+| | ... | Email			| rsunftp@gameofholdstesting.corp	|
+| | ... | Department	| AppendAndOverlayFTP
+
+| | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${ExistingAndUpdatedObject}
+| | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
+| | Create a Custodian using API	| 
+| | ... | Full Name		| ${ExistingAndUpdatedObject}	|
+| | ... | Email			| msunftp@gameofholdstesting.corp	|
+| | ... | Department	| AppendAndOverlayFT
+
+# --------------------------------------------------------------------------------------------------------
+
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
+
+| | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
+| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP - File Transfer Protocol | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendOverlayFTP.csv
+| | @{Step3Mapping}=	| Create List	|
+| | ... | Department	| Department 
+| | ... | Email			| Email		 
+| | ... | First Name	| FirstName 
+| | ... | Last Name		| LastName	 
+| | ... | UniqueID		| unique_id
+
+| | Create FTP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
+
+| | Run Import Now on the Following Integration Point	| ${IntegrationName}
+| | [Teardown]		| Drop connection to the relativity services api
+
+| Delete the Objects created in the Suite then Close All Browsers
+| | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
+
+#| | Delete the Custodians in the Following Department using API	| AppendAndOverlayFT
+| | Delete the following Integration Point using API | ${IntegrationName}
+
+| | Drop connection to the relativity services api
+| | Close All Browsers
+
+
+*** Settings ***
+| Library	| ${KEYWORD_DIR}/kWebDriver.py
+| Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepThreeKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

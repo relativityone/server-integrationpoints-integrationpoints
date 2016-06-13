@@ -20,7 +20,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
-using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 
@@ -34,8 +33,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		private readonly string _sourceWorkspaceName;
 		private readonly string _targetWorkspaceName;
 
-	    protected SourceProvider LdapProvider;
-        protected SourceProvider RelativityProvider;
+		protected SourceProvider LdapProvider;
+		protected SourceProvider RelativityProvider;
 		protected DestinationProvider DestinationProvider;
 		protected ICaseServiceContext CaseContext;
 
@@ -70,14 +69,13 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Install();
 
 			CaseContext = Container.Resolve<ICaseServiceContext>();
-			IEnumerable<SourceProvider> providers = CaseContext.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name),
-							Guid.Parse(SourceProviderFieldGuids.Identifier));
+			IEnumerable<SourceProvider> providers = CaseContext.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name), Guid.Parse(SourceProviderFieldGuids.Identifier));
 			RelativityProvider = providers.First(provider => provider.Name == "Relativity");
-            LdapProvider = providers.First(provider => provider.Name == "LDAP");
-            DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
+			LdapProvider = providers.First(provider => provider.Name == "LDAP");
+			DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
 		}
 
-	    protected virtual void Install()
+		protected virtual void Install()
 		{
 			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
 			Container.Register(Component.For<IServiceContextHelper>()
@@ -101,7 +99,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 					IRSAPIClient client = Rsapi.CreateRsapiClient();
 					client.APIOptions.WorkspaceID = SourceWorkspaceArtifactId;
 					return client;
-				}) 
+				})
 				.LifeStyle.Transient);
 
 			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));
@@ -213,17 +211,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			SqlParameter toEnabled = new SqlParameter("@enabled", SqlDbType.Bit) { Value = enable };
 
 			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new SqlParameter[] { toEnabled });
-
-		}
-		protected void CloseSeleniumBrowser()
-		{
-			try
-			{
-				Selenium.WebDriver.Quit();
-			}
-			catch (Exception)
-			{
-			}
 		}
 	}
 }

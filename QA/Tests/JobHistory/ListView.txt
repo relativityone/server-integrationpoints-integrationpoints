@@ -249,17 +249,17 @@
 | Suite Setup Keyword
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
-| | Open and Log in to Method
+| | Open and Log in to Legal Hold
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 # --------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=		| Create List	| 
-| | ... | List View Sort Testing	| 
-| | ... | Append/Overlay			|
-| | ... | LDAP						| 
-| | ... | Custodian					| 
+| | ... | List View Sort Testing
+| | ... | LDAP
+| | ... | Custodian
 | | ... | No
+
 | | @{Step2Fields}=		| Create List | 
 | | ... | ${ConnectionPath}		| 
 | | ... | ${ObjectFilterString}	| 
@@ -267,32 +267,38 @@
 | | ... | ${ConnectionUsername}	| 
 | | ... | ${ConnectionPassword}	| 
 | | ... | ${ImportNestedItems}
+
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Email			| mail			| 
 | | ... | Department	| countrycode	| 
 | | ... | First Name	| givenname		| 
 | | ... | Last Name		| sn			| 
 | | ... | UniqueID		| objectguid
+
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| List View Sort Testing
-| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
+
+# --------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=	| Create List	| 
-| | ... | Integration Point List View Testing	| 
-| | ... | Append/Overlay						| 
-| | ... | LDAP									| 
-| | ... | Custodian								| 
+| | ... | Integration Point List View Testing
+| | ... | LDAP
+| | ... | Custodian
 | | ... | No
+
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Integration Point List View Testing
-| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
+
+# --------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=	| Create List	| 
-| | ... | Integration Point Sort Testing	| 
-| | ... | Append/Overlay					|
-| | ... | LDAP								| 
-| | ... | Custodian							| 
+| | ... | Integration Point Sort Testing
+| | ... | LDAP
+| | ... | Custodian
 | | ... | No
+
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Integration Point Sort Testing
-| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | UniqueID
+| | Run Keyword Unless	| ${${IntegrationPointExists}}	| Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | UniqueID
 
 # --------------------------------------------------------------------------------------------------------
 

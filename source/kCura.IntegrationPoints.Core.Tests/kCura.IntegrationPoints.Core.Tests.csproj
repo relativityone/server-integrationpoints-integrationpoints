@@ -68,9 +68,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\kCuraCore.9.3.398.12\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.EDDS.DocumentCompareGateway, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
+    <Reference Include="kCura.EDDS.DocumentCompareGateway">
+      <HintPath>..\packages\RelativityCore.9.4.205.3\lib\net45\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -79,8 +78,8 @@
     <Reference Include="kCura.Method.Injection">
       <HintPath>..\Dependencies\Injection\kCura.Method.Injection.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Relativity.Client.9.3.398.12\lib\net45\kCura.Relativity.Client.dll</HintPath>
+    <Reference Include="kCura.Relativity.Client, Version=9.4.205.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Relativity.Client.9.4.205.3\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Utility">
@@ -99,28 +98,27 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.API, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.API.9.3.398.12\lib\net45\Relativity.API.dll</HintPath>
+    <Reference Include="Relativity.API, Version=9.4.205.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.API.9.4.205.3\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core, Version=9.3.398.12, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.Core.9.3.398.12\lib\net45\Relativity.Core.dll</HintPath>
+    <Reference Include="Relativity.Core, Version=9.4.205.3, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.Core.9.4.205.3\lib\net45\Relativity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core.Api, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\Relativity.Core.Api.dll</HintPath>
+    <Reference Include="Relativity.Core.Api">
+      <HintPath>..\packages\RelativityCore.9.4.205.3\lib\net45\Relativity.Core.Api.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.163, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.1.0.1.163\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Services.DataContracts.9.3.398.12\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
+    <Reference Include="Relativity.Services.DataContracts, Version=9.4.205.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Services.DataContracts.9.4.205.3\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces, Version=9.3.405.5, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Services.Interfaces.9.3.405.5\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces, Version=9.4.205.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Services.Interfaces.9.4.205.3\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -149,12 +147,12 @@
     <Compile Include="Integration\Installers\ServiceInstallerTests.cs" />
     <Compile Include="Integration\Managers\IntegrationPointManagerTests.cs" />
     <Compile Include="Integration\Managers\QueueManagerTests.cs" />
+    <Compile Include="Integration\PermissionErrorMessageForRelativityProviderTest.cs" />
     <Compile Include="Integration\PermissionErrorMessageTest.cs" />
     <Compile Include="Integration\Services\IntegrationPointServiceTests.cs" />
     <Compile Include="JobHelper.cs" />
     <Compile Include="Unit\AgentJobManagerTest.cs" />
-    <Compile Include="Unit\BatchStatusCommands\DestinationWorkspaceBatchUpdateManagerTest.cs" />
-    <Compile Include="Unit\BatchStatusCommands\JobHistoryBatchUpdateManagerTest.cs" />
+    <Compile Include="Unit\BatchStatusCommands\SourceObjectBatchUpdateManagerTest.cs" />
     <Compile Include="Unit\BatchStatusCommands\TargetDocumentsTaggingManagerTests.cs" />
     <Compile Include="Unit\BatchStatusCommands\TempTableReaderTests.cs" />
     <Compile Include="Unit\DeleteHistoryServiceTest.cs" />
@@ -169,6 +167,8 @@
     <Compile Include="Unit\Managers\JobHistoryManagerTests.cs" />
     <Compile Include="Unit\Managers\ObjectTypeManagerTests.cs" />
     <Compile Include="Unit\Managers\QueueManagerTests.cs" />
+    <Compile Include="Unit\Managers\SourceJobManagerTests.cs" />
+    <Compile Include="Unit\Managers\SourceWorkspaceManagerTests.cs" />
     <Compile Include="Unit\Managers\StateManagerTests.cs" />
     <Compile Include="Unit\RdoFilterTest.cs" />
     <Compile Include="Unit\Services\Domain\RelativityFeaturePathServiceTests.cs" />

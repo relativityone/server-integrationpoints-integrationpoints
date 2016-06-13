@@ -1,10 +1,12 @@
-﻿using Relativity.Services.Search;
+﻿using System;
+using Relativity.Services.Search;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class SavedSearch
 	{
 		private const string _CREATE_SINGLE_SERVICE = "api/Relativity.Services.Search.ISearchModule/Keyword Search Manager/CreateSingleAsync";
+
 		public static int CreateSavedSearch(int workspaceId, string name)
 		{
 			string json = string.Format(@"
@@ -31,7 +33,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				KeywordSearch keywordSearch = proxy.ReadSingleAsync(workspaceArtifactId, searchArtifactId).Result;
 				keywordSearch.SearchCriteria = searchCriteria;
-				proxy.UpdateSingleAsync(workspaceArtifactId, keywordSearch).ConfigureAwait(false);
+				proxy.UpdateSingleAsync(workspaceArtifactId, keywordSearch).Wait((int) TimeSpan.FromSeconds(5).TotalMilliseconds);
 			}
 		}
 	}

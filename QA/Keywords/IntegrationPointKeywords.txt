@@ -125,7 +125,7 @@
 #------------------------------------------------------------------------------------------------------------------------
 # Step 2 Section
 
-| Fill out the Following Fields of the Integration Point Step 2 form
+| Fill out the Following Fields of the LDAP Integration Point Step 2 form
 | | [Documentation]	| This keyword fills out the Integration Point Step 2 fields.
 | | ... 			| The value of ${Authentication} should be Select.../Anonymous/FastBind/Secure/Secure Socket Layer/Readonly server.
 | | ... 			| The value of ${ImportNestedItems} should be Yes or No.
@@ -332,10 +332,10 @@
 | | View Integration Point	| ${IntegrationPoint} 
 | | Delete this object
 
-| Create Integration Point
+| Create LDAP Integration Point
 | | [Documentation] | A keyword that creates an Integration Point. 
 | | ...				| The value of ${Step1Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 1 form".
-| | ...				| The value of ${Step2Fields} are the arguments from "Fill out the Following Fields of the Integration Point Step 2 form".
+| | ...				| The value of ${Step2Fields} are the arguments from "Fill out the Following Fields of the LDAP Integration Point Step 2 form".
 | | ...				| The value of ${Step3Mapping} are the arguments from "Map the Following Fields on the Integration Point Step 3 form".
 | | ...				| The value of ${ParentAttribute} is the Parent RDO for the Destination RDO, which should be NULL or not entered when there is no Parent.
 | | [ARGUMENTS]		| ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | ${Step3UniqueID} | ${ParentAttribute}=NULL
@@ -343,7 +343,7 @@
 | | Fill out the Following Fields of the Integration Point Step 1 form | @{Step1Fields}
 | | Proceed to the Next Step of the Integration Point wizard
 
-| | Fill out the Following Fields of the Integration Point Step 2 form | @{Step2Fields}
+| | Fill out the Following Fields of the LDAP Integration Point Step 2 form | @{Step2Fields}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Element Is Visible	| xpath=//select[@id='source-fields']/child::option	| 15s	| No Attribute fields were found.
 
@@ -434,7 +434,7 @@
 | | [Documentation]	| Verifies that you are on the given step of the Create Integration Point process.
 | | ...				| Currently, the acceptable values are: "Set Integration Details", "Connect to Source", and "Map Fields"
 | | [ARGUMENTS] 	| ${ExpectedStep}
-| | Verify that the Header has the Following Text	| Create Integration Point
+| | Verify that the Header has the Following Text	| Create LDAP Integration Point
 | | ${ActualStep}=	| Determine the current Step of the Create Integration Point Process
 | | Run Keyword Unless	| "${ExpectedStep}" == "${ActualStep}"	| Fail	| The current step was not "${ExpectedStep}", it was "${ActualStep}".
 
@@ -474,5 +474,5 @@
 | Library	| Collections
 | Library 	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscMethodKeywords.txt
+| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
