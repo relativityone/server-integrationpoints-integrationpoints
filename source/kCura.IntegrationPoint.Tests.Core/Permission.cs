@@ -12,7 +12,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		private static void IISReset()
 		{
-			Process process = System.Diagnostics.Process.Start(@"C:\Windows\System32\iisreset.exe");
+			Process process = System.Diagnostics.Process.Start(@"C:\Windows\System32\iisreset.exe", SharedVariables.TargetHost);
 			process?.WaitForExit((int)TimeSpan.FromSeconds(30).TotalMilliseconds);
 		}
 
