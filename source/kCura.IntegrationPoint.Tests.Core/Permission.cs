@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.DirectoryServices;
 using System.Linq;
+using System.ServiceProcess;
 using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
@@ -10,10 +12,21 @@ namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Permission
 	{
-		private static void IISReset()
+		private static void ResetRelativityServices()
 		{
-			Process process = System.Diagnostics.Process.Start(@"C:\Windows\System32\iisreset.exe", SharedVariables.TargetHost);
-			process?.WaitForExit((int)TimeSpan.FromSeconds(30).TotalMilliseconds);
+			string[] toReset = new string[]
+			{
+				$"IIS://{SharedVariables.TargetHost}/W3SVC/APPPOOLS/Relativity.Services",
+				$"IIS://{SharedVariables.TargetHost}/W3SVC/APPPOOLS/Relativity.REST"
+			};
+
+			foreach (var service in toReset)
+			{
+				var directoryEntry = new DirectoryEntry(service);
+				directoryEntry.Invoke("Stop", null);
+				directoryEntry.Invoke("Start", null);
+				directoryEntry.Invoke("Recycle", null);
+			}
 		}
 
 		public static GroupPermissions GetGroupPermissions(int workspaceId, int groupId)
@@ -31,7 +44,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, permissions).Wait(TimeSpan.FromSeconds(2));
 			}
-			IISReset();
+			ResetRelativityServices();
 		}
 
 		public static void RemoveAddWorkspaceGroup(int workspaceId, GroupSelector groupSelector)
@@ -40,7 +53,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, groupSelector).Wait(TimeSpan.FromSeconds(2));
 			}
-			IISReset();
+			ResetRelativityServices();
 		}
 
 		public static void SetMinimumRelativityProviderPermissions(int workspaceId, int groupId)
@@ -59,7 +72,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				proxy.SetWorkspaceGroupPermissionsAsync(workspaceId, groupPermissions);
 			}
-			IISReset();
+			ResetRelativityServices();
 		}
 
 		public static void SetGroupPermissions(int workspaceId, GroupPermissions groupPermissions)
