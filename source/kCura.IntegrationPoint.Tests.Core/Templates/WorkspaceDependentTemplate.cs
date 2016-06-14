@@ -64,7 +64,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				TargetWorkspaceArtifactId = SourceWorkspaceArtifactId;
 			}
 
-			Workspace.ImportApplicationToWorkspace(SourceWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
+
+			Workspace.ImportLibraryApplicationToWorkspace(SourceWorkspaceArtifactId, new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
 			SavedSearchArtifactId = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents");
 			Install();
 

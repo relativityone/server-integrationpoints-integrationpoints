@@ -40,7 +40,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			Exception ex = null;
 			try
 			{
-				driver.WaitUntilElementExists(ElementType.Id, "horizontal-tabstrip", 5);
+				driver.WaitUntilElementExists(ElementType.Id, "horizontal-tabstrip", 10);
 				ReadOnlyCollection<IWebElement> webElementCollection = driver.FindElements(By.Id("horizontal-tabstrip"));
 				IWebElement navigationList = webElementCollection[0].FindElement(By.XPath("//ul[@class='nav navbar-nav']"));
 				ReadOnlyCollection<IWebElement> listElements = navigationList.FindElements(By.TagName("li"));
@@ -100,6 +100,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void WaitUntilElementIsClickable(this IWebDriver driver, ElementType elementType, string value, int timeSeconds)
 		{
+			WaitUntilElementExists(driver, elementType, value, timeSeconds);
 			WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeSeconds));
 			switch (elementType)
 			{
