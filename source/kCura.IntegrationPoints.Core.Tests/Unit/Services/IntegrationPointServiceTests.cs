@@ -816,10 +816,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		}
 
 		[Test]
-		public void Get_Existing_IntegrationPoint_Rdo()
+		public void GetRdo_ArtifactIdExists_ReturnsRdo_Test()
 		{
-			//Arrange
-
 			//Act
 			Data.IntegrationPoint integrationPoint = _instance.GetRdo(_integrationPointArtifactId);
 
@@ -829,7 +827,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 		}
 
 		[Test]
-		public void Get_NonExisting_IntegrationPoint_Rdo()
+		public void GetRdo_ArtifactIdDoesNotExist_ExceptionThrown_Test()
 		{
 			//Arrange
 			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(_integrationPointArtifactId).Throws<Exception>();
