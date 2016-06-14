@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using kCura.Relativity.Client;
 using kCura.Relativity.Client.DTOs;
+using Relativity.Services.ApplicationInstallManager;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
 	public static class Workspace
 	{
-		public static void ImportApplicationToWorkspace(int workspaceId, string applicationFilePath, bool forceUnlock, List<int> appsToOverride = null)
+		public static void ImportApplicationToWorkspace(int workspaceId, string applicationFilePath, bool forceUnlock,
+			List<int> appsToOverride = null)
 		{
 			//List of application ArtifactIDs to override, if already installed
 			// TODO: Add this functionality - Gerron Thurman 5/11/2016
@@ -27,15 +29,29 @@ namespace kCura.IntegrationPoint.Tests.Core
 					ProcessOperationResult result = proxy.InstallApplication(proxy.APIOptions, appInstallRequest);
 					if (!result.Success)
 					{
-						throw new Exception(string.Format("Failed to install application file: {0} to workspace: {1}.", applicationFilePath, workspaceId));
+						throw new Exception($"Failed to install application file: {applicationFilePath} to workspace: {workspaceId}.");
 					}
 
-					Status.WaitForProcessToComplete(proxy, result.ProcessID, (int)TimeSpan.FromMinutes(2).TotalSeconds, 500);
+					Status.WaitForProcessToComplete(proxy, result.ProcessID, (int) TimeSpan.FromMinutes(2).TotalSeconds, 500);
 				}
 				catch (Exception ex)
 				{
-					throw new Exception(string.Format("An error occurred attempting to import the application file {0}. Error: {1}.", applicationFilePath, ex.Message));
+					throw new Exception($"An error occurred attempting to import the application file {applicationFilePath}. Error: {ex.Message}.");
 				}
+			}
+		}
+
+		public static void ImportLibraryApplicationToWorkspace(int workspaceArtifactId, Guid applicationGuid)
+		{
+			int applicationInstallId = 0;
+			using (IApplicationInstallManager proxy = Kepler.CreateProxy<IApplicationInstallManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				applicationInstallId = proxy.InstallLibraryApplicationByGuid(workspaceArtifactId, applicationGuid).Result;
+			}
+
+			if (applicationInstallId == 0)
+			{
+				throw new Exception($"Failed to install Library Application. SourceWorkspace: {workspaceArtifactId}. ApplicationGuid {applicationGuid}");
 			}
 		}
 
@@ -59,13 +75,11 @@ namespace kCura.IntegrationPoint.Tests.Core
 					query.Fields.Add(new FieldValue(WorkspaceFieldNames.Name));
 					int templateWorkspaceId = QueryWorkspace(query, 0).Results[0].Artifact.ArtifactID;
 
-					ProcessOperationResult result;
-
-					result = proxy.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspaceDto);
+					ProcessOperationResult result = proxy.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspaceDto);
 
 					if (!result.Success)
 					{
-						throw new Exception(string.Format("Failed creating workspace {0}. Result Message: {1} [{2}]",  workspaceName, result.Message, Environment.CurrentDirectory));
+						throw new Exception($"Failed creating workspace {workspaceName}. Result Message: {result.Message} [{Environment.CurrentDirectory}]");
 					}
 
 					Status.WaitForProcessToComplete(proxy, result.ProcessID);
@@ -74,7 +88,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 				catch (Exception ex)
 				{
-					throw new Exception(string.Format("An error occurred while creating workspace {0}. Error Message: {1}", workspaceName, ex.Message));
+					throw new Exception($"An error occurred while creating workspace {workspaceName}. Error Message: {ex.Message}");
 				}
 			}
 			return workspaceId;
@@ -134,12 +148,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 				}
 				catch (Exception ex)
 				{
-					throw new Exception(string.Format("An error occurred attempting to query workspaces using query: {0}. Error Message: {1}", query, ex.Message));
+					throw new Exception($"An error occurred attempting to query workspaces using query: {query}. Error Message: {ex.Message}");
 				}
 
 				if (!resultSet.Success)
 				{
-					throw new Exception(string.Format("Query failed for workspace using Query: {0}", query));
+					throw new Exception($"Query failed for workspace using Query: {query}");
 				}
 
 				return resultSet;

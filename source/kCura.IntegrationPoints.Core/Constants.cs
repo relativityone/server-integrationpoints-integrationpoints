@@ -10,6 +10,7 @@ namespace kCura.IntegrationPoints.Core
 			public const string APP_DOMAIN_DATA_CONNECTION_STRING = "IntegrationPointsConnectionString";
 			public const string APP_DOMAIN_DATA_SYSTEM_TOKEN_PROVIDER = "SystemToken";
 			public const string APP_DOMAIN_SUBSYSTEM_NAME = "IntegrationPoints";
+			public const string INTEGRATION_POINT_OBJECT_TYPE_NAME = "IntegrationPoint";
 			public const string APPLICATION_GUID_STRING = "DCF6E9D1-22B6-4DA3-98F6-41381E93C30C";
 			public const string DOC_OBJ_GUID = "15C36703-74EA-4FF8-9DFB-AD30ECE7530D";
 			public const string INVALID_PARAMETERS = "Invalid parameters";

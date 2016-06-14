@@ -9,7 +9,6 @@ using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -22,12 +21,8 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Core;
-using Relativity.Core.Service;
-using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -69,7 +64,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				TargetWorkspaceArtifactId = SourceWorkspaceArtifactId;
 			}
 
-			Workspace.ImportApplicationToWorkspace(SourceWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
+
+			Workspace.ImportLibraryApplicationToWorkspace(SourceWorkspaceArtifactId, new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
 			SavedSearchArtifactId = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents");
 			Install();
 
@@ -128,7 +124,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			var auditHelper = new AuditHelper(Helper);
 
-			Audit audit = auditHelper.RetrieveLastAuditForArtifact(SourceWorkspaceArtifactId, "IntegrationPoint", integrationPointName);
+			Audit audit = auditHelper.RetrieveLastAuditForArtifact(
+				SourceWorkspaceArtifactId, 
+				IntegrationPoints.Core.Constants.IntegrationPoints.INTEGRATION_POINT_OBJECT_TYPE_NAME, 
+				integrationPointName);
 
 			return audit;
 		}
