@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
+using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
+using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
@@ -18,6 +23,9 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private const string _NAME = "Name";
 		private const string _FIELDMAP = "Map";
 		private DestinationProvider _destinationProvider;
+		private IIntegrationPointService _integrationPointService;
+		private IQueueRepository _queueRepository;
+		private const int _ADMIN_USER_ID = 9;
 
 		public IntegrationPointServiceTests()
 			: base("IntegrationPointService Source", null)
@@ -29,12 +37,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		{
 			base.SetUp();
 			_destinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
+			_integrationPointService = Container.Resolve<IIntegrationPointService>();
+			_queueRepository = Container.Resolve<IQueueRepository>();
 		}
 
 		#region UpdateProperties
 
 		[Test]
-		public void UpdateNothing()
+		public void SaveIntegration_UpdateNothing()
 		{
 			const string name = "Resaved Rip";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
@@ -45,7 +55,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		public void UpdateName_OnRanIp_ErrorCase()
+		public void SaveIntegration_UpdateName_OnRanIp_ErrorCase()
 		{
 			const string name = "Update Name - OnRanIp";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
@@ -57,7 +67,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		public void UpdateMap_OnRanIp()
+		public void SaveIntegration_UpdateMap_OnRanIp()
 		{
 			const string name = "Update Map - OnRanIp";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
@@ -74,7 +84,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		public void UpdateConfig_OnNewRip()
+		public void SaveIntegration_UpdateConfig_OnNewRip()
 		{
 			const string name = "Update Source Config - SavedSearch - OnNewRip";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
@@ -87,7 +97,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		public void UpdateName_OnNewRip()
+		public void SaveIntegration_UpdateName_OnNewRip()
 		{
 			const string name = "Update Name - OnNewRip";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
@@ -99,7 +109,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		public void UpdateMap_OnNewRip()
+		public void SaveIntegration_UpdateMap_OnNewRip()
 		{
 			const string name = "Update Map - OnNewRip";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
@@ -118,6 +128,84 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 		#endregion
 
+		[Test]
+		public void CreateAndRunIntegrationPoint()
+		{
+			//Arrange
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("RunNow",3));
+
+			IntegrationModel integrationModel = new IntegrationModel
+			{
+				Destination = GetDestinationConfigWithOverlayOnly(),
+				DestinationProvider = DestinationProvider.ArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
+				SourceConfiguration = CreateDefaultSourceConfig(),
+				LogErrors = true,
+				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				SelectedOverwrite = "Overlay Only",
+				Scheduler = new Scheduler()
+				{
+					EnableScheduler = false
+				},
+				Map = CreateDefaultFieldMap()
+			};
+
+			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+
+			//Act
+			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID);
+			Status.WaitForIntegrationPointJobToComplete(_queueRepository, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
+			IntegrationModel integrationPointPostJob = _integrationPointService.ReadIntegrationPoint(integrationPoint.ArtifactID);
+
+			//Assert
+			Assert.AreEqual(false, integrationPointPostJob.HasErrors);
+		}
+
+		[Test]
+		public void RetryIntegrationPointErrors()
+		{
+			//Arrange
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("Retry", 3));
+
+			IntegrationModel integrationModel = new IntegrationModel
+			{
+				Destination = CreateDefaultDestinationConfig(),
+				DestinationProvider = DestinationProvider.ArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
+				SourceConfiguration = CreateDefaultSourceConfig(),
+				LogErrors = true,
+				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				SelectedOverwrite = "Append Only",
+				Scheduler = new Scheduler()
+				{
+					EnableScheduler = false
+				},
+				Map = CreateDefaultFieldMap()
+			};
+
+			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+
+			//Act
+
+			//Create Errors by using Append Only
+			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID);
+			Status.WaitForIntegrationPointJobToComplete(_queueRepository, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
+
+			//Update Integration Point's SelectedOverWrite to "Overlay Only"
+			IntegrationModel integrationPointPostRun = _integrationPointService.ReadIntegrationPoint(integrationPoint.ArtifactID);
+			integrationPointPostRun.SelectedOverwrite = "Overlay Only";
+			integrationPointPostRun.Destination = GetDestinationConfigWithOverlayOnly();
+			CreateOrUpdateIntegrationPoint(integrationPointPostRun);
+
+			//Retry Errors
+			_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactId, integrationPointPostRun.ArtifactID, _ADMIN_USER_ID);
+			Status.WaitForIntegrationPointJobToComplete(_queueRepository, SourceWorkspaceArtifactId, integrationPointPostRun.ArtifactID);
+			IntegrationModel integrationPointPostRetry = _integrationPointService.ReadIntegrationPoint(integrationPointPostRun.ArtifactID);
+
+			//Assert
+			Assert.AreEqual(true, integrationPointPostRun.HasErrors);
+			Assert.AreEqual(false, integrationPointPostRetry.HasErrors);
+		}
 
 		private void ValidateModel(IntegrationModel expectedModel, IntegrationModel actual, string[] updatedProperties)
 		{
@@ -176,6 +264,34 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationModel model = CreateIntegrationPointThatHasNotRun(name);
 			model.LastRun = DateTime.Now;
 			return model;
+		}
+
+		private DataTable GetImportTable(string documentPrefix ,int numberOfDocuments)
+		{
+			DataTable table = new DataTable();
+			table.Columns.Add("Control Number", typeof(string));
+
+			for (int index = 1; index <= numberOfDocuments; index++)
+			{
+				string controlNumber = $"{documentPrefix}{index}";
+				table.Rows.Add(controlNumber);
+			}
+			return table;
+		}
+
+		private string GetDestinationConfigWithOverlayOnly()
+		{
+			ImportSettings destinationConfig = new ImportSettings
+			{
+				ArtifactTypeId = 10,
+				CaseArtifactId = SourceWorkspaceArtifactId,
+				Provider = "Relativity",
+				ImportOverwriteMode = ImportOverwriteModeEnum.OverlayOnly,
+				ImportNativeFile = false,
+				ExtractedTextFieldContainsFilePath = false,
+				FieldOverlayBehavior = "Use Field Settings"
+			};
+			return Container.Resolve<ISerializer>().Serialize(destinationConfig);
 		}
 	}
 }
