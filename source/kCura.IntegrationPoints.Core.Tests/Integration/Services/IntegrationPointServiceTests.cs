@@ -26,6 +26,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private IIntegrationPointService _integrationPointService;
 		private IQueueRepository _queueRepository;
 		private const int _ADMIN_USER_ID = 9;
+		private const string _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME = "Service Account, Relativity";
 
 		public IntegrationPointServiceTests()
 			: base("IntegrationPointService Source", null)
@@ -162,6 +163,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			Audit audit = this.GetLastAuditForIntegrationPoint(integrationModel.Name);
 			Assert.AreEqual("Update", audit.AuditAction, "The last audit action should match");
+			Assert.AreEqual(_REALTIVITY_SERVICE_ACCOUNT_FULL_NAME, audit.UserFullName, "The user full name should match");
 			Tuple<string, string> auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(audit, "Last Runtime (UTC)");
 			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
 			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
@@ -213,6 +215,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(false, integrationPointPostRetry.HasErrors, "The integration point post retry should not have errors");
 			Audit audit = this.GetLastAuditForIntegrationPoint(integrationModel.Name);
 			Assert.AreEqual("Update", audit.AuditAction, "The last audit action should match");
+			Assert.AreEqual(_REALTIVITY_SERVICE_ACCOUNT_FULL_NAME, audit.UserFullName, "The user full name should match");
 			Tuple<string, string> auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(audit, "Last Runtime (UTC)");
 			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
 			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
