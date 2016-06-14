@@ -20,11 +20,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace kCura.IntegrationPoints.Data.Tests
 {
 	[TestFixture]
-	[Explicit]
+	[Category("Integration Tests")]
 	public class JobHistoryErrorsBatchingTests : WorkspaceDependentTemplate
 	{
 		private IIntegrationPointService _integrationPointService;
