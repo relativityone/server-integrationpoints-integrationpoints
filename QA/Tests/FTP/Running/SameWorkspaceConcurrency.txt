@@ -35,7 +35,7 @@
 *** Keywords ***
 
 | Create LDAP Integration Point
-# This LDAP Integration Point should generate X records
+# This LDAP Integration Point should generate 10 records
 | | Fill out the Following Fields of the Integration Point Step 1 form | ${IntegrationName1}	| LDAP	| Custodian	| No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| 
