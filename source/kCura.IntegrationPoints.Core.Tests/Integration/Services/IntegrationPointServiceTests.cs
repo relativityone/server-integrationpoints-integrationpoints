@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -44,7 +45,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		#region UpdateProperties
 
 		[Test]
-		public void UpdateNothing()
+		public void SaveIntegration_UpdateNothing()
 		{
 			const string name = "Resaved Rip";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
@@ -55,7 +56,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		public void UpdateName_OnRanIp_ErrorCase()
+		public void SaveIntegration_UpdateName_OnRanIp_ErrorCase()
 		{
 			const string name = "Update Name - OnRanIp";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
@@ -67,7 +68,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		public void UpdateMap_OnRanIp()
+		public void SaveIntegration_UpdateMap_OnRanIp()
 		{
 			const string name = "Update Map - OnRanIp";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
@@ -77,10 +78,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 			ValidateModel(defaultModel, newModel, new string[] { _FIELDMAP });
+
+			Audit audit = this.GetLastForIntegrationPoint(defaultModel.Name);
+			Assert.AreEqual(SharedVariables.UserFullName, audit.UserFullName, "The user should be correct.");
+			Assert.AreEqual("Update", audit.AuditAction, "The audit action should be correct.");
 		}
 
 		[Test]
-		public void UpdateConfig_OnNewRip()
+		public void SaveIntegration_UpdateConfig_OnNewRip()
 		{
 			const string name = "Update Source Config - SavedSearch - OnNewRip";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
@@ -93,7 +98,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		public void UpdateName_OnNewRip()
+		public void SaveIntegration_UpdateName_OnNewRip()
 		{
 			const string name = "Update Name - OnNewRip";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
@@ -105,7 +110,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		}
 
 		[Test]
-		public void UpdateMap_OnNewRip()
+		public void SaveIntegration_UpdateMap_OnNewRip()
 		{
 			const string name = "Update Map - OnNewRip";
 			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
@@ -116,6 +121,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 
 			ValidateModel(defaultModel, newModel, new[] { _FIELDMAP });
+
+			Audit audit = this.GetLastForIntegrationPoint(defaultModel.Name);
+			Assert.AreEqual(SharedVariables.UserFullName, audit.UserFullName, "The user should be correct.");
+			Assert.AreEqual("Update", audit.AuditAction, "The audit action should be correct.");
 		}
 
 		#endregion

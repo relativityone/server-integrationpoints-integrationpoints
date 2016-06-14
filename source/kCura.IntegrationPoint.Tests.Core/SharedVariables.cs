@@ -42,5 +42,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static string EddsConnectionString => ConfigurationManager.AppSettings["connectionStringEDDS"];
 
 		public static string WorkspaceConnectionStringFormat => ConfigurationManager.AppSettings["connectionStringWorkspace"];
+
+		public static string UserFullName => $"{ConfigurationManager.AppSettings["userLastName"]}, {ConfigurationManager.AppSettings["userFirstName"]}";
 	}
 }

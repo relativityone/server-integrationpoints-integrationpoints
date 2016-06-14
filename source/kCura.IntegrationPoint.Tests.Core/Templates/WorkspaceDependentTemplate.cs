@@ -7,6 +7,7 @@ using Castle.Core.Internal;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Models;
@@ -117,6 +118,18 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
 			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
+		}
+
+		protected Audit GetLastForIntegrationPoint(string integrationPointName)
+		{
+			var auditHelper = new AuditHelper(Helper);
+
+			Audit audit = auditHelper.RetrieveLastAuditForArtifact(
+				SourceWorkspaceArtifactId, 
+				IntegrationPoints.Core.Constants.IntegrationPoints.INTEGRATION_POINT_OBJECT_TYPE_NAME, 
+				integrationPointName);
+
+			return audit;
 		}
 
 		protected IntegrationModel CreateOrUpdateIntegrationPoint(IntegrationModel model)

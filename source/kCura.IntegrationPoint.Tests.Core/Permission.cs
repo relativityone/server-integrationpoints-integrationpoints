@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.DirectoryServices;
 using System.Linq;
-using System.ServiceProcess;
 using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
@@ -22,7 +20,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			foreach (var service in toReset)
 			{
-				var directoryEntry = new DirectoryEntry(service);
+				var directoryEntry = new DirectoryEntry(service, @"testing\rellockdown", "P@ssw0rd@1");
 				directoryEntry.Invoke("Stop", null);
 				directoryEntry.Invoke("Start", null);
 				directoryEntry.Invoke("Recycle", null);
