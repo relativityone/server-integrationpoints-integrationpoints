@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -17,10 +18,10 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_helper = helper;
 		}
 
-		public Audit RetrieveLastAuditForArtifact(int workspaceArtifactId, string artifactTypeName, string artifactName)
+		public IList<Audit> RetrieveLastAuditsForArtifact(int workspaceArtifactId, string artifactTypeName, string artifactName, int take = 1)
 		{
 			string query = $@"
-				SELECT TOP 1 
+				SELECT TOP {take}
 					AuditRecord.ArtifactID, 
 					AuditRecord.Details, 
 					AuditObject.Textidentifier as [Name],
@@ -47,23 +48,27 @@ namespace kCura.IntegrationPoint.Tests.Core
 					query, 
 					new[] { artifactTypeNameParameter, artifactNameParameter });
 
+			IList<Audit> audits = new List<Audit>(result.Rows.Count);
 			if (result.Rows.Count > 0)
 			{
-				DataRow row = result.Rows[0];
-				var audit = new Audit()
+				for (int i = 0; i < result.Rows.Count; i++)
 				{
-					ArtifactId = (int) row["ArtifactID"],
-					ArtifactName = (string) row["Name"],
-					UserId = (int) row["UserID"],
-					UserFullName = (string) row["UserName"],
-					AuditAction = (string) row["Action"],
-					AuditDetails = (string) row["Details"]
-				};
+					DataRow row = result.Rows[i];
+					var audit = new Audit()
+					{
+						ArtifactId = (int)row["ArtifactID"],
+						ArtifactName = (string)row["Name"],
+						UserId = (int)row["UserID"],
+						UserFullName = (string)row["UserName"],
+						AuditAction = (string)row["Action"],
+						AuditDetails = (string)row["Details"]
+					};
 
-				return audit;
+					audits.Add(audit);
+				}
 			}
 
-			return null;
+			return audits;
 		}
 
 		public Tuple<string, string> GetAuditDetailFieldUpdates(Audit audit, string fieldName)
