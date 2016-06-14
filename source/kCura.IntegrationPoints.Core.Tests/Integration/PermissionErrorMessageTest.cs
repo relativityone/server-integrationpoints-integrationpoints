@@ -10,7 +10,6 @@ using kCura.IntegrationPoints.Data.Repositories;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.IE;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration
 {
@@ -107,7 +106,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration
 			_webDriver.WaitUntilElementIsClickable(ElementType.Id, runNowId, 10);
 			_webDriver.FindElement(By.Id(runNowId)).Click();
 
-			_webDriver.WaitUntilElementExists(ElementType.Xpath, okPath, 10);
+			_webDriver.WaitUntilElementIsClickable(ElementType.Xpath, okPath, 10);
 			_webDriver.FindElement(By.XPath(okPath)).Click();
 			_webDriver.WaitUntilElementExists(ElementType.Xpath, jobError, 10);
 		}
