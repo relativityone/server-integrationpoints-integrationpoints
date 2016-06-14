@@ -128,7 +128,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			var auditHelper = new AuditHelper(Helper);
 
-			Audit audit = auditHelper.RetrieveLastAuditForArtifact(SourceWorkspaceArtifactId, "IntegrationPoint", integrationPointName);
+			Audit audit = auditHelper.RetrieveLastAuditForArtifact(
+				SourceWorkspaceArtifactId, 
+				IntegrationPoints.Core.Constants.IntegrationPoints.INTEGRATION_POINT_OBJECT_TYPE_NAME, 
+				integrationPointName);
 
 			return audit;
 		}
