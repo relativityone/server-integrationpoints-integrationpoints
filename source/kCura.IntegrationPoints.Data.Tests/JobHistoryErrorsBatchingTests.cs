@@ -98,7 +98,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			try
 			{
 				_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, 9);
-				Status.WaitForIntegrationPointJobToComplete(_queueRepository, SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID);
+				Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID);
 			}
 			catch (Exception ex)
 			{
@@ -148,7 +148,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			try
 			{
 				_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, 9);
-				Status.WaitForIntegrationPointJobToComplete(_queueRepository, SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID);
+				Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID);
 			}
 			catch (Exception ex)
 			{
@@ -337,7 +337,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			//Act
 			ModifySavedSearch(docPrefix, true);
 			_integrationPointService.RetryIntegrationPoint(SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID, _ADMIN_USER_ID);
-			Status.WaitForIntegrationPointJobToComplete(_queueRepository, SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID);
+			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointCreated.ArtifactID);
 
 			//Assert
 			VerifyTempSavedSearchDeletion(integrationPointCreated.ArtifactID, jobHistory.ArtifactId);
