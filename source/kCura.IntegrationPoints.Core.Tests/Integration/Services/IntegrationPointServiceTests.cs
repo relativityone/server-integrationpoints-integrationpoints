@@ -281,6 +281,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(false, integrationPointPreJobExecution.HasErrors);
 			Assert.AreEqual(false, integrationPointPostRun.HasErrors);
 			Assert.IsNotNull(integrationPointPostRun.LastRun);
+
+			Audit postRunAudit = this.GetLastAuditsForIntegrationPoint(integrationPointPostRun.Name, 1).First();
+
+			Assert.AreEqual("Update", postRunAudit.AuditAction, "The audit action should be Update");
+			Assert.AreEqual(_REALTIVITY_SERVICE_ACCOUNT_FULL_NAME, postRunAudit.UserFullName, "The user should be correct");
+
+			Tuple<string, string> auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRunAudit, "Next Scheduled Runtime (UTC)");
+			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
+			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
+			auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRunAudit, "Last Runtime (UTC)");
+			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
+			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
 		}
 
 
