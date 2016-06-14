@@ -19,6 +19,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			string query = $@"
 				SELECT TOP 1 
 					AuditRecord.ArtifactID, 
+					AuditRecord.Details, 
 					AuditObject.Textidentifier as [Name],
 					AuditObjectType.ArtifactType,
 					AuditUser.UserID,
@@ -53,6 +54,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					UserId = (int) row["UserID"],
 					UserFullName = (string) row["UserName"],
 					AuditAction = (string) row["Action"],
+					AuditDetails = (string) row["Details"]
 				};
 
 				return audit;
