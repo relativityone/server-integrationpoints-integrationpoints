@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.DirectoryServices;
 using System.Linq;
-using System.ServiceProcess;
 using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services.Group;
 using Relativity.Services.Permission;
