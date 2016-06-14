@@ -24,10 +24,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private UserModel _user;
 		private GroupPermissions _groupPermission;
 		private IObjectTypeRepository _typeRepo;
+		private Random _rand;
 
 		public PermissionRepositoryTests()
 			: base("PermissionRepositoryTests", null)
 		{
+			_rand = new Random();
 		}
 
 		[SetUp]
@@ -36,7 +38,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_typeRepo = Container.Resolve<IObjectTypeRepository>();
 			_permissionRepo = new PermissionRepository(Helper, SourceWorkspaceArtifactId);
 			_groupId = Group.CreateGroup("krowten");
-			_user = User.CreateUser("Gerron", "BadMan", "gbadman@kcura.com", new[] { _groupId });
+			_user = User.CreateUser("Gerron", "BadMan", $"gbadman{_rand.Next(int.MaxValue)}@kcura.com", new[] { _groupId });
 
 			Helper.RelativityUserName = _user.EmailAddress;
 			Helper.RelativityPassword = _user.Password;

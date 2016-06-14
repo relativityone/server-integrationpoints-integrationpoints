@@ -9,7 +9,6 @@ using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Contracts.RDO;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
@@ -22,12 +21,8 @@ using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
-using kCura.Relativity.Client.DTOs;
 using NUnit.Framework;
 using Relativity.API;
-using Relativity.Core;
-using Relativity.Core.Service;
-using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
