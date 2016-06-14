@@ -223,7 +223,7 @@
                         File Type :
                     </td>
                     <td class="editFieldValue">
-                        <select id="imageFileTypesSelector" data-bind="options: imageFileTypes, optionsText: 'value', optionsValue: 'key', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
+                        <select id="imageFileTypesSelector" data-bind="enable: CopyFileFromRepository() === 'true', options: imageFileTypes, optionsText: 'value', optionsValue: 'key', optionsCaption: 'Select...', value: SelectedImageFileType"></select>
                     </td>
                 </tr>
             </table>

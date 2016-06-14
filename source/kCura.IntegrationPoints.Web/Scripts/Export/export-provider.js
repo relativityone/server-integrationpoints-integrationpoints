@@ -154,6 +154,12 @@
         });
 
         this.CopyFileFromRepository = ko.observable(state.CopyFileFromRepository || "false");
+        this.CopyFileFromRepository.subscribe(function (value) {
+            if (value === 'false') {
+                self.SelectedImageFileType(0);
+            }
+        });
+
         this.OverwriteFiles = ko.observable(state.OverwriteFiles || "false");
 
         this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId).extend({
@@ -252,7 +258,7 @@
             { key: 2, value: "PDF" }
         ]);
 
-        this.SelectedImageFileType = ko.observable(state.SelectedImageFileType).extend({
+        this.SelectedImageFileType = ko.observable(state.SelectedImageFileType || (self.CopyFileFromRepository() === 'false' ? 0 : undefined)).extend({
             required: {
                 onlyIf: function () {
                     return self.ExportImagesChecked() === "true";
