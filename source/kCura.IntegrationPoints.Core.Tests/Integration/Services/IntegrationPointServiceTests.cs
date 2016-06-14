@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Data;
@@ -66,6 +67,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 			ValidateModel(defaultModel, newModel, new string[] { _FIELDMAP });
+
+			Audit audit = this.GetLastForIntegrationPoint(defaultModel.Name);
+			Assert.AreEqual(SharedVariables.UserFullName, audit.UserFullName, "The user should be correct.");
+			Assert.AreEqual("Update", audit.AuditAction, "The audit action should be correct.");
 		}
 
 		[Test]
@@ -105,6 +110,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 
 			ValidateModel(defaultModel, newModel, new[] { _FIELDMAP });
+
+			Audit audit = this.GetLastForIntegrationPoint(defaultModel.Name);
+			Assert.AreEqual(SharedVariables.UserFullName, audit.UserFullName, "The user should be correct.");
+			Assert.AreEqual("Update", audit.AuditAction, "The audit action should be correct.");
 		}
 
 		#endregion

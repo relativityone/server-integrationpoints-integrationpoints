@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					value = Environment.GetEnvironmentVariable("rapFileLocation", EnvironmentVariableTarget.User);
 					if (value == null)
 					{
-						value = @"C:\SourceCode\IntegrationPoints\source\bin\Application\RelativityIntegrationPoints.Auto.rap";
+						value = @"S:\SourceCode\IntegrationPoints\source\bin\Application\RelativityIntegrationPoints.Auto.rap";
 					}
 				}
 				return value;
@@ -42,5 +42,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 		public static string EddsConnectionString => ConfigurationManager.AppSettings["connectionStringEDDS"];
 
 		public static string WorkspaceConnectionStringFormat => ConfigurationManager.AppSettings["connectionStringWorkspace"];
+
+		public static string UserFullName => $"{ConfigurationManager.AppSettings["userLastName"]}, {ConfigurationManager.AppSettings["userFirstName"]}";
 	}
 }
