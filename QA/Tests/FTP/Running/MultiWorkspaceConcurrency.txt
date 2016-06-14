@@ -1,13 +1,14 @@
 
 *** Settings ***
-| Documentation 	| Verify that the Integration Points work correctly when multiple Jobs with different Source Providers are run together on the same workspace.
+| Documentation 	| Verify that the Integration Points work correctly when multiple Jobs with different Source Providers are run together from different Workspaces.
 | Metadata		    | Authors	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points	| manual
 
 
 *** Variables ***
 
-| ${WorkspaceName}		| Relativity Legal Hold
+| ${WorkspaceName1}		| Temporary Workspace 1
+| ${WorkspaceName2}		| Temporary Workspace 2
 | ${IntegrationPoint1}	| LDAP Concurrency	| # LDAP
 | ${IntegrationPoint2}	| FTP Concurrency	| # FTP
 
@@ -20,16 +21,20 @@
 | | ... | Preconditions:
 | | ... | 1. ${IntegrationPoint1} uses LDAP to import
 | | ... | 2. ${IntegrationPoint1} has [X] Records to import
-| | ... | 3. ${IntegrationPoint2} uses FTP to import
-| | ... | 4. ${IntegrationPoint2} has [Y] Records to import
+| | ... | 3. ${IntegrationPoint1} is on ${Workspace1}
+| | ... | 4. ${IntegrationPoint2} uses FTP to import
+| | ... | 5. ${IntegrationPoint2} has [Y] Records to import
+| | ... | 6. ${IntegrationPoint2} is on ${Workspace2}
 | | ... | 
 | | ... | Steps:
 | | ... | 1. Schedule both ${IntegrationPoint1} and ${IntegrationPoint2} to import five minutes from now (at the same time)
 | | ... | 2. Wait until the Jobs finish
 | | ... | 
 | | ... | Expected Results:
-| | ... | 1. Verify that the ${IntegrationPoint1} imported all [X] Objects correctly
-| | ... | 2. Verify that the ${IntegrationPoint2} imported all [Y] Objects correctly
+| | ... | 1. Verify that the ${IntegrationPoint1} imported all [X] Objects into ${Workspace1} correctly
+| | ... | 2. Verify that none of ${IntegrationPoint2}'s objects were imported into ${Workspace1}
+| | ... | 3. Verify that the ${IntegrationPoint2} imported all [Y] Objects into ${Workspace2} correctly
+| | ... | 4. Verify that none of ${IntegrationPoint1}'s objects were imported into ${Workspace2}
 
 
 *** Keywords ***
