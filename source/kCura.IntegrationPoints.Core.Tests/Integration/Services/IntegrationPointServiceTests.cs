@@ -209,8 +209,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationModel integrationPointPostRetry = _integrationPointService.ReadIntegrationPoint(integrationPointPostRun.ArtifactID);
 
 			//Assert
-			Assert.AreEqual(true, integrationPointPostRun.HasErrors);
-			Assert.AreEqual(false, integrationPointPostRetry.HasErrors);
+			Assert.AreEqual(true, integrationPointPostRun.HasErrors, "The first integration point run should have errors");
+			Assert.AreEqual(false, integrationPointPostRetry.HasErrors, "The integration point post retry should not have errors");
+			Audit audit = this.GetLastAuditForIntegrationPoint(integrationModel.Name);
+			Assert.AreEqual("Update", audit.AuditAction, "The last audit action should match");
+			Tuple<string, string> auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(audit, "Last Runtime (UTC)");
+			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
+			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
 		}
 
 		private void ValidateModel(IntegrationModel expectedModel, IntegrationModel actual, string[] updatedProperties)
