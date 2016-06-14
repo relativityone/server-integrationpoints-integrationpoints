@@ -8,18 +8,18 @@
 *** Variables ***
 
 | ${WorkspaceName}		| Relativity Legal Hold
-| ${ConnectionPath}		| testing.corp
-| ${ObjectFilterString}	| (objectClass=*)
-| ${Authentication}		| FastBind
-| ${ConnectionUsername}	| testing\administrator
-| ${ConnectionPassword}	| P@ssw0rd@1
+| ${Host}				| filetransfer.kcura.com
+| ${Protocol}			| FTP
+| ${Port}				| 21
+| ${FTPUsername}		| admin
+| ${FTPPassword}		| C@m3l!ts
+| ${Filepath}			| /Custom Development/ftp/LegalHold/AppendFTP.csv
 
 
 *** Test Cases ***
 
 | The Back button says "<-- Back" on Step 1
 | | [Documentation] | Verify that The Back button says "<-- Back" on Step 1.
-| | ...				| [id] 0ea57b6e-a89f-11e4-9a72-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
@@ -31,7 +31,6 @@
 
 | The Next button says "Next -->" on Step 1
 | | [Documentation] | Verify that The Next button says "Next -->" on Step 1.
-| | ...				| [id] 0ea99a1e-a89f-11e4-80be-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
@@ -43,12 +42,11 @@
 
 | The Back button says "<-- Back" on Step 2
 | | [Documentation] | Verify that The Back button says "<-- Back" on Step 2.
-| | ...				| [id] 0ea99a1f-a89f-11e4-952e-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Go to Step 1 of the Create Integration Point Wizard
-| | ... | 2. Select the Sourcer Provider: LDAP
+| | ... | 2. Select the Sourcer Provider: FTP (CSV File)
 | | ... | 3. Fill out all of the remaining Required fields
 | | ... | 4. Click: Next
 | | ... | 
@@ -58,12 +56,11 @@
 
 | The Next button says "Next -->" on Step 2
 | | [Documentation] | Verify that The Next button says "Next -->" on Step 2.
-| | ...				| [id] 0ea99a20-a89f-11e4-a6aa-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Go to Step 1 of the Create Integration Point Wizard
-| | ... | 2. Select the Sourcer Provider: LDAP
+| | ... | 2. Select the Sourcer Provider: FTP (CSV File)
 | | ... | 3. Fill out all of the remaining Required fields
 | | ... | 4. Click: Next
 | | ... | 
@@ -73,16 +70,15 @@
 
 | The Back button says "<-- Back" on Step 3
 | | [Documentation] | Verify that  The Back button says "<-- Back" on Step 3.
-| | ...				| [id] 0ea99a21-a89f-11e4-a161-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Go to Step 1 of the Create Integration Point Wizard
-| | ... | 2. Select the Sourcer Provider: LDAP
+| | ... | 2. Select the Sourcer Provider: FTP (CSV File)
 | | ... | 3. Fill out all of the remaining Required fields
 | | ... | 4. Click: Next
-| | ... | 4. Fill out all of the Required fields
-| | ... | 5. Click: Next
+| | ... | 5. Fill out all of the Required fields
+| | ... | 6. Click: Next
 | | ... | 
 | | ... | Expected Results:
 | | ... | Verify that the Back button has the text "<-- Back" with "<--" replaced with an actual arrow
@@ -90,16 +86,15 @@
 
 | The Next button says "Save" on Step 3
 | | [Documentation] | Verify that The Next button says "Save" on Step 3.
-| | ...				| [id] 0ea99a22-a89f-11e4-b20f-b8ca3a83048f
 | | [Tags]			| manual	| visual
 | | Run the following manual steps:
 | | ... | Steps:
 | | ... | 1. Go to Step 1 of the Create Integration Point Wizard
-| | ... | 2. Select the Sourcer Provider: LDAP
+| | ... | 2. Select the Sourcer Provider: FTP (CSV File)
 | | ... | 3. Fill out all of the remaining Required fields
 | | ... | 4. Click: Next
-| | ... | 4. Fill out all of the Required fields
-| | ... | 5. Click: Next
+| | ... | 5. Fill out all of the Required fields
+| | ... | 6. Click: Next
 | | ... | 
 | | ... | Expected Results:
 | | ... | Verify that the Next button has the text "Save"
