@@ -283,6 +283,61 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.IsNotNull(integrationPointPostRun.LastRun);
 		}
 
+
+		[Test]
+		public void CreateIntegrationPointWithNoSchedulerAndUpdateWithScheduler()
+		{
+			//Arrange
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("RunNow", 3));
+
+			IntegrationModel integrationModel = new IntegrationModel
+			{
+				Destination = GetDestinationConfigWithOverlayOnly(),
+				DestinationProvider = DestinationProvider.ArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
+				SourceConfiguration = CreateDefaultSourceConfig(),
+				LogErrors = true,
+				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				SelectedOverwrite = "Overlay Only",
+				Scheduler = new Scheduler()
+				{
+					EnableScheduler = false
+				},
+				Map = CreateDefaultFieldMap()
+			};
+
+			//Act
+			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+			integrationPoint.Scheduler = new Scheduler()
+			{
+				EnableScheduler = true,
+				StartDate = DateTime.UtcNow.ToString("MM/dd/yyyy"),
+				EndDate = DateTime.UtcNow.ToString("MM/dd/yyyy"),
+				ScheduledTime = DateTime.UtcNow.Hour + ":" + DateTime.UtcNow.AddMinutes(1),
+				Reoccur = 0,
+				SelectedFrequency = ScheduleInterval.None.ToString()
+			};
+			IntegrationModel modifiedIntegrationPoint = CreateOrUpdateIntegrationPoint(integrationPoint);
+
+			//Assert
+			Audit postRunAudit = this.GetLastAuditsForIntegrationPoint(modifiedIntegrationPoint.Name, 1).First();
+
+			Assert.AreEqual("Update", postRunAudit.AuditAction, "The audit action should be Update");
+			Assert.AreEqual(SharedVariables.UserFullName, postRunAudit.UserFullName, "The user should be correct");
+
+			Tuple<string, string> auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRunAudit, "Next Scheduled Runtime (UTC)");
+			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
+			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
+
+			auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRunAudit, "Enable Scheduler");
+			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
+			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
+
+			auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRunAudit, "Schedule Rule");
+			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
+			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
+		}
+
 		private void ValidateModel(IntegrationModel expectedModel, IntegrationModel actual, string[] updatedProperties)
 		{
 			Action<object, object> assertion = DetermineAssertion(updatedProperties, _SOURCECONFIG);
