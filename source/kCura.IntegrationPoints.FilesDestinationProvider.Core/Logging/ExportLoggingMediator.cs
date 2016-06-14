@@ -18,18 +18,24 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
         public void RegisterEventHandlers(IUserMessageNotification userMessageNotification,
             IExporterStatusNotification exporterStatusNotification)
         {
-            userMessageNotification.UserMessageEvent += OnUserMessage;
+            userMessageNotification.UserFatalMessageEvent += OnUserFatalMessage;
+	        userMessageNotification.UserWarningMessageEvent += OnUserWarningMessage;
             exporterStatusNotification.FatalErrorEvent += OnFatalError;
             exporterStatusNotification.FileTransferModeChangeEvent += OnFileTransferModeChange;
             exporterStatusNotification.StatusMessage += OnStatusMessage;
         }
 
-        private void OnUserMessage(object sender, UserMessageEventArgs userMessageEventArgs)
+	    private void OnUserFatalMessage(object sender, UserMessageEventArgs userMessageEventArgs)
         {
             _apiLog.LogFatal(userMessageEventArgs.Message);
-        }
+		}
 
-        private void OnFileTransferModeChange(string newMode)
+		private void OnUserWarningMessage(object sender, UserMessageEventArgs userMessageEventArgs)
+		{
+			_apiLog.LogWarning(userMessageEventArgs.Message);
+		}
+
+		private void OnFileTransferModeChange(string newMode)
         {
             _apiLog.LogInformation("File transfer mode has been changed: {mode}", newMode);
         }

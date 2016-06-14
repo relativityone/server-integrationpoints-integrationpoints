@@ -4,6 +4,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 {
 	public interface IUserMessageNotification
 	{
-		event EventHandler<UserMessageEventArgs> UserMessageEvent;
+		event EventHandler<UserMessageEventArgs> UserFatalMessageEvent;
+
+		event EventHandler<UserMessageEventArgs> UserWarningMessageEvent;
 	}
 }

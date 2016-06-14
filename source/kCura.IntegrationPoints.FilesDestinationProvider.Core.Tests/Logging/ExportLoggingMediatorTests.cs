@@ -111,15 +111,24 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
         }
 
         [Test]
-        public void ItShouldLogUserMessageAsFatal()
+        public void ItShouldLogUserFatalMessageAsFatal()
         {
             const string expectedMessage = "expected_user_message";
-            _userMessageNotification.UserMessageEvent += Raise.EventWith(null, new UserMessageEventArgs(expectedMessage));
+            _userMessageNotification.UserFatalMessageEvent += Raise.EventWith(null, new UserMessageEventArgs(expectedMessage));
 
             _apiLog.Received().LogFatal(expectedMessage);
-        }
+		}
 
-        [Test]
+		[Test]
+		public void ItShouldLogUserWarningMessageAsWarning()
+		{
+			const string expectedMessage = "expected_user_message";
+			_userMessageNotification.UserWarningMessageEvent += Raise.EventWith(null, new UserMessageEventArgs(expectedMessage));
+
+			_apiLog.Received().LogWarning(expectedMessage);
+		}
+
+		[Test]
         public void ItShouldThrowExceptionForUnknownEventType()
         {
             var correctValues = Enum.GetValues(typeof (EventType)).Cast<int>().ToList();

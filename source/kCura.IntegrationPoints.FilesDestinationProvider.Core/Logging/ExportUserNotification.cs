@@ -10,16 +10,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 	/// </summary>
 	public class ExportUserNotification : IUserMessageNotification, IUserNotification
 	{
-		public event EventHandler<UserMessageEventArgs> UserMessageEvent;
+		public event EventHandler<UserMessageEventArgs> UserFatalMessageEvent;
+		public event EventHandler<UserMessageEventArgs> UserWarningMessageEvent;
 
 		public void Alert(string message)
 		{
-			RaiseUserMessageEvent(message);
+			RaiseUserFatalMessageEvent(message);
 		}
 
 		public void AlertCriticalError(string message)
 		{
-			RaiseUserMessageEvent(message);
+			RaiseUserFatalMessageEvent(message);
 		}
 
 		/// <summary>
@@ -30,13 +31,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		/// <returns></returns>
 		public bool AlertWarningSkippable(string message)
 		{
-			RaiseUserMessageEvent(message);
-			return false;
+			RaiseUserWarningMessageEvent(message);
+			return true;
 		}
 
-		private void RaiseUserMessageEvent(string message)
+		private void RaiseUserFatalMessageEvent(string message)
 		{
-			UserMessageEvent?.Invoke(this, new UserMessageEventArgs(message));
+			UserFatalMessageEvent?.Invoke(this, new UserMessageEventArgs(message));
+		}
+
+		private void RaiseUserWarningMessageEvent(string message)
+		{
+			UserWarningMessageEvent?.Invoke(this, new UserMessageEventArgs(message));
 		}
 	}
 }
