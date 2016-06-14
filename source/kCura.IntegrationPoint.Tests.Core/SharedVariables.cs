@@ -32,7 +32,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					value = Environment.GetEnvironmentVariable("rapFileLocation", EnvironmentVariableTarget.User);
 					if (value == null)
 					{
-						value = @"S:\SourceCode\IntegrationPoints\source\bin\Application\RelativityIntegrationPoints.Auto.rap";
+						value = @"C:\SourceCode\IntegrationPoints\source\bin\Application\RelativityIntegrationPoints.Auto.rap";
 					}
 				}
 				return value;
