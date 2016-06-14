@@ -119,7 +119,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
 		}
 
-		protected Audit GetLastForIntegrationPoint(string integrationPointName)
+		protected Audit GetLastAuditForIntegrationPoint(string integrationPointName)
 		{
 			var auditHelper = new AuditHelper(Helper);
 
@@ -129,6 +129,14 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				integrationPointName);
 
 			return audit;
+		}
+
+		protected Tuple<string, string> GetAuditDetailsFieldValues(Audit audit, string fieldName)
+		{
+			var auditHelper = new AuditHelper(Helper);
+			Tuple<string, string> fieldValues = auditHelper.GetAuditDetailFieldUpdates(audit, fieldName);
+
+			return fieldValues;
 		}
 
 		protected IntegrationModel CreateOrUpdateIntegrationPoint(IntegrationModel model)

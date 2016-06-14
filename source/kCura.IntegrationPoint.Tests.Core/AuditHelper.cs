@@ -1,5 +1,8 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Data.SqlClient;
+using System.IO;
+using System.Xml;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using Relativity.API;
 
@@ -61,6 +64,31 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 
 			return null;
+		}
+
+		public Tuple<string, string> GetAuditDetailFieldUpdates(Audit audit, string fieldName)
+		{
+			Tuple<string, string> fieldValuesTuple = null;
+			using (XmlReader reader = XmlReader.Create(new StringReader(audit.AuditDetails)))
+			{
+				while (reader.ReadToFollowing("field"))
+				{
+					reader.MoveToAttribute("name");
+					string xmlFieldName = reader.Value;
+					reader.Read();
+
+					if (xmlFieldName == fieldName)
+					{
+						string oldValue = reader.ReadElementString("oldValue");
+						string newValue = reader.ReadElementString("newValue");
+
+						fieldValuesTuple = new Tuple<string, string>(oldValue, newValue);
+						break;
+					}
+				}
+			}
+
+			return fieldValuesTuple;
 		}
 	}
 }

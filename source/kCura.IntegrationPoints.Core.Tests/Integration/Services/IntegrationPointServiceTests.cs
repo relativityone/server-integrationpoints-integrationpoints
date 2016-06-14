@@ -78,7 +78,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 			ValidateModel(defaultModel, newModel, new string[] { _FIELDMAP });
 
-			Audit audit = this.GetLastForIntegrationPoint(defaultModel.Name);
+			Audit audit = this.GetLastAuditForIntegrationPoint(defaultModel.Name);
 			Assert.AreEqual(SharedVariables.UserFullName, audit.UserFullName, "The user should be correct.");
 			Assert.AreEqual("Update", audit.AuditAction, "The audit action should be correct.");
 		}
@@ -121,7 +121,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			ValidateModel(defaultModel, newModel, new[] { _FIELDMAP });
 
-			Audit audit = this.GetLastForIntegrationPoint(defaultModel.Name);
+			Audit audit = this.GetLastAuditForIntegrationPoint(defaultModel.Name);
 			Assert.AreEqual(SharedVariables.UserFullName, audit.UserFullName, "The user should be correct.");
 			Assert.AreEqual("Update", audit.AuditAction, "The audit action should be correct.");
 		}
@@ -159,6 +159,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 
 			//Assert
 			Assert.AreEqual(false, integrationPointPostJob.HasErrors);
+
+			Audit audit = this.GetLastAuditForIntegrationPoint(integrationModel.Name);
+			Assert.AreEqual("Update", audit.AuditAction, "The last audit action should match");
+			Tuple<string, string> auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(audit, "Last Runtime (UTC)");
+			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
+			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
 		}
 
 		[Test]
