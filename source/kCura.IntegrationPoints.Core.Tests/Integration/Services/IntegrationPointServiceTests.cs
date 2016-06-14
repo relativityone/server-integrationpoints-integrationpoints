@@ -48,19 +48,19 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateNothing()
 		{
 			const string name = "Resaved Rip";
-			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(modelToUse);
+			IntegrationModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 
-			ValidateModel(defaultModel, newModel, new string[0]);
+			ValidateModel(originalModel, newModel, new string[0]);
 		}
 
 		[Test]
 		public void SaveIntegration_UpdateName_OnRanIp_ErrorCase()
 		{
 			const string name = "Update Name - OnRanIp";
-			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(modelToUse);
+			IntegrationModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
 			defaultModel.Name = "newName";
 
@@ -71,13 +71,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateMap_OnRanIp()
 		{
 			const string name = "Update Map - OnRanIp";
-			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(modelToUse);
+			IntegrationModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
 			defaultModel.Map = "Blahh";
 
 			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
-			ValidateModel(defaultModel, newModel, new string[] { _FIELDMAP });
+			ValidateModel(originalModel, newModel, new string[] { _FIELDMAP });
 
 			Audit audit = this.GetLastForIntegrationPoint(defaultModel.Name);
 			Assert.AreEqual(SharedVariables.UserFullName, audit.UserFullName, "The user should be correct.");
@@ -88,8 +88,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateConfig_OnNewRip()
 		{
 			const string name = "Update Source Config - SavedSearch - OnNewRip";
-			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(modelToUse);
+			IntegrationModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
 			int newSavedSearch = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, name);
 			defaultModel.SourceConfiguration = CreateSourceConfig(newSavedSearch, SourceWorkspaceArtifactId);
@@ -101,8 +101,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateName_OnNewRip()
 		{
 			const string name = "Update Name - OnNewRip";
-			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(modelToUse);
+			IntegrationModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
 			defaultModel.Name = name + " 2";
 
@@ -113,14 +113,14 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void SaveIntegration_UpdateMap_OnNewRip()
 		{
 			const string name = "Update Map - OnNewRip";
-			IntegrationModel modelToUse = CreateIntegrationPointThatIsAlreadyRunModel(name);
-			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(modelToUse);
+			IntegrationModel originalModel = CreateIntegrationPointThatIsAlreadyRunModel(name);
+			IntegrationModel defaultModel = CreateOrUpdateIntegrationPoint(originalModel);
 
 			defaultModel.Map = "New Map string";
 
 			IntegrationModel newModel = CreateOrUpdateIntegrationPoint(defaultModel);
 
-			ValidateModel(defaultModel, newModel, new[] { _FIELDMAP });
+			ValidateModel(originalModel, newModel, new[] { _FIELDMAP });
 
 			Audit audit = this.GetLastForIntegrationPoint(defaultModel.Name);
 			Assert.AreEqual(SharedVariables.UserFullName, audit.UserFullName, "The user should be correct.");
@@ -263,9 +263,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			assertion(expectedModel.Map, actual.Map);
 
 			Assert.AreEqual(expectedModel.HasErrors, actual.HasErrors);
-			Assert.AreEqual(expectedModel.ArtifactID, actual.ArtifactID);
 			Assert.AreEqual(expectedModel.DestinationProvider, actual.DestinationProvider);
-			Assert.AreEqual(expectedModel.LastRun, actual.LastRun);
+			Assert.AreEqual(expectedModel.LastRun.Value.Date, actual.LastRun.Value.Date);
+			Assert.AreEqual(expectedModel.LastRun.Value.Hour, actual.LastRun.Value.Hour);
+			Assert.AreEqual(expectedModel.LastRun.Value.Minute, actual.LastRun.Value.Minute);
 		}
 
 		private Action<object, object> DetermineAssertion(string[] updatedProperties, string property)
