@@ -7,6 +7,7 @@ using Castle.Core.Internal;
 using Castle.MicroKernel.Registration;
 using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
+using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Models;
@@ -27,7 +28,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	[Explicit]
 	public class WorkspaceDependentTemplate : IntegrationTestBase
 	{
 		private readonly string _sourceWorkspaceName;
@@ -64,7 +64,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				TargetWorkspaceArtifactId = SourceWorkspaceArtifactId;
 			}
 
-			Workspace.ImportApplicationToWorkspace(SourceWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
+
+			Workspace.ImportLibraryApplicationToWorkspace(SourceWorkspaceArtifactId, new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
 			SavedSearchArtifactId = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents");
 			Install();
 
@@ -117,6 +118,27 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
 			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
+		}
+
+		protected IList<Audit> GetLastAuditsForIntegrationPoint(string integrationPointName, int take)
+		{
+			var auditHelper = new AuditHelper(Helper);
+
+			IList<Audit> audits = auditHelper.RetrieveLastAuditsForArtifact(
+				SourceWorkspaceArtifactId, 
+				IntegrationPoints.Core.Constants.IntegrationPoints.INTEGRATION_POINT_OBJECT_TYPE_NAME, 
+				integrationPointName,
+				take);
+
+			return audits;
+		}
+
+		protected Tuple<string, string> GetAuditDetailsFieldValues(Audit audit, string fieldName)
+		{
+			var auditHelper = new AuditHelper(Helper);
+			Tuple<string, string> fieldValues = auditHelper.GetAuditDetailFieldUpdates(audit, fieldName);
+
+			return fieldValues;
 		}
 
 		protected IntegrationModel CreateOrUpdateIntegrationPoint(IntegrationModel model)

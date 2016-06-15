@@ -92,7 +92,7 @@
 
 #------------------------------------------------------------------------------------------------------------------------
 | | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
-| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP - File Transfer Protocol | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/OverlayFTP.csv
+| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/OverlayFTP.csv
 
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Department	| Department 

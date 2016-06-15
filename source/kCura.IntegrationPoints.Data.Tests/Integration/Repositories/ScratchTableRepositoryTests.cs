@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
-	[Explicit]
+	[Category("Integration Tests")]
 	public class ScratchTableRepositoryTests : WorkspaceDependentTemplate
 	{
 		private IExtendedRelativityToggle _toggle;
@@ -65,7 +65,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 
 			//ACT
 			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
-			string tableName = useEDDSResource? $"{tablePrefix}_{tableSuffix}" : $"EDDSResource_{tablePrefix}_{tableSuffix}";
+			string tableName = useEDDSResource ? $"{tablePrefix}_{tableSuffix}" : $"EDDSResource_{tablePrefix}_{tableSuffix}";
 			DataTable tempTable = GetTempTable(tableName, useEDDSResource);
 
 			//ASSERT
@@ -181,7 +181,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			//ACT
 			scratchTableRepository.AddArtifactIdsIntoTempTable(documentIds);
 			scratchTableRepository.Dispose();
-			
+
 			//ASSERT
 			VerifyTableDisposal(tableName, useEDDSResource);
 		}
@@ -270,7 +270,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				throw new Exception($"Error: {tableName} has an incorrect count. Expected: {newCount}. Actual: {entryCount}");
 			}
 		}
-
 
 		private void VerifyTableDisposal(string tableName, bool isScratchTableOnEDDSResource)
 		{

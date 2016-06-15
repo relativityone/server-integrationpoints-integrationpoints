@@ -34,11 +34,10 @@ namespace kCura.IntegrationPoints.Data.Repositories
 		int CreateItemLevelErrorsSavedSearch(int integrationPointArtifactId, int savedSearchArtifactId, int jobHistoryArtifactId);
 
 		/// <summary>
-		/// Deletes the saved search used for the item-level retry error job.
+		/// Attempt to deletes the saved search used for the item-level retry error job.
 		/// </summary>
 		/// <param name="savedSearchArtifactId">The artifact id of the temporary saved search made.</param>
-		/// <param name="retryAttempts">The amount of times this method has been called as part of a retry recursive loop.</param>
-		void DeleteItemLevelErrorsSavedSearch(int savedSearchArtifactId, int retryAttempts);
+		void DeleteItemLevelErrorsSavedSearch(int savedSearchArtifactId);
 
 		/// <summary>
 		/// Reads specified job history error instances.
