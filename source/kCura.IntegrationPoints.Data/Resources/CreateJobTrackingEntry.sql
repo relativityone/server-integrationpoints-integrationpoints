@@ -1,24 +1,19 @@
-﻿IF (NOT EXISTS (SELECT * FROM [EDDSResource].[INFORMATION_SCHEMA].[TABLES] WHERE TABLE_SCHEMA = 'eddsdbo' AND  TABLE_NAME = @tableName))
+﻿IF OBJECT_ID(N'{0}.[{1}]',N'U') IS NULL
 BEGIN
-	declare @table nvarchar(max) = N'
-CREATE TABLE [EDDSRESOURCE].[EDDSDBO].[' + @tableName +'] 
+	CREATE TABLE {0}.[{1}] 
 	([JobID] bigint,
 	[TotalRecords] int,
 	[ErrorRecords] int,
 	[Completed] bit,
-	CONSTRAINT [PK_' + @tableName + ' ] PRIMARY KEY CLUSTERED 
+	CONSTRAINT [PK_{1}] PRIMARY KEY CLUSTERED 
 	(
-	[JobID] ASC
+		[JobID] ASC
 	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-	) ON [PRIMARY]';
-	execute sp_executesql @table
+	) ON [PRIMARY]
 END
 
-
-DECLARE @insert nvarchar(max) = '
-IF (NOT EXISTS (SELECT * FROM [EDDSRESOURCE].[EDDSDBO].[' + @tableName + '] WHERE JobID = @id))
+IF (NOT EXISTS (SELECT * FROM {0}.[{1}] WHERE JobID = @jobID))
 BEGIN
-	insert into [EDDSRESOURCE].[EDDSDBO].[' + @tableName + '] ([JobID],[Completed]) values (@id, 0)
-END'
-DECLARE @params nvarchar(max) = N'@id bigint';
-EXECUTE sp_executesql @insert, @params, @id = @jobID
+	insert into {0}.[{1}] ([JobID],[Completed]) values (@jobID, 0)
+END
+

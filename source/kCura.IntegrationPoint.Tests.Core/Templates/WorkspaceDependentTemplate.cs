@@ -120,16 +120,25 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
 		}
 
-		protected Audit GetLastForIntegrationPoint(string integrationPointName)
+		protected IList<Audit> GetLastAuditsForIntegrationPoint(string integrationPointName, int take)
 		{
 			var auditHelper = new AuditHelper(Helper);
 
-			Audit audit = auditHelper.RetrieveLastAuditForArtifact(
+			IList<Audit> audits = auditHelper.RetrieveLastAuditsForArtifact(
 				SourceWorkspaceArtifactId, 
 				IntegrationPoints.Core.Constants.IntegrationPoints.INTEGRATION_POINT_OBJECT_TYPE_NAME, 
-				integrationPointName);
+				integrationPointName,
+				take);
 
-			return audit;
+			return audits;
+		}
+
+		protected Tuple<string, string> GetAuditDetailsFieldValues(Audit audit, string fieldName)
+		{
+			var auditHelper = new AuditHelper(Helper);
+			Tuple<string, string> fieldValues = auditHelper.GetAuditDetailFieldUpdates(audit, fieldName);
+
+			return fieldValues;
 		}
 
 		protected IntegrationModel CreateOrUpdateIntegrationPoint(IntegrationModel model)
