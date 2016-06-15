@@ -1,4 +1,10 @@
-﻿using kCura.IntegrationPoints.Contracts.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using kCura.IntegrationPoint.Tests.Core;
+using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core;
 using kCura.IntegrationPoints.Core.BatchStatusCommands.Implementations;
 using kCura.IntegrationPoints.Core.Managers;
@@ -9,22 +15,16 @@ using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoint.Tests.Core;
-using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.Relativity.Client;
 using kCura.ScheduleQueue.Core;
 using NUnit.Framework;
-using kCura.Relativity.Client;
 using Relativity.Services.Field;
 using Relativity.Services.Search;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data;
 
-namespace kCura.IntegrationPoints.Data.Tests
+namespace kCura.IntegrationPoints.Data.Tests.Integration
 {
 	[TestFixture]
-	[Explicit]
+	[Category("Integration Tests")]
 	public class JobHistoryErrorsBatchingTests : WorkspaceDependentTemplate
 	{
 		private IIntegrationPointService _integrationPointService;
@@ -330,7 +330,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			IntegrationModel integrationPointCreated = CreateOrUpdateIntegrationPoint(integrationModel);
 			Guid batchInstance = Guid.NewGuid();
 			JobHistory jobHistory = CreateJobHistoryOnIntegrationPoint(integrationPointCreated.ArtifactID, batchInstance);
-			
+
 			//Create item level error
 			CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
 
@@ -341,7 +341,6 @@ namespace kCura.IntegrationPoints.Data.Tests
 
 			//Assert
 			VerifyTempSavedSearchDeletion(integrationPointCreated.ArtifactID, jobHistory.ArtifactId);
-
 		}
 
 		private void ExpectJobHistoryErrorsUpdatedWithBatchingOnRetry(int startingControlNumber, int numberOfDocuments, string documentPrefix, string expiredDocumentPrefix)
@@ -382,7 +381,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			//Create item level error
 			CreateItemLevelJobHistoryErrors(jobHistory.ArtifactId, ErrorStatusChoices.JobHistoryErrorNew, importTable);
 
-			IDictionary<int, string> expectedNonExpiredJobHistoryArtifacts =_jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(jobHistory.ArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
+			IDictionary<int, string> expectedNonExpiredJobHistoryArtifacts = _jobHistoryErrorRepository.RetrieveJobHistoryErrorIdsAndSourceUniqueIds(jobHistory.ArtifactId, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
 			List<int> expectedJobHistoryErrorsForRetry = GetExpectedInprogressAndRetriedErrors(expectedNonExpiredJobHistoryArtifacts);
 			List<int> expectedJobHistoryErrorExpired = GetExpectedExpiredErrors(expectedNonExpiredJobHistoryArtifacts);
 
@@ -423,7 +422,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			DataTable table = new DataTable();
 			table.Columns.Add("Control Number", typeof(string));
 			int endDocNumber = startingDocNumber + numberOfDocuments - 1;
-			int halfDocCount = endDocNumber -  (numberOfDocuments / 2);
+			int halfDocCount = endDocNumber - (numberOfDocuments / 2);
 
 			for (int index = startingDocNumber; index <= endDocNumber; index++)
 			{
@@ -507,7 +506,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			FieldRef fieldRef = new FieldRef(controlNumberFieldArtifactId)
 			{
 				Name = "Control Number",
-				Guids = new List<Guid>() {new Guid("2a3f1212-c8ca-4fa9-ad6b-f76c97f05438")}
+				Guids = new List<Guid>() { new Guid("2a3f1212-c8ca-4fa9-ad6b-f76c97f05438") }
 			};
 
 			CriteriaCollection searchCriteria = new CriteriaCollection();
@@ -556,7 +555,7 @@ namespace kCura.IntegrationPoints.Data.Tests
 			if (tempTable.Rows.Count != expectedJobHistoryErrorArtifacts.Count)
 			{
 				throw new Exception($"Error: Expected { expectedJobHistoryErrorArtifacts.Count } JobHistoryError ArtifactIds. { tempTable } contains { tempTable.Rows.Count } ArtifactIds.");
-            }
+			}
 
 			List<int> actualJobHistoryArtifactIds = new List<int>();
 			foreach (DataRow dataRow in tempTable.Rows)
