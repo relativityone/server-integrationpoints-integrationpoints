@@ -1,5 +1,9 @@
-﻿using System.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
+using System.IO;
+using System.Xml;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using Relativity.API;
 
@@ -14,11 +18,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 			_helper = helper;
 		}
 
-		public Audit RetrieveLastAuditForArtifact(int workspaceArtifactId, string artifactTypeName, string artifactName)
+		public IList<Audit> RetrieveLastAuditsForArtifact(int workspaceArtifactId, string artifactTypeName, string artifactName, int take = 1)
 		{
 			string query = $@"
-				SELECT TOP 1 
+				SELECT TOP {take}
 					AuditRecord.ArtifactID, 
+					AuditRecord.Details, 
 					AuditObject.Textidentifier as [Name],
 					AuditObjectType.ArtifactType,
 					AuditUser.UserID,
@@ -43,22 +48,52 @@ namespace kCura.IntegrationPoint.Tests.Core
 					query, 
 					new[] { artifactTypeNameParameter, artifactNameParameter });
 
+			IList<Audit> audits = new List<Audit>(result.Rows.Count);
 			if (result.Rows.Count > 0)
 			{
-				DataRow row = result.Rows[0];
-				var audit = new Audit()
+				for (int i = 0; i < result.Rows.Count; i++)
 				{
-					ArtifactId = (int) row["ArtifactID"],
-					ArtifactName = (string) row["Name"],
-					UserId = (int) row["UserID"],
-					UserFullName = (string) row["UserName"],
-					AuditAction = (string) row["Action"],
-				};
+					DataRow row = result.Rows[i];
+					var audit = new Audit()
+					{
+						ArtifactId = (int)row["ArtifactID"],
+						ArtifactName = (string)row["Name"],
+						UserId = (int)row["UserID"],
+						UserFullName = (string)row["UserName"],
+						AuditAction = (string)row["Action"],
+						AuditDetails = (string)row["Details"]
+					};
 
-				return audit;
+					audits.Add(audit);
+				}
 			}
 
-			return null;
+			return audits;
+		}
+
+		public Tuple<string, string> GetAuditDetailFieldUpdates(Audit audit, string fieldName)
+		{
+			Tuple<string, string> fieldValuesTuple = null;
+			using (XmlReader reader = XmlReader.Create(new StringReader(audit.AuditDetails)))
+			{
+				while (reader.ReadToFollowing("field"))
+				{
+					reader.MoveToAttribute("name");
+					string xmlFieldName = reader.Value;
+					reader.Read();
+
+					if (xmlFieldName == fieldName)
+					{
+						string oldValue = reader.ReadElementString("oldValue");
+						string newValue = reader.ReadElementString("newValue");
+
+						fieldValuesTuple = new Tuple<string, string>(oldValue, newValue);
+						break;
+					}
+				}
+			}
+
+			return fieldValuesTuple;
 		}
 	}
 }

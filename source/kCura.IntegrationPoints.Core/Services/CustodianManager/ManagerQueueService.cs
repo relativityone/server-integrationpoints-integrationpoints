@@ -2,19 +2,23 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Queries;
+using kCura.IntegrationPoints.Data.Repositories;
 using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoints.CustodianManager
 {
     public class ManagerQueueService
     {
-        private ICaseServiceContext _caseServiceContext;
-        private IEddsServiceContext _eddsServiceContext;
-        public ManagerQueueService(ICaseServiceContext caseServiceContext, IEddsServiceContext eddsServiceContext)
+        private readonly IRepositoryFactory _repositoryFactory;
+        private readonly ICaseServiceContext _caseServiceContext;
+        private readonly IEddsServiceContext _eddsServiceContext;
+
+        public ManagerQueueService(IRepositoryFactory repositoryFactory, ICaseServiceContext caseServiceContext, IEddsServiceContext eddsServiceContext)
         {
+            _repositoryFactory = repositoryFactory;
             _caseServiceContext = caseServiceContext;
             _eddsServiceContext = eddsServiceContext;
         }
@@ -32,10 +36,10 @@ namespace kCura.IntegrationPoints.CustodianManager
         {
             //Create temp table if does not exist and delete old links
             string tableName = GetTempTableName(job, batchInstance);
-            new CreateCustodianManagerResourceTable(_caseServiceContext.SqlContext).Execute(tableName);
+            new CreateCustodianManagerResourceTable(_repositoryFactory, _caseServiceContext.SqlContext).Execute(tableName, _caseServiceContext.WorkspaceID);
 
             //insert job Custodian Manager links
-            InsertData(tableName, jobCustodianManagerMap);
+            InsertData(tableName, jobCustodianManagerMap, _caseServiceContext.WorkspaceID);
 
             //Get links to process
             List<CustodianManagerMap> newLinkMap = GetLinksToProcess(tableName, job);
@@ -46,7 +50,7 @@ namespace kCura.IntegrationPoints.CustodianManager
         private List<CustodianManagerMap> GetLinksToProcess(string tableName, Job job)
         {
             List<CustodianManagerMap> newLinkMap = new List<CustodianManagerMap>();
-            DataTable dt = new GetJobCustodianManagerLinks(_caseServiceContext.SqlContext).Execute(tableName, job.JobId);
+            DataTable dt = new GetJobCustodianManagerLinks(_repositoryFactory, _caseServiceContext.SqlContext).Execute(tableName, job.JobId, _caseServiceContext.WorkspaceID);
             if (dt != null && dt.Rows != null)
             {
                 foreach (DataRow row in dt.Rows)
@@ -74,12 +78,13 @@ namespace kCura.IntegrationPoints.CustodianManager
             return result;
         }
 
-        private void InsertData(string tableName, List<CustodianManagerMap> jobCustodianManagerMap)
+        private void InsertData(string tableName, List<CustodianManagerMap> jobCustodianManagerMap, int workspaceID)
         {
+            IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(workspaceID, string.Empty, string.Empty);
             DataTable dtInsertRows = GetDataTable(jobCustodianManagerMap);
             using (SqlBulkCopy sbc = new SqlBulkCopy(_caseServiceContext.SqlContext.GetConnection()))
             {
-                sbc.DestinationTableName = string.Format("[EDDSResource].[eddsdbo].[{0}]", tableName);
+                sbc.DestinationTableName = string.Format("{0}.[{1}]", scratchTableRepository.GetResourceDBPrepend(), tableName);
 
                 // Map the Source Column from DataTabel to the Destination Columns
                 sbc.ColumnMappings.Add("CustodianID", "CustodianID");

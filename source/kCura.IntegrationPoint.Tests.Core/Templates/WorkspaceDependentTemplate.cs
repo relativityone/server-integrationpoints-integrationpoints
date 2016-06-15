@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -64,7 +65,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				TargetWorkspaceArtifactId = SourceWorkspaceArtifactId;
 			}
 
-			Workspace.ImportApplicationToWorkspace(SourceWorkspaceArtifactId, SharedVariables.RapFileLocation, true);
+
+			Workspace.ImportLibraryApplicationToWorkspace(SourceWorkspaceArtifactId, new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
 			SavedSearchArtifactId = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents");
 			Install();
 
@@ -119,13 +121,25 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
 		}
 
-		protected Audit GetLastForIntegrationPoint(string integrationPointName)
+		protected IList<Audit> GetLastAuditsForIntegrationPoint(string integrationPointName, int take)
 		{
 			var auditHelper = new AuditHelper(Helper);
 
-			Audit audit = auditHelper.RetrieveLastAuditForArtifact(SourceWorkspaceArtifactId, "IntegrationPoint", integrationPointName);
+			IList<Audit> audits = auditHelper.RetrieveLastAuditsForArtifact(
+				SourceWorkspaceArtifactId, 
+				IntegrationPoints.Core.Constants.IntegrationPoints.INTEGRATION_POINT_OBJECT_TYPE_NAME, 
+				integrationPointName,
+				take);
 
-			return audit;
+			return audits;
+		}
+
+		protected Tuple<string, string> GetAuditDetailsFieldValues(Audit audit, string fieldName)
+		{
+			var auditHelper = new AuditHelper(Helper);
+			Tuple<string, string> fieldValues = auditHelper.GetAuditDetailFieldUpdates(audit, fieldName);
+
+			return fieldValues;
 		}
 
 		protected IntegrationModel CreateOrUpdateIntegrationPoint(IntegrationModel model)
@@ -220,6 +234,39 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			SqlParameter toEnabled = new SqlParameter("@enabled", SqlDbType.Bit) { Value = enable };
 
 			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new SqlParameter[] { toEnabled });
+		}
+
+		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance)
+		{
+			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
+			IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
+			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			jobHistory.EndTimeUTC = DateTime.Now;
+			jobHistory.JobStatus = JobStatusChoices.JobHistoryCompletedWithErrors;
+			jobHistoryService.UpdateRdo(jobHistory);
+			return jobHistory;
+		}
+
+		protected List<int> CreateJobHistoryError(int jobHistoryArtifactId, Choice errorStatus, Choice type)
+		{
+			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>();
+			JobHistoryError jobHistoryError = new JobHistoryError
+			{
+				ParentArtifactId = jobHistoryArtifactId,
+				JobHistory = jobHistoryArtifactId,
+				Name = Guid.NewGuid().ToString(),
+				SourceUniqueID = type == ErrorTypeChoices.JobHistoryErrorItem ? Guid.NewGuid().ToString() : null,
+				ErrorType = type,
+				ErrorStatus = errorStatus,
+				Error = "Inserted Error for testing.",
+				StackTrace = "Error created from JobHistoryErrorsBatchingTests",
+				TimestampUTC = DateTime.Now,
+			};
+
+			jobHistoryErrors.Add(jobHistoryError);
+
+			List<int> jobHistoryErrorArtifactIds = CaseContext.RsapiService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
+			return jobHistoryErrorArtifactIds;
 		}
 	}
 }

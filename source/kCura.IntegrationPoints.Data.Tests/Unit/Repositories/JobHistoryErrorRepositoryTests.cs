@@ -1,0 +1,160 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Contracts.RDO;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Data.Transformers;
+using NSubstitute;
+using NUnit.Framework;
+using Relativity.API;
+using Relativity.Services.Search;
+using Relativity.Services.ObjectQuery;
+
+namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
+{
+	[TestFixture]
+	public class JobHistoryErrorRepositoryTests
+	{
+		private JobHistoryErrorRepository _instance;
+		private IHelper _helper;
+		private IObjectQueryManagerAdaptor _objectQueryAdaptorManager;
+		private IGenericLibrary<JobHistoryError> _jobHistoryErrorLibrary;
+		private IDtoTransformer<JobHistoryErrorDTO, JobHistoryError> _dtoTransformer;
+		private int _workspaceArtifactId;
+
+		[SetUp]
+		public void Setup()
+		{
+			_helper = NSubstitute.Substitute.For<IHelper>();
+			_objectQueryAdaptorManager = NSubstitute.Substitute.For<IObjectQueryManagerAdaptor>();
+			_jobHistoryErrorLibrary = NSubstitute.Substitute.For<IGenericLibrary<JobHistoryError>>();
+			_dtoTransformer = NSubstitute.Substitute.For<IDtoTransformer<JobHistoryErrorDTO, JobHistoryError>>();
+			_workspaceArtifactId = 456;
+			_instance = new JobHistoryErrorRepository(_helper, 
+				_objectQueryAdaptorManager, 
+				_jobHistoryErrorLibrary,
+				_dtoTransformer,
+				_workspaceArtifactId);
+		}
+
+		#region Read
+		private static IEnumerable<int>[] ReadSource = {
+			new List<int>(),
+			new List<int>() { 1 },
+			new List<int>() { 1 , 2, 3 , 4 } ,
+			null
+		};
+
+		[Test, TestCaseSource(nameof(ReadSource))]
+		public void Read(IEnumerable<int> artifactIds)
+		{
+			// act
+			_instance.Read(artifactIds);
+
+			// assert
+			_jobHistoryErrorLibrary.Received(1).Read(artifactIds);
+		}
+		#endregion
+
+		#region DeleteItemLevelErrorsSavedSearch
+		private static List<Task>[] DeleteItemLevelErrorsSavedSearch = {
+			new List<Task>() { CreateCompletedTask() },
+			new List<Task>() { CreateErrorTask(), CreateCompletedTask()},
+			new List<Task>() { CreateErrorTask(), CreateErrorTask(), CreateErrorTask() },
+			new List<Task>() { CreateErrorTask(), CreateErrorTask(), CreateCompletedTask() },
+		};
+
+		private static Task CreateCompletedTask()
+		{
+			Task task = new Task(() => { });
+			task.Start();
+			task.Wait();
+			return task;
+		}
+
+		private static Task CreateErrorTask()
+		{
+			Task task = null;
+			try
+			{
+				task = new Task(() => { throw new Exception(); });
+				task.Start();
+				task.Wait();
+			}
+			catch (Exception)
+			{ }
+			return task;
+		}
+
+		[Test, TestCaseSource(nameof(DeleteItemLevelErrorsSavedSearch))]
+		public void DeleteItemLevelErrorsSavedSearch_GoldFlow(List<Task> mockTasks)
+		{
+			// arrange
+			IKeywordSearchManager keywordSearch = Substitute.For<IKeywordSearchManager>();
+
+			int searchId = 123456;
+			_helper.GetServicesManager().CreateProxy<IKeywordSearchManager>(Arg.Any<ExecutionIdentity>()).Returns(keywordSearch);
+			if (mockTasks.Count < 2)
+			{
+				keywordSearch.DeleteSingleAsync(_workspaceArtifactId, searchId).Returns(mockTasks[0]);
+			}
+			else
+			{
+				keywordSearch.DeleteSingleAsync(_workspaceArtifactId, searchId).Returns(mockTasks[0], mockTasks.GetRange(1, mockTasks.Count - 1).ToArray());
+			}
+
+			// act
+			_instance.DeleteItemLevelErrorsSavedSearch(searchId);
+
+			// assert
+			keywordSearch.Received(mockTasks.Count).DeleteSingleAsync(_workspaceArtifactId, searchId);
+		}
+
+		#endregion
+
+		#region RetrieveJobHistoryErrorArtifactIds
+
+		[Test]
+		public void RetrieveJobHistoryErrorArtifactIds()
+		{
+			// arrange
+			ObjectQueryResultSet resultSet = new ObjectQueryResultSet
+			{
+				Success = true,
+				Data = new DataResult
+				{
+					TotalResultCount = 1,
+					DataResults = new[]
+					{
+						new QueryDataItemResult()
+						{
+							ArtifactId = 123,
+							ArtifactTypeId = 456,
+							TextIdentifier = "Hello World",
+							Fields =  new DataItemFieldResult[]
+							{
+								new DataItemFieldResult() { Value = JobHistoryErrorDTO.Choices.ErrorType.Values.Item }
+							}
+						}
+					}
+				}
+			};
+
+			Task<ObjectQueryResultSet> task = new Task<ObjectQueryResultSet>( () => resultSet );
+			task.Start();
+			task.Wait();
+
+			_objectQueryAdaptorManager.RetrieveAsync(Arg.Any<Query>(), String.Empty).Returns(task);
+
+			// act
+			IList<int> result = _instance.RetrieveJobHistoryErrorArtifactIds(123, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
+
+			// assert
+			Assert.IsNotNull(result);
+			Assert.AreEqual(1, result.Count);
+		}
+
+		#endregion
+	}
+}

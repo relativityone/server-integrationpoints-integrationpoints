@@ -22,7 +22,8 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private IQueueRepository _queueRepo;
 		private IJobService _jobService;
 
-		public QueueRepositoryTests() : base("QueueRepositoryTests", null)
+		public QueueRepositoryTests()
+			: base("QueueRepositoryTests", null)
 		{
 		}
 
