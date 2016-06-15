@@ -116,4 +116,7 @@ source/packages/*
 source/TestLogs/output64.xml
 
 source/.vs/config/applicationhost.config
+example/MyFirstProvider/.vs/config/applicationhost.config
 documentation/images/*
+
+example/MyFirstProvider/packages/*

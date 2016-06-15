@@ -33,8 +33,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="kCura.EventHandler">
-      <HintPath>..\..\ProviderIncludes\Provider\kCura.EventHandler.dll</HintPath>
+    <Reference Include="kCura.EventHandler, Version=9.3.439.11, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.EventHandler.9.3.439.11\lib\net45\kCura.EventHandler.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.IntegrationPoints.Contracts">
       <HintPath>..\..\ProviderIncludes\Provider\kCura.IntegrationPoints.Contracts.dll</HintPath>
@@ -45,8 +46,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.CustomPages">
-      <HintPath>..\..\ProviderIncludes\Relativity.CustomPages.dll</HintPath>
+    <Reference Include="Relativity.CustomPages, Version=9.3.439.11, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.CustomPages.9.3.439.11\lib\net45\Relativity.CustomPages.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
