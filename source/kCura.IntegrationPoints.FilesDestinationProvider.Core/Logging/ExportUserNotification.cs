@@ -4,9 +4,10 @@ using kCura.WinEDDS.Exporters;
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 {
 	/// <summary>
-	///     All user notifications from Shared Export Library during export
+	///     All user notifications (which can't be skipped) from Shared Export Library during export
 	///     should be handled as fatal error on RIP side.
 	///     During export after user notification is shown, process is terminated.
+	///     After showing skippable warning process will continue.
 	/// </summary>
 	public class ExportUserNotification : IUserMessageNotification, IUserNotification
 	{
@@ -24,8 +25,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		}
 
 		/// <summary>
-		///     This method always return false, because export in RIP is performed in Agent and we can't ask user.
-		///     After returning false, process will be shutdown.
+		///     This method always return true, because export in RIP is performed in Agent and we can't ask user.
+		///     After returning true, process will continue.
 		/// </summary>
 		/// <param name="message"></param>
 		/// <returns></returns>
