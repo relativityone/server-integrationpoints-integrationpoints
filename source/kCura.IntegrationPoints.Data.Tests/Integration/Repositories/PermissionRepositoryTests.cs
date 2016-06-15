@@ -16,7 +16,6 @@ using Relativity.Services.Permission;
 namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 {
 	[TestFixture]
-	[Explicit]
 	[Category("Integration Tests")]
 	public class PermissionRepositoryTests : WorkspaceDependentTemplate
 	{
@@ -25,10 +24,12 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		private UserModel _user;
 		private GroupPermissions _groupPermission;
 		private IObjectTypeRepository _typeRepo;
+		private Random _rand;
 
 		public PermissionRepositoryTests()
 			: base("PermissionRepositoryTests", null)
 		{
+			_rand = new Random();
 		}
 
 		[SetUp]
@@ -37,7 +38,7 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 			_typeRepo = Container.Resolve<IObjectTypeRepository>();
 			_permissionRepo = new PermissionRepository(Helper, SourceWorkspaceArtifactId);
 			_groupId = Group.CreateGroup("krowten");
-			_user = User.CreateUser("Gerron", "BadMan", "gbadman@kcura.com", new[] { _groupId });
+			_user = User.CreateUser("Gerron", "BadMan", $"gbadman{_rand.Next(int.MaxValue)}@kcura.com", new[] { _groupId });
 
 			Helper.RelativityUserName = _user.EmailAddress;
 			Helper.RelativityPassword = _user.Password;
@@ -107,7 +108,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		[Test]
 		public void UserHasPermissionToAccessWorkspace_DoHavePermission()
 		{
-			IISReset();
 			Assert.IsTrue(_permissionRepo.UserHasPermissionToAccessWorkspace());
 		}
 
@@ -116,7 +116,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 		public void UserHasPermissionToAccessWorkspace_DoNotHavePermission()
 		{
 			// arrange
-			IISReset();
 			GroupSelector selector = new GroupSelector()
 			{
 				EnabledGroups = new List<GroupRef>(),
@@ -234,8 +233,6 @@ namespace kCura.IntegrationPoints.Data.Tests.Integration.Repositories
 				Helper.RelativityUserName = _user.EmailAddress;
 				Helper.RelativityPassword = _user.Password;
 			}
-
-			IISReset();
 			Assert.AreEqual(useAdmin, _permissionRepo.UserHasArtifactInstancePermission(Core.Constants.IntegrationPoints.IntegrationPoint.ObjectTypeGuid, model.ArtifactID, ArtifactPermission.View));
 		}
 	}

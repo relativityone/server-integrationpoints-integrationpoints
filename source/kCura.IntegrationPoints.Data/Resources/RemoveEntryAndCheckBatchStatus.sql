@@ -1,15 +1,15 @@
 ﻿SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
 
---Do cleanup first - delete old tables (over 24 hours old)
+--Do cleanup first - delete old tables (over 72 hours old)
 DECLARE @table varchar(255) 
 DECLARE @dropCommand varchar(300) 
 DECLARE tableCursor CURSOR FOR 
-		SELECT QUOTENAME('EDDSResource')+'.'+QUOTENAME(s.name)+'.'+QUOTENAME(t.name) 
-		FROM [EDDSResource].[sys].[tables] AS t 
-		INNER JOIN [EDDSResource].[sys].[schemas] AS s 
+		SELECT '{0}.' + QUOTENAME(t.name) 
+		FROM {1}.[sys].[tables] AS t 
+		INNER JOIN {1}.[sys].[schemas] AS s 
 		ON t.[schema_id] = s.[schema_id] 
-		WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())>72 
+		WHERE DATEDIFF(HOUR,t.create_date,GETUTCDATE())>72
 		AND t.name LIKE 'RIP_JobTracker_%'
 
 OPEN tableCursor 
@@ -27,21 +27,18 @@ CLOSE tableCursor
 DEALLOCATE tableCursor
 
 
-IF (EXISTS (SELECT * FROM [EDDSResource].[INFORMATION_SCHEMA].[TABLES] WHERE TABLE_SCHEMA = 'eddsdbo' AND  TABLE_NAME = @tableName))
+IF OBJECT_ID(N'{0}.[{2}]',N'U') IS NOT NULL
 BEGIN
-	declare @sql nvarchar(1000) = N'UPDATE [EDDSResource].[eddsdbo].[' + @tableName +'] SET [Completed] = 1 WHERE [JobID] = @id'
-	declare @params nvarchar(50) = N'@id bigint';
-	Execute sp_executesql @sql, @params, @id = @jobID
+	UPDATE {0}.[{2}] SET [Completed] = 1 WHERE [JobID] = @jobID
 	
-	SET @sql = 'IF EXISTS(select [JobID] FROM [EDDSResource].[eddsdbo].['+ @tableName+'] WHERE [Completed] = 0)
+	IF EXISTS(select [JobID] FROM {0}.[{2}] WHERE [Completed] = 0)
 	BEGIN
 		select 1
 	END
 	ELSE
 	BEGIN
 		select 0
-	END'
-	EXECUTE sp_executesql @sql
+	END
 END
 ELSE
 BEGIN

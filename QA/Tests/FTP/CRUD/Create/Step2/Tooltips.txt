@@ -88,6 +88,24 @@
 | | ... | Verify that the Field's tooltip is: The location of the CSV file to be imported on the FTP/SFTP.  If you set the generated CSV file to always include the date, you can specify this filepath value to use date wildcards so that the latest file is always imported.  For example, a file path of /export/nightlyexport/*yyyy*-*MM*-*dd*_HRIS_export will successfully import the following file because it has the latest date in the name: 2016-04-05_HRIS_export.csv
 
 
+| The Help Icon works correctly
+| | [Documentation]	| Verify that the Help Icon on Connection Information works correctly.
+| | ...				| 
+| | [Tags]			| manual
+| | Run the following manual steps:
+| | ... | Steps:
+| | ... | 1. Click the Question Mark icon on the Connection Information title text
+| | ... |
+| | ... | Expected Results:
+| | ... | 1. Verify that the popup has the following title text: CSV Import on FTP
+| | ... | 2. Verify that the popup has the following body text in bullets.
+| | ... | * [b]Host:[/b] The address of the FTP or SFTP server, e.g. yourcompany.com
+| | ... | * [b]Protocol:[/b] Specifies if the standard file transfer protocol or SSH file transfer protocol should be used.
+| | ... | * [b]Port:[/b] The port of the server to connect to.
+| | ... | * [b]Username:[/b] If required for your connection, specifies the username to use for authenticating. Leave blank to use anonymous.
+| | ... | * [b]Password:[/b] If required for your connection, specify the password to use for authentication. Leave blank to use anonymous.
+| | ... | * [b]CSV filepath:[/b] The location of the CSV file to be imported from the FTP/SFTP. If you set the generated CSV file to always include the date, you can specify this filepath value to use date wildcards so that the latest file is always imported. For example, a filepath of /export/nightlyexport/*yyyy*-*MM*-*dd**_HRIS_export.csv will successfully import the most recently dated file.
+
 
 *** Keywords *** 
 

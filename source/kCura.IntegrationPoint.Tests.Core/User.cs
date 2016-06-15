@@ -99,10 +99,12 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return user;
 		}
 
-		public static bool DeleteUser(int userArtifactId)
+		public static void DeleteUser(int userArtifactId)
 		{
-			string response = Rest.DeleteRequestAsJson("localhost", $"Relativity/User/{userArtifactId}", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false);
-			return true;
+			if (userArtifactId != 0)
+			{
+				Rest.DeleteRequestAsJson(SharedVariables.TargetHost, $"Relativity/User/{userArtifactId}", SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, false);
+			}
 		}
 
 		#region Deprecated RSAPI
