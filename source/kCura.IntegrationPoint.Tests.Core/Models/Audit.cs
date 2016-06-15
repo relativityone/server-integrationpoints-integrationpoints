@@ -12,5 +12,7 @@
 
 		public string AuditAction { get; set; }
 
+		public string AuditDetails { get; set; }
+
 	}
 }

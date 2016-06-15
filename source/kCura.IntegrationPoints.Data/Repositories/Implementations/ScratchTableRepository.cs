@@ -12,242 +12,252 @@ using Relativity.API;
 
 namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 {
-	public class ScratchTableRepository : IScratchTableRepository
-	{
-		private readonly IDBContext _caseContext;
-		private readonly IDocumentRepository _documentRepository;
-		private readonly IFieldRepository _fieldRepository;
-		private readonly string _tablePrefix;
-		private readonly string _tableSuffix;
-		private readonly int _workspaceId;
-		private IDataReader _reader;
-		private string _database;
-		private string _tempTableName;
-		private string _docIdentifierFieldName;
-		private int _count;
-		private readonly bool _isAOAGEnabled;
+    public class ScratchTableRepository : IScratchTableRepository
+    {
+        private readonly IDBContext _caseContext;
+        private readonly IDocumentRepository _documentRepository;
+        private readonly IFieldRepository _fieldRepository;
+        private readonly string _tablePrefix;
+        private readonly string _tableSuffix;
+        private readonly int _workspaceId;
+        private IDataReader _reader;
+        private string _database;
+        private string _tempTableName;
+        private string _docIdentifierFieldName;
+        private int _count;
+        private readonly bool _isAOAGEnabled;
 
-		public ScratchTableRepository(IHelper helper, IExtendedRelativityToggle toggleProvider, IDocumentRepository documentRepository, 
-			IFieldRepository fieldRepository, string tablePrefix, string tableSuffix, int workspaceId)
-		{
-			_caseContext = helper.GetDBContext(workspaceId);
-			_documentRepository = documentRepository;
-			_fieldRepository = fieldRepository;
-			_tablePrefix = tablePrefix;
-			_tableSuffix = tableSuffix;
-			_workspaceId = workspaceId;
-			IgnoreErrorDocuments = false;
-			_isAOAGEnabled = toggleProvider.IsAOAGFeatureEnabled();
-		}
+        public ScratchTableRepository(IHelper helper, IExtendedRelativityToggle toggleProvider, IDocumentRepository documentRepository,
+            IFieldRepository fieldRepository, string tablePrefix, string tableSuffix, int workspaceId)
+        {
+            _caseContext = helper.GetDBContext(workspaceId);
+            _documentRepository = documentRepository;
+            _fieldRepository = fieldRepository;
+            _tablePrefix = tablePrefix;
+            _tableSuffix = tableSuffix;
+            _workspaceId = workspaceId;
+            IgnoreErrorDocuments = false;
+            _isAOAGEnabled = toggleProvider.IsAOAGFeatureEnabled();
+        }
 
-		public bool IgnoreErrorDocuments { get; set; }
+        public bool IgnoreErrorDocuments { get; set; }
 
-		public int Count
-		{
-			get
-			{
-				return _count;
-			}
-		}
+        public int Count
+        {
+            get
+            {
+                return _count;
+            }
+        }
 
-		public void RemoveErrorDocument(string docIdentifier)
-		{
-			_count -= 1;
+        public void RemoveErrorDocument(string docIdentifier)
+        {
+            _count -= 1;
 
-			int docId = GetErroredDocumentId(docIdentifier);
-			string fullTableName = GetTempTableName();
-			string sql = String.Format(@"DELETE FROM {2}[{0}] WHERE [ArtifactID] = {1}", fullTableName, docId, FullDatabaseFormat);
+            int docId = GetErroredDocumentId(docIdentifier);
+            string fullTableName = GetTempTableName();
+            string sql = String.Format(@"DELETE FROM {2}[{0}] WHERE [ArtifactID] = {1}", fullTableName, docId, FullDatabaseFormat);
 
-			_caseContext.ExecuteNonQuerySQLStatement(sql);
-		}
+            _caseContext.ExecuteNonQuerySQLStatement(sql);
+        }
 
-		public IDataReader GetDocumentIdsDataReaderFromTable()
-		{
-			if (_reader == null)
-			{
-				string fullTableName = GetTempTableName();
+        public IDataReader GetDocumentIdsDataReaderFromTable()
+        {
+            if (_reader == null)
+            {
+                string fullTableName = GetTempTableName();
 
-				var sql = String.Format(@"IF EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
+                var sql = String.Format(@"IF EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
 											SELECT [ArtifactID] FROM {2}[{0}]", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
 
-				_reader = _caseContext.ExecuteSQLStatementAsReader(sql);
-			}
-			return _reader;
-		}
+                _reader = _caseContext.ExecuteSQLStatementAsReader(sql);
+            }
+            return _reader;
+        }
 
-		public void Dispose()
-		{
-			try
-			{
-				if (_reader != null)
-				{
-					_reader.Close();
-					_reader = null;
-				}
-				DeleteTable();
-			}
-			catch (Exception)
-			{
-				// trying to delete temp tables early, don't have worry about failing
-			}
-		}
+        public void Dispose()
+        {
+            try
+            {
+                if (_reader != null)
+                {
+                    _reader.Close();
+                    _reader = null;
+                }
+                DeleteTable();
+            }
+            catch (Exception)
+            {
+                // trying to delete temp tables early, don't have worry about failing
+            }
+        }
 
-		public void AddArtifactIdsIntoTempTable(IList<int> artifactIds)
-		{
-			_count += artifactIds.Count;
+        public void AddArtifactIdsIntoTempTable(IList<int> artifactIds)
+        {
+            _count += artifactIds.Count;
 
-			if (!artifactIds.IsNullOrEmpty())
-			{
-				string fullTableName = GetTempTableName();
-				List<int> tempArtifactIds = artifactIds.ToList();
-				while (tempArtifactIds.Count > 0)
-				{
-					List<int> batchIds = RetrieveBatchFromList(tempArtifactIds);
-					string artifactIdList = String.Join("),(", batchIds.Select(x => x.ToString()));
-					artifactIdList = $"({artifactIdList})";
+            if (!artifactIds.IsNullOrEmpty())
+            {
+                string fullTableName = GetTempTableName();
+                List<int> tempArtifactIds = artifactIds.ToList();
+                while (tempArtifactIds.Count > 0)
+                {
+                    List<int> batchIds = RetrieveBatchFromList(tempArtifactIds);
+                    string artifactIdList = String.Join("),(", batchIds.Select(x => x.ToString()));
+                    artifactIdList = $"({artifactIdList})";
 
-					string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM {2}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
+                    string sql = String.Format(@"IF NOT EXISTS (SELECT * FROM {2}INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{0}')
 											BEGIN
 												CREATE TABLE {3}[{0}] ([ArtifactID] INT PRIMARY KEY CLUSTERED)
 											END
 									INSERT INTO {3}[{0}] ([ArtifactID]) VALUES {1}", fullTableName, artifactIdList, TargetDatabaseFormat, FullDatabaseFormat);
 
-					_caseContext.ExecuteNonQuerySQLStatement(sql);
-				}
-			}
-		}
+                    _caseContext.ExecuteNonQuerySQLStatement(sql);
+                }
+            }
+        }
 
-		private List<int> RetrieveBatchFromList(List<int> source)
-		{
-			// The INSERT statement can only have the maximum allowed number of 1000 row values. 
-			const int maxBatchSize = 1000;
-			int sizeToGet = source.Count < maxBatchSize ? source.Count : maxBatchSize;
-			List<int> result = source.GetRange(0, sizeToGet);
-			source.RemoveRange(0, sizeToGet);
-			return result;
-		}
+        private List<int> RetrieveBatchFromList(List<int> source)
+        {
+            // The INSERT statement can only have the maximum allowed number of 1000 row values. 
+            const int maxBatchSize = 1000;
+            int sizeToGet = source.Count < maxBatchSize ? source.Count : maxBatchSize;
+            List<int> result = source.GetRange(0, sizeToGet);
+            source.RemoveRange(0, sizeToGet);
+            return result;
+        }
 
-		public void DeleteTable()
-		{
-			string fullTableName = GetTempTableName();
-			string sql = String.Format(@"IF EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
+        public void DeleteTable()
+        {
+            string fullTableName = GetTempTableName();
+            string sql = String.Format(@"IF EXISTS (SELECT * FROM {1}INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}')
 										DROP TABLE {2}[{0}]", fullTableName, TargetDatabaseFormat, FullDatabaseFormat);
 
-			_caseContext.ExecuteNonQuerySQLStatement(sql);
-		}
+            _caseContext.ExecuteNonQuerySQLStatement(sql);
+        }
 
-		private string TargetDatabaseFormat
-		{
-			get
-			{
-				if (_database == null)
-				{
-					_database = _isAOAGEnabled ? String.Empty : "[EDDSRESOURCE].";
-				}
-				return _database;
-			}
-		}
+        private string TargetDatabaseFormat
+        {
+            get
+            {
+                if (_database == null)
+                {
+                    _database = _isAOAGEnabled ? String.Empty : "[EDDSRESOURCE].";
+                }
+                return _database;
+            }
+        }
 
-		private string FullDatabaseFormat
-		{
-			get { return TargetDatabaseFormat == String.Empty ? "[Resource]." : "[EDDSRESOURCE].."; }
-		}
+        private string FullDatabaseFormat
+        {
+            get { return TargetDatabaseFormat == String.Empty ? "[Resource]." : "[EDDSRESOURCE].."; }
+        }
 
-		public string GetTempTableName()
-		{
-			if (_tempTableName == null)
-			{
-				string prepend = String.Empty;
-				if (_isAOAGEnabled)
-				{
-					prepend = $"{ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_workspaceId)}_";
-				}
-				_tempTableName = $"{prepend}{_tablePrefix}_{_tableSuffix}";
-				if (_tempTableName.Length > 128)
-				{
-					throw new Exception($"Unable to create scratch table - {_tempTableName}. The name of the table is too long. Please contact the system administrator.");
-				}
-			}
-			return _tempTableName;
-		}
+        public string GetTempTableName()
+        {
+            if (_tempTableName == null)
+            {
+                string prepend = String.Empty;
+                if (_isAOAGEnabled)
+                {
+                    prepend = $"{ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_workspaceId)}_";
+                }
+                _tempTableName = $"{prepend}{_tablePrefix}_{_tableSuffix}";
+                if (_tempTableName.Length > 128)
+                {
+                    throw new Exception($"Unable to create scratch table - {_tempTableName}. The name of the table is too long. Please contact the system administrator.");
+                }
+            }
+            return _tempTableName;
+        }
 
-		private int GetErroredDocumentId(string docIdentifier)
-		{
-			if (String.IsNullOrEmpty(_docIdentifierFieldName))
-			{
-				_docIdentifierFieldName = GetDocumentIdentifierField();
-			}
+        public string GetSchemalessResourceDataBasePrepend()
+        {
+            return ClaimsPrincipal.Current.GetSchemalessResourceDataBasePrepend(_workspaceId);
+        }
 
-			int documentId = QueryForDocumentArtifactId(docIdentifier);
-			return documentId;
-		}
+        public string GetResourceDBPrepend()
+        {
+            return ClaimsPrincipal.Current.ResourceDBPrepend(_workspaceId);
+        }
 
-		internal string GetDocumentIdentifierField()
-		{
-			ArtifactDTO[] fieldArtifacts = _fieldRepository.RetrieveFieldsAsync(
-				10,
-				new HashSet<string>(new[]
-				{
-					Fields.Name,
-					Fields.IsIdentifier
-				})).ConfigureAwait(false).GetAwaiter().GetResult();
+        private int GetErroredDocumentId(string docIdentifier)
+        {
+            if (String.IsNullOrEmpty(_docIdentifierFieldName))
+            {
+                _docIdentifierFieldName = GetDocumentIdentifierField();
+            }
 
-			string fieldName = String.Empty;
-			foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
-			{
-				int isIdentifierFieldValue = 0;
-				foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
-				{
-					if (field.Name == Fields.Name)
-					{
-						fieldName = field.Value.ToString();
-					}
-					if (field.Name == Fields.IsIdentifier)
-					{
-						try
-						{
-							isIdentifierFieldValue = Convert.ToInt32(field.Value);
-						}
-						catch
-						{
-							// suppress error for invalid casts
-						}
-					}
-				}
-				if (isIdentifierFieldValue == 1)
-				{
-					break;
-				}
-			}
-			return fieldName;
-		}
+            int documentId = QueryForDocumentArtifactId(docIdentifier);
+            return documentId;
+        }
 
-		internal int QueryForDocumentArtifactId(string docIdentifier)
-		{
-			ArtifactDTO document;
-			string queryFailureMessage = "Unable to retrieve Document Artifact ID. Object Query failed.";
-			try
-			{
-				Task<ArtifactDTO> documentResult = _documentRepository.RetrieveDocumentAsync(_docIdentifierFieldName, docIdentifier);
-				document = documentResult.ConfigureAwait(false).GetAwaiter().GetResult();
-			}
-			catch (Exception ex)
-			{
-				throw new Exception(queryFailureMessage, ex);
-			}
+        internal string GetDocumentIdentifierField()
+        {
+            ArtifactDTO[] fieldArtifacts = _fieldRepository.RetrieveFieldsAsync(
+                10,
+                new HashSet<string>(new[]
+                {
+                    Fields.Name,
+                    Fields.IsIdentifier
+                })).ConfigureAwait(false).GetAwaiter().GetResult();
 
-			if (document == null)
-			{
-				throw new Exception(queryFailureMessage);
-			}
+            string fieldName = String.Empty;
+            foreach (ArtifactDTO fieldArtifact in fieldArtifacts)
+            {
+                int isIdentifierFieldValue = 0;
+                foreach (ArtifactFieldDTO field in fieldArtifact.Fields)
+                {
+                    if (field.Name == Fields.Name)
+                    {
+                        fieldName = field.Value.ToString();
+                    }
+                    if (field.Name == Fields.IsIdentifier)
+                    {
+                        try
+                        {
+                            isIdentifierFieldValue = Convert.ToInt32(field.Value);
+                        }
+                        catch
+                        {
+                            // suppress error for invalid casts
+                        }
+                    }
+                }
+                if (isIdentifierFieldValue == 1)
+                {
+                    break;
+                }
+            }
+            return fieldName;
+        }
 
-			return document.ArtifactId;
-		}
+        internal int QueryForDocumentArtifactId(string docIdentifier)
+        {
+            ArtifactDTO document;
+            string queryFailureMessage = "Unable to retrieve Document Artifact ID. Object Query failed.";
+            try
+            {
+                Task<ArtifactDTO> documentResult = _documentRepository.RetrieveDocumentAsync(_docIdentifierFieldName, docIdentifier);
+                document = documentResult.ConfigureAwait(false).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(queryFailureMessage, ex);
+            }
 
-		internal static class Fields //MNG: similar to class used in DocumentTransferProvider, probably find a better way to reference these
-		{
-			internal static string Name = "Name";
-			internal static string IsIdentifier = "Is Identifier";
-		}
-	}
+            if (document == null)
+            {
+                throw new Exception(queryFailureMessage);
+            }
+
+            return document.ArtifactId;
+        }
+
+        internal static class Fields //MNG: similar to class used in DocumentTransferProvider, probably find a better way to reference these
+        {
+            internal static string Name = "Name";
+            internal static string IsIdentifier = "Is Identifier";
+        }
+    }
 }

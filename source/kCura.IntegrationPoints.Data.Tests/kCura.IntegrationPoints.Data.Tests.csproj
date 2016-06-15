@@ -222,11 +222,12 @@
     <Compile Include="Integration\Queries\GetSavedSearchesQueryTests..cs" />
     <Compile Include="Integration\Queries\GetWorkspacesQueryTests.cs" />
     <Compile Include="Integration\RelativityRdoQueryTest.cs" />
+    <Compile Include="Integration\Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Integration\Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Integration\Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Integration\Repositories\ScratchTableRepositorySqlTests.cs" />
     <Compile Include="Integration\Repositories\ScratchTableRepositoryTests.cs" />
-    <Compile Include="JobHistoryErrorsBatchingTests.cs" />
+    <Compile Include="Integration\JobHistoryErrorsBatchingTests.cs" />
     <Compile Include="Transformer\JobHistoryErrorTransformerTests.cs" />
     <Compile Include="Transformer\IntegrationPointTransformerTests.cs" />
     <Compile Include="Unit\BaseRdoTests.cs" />
@@ -236,6 +237,7 @@
     <Compile Include="Unit\RelativityReaderBaseTests.cs" />
     <Compile Include="Unit\Repositories\FieldRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\IntegrationPointRepositoryTests.cs" />
+    <Compile Include="Unit\Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\SqlArtifactGuidRepositoryTests.cs" />

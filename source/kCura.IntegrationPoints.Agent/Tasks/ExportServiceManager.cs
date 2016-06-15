@@ -125,6 +125,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					job.SubmittedBy))
 				{
 					JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
+					JobHistoryDto.JobStatus = JobStatusChoices.JobHistoryProcessing;
 					UpdateJobStatus();
 
 					if (exporter.TotalRecordsFound > 0)
@@ -273,7 +274,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					_updateStatusType.ErrorTypes == JobHistoryErrorDTO.UpdateStatusType.ErrorTypesChoices.ItemOnly)
 				{
 					IJobHistoryErrorRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryErrorRepository(_sourceConfiguration.SourceWorkspaceArtifactId);
-					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_savedSearchArtifactId, 0);
+					jobHistoryErrorRepository.DeleteItemLevelErrorsSavedSearch(_savedSearchArtifactId);
 				}
 
 				// Finalize any In Progress Job History Errors
