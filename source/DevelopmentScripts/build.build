@@ -87,7 +87,7 @@
 		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
 	</target>
 	
-	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_integrationPoint_core, merge_binaries, copy_kCura.IntegrationPoints.Contracts, copy_kCura.IntegrationPoints.Security, copy_ftpProvider_files, build_integrationpoint_services, merge_ldap, merge_documentsTransfer, merge_source_provider_installer, build_ip_sdk">				
+	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_integrationPoint_core, merge_binaries, copy_files, build_integrationpoint_services, merge_ldap, merge_documentsTransfer, merge_source_provider_installer, build_ip_sdk">				
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
@@ -347,42 +347,11 @@
 		</exec>
 	</target>
 	
-	<target name="copy_kCura.IntegrationPoints.Contracts" description="Copy kCura.IntegrationPoints.Contracts.dll to \bin">
-		<copy todir="${bin.directory}">
-			<fileset basedir="${target.code.directory}">
-				<include name="kCura.IntegrationPoints.Contracts.dll" />
-			</fileset>
-		</copy>
-	</target>
-
-	<target name="copy_kCura.IntegrationPoints.Security" description="Copy kCura.IntegrationPoints.Contracts.dll to \bin">
-		<copy todir="${bin.directory}">
-			<fileset basedir="${target.code.directory}">
-				<include name="kCura.IntegrationPoints.Security.dll" />
-			</fileset>
-		</copy>
-	</target>
-	
-	<target name="copy_ftpProvider_files" description="Copy all dlls for rap to \bin">
-		<copy todir="${bin.directory}">
-			<fileset basedir="${target.code.directory}">
-				<include name="kCura.IntegrationPoints.FtpProvider.Connection.dll" />
-				<include name="kCura.IntegrationPoints.FtpProvider.dll" />
-				<include name="kCura.IntegrationPoints.FtpProvider.Helpers.dll" />
-				<include name="kCura.IntegrationPoints.FtpProvider.Parser.dll" />
-			</fileset>
-		</copy>
-		<copy todir="${bin.directory}">
-			<fileset basedir="${source.packages.directory}\SSH.NET.2013.4.7\lib\net40\">
-				<include name="Renci.SshNet.dll" />
-			</fileset>
-		</copy>
-	</target>
-
 	<target name="copy_files" description="Copy all dlls for rap to \bin">
 		<copy todir="${bin.directory}">
 			<fileset basedir="${target.code.directory}">
 				<include name="kCura.IntegrationPoints.Contracts.dll" />
+				<include name="kCura.IntegrationPoints.Security.dll" />
 				<include name="kCura.IntegrationPoints.dll" />
 				<include name="kCura.LDAPProvider.dll" />
 				<include name="kCura.DocumentTransferProvider.dll" />
@@ -398,6 +367,11 @@
 			<fileset basedir="${source.packages.directory}\RelativityCore.9.3.398.12\lib\net45">
 				<include name="kCura.Image.Viewer.dll" />
 				<include name="kCura.Print.dll" />
+			</fileset>
+		</copy>
+		<copy todir="${bin.directory}">
+			<fileset basedir="${source.packages.directory}\SSH.NET.2013.4.7\lib\net40\">
+				<include name="Renci.SshNet.dll" />
 			</fileset>
 		</copy>
 	</target>
