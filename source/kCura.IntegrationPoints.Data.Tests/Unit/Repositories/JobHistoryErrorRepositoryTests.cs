@@ -9,6 +9,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Search;
+using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
 {
@@ -108,6 +109,50 @@ namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
 
 			// assert
 			keywordSearch.Received(mockTasks.Count).DeleteSingleAsync(_workspaceArtifactId, searchId);
+		}
+
+		#endregion
+
+		#region RetrieveJobHistoryErrorArtifactIds
+
+		[Test]
+		public void RetrieveJobHistoryErrorArtifactIds()
+		{
+			// arrange
+			ObjectQueryResultSet resultSet = new ObjectQueryResultSet
+			{
+				Success = true,
+				Data = new DataResult
+				{
+					TotalResultCount = 1,
+					DataResults = new[]
+					{
+						new QueryDataItemResult()
+						{
+							ArtifactId = 123,
+							ArtifactTypeId = 456,
+							TextIdentifier = "Hello World",
+							Fields =  new DataItemFieldResult[]
+							{
+								new DataItemFieldResult() { Value = JobHistoryErrorDTO.Choices.ErrorType.Values.Item }
+							}
+						}
+					}
+				}
+			};
+
+			Task<ObjectQueryResultSet> task = new Task<ObjectQueryResultSet>( () => resultSet );
+			task.Start();
+			task.Wait();
+
+			_objectQueryAdaptorManager.RetrieveAsync(Arg.Any<Query>(), String.Empty).Returns(task);
+
+			// act
+			IList<int> result = _instance.RetrieveJobHistoryErrorArtifactIds(123, JobHistoryErrorDTO.Choices.ErrorType.Values.Item);
+
+			// assert
+			Assert.IsNotNull(result);
+			Assert.AreEqual(1, result.Count);
 		}
 
 		#endregion
