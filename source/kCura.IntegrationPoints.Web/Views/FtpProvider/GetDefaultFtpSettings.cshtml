@@ -76,19 +76,19 @@
     </div>
 
     <div class="field-row">
-        @Html.LabelFor(m => model.Username, new { id = "username_label", @class = "field-label", title = "Username: If required for your connection, specify the username to the use for authentication; leave blank to use anonymous." })
+        @Html.LabelFor(m => model.Username, new { id = "username_label", @class = "field-label", title = "Username: If required for your connection, specifies the username to the use for authenticating. Leave blank to use anonymous." })
         <div class="field-value"> @Html.TextBoxFor(m => model.Username, new { id = "username", }) </div>
     </div>
 
     <div class="field-row">
-        @Html.LabelFor(m => model.Password, new { id = "password_label", @class = "field-label", title = "Password: If required for your connection, specify the password to use for authentication; leave blank to use anonymous." })
+        @Html.LabelFor(m => model.Password, new { id = "password_label", @class = "field-label", title = "Password: If required for your connection, specify the password to use for authentication. Leave blank to use anonymous." })
         <div class="field-value"> @Html.TextBoxFor(m => model.Password, new { type = "password", id = "password" }) </div>
     </div>
 
     <label class="section label">File Information</label>
 
     <div class="field-row">
-        @Html.LabelFor(m => model.Filename_Prefix, new { id = "filename_prefix_label", @class = "field-label required", title = "CSV Filepath: The location of the CSV file to be imported from the FTP/SFTP. If you set the generated CSV file to always include the date, you can specify this filepath value to use date wildcards so that the latest file is always imported. For example, a file path of /export/nightlyexport/*yyyy*-*MM*-*dd**_HRIS_export.csv will successfully import the most recently dated file." })
+        @Html.LabelFor(m => model.Filename_Prefix, new { id = "filename_prefix_label", @class = "field-label required", title = "CSV Filepath: The location of the CSV file to be imported from the FTP/SFTP. If you set the generated CSV file to always include the date, you can specify this filepath value to use date wildcards so that the latest file is always imported. For example, a filepath of /export/nightlyexport/*yyyy*-*MM*-*dd**_HRIS_export.csv will successfully import the most recently dated file." })
         <div class="field-value"> @Html.TextBoxFor(m => model.Filename_Prefix, new { id = "filename_prefix", placeholder = "e.g. /export/nightlyexport/*yyyy*-*MM*-*dd*_HRIS_export", style = "width: 250%;" }) </div>
     </div>
 
@@ -115,15 +115,15 @@
             </li>
 
             <li>
-                <span><strong>Username:</strong> <p>If required for your connection, specify the username to the use for authentication; leave blank to use anonymous.</p> </span>
+                <span><strong>Username:</strong> <p>If required for your connection, specifies the username to use for authenticating. Leave blank to use anonymous.</p> </span>
             </li>
             <li>
-                <span><strong>Password:</strong> <p>: If required for your connection, specify the password to use for authentication; leave blank to use anonymous.</p> </span>
+                <span><strong>Password:</strong> <p>: If required for your connection, specifies the password to use for authentication. Leave blank to use anonymous.</p> </span>
             </li>
             <li>
                 <span>
                     <strong>CSV filepath:</strong> <p>
-                        The location of the CSV file to be imported from the FTP/SFTP. If you set the generated CSV file to always include the date, you can specify this filepath value to use date wildcards so that the latest file is always imported. For example, a file path of /export/nightlyexport/*yyyy*-*MM*-*dd**_HRIS_export.csv will successfully import the most recently dated file.
+                        The location of the CSV file to be imported from the FTP/SFTP. If you set the generated CSV file to always include the date, you can specify this filepath value to use date wildcards so that the latest file is always imported. For example, a filepath of /export/nightlyexport/*yyyy*-*MM*-*dd**_HRIS_export.csv will successfully import the most recently dated file.
                     </p>
                 </span>
             </li>
