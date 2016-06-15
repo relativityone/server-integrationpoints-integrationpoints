@@ -34,6 +34,7 @@
 	<property name="target.bin.directory" value="${root}\bin" />
 	<property name="target.code.directory" value="${root}\bin\${buildconfig}" />
 	<property name="bin.directory" value="${root}\bin\" />
+	<property name="provider.includes.directory" value="${root}\..\example\ProviderIncludes\" />
 	<property name="ldap.build.server.share" value="\\tt-img-app-9-0.testing.corp\BuildShare\LDAPSync\release-1.0" unless="${property::exists('ldap.build.server.share')}"/>
 	<property name="buildType" value="DEV" unless="${property::exists('buildType')}" />
 	<property name="Injections" value="INJECTION" unless="${property::exists('Injections')}" />
@@ -87,7 +88,7 @@
 		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
 	</target>
 	
-	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_integrationPoint_core, merge_binaries, copy_files, build_integrationpoint_services, merge_ldap, merge_documentsTransfer, merge_source_provider_installer, build_ip_sdk">				
+	<target name="build" description="Build the entire LDAPSync codebase." depends="build_initialize, build_integrationPoint_core, merge_binaries, copy_files, build_integrationpoint_services, merge_ldap, merge_documentsTransfer, merge_source_provider_installer, copy_example_dependencies, build_ip_sdk">				
 		<if test="${file::exists(logfile)}">
 			<delete file="${logfile}" failonerror="true"/>
 		</if>
@@ -372,6 +373,15 @@
 		<copy todir="${bin.directory}">
 			<fileset basedir="${source.packages.directory}\SSH.NET.2013.4.7\lib\net40\">
 				<include name="Renci.SshNet.dll" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="copy_example_dependencies" description="Copy all dlls for example projects to ..\example\ProviderIncludes">
+		<copy todir="${provider.includes.directory}">
+			<fileset basedir="${bin.directory}">
+				<include name="kCura.IntegrationPoints.Contracts.dll" />
+				<include name="kCura.SourceProviderInstaller.dll" />
 			</fileset>
 		</copy>
 	</target>

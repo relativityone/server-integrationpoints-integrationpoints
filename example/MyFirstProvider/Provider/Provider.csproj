@@ -37,11 +37,13 @@
       <HintPath>..\packages\kCura.EventHandler.9.3.439.11\lib\net45\kCura.EventHandler.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.IntegrationPoints.Contracts">
-      <HintPath>..\..\ProviderIncludes\Provider\kCura.IntegrationPoints.Contracts.dll</HintPath>
+    <Reference Include="kCura.IntegrationPoints.Contracts, Version=1.2.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ProviderIncludes\kCura.IntegrationPoints.Contracts.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.SourceProviderInstaller">
-      <HintPath>..\..\ProviderIncludes\Provider\kCura.SourceProviderInstaller.dll</HintPath>
+    <Reference Include="kCura.SourceProviderInstaller, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ProviderIncludes\kCura.SourceProviderInstaller.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>

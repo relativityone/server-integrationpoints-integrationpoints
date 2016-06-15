@@ -120,3 +120,5 @@ example/MyFirstProvider/.vs/config/applicationhost.config
 documentation/images/*
 
 example/MyFirstProvider/packages/*
+example/ProviderIncludes/kCura.IntegrationPoints.Contracts.dll
+example/ProviderIncludes/kCura.SourceProviderInstaller.dll
