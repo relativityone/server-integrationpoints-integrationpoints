@@ -236,6 +236,7 @@
     <Compile Include="Unit\RelativityReaderBaseTests.cs" />
     <Compile Include="Unit\Repositories\FieldRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\IntegrationPointRepositoryTests.cs" />
+    <Compile Include="Unit\Repositories\JobHistoryErrorRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\PermissionRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Unit\Repositories\SqlArtifactGuidRepositoryTests.cs" />
