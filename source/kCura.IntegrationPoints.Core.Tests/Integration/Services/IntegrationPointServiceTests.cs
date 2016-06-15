@@ -1,15 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
+using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
+using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using NUnit.Framework;
 using kCura.ScheduleQueue.Core.ScheduleRules;
@@ -25,7 +30,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private const string _FIELDMAP = "Map";
 		private DestinationProvider _destinationProvider;
 		private IIntegrationPointService _integrationPointService;
-		private IQueueRepository _queueRepository;
+		private IRepositoryFactory _repositoryFactory;
+		private IJobHistoryService _jobHistoryService;
 		private const int _ADMIN_USER_ID = 9;
 
 		public IntegrationPointServiceTests()
@@ -39,7 +45,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			base.SetUp();
 			_destinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
-			_queueRepository = Container.Resolve<IQueueRepository>();
+			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
+			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 		}
 
 		#region UpdateProperties
@@ -157,10 +164,15 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID);
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
 			IntegrationModel integrationPointPostJob = _integrationPointService.ReadIntegrationPoint(integrationPoint.ArtifactID);
+			IJobHistoryRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryRepository(SourceWorkspaceArtifactId);
+			IList<int> jobHistoryArtifactIds = new List<int> { jobHistoryErrorRepository.GetLastJobHistoryArtifactId(integrationPointPostJob.ArtifactID) };
+			JobHistory jobHistory = _jobHistoryService.GetJobHistory(jobHistoryArtifactIds)[0];
 
 			//Assert
 			Assert.AreEqual(false, integrationPointPostJob.HasErrors);
 			Assert.IsNotNull(integrationPointPostJob.LastRun);
+			Assert.AreEqual(3, jobHistory.ItemsImported);
+
 		}
 
 		[Test]
@@ -215,6 +227,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Arrange
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("Scheduled", 3));
 
+			DateTime utcNow = DateTime.UtcNow;
+
 			IntegrationModel integrationModel = new IntegrationModel
 			{
 				Destination = GetDestinationConfigWithOverlayOnly(),
@@ -227,11 +241,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				Scheduler = new Scheduler()
 				{
 					EnableScheduler = true,
-					StartDate = DateTime.UtcNow.ToString("MM/dd/yyyy"),
-					EndDate = DateTime.UtcNow.ToString("MM/dd/yyyy"),
-					ScheduledTime = DateTime.UtcNow.Hour + ":" + DateTime.UtcNow.AddMinutes(1),
-					Reoccur = 0,
-					SelectedFrequency = ScheduleInterval.None.ToString()
+					StartDate = utcNow.ToString("MM/dd/yyyy"),
+					EndDate = utcNow.AddDays(1).ToString("MM/dd/yyyy"),
+					ScheduledTime = utcNow.ToString("HH") + ":" + utcNow.AddMinutes(1).ToString("mm"),
+					SelectedFrequency = ScheduleInterval.Daily.ToString(),
 				},
 				Map = CreateDefaultFieldMap()
 			};
@@ -241,7 +254,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Act
 
 			//Create Errors by using Append Only
-			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPreJobExecution.ArtifactID);
+			Status.WaitForScheduledJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPreJobExecution.ArtifactID, TaskType.ExportService.ToString());
 			IntegrationModel integrationPointPostRun = _integrationPointService.ReadIntegrationPoint(integrationPointPreJobExecution.ArtifactID);
 
 			//Assert
@@ -249,6 +262,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(false, integrationPointPreJobExecution.HasErrors);
 			Assert.AreEqual(false, integrationPointPostRun.HasErrors);
 			Assert.IsNotNull(integrationPointPostRun.LastRun);
+			Assert.IsNotNull(integrationPointPostRun.NextRun);
 		}
 
 		private void ValidateModel(IntegrationModel expectedModel, IntegrationModel actual, string[] updatedProperties)
