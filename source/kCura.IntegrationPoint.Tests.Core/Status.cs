@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading;
+using Castle.Windsor;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
+using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -29,12 +31,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 			}
 		}
 
-		public static void WaitForIntegrationPointJobToComplete(IQueueRepository queueRepository, int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 300, int intervalInMilliseconds = 500)
+		public static void WaitForIntegrationPointJobToComplete(IWindsorContainer container, int workspaceArtifactId, int integrationPointArtifactId, int timeoutInSeconds = 300, int intervalInMilliseconds = 500)
 		{
-			double timeWaitedInSeconds = 0.0;
-			int numberOfJobsQueuedOrProgress = queueRepository.GetNumberOfJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
+			IQueueRepository queueRepository = container.Resolve<IQueueRepository>();
 
-			while (numberOfJobsQueuedOrProgress > 0)
+			double timeWaitedInSeconds = 0.0;
+			int numberOfJobsQueuedOrInProgress = queueRepository.GetNumberOfJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
+
+			while (numberOfJobsQueuedOrInProgress > 0)
 			{
 				if (timeWaitedInSeconds >= timeoutInSeconds)
 				{
@@ -43,7 +47,27 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 				Thread.Sleep(intervalInMilliseconds);
 				timeWaitedInSeconds += (intervalInMilliseconds / 1000.0);
-				numberOfJobsQueuedOrProgress = queueRepository.GetNumberOfJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
+				numberOfJobsQueuedOrInProgress = queueRepository.GetNumberOfJobsExecutingOrInQueue(workspaceArtifactId, integrationPointArtifactId);
+			}
+		}
+
+		public static void WaitForScheduledJobToComplete(IWindsorContainer container, int workspaceArtifactId, int integrationPointArtifactId, string taskType, int timeoutInSeconds = 300, int intervalInMilliseconds = 500)
+		{
+			IJobService jobService = container.Resolve<IJobService>();
+
+			double timeWaitedInSeconds = 0.0;
+			Job job = jobService.GetScheduledJob(workspaceArtifactId, integrationPointArtifactId, taskType);
+
+			while (job.LastRunTime == null)
+			{
+				if (timeWaitedInSeconds >= timeoutInSeconds)
+				{
+					throw new Exception($"Timed out waiting for Scheduled IntegrationPoint: { integrationPointArtifactId } to finish. Waited { timeoutInSeconds } seconds.");
+				}
+
+				Thread.Sleep(intervalInMilliseconds);
+				timeWaitedInSeconds += (intervalInMilliseconds / 1000.0);
+				job = jobService.GetScheduledJob(workspaceArtifactId, integrationPointArtifactId, "");
 			}
 		}
 	}

@@ -814,5 +814,26 @@ namespace kCura.IntegrationPoints.Core.Tests.Unit.Services
 				.Received(!propertyNameHashSet.Contains("Source Provider") ? 1 : 0)
 				.Read(Arg.Is(model.SourceProvider));
 		}
+
+		[Test]
+		public void GetRdo_ArtifactIdExists_ReturnsRdo_Test()
+		{
+			//Act
+			Data.IntegrationPoint integrationPoint = _instance.GetRdo(_integrationPointArtifactId);
+
+			//Assert
+			_caseServiceManager.RsapiService.IntegrationPointLibrary.Received(1).Read(_integrationPointArtifactId);
+			Assert.IsNotNull(integrationPoint);
+		}
+
+		[Test]
+		public void GetRdo_ArtifactIdDoesNotExist_ExceptionThrown_Test()
+		{
+			//Arrange
+			_caseServiceManager.RsapiService.IntegrationPointLibrary.Read(_integrationPointArtifactId).Throws<Exception>();
+
+			//Act
+			Assert.Throws<Exception>(() => _instance.GetRdo(_integrationPointArtifactId), "Unable to retrieve Integration Point.");
+		}
 	}
 }

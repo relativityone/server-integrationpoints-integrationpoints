@@ -37,22 +37,32 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void GoToTab(this IWebDriver driver, string tabName)
 		{
-			ReadOnlyCollection<IWebElement> webElementCollection = driver.FindElements(By.Id("horizontal-tabstrip"));
-			IWebElement navigationList = webElementCollection[0].FindElement(By.XPath("//ul[@class='nav navbar-nav']"));
-			ReadOnlyCollection<IWebElement> listElements = navigationList.FindElements(By.TagName("li"));
-			foreach (IWebElement listElement in listElements)
+			Exception ex = null;
+			try
 			{
-				ReadOnlyCollection<IWebElement> anchorCollectoin = listElement.FindElements(By.TagName("a"));
-
-				foreach (IWebElement anchor in anchorCollectoin)
+				driver.WaitUntilElementExists(ElementType.Id, "horizontal-tabstrip", 10);
+				ReadOnlyCollection<IWebElement> webElementCollection = driver.FindElements(By.Id("horizontal-tabstrip"));
+				IWebElement navigationList = webElementCollection[0].FindElement(By.XPath("//ul[@class='nav navbar-nav']"));
+				ReadOnlyCollection<IWebElement> listElements = navigationList.FindElements(By.TagName("li"));
+				foreach (IWebElement listElement in listElements)
 				{
-					if (anchor.Text.Equals(tabName))
+					ReadOnlyCollection<IWebElement> anchorCollectoin = listElement.FindElements(By.TagName("a"));
+
+					foreach (IWebElement anchor in anchorCollectoin)
 					{
-						anchor.Click();
-						return;
+						if (anchor.Text.Equals(tabName))
+						{
+							anchor.Click();
+							return;
+						}
 					}
 				}
 			}
+			catch (Exception exception)
+			{
+				ex = exception;
+			}
+			throw new Exception($"Unable to find tab {tabName}", ex);
 		}
 
 		public static void GoToObjectInstance(this IWebDriver driver, int workspaceArtifactId, int integrationPointArtifactId, int artifactTypeId)
@@ -90,6 +100,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void WaitUntilElementIsClickable(this IWebDriver driver, ElementType elementType, string value, int timeSeconds)
 		{
+			WaitUntilElementExists(driver, elementType, value, timeSeconds);
 			WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeSeconds));
 			switch (elementType)
 			{
