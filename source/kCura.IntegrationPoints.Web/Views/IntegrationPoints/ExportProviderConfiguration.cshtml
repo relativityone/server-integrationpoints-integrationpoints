@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 @{
     ViewBag.Title = "Settings";
 }
@@ -135,6 +135,68 @@
         </div>
 
         <div class="cardSection">
+            <h2>Subdirectory Information</h2>
+            <table>
+                <tr>
+                    <td class="cardColumn cardFieldLeft">
+                        <table class="fieldTable">
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Image Prefix:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="subdirectory-image-prefix-input" type="text" data-bind="value: SubdirectoryImagePrefix" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Native Prefix:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="subdirectory-native-prefix-input" type="text" data-bind="value: SubdirectoryNativePrefix" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Text Prefix:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="subdirectory-text-prefix-input" type="text" data-bind="value: SubdirectoryTextPrefix" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="cardColumn">
+                        <table class="fieldTable">
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Start #:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="subdirectory-start-files-input" type="number" data-bind="value: SubdirectoryStartNumber" />
+                                </td>
+                                <td class="editFieldNameRequired">
+                                    # of digits:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="subdirectory-digit-padding-input" type="number" data-bind="value: SubdirectoryDigitPadding" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editFieldNameRequired">
+                                    Max Files:
+                                </td>
+                                <td class="editFieldValue">
+                                    <input id="subdirectory-max-files-input" type="number" data-bind="value: SubdirectoryMaxFiles" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="cardSection">
             <h2>Physical File Export</h2>
             <table class="fieldTable">
                 <tr>
@@ -217,7 +279,7 @@
                         <select id="imageDataFileFormatSelector" data-bind="options: imageDataFileFormats, optionsText: 'value', optionsValue: 'key', optionsCaption: 'Select...', value: SelectedImageDataFileFormat"></select>
                     </td>
                 </tr>
-		
+
                 <tr data-bind="visible: ExportImagesChecked() === 'true'">
                     <td class="editFieldNameRequired">
                         File Type :

@@ -21,7 +21,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             expFile.ObjectTypeName = "Document";
             expFile.RenameFilesToIdentifier = true;
             expFile.StartAtDocumentNumber = 0;
-            expFile.SubdirectoryDigitPadding = 8;
             expFile.TextFileEncoding = null;
             expFile.TypeOfExport = ExportFile.ExportType.ArtifactSearch;
             expFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Relative;
@@ -31,8 +30,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             expFile.VolumeInfo.VolumePrefix = "VOL";
             expFile.VolumeInfo.VolumeStartNumber = 1;
             expFile.VolumeInfo.VolumeMaxSize = 650;
-            expFile.VolumeInfo.SubdirectoryStartNumber = 1;
-            expFile.VolumeInfo.SubdirectoryMaxSize = 500;
+            
         }
     }
 }

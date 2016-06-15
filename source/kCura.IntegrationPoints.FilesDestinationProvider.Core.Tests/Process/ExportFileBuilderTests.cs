@@ -145,6 +145,33 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
+		public void ItShouldRewriteSubdirectoryInfoSettings()
+		{
+			const int subdirectoryStartNumber = 10;
+			const int subdirectoryMaxSize = 1000;
+			const int subdirectoryDigitPadding = 20;
+			const string subdirectoryImagePrefix = "image_prefix";
+			const string subdirectoryTextPrefix = "text_prefix";
+			const string subdirectoryNativePrefix = "native_prefix";
+
+			_exportSettings.SubdirectoryStartNumber = subdirectoryStartNumber;
+			_exportSettings.SubdirectoryMaxFiles = subdirectoryMaxSize;
+			_exportSettings.SubdirectoryDigitPadding = subdirectoryDigitPadding;
+			_exportSettings.SubdirectoryImagePrefix = subdirectoryImagePrefix;
+			_exportSettings.SubdirectoryTextPrefix = subdirectoryTextPrefix;
+			_exportSettings.SubdirectoryNativePrefix = subdirectoryNativePrefix;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.AreEqual(subdirectoryStartNumber, exportFile.VolumeInfo.SubdirectoryStartNumber);
+			Assert.AreEqual(subdirectoryMaxSize, exportFile.VolumeInfo.SubdirectoryMaxSize);
+			Assert.AreEqual(subdirectoryDigitPadding, exportFile.SubdirectoryDigitPadding);
+			Assert.AreEqual(subdirectoryImagePrefix, exportFile.VolumeInfo.get_SubdirectoryImagePrefix(false));
+			Assert.AreEqual(subdirectoryTextPrefix, exportFile.VolumeInfo.get_SubdirectoryFullTextPrefix(false));
+			Assert.AreEqual(subdirectoryNativePrefix, exportFile.VolumeInfo.get_SubdirectoryNativePrefix(false));
+		}
+
+		[Test]
 		public void ItShouldRewriteOtherSettings()
 		{
 			const int artifactTypeId = 10;

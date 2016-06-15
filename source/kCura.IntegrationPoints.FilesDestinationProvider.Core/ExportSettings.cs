@@ -46,5 +46,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
         public char NewlineSeparator { get; set; }
         public char MultiValueSeparator { get; set; }
         public char NestedValueSeparator { get; set; }
-    }
+		public string SubdirectoryImagePrefix { get; set; }
+		public string SubdirectoryNativePrefix { get; set; }
+		public string SubdirectoryTextPrefix { get; set; }
+		public int SubdirectoryStartNumber { get; set; }
+		public int SubdirectoryDigitPadding { get; set; }
+		public int SubdirectoryMaxFiles { get; set; }
+	}
 }

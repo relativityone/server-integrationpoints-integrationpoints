@@ -28,6 +28,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 			SetCaseInfo(exportSettings, exportFile);
 			SetMetadataFileSettings(exportSettings, exportFile);
+			SetSubdirectoryInfo(exportSettings, exportFile);
 			SetImagesSettings(exportSettings, exportFile);
 
 			_delimitersBuilder.SetDelimiters(exportFile, exportSettings);
@@ -46,6 +47,16 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.LoadFileExtension = ParseDataFileFormat(exportSettings.OutputDataFileFormat);
 			exportFile.LoadFileIsHtml = IsHtml(exportSettings.OutputDataFileFormat);
 			exportFile.LoadFilesPrefix = exportSettings.ExportedObjName;
+		}
+
+		private void SetSubdirectoryInfo(ExportSettings exportSettings, ExportFile exportFile)
+		{
+			exportFile.VolumeInfo.SubdirectoryStartNumber = exportSettings.SubdirectoryStartNumber;
+			exportFile.VolumeInfo.SubdirectoryMaxSize = exportSettings.SubdirectoryMaxFiles;
+			exportFile.VolumeInfo.set_SubdirectoryImagePrefix(false, exportSettings.SubdirectoryImagePrefix);
+			exportFile.VolumeInfo.set_SubdirectoryFullTextPrefix(false, exportSettings.SubdirectoryTextPrefix);
+			exportFile.VolumeInfo.set_SubdirectoryNativePrefix(false, exportSettings.SubdirectoryNativePrefix);
+			exportFile.SubdirectoryDigitPadding = exportSettings.SubdirectoryDigitPadding;
 		}
 
 		private static void SetImagesSettings(ExportSettings exportSettings, ExportFile exportFile)

@@ -209,6 +209,7 @@
     <Compile Include="TestCases\ItShouldExportDataFileAsHTML.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithUnicodeEncoding.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithUTF8Encoding.cs" />
+    <Compile Include="TestCases\ItShouldExportDirectoriesWithCustomNumbering.cs" />
     <Compile Include="TestCases\ItShouldExportImageDataFileAsIPROFullText.cs" />
     <Compile Include="TestCases\ItShouldExportImageDataFileAsIPRO.cs" />
     <Compile Include="TestCases\ItShouldExportImageDataFileAsOpticon.cs" />
@@ -216,8 +217,11 @@
     <Compile Include="TestCases\ItShouldExportImagesAsPdfs.cs" />
     <Compile Include="TestCases\ItShouldExportImagesAsSinglePages.cs" />
     <Compile Include="TestCases\ItShouldExportImagesMetadataOnly.cs" />
+    <Compile Include="TestCases\ItShouldExportImagesWithCustomDirectoryPrefix.cs" />
+    <Compile Include="TestCases\ItShouldExportNativesWithCustomDirectoryPrefix.cs" />
     <Compile Include="TestCases\ItShouldExportSavedSearch.cs" />
     <Compile Include="TestCases\ItShouldExportSavedSearchMetadataOnly.cs" />
+    <Compile Include="TestCases\ItShouldExportTextFilesWithCustomDirectoryPrefix.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

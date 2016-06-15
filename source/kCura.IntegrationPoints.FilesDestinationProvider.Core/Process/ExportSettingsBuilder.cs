@@ -40,7 +40,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				MultiValueSeparator = sourceSettings.MultiValueSeparator,
 				NestedValueSeparator = sourceSettings.NestedValueSeparator,
 				NewlineSeparator = sourceSettings.NewlineSeparator,
-				QuoteSeparator = sourceSettings.QuoteSeparator
+				QuoteSeparator = sourceSettings.QuoteSeparator,
+				SubdirectoryMaxFiles = sourceSettings.SubdirectoryMaxFiles,
+				SubdirectoryStartNumber = sourceSettings.SubdirectoryStartNumber,
+				SubdirectoryDigitPadding = sourceSettings.SubdirectoryDigitPadding,
+				SubdirectoryNativePrefix = sourceSettings.SubdirectoryNativePrefix,
+				SubdirectoryImagePrefix = sourceSettings.SubdirectoryImagePrefix,
+				SubdirectoryTextPrefix = sourceSettings.SubdirectoryTextPrefix
 			};
 
 			return exportSettings;

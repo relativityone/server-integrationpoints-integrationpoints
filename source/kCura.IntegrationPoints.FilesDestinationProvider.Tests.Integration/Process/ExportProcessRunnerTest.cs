@@ -52,10 +52,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
 
+			var userNotification = Substitute.For<IUserNotification>();
+			userNotification.AlertWarningSkippable(Arg.Any<string>()).Returns(true);
+
 			var exportProcessBuilder = new ExportProcessBuilder(
 				Substitute.For<ILoggingMediator>(),
 				Substitute.For<IUserMessageNotification>(),
-				Substitute.For<IUserNotification>(),
+				userNotification,
 				new UserPasswordCredentialProvider(_configSettings),
 				new CaseManagerWrapperFactory(),
 				new SearchManagerFactory(),
