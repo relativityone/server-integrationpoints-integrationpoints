@@ -226,7 +226,7 @@
     <Compile Include="Integration\Repositories\QueueRepositoryTests.cs" />
     <Compile Include="Integration\Repositories\ScratchTableRepositorySqlTests.cs" />
     <Compile Include="Integration\Repositories\ScratchTableRepositoryTests.cs" />
-    <Compile Include="JobHistoryErrorsBatchingTests.cs" />
+    <Compile Include="Integration\JobHistoryErrorsBatchingTests.cs" />
     <Compile Include="Transformer\JobHistoryErrorTransformerTests.cs" />
     <Compile Include="Transformer\IntegrationPointTransformerTests.cs" />
     <Compile Include="Unit\BaseRdoTests.cs" />
