@@ -13,6 +13,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		{
 			settings.ExportImages = true;
 			settings.CopyFileFromRepository = false;
+			settings.SelectedImageDataFileFormat = ExportSettings.ImageDataFileFormat.Opticon;
 
 			return base.Prepare(settings);
 		}
