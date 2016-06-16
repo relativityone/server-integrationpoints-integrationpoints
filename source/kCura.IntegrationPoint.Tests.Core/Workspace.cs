@@ -46,7 +46,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			int applicationInstallId = 0;
 			using (IApplicationInstallManager proxy = Kepler.CreateProxy<IApplicationInstallManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
-				applicationInstallId = proxy.InstallLibraryApplicationByGuid(workspaceArtifactId, applicationGuid).Result;
+				applicationInstallId =proxy.InstallLibraryApplicationByGuid(workspaceArtifactId, applicationGuid).ConfigureAwait(false).GetAwaiter().GetResult();
 			}
 
 			if (applicationInstallId == 0)
