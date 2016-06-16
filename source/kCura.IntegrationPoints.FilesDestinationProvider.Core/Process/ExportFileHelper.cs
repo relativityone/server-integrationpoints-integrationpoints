@@ -25,12 +25,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             expFile.TypeOfExport = ExportFile.ExportType.ArtifactSearch;
             expFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Relative;
             expFile.ViewID = 0;
-            expFile.VolumeDigitPadding = 8;
-            expFile.VolumeInfo = new VolumeInfo();
-            expFile.VolumeInfo.VolumePrefix = "VOL";
-            expFile.VolumeInfo.VolumeStartNumber = 1;
-            expFile.VolumeInfo.VolumeMaxSize = 650;
-            
         }
     }
 }

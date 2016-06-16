@@ -284,6 +284,18 @@
         this.SubdirectoryMaxFiles = ko.observable(state.SubdirectoryMaxFiles || 500).extend({
             required: true
         });
+        this.VolumePrefix = ko.observable(state.VolumePrefix || "VOL").extend({
+            required: true
+        });
+        this.VolumeStartNumber = ko.observable(state.VolumeStartNumber || 1).extend({
+            required: true
+        });
+        this.VolumeDigitPadding = ko.observable(state.VolumeDigitPadding || 2).extend({
+            required: true
+        });
+        this.VolumeMaxSize = ko.observable(state.VolumeMaxSize || 650).extend({
+            required: true
+        });
 
         this.errors = ko.validation.group(this, { deep: true });
 
@@ -312,7 +324,11 @@
                 "SubdirectoryTextPrefix": self.SubdirectoryTextPrefix(),
                 "SubdirectoryStartNumber": self.SubdirectoryStartNumber(),
                 "SubdirectoryDigitPadding": self.SubdirectoryDigitPadding(),
-                "SubdirectoryMaxFiles": self.SubdirectoryMaxFiles()
+                "SubdirectoryMaxFiles": self.SubdirectoryMaxFiles(),
+                "VolumePrefix": self.VolumePrefix(),
+                "VolumeStartNumber": self.VolumeStartNumber(),
+                "VolumeDigitPadding": self.VolumeDigitPadding(),
+                "VolumeMaxSize": self.VolumeMaxSize()
             }
         }
     }
