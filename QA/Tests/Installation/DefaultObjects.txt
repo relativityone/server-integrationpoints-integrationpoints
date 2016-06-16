@@ -20,7 +20,7 @@
 | Verify that the default Source Providers are created
 | | [Documentation]	| Verifies that the default Source Provider created is "LDAP" and that no other Source Providers were created.
 | | [Tags]			| automated
-| | Verify that only the following Source Providers exist in the workspace	| LDAP
+| | Verify that only the following Source Providers exist in the workspace	| LDAP | FTP (CSV File) | Relativity
 
 
 | Verify that the default Destination Providers are created
