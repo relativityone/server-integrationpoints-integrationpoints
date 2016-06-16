@@ -12,6 +12,7 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
@@ -133,10 +134,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return audits;
 		}
 
-		protected Tuple<string, string> GetAuditDetailsFieldValues(Audit audit, string fieldName)
+		protected IDictionary<string, Tuple<string, string>> GetAuditDetailsFieldValues(Audit audit, HashSet<string> fieldNames)
 		{
 			var auditHelper = new AuditHelper(Helper);
-			Tuple<string, string> fieldValues = auditHelper.GetAuditDetailFieldUpdates(audit, fieldName);
+			IDictionary<string, Tuple<string, string>> fieldValues = auditHelper.GetAuditDetailFieldUpdates(audit, fieldNames);
 
 			return fieldValues;
 		}
@@ -233,6 +234,39 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			SqlParameter toEnabled = new SqlParameter("@enabled", SqlDbType.Bit) { Value = enable };
 
 			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(query, new SqlParameter[] { toEnabled });
+		}
+
+		protected JobHistory CreateJobHistoryOnIntegrationPoint(int integrationPointArtifactId, Guid batchInstance)
+		{
+			IJobHistoryService jobHistoryService = Container.Resolve<IJobHistoryService>();
+			IntegrationPoints.Data.IntegrationPoint integrationPoint = CaseContext.RsapiService.IntegrationPointLibrary.Read(integrationPointArtifactId);
+			JobHistory jobHistory = jobHistoryService.CreateRdo(integrationPoint, batchInstance, JobTypeChoices.JobHistoryRunNow, DateTime.Now);
+			jobHistory.EndTimeUTC = DateTime.Now;
+			jobHistory.JobStatus = JobStatusChoices.JobHistoryCompletedWithErrors;
+			jobHistoryService.UpdateRdo(jobHistory);
+			return jobHistory;
+		}
+
+		protected List<int> CreateJobHistoryError(int jobHistoryArtifactId, Choice errorStatus, Choice type)
+		{
+			List<JobHistoryError> jobHistoryErrors = new List<JobHistoryError>();
+			JobHistoryError jobHistoryError = new JobHistoryError
+			{
+				ParentArtifactId = jobHistoryArtifactId,
+				JobHistory = jobHistoryArtifactId,
+				Name = Guid.NewGuid().ToString(),
+				SourceUniqueID = type == ErrorTypeChoices.JobHistoryErrorItem ? Guid.NewGuid().ToString() : null,
+				ErrorType = type,
+				ErrorStatus = errorStatus,
+				Error = "Inserted Error for testing.",
+				StackTrace = "Error created from JobHistoryErrorsBatchingTests",
+				TimestampUTC = DateTime.Now,
+			};
+
+			jobHistoryErrors.Add(jobHistoryError);
+
+			List<int> jobHistoryErrorArtifactIds = CaseContext.RsapiService.JobHistoryErrorLibrary.Create(jobHistoryErrors);
+			return jobHistoryErrorArtifactIds;
 		}
 	}
 }

@@ -4,7 +4,7 @@
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
 | Suite Setup		| Open and Log in to Legal Hold
-| Test Setup		| Go to Step 2 of the Create Integration Point Process
+| Test Setup		| Go to Step 3 of the Create Integration Point Process
 | Test Teardown 	| Capture Screenshot If Test Fails
 | Suite Teardown	| Close All Browsers
 

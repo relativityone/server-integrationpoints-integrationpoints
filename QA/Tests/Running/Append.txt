@@ -16,7 +16,6 @@
 | ${ExistingAndUpdatedObject}	| Man, Dog
 | ${ExistingNoChangeObject}		| Man, Bird 
 | ${Manager}					| Man, Bigdog
-| ${Custodians Grid}			| gbox_custodianGrid
 
 
 *** Test Cases ***
@@ -25,20 +24,17 @@
 | | [Documentation] | Verify that when an Append RIP is run which has new Source objects, that it creates new objects in the Target RDO.
 | | ...				| [id] 9632b8ae-b203-11e4-8099-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
-| | Filter the following Grid on the following Column by the following Value | ${Custodians Grid} | Email | catman@gameofholdstesting.corp
-
-| | Verify that the following Grid contains the following number of Rows | ${Custodians Grid} | 1
+| | View Custodian | ${NewObject}	
+| | Verify the current layout has fields with the following values | Email | catman@gameofholdstesting.corp
 
 
 | An Append imports will Overlay Managers
 | | [Documentation] | Verify that Append imports will Overlay Manager information by linking an Existing Custodians to a new Manager.
 | | ...				| [id] 65ef890f-e46e-11e4-8722-90b11c6c5ae4
 | | [Tags]			| automated
-| | Go to the Tab	| Custodian
 | | View Custodian	| ${ExistingAndUpdatedObject} 
 
-| | Verify that the current Custodian has the Following Manager	| ${Manager}
+| | Verify the current layout has fields with the following values | Manager | ${Manager}
 
 
 | An Append import Creates new History objects
@@ -146,15 +142,15 @@
 | | ... | UniqueID		| objectguid
 | | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | Email
 
-| | Run Import Now on the Following Integration Point	| ${IntegrationName}
+| | Run Import Now on the Following Integration Point | ${IntegrationName}
 | | [Teardown]		| Run Keywords | Drop connection to the relativity services api | Capture Page Screenshot
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
-| | Delete the following Integration Point using API | ${IntegrationName}
-| | Delete the Custodians in the Following Department using API	| Append
+| | Delete the following Integration Point | ${IntegrationName}
+| | Delete the Custodians in the Following Department using API | Append
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
@@ -167,4 +163,7 @@
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepThreeKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

@@ -12,6 +12,7 @@
 *** Variables ***
 
 | ${WorkspaceName}				| LDAP Sync
+| ${Source Provider Dropdown}	| s2id_sourceProvider
 | ${Destination RDO Drop Down}	| s2id_destinationRdo
 
 
@@ -20,16 +21,16 @@
 | The Source Provider dropdown contains the FTP Object
 | | [Documentation]	| Verify that the Source Provider dropdown has the FTP object.
 | | ...				| 
-#| | [Tags]			| untested
-| | Select from select2 Dropdown	| ${Destination RDO Drop Down}	| FTP (CSV File)
-| | Verify that the following select2 Dropdown currently has the following value selected	| ${Destination RDO Drop Down}	| FTP (CSV File)
+| | [Tags]			| automated
+| | Fill out the Following Fields of the Integration Point Step 1 form	| SourceProvider=FTP (CSV File)
+| | Verify that the following select2 Dropdown currently has the following value selected	| ${Source Provider Dropdown}	| FTP (CSV File)
 
 
 | The Destination RDO dropdown has the correct values for Admins
 | | [Documentation]	| Verify that the Destination RDO Dropdown has the correct options when you are a user with Admin permissions.
 | | ...				| The expected values are Select..., followed by an alphabetized list of every non-System object type
 | | ...				| 
-#| | [Tags]			| untested
+| | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| SourceProvider=FTP (CSV File)
 | | @{ExpectedFields}=	| Get a List of All Non-System Object Types in the Workspace	| # Already alphabetized
 | | Click	| ${Destination RDO Drop Down}
@@ -39,7 +40,7 @@
 | The Destination RDO dropdown hides Object Types the User does not have Add Permissions for
 | | [Documentation]	| Verify that the Destination RDO Dropdown has the correct options (i.e. you are a user without permission to some RDOs).
 | | ...				| 
-| | [Tags]			| manual	| unautomateable
+| | [Tags]			| manual	| unautomateable	| permissions
 | | Run the following manual steps:
 | | ... | Notes:
 | | ... | - The Destination RDO only shows values that you have Add permissions for.
