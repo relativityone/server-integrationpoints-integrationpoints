@@ -17,7 +17,7 @@
 
 
 		this.goToStep = function (step, model) {
-			var totalSteps = this.steps().length - 1;
+			var totalSteps = 2; // hardcoded to hide additional steps //this.steps().length - 1;
 			if (step > totalSteps) {
 				return totalSteps;
 			}

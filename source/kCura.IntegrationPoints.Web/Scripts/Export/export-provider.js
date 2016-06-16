@@ -1,74 +1,104 @@
 ﻿$(function (root) {
-    //Create a new communication object that talks to the host page.
-    var message = IP.frameMessaging();
+	//Create a new communication object that talks to the host page.
+	var message = IP.frameMessaging();
 
-    var viewModel;
+	var viewModel;
 
-    //An event raised when the user has clicked the Next or Save button.
-    message.subscribe('submit', function () {
-        //Execute save logic that persists the state.
-        this.publish("saveState", JSON.stringify(ko.toJS(viewModel)));
+	var prepareStepsFor = function (ipType) {
+		var _swap = function (__step) {
+			IP.frameMessaging().dFrame.IP.points.steps.steps[2] = IP.frameMessaging().dFrame.IP.points.steps.steps[3];
+			IP.frameMessaging().dFrame.IP.points.steps.steps[3] = __step;
+		};
 
-        if (viewModel.errors().length === 0) {
-            //Communicate to the host page that it to continue.
-            this.publish('saveComplete', JSON.stringify(viewModel.getSelectedOption()));
-        } else {
-            viewModel.errors.showAllMessages();
-        }
+		var _step = IP.frameMessaging().dFrame.IP.points.steps.steps[2];
 
-        // Modify destination object to contain target workspaceId
-        var destinationJson = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination;
-        var destination = JSON.parse(destinationJson);
-        destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
-        destination.Provider = "Fileshare";
-        destination.DoNotUseFieldsMapCache = viewModel.WorkspaceHasChanged;
-        destinationJson = JSON.stringify(destination);
-        IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination = destinationJson;
-    });
+		switch (ipType) {
+			case 'relativity':
+				if (_step.settings.isForRelativityExport) {
+					_swap(_step);
+				}
+				break;
+			case 'relativityExport':
+				if (!_step.settings.isForRelativityExport) {
+					_swap(_step);
+				}
+				break;
+			default:
+				break;
+		}
+	}
 
-    //An event raised when a user clicks the Back button.
-    message.subscribe('back', function () {
-        //Execute save logic that persists the state.
-        this.publish('saveState', JSON.stringify(ko.toJS(viewModel)));
-    });
+	//An event raised when the user has clicked the Next or Save button.
+	message.subscribe('submit', function () {
+		//Execute save logic that persists the state.
+		this.publish("saveState", JSON.stringify(ko.toJS(viewModel)));
 
-    //An event raised when the host page has loaded the current settings page.
-    message.subscribe('load', function (m) {
-        var _bind = function (m) {
-            viewModel = new Model(m);
-            ko.applyBindings(viewModel, document.getElementById('exportProviderConfiguration'));
-        }
+		if (viewModel.errors().length === 0) {
+			//Communicate to the host page that it to continue.
+			this.publish('saveComplete', JSON.stringify(viewModel.getSelectedOption()));
+		} else {
+			viewModel.errors.showAllMessages();
+		}
 
-        // expect model to be serialized to string
-        if (typeof m === "string") {
-            try {
-                m = JSON.parse(m);
-            } catch (e) {
-                m = undefined;
-            }
-            _bind(m);
-        } else {
-            _bind({});
-        }
-    });
+		// Modify destination object to contain target workspaceId
+		var destinationJson = IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination;
+		var destination = JSON.parse(destinationJson);
+		destination.CaseArtifactId = viewModel.TargetWorkspaceArtifactId();
+		destination.Provider = "Fileshare";
+		destination.DoNotUseFieldsMapCache = viewModel.WorkspaceHasChanged;
+		destinationJson = JSON.stringify(destination);
+		IP.frameMessaging().dFrame.IP.points.steps.steps[1].model.destination = destinationJson;
 
-    var Model = function (m) {
+		// going to the third step of relativity export provider
+		prepareStepsFor('relativityExport');
+	});
 
-        var state = $.extend({}, {}, m);
-        var self = this;
+	//An event raised when a user clicks the Back button.
+	message.subscribe('back', function () {
+		//Execute save logic that persists the state.
+		this.publish('saveState', JSON.stringify(ko.toJS(viewModel)));
+	});
 
-        this.workspaces = ko.observableArray(state.workspaces || []);
-        this.savedSearches = ko.observableArray(state.savedSearches || []);
+	//An event raised when the host page has loaded the current settings page.
+	message.subscribe('load', function (m) {
+		var _bind = function (m) {
+			viewModel = new Model(m);
+			ko.applyBindings(viewModel, document.getElementById('exportProviderConfiguration'));
+		}
 
-        this.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
+		// expect model to be serialized to string
+		if (typeof m === "string") {
+			try {
+				m = JSON.parse(m);
+			} catch (e) {
+				m = undefined;
+			}
+			_bind(m);
+		} else {
+			_bind({});
+		}
 
-        this.Fileshare = ko.observable(state.Fileshare).extend({
-            required: true
-        });
+		// restore default steps configuration
+		prepareStepsFor('relativity');
+	});
 
-        this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || "true");
+	var Model = function (m) {
 
-        this.dataFileFormats = [
+		var state = $.extend({}, {}, m);
+		var self = this;
+
+		this.workspaces = ko.observableArray(state.workspaces || []);
+		this.savedSearches = ko.observableArray(state.savedSearches || []);
+
+		this.disable = IP.frameMessaging().dFrame.IP.points.steps.steps[0].model.hasBeenRun();
+
+		this.Fileshare = ko.observable(state.Fileshare).extend({
+			required: true
+		});
+
+		this.IncludeNativeFilesPath = ko.observable(state.IncludeNativeFilesPath || "true");
+
+		this.dataFileFormats = [
           { key: "Concordance (.dat)", value: "Concordance" },
           { key: "HTML (.html)", value: "HTML" },
           { key: "Comma-separated (.csv)", value: "CSV" },
@@ -227,59 +257,59 @@
                         return $.inArray(item.name, ['utf-16', 'utf-16BE', 'utf-8', 'Windows-1252']) >= 0;
                     })
                 );
-                self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
-            });
-        }
-        else {
-            self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
-        }
+				self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
+			});
+		}
+		else {
+			self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
+		}
 
-        this.ExportImagesChecked = ko.observable(state.ExportImagesChecked || "false").extend({
-            required: true
-        });
+		this.ExportImagesChecked = ko.observable(state.ExportImagesChecked || "false").extend({
+			required: true
+		});
 
-        this.imageDataFileFormats = ko.observableArray([
+		this.imageDataFileFormats = ko.observableArray([
             { key: 0, value: "Opticon" },
             { key: 1, value: "IPRO" },
             { key: 2, value: "IPRO (FullText)" }
-        ]);
+		]);
 
-        this.SelectedImageDataFileFormat = ko.observable(state.SelectedImageDataFileFormat).extend({
-            required: {
-                onlyIf: function () {
-                    return self.ExportImagesChecked() === "true";
-                }
-            }
-        });
+		this.SelectedImageDataFileFormat = ko.observable(state.SelectedImageDataFileFormat).extend({
+			required: {
+				onlyIf: function () {
+					return self.ExportImagesChecked() === "true";
+				}
+			}
+		});
 
-        this.imageFileTypes = ko.observableArray([
+		this.imageFileTypes = ko.observableArray([
             { key: 0, value: "Single page TIFF/JPEG" },
             { key: 1, value: "Multi page TIFF/JPEG" },
             { key: 2, value: "PDF" }
-        ]);
+		]);
 
-        this.SelectedImageFileType = ko.observable(state.SelectedImageFileType || (self.CopyFileFromRepository() === 'false' ? 0 : undefined)).extend({
-            required: {
-                onlyIf: function () {
-                    return self.ExportImagesChecked() === "true";
-                }
-            }
+        this.SelectedImageFileType = ko.observable(self.CopyFileFromRepository() === 'false' ? 0 : state.SelectedImageFileType).extend({
+			required: {
+				onlyIf: function () {
+					return self.ExportImagesChecked() === "true";
+				}
+			}
         });
 
         this.SubdirectoryImagePrefix = ko.observable(state.SubdirectoryImagePrefix || "IMG").extend({
-            required: true
+        	required: true
         });
         this.SubdirectoryNativePrefix = ko.observable(state.SubdirectoryNativePrefix || "NATIVE").extend({
-            required: true
+        	required: true
         });
         this.SubdirectoryTextPrefix = ko.observable(state.SubdirectoryTextPrefix || "TEXT").extend({
-            required: true
+        	required: true
         });
         this.SubdirectoryStartNumber = ko.observable(state.SubdirectoryStartNumber || 1).extend({
-            required: true
+        	required: true
         });
         this.SubdirectoryDigitPadding = ko.observable(state.SubdirectoryDigitPadding || 3).extend({
-            required: true
+        	required: true
         });
         this.SubdirectoryMaxFiles = ko.observable(state.SubdirectoryMaxFiles || 500).extend({
             required: true
@@ -297,39 +327,35 @@
             required: true
         });
 
-        this.errors = ko.validation.group(this, { deep: true });
+		this.errors = ko.validation.group(this, { deep: true });
 
-        this.getSelectedOption = function () {
-            return {
-                "SavedSearchArtifactId": self.SavedSearch().value,
-                "SavedSearch": self.SavedSearch().displayName,
-                "TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
-                "SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
-                "CopyFileFromRepository": self.CopyFileFromRepository(),
-                "OverwriteFiles": self.OverwriteFiles(),
-                "Fileshare": self.Fileshare(),
-                "ExportImagesChecked": self.ExportImagesChecked(),
+		this.getSelectedOption = function () {
+			return {
+				"SavedSearchArtifactId": self.SavedSearch().value,
+				"SavedSearch": self.SavedSearch().displayName,
+				"TargetWorkspaceArtifactId": self.TargetWorkspaceArtifactId(),
+				"SourceWorkspaceArtifactId": IP.utils.getParameterByName('AppID', window.top),
+				"CopyFileFromRepository": self.CopyFileFromRepository(),
+				"OverwriteFiles": self.OverwriteFiles(),
+				"Fileshare": self.Fileshare(),
+				"ExportImagesChecked": self.ExportImagesChecked(),
                 "SelectedImageFileType": self.SelectedImageFileType(),
-                "IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
-                "SelectedDataFileFormat": self.SelectedDataFileFormat(),
-                "DataFileEncodingType": self.DataFileEncodingType(),
-                "SelectedImageDataFileFormat": self.SelectedImageDataFileFormat(),
-                "ColumnSeparator": self.ColumnSeparator(),
-                "QuoteSeparator": self.QuoteSeparator(),
-                "NewlineSeparator": self.NewlineSeparator(),
-                "MultiValueSeparator": self.MultiValueSeparator(),
+				"IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
+				"SelectedDataFileFormat": self.SelectedDataFileFormat(),
+				"DataFileEncodingType": self.DataFileEncodingType(),
+				"SelectedImageDataFileFormat": self.SelectedImageDataFileFormat(),
+				"ColumnSeparator": self.ColumnSeparator(),
+				"QuoteSeparator": self.QuoteSeparator(),
+				"NewlineSeparator": self.NewlineSeparator(),
+				"MultiValueSeparator": self.MultiValueSeparator(),
                 "NestedValueSeparator": self.NestedValueSeparator(),
                 "SubdirectoryImagePrefix": self.SubdirectoryImagePrefix(),
                 "SubdirectoryNativePrefix": self.SubdirectoryNativePrefix(),
                 "SubdirectoryTextPrefix": self.SubdirectoryTextPrefix(),
                 "SubdirectoryStartNumber": self.SubdirectoryStartNumber(),
                 "SubdirectoryDigitPadding": self.SubdirectoryDigitPadding(),
-                "SubdirectoryMaxFiles": self.SubdirectoryMaxFiles(),
-                "VolumePrefix": self.VolumePrefix(),
-                "VolumeStartNumber": self.VolumeStartNumber(),
-                "VolumeDigitPadding": self.VolumeDigitPadding(),
-                "VolumeMaxSize": self.VolumeMaxSize()
-            }
-        }
-    }
+                "SubdirectoryMaxFiles": self.SubdirectoryMaxFiles()
+			}
+		}
+	}
 });

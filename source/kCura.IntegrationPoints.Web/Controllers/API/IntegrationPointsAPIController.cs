@@ -50,16 +50,16 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
 		{
 			try
 			{
-				using (IMetricsManager metricManager =
-						_cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
+				using (IMetricsManager metricManager = _cpHelper.GetServicesManager().CreateProxy<IMetricsManager>(ExecutionIdentity.CurrentUser))
 				{
-					metricManager.StartTimer(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR, Guid.Empty, null, MetricTargets.SUM);
+					using (metricManager.LogDuration(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR, 
+						Guid.Empty, model.Name, MetricTargets.APMandSUM ))
+					{
+						int createdId = _reader.SaveIntegration(model);
+						string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
 
-					int createdId = _reader.SaveIntegration(model);
-					string result = _urlHelper.GetRelativityViewUrl(workspaceID, createdId, Data.ObjectTypes.IntegrationPoint);
-
-					metricManager.EndTimer(Core.Constants.IntegrationPoints.Telemetry.BUCKET_INTEGRATION_POINT_REC_SAVE_DURATION_METRIC_COLLECTOR);
-					return Request.CreateResponse(HttpStatusCode.OK, new {returnURL = result});
+						return Request.CreateResponse(HttpStatusCode.OK, new {returnURL = result});
+					}
 				}
 			}
 			catch (Exception exception)
