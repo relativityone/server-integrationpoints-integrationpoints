@@ -288,7 +288,7 @@
             { key: 2, value: "PDF" }
 		]);
 
-        this.SelectedImageFileType = ko.observable(state.SelectedImageFileType || (self.CopyFileFromRepository() === 'false' ? 0 : undefined)).extend({
+        this.SelectedImageFileType = ko.observable(self.CopyFileFromRepository() === 'false' ? 0 : state.SelectedImageFileType).extend({
 			required: {
 				onlyIf: function () {
 					return self.ExportImagesChecked() === "true";
