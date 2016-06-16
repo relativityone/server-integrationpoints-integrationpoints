@@ -63,7 +63,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				new CaseManagerWrapperFactory(),
 				new SearchManagerFactory(),
 				new ExporterWrapperFactory(),
-				new ExportFileBuilder(new DelimitersBuilder())
+				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder())
 			);
 
 			var exportSettingsBuilder= new ExportSettingsBuilder(); 
@@ -111,7 +111,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				ExportedObjArtifactId = _configSettings.ExportedObjArtifactId,
 				ExportedObjName = _configSettings.SavedSearchArtifactName,
 				SelViewFieldIds = _configSettings.SelViewFieldIds,
-				DataFileEncoding = Encoding.Unicode
+				DataFileEncoding = Encoding.Unicode,
+				VolumeMaxSize = 650
 			};
 
 			return settings;

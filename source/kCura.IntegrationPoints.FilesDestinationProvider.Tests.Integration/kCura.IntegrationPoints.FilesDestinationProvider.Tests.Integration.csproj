@@ -222,6 +222,7 @@
     <Compile Include="TestCases\ItShouldExportSavedSearch.cs" />
     <Compile Include="TestCases\ItShouldExportSavedSearchMetadataOnly.cs" />
     <Compile Include="TestCases\ItShouldExportTextFilesWithCustomDirectoryPrefix.cs" />
+    <Compile Include="TestCases\ItShouldExportVolumeWithCustomName.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kCura.IntegrationPoint.Tests.Core\kCura.IntegrationPoint.Tests.Core.csproj">

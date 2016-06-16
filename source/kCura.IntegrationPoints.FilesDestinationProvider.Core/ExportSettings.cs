@@ -52,5 +52,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public int SubdirectoryStartNumber { get; set; }
 		public int SubdirectoryDigitPadding { get; set; }
 		public int SubdirectoryMaxFiles { get; set; }
+		public string VolumePrefix { get; set; }
+		public int VolumeStartNumber { get; set; }
+		public int VolumeDigitPadding { get; set; }
+		public int VolumeMaxSize { get; set; }
 	}
 }

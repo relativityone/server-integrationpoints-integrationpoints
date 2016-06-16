@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		public void SetUp()
 		{
 			_exportSettings = DefaultExportSettingsFactory.Create();
-			_exportFileBuilder = new ExportFileBuilder(Substitute.For<IDelimitersBuilder>());
+			_exportFileBuilder = new ExportFileBuilder(Substitute.For<IDelimitersBuilder>(), Substitute.For<IVolumeInfoBuilder>());
 		}
 
 		[Test]
@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			_exportSettings.CopyFileFromRepository = true;
 
-			var incorrectEnumValue = Enum.GetValues(typeof(ExportSettings.ImageDataFileFormat)).Cast<ExportSettings.ImageDataFileFormat>().Max() + 1;
+			var incorrectEnumValue = Enum.GetValues(typeof (ExportSettings.ImageDataFileFormat)).Cast<ExportSettings.ImageDataFileFormat>().Max() + 1;
 			_exportSettings.SelectedImageDataFileFormat = incorrectEnumValue;
 
 			Assert.That(() => _exportFileBuilder.Create(_exportSettings),
@@ -145,30 +145,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
-		public void ItShouldRewriteSubdirectoryInfoSettings()
+		public void ItShouldRewriteDigitPaddings()
 		{
-			const int subdirectoryStartNumber = 10;
-			const int subdirectoryMaxSize = 1000;
-			const int subdirectoryDigitPadding = 20;
-			const string subdirectoryImagePrefix = "image_prefix";
-			const string subdirectoryTextPrefix = "text_prefix";
-			const string subdirectoryNativePrefix = "native_prefix";
+			const int volumeDigitPadding = 15;
+			const int subdirectoryDigitPadding = 23;
 
-			_exportSettings.SubdirectoryStartNumber = subdirectoryStartNumber;
-			_exportSettings.SubdirectoryMaxFiles = subdirectoryMaxSize;
+			_exportSettings.VolumeDigitPadding = volumeDigitPadding;
 			_exportSettings.SubdirectoryDigitPadding = subdirectoryDigitPadding;
-			_exportSettings.SubdirectoryImagePrefix = subdirectoryImagePrefix;
-			_exportSettings.SubdirectoryTextPrefix = subdirectoryTextPrefix;
-			_exportSettings.SubdirectoryNativePrefix = subdirectoryNativePrefix;
 
 			var exportFile = _exportFileBuilder.Create(_exportSettings);
 
-			Assert.AreEqual(subdirectoryStartNumber, exportFile.VolumeInfo.SubdirectoryStartNumber);
-			Assert.AreEqual(subdirectoryMaxSize, exportFile.VolumeInfo.SubdirectoryMaxSize);
+			Assert.AreEqual(volumeDigitPadding, exportFile.VolumeDigitPadding);
 			Assert.AreEqual(subdirectoryDigitPadding, exportFile.SubdirectoryDigitPadding);
-			Assert.AreEqual(subdirectoryImagePrefix, exportFile.VolumeInfo.get_SubdirectoryImagePrefix(false));
-			Assert.AreEqual(subdirectoryTextPrefix, exportFile.VolumeInfo.get_SubdirectoryFullTextPrefix(false));
-			Assert.AreEqual(subdirectoryNativePrefix, exportFile.VolumeInfo.get_SubdirectoryNativePrefix(false));
 		}
 
 		[Test]
@@ -179,7 +167,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			const bool includeNativeFilesPath = true;
 			const string exportFilesLocation = "folder_path";
 			const bool overwriteFiles = true;
-			const bool copyFilesFromRepository = true;
 			const int workspaceId = 30;
 			var dataFileEncoding = Encoding.UTF8;
 			const string exportedObjName = "files_prefix";
@@ -190,7 +177,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportSettings.IncludeNativeFilesPath = includeNativeFilesPath;
 			_exportSettings.ExportFilesLocation = exportFilesLocation;
 			_exportSettings.OverwriteFiles = overwriteFiles;
-			_exportSettings.CopyFileFromRepository = copyFilesFromRepository;
 			_exportSettings.WorkspaceId = workspaceId;
 			_exportSettings.DataFileEncoding = dataFileEncoding;
 			_exportSettings.ExportedObjName = exportedObjName;
@@ -203,7 +189,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.AreEqual(exportFile.ExportNative, includeNativeFilesPath);
 			Assert.AreEqual(exportFile.FolderPath, exportFilesLocation);
 			Assert.AreEqual(exportFile.Overwrite, overwriteFiles);
-			Assert.AreEqual(exportFile.VolumeInfo.CopyFilesFromRepository, copyFilesFromRepository);
 			Assert.AreEqual(exportFile.CaseInfo.ArtifactID, workspaceId);
 			Assert.AreEqual(exportFile.LoadFileEncoding, dataFileEncoding);
 			Assert.AreEqual(exportFile.LoadFilesPrefix, exportedObjName);

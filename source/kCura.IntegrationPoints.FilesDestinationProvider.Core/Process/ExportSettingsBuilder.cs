@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using kCura.IntegrationPoints.Contracts.Models;
@@ -46,7 +44,11 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				SubdirectoryDigitPadding = sourceSettings.SubdirectoryDigitPadding,
 				SubdirectoryNativePrefix = sourceSettings.SubdirectoryNativePrefix,
 				SubdirectoryImagePrefix = sourceSettings.SubdirectoryImagePrefix,
-				SubdirectoryTextPrefix = sourceSettings.SubdirectoryTextPrefix
+				SubdirectoryTextPrefix = sourceSettings.SubdirectoryTextPrefix,
+				VolumeDigitPadding = sourceSettings.VolumeDigitPadding,
+				VolumeMaxSize = sourceSettings.VolumeMaxSize,
+				VolumeStartNumber = sourceSettings.VolumeStartNumber,
+				VolumePrefix = sourceSettings.VolumePrefix
 			};
 
 			return exportSettings;
