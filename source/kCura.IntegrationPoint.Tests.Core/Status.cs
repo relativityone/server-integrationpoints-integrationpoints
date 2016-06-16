@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading;
 using Castle.Windsor;
+using kCura.IntegrationPoints.Contracts.Models;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.Relativity.Client;
-using kCura.ScheduleQueue.Core;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -42,7 +43,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				if (timeWaitedInSeconds >= timeoutInSeconds)
 				{
-					throw new Exception($"Timed out waiting for IntegrationPoint: { integrationPointArtifactId } to finish. Waited { timeoutInSeconds } seconds.");
+					throw new Exception($"Timed out waiting for IntegrationPoint: { integrationPointArtifactId } to finish. Waited { timeWaitedInSeconds } seconds.");
 				}
 
 				Thread.Sleep(intervalInMilliseconds);
@@ -53,21 +54,22 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void WaitForScheduledJobToComplete(IWindsorContainer container, int workspaceArtifactId, int integrationPointArtifactId, string taskType, int timeoutInSeconds = 300, int intervalInMilliseconds = 500)
 		{
-			IJobService jobService = container.Resolve<IJobService>();
+			IRepositoryFactory repositoryFactory = container.Resolve<IRepositoryFactory>();
+			IIntegrationPointRepository integrationPointRepository = repositoryFactory.GetIntegrationPointRepository(workspaceArtifactId);
 
 			double timeWaitedInSeconds = 0.0;
-			Job job = jobService.GetScheduledJob(workspaceArtifactId, integrationPointArtifactId, taskType);
+			IntegrationPointDTO integrationPoint = integrationPointRepository.Read(integrationPointArtifactId);
 
-			while (job.LastRunTime == null)
+			while (integrationPoint.LastRuntimeUTC == null)
 			{
 				if (timeWaitedInSeconds >= timeoutInSeconds)
 				{
-					throw new Exception($"Timed out waiting for Scheduled IntegrationPoint: { integrationPointArtifactId } to finish. Waited { timeoutInSeconds } seconds.");
+					throw new Exception($"Timed out waiting for Scheduled IntegrationPoint: { integrationPointArtifactId } to finish. Waited { timeWaitedInSeconds } seconds.");
 				}
 
 				Thread.Sleep(intervalInMilliseconds);
 				timeWaitedInSeconds += (intervalInMilliseconds / 1000.0);
-				job = jobService.GetScheduledJob(workspaceArtifactId, integrationPointArtifactId, "");
+				integrationPoint = integrationPointRepository.Read(integrationPointArtifactId);
 			}
 		}
 	}
