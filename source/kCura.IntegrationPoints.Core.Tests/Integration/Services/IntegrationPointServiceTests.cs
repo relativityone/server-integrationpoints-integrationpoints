@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
-using kCura.IntegrationPoints.Core.Contracts.Agent;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -14,10 +9,13 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using NUnit.Framework;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
@@ -28,12 +26,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private const string _SOURCECONFIG = "Source Config";
 		private const string _NAME = "Name";
 		private const string _FIELDMAP = "Map";
+		private const int _ADMIN_USER_ID = 9;
+		private const string _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME = "Service Account, Relativity";
 		private DestinationProvider _destinationProvider;
 		private IIntegrationPointService _integrationPointService;
 		private IRepositoryFactory _repositoryFactory;
 		private IJobHistoryService _jobHistoryService;
-		private const int _ADMIN_USER_ID = 9;
-		private const string _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME = "Service Account, Relativity";
 
 		public IntegrationPointServiceTests()
 			: base("IntegrationPointService Source", null)
@@ -173,8 +171,11 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(false, integrationPointPostJob.HasErrors);
 			Assert.IsNotNull(integrationPointPostJob.LastRun);
 			Assert.AreEqual(3, jobHistory.ItemsImported);
-			IList<Audit> postRunAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, 3);
+			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
+			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted, jobHistory.JobStatus);
+			Assert.AreEqual(JobTypeChoices.JobHistoryRunNow, jobHistory.JobType);
 
+			IList<Audit> postRunAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, 3);
 			Assert.AreEqual(3, postRunAudits.Count, "There should be 4 audits");
 			Assert.IsTrue(postRunAudits.All(x => x.AuditAction == "Update"));
 			Assert.IsTrue(postRunAudits.All(x => x.UserFullName == _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME), "The user full name should match");
@@ -225,9 +226,18 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPostRun.ArtifactID);
 			IntegrationModel integrationPointPostRetry = _integrationPointService.ReadIntegrationPoint(integrationPointPostRun.ArtifactID);
 
+			IJobHistoryRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryRepository(SourceWorkspaceArtifactId);
+			IList<int> jobHistoryArtifactIds = new List<int> { jobHistoryErrorRepository.GetLastJobHistoryArtifactId(integrationPointPostRetry.ArtifactID) };
+			JobHistory jobHistory = _jobHistoryService.GetJobHistory(jobHistoryArtifactIds)[0];
+
 			//Assert
 			Assert.AreEqual(true, integrationPointPostRun.HasErrors, "The first integration point run should have errors");
 			Assert.AreEqual(false, integrationPointPostRetry.HasErrors, "The integration point post retry should not have errors");
+			Assert.AreEqual(3, jobHistory.ItemsImported);
+			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
+			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted, jobHistory.JobStatus);
+			Assert.AreEqual(JobTypeChoices.JobHistoryRetryErrors, jobHistory.JobType);
+
 
 			Assert.AreEqual(4, postRunAudits.Count, "There should be 4 audits");
 			Assert.IsTrue(postRunAudits.All(x => x.AuditAction == "Update"));
@@ -284,7 +294,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Act
 
 			//Create Errors by using Append Only
-			Status.WaitForScheduledJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPreJobExecution.ArtifactID, TaskType.ExportService.ToString());
+			Status.WaitForScheduledJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPreJobExecution.ArtifactID);
 			IntegrationModel integrationPointPostRun = _integrationPointService.ReadIntegrationPoint(integrationPointPreJobExecution.ArtifactID);
 
 			//Assert
