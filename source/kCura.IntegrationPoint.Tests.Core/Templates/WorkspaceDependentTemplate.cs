@@ -134,10 +134,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			return audits;
 		}
 
-		protected Tuple<string, string> GetAuditDetailsFieldValues(Audit audit, string fieldName)
+		protected IDictionary<string, Tuple<string, string>> GetAuditDetailsFieldValues(Audit audit, HashSet<string> fieldNames)
 		{
 			var auditHelper = new AuditHelper(Helper);
-			Tuple<string, string> fieldValues = auditHelper.GetAuditDetailFieldUpdates(audit, fieldName);
+			IDictionary<string, Tuple<string, string>> fieldValues = auditHelper.GetAuditDetailFieldUpdates(audit, fieldNames);
 
 			return fieldValues;
 		}
