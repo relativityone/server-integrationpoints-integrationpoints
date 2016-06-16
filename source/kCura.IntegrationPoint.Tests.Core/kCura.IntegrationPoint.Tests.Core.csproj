@@ -550,6 +550,7 @@
     <Compile Include="Status.cs" />
     <Compile Include="IntegrationPoint.cs" />
     <Compile Include="Group.cs" />
+    <Compile Include="Templates\SingleWorkspaceTestTemplate.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Templates\WorkspaceDependentTemplate.cs" />
     <Compile Include="TestHelper.cs" />

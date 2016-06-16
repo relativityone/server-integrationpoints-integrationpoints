@@ -28,9 +28,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
 	[TestFixture]
 	[Category("Integration Tests")]
-	public class WorkspaceDependentTemplate : IntegrationTestBase
+	public class WorkspaceDependentTemplate : SingleWorkspaceTestTemplate
 	{
-		private readonly string _sourceWorkspaceName;
 		private readonly string _targetWorkspaceName;
 
 		protected SourceProvider LdapProvider;
@@ -42,22 +41,20 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public int TargetWorkspaceArtifactId { get; protected set; }
 		public int SavedSearchArtifactId { get; set; }
 
-		public WorkspaceDependentTemplate(string sourceWorkspaceName, string targetWorkspaceName)
+		public WorkspaceDependentTemplate(string sourceWorkspaceName, string targetWorkspaceName) 
+			: base(sourceWorkspaceName)
 		{
-			_sourceWorkspaceName = sourceWorkspaceName;
 			_targetWorkspaceName = targetWorkspaceName;
 		}
 
 		[TestFixtureSetUp]
 		public virtual void SetUp()
 		{
-			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
-			const string template = "New Case Template";
-			SourceWorkspaceArtifactId = Workspace.CreateWorkspace(_sourceWorkspaceName, template);
+			SourceWorkspaceArtifactId = WorkspaceArtifactId;
 
 			if (!_targetWorkspaceName.IsNullOrEmpty())
 			{
-				TargetWorkspaceArtifactId = Workspace.CreateWorkspace(_targetWorkspaceName, template);
+				TargetWorkspaceArtifactId = Workspace.CreateWorkspace(_targetWorkspaceName, "New Case Template");
 			}
 			else
 			{
@@ -67,7 +64,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 			Workspace.ImportLibraryApplicationToWorkspace(SourceWorkspaceArtifactId, new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
 			SavedSearchArtifactId = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents");
-			Install();
 
 			CaseContext = Container.Resolve<ICaseServiceContext>();
 			IEnumerable<SourceProvider> providers = CaseContext.RsapiService.SourceProviderLibrary.ReadAll(Guid.Parse(SourceProviderFieldGuids.Name), Guid.Parse(SourceProviderFieldGuids.Identifier));
