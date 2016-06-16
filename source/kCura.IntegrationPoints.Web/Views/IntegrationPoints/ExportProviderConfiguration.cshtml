@@ -196,6 +196,53 @@
 		</div>
 
 		<div class="cardSection">
+			<h2>Volume Information</h2>
+			<table>
+				<tr>
+					<td class="cardColumn cardFieldLeft">
+						<table class="fieldTable">
+							<tr>
+								<td class="editFieldNameRequired">
+									Prefix:
+								</td>
+								<td class="editFieldValue">
+									<input id="volume-prefix-input" type="text" data-bind="value: VolumePrefix, disable: HasBeenRun()" />
+								</td>
+							</tr>
+						</table>
+					</td>
+					<td class="cardColumn">
+						<table class="fieldTable">
+							<tr>
+								<td class="editFieldNameRequired">
+									Start #:
+								</td>
+								<td class="editFieldValue">
+									<input id="volume-start-files-input" type="number" data-bind="value: VolumeStartNumber, disable: HasBeenRun()" />
+								</td>
+								<td class="editFieldNameRequired">
+									# of digits:
+								</td>
+								<td class="editFieldValue">
+									<input id="volume-digit-padding-input" type="number" data-bind="value: VolumeDigitPadding, disable: HasBeenRun()" />
+								</td>
+							</tr>
+							<tr>
+								<td class="editFieldNameRequired">
+									Max Size (MB):
+								</td>
+								<td class="editFieldValue">
+									<input id="volume-max-size-input" type="number" data-bind="value: VolumeMaxSize, disable: HasBeenRun()" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+
+		<div class="cardSection">
 			<h2>Physical File Export</h2>
 			<table class="fieldTable">
 				<tr>
