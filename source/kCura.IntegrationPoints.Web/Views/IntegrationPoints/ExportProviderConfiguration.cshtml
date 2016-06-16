@@ -6,6 +6,7 @@
 <link href="~/Content/styles.min.css" rel="stylesheet" />
 <link href="~/Content/site.css" rel="stylesheet" />
 <link href="~/Content/buttermilk.9_2.min.css" rel="stylesheet" />
+<link href="~/Content/css/select2search.css" rel="stylesheet" />
 
 <div id="_main">
     <div id="exportProviderConfiguration" class="cardContainer">
@@ -73,7 +74,7 @@
                                     Data File Encoding:
                                 </td>
                                 <td class="editFieldValue">
-                                    <select id="dataFileEncodingSelector" data-bind="options: DataFileEncodingTypeList, value: DataFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...'"></select>
+                                    <select id="dataFileEncodingSelector" data-bind="options: DataFileEncodingTypeList, value: DataFileEncodingType, optionsText: 'displayName', optionsValue: 'name', optionsCaption: 'Select...',  select2searchable: {}"></select>
                                 </td>
                             </tr>
                         </table>
