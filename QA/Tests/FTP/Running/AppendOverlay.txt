@@ -85,7 +85,7 @@
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
 
 | | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
-| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendOverlayFTP.csv
+| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP - File Transfer Protocol | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendOverlayFTP.csv
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Department	| Department 
 | | ... | Email			| Email		 
@@ -102,8 +102,8 @@
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
-#| | Delete the Custodians in the Following Department using API	| AppendAndOverlayFT
-| | Delete the following Integration Point using API | ${IntegrationName}
+| | Delete the Custodians in the Following Department using API	| AppendAndOverlayFT
+| | Delete the following Integration Point | ${IntegrationName}
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
