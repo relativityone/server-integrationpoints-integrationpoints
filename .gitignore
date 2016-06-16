@@ -116,4 +116,11 @@ source/packages/*
 source/TestLogs/output64.xml
 
 source/.vs/config/applicationhost.config
+example/MyFirstProvider/.vs/config/applicationhost.config
 documentation/images/*
+
+example/MyFirstProvider/application/MyFirstProvider.rap
+example/MyFirstProvider/packages/
+example/MyFirstProvider/publish/
+example/ProviderIncludes/kCura.IntegrationPoints.Contracts.dll
+example/ProviderIncludes/kCura.SourceProviderInstaller.dll

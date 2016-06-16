@@ -36,7 +36,7 @@
 | | ... | UniqueID		| unique_id
 | | ... | First Name	| FirstName
 
-| | Create LDAP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email 
+| | Create FTP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email 
 
 | | Proceed to the Previous Step of the Integration Point wizard
 | | Proceed to the Next Step of the Integration Point wizard
@@ -88,7 +88,7 @@
 | | ... | UniqueID		| unique_id
 | | ... | First Name	| FirstName
 
-| | Create LDAP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email 
+| | Create FTP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email 
 
 | | Proceed to the Previous Step of the Integration Point wizard
 | | Proceed to the Previous Step of the Integration Point wizard
@@ -112,7 +112,7 @@
 #| | @{Step3Mapping}=	| Create List	|
 #| | ... | Department	| objectguid	|
 #| | ... | Email			| mail 
-#| | Create LDAP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email 
+#| | Create FTP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email 
 #| | Select Radio Button	| ${ManagerRadioButton}	| false
 #| | Proceed to the Previous Step of the Integration Point wizard
 #| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| ${ConnectionPath2}
@@ -135,7 +135,7 @@
 | | ... | UniqueID		| unique_id
 | | ... | First Name	| FirstName
 
-| | Create LDAP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email
+| | Create FTP Integration Point without Saving	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Overlay Only	| Email
  
 | | Proceed to the Previous Step of the Integration Point wizard
 | | Proceed to the Previous Step of the Integration Point wizard
@@ -164,10 +164,10 @@
 
 | | Element should not be visible	| xpath=//select[@id='selected-workspace-fields']/child::option]
 
-| Create LDAP Integration Point without Saving
+| Create FTP Integration Point without Saving
 | | [Documentation]	| A keyword that creates an Integration Point but does not click Save.
 | | ...				| The value of Step1Fields should be the arguments from "Fill out the Following Fields of the Integration Point Step 1 form" in a list variable.
-| | ...				| The value of Step2Fields should be the arguments from "Fill out the Following Fields of the LDAP Integration Point Step 2 form" in a list variable.
+| | ...				| The value of Step2Fields should be the arguments from "Fill out the Following Fields of the FTP Integration Point Step 2 form" in a list variable.
 | | ...				| The value of Step3Mapping should be the arguments from "Map the Following Fields on the Integration Point Step 3 form" in a list variable.
 | | ... 			| The value of Overwrite should be "Overlay Only", "Overlay Only", or "ppend/Overlay".
 | | [ARGUMENTS]		| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| ${Step3Overwrite}	| ${Step3UniqueID}
@@ -175,7 +175,7 @@
 | | Fill out the Following Fields of the Integration Point Step 1 form	| @{Step1Fields}
 | | Proceed to the Next Step of the Integration Point wizard
 
-| | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| @{Step2Fields}
+| | Fill out the Following Fields of the FTP Integration Point Step 2 form	| @{Step2Fields}
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Element Is Visible	| xpath=//select[@id='source-fields']/child::option	| 15s	| No Attribute fields were found.
 
