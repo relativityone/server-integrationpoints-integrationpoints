@@ -294,7 +294,26 @@
 					return self.ExportImagesChecked() === "true";
 				}
 			}
-		});
+        });
+
+        this.SubdirectoryImagePrefix = ko.observable(state.SubdirectoryImagePrefix || "IMG").extend({
+        	required: true
+        });
+        this.SubdirectoryNativePrefix = ko.observable(state.SubdirectoryNativePrefix || "NATIVE").extend({
+        	required: true
+        });
+        this.SubdirectoryTextPrefix = ko.observable(state.SubdirectoryTextPrefix || "TEXT").extend({
+        	required: true
+        });
+        this.SubdirectoryStartNumber = ko.observable(state.SubdirectoryStartNumber || 1).extend({
+        	required: true
+        });
+        this.SubdirectoryDigitPadding = ko.observable(state.SubdirectoryDigitPadding || 3).extend({
+        	required: true
+        });
+        this.SubdirectoryMaxFiles = ko.observable(state.SubdirectoryMaxFiles || 500).extend({
+        	required: true
+        });
 
 		this.errors = ko.validation.group(this, { deep: true });
 
@@ -317,7 +336,13 @@
 				"QuoteSeparator": self.QuoteSeparator(),
 				"NewlineSeparator": self.NewlineSeparator(),
 				"MultiValueSeparator": self.MultiValueSeparator(),
-				"NestedValueSeparator": self.NestedValueSeparator()
+                "NestedValueSeparator": self.NestedValueSeparator(),
+                "SubdirectoryImagePrefix": self.SubdirectoryImagePrefix(),
+                "SubdirectoryNativePrefix": self.SubdirectoryNativePrefix(),
+                "SubdirectoryTextPrefix": self.SubdirectoryTextPrefix(),
+                "SubdirectoryStartNumber": self.SubdirectoryStartNumber(),
+                "SubdirectoryDigitPadding": self.SubdirectoryDigitPadding(),
+                "SubdirectoryMaxFiles": self.SubdirectoryMaxFiles()
 			}
 		}
 	}
