@@ -110,9 +110,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		}
 
 		[TestFixtureTearDown]
-		public virtual void TearDown()
+		public override void TearDown()
 		{
-			Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
 			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
 		}
 

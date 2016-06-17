@@ -74,7 +74,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 					ArtifactTypeId = 7,
 					ArtifactTypeName = "Choice"
 				},
-				Password = "Test1234!",
+				//Password = "Test1234!",
 				DocumentSkip = new BaseFields
 				{
 					ArtifactId = 1015042,

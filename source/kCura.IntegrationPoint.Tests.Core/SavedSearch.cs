@@ -1,5 +1,7 @@
 ﻿using System;
+using kCura.IntegrationPoints.Data.Extensions;
 using Relativity.Services.Search;
+using Relativity.Services.User;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
@@ -33,7 +35,32 @@ namespace kCura.IntegrationPoint.Tests.Core
 			{
 				KeywordSearch keywordSearch = proxy.ReadSingleAsync(workspaceArtifactId, searchArtifactId).Result;
 				keywordSearch.SearchCriteria = searchCriteria;
-				proxy.UpdateSingleAsync(workspaceArtifactId, keywordSearch).Wait((int) TimeSpan.FromSeconds(5).TotalMilliseconds);
+				proxy.UpdateSingleAsync(workspaceArtifactId, keywordSearch).Wait(TimeSpan.FromSeconds(5));
+			}
+		}
+
+		public static void Delete(int workspaceArtifactId, int savedSearchArtifactId)
+		{
+			if(savedSearchArtifactId == 0) {  return; }
+			using (IKeywordSearchManager proxy = Kepler.CreateProxy<IKeywordSearchManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				proxy.DeleteSingleAsync(workspaceArtifactId, savedSearchArtifactId).Wait(TimeSpan.FromSeconds(5));
+			}
+		}
+
+		public static int Create(int workspaceArtifactId, KeywordSearch search)
+		{
+			using (IKeywordSearchManager proxy = Kepler.CreateProxy<IKeywordSearchManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				return proxy.CreateSingleAsync(workspaceArtifactId, search).GetResultsWithoutContextSync();
+			}
+		}
+
+		public static int CreateSearchFolder(int workspaceArtifactId, SearchContainer searchContainer )
+		{
+			using (ISearchContainerManager proxy = Kepler.CreateProxy<ISearchContainerManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				return proxy.CreateSingleAsync(workspaceArtifactId, searchContainer).GetResultsWithoutContextSync();
 			}
 		}
 	}
