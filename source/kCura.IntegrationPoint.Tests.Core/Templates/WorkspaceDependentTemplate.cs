@@ -42,6 +42,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public int SourceWorkspaceArtifactId { get; protected set; }
 		public int TargetWorkspaceArtifactId { get; protected set; }
 		public int SavedSearchArtifactId { get; set; }
+		public int AgentArtifactId { get; set; }
 
 		public WorkspaceDependentTemplate(string sourceWorkspaceName, string targetWorkspaceName)
 		{
@@ -67,6 +68,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 
 
 			Workspace.ImportLibraryApplicationToWorkspace(SourceWorkspaceArtifactId, new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
+			AgentArtifactId = Agent.CreateIntegrationPointAgent();
+
 			SavedSearchArtifactId = SavedSearch.CreateSavedSearch(SourceWorkspaceArtifactId, "All documents");
 			Install();
 
@@ -119,6 +122,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		{
 			Workspace.DeleteWorkspace(SourceWorkspaceArtifactId);
 			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
+			Agent.DeleteAgent(AgentArtifactId);
 		}
 
 		protected IList<Audit> GetLastAuditsForIntegrationPoint(string integrationPointName, int take)
