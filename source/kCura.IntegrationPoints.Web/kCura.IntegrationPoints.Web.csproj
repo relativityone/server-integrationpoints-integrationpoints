@@ -384,6 +384,7 @@
     <Content Include="Content\css\select2-spinner.gif" />
     <Content Include="Content\css\select2.css" />
     <Content Include="Content\css\select2.png" />
+    <Content Include="Content\css\select2search.css" />
     <Content Include="Content\css\select2x2.png" />
     <Content Include="Content\fonts\integration-points.svg" />
     <Content Include="Content\fonts\legal-hold-icons.svg" />
