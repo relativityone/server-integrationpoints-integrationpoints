@@ -58,6 +58,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
+		public void ItShouldThrowExceptionForUnknownFilePath()
+		{
+			var incorrectEnumValue = Enum.GetValues(typeof(ExportSettings.FilePathType)).Cast<ExportSettings.FilePathType>().Max() + 1;
+
+			var sourceSettings = CreateSourceSettings();
+			sourceSettings.FilePath = ((int)incorrectEnumValue).ToString();
+
+			Assert.That(() => _exportSettingsBuilder.Create(sourceSettings, new List<FieldMap>(), 1),
+				Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown FilePathType ({incorrectEnumValue})"));
+		}
+
+		[Test]
 		public void ItShouldSelectFieldIdentifiers()
 		{
 			var fields = new List<FieldMap>()
@@ -77,6 +89,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 				SelectedImageFileType = ((int)default(ExportSettings.ImageFileType)).ToString(),
 				SelectedDataFileFormat = ((int)default(ExportSettings.DataFileFormat)).ToString(),
 				SelectedImageDataFileFormat = ((int)default(ExportSettings.ImageDataFileFormat)).ToString(),
+				FilePath = ((int)default(ExportSettings.FilePathType)).ToString(),
 				DataFileEncodingType = "Unicode"
 			};
 		}

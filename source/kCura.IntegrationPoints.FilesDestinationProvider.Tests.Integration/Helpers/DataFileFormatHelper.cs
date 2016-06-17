@@ -23,5 +23,17 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
                 return fileFirstLine != null && fileFirstLine.StartsWith(firstLineStartsWith);
             }
         }
-    }
+
+	    public static bool LineNumberContains(int lineNumber, string text, FileInfo file)
+	    {
+			using (var reader = new StreamReader(file.FullName))
+			{
+				for (int i = 1; i < lineNumber; i++)
+					reader.ReadLine();
+
+				var line = reader.ReadLine();
+				return line != null && line.Contains(text);
+			}
+		}
+	}
 }

@@ -27,6 +27,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 			Custom
 		}
 
+		public enum FilePathType
+		{
+			Relative,
+			Absolute,
+			Prefix
+		}
+
 		public int ExportedObjArtifactId { get; set; }
 		public string ExportedObjName { get; set; }
 		public int WorkspaceId { get; set; }
@@ -46,5 +53,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
         public char NewlineSeparator { get; set; }
         public char MultiValueSeparator { get; set; }
         public char NestedValueSeparator { get; set; }
+		public FilePathType FilePath { get; set; }
+		public string UserPrefix { get; set; }
     }
 }

@@ -20,6 +20,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			ExportSettings.ImageDataFileFormat? imageDataFileFormat;
 			EnumHelper.TryParse(sourceSettings.SelectedImageDataFileFormat, out imageDataFileFormat);
 
+			ExportSettings.FilePathType filePath;
+			EnumHelper.Parse(sourceSettings.FilePath, out filePath);
+
 			var exportSettings = new ExportSettings
 			{
 				ExportedObjArtifactId = sourceSettings.SavedSearchArtifactId,
@@ -40,7 +43,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				MultiValueSeparator = sourceSettings.MultiValueSeparator,
 				NestedValueSeparator = sourceSettings.NestedValueSeparator,
 				NewlineSeparator = sourceSettings.NewlineSeparator,
-				QuoteSeparator = sourceSettings.QuoteSeparator
+				QuoteSeparator = sourceSettings.QuoteSeparator,
+				FilePath = filePath,
+				UserPrefix  = sourceSettings.UserPrefix
 			};
 
 			return exportSettings;

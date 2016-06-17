@@ -260,6 +260,24 @@
             }
         });
 
+        this.FilePath = ko.observable(state.FilePath || "Relative").extend({
+            required: true
+        });
+
+        this.UserPrefix = ko.observable(state.UserPrefix).extend({
+            required: {
+                onlyIf: function () {
+                    return self.FilePath() === "UserPrefix";
+                }
+            }
+        });
+
+        this.isUserPrefix = ko.observable(false);
+
+        this.FilePath.subscribe(function (value) {
+            self.isUserPrefix(value === "UserPrefix");
+        });
+
         this.errors = ko.validation.group(this, { deep: true });
 
         this.getSelectedOption = function () {
@@ -281,7 +299,9 @@
                 "QuoteSeparator": self.QuoteSeparator(),
                 "NewlineSeparator": self.NewlineSeparator(),
                 "MultiValueSeparator": self.MultiValueSeparator(),
-                "NestedValueSeparator": self.NestedValueSeparator()
+                "NestedValueSeparator": self.NestedValueSeparator(),
+                "FilePath": self.FilePath(),
+                "UserPrefix": self.UserPrefix()
             }
         }
     }

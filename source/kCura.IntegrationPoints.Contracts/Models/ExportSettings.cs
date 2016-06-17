@@ -26,5 +26,7 @@
         public char NewlineSeparator { get; set; }
         public char MultiValueSeparator { get; set; }
         public char NestedValueSeparator { get; set; }
+		public string FilePath { get; set; }
+		public string UserPrefix { get; set; }
 	}
 }

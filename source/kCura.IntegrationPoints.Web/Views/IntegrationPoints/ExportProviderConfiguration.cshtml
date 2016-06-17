@@ -217,7 +217,7 @@
                         <select id="imageDataFileFormatSelector" data-bind="options: imageDataFileFormats, optionsText: 'value', optionsValue: 'key', optionsCaption: 'Select...', value: SelectedImageDataFileFormat"></select>
                     </td>
                 </tr>
-		
+        
                 <tr data-bind="visible: ExportImagesChecked() === 'true'">
                     <td class="editFieldNameRequired">
                         File Type :
@@ -229,7 +229,37 @@
             </table>
         </div>
 
-    </div>
+        <div class="cardSection">
+            <h2>Other</h2>
+            <table class="fieldTable">
+                <tr>
+                    <td class="editFieldNameRequired">File Path:</td>
+                    <td class="editFieldValue">
+                        <table class="RadioButtonListRelativePosition">
+                            <tr>
+                                <td>
+                                    <input id="file-path-radio-0" type="radio" name="filePath" value="Relative" data-bind="checked: FilePath"/>
+                                    <label>Use Relative Path</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input id="file-path-radio-1" type="radio" name="filePath" value="Absolute" data-bind="checked: FilePath"/>
+                                    <label>Use Absolute Path</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="editFieldValue">
+                                    <input id="file-path-radio-2" type="radio" name="filePath" value="UserPrefix" data-bind="checked: FilePath"/>
+                                    <label>User Prefix</label>
+                                    <input id="userprefix-input" type="text" data-bind="enable: isUserPrefix(), value: UserPrefix" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
 </div>
 
 @section scripts
