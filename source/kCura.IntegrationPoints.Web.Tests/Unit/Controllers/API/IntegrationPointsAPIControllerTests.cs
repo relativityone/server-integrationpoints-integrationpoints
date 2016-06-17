@@ -11,6 +11,8 @@ using Newtonsoft.Json;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
+using Relativity.API;
+using Relativity.Telemetry.Services.Metrics;
 
 namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 {
@@ -21,6 +23,8 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 		private IIntegrationPointService _integrationPointService;
 		private IRelativityUrlHelper _relativityUrlHelper;
 		private IRdoSynchronizerProvider _rdoSynchronizerProvider;
+		private ICPHelper _cpHelper;
+		private IServicesMgr _svcMgr;
 
 		private const int _WORKSPACE_ID = 23432;
 
@@ -30,6 +34,11 @@ namespace kCura.IntegrationPoints.Web.Tests.Unit.Controllers.API
 			_relativityUrlHelper = this.GetMock<IRelativityUrlHelper>();
 			_integrationPointService = this.GetMock<IIntegrationPointService>();
 			_rdoSynchronizerProvider = this.GetMock<IRdoSynchronizerProvider>();
+			_cpHelper = this.GetMock<ICPHelper>();
+			_svcMgr = Substitute.For<IServicesMgr>();
+
+			_cpHelper.GetServicesManager().Returns(_svcMgr);
+			_svcMgr.CreateProxy<IMetricsManager>(Arg.Any<ExecutionIdentity>()).Returns(Substitute.For<IMetricsManager>());
 
 			_instance = this.ResolveInstance<IntegrationPointsAPIController>();
 			_instance.Request = new HttpRequestMessage();

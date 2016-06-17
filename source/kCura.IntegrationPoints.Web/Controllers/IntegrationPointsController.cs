@@ -65,6 +65,11 @@ namespace kCura.IntegrationPoints.Web.Controllers
 			return PartialView("_IntegrationMapFields");
 		}
 
+        public ActionResult StepDetails3Export()
+        {
+            return PartialView("ExportProviderFields");
+        }
+
 		public ActionResult ConfigurationDetail()
 		{
 			return PartialView("_Configuration");

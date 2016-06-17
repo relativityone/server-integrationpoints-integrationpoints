@@ -24,7 +24,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		{
 			var fileInfo = GetFileInfo(directory);
 			Assert.That(DataFileFormatHelper.LineNumberContains(1,
-				@"USER1\VOL00000001\IMAGES\00000001\AMEYERS_0000757.tif", fileInfo));
+				@"USER1\0\IMAGES\1\AMEYERS_0000757.tif", fileInfo));
 		}
 
 		public override string MetadataFormat => "opt";

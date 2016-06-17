@@ -17,6 +17,9 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.ScheduleQueue.Core;
 using Relativity.API;
+using Relativity.Services.DataContracts.DTOs.MetricsCollection;
+using Relativity.Telemetry.MetricsCollection;
+using Constants = kCura.IntegrationPoints.Core.Constants;
 
 namespace kCura.IntegrationPoints.Agent.Tasks
 {
@@ -24,6 +27,8 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 	{
 		private JobStatisticsService _statisticsService;
 		private IEnumerable<Core.IBatchStatus> _batchStatus;
+
+		protected virtual string TelemetryMetricIdentifier => Core.Constants.IntegrationPoints.Telemetry.BUCKET_SYNC_WORKER_EXEC_DURATION_METRIC_COLLECTOR;
 
 		public IEnumerable<Core.IBatchStatus> BatchStatus
 		{
@@ -56,11 +61,14 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 
 		public void Execute(Job job)
 		{
-			foreach (var batchComplete in BatchStatus)
+			using (Client.MetricsClient.LogDuration(TelemetryMetricIdentifier, Guid.Empty, MetricTargets.SUM))
 			{
-				batchComplete.OnJobStart(job);
+				foreach (var batchComplete in BatchStatus)
+				{
+					batchComplete.OnJobStart(job);
+				}
+				ExecuteTask(job);
 			}
-			ExecuteTask(job);
 		}
 
 		internal virtual void ExecuteTask(Job job)

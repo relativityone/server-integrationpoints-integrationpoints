@@ -52,15 +52,18 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
 
+			var userNotification = Substitute.For<IUserNotification>();
+			userNotification.AlertWarningSkippable(Arg.Any<string>()).Returns(true);
+
 			var exportProcessBuilder = new ExportProcessBuilder(
 				Substitute.For<ILoggingMediator>(),
 				Substitute.For<IUserMessageNotification>(),
-				Substitute.For<IUserNotification>(),
+				userNotification,
 				new UserPasswordCredentialProvider(_configSettings),
 				new CaseManagerWrapperFactory(),
 				new SearchManagerFactory(),
 				new ExporterWrapperFactory(),
-				new ExportFileBuilder(new DelimitersBuilder())
+				new ExportFileBuilder(new DelimitersBuilder(), new VolumeInfoBuilder())
 			);
 
 			var exportSettingsBuilder= new ExportSettingsBuilder(); 
@@ -108,7 +111,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 				ExportedObjArtifactId = _configSettings.ExportedObjArtifactId,
 				ExportedObjName = _configSettings.SavedSearchArtifactName,
 				SelViewFieldIds = _configSettings.SelViewFieldIds,
-				DataFileEncoding = Encoding.Unicode
+				DataFileEncoding = Encoding.Unicode,
+				VolumeMaxSize = 650
 			};
 
 			return settings;

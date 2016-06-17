@@ -7,10 +7,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 	internal class ExportFileBuilder : IExportFileBuilder
 	{
 		private readonly IDelimitersBuilder _delimitersBuilder;
+		private readonly IVolumeInfoBuilder _volumeInfoBuilder;
 
-		public ExportFileBuilder(IDelimitersBuilder delimitersBuilder)
+		public ExportFileBuilder(IDelimitersBuilder delimitersBuilder, IVolumeInfoBuilder volumeInfoBuilder)
 		{
 			_delimitersBuilder = delimitersBuilder;
+			_volumeInfoBuilder = volumeInfoBuilder;
 		}
 
 		public ExportFile Create(ExportSettings exportSettings)
@@ -24,10 +26,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.ExportNative = exportSettings.IncludeNativeFilesPath;
 			exportFile.FolderPath = exportSettings.ExportFilesLocation;
 			exportFile.Overwrite = exportSettings.OverwriteFiles;
-			exportFile.VolumeInfo.CopyFilesFromRepository = exportSettings.CopyFileFromRepository;
+
+			_volumeInfoBuilder.SetVolumeInfo(exportSettings, exportFile);
 
 			SetCaseInfo(exportSettings, exportFile);
 			SetMetadataFileSettings(exportSettings, exportFile);
+			SetDigitPaddings(exportSettings, exportFile);
 			SetImagesSettings(exportSettings, exportFile);
 
 			exportFile.TypeOfExportedFilePath = ParseFilePath(exportSettings.FilePath);
@@ -49,6 +53,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			exportFile.LoadFileExtension = ParseDataFileFormat(exportSettings.OutputDataFileFormat);
 			exportFile.LoadFileIsHtml = IsHtml(exportSettings.OutputDataFileFormat);
 			exportFile.LoadFilesPrefix = exportSettings.ExportedObjName;
+		}
+
+		private void SetDigitPaddings(ExportSettings exportSettings, ExportFile exportFile)
+		{
+			exportFile.SubdirectoryDigitPadding = exportSettings.SubdirectoryDigitPadding;
+			exportFile.VolumeDigitPadding = exportSettings.VolumeDigitPadding;
 		}
 
 		private static void SetImagesSettings(ExportSettings exportSettings, ExportFile exportFile)

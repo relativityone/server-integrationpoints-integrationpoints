@@ -685,6 +685,7 @@
     <Compile Include="Telemetry\ExportTelemetryMetricProvider.cs" />
     <Compile Include="Telemetry\ITelemetryMetricProvider.cs" />
     <Compile Include="Telemetry\TelemetryManager.cs" />
+    <Compile Include="Telemetry\TelemetryMetricProvider.cs" />
     <Compile Include="Telemetry\TelemetryMetricProviderBase.cs" />
   </ItemGroup>
   <ItemGroup />

@@ -26,6 +26,16 @@
         public char NewlineSeparator { get; set; }
         public char MultiValueSeparator { get; set; }
         public char NestedValueSeparator { get; set; }
+		public string SubdirectoryImagePrefix { get; set; }
+		public string SubdirectoryNativePrefix { get; set; }
+		public string SubdirectoryTextPrefix { get; set; }
+		public int SubdirectoryStartNumber { get; set; }
+		public int SubdirectoryDigitPadding { get; set; }
+		public int SubdirectoryMaxFiles { get; set; }
+		public string VolumePrefix { get; set; }
+		public int VolumeStartNumber { get; set; }
+		public int VolumeDigitPadding { get; set; }
+		public int VolumeMaxSize { get; set; }
 		public string FilePath { get; set; }
 		public string UserPrefix { get; set; }
 	}

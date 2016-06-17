@@ -22,7 +22,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
 		{
 			var fileInfo = GetFileInfo(directory);
-			Assert.That(DataFileFormatHelper.LineNumberContains(1, @".\VOL00000001\IMAGES\00000001\AMEYERS_0000757.tif", fileInfo));
+			Assert.That(DataFileFormatHelper.LineNumberContains(1, @".\0\IMAGES\1\AMEYERS_0000757.tif", fileInfo));
 		}
 
 		public override string MetadataFormat => "opt";

@@ -1,5 +1,9 @@
-﻿using kCura.WinEDDS;
+﻿using System;
+using kCura.IntegrationPoints.Core;
+using kCura.WinEDDS;
 using kCura.WinEDDS.Exporters;
+using Relativity.Services.DataContracts.DTOs.MetricsCollection;
+using Relativity.Telemetry.MetricsCollection;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 {
@@ -40,7 +44,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary
 
 		public bool Run()
 		{
-			return _exporter.ExportSearch();
+			using (Client.MetricsClient.LogDuration(
+					Constants.IntegrationPoints.Telemetry.BUCKET_EXPORT_LIB_EXEC_DURATION_METRIC_COLLECTOR,
+					Guid.Empty, MetricTargets.APMandSUM))
+			{
+				return _exporter.ExportSearch();
+			}
 		}
 	}
 }

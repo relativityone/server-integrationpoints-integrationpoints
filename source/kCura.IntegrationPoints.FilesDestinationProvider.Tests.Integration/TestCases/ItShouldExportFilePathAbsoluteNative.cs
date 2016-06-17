@@ -23,7 +23,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 		{
 			var fileInfo = GetFileInfo(directory);
 			Assert.That(DataFileFormatHelper.LineNumberContains(2,
-				$"þ{ExportSettings.ExportFilesLocation}\\VOL00000001\\NATIVES\\00000001\\AMEYERS_0000757.htmþ", fileInfo));
+				$"þ{ExportSettings.ExportFilesLocation}\\0\\NATIVES\\1\\AMEYERS_0000757.htmþ", fileInfo));
 		}
 
 		public override string MetadataFormat => "dat";

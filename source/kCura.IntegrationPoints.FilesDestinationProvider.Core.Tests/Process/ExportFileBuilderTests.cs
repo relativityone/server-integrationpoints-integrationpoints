@@ -18,7 +18,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		public void SetUp()
 		{
 			_exportSettings = DefaultExportSettingsFactory.Create();
-			_exportFileBuilder = new ExportFileBuilder(Substitute.For<IDelimitersBuilder>());
+			_exportFileBuilder = new ExportFileBuilder(Substitute.For<IDelimitersBuilder>(), Substitute.For<IVolumeInfoBuilder>());
 		}
 
 		[Test]
@@ -117,7 +117,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		{
 			_exportSettings.CopyFileFromRepository = true;
 
-			var incorrectEnumValue = Enum.GetValues(typeof(ExportSettings.ImageDataFileFormat)).Cast<ExportSettings.ImageDataFileFormat>().Max() + 1;
+			var incorrectEnumValue = Enum.GetValues(typeof (ExportSettings.ImageDataFileFormat)).Cast<ExportSettings.ImageDataFileFormat>().Max() + 1;
 			_exportSettings.SelectedImageDataFileFormat = incorrectEnumValue;
 
 			Assert.That(() => _exportFileBuilder.Create(_exportSettings),
@@ -168,6 +168,20 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
+		public void ItShouldRewriteDigitPaddings()
+		{
+			const int volumeDigitPadding = 15;
+			const int subdirectoryDigitPadding = 23;
+
+			_exportSettings.VolumeDigitPadding = volumeDigitPadding;
+			_exportSettings.SubdirectoryDigitPadding = subdirectoryDigitPadding;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.AreEqual(volumeDigitPadding, exportFile.VolumeDigitPadding);
+			Assert.AreEqual(subdirectoryDigitPadding, exportFile.SubdirectoryDigitPadding);
+		}
+
 		public void ItShouldRewriteOtherSettings()
 		{
 			const int artifactTypeId = 10;
@@ -175,7 +189,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			const bool includeNativeFilesPath = true;
 			const string exportFilesLocation = "folder_path";
 			const bool overwriteFiles = true;
-			const bool copyFilesFromRepository = true;
 			const int workspaceId = 30;
 			var dataFileEncoding = Encoding.UTF8;
 			const string exportedObjName = "files_prefix";
@@ -186,7 +199,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			_exportSettings.IncludeNativeFilesPath = includeNativeFilesPath;
 			_exportSettings.ExportFilesLocation = exportFilesLocation;
 			_exportSettings.OverwriteFiles = overwriteFiles;
-			_exportSettings.CopyFileFromRepository = copyFilesFromRepository;
 			_exportSettings.WorkspaceId = workspaceId;
 			_exportSettings.DataFileEncoding = dataFileEncoding;
 			_exportSettings.ExportedObjName = exportedObjName;
@@ -199,7 +211,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.AreEqual(exportFile.ExportNative, includeNativeFilesPath);
 			Assert.AreEqual(exportFile.FolderPath, exportFilesLocation);
 			Assert.AreEqual(exportFile.Overwrite, overwriteFiles);
-			Assert.AreEqual(exportFile.VolumeInfo.CopyFilesFromRepository, copyFilesFromRepository);
 			Assert.AreEqual(exportFile.CaseInfo.ArtifactID, workspaceId);
 			Assert.AreEqual(exportFile.LoadFileEncoding, dataFileEncoding);
 			Assert.AreEqual(exportFile.LoadFilesPrefix, exportedObjName);

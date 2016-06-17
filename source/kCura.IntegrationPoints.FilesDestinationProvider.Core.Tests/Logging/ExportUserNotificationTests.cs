@@ -15,42 +15,54 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Logging
         }
 
         [Test]
-        public void ItShouldRaiseEventOnAlert()
+        public void ItShouldRaiseFatalEventOnAlert()
         {
-            AssertEventCall(expectedMessage => _exportUserNotification.Alert(expectedMessage));
+            AssertFatalEventCall(expectedMessage => _exportUserNotification.Alert(expectedMessage));
         }
 
         [Test]
-        public void ItShouldRaiseEventOnAlertCriticalError()
+        public void ItShouldRaiseFatalEventOnAlertCriticalError()
         {
-            AssertEventCall(expectedMessage => _exportUserNotification.AlertCriticalError(expectedMessage));
+            AssertFatalEventCall(expectedMessage => _exportUserNotification.AlertCriticalError(expectedMessage));
         }
 
         [Test]
-        public void ItShouldRaiseEventOnAlertWarningSkippable()
+        public void ItShouldRaiseWarningEventOnAlertWarningSkippable()
         {
-            AssertEventCall(expectedMessage => _exportUserNotification.AlertWarningSkippable(expectedMessage));
+			AssertWarningEventCall(expectedMessage => _exportUserNotification.AlertWarningSkippable(expectedMessage));
         }
 
         [Test]
         [TestCase(null)]
         [TestCase("")]
         [TestCase("any_message")]
-        public void ItShouldAlwaysReturnFalseOnAlertWarningSkippable(string message)
+        public void ItShouldAlwaysReturnTrueOnAlertWarningSkippable(string message)
         {
-            Assert.False(_exportUserNotification.AlertWarningSkippable(message));
+            Assert.True(_exportUserNotification.AlertWarningSkippable(message));
         }
 
-        private void AssertEventCall(Action<string> webUserNotificationCall)
+        private void AssertFatalEventCall(Action<string> webUserNotificationCall)
         {
             const string expectedMessage = "expected_message";
             string actualMessage = null;
 
-            _exportUserNotification.UserMessageEvent += (sender, args) => { actualMessage = args.Message; };
+            _exportUserNotification.UserFatalMessageEvent += (sender, args) => { actualMessage = args.Message; };
 
             webUserNotificationCall.Invoke(expectedMessage);
 
             Assert.AreEqual(expectedMessage, actualMessage);
         }
+
+	    private void AssertWarningEventCall(Action<string> webUserNotificationCall)
+	    {
+			const string expectedMessage = "expected_message";
+			string actualMessage = null;
+
+			_exportUserNotification.UserWarningMessageEvent += (sender, args) => { actualMessage = args.Message; };
+
+			webUserNotificationCall.Invoke(expectedMessage);
+
+			Assert.AreEqual(expectedMessage, actualMessage);
+		}
     }
 }

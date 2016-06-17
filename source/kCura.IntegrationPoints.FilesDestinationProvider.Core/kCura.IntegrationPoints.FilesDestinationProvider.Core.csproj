@@ -147,6 +147,22 @@
       <HintPath>..\packages\Relativity.API.9.3.433.7\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Kepler, Version=1.0.1.149, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.1.0.1.149\lib\net45\Relativity.Kepler.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.149, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Kepler.Client.1.0.1.149\lib\net45\Relativity.Services.ServiceProxy.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=9.4.60.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.9.4.60\lib\net45\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Relativity.Telemetry.MetricsCollection, Version=9.4.60.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.MetricsCollection.9.4.60\lib\net45\Relativity.Telemetry.MetricsCollection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web.Services" />
@@ -180,6 +196,8 @@
     <Compile Include="Process\IExportFileBuilder.cs" />
     <Compile Include="Process\IExportProcessBuilder.cs" />
     <Compile Include="Process\IExportSettingsBuilder.cs" />
+    <Compile Include="Process\IVolumeInfoBuilder.cs" />
+    <Compile Include="Process\VolumeInfoBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Logging\UserMessageEventArgs.cs" />
     <Compile Include="Logging\ExportUserNotification.cs" />

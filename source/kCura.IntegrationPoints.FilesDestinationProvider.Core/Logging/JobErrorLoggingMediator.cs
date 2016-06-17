@@ -18,7 +18,8 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 		public void RegisterEventHandlers(IUserMessageNotification userMessageNotification,
 			IExporterStatusNotification exporterStatusNotification)
 		{
-			userMessageNotification.UserMessageEvent += OnUserMessage;
+			userMessageNotification.UserFatalMessageEvent += OnUserFatalMessage;
+			userMessageNotification.UserWarningMessageEvent += OnUserWarningMessage;
 			exporterStatusNotification.FatalErrorEvent += OnFatalError;
 			exporterStatusNotification.StatusMessage += OnStatusMessage;
 		}
@@ -37,9 +38,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging
 			_historyErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, ex);
 		}
 
-		private void OnUserMessage(object sender, UserMessageEventArgs e)
+		private void OnUserFatalMessage(object sender, UserMessageEventArgs e)
 		{
 			_historyErrorService.AddError(ErrorTypeChoices.JobHistoryErrorJob, string.Empty, e.Message, string.Empty);
+		}
+
+		private void OnUserWarningMessage(object sender, UserMessageEventArgs e)
+		{
+			_historyErrorService.AddError(ErrorTypeChoices.JobHistoryErrorItem, string.Empty, e.Message, string.Empty);
 		}
 	}
 }
