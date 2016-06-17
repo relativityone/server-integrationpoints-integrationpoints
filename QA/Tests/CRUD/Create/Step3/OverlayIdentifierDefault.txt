@@ -60,4 +60,4 @@
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource  | ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource  | ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource  | ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
