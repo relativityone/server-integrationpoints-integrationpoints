@@ -202,7 +202,6 @@
 
 | | @{Step1Fields}=	| Create List	| 
 | | ... | ${IntegrationName}
-| | ... | Junk Data
 | | ... | LDAP
 | | ... | Custodian
 | | ... | No
