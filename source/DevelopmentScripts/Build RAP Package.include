@@ -22,9 +22,9 @@
 	<property name="signOutput" value="true" unless="${property::exists('signOutput')}" />
 	
 	<!--<target name="build_RAP_Package" depends="deploy_web_project,sign_files,build_custom_pages_zip, generate_RAP_package" />-->
-	<target name="build_RAP_Package" depends="deploy_web_project,sign_files,build_applications" />
+	<target name="build_RAP_Package" depends="deploy_web_project, sign_files, build_applications" />
 	
-	<target name="deploy_web_project" description="deploys custom pages to a directory">
+	<target name="deploy_web_project" description="Deploys custom pages to a directory">
 		<exec program="${msbuild}">
 			<arg line='"${ldap.web.directory}\${ldap.web.name}"' />
 			<arg line='/property:SourceRoot="${root}"' />
@@ -39,6 +39,25 @@
 			<arg value='/p:SolutionDir=${root}\'/>
 			<arg value="/verbosity:${verbosity}" />
 			<arg value='/p:DefineConstants="${TimeMachine},${Injections}";OutDir="${target.web.out}";WebProjectOutputDir="${target.web.publish}"' />
+			<arg value="/nologo" />
+		</exec>
+	</target>
+	
+	<target name="deploy_myfirstprovider_web_project" description="Deploys custom pages to a directory">
+		<exec program="${msbuild}">
+			<arg line='"${example.directory}\MyFirstProvider\Web\Web.csproj"' />
+			<arg line='/property:SourceRoot="${root}"' />
+			<arg line="/property:Configuration=${buildconfig}" />
+			<arg line='/property:Platform="ANYCPU"' />
+			<arg line="/property:NoWarn=${ignorewarnings}" />
+			<arg line='/logger:"${logger}"'/>
+			<arg line='/logger:"${buildLogger}";"${buildLoggerLogFile}"'/>
+			<arg value="/noconsolelogger" />
+			<arg value="/filelogger" />
+			<arg value='/flp:LogFile="${logfile}";Verbosity=${verbosity}' />      
+			<arg value='/p:SolutionDir=${root}\'/>
+			<arg value="/verbosity:${verbosity}" />
+			<arg value='/p:DefineConstants="${TimeMachine},${Injections}";OutDir="${example.directory}\MyFirstProvider\publish\bin\web";WebProjectOutputDir="${example.directory}\MyFirstProvider\publish\web"' />
 			<arg value="/nologo" />
 		</exec>
 	</target>

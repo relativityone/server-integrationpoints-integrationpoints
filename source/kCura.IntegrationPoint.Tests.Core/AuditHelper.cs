@@ -71,9 +71,9 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return audits;
 		}
 
-		public Tuple<string, string> GetAuditDetailFieldUpdates(Audit audit, string fieldName)
+		public IDictionary<string, Tuple<string, string>> GetAuditDetailFieldUpdates(Audit audit, HashSet<string> fieldNames)
 		{
-			Tuple<string, string> fieldValuesTuple = null;
+			var fieldValuesForFieldName = new Dictionary<string, Tuple<string, string>>();
 			using (XmlReader reader = XmlReader.Create(new StringReader(audit.AuditDetails)))
 			{
 				while (reader.ReadToFollowing("field"))
@@ -82,18 +82,20 @@ namespace kCura.IntegrationPoint.Tests.Core
 					string xmlFieldName = reader.Value;
 					reader.Read();
 
-					if (xmlFieldName == fieldName)
+					if (fieldNames.Contains(xmlFieldName))
 					{
 						string oldValue = reader.ReadElementString("oldValue");
 						string newValue = reader.ReadElementString("newValue");
 
-						fieldValuesTuple = new Tuple<string, string>(oldValue, newValue);
+						Tuple<string, string> fieldValuesTuple = new Tuple<string, string>(oldValue, newValue);
+
+						fieldValuesForFieldName.Add(xmlFieldName, fieldValuesTuple);
 						break;
 					}
 				}
 			}
 
-			return fieldValuesTuple;
+			return fieldValuesForFieldName;
 		}
 	}
 }
