@@ -16,15 +16,16 @@ namespace kCura.IntegrationPoint.Tests.Core
 			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
 				List<ResourceServer> resourceServers = GetAgentServers();
-				ResourceServerRef resourceServerRef = new ResourceServerRef
-				{
-					ArtifactID = resourceServers[0].ArtifactID,
-				};
 
 				if (resourceServers.Count == 0)
 				{
 					throw new Exception($"Error: No Agent servers available for agent creation.");
 				}
+
+				ResourceServerRef resourceServerRef = new ResourceServerRef
+				{
+					ArtifactID = resourceServers[0].ArtifactID,
+				};
 
 				global::Relativity.Services.Agent.Agent agentDto = new global::Relativity.Services.Agent.Agent
 				{
@@ -100,7 +101,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 			if (agentTypeRefs.IsNullOrEmpty())
 			{
-				throw new Exception("AgentTypeRefs is null or empty.");
+				throw new Exception("Failed to retrieve Agent Types. Please check the [AgentType] table on the primary server.");
 			}
 
 			foreach (AgentTypeRef agentTypeRef in agentTypeRefs)
