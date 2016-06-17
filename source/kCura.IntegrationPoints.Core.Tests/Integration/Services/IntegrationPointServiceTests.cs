@@ -14,10 +14,9 @@ using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using NUnit.Framework;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using NUnit.Framework;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
@@ -135,13 +134,13 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual("Update", audit.AuditAction, "The audit action should be correct.");
 		}
 
-		#endregion
+		#endregion UpdateProperties
 
 		[Test]
 		public void CreateAndRunIntegrationPoint()
 		{
 			//Arrange
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("RunNow",3));
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("RunNow", 3));
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
@@ -307,7 +306,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
 		}
 
-
 		[Test]
 		public void CreateIntegrationPointWithNoSchedulerAndUpdateWithScheduler()
 		{
@@ -422,7 +420,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			return model;
 		}
 
-		private DataTable GetImportTable(string documentPrefix ,int numberOfDocuments)
+		private DataTable GetImportTable(string documentPrefix, int numberOfDocuments)
 		{
 			DataTable table = new DataTable();
 			table.Columns.Add("Control Number", typeof(string));

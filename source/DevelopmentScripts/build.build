@@ -42,7 +42,7 @@
 	<property name="ncover.install.directory" value="${environment::get-variable('ProgramW6432')}\NCover" />
 	<property name="ncover.output.directory" value="D:\NCover" unless="${property::exists('ncover.output.directory')}" />
 	<property name="caseId" value="" unless="${property::exists('caseId')}" />
-	<property name="relativityDependencyVersion" value="9.3.398.12" />
+	<property name="relativityDependencyVersion" value="9.3.440.1" />
 	
 	<!-- Microsoft .NET folders -->
 	<property name="microsoft.net.directory" value="${environment::get-variable('windir')}\Microsoft.NET\Framework\v4.0.30319" unless="${property::exists('microsoft.net.directory')}" />
@@ -196,8 +196,13 @@
 			
 			<!-- kCura Dependencies -->
 			<arg line='/lib:"${source.packages.directory}\kCura.HTMLSanitizer.0.0.21.7\lib"' />
+			<arg line='/lib:"${source.packages.directory}\Nito.AsyncEx.3.0.1\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\AutoMapper.4.2.1\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Remotion.Linq.2.0.2\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\Dynamitey.1.0.2.0\lib\portable-win+net45+sl40+wp80"' />
 			<arg line='/lib:"${source.packages.directory}\kCuraCore.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\RelativityCore.${relativityDependencyVersion}\lib\net45"' />
+			<arg line='/lib:"${source.packages.directory}\kCura.Agent.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Data.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.ImportExport.${relativityDependencyVersion}\lib\net45"' />
 			<arg line='/lib:"${source.packages.directory}\Relativity.Kepler.1.0.1.149\lib\net45"' />
@@ -225,6 +230,7 @@
 			<arg line='/lib:"${source.reference.CastleCore.directory}"' />
 			<arg line='/lib:"${source.reference.CastleWindsor.directory}"' />
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5"' />
+			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1"' />
 			<arg line='/lib:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0"' />
 			<arg line='/lib:"C:\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 4\Assemblies"' />
 			<arg line='/lib:"${source.reference.NewtonsoftJson.directory}"' />
@@ -244,7 +250,6 @@
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Agent.dll"' />
 			<arg line='"${target.code.directory}\kCura.IntegrationPoints.Email.dll"' />
 			<arg line='/ver:${ILMerge.DLL.Version}' />
-			<arg line='/closed' />
 		</exec>
 	</target>
 
@@ -395,7 +400,7 @@
 			</fileset>
 		</copy>
 		<copy todir="${bin.directory}">
-			<fileset basedir="${source.packages.directory}\RelativityCore.9.3.398.12\lib\net45">
+			<fileset basedir="${source.packages.directory}\RelativityCore.9.3.440.1\lib\net45">
 				<include name="kCura.Image.Viewer.dll" />
 				<include name="kCura.Print.dll" />
 			</fileset>

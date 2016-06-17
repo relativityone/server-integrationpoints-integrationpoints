@@ -1,5 +1,4 @@
 ﻿using System;
-using Relativity.Core.Api.Contracts.Shared;
 using IAgentManager = Relativity.Services.Agent.IAgentManager;
 
 namespace kCura.IntegrationPoint.Tests.Core
