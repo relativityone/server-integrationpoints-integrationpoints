@@ -24,7 +24,7 @@ ko.bindingHandlers.select2 = {
 
 		var allBindings = allBindingsAccessor();
 		if ("value" in allBindings) {
-			$(el).select2("val", allBindings.value());
+		    $(el).val(allBindings.value()).trigger('change');
 		} else if ("selectedOptions" in allBindings) {
 			var converted = [];
 			var textAccessor = function (value) { return value; };
