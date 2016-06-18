@@ -248,7 +248,6 @@
     <Compile Include="Migrations\IMigration.cs" />
     <Compile Include="Migrations\MigrationRunner.cs" />
     <Compile Include="Migrations\UpdateJobErrorsBlankToNo.cs" />
-    <Compile Include="Models\ApplicationBinary.cs" />
     <Compile Include="Queries\JobResourceTracker.cs" />
     <Compile Include="Queries\GetJobCustodianManagerLinks.cs" />
     <Compile Include="Queries\CreateCustodianManagerResourceTable.cs" />
@@ -285,7 +284,6 @@
     <Compile Include="Transformers\IDtoTransformer.cs" />
     <Compile Include="Transformers\JobHistoryErrorTransformer.cs" />
     <Compile Include="Transformers\IntegrationPointTransformer.cs" />
-    <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GeneratedStringConstants.cs">
@@ -358,6 +356,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Contracts\kCura.IntegrationPoints.Contracts.csproj">
       <Project>{0cedb7af-db89-47de-9587-8ccd58621f2f}</Project>
       <Name>kCura.IntegrationPoints.Contracts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

@@ -232,10 +232,6 @@
     <Compile Include="Services\DeleteHistoryErrorService.cs" />
     <Compile Include="Services\DeleteHistoryService.cs" />
     <Compile Include="Services\DeleteIntegrationPoints.cs" />
-    <Compile Include="Services\Domain\AssemblyDomainLoader.cs" />
-    <Compile Include="Services\Domain\DataReaderWrapper.cs" />
-    <Compile Include="Services\Domain\DomainHelper.cs" />
-    <Compile Include="IPluginProvider.cs" />
     <Compile Include="ISourcePluginProvider.cs" />
     <Compile Include="Properties\ErrorMessages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -245,8 +241,6 @@
     <Compile Include="IContextService.cs" />
     <Compile Include="Queries\GetSourceProviderRdoByIdentifier.cs" />
     <Compile Include="Queries\GetSourceProviderRdoByApplicationIdentifier.cs" />
-    <Compile Include="Services\Domain\ProviderWrapper.cs" />
-    <Compile Include="Services\Domain\RelativityFeaturePathService.cs" />
     <Compile Include="Services\Exporter\DocumentTransferDataReader.cs" />
     <Compile Include="Services\Exporter\ExportApiDataHelper.cs" />
     <Compile Include="Factories\Implementations\ExporterFactory.cs" />
@@ -274,13 +268,10 @@
     <Compile Include="Services\Keywords\SourceEmailBodyDataKeyword.cs" />
     <Compile Include="Services\Keywords\RipNameKeyword.cs" />
     <Compile Include="Services\Keywords\WorkspaceNameKeyword.cs" />
-    <Compile Include="Services\Marshaller\IAppDomainDataMarshaller.cs" />
     <Compile Include="Services\Marshaller\ISerializationHelper.cs" />
-    <Compile Include="Services\Marshaller\SecureAppDomainDataMarshaller.cs" />
     <Compile Include="Services\Marshaller\SerializationHelper.cs" />
     <Compile Include="Services\Provider\DefaultSourcePluginProvider.cs" />
     <Compile Include="Services\Domain\AppDomainFactory.cs" />
-    <Compile Include="Services\Provider\ProviderManager.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForEventHandlers.cs" />
     <Compile Include="Services\ServiceContext\IServiceContextHelper.cs" />
     <Compile Include="Services\ServiceContext\ServiceContextHelperForAgent.cs" />
@@ -342,6 +333,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
       <Project>{599d771d-2ae7-4321-9bac-be06f827ce0a}</Project>
       <Name>kCura.IntegrationPoints.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Security\kCura.IntegrationPoints.Security.csproj">
       <Project>{E7D6A21D-ACC6-4140-9E18-C2E6BCA85449}</Project>

@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using kCura.IntegrationPoints.Data.Models;
+using kCura.IntegrationPoints.Contracts.Domain;
 using kCura.IntegrationPoints.Data.Queries;
 
 namespace kCura.IntegrationPoints.Core.Services.Provider

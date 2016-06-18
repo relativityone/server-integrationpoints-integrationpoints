@@ -7,11 +7,11 @@ using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Castle.Windsor.Installer;
-using kCura.IntegrationPoints.Core.Domain;
-using kCura.IntegrationPoints.Core.Services.Marshaller;
+using kCura.IntegrationPoints.Contracts;
+using kCura.IntegrationPoints.Contracts.Provider;
 using Relativity.API;
 
-namespace kCura.IntegrationPoints.Contracts
+namespace kCura.IntegrationPoints.Domain
 {
 	/// <summary>
 	/// Entry point into the App domain to create the Provider
@@ -23,13 +23,15 @@ namespace kCura.IntegrationPoints.Contracts
 		private IProviderFactory _providerFactory;
 		private WindsorContainer _windsorContainer;
 
+	    public DomainManager()
+	    {
+	    }
+
 		/// <summary>
 		/// Called to initialized the provider's app domain and do any setup work needed
 		/// </summary>
 		public void Init()
 		{
-			// Resolve new app domain's assemblies
-			AppDomain.CurrentDomain.AssemblyResolve += AssemblyDomainLoader.ResolveAssembly;
 			System.Reflection.Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			Type startupType = typeof(IStartUp);
 
@@ -63,7 +65,7 @@ namespace kCura.IntegrationPoints.Contracts
 		/// </summary>
 		private void SetUpConnectionString(IAppDomainDataMarshaller dataMarshaller)
 		{
-			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Core.Constants.IntegrationPoints.APP_DOMAIN_DATA_CONNECTION_STRING);
+			byte[] data = dataMarshaller.RetrieveMarshaledData(AppDomain.CurrentDomain, Constants.IntegrationPoints.APP_DOMAIN_DATA_CONNECTION_STRING);
 			if (data != null && data.Length > 0)
 			{
 				string connectionString = System.Text.Encoding.ASCII.GetString(data);
@@ -80,7 +82,7 @@ namespace kCura.IntegrationPoints.Contracts
 			var installerFactory = new InstallerFactory();
 			_windsorContainer.Install(
 				FromAssembly.InDirectory(
-					new AssemblyFilter(AppDomain.CurrentDomain.RelativeSearchPath)
+					new AssemblyFilter(AppDomain.CurrentDomain.BaseDirectory)
 						.FilterByName(this.FilterByAllowedAssemblyNames)));
 		}
 
@@ -110,7 +112,7 @@ namespace kCura.IntegrationPoints.Contracts
 		/// <param name="identifier">The identifier that represents the provider</param>
 		/// <param name="helper">Optional IHelper object to use for resolving classes</param>
 		/// <returns>A Data source provider to retrieve data and pass along to the source.</returns>
-		public Provider.IDataSourceProvider GetProvider(Guid identifier, IHelper helper)
+		public IDataSourceProvider GetProvider(Guid identifier, IHelper helper)
 		{
 			if (_windsorContainer == null)
 			{
