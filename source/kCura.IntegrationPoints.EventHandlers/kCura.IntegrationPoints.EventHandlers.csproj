@@ -78,11 +78,7 @@
     </Reference>
     <Reference Include="kCura.Relativity.Client, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\bin\UnitTests\kCura.IntegrationPoints.Agent.Tests\kCura.Relativity.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="kCura.Relativity.DataReaderClient, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Injection.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\kCura.Relativity.Client.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Notification, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Notification.dll</HintPath>

@@ -118,9 +118,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\RelativityCore.9.4.212.3\lib\net45\Relativity.Core.Api.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Data, Version=9.4.205.3, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\bin\UnitTests\kCura.IntegrationPoints.Agent.Tests\Relativity.Data.dll</HintPath>
+    <Reference Include="Relativity.Data">
+      <HintPath>..\packages\Relativity.Data.9.4.212.3\lib\net45\Relativity.Data.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.DataGrid, Version=10.0.55.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
