@@ -42,6 +42,17 @@
 			<arg line='/internaldlls:${dllout}' />
 		</exec>
 	</target>
+	
+	<target name="build_jsonloader_rap">
+		<exec program="${ldap.scripts.directory}\kCura.RAPBuilder.exe">
+			<arg line='/source:${root}' />
+			<arg line='/input:${example.directory}\JsonLoader\application\build.xml' />
+			<arg line='/version:${Product.Version}' />
+			<arg line='/servertype:local' />
+			<arg line='/debug:${diagnostic}' />
+			<arg line='/internaldlls:${dllout}' />
+		</exec>
+	</target>
 
 		<!-- Use following as template
 	
