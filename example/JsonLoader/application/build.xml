@@ -76,6 +76,7 @@
         <ApplicationSchema>..\example\JsonLoader\application\application.xml</ApplicationSchema>
         <Assemblies>
           <Assembly>bin\kCura.IntegrationPoints.Contracts.dll</Assembly>
+		  <Assembly>bin\kCura.IntegrationPoints.Domain.dll</Assembly>
           <Assembly>bin\kCura.SourceProviderInstaller.dll</Assembly>
           <Assembly>..\example\JsonLoader\JsonLoader\bin\JsonLoader.dll</Assembly>
 		  <Assembly>..\example\JsonLoader\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</Assembly>

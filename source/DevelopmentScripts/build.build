@@ -420,6 +420,7 @@
 			<fileset basedir="${target.bin.directory}">
 				<include name="kCura.IntegrationPoints.Contracts.dll" />
 				<include name="kCura.SourceProviderInstaller.dll" />
+				<include name="kCura.IntegrationPoints.Domain.dll" />
 			</fileset>
 		</copy>
 	</target>
