@@ -19,10 +19,12 @@ namespace kCura.IntegrationPoints.Domain
             var assemblyLocalPath = new Uri(typeof(AssemblyDomainLoader).Assembly.CodeBase).LocalPath;
             var assemblyLocalDirectory = Path.GetDirectoryName(assemblyLocalPath);
             var assemblyPath = Path.Combine(assemblyLocalDirectory, "kCura.IntegrationPoints.Contracts.dll");
+            if (!File.Exists(assemblyPath)) { throw new FileNotFoundException($"Required file kCura.IntegrationPoints.Contracts.dll is missing in {assemblyLocalDirectory}."); }
             var stream = File.ReadAllBytes(assemblyPath);
             var dir = Path.Combine(domain.BaseDirectory, new FileInfo(assemblyPath).Name);
             File.WriteAllBytes(dir, stream);
             assemblyPath = Path.Combine(assemblyLocalDirectory, "kCura.IntegrationPoints.Domain.dll");
+            if (!File.Exists(assemblyPath)) { throw new FileNotFoundException($"Required file kCura.IntegrationPoints.Domain.dll is missing in {assemblyLocalDirectory}."); }
             stream = File.ReadAllBytes(assemblyPath);
             dir = Path.Combine(domain.BaseDirectory, new FileInfo(assemblyPath).Name);
             File.WriteAllBytes(dir, stream);
@@ -106,8 +108,16 @@ namespace kCura.IntegrationPoints.Domain
             if (domain != null)
             {
                 string domainDirectory = domain.BaseDirectory;
-                domain.AssemblyResolve -= _appDomainLoader.ResolveAssembly;
-                _appDomainLoader = null;
+                if (_appDomainLoader != null)
+                {
+                    try
+                    {
+                        domain.AssemblyResolve -= _appDomainLoader.ResolveAssembly;
+                    }
+                    catch
+                    { }
+                    _appDomainLoader = null;
+                }
                 try
                 {
                     domain.DomainUnload += (sender, args) =>

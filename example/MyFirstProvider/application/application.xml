@@ -3,45 +3,51 @@
   <ArtifactViewFields />
   <Assemblies>
     <Assembly>
-      <ArtifactId>1123109</ArtifactId>
+      <ArtifactId>1017652</ArtifactId>
       <Keywords />
       <Name>kCura.IntegrationPoints.Contracts.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1123110</ArtifactId>
+      <ArtifactId>1017653</ArtifactId>
       <Keywords />
       <Name>kCura.SourceProviderInstaller.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1123111</ArtifactId>
+      <ArtifactId>1017654</ArtifactId>
       <Keywords />
       <Name>Provider.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1017658</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Domain.dll</Name>
       <Notes />
     </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-06-15T23:48:48.5846364Z</ExtractionDate>
+  <ExtractionDate>2016-06-20T17:07:26.9759851Z</ExtractionDate>
   <Guid>616c3c78-aa2c-46b9-b81c-21be354f323d</Guid>
   <Name>MyFirstProvider</Name>
   <Objects />
   <ParentTabs />
   <RelativityVersion>9.3.0.0</RelativityVersion>
-  <Version>0.0.0.3</Version>
+  <Version>0.0.0.1</Version>
   <TabDisplay>false</TabDisplay>
-  <OriginSignature>82c67c8a-f431-4f80-9de3-9ccf65c2ecad</OriginSignature>
+  <OriginSignature>92968c26-9c92-4db6-8ad7-896c469ffde5</OriginSignature>
   <MasterScripts />
   <ApplicationScripts />
   <CustomPages>
     <CustomPage>
-      <ArtifactID>1040428</ArtifactID>
+      <ArtifactID>1039825</ArtifactID>
       <Guid>26cd78ff-d5a9-4469-af6b-1b81aa346b32</Guid>
-      <ApplicationVersion>0.0.0.3</ApplicationVersion>
+      <ApplicationVersion>0.0.0.1</ApplicationVersion>
       <Name>Web</Name>
       <FileName>Web.zip</FileName>
-      <Size>1144797</Size>
+      <Size>1367221</Size>
       <Keywords />
       <Notes />
       <Hash />
@@ -51,27 +57,27 @@
   <IsRelativityApplication>true</IsRelativityApplication>
   <InstallEventHandlers>
     <InstallEventHandler>
-      <ArtifactId>1040426</ArtifactId>
-      <AssemblyArtifactId>1123111</AssemblyArtifactId>
+      <ArtifactId>1039827</ArtifactId>
+      <AssemblyArtifactId>1017654</AssemblyArtifactId>
       <Name>Provider.EventHandlers.RegisterNewIntegrationPoint</Name>
       <Guid>bd0c749d-dc8d-4b9c-b4f7-2ea4f508089e</Guid>
       <Guids>ea11a845-1cc3-45a3-8dc0-0344f3885f17</Guids>
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>Provider.dll</AssemblyName>
-      <ApplicationVersion>0.0.0.3</ApplicationVersion>
+      <ApplicationVersion>0.0.0.1</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
-      <ArtifactId>1040427</ArtifactId>
-      <AssemblyArtifactId>1123111</AssemblyArtifactId>
+      <ArtifactId>1039828</ArtifactId>
+      <AssemblyArtifactId>1017654</AssemblyArtifactId>
       <Name>Provider.EventHandlers.RemoveMyFirstProvider</Name>
       <Guid>a2e8a386-af25-42f9-ab99-1063e8547114</Guid>
       <Guids>5a83f6c9-e4c8-42b4-8a2b-9f037c7ca485</Guids>
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>Provider.dll</AssemblyName>
-      <ApplicationVersion>0.0.0.3</ApplicationVersion>
+      <ApplicationVersion>0.0.0.1</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>
@@ -83,6 +89,7 @@
     <FullTextAll>1000182</FullTextAll>
   </EnvironmentVariables>
   <GlobalApplication>false</GlobalApplication>
+  <UserFriendlyUrl />
   <RelativityScriptIds />
   <ViewIds />
   <LayoutIds />
@@ -91,7 +98,7 @@
   <ObjectTypeIds />
   <TabIds />
   <CustomPageIds>
-    <Id>1040428</Id>
+    <Id>1039825</Id>
   </CustomPageIds>
   <Locked>true</Locked>
 </Application>
