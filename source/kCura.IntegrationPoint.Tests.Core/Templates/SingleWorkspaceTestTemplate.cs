@@ -34,12 +34,11 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			Install();
 		}
 
-		[TestFixtureSetUp]
+		[TestFixtureTearDown]
 		public virtual void TearDown()
 		{
 			Workspace.DeleteWorkspace(WorkspaceArtifactId);
 		}
-
 
 		protected virtual void Install()
 		{
