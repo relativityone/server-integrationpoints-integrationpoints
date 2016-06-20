@@ -62,8 +62,20 @@
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Elasticsearch.Net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Elasticsearch.Net.1.4.3\lib\net45\Elasticsearch.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentValidation, Version=6.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.6.1.0.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="FreeImageNET, Version=3.15.1.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.3.440.1\lib\net45\FreeImageNET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.3.0.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.HTMLSanitizer.0.0.21.7\lib\HtmlAgilityPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ionic.Zip, Version=1.8.4.28, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
@@ -84,6 +96,10 @@
     </Reference>
     <Reference Include="kCura.Data.RowDataGateway, Version=9.3.440.1, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\kCuraCore.9.3.440.1\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.HTMLSanitizer, Version=0.0.21.7, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.HTMLSanitizer.0.0.21.7\lib\kCura.HTMLSanitizer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
@@ -134,6 +150,18 @@
       <HintPath>..\packages\Relativity.ImportExport.9.3.440.1\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.FileSystems, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.FileSystems.3.0.1\lib\net45\Microsoft.Owin.FileSystems.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Administration, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Administration.7.0.0.0\lib\net20\Microsoft.Web.Administration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -155,14 +183,21 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.API">
-      <HintPath>..\packages\RelativityCore.9.4.205.3\lib\net45\Relativity.API.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.3.440.1\lib\net45\Relativity.API.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=9.4.205.3, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Services.DataContracts, Version=9.3.440.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RelativityCore.9.4.205.3\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.3.440.1\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Services.Interfaces">
+      <HintPath>..\packages\RelativityCore.9.3.440.1\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Toggles, Version=1.0.0.68, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Toggles.1.0.0.68\lib\net45\Relativity.Toggles.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Sodium, Version=0.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\libsodium-net.0.8.0\lib\Net40\Sodium.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -308,5 +343,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Relativity.ImportExport.9.3.440.1\build\Relativity.ImportExport.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.ImportExport.9.3.440.1\build\Relativity.ImportExport.targets'))" />
+    <Error Condition="!Exists('..\packages\Baseclass.Contrib.Nuget.Output.2.1.0\build\net40\Baseclass.Contrib.Nuget.Output.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Baseclass.Contrib.Nuget.Output.2.1.0\build\net40\Baseclass.Contrib.Nuget.Output.targets'))" />
   </Target>
+  <Import Project="..\packages\Baseclass.Contrib.Nuget.Output.2.1.0\build\net40\Baseclass.Contrib.Nuget.Output.targets" Condition="Exists('..\packages\Baseclass.Contrib.Nuget.Output.2.1.0\build\net40\Baseclass.Contrib.Nuget.Output.targets')" />
 </Project>

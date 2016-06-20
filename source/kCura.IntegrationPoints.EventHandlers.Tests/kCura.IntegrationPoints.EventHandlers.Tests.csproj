@@ -61,14 +61,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.227.4\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.EventHandler, Version=9.3.440.1, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.EventHandler.9.3.440.1\lib\net45\kCura.EventHandler.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=9.3.440.1, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Relativity.Client.9.3.440.1\lib\net45\kCura.Relativity.Client.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="kCura.Data, Version=9.4.205.3, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\kCuraCore.9.4.205.3\lib\net45\kCura.Data.dll</HintPath>
       <Private>True</Private>
