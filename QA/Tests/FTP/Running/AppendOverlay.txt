@@ -102,8 +102,8 @@
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
-#| | Delete the Custodians in the Following Department using API	| AppendAndOverlayFT
-| | Delete the following Integration Point using API | ${IntegrationName}
+| | Delete the Custodians in the Following Department using API	| AppendAndOverlayFT
+| | Delete the following Integration Point | ${IntegrationName}
 
 | | Drop connection to the relativity services api
 | | Close All Browsers

@@ -4,22 +4,24 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using kCura.IntegrationPoints.Contracts;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
+using kCura.IntegrationPoints.Core.Services.Provider;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Interfaces;
 using kCura.IntegrationPoints.FtpProvider.Helpers.Models;
 using kCura.IntegrationPoints.Security;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.Web.Controllers.API
 {
     public class FtpProviderAPIController : ApiController
     {
-        private IEncryptionManager _securityManager;
-        private ISettingsManager _settingsManager;
-        private IProviderFactory _providerFactory;
+        private readonly IEncryptionManager _securityManager;
+        private readonly ISettingsManager _settingsManager;
+        private IDataProviderFactory _providerFactory;
+        private readonly IHelper _helper;
 
-        public FtpProviderAPIController(IEncryptionManager securityManager, ISettingsManager settingsManager, IProviderFactory providerFactory)
+        public FtpProviderAPIController(IEncryptionManager securityManager, ISettingsManager settingsManager, IDataProviderFactory providerFactory, IHelper helper)
         {
             _securityManager = securityManager;
             _settingsManager = settingsManager;
@@ -47,19 +49,18 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
         [HttpPost]
         public IHttpActionResult GetColumnList([FromBody] object data)
         {
-	        List<FieldEntry> result = null;
-	        try
-	        {
-				string encryptedSettings = _securityManager.Encrypt(data.ToString());
-				IDataSourceProvider ftpProvider = _providerFactory.CreateProvider(Guid.Parse(FtpProvider.Helpers.Constants.Guids.FtpProviderEventHandler));
-				IEnumerable<Contracts.Models.FieldEntry> fields = ftpProvider.GetFields(encryptedSettings);
-				result = fields.ToList();
-			}
-	        catch (Exception ex)
-	        {
-		        return Content(HttpStatusCode.BadRequest, ex.Message);
-			}
-           
+            List<FieldEntry> result = null;
+            try
+            {
+                string encryptedSettings = _securityManager.Encrypt(data.ToString());
+                IDataSourceProvider ftpProvider = _providerFactory.GetDataProvider(Guid.Parse(Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING), Guid.Parse(FtpProvider.Helpers.Constants.Guids.FtpProviderEventHandler), _helper);
+                IEnumerable<Contracts.Models.FieldEntry> fields = ftpProvider.GetFields(encryptedSettings);
+                result = fields.ToList();
+            }
+            catch (Exception ex)
+            {
+                return Content(HttpStatusCode.BadRequest, ex.Message);
+            }
 
             return Ok(result);
         }

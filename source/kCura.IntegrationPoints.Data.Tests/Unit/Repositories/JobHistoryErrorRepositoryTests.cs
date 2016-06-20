@@ -9,6 +9,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Relativity.API;
 using Relativity.Services.Search;
+using Relativity.Services.ObjectQuery;
 
 namespace kCura.IntegrationPoints.Data.Tests.Unit.Repositories
 {

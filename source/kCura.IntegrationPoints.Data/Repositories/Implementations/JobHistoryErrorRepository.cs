@@ -91,7 +91,6 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 			return jobHistoryErrors;
 		}
 
-
 		public void UpdateErrorStatuses(ClaimsPrincipal claimsPrincipal, int numberOfErrors, int jobHistoryErrorTypeId, int errorStatusArtifactId, string tableName)
 		{
 			if (numberOfErrors <= 0)

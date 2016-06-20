@@ -18,12 +18,13 @@ namespace kCura.IntegrationPoints.Web.Models
 		public String DisplayName { get; private set; }
 
 		public static IList<SavedSearchModel> GetAllPublicSavedSearches(IRSAPIClient context)
-		{
+		 {
 			const String identifier = "Text Identifier";
 			const String owner = "Owner";
 
 			GetSavedSearchesQuery query = new GetSavedSearchesQuery(context);
-			List<Artifact> artifacts = query.ExecuteQuery().QueryArtifacts;
+			QueryResult queryResult = query.ExecuteQuery();
+			List<Artifact> artifacts = queryResult.QueryArtifacts;
 			List<SavedSearchModel> result = new List<SavedSearchModel>(artifacts.Count);
 			foreach (var artifact in artifacts)
 			{

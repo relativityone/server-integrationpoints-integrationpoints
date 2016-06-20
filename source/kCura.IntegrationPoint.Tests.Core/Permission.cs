@@ -54,6 +54,24 @@ namespace kCura.IntegrationPoint.Tests.Core
 			ResetRelativityServices();
 		}
 
+		public static void AddRemoveItemGroups(int workspaceId, int itemArtifactId, GroupSelector groupSelector)
+		{
+			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				ItemLevelSecurity itemLevel = proxy.GetItemLevelSecurityAsync(workspaceId, itemArtifactId).Result;
+				itemLevel.Enabled = true;
+				proxy.SetItemLevelSecurityAsync(workspaceId, itemLevel).Wait(TimeSpan.FromSeconds(10));
+			}
+
+			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				GroupSelector originalSelector = proxy.GetItemGroupSelectorAsync(workspaceId, itemArtifactId).Result;
+				originalSelector.DisabledGroups = groupSelector.DisabledGroups;
+				originalSelector.EnabledGroups = groupSelector.EnabledGroups;
+				proxy.AddRemoveItemGroupsAsync(workspaceId, itemArtifactId, originalSelector).Wait(TimeSpan.FromSeconds(10));
+			}
+		}
+
 		public static void SetMinimumRelativityProviderPermissions(int workspaceId, int groupId)
 		{
 			GroupRef groupRef = new GroupRef(groupId);

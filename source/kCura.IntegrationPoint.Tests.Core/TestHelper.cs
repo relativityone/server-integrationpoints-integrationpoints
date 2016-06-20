@@ -96,11 +96,6 @@ namespace kCura.IntegrationPoint.Tests.Core
 			throw new NotImplementedException();
 		}
 
-		public IServicesMgr GetServicesManager()
-		{
-			return _serviceManager;
-		}
-
 		public string ResourceDBPrepend()
 		{
 			throw new NotImplementedException();
@@ -116,10 +111,15 @@ namespace kCura.IntegrationPoint.Tests.Core
 			throw new NotImplementedException();
 		}
 
-	    public Guid GetGuid(int workspaceID, int artifactID)
-	    {
-	        throw new NotImplementedException();
-	    }
+		public Guid GetGuid(int workspaceID, int artifactID)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IServicesMgr GetServicesManager()
+		{
+			return _serviceManager;
+		}
 
         #region Extended classes
 

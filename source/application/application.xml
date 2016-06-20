@@ -8048,7 +8048,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.56</ApplicationVersion>
+          <ApplicationVersion>2.0.0.60</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8852,25 +8852,21 @@
           <ViewCriteria />
           <ViewFields>
             <ViewField>
-              <ArtifactViewFieldId>1001270</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001316</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>0</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001316</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001315</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>1</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001315</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001307</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>2</Order>
             </ViewField>
-            <ViewField>
-              <ArtifactViewFieldId>1001307</ArtifactViewFieldId>
-              <IsEditable>false</IsEditable>
               <Order>3</Order>
-            </ViewField>
           </ViewFields>
           <ViewOrders />
           <VisualizationType>0</VisualizationType>
@@ -8878,7 +8874,7 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>2.0.95.14</ApplicationVersion>
+          <ApplicationVersion>2.0.0.59</ApplicationVersion>
         </View>
       </Views>
       <ApplicationVersion>2.0.95.12</ApplicationVersion>

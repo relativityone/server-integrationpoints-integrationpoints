@@ -125,6 +125,7 @@ namespace kCura.IntegrationPoints.Agent.Tasks
 					job.SubmittedBy))
 				{
 					JobHistoryDto.TotalItems = exporter.TotalRecordsFound;
+					JobHistoryDto.JobStatus = JobStatusChoices.JobHistoryProcessing;
 					UpdateJobStatus();
 
 					if (exporter.TotalRecordsFound > 0)

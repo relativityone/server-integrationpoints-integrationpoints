@@ -10,9 +10,10 @@ using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using Newtonsoft.Json;
 using Relativity;
-using Relativity.Core;
 using Relativity.Data;
 using System.Text.RegularExpressions;
+using Relativity.Core;
+using Relativity.Core.Api.Shared.Manager.Export;
 
 namespace kCura.IntegrationPoints.Core.Services.Exporter
 {

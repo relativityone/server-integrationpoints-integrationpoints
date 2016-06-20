@@ -57,17 +57,12 @@
       <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="itextsharp, Version=5.1.2.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\itextsharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="kCura.Agent, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\kCura.Agent.9.4.212.3\lib\net45\kCura.Agent.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Apps.Common.Config, Version=1.0.227.4, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\kCura.Apps.Common.Config.1.0.227.4\lib\net45\kCura.Apps.Common.Config.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Apps.Common.Data, Version=1.0.227.4, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\kCura.Apps.Common.Data.1.0.227.4\lib\net45\kCura.Apps.Common.Data.dll</HintPath>
@@ -124,9 +119,6 @@
     <Reference Include="Relativity.API, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.API.9.4.212.3\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.CustomPages">
-      <HintPath>..\Relativity.CustomPages.9.3.398.12\lib\net45\Relativity.CustomPages.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

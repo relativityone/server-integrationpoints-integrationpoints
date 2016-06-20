@@ -23,7 +23,6 @@ namespace kCura.IntegrationPoints.Config
 
 		public static Config Instance => _instance.Value;
 
-
 		internal Config(IDictionary instanceSettings)
 		{
 			_instanceSettings = instanceSettings;

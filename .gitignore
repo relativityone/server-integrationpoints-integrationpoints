@@ -111,9 +111,20 @@ source/Dependencies/kCura.RAPBuilder/*
 source/DevelopmentScripts/kCura.RAPBuilder.exe
 source/publish/*
 *.pubxml.user
+*.rap
 
 source/packages/*
 source/TestLogs/output64.xml
 
 source/.vs/config/applicationhost.config
+example/MyFirstProvider/.vs/config/applicationhost.config
+example/JsonLoader/.vs/config/applicationhost.config
 documentation/images/*
+
+example/MyFirstProvider/packages/
+example/MyFirstProvider/publish/
+example/JsonLoader/packages/
+example/JsonLoader/publish/
+example/ProviderIncludes/kCura.IntegrationPoints.Contracts.dll
+example/ProviderIncludes/kCura.SourceProviderInstaller.dll
+example/ProviderIncludes/kCura.IntegrationPoints.Domain.dll
