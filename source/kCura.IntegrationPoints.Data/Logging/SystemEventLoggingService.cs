@@ -1,4 +1,5 @@
 ﻿using System;
+using kCura.IntegrationPoints.Domain;
 
 namespace kCura.IntegrationPoints.Data.Logging
 {

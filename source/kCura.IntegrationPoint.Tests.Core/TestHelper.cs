@@ -96,6 +96,26 @@ namespace kCura.IntegrationPoint.Tests.Core
 			throw new NotImplementedException();
 		}
 
+		public string ResourceDBPrepend()
+		{
+			throw new NotImplementedException();
+		}
+
+		public string ResourceDBPrepend(IDBContext context)
+		{
+			throw new NotImplementedException();
+		}
+
+		public string GetSchemalessResourceDataBasePrepend(IDBContext context)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Guid GetGuid(int workspaceID, int artifactID)
+		{
+			throw new NotImplementedException();
+		}
+
 		public IServicesMgr GetServicesManager()
 		{
 			return _serviceManager;

@@ -1,19 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using kCura.Apps.Common.Utils.Serializers;
+﻿using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoint.Tests.Core.Templates;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
+using kCura.IntegrationPoints.Data.Factories;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Synchronizers.RDO;
-using NUnit.Framework;
 using kCura.ScheduleQueue.Core.ScheduleRules;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 {
@@ -24,11 +26,12 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		private const string _SOURCECONFIG = "Source Config";
 		private const string _NAME = "Name";
 		private const string _FIELDMAP = "Map";
-		private DestinationProvider _destinationProvider;
-		private IIntegrationPointService _integrationPointService;
-		private IQueueRepository _queueRepository;
 		private const int _ADMIN_USER_ID = 9;
 		private const string _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME = "Service Account, Relativity";
+		private DestinationProvider _destinationProvider;
+		private IIntegrationPointService _integrationPointService;
+		private IRepositoryFactory _repositoryFactory;
+		private IJobHistoryService _jobHistoryService;
 
 		public IntegrationPointServiceTests()
 			: base("IntegrationPointService Source", null)
@@ -41,7 +44,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			base.SetUp();
 			_destinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
-			_queueRepository = Container.Resolve<IQueueRepository>();
+			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
+			_jobHistoryService = Container.Resolve<IJobHistoryService>();
 		}
 
 		#region UpdateProperties
@@ -129,13 +133,57 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual("Update", audit.AuditAction, "The audit action should be correct.");
 		}
 
+		[Test]
+		public void SaveIntegration_IntegrationPointWithNoSchedulerAndUpdateWithScheduler()
+		{
+			//Arrange
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("RunNow", 3));
+
+			IntegrationModel integrationModel = new IntegrationModel
+			{
+				Destination = GetDestinationConfigWithOverlayOnly(),
+				DestinationProvider = DestinationProvider.ArtifactId,
+				SourceProvider = RelativityProvider.ArtifactId,
+				SourceConfiguration = CreateDefaultSourceConfig(),
+				LogErrors = true,
+				Name = "IntegrationPointServiceTest" + DateTime.Now,
+				SelectedOverwrite = "Overlay Only",
+				Scheduler = new Scheduler()
+				{
+					EnableScheduler = false
+				},
+				Map = CreateDefaultFieldMap()
+			};
+
+			//Act
+			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
+			integrationPoint.Scheduler = new Scheduler()
+			{
+				EnableScheduler = true,
+				StartDate = DateTime.UtcNow.ToString("MM/dd/yyyy"),
+				EndDate = DateTime.UtcNow.ToString("MM/dd/yyyy"),
+				ScheduledTime = DateTime.UtcNow.Hour + ":" + DateTime.UtcNow.AddMinutes(1),
+				Reoccur = 0,
+				SelectedFrequency = ScheduleInterval.None.ToString()
+			};
+			IntegrationModel modifiedIntegrationPoint = CreateOrUpdateIntegrationPoint(integrationPoint);
+
+			//Assert
+			Audit postRunAudit = this.GetLastAuditsForIntegrationPoint(modifiedIntegrationPoint.Name, 1).First();
+
+			Assert.AreEqual("Update", postRunAudit.AuditAction, "The audit action should be Update");
+			Assert.AreEqual(SharedVariables.UserFullName, postRunAudit.UserFullName, "The user should be correct");
+
+			AssertThatAuditDetailsChanged(postRunAudit, new HashSet<string>() { "Next Scheduled Runtime (UTC)", "Has Errors" });
+		}
+
 		#endregion
 
 		[Test]
-		public void CreateAndRunIntegrationPoint()
+		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{
 			//Arrange
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("RunNow",3));
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("RunNow", 3));
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
@@ -159,22 +207,28 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			_integrationPointService.RunIntegrationPoint(SourceWorkspaceArtifactId, integrationPoint.ArtifactID, _ADMIN_USER_ID);
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPoint.ArtifactID);
 			IntegrationModel integrationPointPostJob = _integrationPointService.ReadIntegrationPoint(integrationPoint.ArtifactID);
+			IJobHistoryRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryRepository(SourceWorkspaceArtifactId);
+			IList<int> jobHistoryArtifactIds = new List<int> { jobHistoryErrorRepository.GetLastJobHistoryArtifactId(integrationPointPostJob.ArtifactID) };
+			JobHistory jobHistory = _jobHistoryService.GetJobHistory(jobHistoryArtifactIds)[0];
 
 			//Assert
 			Assert.AreEqual(false, integrationPointPostJob.HasErrors);
 			Assert.IsNotNull(integrationPointPostJob.LastRun);
-			IList<Audit> postRunAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, 3);
+			Assert.AreEqual(3, jobHistory.ItemsImported);
+			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
+			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted, jobHistory.JobStatus);
+			Assert.AreEqual(JobTypeChoices.JobHistoryRunNow, jobHistory.JobType);
 
+			IList<Audit> postRunAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, 3);
 			Assert.AreEqual(3, postRunAudits.Count, "There should be 4 audits");
 			Assert.IsTrue(postRunAudits.All(x => x.AuditAction == "Update"));
 			Assert.IsTrue(postRunAudits.All(x => x.UserFullName == _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME), "The user full name should match");
-			Tuple<string, string> auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRunAudits.First(), "Last Runtime (UTC)");
-			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
-			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
+
+			AssertThatAuditDetailsChanged(postRunAudits.First(), new HashSet<string>() { "Last Runtime (UTC)" });
 		}
 
 		[Test]
-		public void RetryIntegrationPointErrors()
+		public void RetryIntegrationPoint_GoldFlow()
 		{
 			//Arrange
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("Retry", 3));
@@ -215,37 +269,38 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPostRun.ArtifactID);
 			IntegrationModel integrationPointPostRetry = _integrationPointService.ReadIntegrationPoint(integrationPointPostRun.ArtifactID);
 
+			IJobHistoryRepository jobHistoryErrorRepository = _repositoryFactory.GetJobHistoryRepository(SourceWorkspaceArtifactId);
+			IList<int> jobHistoryArtifactIds = new List<int> { jobHistoryErrorRepository.GetLastJobHistoryArtifactId(integrationPointPostRetry.ArtifactID) };
+			JobHistory jobHistory = _jobHistoryService.GetJobHistory(jobHistoryArtifactIds)[0];
+
 			//Assert
 			Assert.AreEqual(true, integrationPointPostRun.HasErrors, "The first integration point run should have errors");
 			Assert.AreEqual(false, integrationPointPostRetry.HasErrors, "The integration point post retry should not have errors");
+			Assert.AreEqual(3, jobHistory.ItemsImported);
+			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
+			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted, jobHistory.JobStatus);
+			Assert.AreEqual(JobTypeChoices.JobHistoryRetryErrors, jobHistory.JobType);
+
 
 			Assert.AreEqual(4, postRunAudits.Count, "There should be 4 audits");
 			Assert.IsTrue(postRunAudits.All(x => x.AuditAction == "Update"));
 			Assert.IsTrue(postRunAudits.All(x => x.UserFullName == _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME), "The user full name should match");
-			Tuple<string, string> auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRunAudits.First(), "Last Runtime (UTC)");
-			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
-			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
-			auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRunAudits[3], "Has Errors");
-			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
-			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
+			AssertThatAuditDetailsChanged(postRunAudits.First(), new HashSet<string>() { "Last Runtime (UTC)", "Has Errors" });
 
 			IList<Audit> postRetryAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, 4);
 			Assert.AreEqual(4, postRetryAudits.Count, "There should be 4 audits");
 			Assert.IsTrue(postRetryAudits.All(x => x.AuditAction == "Update"));
 			Assert.IsTrue(postRetryAudits.All(x => x.UserFullName == _REALTIVITY_SERVICE_ACCOUNT_FULL_NAME), "The user full name should match");
-			auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRetryAudits.First(), "Last Runtime (UTC)");
-			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
-			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
-			auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRetryAudits[3], "Has Errors");
-			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
-			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
+			AssertThatAuditDetailsChanged(postRetryAudits.First(), new HashSet<string>() { "Last Runtime (UTC)", "Has Errors" });
 		}
 
 		[Test]
-		public void CreateAndRunScheduledIntegrationPoint()
+		public void CreateAndRunIntegrationPoint_ScheduledIntegrationPoint_GoldFlow()
 		{
 			//Arrange
 			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("Scheduled", 3));
+
+			DateTime utcNow = DateTime.UtcNow;
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
@@ -259,11 +314,10 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 				Scheduler = new Scheduler()
 				{
 					EnableScheduler = true,
-					StartDate = DateTime.UtcNow.ToString("MM/dd/yyyy"),
-					EndDate = DateTime.UtcNow.ToString("MM/dd/yyyy"),
-					ScheduledTime = DateTime.UtcNow.Hour + ":" + DateTime.UtcNow.AddMinutes(1),
-					Reoccur = 0,
-					SelectedFrequency = ScheduleInterval.None.ToString()
+					StartDate = utcNow.ToString("MM/dd/yyyy"),
+					EndDate = utcNow.AddDays(1).ToString("MM/dd/yyyy"),
+					ScheduledTime = utcNow.ToString("HH") + ":" + utcNow.AddMinutes(1).ToString("mm"),
+					SelectedFrequency = ScheduleInterval.Daily.ToString(),
 				},
 				Map = CreateDefaultFieldMap()
 			};
@@ -273,7 +327,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			//Act
 
 			//Create Errors by using Append Only
-			Status.WaitForIntegrationPointJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPreJobExecution.ArtifactID);
+			Status.WaitForScheduledJobToComplete(Container, SourceWorkspaceArtifactId, integrationPointPreJobExecution.ArtifactID);
 			IntegrationModel integrationPointPostRun = _integrationPointService.ReadIntegrationPoint(integrationPointPreJobExecution.ArtifactID);
 
 			//Assert
@@ -281,73 +335,28 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(false, integrationPointPreJobExecution.HasErrors);
 			Assert.AreEqual(false, integrationPointPostRun.HasErrors);
 			Assert.IsNotNull(integrationPointPostRun.LastRun);
+			Assert.IsNotNull(integrationPointPostRun.NextRun);
 
 			Audit postRunAudit = this.GetLastAuditsForIntegrationPoint(integrationPointPostRun.Name, 1).First();
 
 			Assert.AreEqual("Update", postRunAudit.AuditAction, "The audit action should be Update");
 			Assert.AreEqual(_REALTIVITY_SERVICE_ACCOUNT_FULL_NAME, postRunAudit.UserFullName, "The user should be correct");
 
-			Tuple<string, string> auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRunAudit, "Next Scheduled Runtime (UTC)");
-			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
-			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
-			auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRunAudit, "Last Runtime (UTC)");
-			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
-			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
+			AssertThatAuditDetailsChanged(postRunAudit, new HashSet<string>() { "Next Scheduled Runtime (UTC)", "Last Runtime (UTC)" });
 		}
 
+	
 
-		[Test]
-		public void CreateIntegrationPointWithNoSchedulerAndUpdateWithScheduler()
+		private void AssertThatAuditDetailsChanged(Audit audit, HashSet<string> fieldNames)
 		{
-			//Arrange
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("RunNow", 3));
+			IDictionary<string, Tuple<string, string>> auditDetailsFieldValueDictionary = this.GetAuditDetailsFieldValues(audit, fieldNames);
 
-			IntegrationModel integrationModel = new IntegrationModel
+			foreach (string key in auditDetailsFieldValueDictionary.Keys)
 			{
-				Destination = GetDestinationConfigWithOverlayOnly(),
-				DestinationProvider = DestinationProvider.ArtifactId,
-				SourceProvider = RelativityProvider.ArtifactId,
-				SourceConfiguration = CreateDefaultSourceConfig(),
-				LogErrors = true,
-				Name = "IntegrationPointServiceTest" + DateTime.Now,
-				SelectedOverwrite = "Overlay Only",
-				Scheduler = new Scheduler()
-				{
-					EnableScheduler = false
-				},
-				Map = CreateDefaultFieldMap()
-			};
-
-			//Act
-			IntegrationModel integrationPoint = CreateOrUpdateIntegrationPoint(integrationModel);
-			integrationPoint.Scheduler = new Scheduler()
-			{
-				EnableScheduler = true,
-				StartDate = DateTime.UtcNow.ToString("MM/dd/yyyy"),
-				EndDate = DateTime.UtcNow.ToString("MM/dd/yyyy"),
-				ScheduledTime = DateTime.UtcNow.Hour + ":" + DateTime.UtcNow.AddMinutes(1),
-				Reoccur = 0,
-				SelectedFrequency = ScheduleInterval.None.ToString()
-			};
-			IntegrationModel modifiedIntegrationPoint = CreateOrUpdateIntegrationPoint(integrationPoint);
-
-			//Assert
-			Audit postRunAudit = this.GetLastAuditsForIntegrationPoint(modifiedIntegrationPoint.Name, 1).First();
-
-			Assert.AreEqual("Update", postRunAudit.AuditAction, "The audit action should be Update");
-			Assert.AreEqual(SharedVariables.UserFullName, postRunAudit.UserFullName, "The user should be correct");
-
-			Tuple<string, string> auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRunAudit, "Next Scheduled Runtime (UTC)");
-			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
-			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
-
-			auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRunAudit, "Enable Scheduler");
-			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
-			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
-
-			auditDetailsFieldValueTuple = this.GetAuditDetailsFieldValues(postRunAudit, "Schedule Rule");
-			Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
-			Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
+				Tuple<string, string> auditDetailsFieldValueTuple = auditDetailsFieldValueDictionary[key];
+				Assert.IsNotNull(auditDetailsFieldValueTuple, "The audit should contain the field value changes");
+				Assert.AreNotEqual(auditDetailsFieldValueTuple.Item1, auditDetailsFieldValueTuple.Item2, "The field's values should have changed");
+			}
 		}
 
 		private void ValidateModel(IntegrationModel expectedModel, IntegrationModel actual, string[] updatedProperties)
@@ -410,7 +419,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			return model;
 		}
 
-		private DataTable GetImportTable(string documentPrefix ,int numberOfDocuments)
+		private DataTable GetImportTable(string documentPrefix, int numberOfDocuments)
 		{
 			DataTable table = new DataTable();
 			table.Columns.Add("Control Number", typeof(string));
