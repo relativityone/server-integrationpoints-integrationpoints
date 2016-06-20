@@ -2,15 +2,11 @@
 	<div id="exportProviderFields" class="card">
 		<span class="label">Export Fields</span>
 
-		<div class="map-field-title">
-			<label class="list-title leftSide-field">Source Fields:</label>
-			<label class="list-title rightSide-field">Selected Fields:</label>
-		</div>
-
 		<div data-bind="validationMessage: mappedFields" class="icon-error legal-hold field-validation-error"></div>
 
 		<div class="table" id="selectFields">
 			<div class="cell">
+				<div class="list-title" style="margin: 10px 0px 5px 0px;">Source Fields:</div>
 				<select id="available-fields" class="list-box" name="available-field" data-bind="options: availableFields, selectedOptions: selectedAvailableFields, optionsText: 'displayName', doubleClick: addField" multiple="multiple"></select>
 			</div>
 			<div class="cell selection map-move">
@@ -22,6 +18,7 @@
 				</div>
 			</div>
 			<div class="cell">
+				<div class="list-title" style="margin: 10px 0px 5px 0px;">Selected Fields:</div>
 				<select class="list-box" id="selected-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'displayName', doubleClick: removeField" multiple="multiple"></select>
 			</div>
 			<div class="cell selection map-move">
