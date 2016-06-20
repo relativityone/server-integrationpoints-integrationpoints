@@ -19,8 +19,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Tes
 
 		public override void Verify(DirectoryInfo directory, DataTable documents, DataTable images)
 		{
-            Assert.That(GetFileInfo(directory), Throws.TypeOf<FileNotFoundException>());
-			//Assert.Throws<FileNotFoundException>(() => GetFileInfo(directory));
+			Assert.Throws<FileNotFoundException>(() => GetFileInfo(directory));
 		}
 		public override string MetadataFormat => "opt";
 	}
