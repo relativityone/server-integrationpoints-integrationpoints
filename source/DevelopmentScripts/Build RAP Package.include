@@ -62,6 +62,25 @@
 		</exec>
 	</target>
 	
+	<target name="deploy_jsonloader_web_project" description="Deploys custom pages to a directory">
+		<exec program="${msbuild}">
+			<arg line='"${example.directory}\JsonLoader\JsonWeb\JsonWeb.csproj"' />
+			<arg line='/property:SourceRoot="${root}"' />
+			<arg line="/property:Configuration=${buildconfig}" />
+			<arg line='/property:Platform="ANYCPU"' />
+			<arg line="/property:NoWarn=${ignorewarnings}" />
+			<arg line='/logger:"${logger}"'/>
+			<arg line='/logger:"${buildLogger}";"${buildLoggerLogFile}"'/>
+			<arg value="/noconsolelogger" />
+			<arg value="/filelogger" />
+			<arg value='/flp:LogFile="${logfile}";Verbosity=${verbosity}' />      
+			<arg value='/p:SolutionDir=${root}\'/>
+			<arg value="/verbosity:${verbosity}" />
+			<arg value='/p:DefineConstants="${TimeMachine},${Injections}";OutDir="${example.directory}\JsonLoader\publish\bin\web";WebProjectOutputDir="${example.directory}\JsonLoader\publish\web"' />
+			<arg value="/nologo" />
+		</exec>
+	</target>
+	
 	<target name="sign_files" description="Signs dlls and exes using signtool.exe">
 		<choose>
 			<when test="${signOutput=='true'}">

@@ -120,7 +120,7 @@
 # --------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
-| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP - File Transfer Protocol | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendFTP.csv
+| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendFTP.csv
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Department	| Department 
 | | ... | Email			| Email		 
@@ -128,7 +128,7 @@
 | | ... | Last Name		| LastName	 
 | | ... | Manager       | Manager
 | | ... | UniqueID		| unique_id
-| | Create FTP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | Email
+| | Create FTP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | UniqueID
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}
 | | [Teardown]		| Run Keywords | Drop connection to the relativity services api | Capture Page Screenshot
