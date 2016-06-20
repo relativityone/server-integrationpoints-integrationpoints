@@ -10,7 +10,7 @@
 
 *** Variables ***
 
-| ${WorkspaceName}	 | LDAP Sync
+| ${WorkspaceName} | LDAP Sync
 | ${Wildcard1} | Wildcard Golden 
 | ${File1}     | Wildcard File 05-13-2016.csv
 | ${File2}     | Wildcard File 05-14-2016.csv
@@ -57,14 +57,14 @@
 # --------------------------------------------------------------------------------------------------------
 
 | | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
-| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/UnlockedFields.csv
+| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP - File Transfer Protocol | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/UnlockedFields.csv
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Department	| Department 
 | | ... | Email			| Email		 
 | | ... | First Name	| FirstName 
 | | ... | Last Name		| LastName	 
 | | ... | UniqueID		| objectguid
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | Email
+| | Create FTP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | Email
 | | View Integration Point | ${IntegrationName}
 | | Click | Edit
 | | Wait for then Select iFrame	| id=_externalPage	| 10s | The Page never redirected after clicking "Edit".
@@ -73,7 +73,7 @@
 | Verify that the following field is not disabled
 | | [Documentation] | Verify that the following field is not disabled on the edit screen.
 | | [ARGUMENTS] | ${FieldName}
-| | xpath=//input[@id='${FieldName}' and not @disabled]
+| | element should be visible | xpath=//input[@id='${FieldName}' and not @disabled]
  
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
@@ -90,7 +90,11 @@
 | Library	| Collections
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
+<<<<<<< HEAD
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepThreeKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
