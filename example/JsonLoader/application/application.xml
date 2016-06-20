@@ -26,16 +26,22 @@
       <Name>kCura.SourceProviderInstaller.dll</Name>
       <Notes />
     </Assembly>
+    <Assembly>
+      <ArtifactId>1123984</ArtifactId>
+      <Keywords />
+      <Name>kCura.IntegrationPoints.Domain.dll</Name>
+      <Notes />
+    </Assembly>
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-06-20T18:06:51.6765642Z</ExtractionDate>
+  <ExtractionDate>2016-06-20T19:17:13.2201453Z</ExtractionDate>
   <Guid>57151c17-cd92-4a6e-800c-a75bf807d097</Guid>
   <Name>JsonLoader</Name>
   <Objects />
   <ParentTabs />
   <RelativityVersion>9.3.0.0</RelativityVersion>
-  <Version>0.0.0.3</Version>
+  <Version>0.0.0.4</Version>
   <TabDisplay>false</TabDisplay>
   <OriginSignature>82c67c8a-f431-4f80-9de3-9ccf65c2ecad</OriginSignature>
   <MasterScripts />
@@ -65,7 +71,7 @@
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
       <AssemblyName>JsonLoader.dll</AssemblyName>
-      <ApplicationVersion>0.0.0.3</ApplicationVersion>
+      <ApplicationVersion>0.0.0.4</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
@@ -77,7 +83,7 @@
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
       <AssemblyName>JsonLoader.dll</AssemblyName>
-      <ApplicationVersion>0.0.0.3</ApplicationVersion>
+      <ApplicationVersion>0.0.0.4</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>
