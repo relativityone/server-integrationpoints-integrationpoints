@@ -127,3 +127,4 @@ example/JsonLoader/packages/
 example/JsonLoader/publish/
 example/ProviderIncludes/kCura.IntegrationPoints.Contracts.dll
 example/ProviderIncludes/kCura.SourceProviderInstaller.dll
+example/ProviderIncludes/kCura.IntegrationPoints.Domain.dll
