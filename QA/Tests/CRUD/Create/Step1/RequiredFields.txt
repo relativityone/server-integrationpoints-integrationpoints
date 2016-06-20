@@ -42,7 +42,7 @@
 | | [Documentation]	| Verify that leaving the Source Provider field as Select... displays a warning message after clicking Next.
 | | ...				| [id] 0f384592-a89f-11e4-8c7e-b8ca3a83048f
 | | [Tags]			| required	| automated
-| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| DestinationRDO=Custodian	| EnableScheduler=No
+| | Fill out the Following Fields of the Integration Point Step 1 form	| IntegrationName=Scheduler Fields Testing	| EnableScheduler=No
 | | Click	| id=next
 | | Verify the following Integration Point Field has the following Error	| ${Sorce Provider Field}	| This field is required.
 
@@ -52,7 +52,7 @@
 | | ...				| [id] 0f384593-a89f-11e4-99c6-b8ca3a83048f
 | | [Tags]			| automated
 | | [Setup]			| Require Test Case	| The Source Provider field displays an error message when empty
-| | Fill out the Following Fields of the Integration Point Step 1 form	| SourceProvider=LDAP
+| | Fill out the Following Fields of the Integration Point Step 1 form	| SourceProvider=LDAP	| DestinationRDO=Custodian
 | | Proceed to the Next Step of the Integration Point wizard
 | | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| Connect to Source
 
@@ -80,4 +80,5 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource  | ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt

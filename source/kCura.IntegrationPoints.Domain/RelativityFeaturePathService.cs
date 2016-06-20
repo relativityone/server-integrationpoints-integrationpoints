@@ -2,7 +2,7 @@
 using System.IO;
 using Microsoft.Win32;
 
-namespace kCura.IntegrationPoints.Core.Domain
+namespace kCura.IntegrationPoints.Domain
 {
 	public class RelativityFeaturePathService
 	{

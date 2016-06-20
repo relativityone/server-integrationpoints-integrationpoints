@@ -99,6 +99,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Ftp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.FtpProvider.Tests", "kCura.IntegrationPoints.FtpProvider.Tests\kCura.IntegrationPoints.FtpProvider.Tests.csproj", "{F5EDCEF8-3F00-47DC-B711-DA6B8E21C987}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kCura.IntegrationPoints.Domain", "kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj", "{5D5B52B4-8769-431A-9743-B96F15FED5FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -493,6 +495,18 @@ Global
 		{F5EDCEF8-3F00-47DC-B711-DA6B8E21C987}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F5EDCEF8-3F00-47DC-B711-DA6B8E21C987}.Release|x64.ActiveCfg = Release|Any CPU
 		{F5EDCEF8-3F00-47DC-B711-DA6B8E21C987}.Release|x64.Build.0 = Release|Any CPU
+		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Debug|x64.ActiveCfg = Debug|x64
+		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Debug|x64.Build.0 = Debug|x64
+		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Release|x64.ActiveCfg = Release|Any CPU
+		{5D5B52B4-8769-431A-9743-B96F15FED5FD}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

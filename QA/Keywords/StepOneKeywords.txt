@@ -40,8 +40,8 @@
 
 | | Run Keyword Unless	| "${Reoccur}" == "NULL"	| Input Text	| id=reoccur	| ${Reoccur}
 
-| | Run Keyword If	| ("${FrequencyValue}" == "Weekly") and ("${SendOn}" != "NULL")		| IntegrationPointKeywords.Fill out the Send On field for a Weekly Frequency	| ${SendOn}	| 
-| | ... | ELSE IF	| ("${FrequencyValue}" == "Monthly") and ("${SendOn}" != "NULL")	| IntegrationPointKeywords.Fill out the Send On field for a Monthly Frequency	| ${SendOn}
+| | Run Keyword If	| ("${FrequencyValue}" == "Weekly") and ("${SendOn}" != "NULL")		| StepOneKeywords.Fill out the Send On field for a Weekly Frequency	| ${SendOn}	| 
+| | ... | ELSE IF	| ("${FrequencyValue}" == "Monthly") and ("${SendOn}" != "NULL")	| StepOneKeywords.Fill out the Send On field for a Monthly Frequency	| ${SendOn}
 
 | | Run Keyword Unless	| "${ScheduledTime}" == "NULL"	| Fill Out the Scheduled Time field	| ${ScheduledTime}	| # Out of order due to date picker issues with the End Date. This does not work when date picker overlaps dropdown.
 
@@ -54,8 +54,8 @@
 | | ... 			| [Tags] private
 | | [ARGUMENTS] 	| ${SendOn}
 | | ${SendOn}=	| Replace String	| ${SendOn}	| ${SPACE}	| ${EMPTY}
-| | IntegrationPointKeywords.Clear the Weekly Send On Field
-| | Run Keyword Unless	| '${SendOn.lower()}' == 'clear'	| IntegrationPointKeywords.Populate the Weekly Send On Field	| ${SendOn}
+| | StepOneKeywords.Clear the Weekly Send On Field
+| | Run Keyword Unless	| '${SendOn.lower()}' == 'clear'	| StepOneKeywords.Populate the Weekly Send On Field	| ${SendOn}
 
 | Clear the Weekly Send On Field
 | | [Documentation]	| Unselects all of the Weekly Send On field's checkboxes.
@@ -80,8 +80,8 @@
 | | ... 			| [Tags] private
 | | [ARGUMENTS] 	| ${SendOn}
 | | ${FirstWord}=	| Fetch from Left	| ${SendOn}	| ${Space}
-| | Run Keyword If	| '${FirstWord.lower()}' == 'the'	| IntegrationPointKeywords.Select the radio button for The X X of the month	| ${SendOn}
-| | ... | ELSE IF	| '${FirstWord.lower()}' == 'day'	| IntegrationPointKeywords.Select the day X of the month radio button		| ${SendOn}
+| | Run Keyword If	| '${FirstWord.lower()}' == 'the'	| StepOneKeywords.Select the radio button for The X X of the month	| ${SendOn}
+| | ... | ELSE IF	| '${FirstWord.lower()}' == 'day'	| StepOneKeywords.Select the day X of the month radio button		| ${SendOn}
 | | ... | ELSE		| Fail	| The Send On field could not be filled out. The value "${SendOn}" was not valid.
 
 | Select the day X of the month radio button

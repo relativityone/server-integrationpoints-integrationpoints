@@ -183,7 +183,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{
 			//Arrange
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("RunNow",3));
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("RunNow", 3));
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
@@ -345,7 +345,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			AssertThatAuditDetailsChanged(postRunAudit, new HashSet<string>() { "Next Scheduled Runtime (UTC)", "Last Runtime (UTC)" });
 		}
 
-
 	
 
 		private void AssertThatAuditDetailsChanged(Audit audit, HashSet<string> fieldNames)
@@ -420,7 +419,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			return model;
 		}
 
-		private DataTable GetImportTable(string documentPrefix ,int numberOfDocuments)
+		private DataTable GetImportTable(string documentPrefix, int numberOfDocuments)
 		{
 			DataTable table = new DataTable();
 			table.Columns.Add("Control Number", typeof(string));

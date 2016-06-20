@@ -4,18 +4,18 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace kCura.IntegrationPoints.Core.Domain
+namespace kCura.IntegrationPoints.Contracts.Domain
 {
     /// <summary>
     /// Helper class used to load assemblies in the foreign app domain
     /// </summary>
-    public class AssemblyDomainLoader : MarshalByRefObject
+    internal class AssemblyDomainLoader : MarshalByRefObject
     {
         public AssemblyDomainLoader()
         {
         }
 
-        public static readonly HashSet<string> MergedBinariesList = new HashSet<string>()
+        public readonly HashSet<string> MergedBinariesList = new HashSet<string>()
         {
             "kCura.IntegrationPoints.Data",
             "kCura.Apps.Common.Config",
@@ -98,8 +98,8 @@ namespace kCura.IntegrationPoints.Core.Domain
             }
         }
 
-        private static Dictionary<String, System.Reflection.Assembly> _assemblies = new Dictionary<String, System.Reflection.Assembly>(StringComparer.OrdinalIgnoreCase);
-        public static System.Reflection.Assembly ResolveAssembly(object sender, ResolveEventArgs args)
+        private Dictionary<String, System.Reflection.Assembly> _assemblies = new Dictionary<String, System.Reflection.Assembly>(StringComparer.OrdinalIgnoreCase);
+        public System.Reflection.Assembly ResolveAssembly(object sender, ResolveEventArgs args)
         {
             System.Reflection.Assembly returnedAssembly = null;
 
@@ -113,7 +113,7 @@ namespace kCura.IntegrationPoints.Core.Domain
             return returnedAssembly;
         }
 
-        public static System.Reflection.Assembly ResolveAssemblyInDirectory(string dllName, string searchDirectory)
+        public System.Reflection.Assembly ResolveAssemblyInDirectory(string dllName, string searchDirectory)
         {
             System.Reflection.Assembly returnedAssembly = null;
 
@@ -148,7 +148,8 @@ namespace kCura.IntegrationPoints.Core.Domain
             return returnedAssembly;
         }
 
-        public static System.Reflection.Assembly ResolveMergedAssembly(string dllName, string searchDirectory)
+
+        public System.Reflection.Assembly ResolveMergedAssembly(string dllName, string searchDirectory)
         {
             System.Reflection.Assembly returnedAssembly = null;
             if (MergedBinariesList.Any(s => { return s.Equals(dllName, StringComparison.InvariantCultureIgnoreCase); }))
@@ -162,7 +163,18 @@ namespace kCura.IntegrationPoints.Core.Domain
             return returnedAssembly;
         }
 
-        private static void GetLoadedAssemblies()
+        public string ResolveMergedAssemblyFullName(string dllName, string searchDirectory)
+        {
+            string mergedAssemblyFullName = null;
+            System.Reflection.Assembly mergedAssembly = ResolveAssemblyInDirectory(dllName, searchDirectory);
+            if (mergedAssembly != null)
+            {
+                mergedAssemblyFullName = mergedAssembly.FullName;
+            }
+            return mergedAssemblyFullName;
+        }
+
+        private void GetLoadedAssemblies()
         {
             foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {

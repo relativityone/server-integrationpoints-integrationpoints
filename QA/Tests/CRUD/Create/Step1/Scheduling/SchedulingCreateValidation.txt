@@ -30,7 +30,7 @@
 | | Click	| id=next
 
 | | Run Keyword And Continue On Failure	| Verify the following Integration Point Field has the following Error	| ${Frequency Field}		| This field is required.
-| | Run Keyword And Continue On Failure	| Verify the following Integration Point Field has the following Error	| ${Start Date Field}		| This field is required.
+| | Run Keyword And Continue On Failure	| Verify the following Integration Point Field has the following Error	| ${Start Date Field}		| Please enter a valid date.
 | | Run Keyword And Continue On Failure	| Verify the following Integration Point Field has the following Error	| ${Scheduled Time Field}	| This field is required.
 
 
@@ -231,4 +231,5 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt

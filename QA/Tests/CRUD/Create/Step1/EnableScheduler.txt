@@ -22,11 +22,11 @@
 | | [Tags]			| automated
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 
-| | Verify that the following Card contains the following fields	| Import Scheduling	| 
-| | ... | Enable Scheduler:	| 
-| | ... | Frequency:		| 
-| | ... | Start Date:		| 
-| | ... | End Date:			| 
+| | Verify that the following Card contains the following fields	| Scheduling	| 
+| | ... | Enable Scheduler:
+| | ... | Frequency:
+| | ... | Start Date:
+| | ... | End Date:
 | | ... | Scheduled Time:\n(local)
 
 
@@ -37,7 +37,7 @@
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=Yes
 | | Fill out the Following Fields of the Integration Point Step 1 form	| EnableScheduler=No
 
-| | Verify that the following Card contains the following fields	| Import Scheduling	| 
+| | Verify that the following Card contains the following fields	| Scheduling	| 
 | | ... | Enable Scheduler:
 
 
@@ -75,4 +75,5 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
