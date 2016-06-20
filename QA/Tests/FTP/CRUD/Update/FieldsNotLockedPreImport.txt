@@ -16,31 +16,22 @@
 | ${SourceProviderField}  | s2id_sourceProvider
 | ${DestinationRDO}       | s2id_destinationRdo
 
-
 *** Test Cases ***
-
-| No Field is locked before Import 
-| | [Documentation] | Verify that prior to an import running, that no Field on Step 1 is locked. 
-| | ...				| [id] 63a9d7b0-324b-11e6-ad09-989096e24b46
+| Integration Name field is Not Locked after Import 
+| | [Documentation] | Verify that prior to an import runing, that the Integration Name field on Step 1 is not locked. 
+| | ...	| [id] 63a9d7b0-324b-11e6-ad09-989096e24b46
 | | [Tags] | automated
 | | Verify that the following field is Enabled | ${IntegrationNameField}
-| | ... | Expected Results: 
-| | ... | Verify that the following fields are not disabled: 
-| | ... | - Integration Name
-| | ... | - Email Notification Recipients
-| | ... | - Log Errors
-| | ... | - Source Provider
-| | ... | - Destination RDO
-| | ... | - Enable Scheduler
-| | ... | - Frequency
-| | ... | - Reoccur
-| | ... | - Send On
-| | ... | - Start Date
-| | ... | - End Date
-| | ... | - Scheduled Time
 
+| Source Provide field is Not Locked before Import 
+| | [Documentation] | Verify that prior to an import being run, that the Source Provider field on Step 1 is not  locked.
+| | ...	| [id] 5f6c7c1e-324b-11e6-9ccb-989096e24b46
 | | [Tags] | automated
 | | Verify that the following list is Enabled | ${SourceProviderField} 
+
+| Destination RDO field is Not Locked before Import 
+| | [Documentation] | Verify that before an import has been run, that the Destination RDO field on Step 1 is not locked.
+| | ...	| [id] 5ac5fe80-324b-11e6-a3f5-989096e24b46
 | | [Tags] | automated
 | | Verify that the following list is Enabled | ${DestinationRDO} 
 
@@ -50,20 +41,11 @@
 | | [Documentation]	| Create the Suite Preconditions
 | | Setup connection to the relativity database
 | | Open and Log in to Legal Hold
+| | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 # --------------------------------------------------------------------------------------------------------
 
-| | @{Step1Fields}=	| Create List	| 
-| | ... | ${IntegrationName}
-| | ... | FTP (CSV File)
-| | ... | Custodian
-| | ... | Yes
-| | ... | Weekly
-| | ... | 1
-| | ... | Monday
-| | ... | 12/12/2112
-| | ... | 12/12/2121
-| | ... | 12:12 AM
+| | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
 | | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/UnlockedFields.csv
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Department	| Department 
@@ -73,7 +55,6 @@
 | | ... | UniqueID		| unique_id
 
 | | Create FTP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | Email
-
 | | View Integration Point | ${IntegrationName}
 | | Click | Edit
 | | Wait for then Select iFrame	| id=_externalPage	| 10s | The Page never redirected after clicking "Edit".
@@ -81,7 +62,7 @@
 
 | Verify that the following field is Enabled
 | | [Documentation] | Verify that the following field is not disabled on the edit screen.
-| | [ARGUMENTS]		| ${FieldName}
+| | [ARGUMENTS] | ${FieldName}
 | | Wait until Keyword succeeds | 10s | 2s | Element should not be visible | xpath=//input[@id='${FieldName}' and (@disabled)]
 | | Wait until Keyword succeeds | 10s | 2s | Element should be visible | xpath=//input[@id='${FieldName}']
 
@@ -98,7 +79,6 @@
 
 | | Delete the Custodians in the Following Department using API	| UnLockedFields
 | | Delete the following Integration Point | ${IntegrationName}
-| | Delete the Following Integration Point	| ${IntegrationName}
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
