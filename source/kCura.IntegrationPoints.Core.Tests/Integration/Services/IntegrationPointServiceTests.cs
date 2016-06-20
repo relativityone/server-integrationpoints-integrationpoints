@@ -46,6 +46,7 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			_integrationPointService = Container.Resolve<IIntegrationPointService>();
 			_repositoryFactory = Container.Resolve<IRepositoryFactory>();
 			_jobHistoryService = Container.Resolve<IJobHistoryService>();
+			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("IPTestDocument", 3));
 		}
 
 		#region UpdateProperties
@@ -183,8 +184,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void CreateAndRunIntegrationPoint_GoldFlow()
 		{
 			//Arrange
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("RunNow", 3));
-
 			IntegrationModel integrationModel = new IntegrationModel
 			{
 				Destination = GetDestinationConfigWithOverlayOnly(),
@@ -216,8 +215,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.IsNotNull(integrationPointPostJob.LastRun);
 			Assert.AreEqual(3, jobHistory.ItemsImported);
 			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
-			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted, jobHistory.JobStatus);
-			Assert.AreEqual(JobTypeChoices.JobHistoryRunNow, jobHistory.JobType);
+			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted.Name, jobHistory.JobStatus.Name);
+			Assert.AreEqual(JobTypeChoices.JobHistoryRunNow.Name, jobHistory.JobType.Name);
 
 			IList<Audit> postRunAudits = this.GetLastAuditsForIntegrationPoint(integrationModel.Name, 3);
 			Assert.AreEqual(3, postRunAudits.Count, "There should be 4 audits");
@@ -231,7 +230,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void RetryIntegrationPoint_GoldFlow()
 		{
 			//Arrange
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("Retry", 3));
 
 			IntegrationModel integrationModel = new IntegrationModel
 			{
@@ -278,8 +276,8 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 			Assert.AreEqual(false, integrationPointPostRetry.HasErrors, "The integration point post retry should not have errors");
 			Assert.AreEqual(3, jobHistory.ItemsImported);
 			Assert.AreEqual(0, jobHistory.ItemsWithErrors);
-			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted, jobHistory.JobStatus);
-			Assert.AreEqual(JobTypeChoices.JobHistoryRetryErrors, jobHistory.JobType);
+			Assert.AreEqual(JobStatusChoices.JobHistoryCompleted.Name, jobHistory.JobStatus.Name);
+			Assert.AreEqual(JobTypeChoices.JobHistoryRetryErrors.Name, jobHistory.JobType.Name);
 
 
 			Assert.AreEqual(4, postRunAudits.Count, "There should be 4 audits");
@@ -298,7 +296,6 @@ namespace kCura.IntegrationPoints.Core.Tests.Integration.Services
 		public void CreateAndRunIntegrationPoint_ScheduledIntegrationPoint_GoldFlow()
 		{
 			//Arrange
-			Import.ImportNewDocuments(SourceWorkspaceArtifactId, GetImportTable("Scheduled", 3));
 
 			DateTime utcNow = DateTime.UtcNow;
 
