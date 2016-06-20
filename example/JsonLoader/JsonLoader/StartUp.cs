@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using kCura.IntegrationPoints.Contracts;
+﻿using kCura.IntegrationPoints.Contracts;
 
 namespace JsonLoader
 {
@@ -11,7 +6,6 @@ namespace JsonLoader
 	{
 		public void Execute()
 		{
-			PluginBuilder.Current.SetProviderFactory(new DIProviderFactory());
 		}
 	}
 }

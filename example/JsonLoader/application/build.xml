@@ -71,18 +71,19 @@
   </TestRunner>
   <RAPBuilder>
     <Applications>
-      <Application name="MyFirstProvider">
-        <Destination>..\example\MyFirstProvider\application\MyFirstProvider.rap</Destination>
-        <ApplicationSchema>..\example\MyFirstProvider\application\application.xml</ApplicationSchema>
+      <Application name="JsonLoader">
+        <Destination>..\example\JsonLoader\application\JsonProvider.rap</Destination>
+        <ApplicationSchema>..\example\JsonLoader\application\application.xml</ApplicationSchema>
         <Assemblies>
           <Assembly>bin\kCura.IntegrationPoints.Contracts.dll</Assembly>
-          <Assembly>bin\kCura.IntegrationPoints.Domain.dll</Assembly>
+		  <Assembly>bin\kCura.IntegrationPoints.Domain.dll</Assembly>
           <Assembly>bin\kCura.SourceProviderInstaller.dll</Assembly>
-          <Assembly>..\example\MyFirstProvider\Provider\bin\Provider.dll</Assembly>
+          <Assembly>..\example\JsonLoader\JsonLoader\bin\JsonLoader.dll</Assembly>
+		  <Assembly>..\example\JsonLoader\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</Assembly>
 		 </Assemblies>
         <ResourceFiles />
         <CustomPages>
-          <CustomPage guid="26cd78ff-d5a9-4469-af6b-1b81aa346b32">..\example\MyFirstProvider\publish\web\</CustomPage>
+          <CustomPage guid="48dae441-8954-433e-9dcb-6513874f0271">..\example\JsonLoader\publish\web\</CustomPage>
         </CustomPages>
       </Application>
     </Applications>
