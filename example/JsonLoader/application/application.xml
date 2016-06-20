@@ -3,25 +3,31 @@
   <ArtifactViewFields />
   <Assemblies>
     <Assembly>
-      <ArtifactId>1017652</ArtifactId>
+      <ArtifactId>1123976</ArtifactId>
+      <Keywords />
+      <Name>JsonLoader.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1123977</ArtifactId>
+      <Keywords />
+      <Name>Newtonsoft.Json.dll</Name>
+      <Notes />
+    </Assembly>
+    <Assembly>
+      <ArtifactId>1123978</ArtifactId>
       <Keywords />
       <Name>kCura.IntegrationPoints.Contracts.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1017653</ArtifactId>
+      <ArtifactId>1123979</ArtifactId>
       <Keywords />
       <Name>kCura.SourceProviderInstaller.dll</Name>
       <Notes />
     </Assembly>
     <Assembly>
-      <ArtifactId>1017654</ArtifactId>
-      <Keywords />
-      <Name>Provider.dll</Name>
-      <Notes />
-    </Assembly>
-    <Assembly>
-      <ArtifactId>1017658</ArtifactId>
+      <ArtifactId>1123984</ArtifactId>
       <Keywords />
       <Name>kCura.IntegrationPoints.Domain.dll</Name>
       <Notes />
@@ -29,25 +35,25 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-06-20T17:07:26.9759851Z</ExtractionDate>
-  <Guid>616c3c78-aa2c-46b9-b81c-21be354f323d</Guid>
-  <Name>MyFirstProvider</Name>
+  <ExtractionDate>2016-06-20T19:17:13.2201453Z</ExtractionDate>
+  <Guid>57151c17-cd92-4a6e-800c-a75bf807d097</Guid>
+  <Name>JsonLoader</Name>
   <Objects />
   <ParentTabs />
   <RelativityVersion>9.3.0.0</RelativityVersion>
-  <Version>0.0.0.1</Version>
+  <Version>0.0.0.4</Version>
   <TabDisplay>false</TabDisplay>
-  <OriginSignature>92968c26-9c92-4db6-8ad7-896c469ffde5</OriginSignature>
+  <OriginSignature>82c67c8a-f431-4f80-9de3-9ccf65c2ecad</OriginSignature>
   <MasterScripts />
   <ApplicationScripts />
   <CustomPages>
     <CustomPage>
-      <ArtifactID>1039825</ArtifactID>
-      <Guid>26cd78ff-d5a9-4469-af6b-1b81aa346b32</Guid>
-      <ApplicationVersion>0.0.0.1</ApplicationVersion>
-      <Name>Web</Name>
-      <FileName>Web.zip</FileName>
-      <Size>1367221</Size>
+      <ArtifactID>1040596</ArtifactID>
+      <Guid>48dae441-8954-433e-9dcb-6513874f0271</Guid>
+      <ApplicationVersion>0.0.0.3</ApplicationVersion>
+      <Name>JsonWeb</Name>
+      <FileName>JsonWeb.zip</FileName>
+      <Size>2033884</Size>
       <Keywords />
       <Notes />
       <Hash />
@@ -57,27 +63,27 @@
   <IsRelativityApplication>true</IsRelativityApplication>
   <InstallEventHandlers>
     <InstallEventHandler>
-      <ArtifactId>1039827</ArtifactId>
-      <AssemblyArtifactId>1017654</AssemblyArtifactId>
-      <Name>Provider.EventHandlers.RegisterNewIntegrationPoint</Name>
-      <Guid>bd0c749d-dc8d-4b9c-b4f7-2ea4f508089e</Guid>
-      <Guids>ea11a845-1cc3-45a3-8dc0-0344f3885f17</Guids>
+      <ArtifactId>1040594</ArtifactId>
+      <AssemblyArtifactId>1123976</AssemblyArtifactId>
+      <Name>JsonLoader.Installer.RunEveryTimeInstaller</Name>
+      <Guid>64110733-03f8-4dac-958d-31e9dfda6071</Guid>
+      <Guids>4f82cf08-a665-4b05-b656-aa8d7848cc0c</Guids>
       <ExecutionType>8</ExecutionType>
       <Order>10</Order>
-      <AssemblyName>Provider.dll</AssemblyName>
-      <ApplicationVersion>0.0.0.1</ApplicationVersion>
+      <AssemblyName>JsonLoader.dll</AssemblyName>
+      <ApplicationVersion>0.0.0.4</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
     <InstallEventHandler>
-      <ArtifactId>1039828</ArtifactId>
-      <AssemblyArtifactId>1017654</AssemblyArtifactId>
-      <Name>Provider.EventHandlers.RemoveMyFirstProvider</Name>
-      <Guid>a2e8a386-af25-42f9-ab99-1063e8547114</Guid>
-      <Guids>5a83f6c9-e4c8-42b4-8a2b-9f037c7ca485</Guids>
+      <ArtifactId>1040595</ArtifactId>
+      <AssemblyArtifactId>1123976</AssemblyArtifactId>
+      <Name>JsonLoader.Installer.Uninstaller</Name>
+      <Guid>a4af9126-a773-4b62-b155-7b54c6bddc19</Guid>
+      <Guids>c99dd8fb-7388-4728-84d8-1cf136601b4d</Guids>
       <ExecutionType>12</ExecutionType>
       <Order>20</Order>
-      <AssemblyName>Provider.dll</AssemblyName>
-      <ApplicationVersion>0.0.0.1</ApplicationVersion>
+      <AssemblyName>JsonLoader.dll</AssemblyName>
+      <ApplicationVersion>0.0.0.4</ApplicationVersion>
       <RunTarget>0</RunTarget>
     </InstallEventHandler>
   </InstallEventHandlers>
@@ -89,7 +95,6 @@
     <FullTextAll>1000182</FullTextAll>
   </EnvironmentVariables>
   <GlobalApplication>false</GlobalApplication>
-  <UserFriendlyUrl />
   <RelativityScriptIds />
   <ViewIds />
   <LayoutIds />
@@ -98,7 +103,7 @@
   <ObjectTypeIds />
   <TabIds />
   <CustomPageIds>
-    <Id>1039825</Id>
+    <Id>1040596</Id>
   </CustomPageIds>
   <Locked>true</Locked>
 </Application>
