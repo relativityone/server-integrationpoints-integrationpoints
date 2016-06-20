@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using kCura.Config;
+using ConfigurationException = System.Configuration.ConfigurationException;
 
 namespace kCura.IntegrationPoints.DocumentTransferProvider.Adaptors.Implementations
 {
