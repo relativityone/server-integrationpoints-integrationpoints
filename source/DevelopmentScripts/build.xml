@@ -76,6 +76,7 @@
         <ApplicationSchema>application\application.xml</ApplicationSchema>
         <Assemblies>
           <Assembly>bin\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.Domain.dll</Assembly>
           <Assembly>bin\kCura.IntegrationPoints.dll</Assembly>
           <Assembly>bin\kCura.LDAPProvider.dll</Assembly>
           <Assembly>bin\kCura.DocumentTransferProvider.dll</Assembly>

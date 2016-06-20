@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using kCura.Crypto.DataProtection;
 
-namespace kCura.IntegrationPoints.Core.Services.Marshaller
+namespace kCura.IntegrationPoints.Domain
 {
 	/// <summary>
 	/// This class marshals data to a target AppDomain after first encrypting each entry
