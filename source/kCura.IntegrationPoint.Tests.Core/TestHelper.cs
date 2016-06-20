@@ -121,9 +121,14 @@ namespace kCura.IntegrationPoint.Tests.Core
 			return _serviceManager;
 		}
 
-		#region Extended classes
+	    public Guid GetGuid(int workspaceID, int artifactID)
+	    {
+	        throw new NotImplementedException();
+	    }
 
-		public class ExtendedIRSAPIClient : IRSAPIClient
+        #region Extended classes
+
+        public class ExtendedIRSAPIClient : IRSAPIClient
 		{
 			private readonly ITestHelper _helper;
 			private readonly ExecutionIdentity _identity;

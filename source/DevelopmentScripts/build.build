@@ -43,7 +43,7 @@
 	<property name="ncover.install.directory" value="${environment::get-variable('ProgramW6432')}\NCover" />
 	<property name="ncover.output.directory" value="D:\NCover" unless="${property::exists('ncover.output.directory')}" />
 	<property name="caseId" value="" unless="${property::exists('caseId')}" />
-	<property name="relativityDependencyVersion" value="9.3.440.1" />
+	<property name="relativityDependencyVersion" value="9.4.212.3" />
 	
 	<!-- Microsoft .NET folders -->
 	<property name="microsoft.net.directory" value="${environment::get-variable('windir')}\Microsoft.NET\Framework\v4.0.30319" unless="${property::exists('microsoft.net.directory')}" />
@@ -395,7 +395,7 @@
 			</fileset>
 		</copy>
 		<copy todir="${target.bin.directory}">
-			<fileset basedir="${source.packages.directory}\RelativityCore.9.3.440.1\lib\net45">
+			<fileset basedir="${source.packages.directory}\RelativityCore.9.4.212.3\lib\net45">
 				<include name="kCura.Image.Viewer.dll" />
 				<include name="kCura.Print.dll" />
 			</fileset>
