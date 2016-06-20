@@ -75,7 +75,7 @@
 | The Back button is enabled when you return to Step 2 from Step 3
 | | [Documentation] | Verify that The Back button is enabled when you return to Step 2 from Step 3.
 | | ...				| 
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| FTP Progress Bar Button Testing | FTP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
@@ -95,7 +95,7 @@
 | The Next button is enabled when you return to Step 2 from Step 3
 | | [Documentation] | Verify that The Next button is enabled when you return to Step 2 from Step 3.
 | | ...				| 
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| FTP Progress Bar Button Testing | FTP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
@@ -115,7 +115,7 @@
 | The Back button is enabled when you first arrive on Step 3
 | | [Documentation] | Verify that The Back button is enabled when you first arrive on Step 3.
 | | ...				| 
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| FTP Progress Bar Button Testing | FTP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
@@ -134,7 +134,7 @@
 | The Save button is enabled when you first arrive on Step 3
 | | [Documentation] | Verify that The Next (Save) button is enabled when you first arrive on Step 3.
 | | ...				| 
-| | [Tags]			| untested
+| | [Tags]			| automated
 | | Open Create Integration Point
 | | Fill out the Following Fields of the Integration Point Step 1 form	| FTP Progress Bar Button Testing | FTP | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
