@@ -31,21 +31,16 @@
 | Manager names are shown on their Report's Custodian Detail View
 | | [Documentation] | Verify that an imported Custodian, who has a manager, is linked to the Manager on the Custodian Detail View.
 | | ...				| [id] e07612b0-326c-11e6-a4ca-989096e24b46
-| | [Tags]			| untested
-| | Go to the Tab	| Custodian
+| | [Tags]			| automated
 | | View Custodian	| ${Custodian1} 
-| | Click Section Tab | Detail
-
-| | Verify that the following Fields have the Following Values	| Manager:	| ${Manager1}
+| | Verify the current layout has fields with the following values | Manager: | ${Manager1}
 
 | Managers that did not previously exist are Created
 | | [Documentation] | Verify that new Managers have their own Custodian record created.
 | | ...				| [id] f510e240-326c-11e6-8374-989096e24b46
-| | [Tags]			| untested
-| | Go to the Tab	| Custodian
+| | [Tags]			| automated
 | | View Custodian	| ${Manager1} 
-
-| | Verify that the following Fields have the Following Values	| 
+| | Verify the current layout has fields with the following values	| 
 | | ... | First Name:	| Alpha
 | | ... | Last Name:	| Manager
 | | ... | Email:		| alphamanager@gameofholds.testing.corp
@@ -55,55 +50,45 @@
 | Imported Managers have the correct name format on their own Custodian record
 | | [Documentation] | Verify that newly imported Managers have the correct name format on their own Custodian record.
 | | ...				| [id] bf3068b0-b605-11e4-8b69-90b11c6c5ae4
-| | [Tags]			| untested 
-| | Go to the Tab	| Custodian
-| | Verify Full name is generated as "Manager, Alpha"
+| | [Tags]			| automated 
+| | Go to the tab | Custodians
+| | Clear Then Set Filter Value | Full Name  | ${Manager1}
+| | Find A Row With The Following Data | Full Name  | ${Manager1}
 
 | Existing Managers names are shown on their Report's Custodian Detail View
 | | [Documentation] | Verify that a Manager who already existed is linked to their Reports on the Custodian Detail View.
 | | ...				| [id] c28279de-b605-11e4-b74f-90b11c6c5ae4
-| | [Tags]			| untested
-| | Go to the Tab	| Custodian
+| | [Tags]			| automated
 | | View Custodian	| ${Custodian2} 
-
-| | Verify that the following Fields have the Following Values	| Manager:	| ${Manager2}
+| | Verify the current layout has fields with the following values	|  Manager	| ${Manager2}
 
 | Existing Custodians can become Managers to New Custodians
 | | [Documentation] | Verify that Existing Custodians can become Managers to New Custodians.
 | | ...				| [id] c7a41aee-b605-11e4-91e0-90b11c6c5ae4
-| | [Tags]			| untested
-| | Go to the Tab	| Custodian
+| | [Tags]			| automated
 | | View Custodian	| ${Custodian3} 
-
-| | Click Section Tab	| Detail
-| | Verify that the following Fields have the Following Values	| Manager:	| ${Manager3}
+| | Verify the current layout has fields with the following values	| Manager:	| ${Manager3}
 
 | Existing Custodians can become Managers of Existing Custodians
 | | [Documentation] | Verify that Existing Custodians can become Managers of Existing Custodians.
 | | ...				| [id] cab886de-b605-11e4-bdd1-90b11c6c5ae4
-| | [Tags]			| untested
-| | Go to the Tab	| Custodian
+| | [Tags]			| automated
 | | View Custodian	| ${Custodian4} 
-
-| | Verify that the following Fields have the Following Values	| Manager:	| ${Manager4}
+| | Verify the current layout has fields with the following values	| Manager:	| ${Manager4}
 
 | Existing Custodians can be linked to Newly created Managers
 | | [Documentation] | Verify that Existing Custodians can be linked to Newly created Managers.
 | | ...				| [id] cf715400-b605-11e4-a0ec-90b11c6c5ae4
-| | [Tags]			| untested
-| | Go to the Tab	| Custodian
+| | [Tags]			| automated
 | | View Custodian	| ${Custodian5} 
-
-| | Verify that the following Fields have the Following Values	| Manager:	| ${Manager1}
+| | Verify the current layout has fields with the following values	| Manager:	| ${Manager1}
 
 | Existing Custodians can be given new existing Managers
 | | [Documentation] | Verify that Existing Custodians can be given new existing Managers.
 | | ...				| [id]  d20656c0-b605-11e4-8c82-90b11c6c5ae4
-| | [Tags]			| untested
-| | Go to the Tab	| Custodian
+| | [Tags]			| automated
 | | View Custodian	| ${Custodian6} 
-
-| | Verify that the following Fields have the Following Values	| Manager:	| ${Manager6}
+| | Verify the current layout has fields with the following values	| Manager:	| ${Manager6}
 
 
 *** Keywords *** 
@@ -120,7 +105,7 @@
 | | Run Keyword If	| ${${CustodianExists}}	| Delete the following Custodian using API	| ${Manager2}
 | | Create a Custodian using API	| 
 | | ... | Full Name		| ${Manager2}
-| | ... | Email			| bm@gameofholds.testing.corp
+| | ... | Email			| BravoManager@gameofholds.testing.corp
 | | ... | Department	| ${Department}
 
 | | ${CustodianExists}=	| Determine if the Following Custodian Exists in the current Workspace	| ${Manager6}
@@ -183,35 +168,27 @@
 
 #-----------------------------------------------------------
 
-| | @{Step1Fields}=	| Create List	| 
-| | ... | ${IntegrationName}
-| | ... | FTP (CSV FILE)
-| | ... | Custodian
-| | ... | No
-
-| | @{Step2Fields}=	| Create List	| 
+| | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
 | | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/ManagersFTP.csv
-
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Email			| Email
 | | ... | Department	| Department
 | | ... | First Name	| FirstName
 | | ... | Last Name		| LastName
 | | ... | Manager       | Manager
-| | ... | UniqueID		| Unique_id
+| | ... | UniqueID		| unique_id
 
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
+| | Create FTP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}  
 
-| | Go to the Tab | Custodian
 | | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
-| | Delete the following Integration Point using API | ${IntegrationName}
+| | Delete the following Integration Point | ${IntegrationName}
 | | Delete the Custodians in the Following Department using API	| ${Department}
 
 | | Drop connection to the relativity services api
@@ -226,5 +203,8 @@
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepThreeKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
 

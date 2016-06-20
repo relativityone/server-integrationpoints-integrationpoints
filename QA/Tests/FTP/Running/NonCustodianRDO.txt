@@ -18,15 +18,15 @@
 | Project Objects can be created
 | | [Documentation]	| Verify that the FTP Relativity Integration Points can be used to create Projects objects.
 | | ...	| [id] ccc8600f-325d-11e6-a0a0-989096e24b46
-| | [Tags] | Untested
+| | [Tags] | automated
 | | Go to the Tab | Projects
-| | View Project | Project 1
+| | View Project | Imported 1
 
 | | Verify the current layout has fields with the following values | 
 | | ... | Name | Imported 1 
 | | ... | Type | Legal Hold 
 | | ... | Owner | Fred Bob
-| | ... | Owner Email | B@law.com
+| | ... | Owner Email | fb@law.com
 | | ... | Start Date | 1/1/2016
 | | ... | End Date | 2/2/2017
 | | ... | Description | First
@@ -49,16 +49,20 @@
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API 	| ${IntegrationName}
 | | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Project | No
-| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/ProjectsFTP.csv
+| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP - File Transfer Protocol | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/ProjectsFTP.csv
 
 | | @{Step3Mapping}=	| Create List	|
-| | ... | Department	| Name 
-| | ... | Email			| Type		 
-| | ... | First Name	| Owner Email 
-| | ... | Last Name		| Start Date	 
-| | ... | Manager       | End Date
-| | ... | UniqueID		| Description
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | Email
+| | ... | Project Description | Description
+| | ... | Name [Object Identifier] | Name
+| | ... | Owner Email | Owner Email
+| | ... | Project Owner | Owner
+| | ... | Type | Type
+| | ... | Subject Matter Start Date | Start Date
+| | ... | Subject Matter End Date | End Date
+| | ... | Favorite | Favorite
+| | ... | Use as Template | Template
+
+| | Create FTP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | Name [Object Identifier]
 
 | | Run Import Now on the Following Integration Point	| ${IntegrationName}
 
@@ -68,7 +72,7 @@
 | | [Documentation]	| Delete the Suite test data of Integration Point and Projects.
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
-| | Delete the following Integration Point using API | ${IntegrationName}
+| | Delete the following Integration Point | ${IntegrationName}
 
 | | Delete the Following Project using API | Imported 1
 
@@ -85,4 +89,7 @@
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/QuestionnaireKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepThreeKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
