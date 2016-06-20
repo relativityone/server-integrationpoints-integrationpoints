@@ -14,10 +14,10 @@ echo f | xcopy "%basePath%\bin\Application\*" "%revisionDirectory%\Application\"
 echo f | xcopy "%basePath%\bin\*.dll" "%revisionDirectory%\dlls" /EY /EXCLUDE:packageCreationExcludeList.txt
 echo f | xcopy "%basePath%\bin\*.config" "%revisionDirectory%\dlls" /EY /EXCLUDE:packageCreationExcludeList.txt
 echo f | xcopy "%basePath%\bin\*.pdb" "%revisionDirectory%\pdbs" /EY /EXCLUDE:packageCreationExcludeList.txt
-echo f | xcopy "%basePath%\publish\bin\web\Release\*" "%revisionDirectory%\web\" /EY /EXCLUDE:packageCreationExcludeList.txt
+echo f | xcopy "%basePath%\publish\bin\web\*" "%revisionDirectory%\web\" /EY /EXCLUDE:packageCreationExcludeList.txt
 echo f | xcopy "%basePath%\nugspec\*.nupkg" "%revisionDirectory%\%buildType% %version% NuGet Packages - INTERNAL USE ONLY" /E /I
 echo f | xcopy "%basePath%\bin\sdk\*" "%revisionDirectory%\dlls\sdk\" /EY /EXCLUDE:packageCreationExcludeList.txt
-echo f | xcopy "%basePath%\bin\IntegrationPoints.SDK.zip" "%revisionDirectory%\sdk\" /EY /EXCLUDE:packageCreationExcludeList.txt
+echo f | xcopy "%basePath%\bin\IntegrationPoints.SDK.zip" "%revisionDirectory%\sdk\" /Y /EXCLUDE:packageCreationExcludeList.txt
 
 :END
 echo PACKAGEMASTER: END
