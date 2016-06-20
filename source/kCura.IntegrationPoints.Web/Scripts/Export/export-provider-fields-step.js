@@ -1,5 +1,15 @@
 ﻿var IP = IP || {};
 
+ko.validation.rules.pattern.message = 'Invalid.';
+
+ko.validation.init({
+    registerExtenders: true,
+    messagesOnModified: true,
+    insertMessages: true,
+    parseInputAttributes: true,
+    messageTemplate: null
+}, true);
+
 (function (root, ko) {
 
 	var viewModel = function () {
@@ -8,7 +18,12 @@
 		self.availableFields = ko.observableArray([]);
 		self.selectedAvailableFields = ko.observableArray([]);
 
-		self.mappedFields = ko.observableArray([]);
+		self.mappedFields = ko.observableArray([]).extend({
+			minLength: {
+				params: 1,
+				message: "Please select at least one field."
+			}
+		});
 		self.selectedMappedFields = ko.observableArray([]);
 
 		self.addField = function () {
@@ -100,7 +115,8 @@
 			self.ipModel.SelectedOverwrite = "Append/Overlay"; // hardcoded as this value doesn't relate to export
 
 			self.model = new viewModel();
-
+			self.model.errors = ko.validation.group(self.model);
+			
 			// call to the service currently fails for some reason :|
 			// var availableFieldsPromise = root.data.ajax({
 			// type: 'post',
@@ -247,8 +263,14 @@
 			});
 
 			self.ipModel.Map = JSON.stringify(fieldMap);
-
-			d.resolve(self.ipModel);
+			
+			if (self.model.errors().length === 0) {
+			// if (self.model.isValid()) {
+				d.resolve(self.ipModel);
+			} else {
+				self.model.errors.showAllMessages();
+				d.reject();
+			}
 
 			return d.promise;
 		}
