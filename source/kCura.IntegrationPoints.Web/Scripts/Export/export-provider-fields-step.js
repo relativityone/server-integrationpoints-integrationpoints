@@ -89,8 +89,12 @@ ko.validation.init({
 
 	var Step = function (settings) {
 		var self = this;
-		self.settings = settings;
+		var _cache = {
+			availableFields: [],
+			mappedFields: []
+		};
 
+		self.settings = settings;
 		self.template = ko.observable();
 		self.hasTemplate = false;
 		self.getTemplate = function () {
@@ -116,7 +120,14 @@ ko.validation.init({
 
 			self.model = new viewModel();
 			self.model.errors = ko.validation.group(self.model);
-			
+
+			if (_cache.mappedFields.length > 0 || _cache.availableFields.length > 0) {
+				self.model.availableFields(_cache.availableFields);
+				self.model.mappedFields(_cache.mappedFields);
+
+				return;
+			}
+
 			// call to the service currently fails for some reason :|
 			// var availableFieldsPromise = root.data.ajax({
 			// type: 'post',
@@ -234,7 +245,6 @@ ko.validation.init({
 					});
 
 					self.model.selectedAvailableFields(_fields);
-
 					self.model.addField();
 				});
 		}
@@ -265,7 +275,6 @@ ko.validation.init({
 			self.ipModel.Map = JSON.stringify(fieldMap);
 			
 			if (self.model.errors().length === 0) {
-			// if (self.model.isValid()) {
 				d.resolve(self.ipModel);
 			} else {
 				self.model.errors.showAllMessages();
@@ -274,6 +283,12 @@ ko.validation.init({
 
 			return d.promise;
 		}
+
+		root.messaging.subscribe("back", function () {
+			_cache.availableFields = self.model.availableFields();
+			_cache.mappedFields = self.model.mappedFields();
+			console.log("back");
+		});
 	};
 
 	var step = new Step({
