@@ -218,6 +218,7 @@
     <Compile Include="TestCases\ItShouldExportDirectoriesWithCustomNumbering.cs" />
     <Compile Include="TestCases\ItShouldExportImageDataFileAsIPROFullText.cs" />
     <Compile Include="TestCases\ItShouldExportImageDataFileAsIPRO.cs" />
+    <Compile Include="TestCases\ItShouldNotExportImageDataFileWhenExportImagesNotSelected.cs" />
     <Compile Include="TestCases\ItShouldExportImageDataFileAsOpticon.cs" />
     <Compile Include="TestCases\ItShouldExportImagesAsMultiplePages.cs" />
     <Compile Include="TestCases\ItShouldExportImagesAsPdfs.cs" />
