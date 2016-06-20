@@ -18,6 +18,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			ExportSettings.ImageDataFileFormat? imageDataFileFormat;
 			EnumHelper.TryParse(sourceSettings.SelectedImageDataFileFormat, out imageDataFileFormat);
 
+			ExportSettings.FilePathType filePath;
+			EnumHelper.Parse(sourceSettings.FilePath, out filePath);
+
 			var exportSettings = new ExportSettings
 			{
 				ExportedObjArtifactId = sourceSettings.SavedSearchArtifactId,
@@ -48,7 +51,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 				VolumeDigitPadding = sourceSettings.VolumeDigitPadding,
 				VolumeMaxSize = sourceSettings.VolumeMaxSize,
 				VolumeStartNumber = sourceSettings.VolumeStartNumber,
-				VolumePrefix = sourceSettings.VolumePrefix
+				VolumePrefix = sourceSettings.VolumePrefix,
+				FilePath = filePath,
+				UserPrefix  = sourceSettings.UserPrefix
 			};
 
 			return exportSettings;

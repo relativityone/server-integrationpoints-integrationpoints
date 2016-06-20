@@ -36,5 +36,7 @@
 		public int VolumeStartNumber { get; set; }
 		public int VolumeDigitPadding { get; set; }
 		public int VolumeMaxSize { get; set; }
+		public string FilePath { get; set; }
+		public string UserPrefix { get; set; }
 	}
 }

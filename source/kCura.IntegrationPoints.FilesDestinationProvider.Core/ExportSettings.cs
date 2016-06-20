@@ -27,6 +27,13 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 			Custom
 		}
 
+		public enum FilePathType
+		{
+			Relative,
+			Absolute,
+			Prefix
+		}
+
 		public int ExportedObjArtifactId { get; set; }
 		public string ExportedObjName { get; set; }
 		public int WorkspaceId { get; set; }
@@ -56,5 +63,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core
 		public int VolumeStartNumber { get; set; }
 		public int VolumeDigitPadding { get; set; }
 		public int VolumeMaxSize { get; set; }
+		public FilePathType FilePath { get; set; }
+		public string UserPrefix { get; set; }
 	}
 }

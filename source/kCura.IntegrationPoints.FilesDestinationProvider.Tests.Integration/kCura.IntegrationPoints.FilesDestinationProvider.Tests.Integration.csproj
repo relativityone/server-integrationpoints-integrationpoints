@@ -203,6 +203,12 @@
     <Compile Include="TestCases\Base\DataFileEncodingTestCaseBase.cs" />
     <Compile Include="TestCases\Base\ExportTestCaseBase.cs" />
     <Compile Include="TestCases\Base\MetadataExportTestCaseBase.cs" />
+    <Compile Include="TestCases\ItShouldExportFilePathRelativeImage.cs" />
+    <Compile Include="TestCases\ItShouldExportFilePathUserPrefixImage.cs" />
+    <Compile Include="TestCases\ItShouldExportFilePathAbsoluteImage.cs" />
+    <Compile Include="TestCases\ItShouldExportFilePathUserPrefixNative.cs" />
+    <Compile Include="TestCases\ItShouldExportFilePathAbsoluteNative.cs" />
+    <Compile Include="TestCases\ItShouldExportFilePathRelativeNative.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileAsConcordance.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileAsCsv.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileAsCustom.cs" />

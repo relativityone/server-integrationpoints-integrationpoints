@@ -103,179 +103,179 @@
           { key: "HTML (.html)", value: "HTML" },
           { key: "Comma-separated (.csv)", value: "CSV" },
           { key: "Custom (.txt)", value: "Custom" }
-        ];
+		];
 
-        this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
-            required: true
-        });
+		this.SelectedDataFileFormat = ko.observable(state.SelectedDataFileFormat).extend({
+			required: true
+		});
 
-        this.ColumnSeparator = ko.observable(state.ColumnSeparator).extend({
-            required: {
-                onlyIf: function () {
-                    return self.SelectedDataFileFormat() === "Custom";
-                }
-            }
-        });
-        this.QuoteSeparator = ko.observable(state.QuoteSeparator).extend({
-            required: {
-                onlyIf: function () {
-                    return self.SelectedDataFileFormat() === "Custom";
-                }
-            }
-        });
-        this.NewlineSeparator = ko.observable(state.NewlineSeparator).extend({
-            required: {
-                onlyIf: function () {
-                    return self.SelectedDataFileFormat() === "Custom";
-                }
-            }
-        });
-        this.MultiValueSeparator = ko.observable(state.MultiValueSeparator).extend({
-            required: {
-                onlyIf: function () {
-                    return self.SelectedDataFileFormat() === "Custom";
-                }
-            }
-        });
-        this.NestedValueSeparator = ko.observable(state.NestedValueSeparator).extend({
-            required: {
-                onlyIf: function () {
-                    return self.SelectedDataFileFormat() === "Custom";
-                }
-            }
-        });
+		this.ColumnSeparator = ko.observable(state.ColumnSeparator).extend({
+			required: {
+				onlyIf: function () {
+					return self.SelectedDataFileFormat() === "Custom";
+				}
+			}
+		});
+		this.QuoteSeparator = ko.observable(state.QuoteSeparator).extend({
+			required: {
+				onlyIf: function () {
+					return self.SelectedDataFileFormat() === "Custom";
+				}
+			}
+		});
+		this.NewlineSeparator = ko.observable(state.NewlineSeparator).extend({
+			required: {
+				onlyIf: function () {
+					return self.SelectedDataFileFormat() === "Custom";
+				}
+			}
+		});
+		this.MultiValueSeparator = ko.observable(state.MultiValueSeparator).extend({
+			required: {
+				onlyIf: function () {
+					return self.SelectedDataFileFormat() === "Custom";
+				}
+			}
+		});
+		this.NestedValueSeparator = ko.observable(state.NestedValueSeparator).extend({
+			required: {
+				onlyIf: function () {
+					return self.SelectedDataFileFormat() === "Custom";
+				}
+			}
+		});
 
-        this.isCustom = ko.observable(false);
-        this.isCustomDisabled = ko.observable(true);
+		this.isCustom = ko.observable(false);
+		this.isCustomDisabled = ko.observable(true);
 
-        this.separatorsList = function () {
-            var result = [];
-            for (var i = 0; i < 256; i++) {
-                result.push({ key: String.fromCharCode(i) + " (ASCII:" + i + ")", value: i });
-            }
-            return result;
-        }();
+		this.separatorsList = function () {
+			var result = [];
+			for (var i = 0; i < 256; i++) {
+				result.push({ key: String.fromCharCode(i) + " (ASCII:" + i + ")", value: i });
+			}
+			return result;
+		}();
 
-        this.SelectedDataFileFormat.subscribe(function (value) {
-            //default values have been taken from RDC application
-            if (value === 'Concordance') {
-                self.ColumnSeparator(20);
-                self.QuoteSeparator(254);
-                self.NewlineSeparator(174);
-                self.MultiValueSeparator(59);
-                self.NestedValueSeparator(92);
-            }
-            if (value === 'CSV') {
-                self.ColumnSeparator(44);
-                self.QuoteSeparator(34);
-                self.NewlineSeparator(10);
-                self.MultiValueSeparator(59);
-                self.NestedValueSeparator(92);
-            }
-        });
+		this.SelectedDataFileFormat.subscribe(function (value) {
+			//default values have been taken from RDC application
+			if (value === 'Concordance') {
+				self.ColumnSeparator(20);
+				self.QuoteSeparator(254);
+				self.NewlineSeparator(174);
+				self.MultiValueSeparator(59);
+				self.NestedValueSeparator(92);
+			}
+			if (value === 'CSV') {
+				self.ColumnSeparator(44);
+				self.QuoteSeparator(34);
+				self.NewlineSeparator(10);
+				self.MultiValueSeparator(59);
+				self.NestedValueSeparator(92);
+			}
+		});
 
-        this.SelectedDataFileFormat.subscribe(function (value) {
-            self.isCustom(value === 'Custom');
-            if (value === 'Custom') {
-                self.isCustomDisabled(undefined);
-            } else {
-                self.isCustomDisabled(true);
-            }
-        });
+		this.SelectedDataFileFormat.subscribe(function (value) {
+			self.isCustom(value === 'Custom');
+			if (value === 'Custom') {
+				self.isCustomDisabled(undefined);
+			} else {
+				self.isCustomDisabled(true);
+			}
+		});
 
-        this.CopyFileFromRepository = ko.observable(state.CopyFileFromRepository || "false");
-        this.CopyFileFromRepository.subscribe(function (value) {
-            if (value === 'false') {
-                self.SelectedImageFileType(0);
-            }
-        });
+		this.CopyFileFromRepository = ko.observable(state.CopyFileFromRepository || "false");
+		this.CopyFileFromRepository.subscribe(function (value) {
+			if (value === 'false') {
+				self.SelectedImageFileType(0);
+			}
+		});
 
-        this.OverwriteFiles = ko.observable(state.OverwriteFiles || "false");
+		this.OverwriteFiles = ko.observable(state.OverwriteFiles || "false");
 
-        this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId).extend({
-            required: true
-        });
+		this.TargetWorkspaceArtifactId = ko.observable(state.TargetWorkspaceArtifactId).extend({
+			required: true
+		});
 
-        this.TargetWorkspaceArtifactId.subscribe(function (value) {
-            if (self.TargetWorkspaceArtifactId !== value) {
-                self.WorkspaceHasChanged = true;
-            }
-        });
+		this.TargetWorkspaceArtifactId.subscribe(function (value) {
+			if (self.TargetWorkspaceArtifactId !== value) {
+				self.WorkspaceHasChanged = true;
+			}
+		});
 
-        this.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId);
+		this.SavedSearchArtifactId = ko.observable(state.SavedSearchArtifactId);
 
-        this.SavedSearch = ko.observable(state.SavedSearch).extend({
-            required: true
-        });
+		this.SavedSearch = ko.observable(state.SavedSearch).extend({
+			required: true
+		});
 
-        this.updateSelectedSavedSearch = function () {
-            var selectedSavedSearch = ko.utils.arrayFirst(self.savedSearches(), function (item) {
-                if (item.value === self.SavedSearchArtifactId()) {
-                    return item;
-                }
-            });
+		this.updateSelectedSavedSearch = function () {
+			var selectedSavedSearch = ko.utils.arrayFirst(self.savedSearches(), function (item) {
+				if (item.value === self.SavedSearchArtifactId()) {
+					return item;
+				}
+			});
 
-            self.SavedSearch(selectedSavedSearch);
-        }
+			self.SavedSearch(selectedSavedSearch);
+		}
 
-        if (self.savedSearches().length === 0) {
-            // load saved searches
-            IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('SavedSearchFinder') }).then(function (result) {
-                self.savedSearches(result);
-                self.updateSelectedSavedSearch();
-            });
-        } else {
-            self.updateSelectedSavedSearch();
-        }
+		if (self.savedSearches().length === 0) {
+			// load saved searches
+			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('SavedSearchFinder') }).then(function (result) {
+				self.savedSearches(result);
+				self.updateSelectedSavedSearch();
+			});
+		} else {
+			self.updateSelectedSavedSearch();
+		}
 
-        if (self.workspaces().length === 0) {
-            // load workspaces
-            IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('workspaceFinder') }).then(function (result) {
-                self.workspaces(result);
-            });
-        }
+		if (self.workspaces().length === 0) {
+			// load workspaces
+			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('workspaceFinder') }).then(function (result) {
+				self.workspaces(result);
+			});
+		}
 
-        this.DataFileEncodingType = ko.observable(state.DataFileEncodingType).extend({
-            required: true
-        });
+		this.DataFileEncodingType = ko.observable(state.DataFileEncodingType).extend({
+			required: true
+		});
 
-        this.updateSelectedDataFileEncodingType = function (value) {
-            if (self.DataFileEncodingTypeList().length == 2) {
-                var ungroupedFileEncodingList = self.DataFileEncodingTypeList()[0].children().concat(self.DataFileEncodingTypeList()[1].children())
-                var selectedDataFileEncodingType = ko.utils.arrayFirst(ungroupedFileEncodingList, function (item) {
-                    return item.name === value;
-                });
+		this.updateSelectedDataFileEncodingType = function (value) {
+			if (self.DataFileEncodingTypeList().length == 2) {
+				var ungroupedFileEncodingList = self.DataFileEncodingTypeList()[0].children().concat(self.DataFileEncodingTypeList()[1].children())
+				var selectedDataFileEncodingType = ko.utils.arrayFirst(ungroupedFileEncodingList, function (item) {
+					return item.name === value;
+				});
 
-                self.DataFileEncodingType(selectedDataFileEncodingType.name);
-            }
-        }
+				self.DataFileEncodingType(selectedDataFileEncodingType.name);
+			}
+		}
 
-        this.DataFileEncodingTypeList = ko.observableArray([]);
-        if (self.DataFileEncodingTypeList.length === 0) {
-            IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
-                function Group(label, children) {
-                    this.label = ko.observable(label);
-                    this.children = ko.observableArray(children);
-                }
-                var favorite = [];
-                var others = [];
-                for (var i = 0; i < result.length; i++) {
-                    if ($.inArray(result[i].name, ['utf-16', 'utf-16BE', 'utf-8', 'Windows-1252']) >= 0) {
-                        favorite.push(result[i]);
-                    }
-                    else {
-                        others.push(result[i]);
-                    }
-                }
-                // By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
-                self.DataFileEncodingTypeList([new Group("Favorite", favorite), new Group("Others", others)]
+		this.DataFileEncodingTypeList = ko.observableArray([]);
+		if (self.DataFileEncodingTypeList.length === 0) {
+			IP.data.ajax({ type: 'get', url: IP.utils.generateWebAPIURL('GetAvailableEncodings') }).then(function (result) {
+				function Group(label, children) {
+					this.label = ko.observable(label);
+					this.children = ko.observableArray(children);
+				}
+				var favorite = [];
+				var others = [];
+				for (var i = 0; i < result.length; i++) {
+					if ($.inArray(result[i].name, ['utf-16', 'utf-16BE', 'utf-8', 'Windows-1252']) >= 0) {
+						favorite.push(result[i]);
+					}
+					else {
+						others.push(result[i]);
+					}
+				}
+				// By default user should see only 4 default options: Unicode, Unicode (Big-Endian), Unicode (UTF-8), Western European (Windows) as in RDC
+				self.DataFileEncodingTypeList([new Group("Favorite", favorite), new Group("Others", others)]
                 );
-                self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
-            });
-        }
-        else {
-            self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
-        }
+				self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
+			});
+		}
+		else {
+			self.updateSelectedDataFileEncodingType(state.DataFileEncodingType);
+		}
 
 		this.ExportImagesChecked = ko.observable(state.ExportImagesChecked || "false").extend({
 			required: true
@@ -301,44 +301,62 @@
             { key: 2, value: "PDF" }
 		]);
 
-        this.SelectedImageFileType = ko.observable(self.CopyFileFromRepository() === 'false' ? 0 : state.SelectedImageFileType).extend({
+		this.SelectedImageFileType = ko.observable(self.CopyFileFromRepository() === 'false' ? 0 : state.SelectedImageFileType).extend({
 			required: {
 				onlyIf: function () {
 					return self.ExportImagesChecked() === "true";
 				}
 			}
-        });
+		});
 
-        this.SubdirectoryImagePrefix = ko.observable(state.SubdirectoryImagePrefix || "IMG").extend({
-        	required: true
-        });
-        this.SubdirectoryNativePrefix = ko.observable(state.SubdirectoryNativePrefix || "NATIVE").extend({
-        	required: true
-        });
-        this.SubdirectoryTextPrefix = ko.observable(state.SubdirectoryTextPrefix || "TEXT").extend({
-        	required: true
-        });
-        this.SubdirectoryStartNumber = ko.observable(state.SubdirectoryStartNumber || 1).extend({
-        	required: true
-        });
-        this.SubdirectoryDigitPadding = ko.observable(state.SubdirectoryDigitPadding || 3).extend({
-        	required: true
-        });
-        this.SubdirectoryMaxFiles = ko.observable(state.SubdirectoryMaxFiles || 500).extend({
-            required: true
-        });
-        this.VolumePrefix = ko.observable(state.VolumePrefix || "VOL").extend({
-            required: true
-        });
-        this.VolumeStartNumber = ko.observable(state.VolumeStartNumber || 1).extend({
-            required: true
-        });
-        this.VolumeDigitPadding = ko.observable(state.VolumeDigitPadding || 2).extend({
-            required: true
-        });
-        this.VolumeMaxSize = ko.observable(state.VolumeMaxSize || 650).extend({
-            required: true
-        });
+		this.SubdirectoryImagePrefix = ko.observable(state.SubdirectoryImagePrefix || "IMG").extend({
+			required: true
+		});
+		this.SubdirectoryNativePrefix = ko.observable(state.SubdirectoryNativePrefix || "NATIVE").extend({
+			required: true
+		});
+		this.SubdirectoryTextPrefix = ko.observable(state.SubdirectoryTextPrefix || "TEXT").extend({
+			required: true
+		});
+		this.SubdirectoryStartNumber = ko.observable(state.SubdirectoryStartNumber || 1).extend({
+			required: true
+		});
+		this.SubdirectoryDigitPadding = ko.observable(state.SubdirectoryDigitPadding || 3).extend({
+			required: true
+		});
+		this.SubdirectoryMaxFiles = ko.observable(state.SubdirectoryMaxFiles || 500).extend({
+			required: true
+		});
+		this.VolumePrefix = ko.observable(state.VolumePrefix || "VOL").extend({
+			required: true
+		});
+		this.VolumeStartNumber = ko.observable(state.VolumeStartNumber || 1).extend({
+			required: true
+		});
+		this.VolumeDigitPadding = ko.observable(state.VolumeDigitPadding || 2).extend({
+			required: true
+		});
+		this.VolumeMaxSize = ko.observable(state.VolumeMaxSize || 650).extend({
+			required: true
+		});
+
+		this.FilePath = ko.observable(state.FilePath || "Relative").extend({
+			required: true
+		});
+
+		this.UserPrefix = ko.observable(state.UserPrefix).extend({
+			required: {
+				onlyIf: function () {
+					return self.FilePath() === "UserPrefix";
+				}
+			}
+		});
+
+		this.isUserPrefix = ko.observable(false);
+
+		this.FilePath.subscribe(function (value) {
+			self.isUserPrefix(value === "UserPrefix");
+		});
 
 		this.errors = ko.validation.group(this, { deep: true });
 
@@ -352,7 +370,7 @@
 				"OverwriteFiles": self.OverwriteFiles(),
 				"Fileshare": self.Fileshare(),
 				"ExportImagesChecked": self.ExportImagesChecked(),
-                "SelectedImageFileType": self.SelectedImageFileType(),
+				"SelectedImageFileType": self.SelectedImageFileType(),
 				"IncludeNativeFilesPath": self.IncludeNativeFilesPath(),
 				"SelectedDataFileFormat": self.SelectedDataFileFormat(),
 				"DataFileEncodingType": self.DataFileEncodingType(),
@@ -361,13 +379,19 @@
 				"QuoteSeparator": self.QuoteSeparator(),
 				"NewlineSeparator": self.NewlineSeparator(),
 				"MultiValueSeparator": self.MultiValueSeparator(),
-                "NestedValueSeparator": self.NestedValueSeparator(),
-                "SubdirectoryImagePrefix": self.SubdirectoryImagePrefix(),
-                "SubdirectoryNativePrefix": self.SubdirectoryNativePrefix(),
-                "SubdirectoryTextPrefix": self.SubdirectoryTextPrefix(),
-                "SubdirectoryStartNumber": self.SubdirectoryStartNumber(),
-                "SubdirectoryDigitPadding": self.SubdirectoryDigitPadding(),
-                "SubdirectoryMaxFiles": self.SubdirectoryMaxFiles()
+				"NestedValueSeparator": self.NestedValueSeparator(),
+				"SubdirectoryImagePrefix": self.SubdirectoryImagePrefix(),
+				"SubdirectoryNativePrefix": self.SubdirectoryNativePrefix(),
+				"SubdirectoryTextPrefix": self.SubdirectoryTextPrefix(),
+				"SubdirectoryStartNumber": self.SubdirectoryStartNumber(),
+				"SubdirectoryDigitPadding": self.SubdirectoryDigitPadding(),
+				"SubdirectoryMaxFiles": self.SubdirectoryMaxFiles(),
+				"VolumePrefix": self.VolumePrefix(),
+				"VolumeStartNumber": self.VolumeStartNumber(),
+				"VolumeDigitPadding": self.VolumeDigitPadding(),
+				"VolumeMaxSize": self.VolumeMaxSize(),
+				"FilePath": self.FilePath(),
+				"UserPrefix": self.UserPrefix()
 			}
 		}
 	}

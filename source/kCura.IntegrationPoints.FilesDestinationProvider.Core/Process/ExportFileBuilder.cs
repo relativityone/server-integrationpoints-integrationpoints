@@ -34,6 +34,9 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 			SetDigitPaddings(exportSettings, exportFile);
 			SetImagesSettings(exportSettings, exportFile);
 
+			exportFile.TypeOfExportedFilePath = ParseFilePath(exportSettings.FilePath);
+			exportFile.FilePrefix = exportSettings.UserPrefix;
+
 			_delimitersBuilder.SetDelimiters(exportFile, exportSettings);
 
 			return exportFile;
@@ -132,6 +135,21 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 					return LoadFileType.FileFormat.IPRO_FullText;
 				default:
 					throw new InvalidEnumArgumentException($"Unknown ExportSettings.ImageDataFileFormat ({imageDataFileFormat})");
+			}
+		}
+
+		private static ExportFile.ExportedFilePathType ParseFilePath(ExportSettings.FilePathType filePath)
+		{
+			switch (filePath)
+			{
+				case ExportSettings.FilePathType.Relative:
+					return ExportFile.ExportedFilePathType.Relative;
+				case ExportSettings.FilePathType.Absolute:
+					return ExportFile.ExportedFilePathType.Absolute;
+				case ExportSettings.FilePathType.Prefix:
+					return ExportFile.ExportedFilePathType.Prefix;
+				default:
+					throw new InvalidEnumArgumentException($"Unknown ExportSettings.FilePathType ({filePath})");
 			}
 		}
 	}

@@ -145,6 +145,29 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 		}
 
 		[Test]
+		[TestCase(ExportSettings.FilePathType.Relative, ExportFile.ExportedFilePathType.Relative)]
+		[TestCase(ExportSettings.FilePathType.Absolute, ExportFile.ExportedFilePathType.Absolute)]
+		[TestCase(ExportSettings.FilePathType.Prefix, ExportFile.ExportedFilePathType.Prefix)]
+		public void ItShouldSetCorrectFilePathWhenCopyingFilesFromRepository(ExportSettings.FilePathType givenSetting, ExportFile.ExportedFilePathType expectedSetting)
+		{
+			_exportSettings.FilePath = givenSetting;
+
+			var exportFile = _exportFileBuilder.Create(_exportSettings);
+
+			Assert.AreEqual(expectedSetting, exportFile.TypeOfExportedFilePath);
+		}
+
+		[Test]
+		public void ItShouldThrowExceptionForUnknownFilePath()
+		{
+			var incorrectEnumValue = Enum.GetValues(typeof(ExportSettings.FilePathType)).Cast<ExportSettings.FilePathType>().Max() + 1;
+			_exportSettings.FilePath = incorrectEnumValue;
+
+			Assert.That(() => _exportFileBuilder.Create(_exportSettings),
+				Throws.TypeOf<InvalidEnumArgumentException>().With.Message.EqualTo($"Unknown ExportSettings.FilePathType ({incorrectEnumValue})"));
+		}
+
+		[Test]
 		public void ItShouldRewriteDigitPaddings()
 		{
 			const int volumeDigitPadding = 15;
@@ -159,7 +182,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Tests.Process
 			Assert.AreEqual(subdirectoryDigitPadding, exportFile.SubdirectoryDigitPadding);
 		}
 
-		[Test]
 		public void ItShouldRewriteOtherSettings()
 		{
 			const int artifactTypeId = 10;

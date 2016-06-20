@@ -12,7 +12,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             expFile.ExportFullText = false;
             expFile.ExportFullTextAsFile = false;
             expFile.ExportNativesToFileNamedFrom = ExportNativeWithFilenameFrom.Identifier;
-            expFile.FilePrefix = "";
             expFile.IdentifierColumnName = "Control Number";
             var imagePrecs = new List<Pair>();
             imagePrecs.Add(new Pair("-1", "Original"));
@@ -23,7 +22,6 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
             expFile.StartAtDocumentNumber = 0;
             expFile.TextFileEncoding = null;
             expFile.TypeOfExport = ExportFile.ExportType.ArtifactSearch;
-            expFile.TypeOfExportedFilePath = ExportFile.ExportedFilePathType.Relative;
             expFile.ViewID = 0;
         }
     }
