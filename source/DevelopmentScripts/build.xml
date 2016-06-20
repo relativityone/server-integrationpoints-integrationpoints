@@ -81,8 +81,8 @@
           <Assembly>bin\kCura.DocumentTransferProvider.dll</Assembly>
           <Assembly>bin\kCura.IntegrationPoints.Services.dll</Assembly>
           <Assembly>bin\kCura.IntegrationPoints.Services.Interfaces.Private.dll</Assembly>
-          <Assembly>packages\RelativityCore.9.4.205.3\lib\net45\kCura.Image.Viewer.dll</Assembly>
-          <Assembly>packages\RelativityCore.9.4.205.3\lib\net45\kCura.Print.dll</Assembly>
+          <Assembly>packages\RelativityCore.9.4.212.3\lib\net45\kCura.Image.Viewer.dll</Assembly>
+          <Assembly>packages\RelativityCore.9.4.212.3\lib\net45\kCura.Print.dll</Assembly>
 		  <Assembly>packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</Assembly>
 		  <Assembly>packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</Assembly>
           <Assembly>bin\kCura.IntegrationPoints.Security.dll</Assembly>
