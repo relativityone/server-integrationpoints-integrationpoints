@@ -108,6 +108,15 @@
 		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
 	</target>
 	
+	<target name="build_jsonloader" description="Builds JsonLoader" depends="build_initialize, build_jsonloader_sln, deploy_jsonloader_web_project, build_jsonloader_rap">
+		<if test="${file::exists(logfile)}">
+			<delete file="${logfile}" failonerror="true"/>
+		</if>
+		<if test="${string::contains(action, 'build')}">
+			<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." file="${buildsuccessfile}" append="false" failonerror="false" />		
+		</if>
+		<echo message="${DSTAMP} ${TSTAMP} ${buildconfig} ${action} complete." />
+	</target>
 	
 	<target name="build_initialize">
 		<echo message="Initializing a ${buildconfig} ${action}..." />
@@ -423,6 +432,30 @@
 	
 		<exec program="${msbuild}">
 			<arg line='"msbuild_myfirstprovider.targets"' />
+			<arg line='/property:SourceRoot="${root}"' />
+			<arg line="/property:Configuration=${buildconfig}" />
+			<arg line='/property:Platform="ANY CPU"' />
+			<arg line="/property:NoWarn=${ignorewarnings}" />
+			<arg line='/logger:"${logger}"'/>
+			<arg line='/logger:"${buildLogger}";"${buildLoggerLogFile}"'/>
+			<arg line="/noconsolelogger" />
+			<arg line="/filelogger" />
+			<arg line='/flp:LogFile="${logfile}";Verbosity=${verbosity}' />      
+			<arg line="/target:BuildMethod" />
+			<arg line="/verbosity:${verbosity}" />
+			<arg line='/p:DefineConstants="${DevEnv},${TimeMachine},${Injections}"' />
+			<arg line="/nologo" />
+		</exec>
+	</target>
+	
+	<target name="build_jsonloader_sln">
+		<exec program="..\Dependencies\NuGet.exe">
+		  <arg value="restore" />
+		  <arg value="..\..\example\JsonLoader\JsonLoader.sln" />
+		</exec>
+	
+		<exec program="${msbuild}">
+			<arg line='"msbuild_jsonloader.targets"' />
 			<arg line='/property:SourceRoot="${root}"' />
 			<arg line="/property:Configuration=${buildconfig}" />
 			<arg line='/property:Platform="ANY CPU"' />
