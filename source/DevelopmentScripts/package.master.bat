@@ -8,7 +8,7 @@ mkdir "%revisionDirectory%"
 mkdir "%revisionDirectory%\web"
 mkdir "%revisionDirectory%\dlls"
 mkdir "%revisionDirectory%\pdbs"
-mkdir "%revisionDirectory%\sdk"
+mkdir "%revisionDirectory%\SDK"
 
 echo f | xcopy "%basePath%\bin\Application\*" "%revisionDirectory%\Application\" /EY /EXCLUDE:packageCreationExcludeList.txt
 echo f | xcopy "%basePath%\bin\*.dll" "%revisionDirectory%\dlls" /EY /EXCLUDE:packageCreationExcludeList.txt
