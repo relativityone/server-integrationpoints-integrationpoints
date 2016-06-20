@@ -76,6 +76,7 @@
         <ApplicationSchema>..\example\MyFirstProvider\application\application.xml</ApplicationSchema>
         <Assemblies>
           <Assembly>bin\kCura.IntegrationPoints.Contracts.dll</Assembly>
+          <Assembly>bin\kCura.IntegrationPoints.Domain.dll</Assembly>
           <Assembly>bin\kCura.SourceProviderInstaller.dll</Assembly>
           <Assembly>..\example\MyFirstProvider\Provider\bin\Provider.dll</Assembly>
 		 </Assemblies>

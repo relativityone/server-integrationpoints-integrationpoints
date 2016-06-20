@@ -4,9 +4,8 @@ using System.Data;
 using System.Linq;
 using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Contracts.Provider;
-using kCura.IntegrationPoints.Data;
 
-namespace kCura.IntegrationPoints.Core.Domain
+namespace kCura.IntegrationPoints.Domain
 {
 	//represents a wrapper to allow for certain safeties to be guaranteed when marshalling
 	internal class ProviderWrapper : MarshalByRefObject, IDataSourceProvider, IEmailBodyData

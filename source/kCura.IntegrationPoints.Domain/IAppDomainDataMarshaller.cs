@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace kCura.IntegrationPoints.Core.Services.Marshaller
+namespace kCura.IntegrationPoints.Domain
 {
 	internal interface IAppDomainDataMarshaller
 	{

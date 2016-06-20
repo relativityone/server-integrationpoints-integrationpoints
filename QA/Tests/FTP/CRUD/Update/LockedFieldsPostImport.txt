@@ -93,3 +93,5 @@
 | Resource	| ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/StepThreeKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
+
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

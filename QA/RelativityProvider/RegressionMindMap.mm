@@ -666,7 +666,9 @@
 <node CREATED="1464667711202" ID="ID_142092194" MODIFIED="1464667713512" TEXT="ARM">
 <node CREATED="1464109314558" ID="ID_126473790" MODIFIED="1464383006874" TEXT="Verify CRUDAS with a workspace that was ARM&apos;ed"/>
 <node CREATED="1464667723043" ID="ID_483403853" MODIFIED="1464667836080" TEXT="Verify Installation/Workspace issues with ARM&apos;ed workspaces (see below)"/>
-<node CREATED="1464667843531" ID="ID_566860750" MODIFIED="1464667886849" TEXT="ARM a DG-enabled workspace and make sure RIP works"/>
+<node CREATED="1464667843531" ID="ID_566860750" MODIFIED="1466107689901" TEXT="ARM a DG-enabled workspace and make sure RIP works">
+<icon BUILTIN="stop-sign"/>
+</node>
 </node>
 <node CREATED="1464109347600" ID="ID_1189347779" MODIFIED="1464109378884" TEXT="Verify CRUDAS (and audit specifically) in Preview Security mode"/>
 <node CREATED="1464669566929" ID="ID_733914259" MODIFIED="1464669591746" TEXT="Issues related to (field) values">
@@ -676,9 +678,8 @@
 </node>
 </node>
 <node CREATED="1464413439092" ID="ID_643746733" MODIFIED="1464413474941" TEXT="Installation/Workspace issues">
-<node CREATED="1464413391426" ID="ID_1240613973" MODIFIED="1464413392818" TEXT="Create source workspace from a template with RIP installed"/>
+<node CREATED="1464413391426" ID="ID_1240613973" MODIFIED="1466111208196" TEXT="Create source workspace from a template with RIP installed (Covered in ECA)"/>
 <node CREATED="1464413393826" ID="ID_96082148" MODIFIED="1464413399599" TEXT="Create target workspace from a template with RIP installed"/>
-<node CREATED="1464413479111" ID="ID_1994605249" MODIFIED="1464413487223" TEXT="RIP to WS with RIP installed"/>
 </node>
 </node>
 </node>

@@ -1,6 +1,6 @@
 
 *** Settings ***
-| Documentation 	| Verify that the ${Blah} step (Step 3) of the Integration Point creation process shows the correct Source fields when using FTP.
+| Documentation 	| Verify that Step 3 of the Integration Point creation process shows the correct Source fields when using FTP.
 | Metadata			| Authors	| Daniel Oliver	| William Sehy
 | Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
 | Suite Setup		| Open and Log in to Legal Hold
@@ -23,8 +23,8 @@
 | | Run the following manual steps:
 | | ... | Expected Results:
 | | ... | Verify that the Source Section contains the following fields:
-| | ... | - Email
 | | ... | - Department
+| | ... | - Email
 | | ... | - FirstName
 | | ... | - LastName
 | | ... | - Manager
@@ -35,7 +35,7 @@
 
 | Go to Step 3 of the Create Integration Point Process
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Testing	| FTP (CSV File) | Custodian | No
+| | Fill out the Following Fields of the Integration Point Step 1 form | Step 3 Testing	| FTP (CSV File) | Custodian | No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the FTP Integration Point Step 2 form	| 
 | | ... | Host=filetransfer.kcura.com
@@ -48,13 +48,10 @@
 
 
 *** Settings ***
-| Library   | Collections
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
-| Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource  | ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
 | Resource  | ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
 | Resource  | ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
-| Resource  | ${LDAP_KEYWORD_DIR}/StepThreeKeywords.txt

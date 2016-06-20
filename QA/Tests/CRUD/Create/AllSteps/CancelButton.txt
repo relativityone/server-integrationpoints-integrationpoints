@@ -52,7 +52,7 @@
 | | [Documentation] | Verify that clicking the Cancel button on Step 2 of the Integration Points Wizard redirects to the Integration Points List View.
 | | [Tags]			| required	| automated
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Cancellation Test	| Append/Overlay | LDAP | Custodian | No
+| | Fill out the Following Fields of the Integration Point Step 1 form | Step 2 Cancellation Test	| LDAP	| Custodian	| No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the LDAP Integration Point Step 2 form | ConnectionPath=${ConnectionPath}	| Authentication=${Authentication}
 | | Click	| Cancel
@@ -135,6 +135,8 @@
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-# ViewKeywords
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepThreeKeywords.txt

@@ -3,6 +3,7 @@ using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.SourceProviderInstaller.Services;
 
 namespace kCura.IntegrationPoints.SourceProviderInstaller
