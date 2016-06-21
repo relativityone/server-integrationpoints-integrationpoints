@@ -61,6 +61,7 @@
     });
 
 })(IP);
+
 $(window).load(function () {
     $(".consoleContainer .consoleButtonDisabled").attr("title", "You do not have permission to run this job.");
 });
