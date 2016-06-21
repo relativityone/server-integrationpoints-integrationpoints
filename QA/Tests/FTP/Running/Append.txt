@@ -1,10 +1,10 @@
 
 *** Settings ***
-| Documentation 	| Verify that running an Append FTP import creates new objects, but does not update existing objects.
+| Documentation		| Verify that running an Append FTP import creates new objects, but does not update existing objects.
 | Metadata			| Authors	| Daniel Oliver
-| Force Tags		| in-progress | team.game_of_holds	| feature.integration_points
+| Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
 | Suite Setup		| Create Suite Setup Data
-| Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
+| Test Teardown		| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
 
 
@@ -14,7 +14,7 @@
 | ${IntegrationName}					| Append FTP
 | ${NewObject}							| ManFTP, Cat
 | ${ExistingAndManagerUpdatedObject}	| ManFTP, Dog
-| ${ExistingNoChangeObject}				| ManFTP, Bird 
+| ${ExistingNoChangeObject}				| ManFTP, Bird
 | ${Manager}							| ManFTP, Bigdog
 | ${ExistingAndUpdatedObject}			| ManFTP, CatDog
 
@@ -165,20 +165,32 @@
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
 | | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point 	| ${IntegrationName}
 
-| | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
-| | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendFTP.csv
+| | @{Step1Fields}=	| Create List	| 
+| | ... | ${IntegrationName}
+| | ... | FTP (CSV File)
+| | ... | Custodian
+| | ... | No
+
+| | @{Step2Fields}=	| Create List	| 
+| | ... | filetransfer.kcura.com
+| | ... | FTP
+| | ... | 21
+| | ... | admin
+| | ... | C@m3l!ts
+| | ... | /Custom Development/ftp/LegalHold/AppendFTP.csv
+
 | | @{Step3Mapping}=	| Create List	|
-| | ... | Department	| Department 
-| | ... | Email			| Email		 
-| | ... | First Name	| FirstName 
-| | ... | Last Name		| LastName	 
+| | ... | Department	| Department
+| | ... | Email			| Email
+| | ... | First Name	| FirstName
+| | ... | Last Name		| LastName
 | | ... | Manager		| Manager
 | | ... | UniqueID		| unique_id
 
-| | Create FTP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | UniqueID
+| | Create FTP Integration Point	| ${Step1Fields}	| ${Step2Fields}	| ${Step3Mapping}	| Append Only	| UniqueID
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}
-| | [Teardown]		| Run Keywords | Drop connection to the relativity services api | Capture Page Screenshot
+| | [Teardown]		| Run Keywords	| Drop connection to the relativity services api	| Capture Page Screenshot
 
 | Delete the Objects created in the Suite then Close All Browsers
 | | [Documentation]	| Delete the Suite test data of Integration Point and Custodians.
@@ -193,7 +205,7 @@
 | | Delete the following Custodian using API	| ${ExistingAndManagerUpdatedObject}
 | | Delete the following Custodian using API	| ${ExistingAndUpdatedObject}
 
-| | Delete the following Integration Point | ${IntegrationName}
+| | Delete the following Integration Point	| ${IntegrationName}
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
@@ -201,6 +213,7 @@
 
 *** Settings ***
 | Library	| Collections
+| Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
