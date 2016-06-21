@@ -57,7 +57,8 @@
 | | [Documentation] | Verify that when an Append RIP is run which has updated Source objects that match to existing objects, 
 | | ...				| that it does not update the existing objects in the target RDO.
 | | ...				| [id] 12ea02f0-a89f-11e4-b98c-b8ca3a83048f
-| | [Tags]			| manual
+| | [Tags]			| manual | broken 
+# Each of the three existing records should have an "error" as they already existed.
 | | Go to the Tab	| History
 
 | | Run the following manual steps:
