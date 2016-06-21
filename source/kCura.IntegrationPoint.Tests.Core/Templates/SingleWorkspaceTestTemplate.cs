@@ -1,4 +1,5 @@
 ﻿using Castle.MicroKernel.Registration;
+using kCura.Apps.Common.Config;
 using kCura.Apps.Common.Data;
 using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -27,10 +28,10 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		[TestFixtureSetUp]
 		public virtual void SetUp()
 		{
-			Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
+			Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
 			const string template = "New Case Template";
 			WorkspaceArtifactId = Workspace.CreateWorkspace(_name, template);
-
+			Helper.GetDBContext(-1).ExecuteNonQuerySQLStatement(@"Update [Edds].[eddsdbo].[InstanceSetting] Set Value = 'True'  where Name = 'AdminsCanSetPasswords' And Section = 'Relativity.Authentication'");
 			Install();
 		}
 

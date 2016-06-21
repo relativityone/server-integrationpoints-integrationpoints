@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Security.Claims;
 using Castle.MicroKernel.SubSystems.Configuration;
 using Castle.Windsor;
-using kCura.IntegrationPoints.Core.Installers;
-using kCura.IntegrationPoints.Core.Services.ServiceContext;
-using kCura.IntegrationPoints.Data;
+using kCura.Apps.Common.Config;
 using kCura.IntegrationPoints.Data.Contexts;
-using kCura.IntegrationPoints.Data.Installers;
-using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
-using kCura.Relativity.Client;
-using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core
 {
