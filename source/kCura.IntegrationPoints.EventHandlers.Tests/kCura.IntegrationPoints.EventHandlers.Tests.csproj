@@ -53,16 +53,16 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.227.4\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.EventHandler, Version=9.3.433.7, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\kCura.EventHandler.9.3.433.7\lib\net45\kCura.EventHandler.dll</HintPath>
+    <Reference Include="kCura.EventHandler, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCura.EventHandler.9.4.212.3\lib\net45\kCura.EventHandler.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=9.3.433.7, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Relativity.Client.9.3.433.7\lib\net45\kCura.Relativity.Client.dll</HintPath>
+    <Reference Include="kCura.Relativity.Client, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Relativity.Client.9.4.212.3\lib\net45\kCura.Relativity.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Utility">
-      <HintPath>..\packages\kCuraCore.9.3.405.5\lib\net45\kCura.Utility.dll</HintPath>
+      <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Utility.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -76,13 +76,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.API, Version=9.3.433.7, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.API.9.3.433.7\lib\net45\Relativity.API.dll</HintPath>
+    <Reference Include="Relativity.API, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.API.9.4.212.3\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces, Version=9.3.433.7, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Relativity.Services.Interfaces, Version=9.4.212.3, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Relativity.Services.Interfaces.9.3.433.7\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
+      <HintPath>..\packages\Relativity.Services.Interfaces.9.4.212.3\lib\net45\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
