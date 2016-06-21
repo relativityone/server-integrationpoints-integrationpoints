@@ -21,7 +21,8 @@ namespace kCura.IntegrationPoints.Web.Models
 		public static List<WorkspaceModel> GetWorkspaceModels(IRSAPIClient context)
 		{
 			GetWorkspacesQuery query = new GetWorkspacesQuery(context);
-			IEnumerable<Result<Workspace>> workspaces = query.ExecuteQuery().Results;
+			var resultSet = query.ExecuteQuery();
+			IEnumerable<Result<Workspace>> workspaces = resultSet.Results;
 			List<WorkspaceModel> result = workspaces.Select(
 				workspace => new WorkspaceModel()
 				{
