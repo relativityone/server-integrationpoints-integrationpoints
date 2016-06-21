@@ -25,6 +25,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Hel
 				return Encoding.UTF8;
 			if (buffer[0] == 0xFF && buffer[1] == 0xFE)
 				return Encoding.Unicode;
+			if (buffer[0] == 0xFE && buffer[1] == 0xFF)
+				return Encoding.BigEndianUnicode;
+			if (buffer[0] == 0xFE && buffer[1] == 0x43)
+				return Encoding.Default;
 
 			throw new Exception($"Not supported encoding type found in file: {srcFile}");
 		}
