@@ -29,13 +29,12 @@ using kCura.IntegrationPoints.Data.Factories.Implementations;
 using kCura.IntegrationPoints.Data.Queries;
 using kCura.IntegrationPoints.Data.Repositories;
 using kCura.IntegrationPoints.Data.Repositories.Implementations;
+using kCura.IntegrationPoints.Domain;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.ScheduleQueue.Core;
 using kCura.ScheduleQueue.Core.Services;
 using Relativity.API;
 using kCura.IntegrationPoints.Security;
-using Relativity.Toggles;
-using Relativity.Toggles.Providers;
 
 namespace kCura.IntegrationPoints.Core.Installers
 {

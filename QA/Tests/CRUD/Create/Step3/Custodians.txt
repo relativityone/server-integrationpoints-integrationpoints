@@ -101,7 +101,8 @@
 | | [Documentation]	| Delete the Integration Points created in this Suite.
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
-| | Delete All Integration Points with the following Name using API	| Required Custodian Fields
+| | :FOR	| ${i}	| IN RANGE	| 6
+| | | Delete the Following Integration Point	| Required Custodian Fields
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
@@ -113,4 +114,4 @@
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/DatabaseKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

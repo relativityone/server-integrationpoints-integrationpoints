@@ -25,17 +25,14 @@
 | | [Documentation] | Verify that when an Append RIP is run which has new Source objects, that it creates new objects in the Target RDO.
 | | ...	| [id] 5994fc0f-2e7b-11e6-b4a3-989096e24b46
 | | [Tags]			| automated
-| | Go to the Tab | Custodians
 | | View Custodian | ${NewObject}	
-| | Verify the current layout has fields with the following values | First Name | Cat | Last Name | ManFTP | Department | AppendFTP | Email | cmanftp@gameofholdstesting.corp
+| | Verify the current layout has fields with the following values | First Name | Cat | Last Name | ManFTP | Department | AppendFTP | Email | CatManFTP@gameofholdstesting.corp
 
 | An Append imports will Overlay Managers
 | | [Documentation] | Verify that Append imports will Overlay Manager information by linking an Existing Custodians to a new Manager.
 | | ...				| [id] e1208a00-2e7b-11e6-8fa2-989096e24b46
 | | [Tags]			| automated
-| | Go to the Tab | Custodians
 | | View Custodian | ${ExistingAndUpdatedObject} 
-
 | | Verify the current layout has fields with the following values | Manager | ${Manager}
 
 | An Append import Creates new History objects
@@ -90,7 +87,7 @@
 | | [Tags]			| manual
 | | Run the following manual steps:
 | | ... | Steps:
-| | ... | Go to the Tab: Job History
+| | ... | 1. Go to the Tab: Job History
 | | ... | 
 | | ... | Expected Results:
 | | ... | Verify that the newest entry for "${IntegrationName}" has no Errors
@@ -124,17 +121,16 @@
 
 | | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
 | | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/AppendFTP.csv
-
 | | @{Step3Mapping}=	| Create List	|
 | | ... | Department	| Department 
 | | ... | Email			| Email		 
 | | ... | First Name	| FirstName 
 | | ... | Last Name		| LastName	 
 | | ... | Manager       | Manager
-| | ... | UniqueID		| objectguid
-| | Create LDAP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | Email
+| | ... | UniqueID		| unique_id
+| | Create FTP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append Only | UniqueID
 
-| | Run Import Now on the Following Integration Point	| ${IntegrationName}
+| | Run Import Now on the Following Integration Point | ${IntegrationName}
 | | [Teardown]		| Run Keywords | Drop connection to the relativity services api | Capture Page Screenshot
 
 | Delete the Objects created in the Suite then Close All Browsers
@@ -142,7 +138,7 @@
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | Delete the Custodians in the Following Department using API	| AppendFTP
-| | Delete the following Integration Point using API | ${IntegrationName}
+| | Delete the following Integration Point | ${IntegrationName}
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
@@ -155,4 +151,7 @@
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepThreeKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt

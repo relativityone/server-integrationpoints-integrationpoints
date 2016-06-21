@@ -48,6 +48,10 @@
     <OutputPath>..\bin\UnitTests\kCura.IntegrationPoints.Core.Tests\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BCrypt.Net, Version=0.1.5073.29922, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Castle.Core.3.3.0\lib\net45\Castle.Core.dll</HintPath>
@@ -60,35 +64,51 @@
       <HintPath>..\packages\kCura.Apps.Common.Utils.1.0.227.4\lib\net45\kCura.Apps.Common.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Data, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\kCuraCore.9.3.398.12\lib\net45\kCura.Data.dll</HintPath>
+    <Reference Include="kCura.Config, Version=9.3.440.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCuraCore.9.3.440.1\lib\net45\kCura.Config.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Data.RowDataGateway, Version=9.1.87.2, Culture=neutral, processorArchitecture=AMD64">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\kCuraCore.9.3.398.12\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
+    <Reference Include="kCura.Crypto, Version=9.3.440.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCuraCore.9.3.440.1\lib\net45\kCura.Crypto.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.EDDS.DocumentCompareGateway, Version=9.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
+    <Reference Include="kCura.Data, Version=9.3.440.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCuraCore.9.3.440.1\lib\net45\kCura.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Data.RowDataGateway, Version=9.3.440.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCuraCore.9.3.440.1\lib\net45\kCura.Data.RowDataGateway.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.EDDS.DocumentCompareGateway">
+      <HintPath>..\packages\RelativityCore.9.3.440.1\lib\net45\kCura.EDDS.DocumentCompareGateway.dll</HintPath>
     </Reference>
     <Reference Include="kCura.Injection, Version=1.0.8.0, Culture=neutral, PublicKeyToken=318fc9f898ce154d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\Injection\kCura.Injection.dll</HintPath>
+      <HintPath>..\packages\kCuraCore.9.3.440.1\lib\net45\kCura.Injection.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="kCura.Method.Injection">
       <HintPath>..\Dependencies\Injection\kCura.Method.Injection.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\kCura.Relativity.Client.9.3.398.12\lib\net45\kCura.Relativity.Client.dll</HintPath>
+    <Reference Include="kCura.Notification, Version=9.3.440.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCuraCore.9.3.440.1\lib\net45\kCura.Notification.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="kCura.Utility">
-      <HintPath>..\packages\kCuraCore.9.3.398.12\lib\net45\kCura.Utility.dll</HintPath>
+    <Reference Include="kCura.Relativity.Client, Version=9.3.440.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCura.Relativity.Client.9.3.440.1\lib\net45\kCura.Relativity.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Utility, Version=9.3.440.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\kCuraCore.9.3.440.1\lib\net45\kCura.Utility.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="kCura.Utility.MassAssign, Version=9.3.440.1, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\kCuraCore.9.3.440.1\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="NSubstitute, Version=1.9.2.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -99,24 +119,27 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.API, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.API.9.3.398.12\lib\net45\Relativity.API.dll</HintPath>
+    <Reference Include="Relativity.API, Version=9.3.440.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.API.9.3.440.1\lib\net45\Relativity.API.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Core, Version=9.3.398.12, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\Relativity.Core.9.3.398.12\lib\net45\Relativity.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Relativity.Core.Api, Version=9.3.0.0, Culture=neutral, processorArchitecture=AMD64">
+    <Reference Include="Relativity.Core, Version=9.3.440.1, Culture=neutral, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RelativityCore.9.3.398.12\lib\net45\Relativity.Core.Api.dll</HintPath>
+      <HintPath>..\packages\RelativityCore.9.3.440.1\lib\net45\Relativity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Core.Api">
+      <HintPath>..\packages\RelativityCore.9.3.440.1\lib\net45\Relativity.Core.Api.dll</HintPath>
+    </Reference>
+    <Reference Include="Relativity.Data, Version=9.3.440.1, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\Relativity.Data.9.3.440.1\lib\net45\Relativity.Data.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.163, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Kepler.1.0.1.163\lib\net45\Relativity.Kepler.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=9.3.398.12, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Services.DataContracts.9.3.398.12\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
+    <Reference Include="Relativity.Services.DataContracts, Version=9.3.440.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Services.DataContracts.9.3.440.1\lib\net45\Relativity.Services.DataContracts.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Relativity.Services.Interfaces, Version=9.3.405.5, Culture=neutral, processorArchitecture=MSIL">
@@ -208,6 +231,10 @@
       <Project>{CA3D5B8B-B99C-4BA5-BB8B-44A0BA9AA0F7}</Project>
       <Name>kCura.IntegrationPoints.DocumentTransferProvider</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Domain\kCura.IntegrationPoints.Domain.csproj">
+      <Project>{5d5b52b4-8769-431a-9743-b96f15fed5fd}</Project>
+      <Name>kCura.IntegrationPoints.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.Synchronizers.RDO\kCura.IntegrationPoints.Synchronizers.RDO.csproj">
       <Project>{B91CC4ED-ABF3-4409-8DF3-46A3C26EB4AA}</Project>
       <Name>kCura.IntegrationPoints.Synchronizers.RDO</Name>
@@ -225,6 +252,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LICENSE.txt" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

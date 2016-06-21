@@ -139,7 +139,7 @@
 | | ...				| [id] 0e874512-a89f-11e4-95b1-b8ca3a83048f
 | | [Tags]			| automated
 | | Open Create Integration Point
-| | Fill out the Following Fields of the Integration Point Step 1 form	| Progress Bar Button Testing	| Append/Overlay | LDAP | Custodian | No
+| | Fill out the Following Fields of the Integration Point Step 1 form	| Progress Bar Button Testing	| LDAP	| Custodian	| No
 | | Proceed to the Next Step of the Integration Point wizard
 | | Fill out the Following Fields of the LDAP Integration Point Step 2 form	| ConnectionPath=${ConnectionPath}	| Authentication=${Authentication}
 | | Proceed to the Next Step of the Integration Point wizard
@@ -177,4 +177,6 @@
 | Library	| ${KEYWORD_DIR}/ManualKeywords.py
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/IntegrationPointKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
+| Resource	| ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
