@@ -82,28 +82,7 @@ namespace kCura.IntegrationPoints.Domain
 			var installerFactory = new InstallerFactory();
 			_windsorContainer.Install(
 				FromAssembly.InDirectory(
-					new AssemblyFilter(AppDomain.CurrentDomain.BaseDirectory)
-						.FilterByName(this.FilterByAllowedAssemblyNames)));
-		}
-
-		private bool FilterByAllowedAssemblyNames(AssemblyName assemblyName)
-		{
-            //AK: perhaps the filter should be a little more generic to cover all related binaries - kCura.IntegrationPoints.*
-            string[] allowedInstallerAssemblies = new[]
-			{
-				"kCura.IntegrationPoints",
-				"kCura.IntegrationPoints.Contracts",
-				"kCura.IntegrationPoints.Core",
-				"kCura.IntegrationPoints.Data",
-                "kCura.IntegrationPoints.FtpProvider"
-            };
-
-			if (allowedInstallerAssemblies.Contains(assemblyName.Name))
-			{
-				return true;
-			}
-
-			return false;
+					new AssemblyFilter(AppDomain.CurrentDomain.BaseDirectory)));
 		}
 
 		/// <summary>
