@@ -49,7 +49,8 @@
 | | [Documentation]	| Verify that when an Overlay RIP is run with an existing record in the Target RDO with one field popuplated, 
 | | ...				| that it does update the existing record in the Target RDO to Null.
 | | ...				| [id] 13a00c83-a89f-11e4-b392-b8ca3a83048f
-| | [Tags]			| automated
+| | [Tags]			| automated | broken
+# needs to have another field set to null, not Department as that is the object filter string
 | | Go to the Tab	| Custodian
 | | Filter the following Grid on the following Columns by the following Values	| ${Custodians Grid}	| Name	| ${ExistingObjectNulled}
 
