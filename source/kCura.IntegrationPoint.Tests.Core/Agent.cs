@@ -66,6 +66,7 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void DeleteAgent(int artifactId)
 		{
+			if(artifactId == 0) {  return; }
 			using (IAgentManager proxy = Kepler.CreateProxy<IAgentManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
 				try

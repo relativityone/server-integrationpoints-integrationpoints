@@ -116,7 +116,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		[TestFixtureTearDown]
 		public override void TearDown()
 		{
-			Workspace.DeleteWorkspace(TargetWorkspaceArtifactId);
+			base.TearDown();
 			Agent.DeleteAgent(AgentArtifactId);
 		}
 
