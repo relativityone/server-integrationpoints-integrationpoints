@@ -54,7 +54,7 @@ namespace kCura.IntegrationPoints.Domain
 					{
 						if (customProviderFactoryType != null)
 						{
-							throw new Exception("Too many provider factories have been found. Make sure there is only one implementation of ProviderFactoryBase.");
+							throw new Exception(Constants.IntegrationPoints.TOO_MANY_PROVIDER_FACTORIES);
 						}
 
 						customProviderFactoryType = type;
@@ -85,7 +85,7 @@ namespace kCura.IntegrationPoints.Domain
 				}
 				catch (Exception ex)
 				{
-					throw new Exception("Unable to instaniate provider factory. Check implementation of ProviderFactoryBase.", ex);	
+					throw new Exception(Constants.IntegrationPoints.UNABLE_TO_INSTANTIATE_PROVIDER_FACTORY, ex);	
 				}
 			}
 
