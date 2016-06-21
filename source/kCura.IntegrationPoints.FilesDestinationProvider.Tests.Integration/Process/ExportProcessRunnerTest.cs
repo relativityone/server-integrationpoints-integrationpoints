@@ -10,6 +10,9 @@ using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.SharedLibrary;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Abstract;
 using kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Helpers;
+using kCura.Vendor.Castle.MicroKernel.Registration;
+using kCura.Vendor.Castle.MicroKernel.Resolvers.SpecializedResolvers;
+using kCura.Vendor.Castle.Windsor;
 using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
@@ -26,6 +29,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 		private WorkspaceService _workspaceService;
 		private DataTable _documents;
 		private DataTable _images;
+		private static WindsorContainer _windsorContainer;
 
 		#endregion //Fields
 
@@ -52,8 +56,7 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
 
-			var userNotification = Substitute.For<IUserNotification>();
-			userNotification.AlertWarningSkippable(Arg.Any<string>()).Returns(true);
+			var userNotification = _windsorContainer.Resolve<IUserNotification>();
 
 			var exportProcessBuilder = new ExportProcessBuilder(
 				Substitute.For<ILoggingMediator>(),
@@ -159,16 +162,22 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			return table;
 		}
 
-		private static IEnumerable<IExportTestCase> ExportTestCaseSource()
+		private IEnumerable<IExportTestCase> ExportTestCaseSource()
 		{
-			var cases = System.Reflection.Assembly
-				.GetExecutingAssembly()
-				.GetTypes()
-				.Where(t => t.GetInterfaces().Contains(typeof(IExportTestCase)) && !t.IsAbstract)
-				.Select(Activator.CreateInstance)
-				.Cast<IExportTestCase>();
+			InitContainer();
+			return _windsorContainer.ResolveAll<IExportTestCase>();
+		}
 
-			return cases;
+		private void InitContainer()
+		{
+			_windsorContainer = new WindsorContainer();
+			_windsorContainer.Kernel.Resolver.AddSubResolver(new CollectionResolver(_windsorContainer.Kernel));
+			_windsorContainer.Register(Classes.FromThisAssembly().IncludeNonPublicTypes().BasedOn<IExportTestCase>().WithServiceAllInterfaces().AllowMultipleMatches());
+
+			var userNotification = Substitute.For<IUserNotification>();
+			userNotification.AlertWarningSkippable(Arg.Any<string>()).Returns(true);
+
+			_windsorContainer.Register(Component.For<IUserNotification>().Instance(userNotification).LifestyleSingleton());
 		}
 
 		#endregion Methods

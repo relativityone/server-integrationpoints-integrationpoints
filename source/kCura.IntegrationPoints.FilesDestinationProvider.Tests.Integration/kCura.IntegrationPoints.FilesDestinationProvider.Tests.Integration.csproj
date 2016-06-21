@@ -206,6 +206,8 @@
     <Compile Include="TestCases\ItShouldExportDataFileWithWindowsANSIEncoding.cs" />
     <Compile Include="TestCases\ItShouldExportDataFileWithBigEndianEncoding.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathRelativeImage.cs" />
+    <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallSubdirectoryDigitPadding.cs" />
+    <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallVolumeDigitPadding.cs" />
     <Compile Include="TestCases\ItShouldNotExportFilePathWhenIncludeNativeFilesPathNotSelected.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathUserPrefixImage.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathAbsoluteImage.cs" />
