@@ -28,7 +28,7 @@
 | | ... | "${CurrentStep}" == "Map Fields"				| Connect to Source		| 
 | | ... | Outdated Keyword call. Please update step names as "${PreviousStep}" was not found.	| # Else
 | | Click	| id=back
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${PreviousStep}
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${PreviousStep}
 | | Wait for the Loading Indicator to disappear
 
 | Run Import Now on the Following Integration Point
