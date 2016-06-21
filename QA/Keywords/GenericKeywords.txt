@@ -15,7 +15,7 @@
 | | ... | "${PreviousStep}" == "Map Fields"					| User Error: Wrong keyword.	| 
 | | ... | Outdated Keyword call. Please update step names as "${NextStep}" was not found.	| # Else
 | | Click	| id=next
-| | Wait Until Keyword Succeeds	| 10s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${NextStep}
+| | Wait Until Keyword Succeeds	| 20s	| 2s	| Verify that you are on the following Step of the Create Integration Point Process	| ${NextStep}
 | | Wait for the Loading Indicator to disappear | 20s
 
 | Proceed to the Previous Step of the Integration Point wizard
