@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Common;
+using kCura.Apps.Common.Data;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.ServiceContext;
@@ -12,16 +13,29 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 {
     public class PreCascadeDeleteEventHandler : kCura.EventHandler.PreCascadeDeleteEventHandler
     {
-        private readonly IRepositoryFactory _repositoryFactory;
+        private IRepositoryFactory _repositoryFactory;
 
         public PreCascadeDeleteEventHandler()
         {
-            _repositoryFactory = new RepositoryFactory(this.Helper);
+            //cant be initialized in constractor. IHelper is not initialized at that time and equals null.
+            //_repositoryFactory = new RepositoryFactory(this.Helper);
         }
 
         internal PreCascadeDeleteEventHandler(IRepositoryFactory repositoryFactory)
         {
             _repositoryFactory = repositoryFactory;
+        }
+
+        internal IRepositoryFactory RepositoryFactory
+        {
+            get
+            {
+                if (_repositoryFactory == null)
+                {
+                    _repositoryFactory = new RepositoryFactory(this.Helper);
+                }
+                return _repositoryFactory;
+            }
         }
 
         private DeleteHistoryService deleteHistoryService;
@@ -102,7 +116,8 @@ namespace kCura.IntegrationPoints.EventHandlers.IntegrationPoints
 
         private DbDataReader GetArtifactsToBeDeleted(IWorkspaceDBContext workspaceContext, int workspaceID)
         {
-            IScratchTableRepository scratchTableRepository = _repositoryFactory.GetScratchTableRepository(workspaceID, string.Empty, string.Empty);
+            Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
+            IScratchTableRepository scratchTableRepository = RepositoryFactory.GetScratchTableRepository(workspaceID, string.Empty, string.Empty);
             //Create a sql statement which will select the list of ArtifactIDs
             //from the TempTableNameWithParentArtifactsToDelete scratch table.
             string sql = string.Format("SELECT ArtifactID FROM {0}.[{1}]", scratchTableRepository.GetResourceDBPrepend(), this.TempTableNameWithParentArtifactsToDelete);

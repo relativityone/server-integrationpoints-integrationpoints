@@ -34,17 +34,38 @@ namespace kCura.IntegrationPoints.Domain
 		{
 			System.Reflection.Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 			Type startupType = typeof(IStartUp);
+			Type providerFactoryType = typeof(IProviderFactory);
 
-			var types = new List<Type>();
+			var startupTypes = new List<Type>();
+			Type customProviderFactoryType = null;
 			foreach (var assembly in assemblies)
 			{
 				Type[] loadableTypes = assembly.GetLoadableTypes();
-				types.AddRange(loadableTypes.Where(type => startupType.IsAssignableFrom(type) && type != startupType));
+				foreach (Type type in loadableTypes)
+				{
+					if (startupType.IsAssignableFrom(type) && type != startupType)
+					{
+						startupTypes.Add(type);
+					}
+					else if (providerFactoryType.IsAssignableFrom(type) 
+							&& type != typeof (DefaultProviderFactory) 
+							&& type != typeof (ProviderFactoryBase)
+							&& type != providerFactoryType)
+					{
+						if (customProviderFactoryType != null)
+						{
+							throw new Exception(Constants.IntegrationPoints.TOO_MANY_PROVIDER_FACTORIES);
+						}
+
+						customProviderFactoryType = type;
+					}
+				}
+				startupTypes.AddRange(loadableTypes.Where(type => startupType.IsAssignableFrom(type) && type != startupType));
 			}
 
-			if (types.Any())
+			if (startupTypes.Any())
 			{
-				var type = types.FirstOrDefault();
+				Type type = startupTypes.FirstOrDefault();
 				if (type != default(Type))
 				{
 					var instance = Activator.CreateInstance(type) as IStartUp;
@@ -52,6 +73,19 @@ namespace kCura.IntegrationPoints.Domain
 					{
 						instance.Execute();
 					}
+				}
+			}
+
+			if (customProviderFactoryType != null)
+			{
+				try
+				{
+					var customProviderFactory = Activator.CreateInstance(customProviderFactoryType) as IProviderFactory;
+					_providerFactory = customProviderFactory;
+				}
+				catch (Exception ex)
+				{
+					throw new Exception(Constants.IntegrationPoints.UNABLE_TO_INSTANTIATE_PROVIDER_FACTORY, ex);	
 				}
 			}
 
@@ -79,11 +113,32 @@ namespace kCura.IntegrationPoints.Domain
 			_windsorContainer = new WindsorContainer();
 			IKernel kernel = _windsorContainer.Kernel;
 			kernel.Resolver.AddSubResolver(new CollectionResolver(kernel, true));
-			var installerFactory = new InstallerFactory();
 			_windsorContainer.Install(
 				FromAssembly.InDirectory(
-					new AssemblyFilter(AppDomain.CurrentDomain.BaseDirectory)));
+					new AssemblyFilter(AppDomain.CurrentDomain.BaseDirectory)
+					.FilterByName(this.FilterByAllowedAssemblyNames)));
 		}
+
+		private bool FilterByAllowedAssemblyNames(AssemblyName assemblyName)
+		{
+			//AK: perhaps the filter should be a little more generic to cover all related binaries  kCura.IntegrationPoints.*
+			string[] allowedInstallerAssemblies = new[]
+			{
+				"kCura.IntegrationPoints",
+				"kCura.IntegrationPoints.Contracts",
+				"kCura.IntegrationPoints.Core",
+				"kCura.IntegrationPoints.Data",
+				"kCura.IntegrationPoints.FtpProvider"
+			};
+
+			if (allowedInstallerAssemblies.Contains(assemblyName.Name))
+			{
+				return true;
+			}
+
+			return false;
+		}
+
 
 		/// <summary>
 		/// Gets the provider in the app domain from the specific identifier
@@ -115,7 +170,7 @@ namespace kCura.IntegrationPoints.Domain
 				catch
 				{
 					// Handle case (in event handlers) where IProviderFactory cannot be resolved...
-					_providerFactory = new DefaultProviderFactory(_windsorContainer);					
+					_providerFactory = new DefaultProviderFactory(_windsorContainer);	
 				}
 			}
 
