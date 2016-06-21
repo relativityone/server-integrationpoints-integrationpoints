@@ -73,5 +73,15 @@ namespace kCura.IntegrationPoints.FtpProvider.Helpers
             return updatedText;
         }
 
+        public static String FormatFtpPath(String path)
+        {
+            var retVal = path.Trim();
+            retVal = retVal.Replace("\\", "/");
+            if (retVal[0] != '/')
+            {
+                retVal = "/" + retVal;
+            }
+            return retVal;
+        }
     }
 }
