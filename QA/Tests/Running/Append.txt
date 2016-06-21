@@ -31,7 +31,7 @@
 | An Append imports will Overlay Managers
 | | [Documentation] | Verify that Append imports will Overlay Manager information by linking an Existing Custodians to a new Manager.
 | | ...				| [id] 65ef890f-e46e-11e4-8722-90b11c6c5ae4
-| | [Tags]			| automated
+| | [Tags]			| broken
 | | View Custodian	| ${ExistingAndUpdatedObject} 
 
 | | Verify the current layout has fields with the following values | Manager | ${Manager}
@@ -50,7 +50,7 @@
 | | ... | 2. View the History objects for "${NewObject}"
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify that there is an entry for the Custodian "${NewObject}" with the Action of "Update - Import"
+| | ... | Verify that there is an entry for the Custodian "${NewObject}" with the Action of "Create"
 
 
 | An Append import does not update existing objects
@@ -66,7 +66,7 @@
 | | ... | 2. View the History objects for "${ExistingAndUpdatedObject}"
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify that there is no entry for "${ExistingAndUpdatedObject}" with the Action of "Update - Import"
+| | ... | Verify that there is no entry for "${ExistingAndUpdatedObject}" with the Action of "Create"
 
 
 | An Append import does not update existing unmodified objects
@@ -82,7 +82,7 @@
 | | ... | 2. View the History objects for "${ExistingNoChangeObject}"
 | | ... |
 | | ... | Expected Results:
-| | ... | Verify that there is no entry for "${ExistingNoChangeObject}" with the Action of "Update - Import"
+| | ... | Verify that there is no entry for "${ExistingNoChangeObject}" with the Action of "Create"
 
 
 | An Append import's Job History does not fail when there are Existing Objects
@@ -90,10 +90,9 @@
 | | ...				| that the Import's Job History has not errors.
 | | ...				| 
 | | [Tags]			| manual
+| | Go to the Tab	| Job History
+
 | | Run the following manual steps:
-| | ... | Steps:
-| | ... | Go to the Tab: Job History
-| | ... | 
 | | ... | Expected Results:
 | | ... | Verify that the newest entry for "${IntegrationName}" has no Errors
 
