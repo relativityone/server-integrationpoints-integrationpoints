@@ -169,20 +169,32 @@ var ftpHelper = (function (data) {
 
     //An event raised when a user clicks the Back button.
     message.subscribe('back', function () {
-        //Execute save logic that persists the state.
-        encryptSettings(getSettingsModel()).then(function (encryptedModel) {
-            //Communicate to the host page to continue.
-            self.publish('saveState', encryptedModel);
-        });
-        //this.publish('saveState', JSON.stringify(ko.toJS(getSettingsModel())));
+        var model = getSettingsModel();
+        model.unencrypted = true;
+        this.publish('saveState', JSON.stringify(ko.toJS(model)));
     });
 
     //An event raised when the host page has loaded the current settings page.
     message.subscribe('load', function (model) {
-        decryptSettings(model).then(function (decryptedJsonModel) {
-            var decryptedModel = JSON.parse(decryptedJsonModel);
-            setSettingsModel(decryptedModel);
-        });
+        var temp = isJson(model);
+        if (temp && JSON.parse(model).unencrypted) {
+            setSettingsModel(JSON.parse(model));
+        }
+        else {
+            decryptSettings(model).then(function (decryptedJsonModel) {
+                var decryptedModel = JSON.parse(decryptedJsonModel);
+                setSettingsModel(decryptedModel);
+            });
+        }
+
+        function isJson(str) {
+            try {
+                JSON.parse(str);
+            } catch (e) {
+                return false;
+            }
+            return true;
+        }
     });
 })(ftpHelper);
 
