@@ -174,19 +174,5 @@ namespace kCura.IntegrationPoints.Data.Repositories.Implementations
 
 			_baseContext.DBContext.ExecuteNonQuerySQLStatement(sql, new[] { filterTypeParam, artifactViewFieldIdParam });
 		}
-
-		private List<Relativity.Client.DTOs.Field> RetrieveFields(IEnumerable<Guid> fieldGuids)
-		{
-			ResultSet<Relativity.Client.DTOs.Field> result = null;
-			List<Relativity.Client.DTOs.Field> fields = fieldGuids.Select(fieldGuid => new Relativity.Client.DTOs.Field(fieldGuid)).ToList();
-
-			ApiHelper.ExecuteRsapi(_helper, _workspaceArtifactId, func =>
-			{
-				result = func.Repositories.Field.Read(fields).CheckResult();
-			});
-
-			List<Relativity.Client.DTOs.Field> resultFields = result.Results.Select(resultField => resultField.Artifact).ToList();
-			return resultFields;
-		}
 	}
 }

@@ -4,12 +4,9 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using Castle.Core.Internal;
-using Castle.MicroKernel.Registration;
-using kCura.Apps.Common.Data;
 using kCura.Apps.Common.Utils.Serializers;
 using kCura.IntegrationPoint.Tests.Core.Models;
 using kCura.IntegrationPoints.Contracts.Models;
-using kCura.IntegrationPoints.Core.Installers;
 using kCura.IntegrationPoints.Core.Models;
 using kCura.IntegrationPoints.Core.Services;
 using kCura.IntegrationPoints.Core.Services.JobHistory;
@@ -17,13 +14,10 @@ using kCura.IntegrationPoints.Core.Services.ServiceContext;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Extensions;
 using kCura.IntegrationPoints.Data.Factories;
-using kCura.IntegrationPoints.Data.Installers;
 using kCura.IntegrationPoints.Data.Repositories;
-using kCura.IntegrationPoints.Data.Repositories.Implementations;
 using kCura.IntegrationPoints.Synchronizers.RDO;
 using kCura.Relativity.Client;
 using NUnit.Framework;
-using Relativity.API;
 
 namespace kCura.IntegrationPoint.Tests.Core.Templates
 {
@@ -43,7 +37,7 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 		public int SavedSearchArtifactId { get; set; }
 		public int AgentArtifactId { get; set; }
 
-		public WorkspaceDependentTemplate(string sourceWorkspaceName, string targetWorkspaceName) 
+		public WorkspaceDependentTemplate(string sourceWorkspaceName, string targetWorkspaceName)
 			: base(sourceWorkspaceName)
 		{
 			_targetWorkspaceName = targetWorkspaceName;
@@ -63,7 +57,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 				TargetWorkspaceArtifactId = SourceWorkspaceArtifactId;
 			}
 
-
 			Workspace.ImportLibraryApplicationToWorkspace(SourceWorkspaceArtifactId, new Guid(IntegrationPoints.Core.Constants.IntegrationPoints.APPLICATION_GUID_STRING));
 			AgentArtifactId = Agent.CreateIntegrationPointAgent();
 
@@ -74,43 +67,6 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			RelativityProvider = providers.First(provider => provider.Name == "Relativity");
 			LdapProvider = providers.First(provider => provider.Name == "LDAP");
 			DestinationProvider = CaseContext.RsapiService.DestinationProviderLibrary.ReadAll().First();
-		}
-
-		protected virtual void Install()
-		{
-			Container.Register(Component.For<IHelper>().UsingFactoryMethod(k => Helper, managedExternally: true));
-			Container.Register(Component.For<IServiceContextHelper>()
-				.UsingFactoryMethod(k =>
-				{
-					IHelper helper = k.Resolve<IHelper>();
-					return new TestServiceContextHelper(helper, SourceWorkspaceArtifactId);
-				}));
-			Container.Register(Component.For<ICaseServiceContext>().ImplementedBy<CaseServiceContext>().LifestyleTransient());
-			Container.Register(Component.For<IEddsServiceContext>().ImplementedBy<EddsServiceContext>().LifestyleTransient());
-			Container.Register(
-				Component.For<IWorkspaceDBContext>()
-					.ImplementedBy<WorkspaceContext>()
-					.UsingFactoryMethod(k => new WorkspaceContext(k.Resolve<IHelper>().GetDBContext(SourceWorkspaceArtifactId)))
-					.LifeStyle.Transient);
-
-			Container.Register(
-				Component.For<IRSAPIClient>()
-				.UsingFactoryMethod(k =>
-				{
-					IRSAPIClient client = Rsapi.CreateRsapiClient();
-					client.APIOptions.WorkspaceID = SourceWorkspaceArtifactId;
-					return client;
-				})
-				.LifeStyle.Transient);
-
-			Container.Register(Component.For<IServicesMgr>().UsingFactoryMethod(k => Helper.GetServicesManager()));
-			Container.Register(Component.For<IQueueRepository>().ImplementedBy<QueueRepository>().LifestyleTransient());
-
-			var dependencies = new IWindsorInstaller[] { new QueryInstallers(), new KeywordInstaller(), new ServicesInstaller() };
-			foreach (IWindsorInstaller dependency in dependencies)
-			{
-				dependency.Install(Container, ConfigurationStore);
-			}
 		}
 
 		[TestFixtureTearDown]
@@ -125,8 +81,8 @@ namespace kCura.IntegrationPoint.Tests.Core.Templates
 			var auditHelper = new AuditHelper(Helper);
 
 			IList<Audit> audits = auditHelper.RetrieveLastAuditsForArtifact(
-				SourceWorkspaceArtifactId, 
-				IntegrationPoints.Core.Constants.IntegrationPoints.INTEGRATION_POINT_OBJECT_TYPE_NAME, 
+				SourceWorkspaceArtifactId,
+				IntegrationPoints.Core.Constants.IntegrationPoints.INTEGRATION_POINT_OBJECT_TYPE_NAME,
 				integrationPointName,
 				take);
 
