@@ -59,11 +59,12 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
 
 			var userNotification = _windsorContainer.Resolve<IUserNotification>();
+			var exportUserNotification = _windsorContainer.Resolve<IUserMessageNotification>();
 			var loggingMediator = _windsorContainer.Resolve<ILoggingMediator>();
 
 			var exportProcessBuilder = new ExportProcessBuilder(
 				loggingMediator,
-				Substitute.For<IUserMessageNotification>(),
+				exportUserNotification, 
 				userNotification,
 				new UserPasswordCredentialProvider(_configSettings),
 				new CaseManagerWrapperFactory(),
@@ -103,6 +104,20 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 
 			// Assert
 			testCase.Verify(directory, _documents, _images);
+		}
+
+		[Explicit("Integration Test")]
+		[TestCaseSource(nameof(InvalidFileshareExportTestCaseSource))]
+		public void RunInvalidFileshareTestCase(IInvalidFileshareExportTestCase testCase)
+		{
+			// Arrange
+			var settings = testCase.Prepare(CreateExportSettings());
+			
+			// Act
+			_instanceUnderTest.StartWith(settings);
+
+			// Assert
+			testCase.Verify();
 		}
 
 		#region Methods
@@ -171,16 +186,25 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			return _windsorContainer.ResolveAll<IExportTestCase>();
 		}
 
+		private IEnumerable<IInvalidFileshareExportTestCase> InvalidFileshareExportTestCaseSource()
+		{
+			InitContainer();
+			return _windsorContainer.ResolveAll<IInvalidFileshareExportTestCase>();
+		}
+
 		private void InitContainer()
 		{
+			if (_windsorContainer != null)
+			{
+				return;
+			}
 			_windsorContainer = new WindsorContainer();
 			_windsorContainer.Kernel.Resolver.AddSubResolver(new CollectionResolver(_windsorContainer.Kernel));
 			_windsorContainer.Register(Classes.FromThisAssembly().IncludeNonPublicTypes().BasedOn<IExportTestCase>().WithServiceAllInterfaces().AllowMultipleMatches());
-
-			var userNotification = Substitute.For<IUserNotification>();
-			userNotification.AlertWarningSkippable(Arg.Any<string>()).Returns(true);
-
-			_windsorContainer.Register(Component.For<IUserNotification>().Instance(userNotification).LifestyleSingleton());
+			_windsorContainer.Register(Classes.FromThisAssembly().IncludeNonPublicTypes().BasedOn<IInvalidFileshareExportTestCase>().WithServiceAllInterfaces().AllowMultipleMatches());
+			
+			var exportUserNotification = Substitute.ForPartsOf<ExportUserNotification>();
+			_windsorContainer.Register(Component.For<IUserNotification, IUserMessageNotification>().Instance(exportUserNotification).LifestyleSingleton());
 
 			var apiLog = Substitute.For<IAPILog>();
 			_windsorContainer.Register(Component.For<IAPILog>().Instance(apiLog).LifestyleSingleton());

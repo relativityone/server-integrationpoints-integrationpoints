@@ -193,6 +193,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstract\IExportTestCase.cs" />
+    <Compile Include="Abstract\IInvalidFileshareExportTestCase.cs" />
     <Compile Include="Helpers\ConfigSettings.cs" />
     <Compile Include="Helpers\DataFileFormatHelper.cs" />
     <Compile Include="Helpers\FileEncodingDetectionHelper.cs" />
@@ -209,8 +210,11 @@
     <Compile Include="TestCases\ItShouldExportFilePathRelativeImage.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallSubdirectoryDigitPadding.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallVolumeDigitPadding.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorForInvalidFilesharePathFormat.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForNegativeSubdirectoryStartNumber.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForNegativeVolumeStartNumber.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorForNotExistingFileshare.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorWhenNotOverwritingExistingFiles.cs" />
     <Compile Include="TestCases\ItShouldNotExportFilePathWhenIncludeNativeFilesPathNotSelected.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathUserPrefixImage.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathAbsoluteImage.cs" />
