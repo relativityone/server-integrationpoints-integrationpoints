@@ -71,13 +71,13 @@ namespace kCura.IntegrationPoints.Web.Controllers.API
             Settings settings = _settingsManager.ConvertFromEncryptedString(data.ToString());
             var model = new List<KeyValuePair<string, string>>()
             {
-                new KeyValuePair<string, string>("host", settings.Host),
-                new KeyValuePair<string, string>("port", settings.Port.ToString()),
-                new KeyValuePair<string, string>("protocol", settings.Protocol),
-                new KeyValuePair<string, string>("username", settings.Username ?? string.Empty),
-                new KeyValuePair<string, string>("password", "******"),
-                new KeyValuePair<string, string>("filename_prefix", settings.Filename_Prefix),
-                new KeyValuePair<string, string>("timezone_offset", settings.Timezone_Offset.ToString())
+                new KeyValuePair<string, string>("Host", settings.Host),
+                new KeyValuePair<string, string>("Port", settings.Port.ToString()),
+                new KeyValuePair<string, string>("Protocol", settings.Protocol),
+                new KeyValuePair<string, string>("Username", settings.Username ?? string.Empty),
+                new KeyValuePair<string, string>("Password", "******"),
+                new KeyValuePair<string, string>("Filename Prefix", settings.Filename_Prefix),
+                new KeyValuePair<string, string>("Timezone Offset", settings.Timezone_Offset.ToString())
             };
             return Request.CreateResponse(HttpStatusCode.OK, model);
         }
