@@ -2,10 +2,11 @@
 *** Settings ***
 | Documentation 	| Verify that when Managers are imported and Custodian Manager Contains Link is set to Yes, that the Custodian records are created and linked to the Manager Custodians.
 | Metadata		    | Authors	| Daniel Oliver
-| Force Tags		| in-progress | team.game_of_holds	| feature.integration_points
+| Force Tags		| in-progress	| team.game_of_holds	| feature.integration_points
 | Suite Setup		| Create Suite Setup Data
 | Test Teardown 	| Run Keyword if Test Failed	| Capture Page Screenshot
 | Suite Teardown	| Delete the Objects created in the Suite then Close All Browsers
+
 
 *** Variables ***
 
@@ -25,6 +26,7 @@
 | ${Manager6}          | Manager, Foxtrot
 | ${IntegrationName}   | ManagersFTP
 | ${Department}        | ManagersFTP
+
 
 *** Test Cases ***
 
@@ -168,6 +170,9 @@
 
 #-----------------------------------------------------------
 
+| | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| ${IntegrationName}
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point 	| ${IntegrationName}
+
 | | @{Step1Fields}=	| Create list | ${IntegrationName} | FTP (CSV File) | Custodian | No
 | | @{Step2Fields}=	| Create list | filetransfer.kcura.com | FTP | 21 | admin | C@m3l!ts | /Custom Development/ftp/LegalHold/ManagersFTP.csv
 | | @{Step3Mapping}=	| Create List	|
@@ -181,7 +186,6 @@
 | | Create FTP Integration Point | ${Step1Fields} | ${Step2Fields} | ${Step3Mapping} | Append/Overlay | Email
 
 | | Run Import Now on the Following Integration Point | ${IntegrationName}  
-
 | | [Teardown]		| Drop connection to the relativity services api
 
 | Delete the Objects created in the Suite then Close All Browsers
@@ -200,11 +204,6 @@
 | Library	| ${KEYWORD_DIR}/kWebDriver.py
 | Resource	| ${KEYWORD_DIR}/LegalHold/Legal_Hold_Keywords_API.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/FormKeywords.txt
-| Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/GridKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/MiscLegalHoldKeywords.txt
 | Resource	| ${LEGAL_HOLD_KEYWORD_DIR}/NavigationKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/StepOneKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/StepTwoKeywords.txt
-| Resource	| ${LDAP_KEYWORD_DIR}/StepThreeKeywords.txt
 | Resource	| ${LDAP_KEYWORD_DIR}/GenericKeywords.txt
-

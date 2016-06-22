@@ -90,6 +90,9 @@
       <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Utility.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="kCura.Utility.MassAssign">
+      <HintPath>..\packages\kCuraCore.9.4.212.3\lib\net45\kCura.Utility.MassAssign.dll</HintPath>
+    </Reference>
     <Reference Include="kCura.WinEDDS.ImportExtension, Version=9.4.212.3, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Relativity.ImportExport.9.4.212.3\lib\net45\kCura.WinEDDS.ImportExtension.dll</HintPath>
       <Private>True</Private>

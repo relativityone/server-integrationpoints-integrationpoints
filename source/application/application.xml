@@ -1493,7 +1493,7 @@
   </Assemblies>
   <ResourceFiles />
   <ExternalTabs />
-  <ExtractionDate>2016-06-20T16:05:54.9893246Z</ExtractionDate>
+  <ExtractionDate>2016-06-21T15:55:57.4697556Z</ExtractionDate>
   <Guid>dcf6e9d1-22b6-4da3-98f6-41381e93c30c</Guid>
   <Name>Integration Points</Name>
   <Objects>
@@ -8048,7 +8048,7 @@
           <FieldTreeView xsi:nil="true" />
           <SiblingFieldArtifactID xsi:nil="true" />
           <AutoAddChoices>false</AutoAddChoices>
-          <ApplicationVersion>2.0.0.60</ApplicationVersion>
+          <ApplicationVersion>2.0.0.56</ApplicationVersion>
         </SystemField>
         <SystemField>
           <AllowHTML>false</AllowHTML>
@@ -8852,21 +8852,25 @@
           <ViewCriteria />
           <ViewFields>
             <ViewField>
-              <ArtifactViewFieldId>1001316</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001270</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>0</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001315</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001316</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>1</Order>
             </ViewField>
             <ViewField>
-              <ArtifactViewFieldId>1001307</ArtifactViewFieldId>
+              <ArtifactViewFieldId>1001315</ArtifactViewFieldId>
               <IsEditable>false</IsEditable>
               <Order>2</Order>
             </ViewField>
+            <ViewField>
+              <ArtifactViewFieldId>1001307</ArtifactViewFieldId>
+              <IsEditable>false</IsEditable>
               <Order>3</Order>
+            </ViewField>
           </ViewFields>
           <ViewOrders />
           <VisualizationType>0</VisualizationType>
@@ -8874,7 +8878,7 @@
           <PayloadArtifactViewFieldId xsi:nil="true" />
           <DisplayArtifactViewFieldId xsi:nil="true" />
           <GroupDefinitionArtifactViewFieldID xsi:nil="true" />
-          <ApplicationVersion>2.0.0.59</ApplicationVersion>
+          <ApplicationVersion>2.0.95.14</ApplicationVersion>
         </View>
       </Views>
       <ApplicationVersion>2.0.95.12</ApplicationVersion>

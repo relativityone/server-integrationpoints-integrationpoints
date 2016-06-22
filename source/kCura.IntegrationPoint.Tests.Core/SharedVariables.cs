@@ -7,8 +7,8 @@ namespace kCura.IntegrationPoint.Tests.Core
 	{
 		public static string TargetHost => ConfigurationManager.AppSettings["targetHost"];
 
-		public static string RsapiClientUri => $"http://{TargetHost}/Relativity.Services";
-		public static Uri RsapiClientServiceUri => new Uri($"{RsapiClientUri}/api");
+		public static string RsapiClientUri => $"https://{TargetHost}/Relativity.Services";
+		public static Uri RsapiClientServiceUri => new Uri($"{RsapiClientUri}/");
 
 		public static string RelativityUserName { get; set; } = ConfigurationManager.AppSettings["userName"];
 

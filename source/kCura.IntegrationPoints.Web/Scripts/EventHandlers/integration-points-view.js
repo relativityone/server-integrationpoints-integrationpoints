@@ -61,6 +61,7 @@
     });
 
 })(IP);
+
 $(window).load(function () {
     $(".consoleContainer .consoleButtonDisabled").attr("title", "You do not have permission to run this job.");
 });
@@ -190,6 +191,7 @@ $(function () {
     var settings = $field.text();
     $field.text('');
     _getSource(settings).then(function (result) {
+       
         IP.utils.createFields($field, result);
     }, function () {
         $field.text('There was an error retrieving the source configuration.');

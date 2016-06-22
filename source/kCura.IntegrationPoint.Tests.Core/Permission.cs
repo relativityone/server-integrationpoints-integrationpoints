@@ -47,11 +47,34 @@ namespace kCura.IntegrationPoint.Tests.Core
 
 		public static void RemoveAddWorkspaceGroup(int workspaceId, GroupSelector groupSelector)
 		{
+			GroupSelector selector = null;
 			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
 			{
+				selector = proxy.GetWorkspaceGroupSelectorAsync(workspaceId).GetResultsWithoutContextSync();
+			}
+
+			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				selector.EnabledGroups = groupSelector.EnabledGroups;
 				proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, groupSelector).Wait(TimeSpan.FromSeconds(2));
 			}
 			ResetRelativityServices();
+		}
+
+		public static void AddGroupToAWorkspace(int workspaceId, List<GroupRef> groupsToAdd)
+		{
+			GroupSelector selector = null;
+			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				selector = proxy.GetWorkspaceGroupSelectorAsync(workspaceId).GetResultsWithoutContextSync();
+			}
+
+			using (IPermissionManager proxy = Kepler.CreateProxy<IPermissionManager>(SharedVariables.RelativityUserName, SharedVariables.RelativityPassword, true, true))
+			{
+				selector.EnabledGroups.AddRange(groupsToAdd);
+				proxy.AddRemoveWorkspaceGroupsAsync(workspaceId, selector).Wait(TimeSpan.FromSeconds(5));
+			}
+			//ResetRelativityServices();
 		}
 
 		public static void AddRemoveItemGroups(int workspaceId, int itemArtifactId, GroupSelector groupSelector)
