@@ -30,7 +30,16 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
             username = String.IsNullOrWhiteSpace(username) ? Constants.DefaultUsername : username.Normalize();
             password = String.IsNullOrWhiteSpace(username) ? Constants.DefaultPassword : password.Normalize();
 
-            _sftpClient = new SftpClient(host.Normalize(), port, username.Normalize(), password.Normalize());
+            // Setup Credentials and Server Information 
+            ConnectionInfo ConnNfo = new ConnectionInfo(host.Normalize(), port, username.Normalize(),
+                new AuthenticationMethod[]
+                {
+                    // Pasword based Authentication 
+                    new PasswordAuthenticationMethod(username.Normalize(), password.Normalize()),
+                }
+                );
+
+            _sftpClient = new SftpClient(ConnNfo);
             Timeout = Constants.Timeout;
         }
 
@@ -57,7 +66,8 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
             Stream retVal = null;
             try
             {
-                var fullRemotePath = Path.Combine(remotePath, fileName);
+                string fullRemotePath = Path.Combine(remotePath, fileName);
+                fullRemotePath = FilenameFormatter.FormatFtpPath(fullRemotePath);
                 if (TestConnection())
                 {
                     if (_fileStream != null)
@@ -73,7 +83,7 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
                 _streamRetryCount++;
                 if (_streamRetryCount < retryLimit)
                 {
-                    DownloadStream(remotePath, fileName, retryLimit);
+                    retVal = DownloadStream(remotePath, fileName, retryLimit);
                 }
                 else
                 {
@@ -92,8 +102,9 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
         {
             try
             {
-                var fullRemotePath = Path.Combine(remotePath, fileName);
-                var fullLocalPath = localDownloadPath;
+                string fullRemotePath = Path.Combine(remotePath, fileName);
+                fullRemotePath = FilenameFormatter.FormatFtpPath(fullRemotePath);
+                string fullLocalPath = localDownloadPath;
                 if (TestConnection())
                 {
                     using (FileStream fs = File.OpenWrite(fullLocalPath))
@@ -118,7 +129,6 @@ namespace kCura.IntegrationPoints.FtpProvider.Connection
             {
                 _downloadRetryCount = 0;
             }
-
         }
 
         protected virtual void Dispose(bool disposing)

@@ -60,11 +60,11 @@ namespace kCura.IntegrationPoints.FtpProvider
             {
                 if (ex is SftpPathNotFoundException || (ex is System.Net.WebException && ex.ToString().Contains("(550) File unavailable")))
                 {
-                    throw new Exception("Unable to access: " + remoteLocation + fileName + " " + ex.ToString()); 
+                    throw new Exception("Unable to access: " + remoteLocation + fileName + " " + ex.ToString());
                 }
                 else
                 {
-					throw new Exception(ex.ToString() );
+                    throw new Exception(ex.ToString());
                 }
             }
 
@@ -80,14 +80,14 @@ namespace kCura.IntegrationPoints.FtpProvider
             ParserOptions parserOptions = ParserOptions.GetDefaultParserOptions();
             try
             {
-                var csvInput = AddFileExtension(settings.Filename_Prefix);
+                string csvInput = AddFileExtension(settings.Filename_Prefix);
                 fileName = GetDynamicFileName(Path.GetFileName(csvInput), settings.Timezone_Offset);
                 remoteLocation = Path.GetDirectoryName(FormatPath(csvInput));
-                using (var client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, settings.Username, settings.Password))
+                using (IFtpConnector client = _connectorFactory.GetConnector(settings.Protocol, settings.Host, settings.Port, settings.Username, settings.Password))
                 {
-                    var fileLocation = Path.GetTempPath() + Guid.NewGuid().ToString() + ".csv";
+                    string fileLocation = Path.GetTempPath() + Guid.NewGuid().ToString() + ".csv";
                     client.DownloadFile(fileLocation, remoteLocation, fileName, Constants.RetyCount);
-                    var fileReader = _dataReaderFactory.GetFileDataReader(fileLocation);
+                    IDataReader fileReader = _dataReaderFactory.GetFileDataReader(fileLocation);
                     if (parserOptions.FirstLineContainsColumnNames)
                     {
                         //since column list and order is recorded at the last Integration Point save,
@@ -151,13 +151,7 @@ namespace kCura.IntegrationPoints.FtpProvider
 
         internal String FormatPath(String path)
         {
-            var retVal = path.Trim();
-            retVal = retVal.Replace("\\", "/");
-            if (retVal[0] != '/')
-            {
-                retVal = "/" + retVal;
-            }
-            return retVal;
+            return FilenameFormatter.FormatFtpPath(path);
         }
 
         internal String GetDynamicFileName(String input, Int32? offset)
