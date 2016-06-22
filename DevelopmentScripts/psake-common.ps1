@@ -1,42 +1,3 @@
-function validateVersions
-{
-    $version_file_path = [System.IO.Path]::Combine($version_directory, 'version.txt')
-
-    $version_text = Get-Content $version_file_path
-
-    if($version_text -eq $null)
-    {
-        Write-Error "ERROR: Version is not defined in " $version_file_path
-        $psake.build_success = $false
-        exit 1
-    }
-
-    $version_array = $version_text.split(".")
-
-    if($version_array.Length -ne 2)
-    {
-        Write-Error "ERROR: Version is not defined in " $version_file_path ".  Versions must defined with syntax '#.#'"
-        $psake.build_success = $false
-        exit 1
-    }
-
-    $maj_version = $version_array[0]
-    $min_version = $version_array[1]
-
-    #check if these are both numbers
-    if(-not ($maj_version -match "[0-9]") -or -not ($min_version -match "[0-9]"))
-    {
-        Write-Error "ERROR: Version is not defined in " $version_file_path ".  Versions must defined with syntax '#.#'"
-        $psake.build_success = $false
-        exit 1
-    }
-
-    $psake.build_success = $true
-}
-
-validateVersions
-
-
 properties {
     #directories
     $root = git rev-parse --show-toplevel
@@ -118,4 +79,42 @@ properties {
 
     #package variable
     $package_root_directory = [System.IO.Path]::Combine($root, 'Packages')
+
+    function validateVersions
+    {
+        $version_file_path = [System.IO.Path]::Combine($version_directory, 'version.txt')
+
+        $version_text = Get-Content $version_file_path
+
+        if($version_text -eq $null)
+        {
+            Write-Error "ERROR: Version is not defined in " $version_file_path
+            $psake.build_success = $false
+            exit 1
+        }
+
+        $version_array = $version_text.split(".")
+
+        if($version_array.Length -ne 2)
+        {
+            Write-Error "ERROR: Version is not defined in " $version_file_path ".  Versions must defined with syntax '#.#'"
+            $psake.build_success = $false
+            exit 1
+        }
+
+        $maj_version = $version_array[0]
+        $min_version = $version_array[1]
+
+        #check if these are both numbers
+        if(-not ($maj_version -match "[0-9]") -or -not ($min_version -match "[0-9]"))
+        {
+            Write-Error "ERROR: Version is not defined in " $version_file_path ".  Versions must defined with syntax '#.#'"
+            $psake.build_success = $false
+            exit 1
+        }
+
+        $psake.build_success = $true
+    }
+
+    validateVersions
 }
