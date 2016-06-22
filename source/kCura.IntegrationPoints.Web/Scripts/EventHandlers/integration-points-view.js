@@ -61,6 +61,7 @@
     });
 
 })(IP);
+
 $(window).load(function () {
     $(".consoleContainer .consoleButtonDisabled").attr("title", "You do not have permission to run this job.");
 });
@@ -190,21 +191,21 @@ $(function () {
     var settings = $field.text();
     $field.text('');
     _getSource(settings).then(function (result) {
-        $(result).each(function(index,value){
-            if(value.key !== "timezone_offset" && value.key !== "filename_prefix"){
-                value.key = value.key.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+        $(result).each(function (index, value) {
+            if (value.key !== "timezone_offset" && value.key !== "filename_prefix") {
+                value.key = value.key.toLowerCase().replace(/\b[a-z]/g, function (letter) {
                     return letter.toUpperCase();
                 });
             }
-            if(value.key === "filename_prefix"){
+            if (value.key === "filename_prefix") {
                 value.key = "Filename Prefix";
             }
-            if(value.key === "timezone_offset"){
+            if (value.key === "timezone_offset") {
                 value.key = "Timezone Offset";
             }
-        IP.utils.createFields($field, result);
-    }, function () {
-        $field.text('There was an error retrieving the source configuration.');
+            IP.utils.createFields($field, result);
+        }, function () {
+            $field.text('There was an error retrieving the source configuration.');
+        });
     });
-
 });
