@@ -209,6 +209,7 @@
     <Compile Include="TestCases\ItShouldExportFilePathRelativeImage.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallSubdirectoryDigitPadding.cs" />
     <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallVolumeDigitPadding.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorForNegativeSubdirectoryStartNumber.cs" />
     <Compile Include="TestCases\ItShouldLogJobErrorForNegativeVolumeStartNumber.cs" />
     <Compile Include="TestCases\ItShouldNotExportFilePathWhenIncludeNativeFilesPathNotSelected.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathUserPrefixImage.cs" />
