@@ -313,13 +313,13 @@
 | | Setup connection to the Relativity Services API for Legal Hold	| ${WorkspaceName}
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Integration Point Sort Testing
-| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| Integration Point Sort Testing
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point | Integration Point Sort Testing
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| Integration Point List View Testing
-| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| Integration Point List View Testing
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point | Integration Point List View Testing
 
 | | ${IntegrationPointExists}=	| Determine if the Following Integration Point Exists in the current Workspace	| List View Sort Testing
-| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point using API	| List View Sort Testing
+| | Run Keyword If	| ${${IntegrationPointExists}}	| Delete the following Integration Point | List View Sort Testing
 
 | | Drop connection to the relativity services api
 | | Close All Browsers
