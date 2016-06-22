@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using kCura.IntegrationPoints.Core.Services.JobHistory;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Logging;
 using kCura.IntegrationPoints.FilesDestinationProvider.Core.Process;
@@ -17,6 +18,7 @@ using kCura.WinEDDS.Exporters;
 using NSubstitute;
 using NUnit.Framework;
 using Relativity;
+using Relativity.API;
 
 namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Process
 {
@@ -57,9 +59,10 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			CreateOutputFolder(_configSettings.DestinationPath); // root folder for all tests
 
 			var userNotification = _windsorContainer.Resolve<IUserNotification>();
+			var loggingMediator = _windsorContainer.Resolve<ILoggingMediator>();
 
 			var exportProcessBuilder = new ExportProcessBuilder(
-				Substitute.For<ILoggingMediator>(),
+				loggingMediator,
 				Substitute.For<IUserMessageNotification>(),
 				userNotification,
 				new UserPasswordCredentialProvider(_configSettings),
@@ -178,6 +181,15 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Tests.Integration.Pro
 			userNotification.AlertWarningSkippable(Arg.Any<string>()).Returns(true);
 
 			_windsorContainer.Register(Component.For<IUserNotification>().Instance(userNotification).LifestyleSingleton());
+
+			var apiLog = Substitute.For<IAPILog>();
+			_windsorContainer.Register(Component.For<IAPILog>().Instance(apiLog).LifestyleSingleton());
+
+			var jobHistoryErrorService = Substitute.For<IJobHistoryErrorService>();
+			_windsorContainer.Register(Component.For<IJobHistoryErrorService>().Instance(jobHistoryErrorService).LifestyleSingleton());
+
+			_windsorContainer.Register(Component.For<LoggingMediatorForTestsFactory>().ImplementedBy<LoggingMediatorForTestsFactory>());
+			_windsorContainer.Register(Component.For<ILoggingMediator>().UsingFactory((LoggingMediatorForTestsFactory f) => f.Create()).LifestyleSingleton());
 		}
 
 		#endregion Methods
