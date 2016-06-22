@@ -456,7 +456,7 @@
 		  <arg value="..\..\example\JsonLoader\JsonLoader.sln" />
 		</exec>
 	
-		<exec program="${microsoft.net64.directory}/msbuild.exe">
+		<exec program="${msbuild}">
 			<arg line='"msbuild_jsonloader.targets"' />
 			<arg line='/property:SourceRoot="${root}"' />
 			<arg line="/property:Configuration=${buildconfig}" />

@@ -63,7 +63,7 @@
 	</target>
 	
 	<target name="deploy_jsonloader_web_project" description="Deploys custom pages to a directory">
-		<exec program="${microsoft.net64.directory}/msbuild.exe">
+		<exec program="${msbuild}">
 			<arg line='"${example.directory}\JsonLoader\JsonWeb\JsonWeb.csproj"' />
 			<arg line='/property:SourceRoot="${root}"' />
 			<arg line="/property:Configuration=${buildconfig}" />
