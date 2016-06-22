@@ -1,10 +1,12 @@
 function validateVersions
 {
-    $version_text = Get-Content ..\Version\version.txt
+    $version_file_path = [System.IO.Path]::Combine($version_directory, 'version.txt')
+
+    $version_text = Get-Content $version_file_path
 
     if($version_text -eq $null)
     {
-        Write-Error "ERROR: Version is not defined in root\Version\version.txt"
+        Write-Error "ERROR: Version is not defined in " $version_file_path
         $psake.build_success = $false
         exit 1
     }
@@ -13,7 +15,7 @@ function validateVersions
 
     if($version_array.Length -ne 2)
     {
-        Write-Error "ERROR: Version is improperly defined in root\Version\version.txt.  Versions must defined with syntax '#.#'"
+        Write-Error "ERROR: Version is not defined in " $version_file_path ".  Versions must defined with syntax '#.#'"
         $psake.build_success = $false
         exit 1
     }
@@ -24,7 +26,7 @@ function validateVersions
     #check if these are both numbers
     if(-not ($maj_version -match "[0-9]") -or -not ($min_version -match "[0-9]"))
     {
-        Write-Error "ERROR: Version is improperly defined in root\Version\version.txt.  Versions must defined with syntax '#.#'"
+        Write-Error "ERROR: Version is not defined in " $version_file_path ".  Versions must defined with syntax '#.#'"
         $psake.build_success = $false
         exit 1
     }

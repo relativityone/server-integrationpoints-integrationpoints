@@ -102,14 +102,6 @@ if($EDITOR) {
 }
 
 if($VERSION -ne "1.0.0.0") {
-
-    if($VERSION -eq "latest") {
-        Invoke-psake  $root\DevelopmentScripts\psake-get-version.ps1 -properties @{'server_type'='local';}
-	    if ($psake.build_success -eq $false) { exit 1 } 
-	
-        $VERSION = [System.IO.File]::ReadAllText([System.IO.Path]::Combine($root, 'DevelopmentScripts', 'version.txt'))
-    }
-
     Invoke-psake $root\DevelopmentScripts\psake-version.ps1 -properties @{'version'=$VERSION;
                                                                           'server_type'='local';
                                                                           'build_config'=$BUILDCONFIG;
