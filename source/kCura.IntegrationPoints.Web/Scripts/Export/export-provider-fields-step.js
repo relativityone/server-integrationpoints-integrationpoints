@@ -3,11 +3,11 @@
 ko.validation.rules.pattern.message = 'Invalid.';
 
 ko.validation.init({
-    registerExtenders: true,
-    messagesOnModified: true,
-    insertMessages: true,
-    parseInputAttributes: true,
-    messageTemplate: null
+	registerExtenders: true,
+	messagesOnModified: true,
+	insertMessages: true,
+	parseInputAttributes: true,
+	messageTemplate: null
 }, true);
 
 (function (root, ko) {
@@ -128,18 +128,18 @@ ko.validation.init({
 				return;
 			}
 
-			// call to the service currently fails for some reason :|
-			// var availableFieldsPromise = root.data.ajax({
-			// type: 'post',
-			// url: root.utils.generateWebAPIURL('SourceFields'),
-			// data: JSON.stringify({
-			// options: self.ipModel.sourceConfiguration,
-			// type: self.ipModel.source.selectedType
-			// })
-			// }).fail(function (error) {
-			// IP.message.error.raise("No attributes were returned from the source provider.");
-			// });
+			var availableFieldsPromise = root.data.ajax({
+				type: 'post',
+				url: root.utils.generateWebAPIURL('SourceFields'),
+				data: JSON.stringify({
+					options: self.ipModel.sourceConfiguration,
+					type: self.ipModel.source.selectedType
+				})
+			}).fail(function (error) {
+				IP.message.error.raise("No attributes were returned from the source provider.");
+			});
 
+			/* // mocking data
 			var availableFieldsPromise = [
 				{
 					"displayName": "Analytics Index",
@@ -220,6 +220,7 @@ ko.validation.init({
 					"isRequired": false
 				}
 			];
+			*/
 
 			var mappedFieldsPromise;
 			if (self.ipModel.artifactID > 0) {
@@ -273,7 +274,7 @@ ko.validation.init({
 			});
 
 			self.ipModel.Map = JSON.stringify(fieldMap);
-			
+
 			if (self.model.errors().length === 0) {
 				d.resolve(self.ipModel);
 			} else {
