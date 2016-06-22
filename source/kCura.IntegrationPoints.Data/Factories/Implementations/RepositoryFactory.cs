@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -23,21 +22,20 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 		private readonly IHelper _helper;
 		private readonly Lazy<IExtendedRelativityToggle> _toggleProvider;
 
-		private IDictionary<int, ContextContainer> ContextCache { get; }
-
 		public RepositoryFactory(IHelper helper)
 		{
 			_helper = helper;
-			ContextCache = new Dictionary<int, ContextContainer>();
 			_toggleProvider = new Lazy<IExtendedRelativityToggle>(() =>
 			{
 				var sqlToggleProvider = new SqlServerToggleProvider(
-				() => {
+				() =>
+				{
 					SqlConnection connection = _helper.GetDBContext(-1).GetConnection(true);
 
 					return connection;
 				},
-				async () => {
+				async () =>
+				{
 					Task<SqlConnection> task = Task.Run(() =>
 					{
 						SqlConnection connection = _helper.GetDBContext(-1).GetConnection(true);
@@ -226,36 +224,25 @@ namespace kCura.IntegrationPoints.Data.Factories.Implementations
 
 		private ContextContainer GetContextsForWorkspace(int workspaceArtifactId)
 		{
-			ContextContainer contexts;
-			if (!ContextCache.TryGetValue(workspaceArtifactId, out contexts))
+			BaseServiceContext baseServiceContext = ClaimsPrincipal.Current.GetUnversionContext(workspaceArtifactId);
+			BaseContext baseContext;
+			if (workspaceArtifactId == -1)
 			{
-				BaseServiceContext baseServiceContext = ClaimsPrincipal.Current.GetUnversionContext(workspaceArtifactId);
-
-				BaseContext baseContext;
-				if (workspaceArtifactId == -1)
-				{
-					baseContext =
-						ClaimsPrincipal.Current.GetUnversionContext(workspaceArtifactId)
-							.GetMasterDbServiceContext()
-							.ThreadSafeChicagoContext;
-				}
-				else
-				{
-					baseContext = ClaimsPrincipal.Current.GetUnversionContext(workspaceArtifactId)
-						.ChicagoContext
-						.ThreadSafeChicagoContext;
-				}
-				var contextContainer = new ContextContainer()
-				{
-					BaseContext = baseContext,
-					BaseServiceContext = baseServiceContext
-				};
-
-				ContextCache.Add(workspaceArtifactId, contextContainer);
-				contexts = contextContainer;
+				baseContext = baseServiceContext
+					.GetMasterDbServiceContext()
+					.ThreadSafeChicagoContext;
 			}
-
-			return contexts;
+			else
+			{
+				baseContext = baseServiceContext.ChicagoContext
+					.ThreadSafeChicagoContext;
+			}
+			var contextContainer = new ContextContainer()
+			{
+				BaseContext = baseContext,
+				BaseServiceContext = baseServiceContext
+			};
+			return contextContainer;
 		}
 
 		#endregion Helper Methods

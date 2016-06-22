@@ -3,7 +3,6 @@ using kCura.IntegrationPoints.Contracts.Models;
 using kCura.IntegrationPoints.Core.Services.Exporter;
 using kCura.IntegrationPoints.Data.Contexts;
 using kCura.IntegrationPoints.Data.Factories;
-using Relativity.Core;
 
 namespace kCura.IntegrationPoints.Core.Factories.Implementations
 {
