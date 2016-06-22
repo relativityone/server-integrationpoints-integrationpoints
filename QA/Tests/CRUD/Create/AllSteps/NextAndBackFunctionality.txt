@@ -119,7 +119,7 @@
 | | ... | - Object Filter String: Object Filter String 
 | | ... | - Authentication: Secure Socket Layer
 | | ... | - Username: User Name
-| | ... | - Password: **********
+| | ... | - Password: ********** (* x 10)
 | | ... | - Import Nested Items: Yes
 
 
