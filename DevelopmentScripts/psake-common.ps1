@@ -1,3 +1,40 @@
+function validateVersions
+{
+    $version_text = Get-Content ..\Version\version.txt
+
+    if($version_text -eq $null)
+    {
+        Write-Error "ERROR: Version is not defined in root\Version\version.txt"
+        $psake.build_success = $false
+        exit 1
+    }
+
+    $version_array = $version_text.split(".")
+
+    if($version_array.Length -ne 2)
+    {
+        Write-Error "ERROR: Version is improperly defined in root\Version\version.txt.  Versions must defined with syntax '#.#'"
+        $psake.build_success = $false
+        exit 1
+    }
+
+    $maj_version = $version_array[0]
+    $min_version = $version_array[1]
+
+    #check if these are both numbers
+    if(-not ($maj_version -match "[0-9]") -or -not ($min_version -match "[0-9]"))
+    {
+        Write-Error "ERROR: Version is improperly defined in root\Version\version.txt.  Versions must defined with syntax '#.#'"
+        $psake.build_success = $false
+        exit 1
+    }
+
+    $psake.build_success = $true
+}
+
+validateVersions
+
+
 properties {
     #directories
     $root = git rev-parse --show-toplevel
@@ -31,8 +68,8 @@ properties {
     $server = 'bld-mstr-01.kcura.corp'
     $database ='TCBuildVersion'
     $project = 'Development'
-    $major_version = 1
-    $minor_version = 0
+    $major_version = (Get-Content ..\Version\version.txt).split(".")[0]
+    $minor_version = (Get-Content ..\Version\version.txt).split(".")[1]
     
     $buildid = 0
 
