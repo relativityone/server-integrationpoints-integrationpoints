@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using kCura.WinEDDS;
 using Relativity;
 
@@ -57,6 +58,14 @@ namespace kCura.IntegrationPoints.FilesDestinationProvider.Core.Process
 
 		private void SetDigitPaddings(ExportSettings exportSettings, ExportFile exportFile)
 		{
+			if (exportSettings.SubdirectoryDigitPadding < 0)
+			{
+				throw new ArgumentException("Subdirectory Digit Padding must be non-negative number");
+			}
+			if (exportSettings.VolumeDigitPadding < 0)
+			{
+				throw new ArgumentException("Volume Digit Padding must be non-negative number");
+			}
 			exportFile.SubdirectoryDigitPadding = exportSettings.SubdirectoryDigitPadding;
 			exportFile.VolumeDigitPadding = exportSettings.VolumeDigitPadding;
 		}
