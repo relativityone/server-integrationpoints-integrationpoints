@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using kCura.Apps.Common.Data;
 using kCura.EventHandler;
 using kCura.IntegrationPoints.Data;
 using kCura.IntegrationPoints.Data.Factories;
@@ -9,15 +10,28 @@ namespace kCura.IntegrationPoints.EventHandlers
 {
     public abstract class PreMassDeleteEventHandlerBase : PreMassDeleteEventHandler
     {
-        private readonly IRepositoryFactory _repositoryFactory;
+        private IRepositoryFactory _repositoryFactory;
         public PreMassDeleteEventHandlerBase()
         {
-            _repositoryFactory = new RepositoryFactory(this.Helper);
+            //cant be initialized in constractor. IHelper is not initialized at that time and equals null.
+            //_repositoryFactory = new RepositoryFactory(this.Helper);
         }
 
         internal PreMassDeleteEventHandlerBase(IRepositoryFactory repositoryFactory)
         {
             _repositoryFactory = repositoryFactory;
+        }
+
+        internal IRepositoryFactory RepositoryFactory
+        {
+            get
+            {
+                if (_repositoryFactory == null)
+                {
+                    _repositoryFactory = new RepositoryFactory(this.Helper);
+                }
+                return _repositoryFactory;
+            }
         }
 
         private IWorkspaceDBContext _workspaceDbContext;
@@ -31,7 +45,7 @@ namespace kCura.IntegrationPoints.EventHandlers
 
         public GetArtifactForMassAction MassAction()
         {
-            return _massAction ?? (_massAction = new GetArtifactForMassAction(_repositoryFactory));
+            return _massAction ?? (_massAction = new GetArtifactForMassAction(RepositoryFactory));
         }
 
         public override void Commit()
@@ -48,6 +62,7 @@ namespace kCura.IntegrationPoints.EventHandlers
 
         private List<int> GetIds()
         {
+            Apps.Common.Config.Manager.Settings.Factory = new HelperConfigSqlServiceFactory(Helper);
             //Get a dbContext for the current workspace
             Int32 currentWorkspaceArtifactId = this.Helper.GetActiveCaseID();
             //Get the temp table name of the artifactIDs to be deleted

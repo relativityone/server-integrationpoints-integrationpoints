@@ -40,11 +40,6 @@ namespace kCura.IntegrationPoints.Data.Repositories
         void DeleteTable();
 
         /// <summary>
-        /// Dispose method for the ScratchTableRepository instance
-        /// </summary>
-        new void Dispose();
-
-        /// <summary>
         /// Retrieve the temp table name for the ScratchTableRepository instance
         /// </summary>
         /// <returns></returns>

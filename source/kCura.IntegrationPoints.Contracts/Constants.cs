@@ -31,6 +31,8 @@
             public const string APP_DOMAIN_DATA_CONNECTION_STRING = "IntegrationPointsConnectionString";
             public const string APP_DOMAIN_SUBSYSTEM_NAME = "IntegrationPoints";
             public const string APPLICATION_GUID_STRING = "DCF6E9D1-22B6-4DA3-98F6-41381E93C30C";
-        }
+	        public const string UNABLE_TO_INSTANTIATE_PROVIDER_FACTORY = "Unable to instantiate the provider factory. Check the class implementing ProviderFactoryBase.";
+			public const string TOO_MANY_PROVIDER_FACTORIES = "Too many provider factories have been found. Make sure there is only one implementation of ProviderFactoryBase.";
+		}
     }
 }

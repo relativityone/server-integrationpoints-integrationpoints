@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataObject.cs" />
+    <Compile Include="DIProviderFactory.cs" />
     <Compile Include="GlobalConst.cs" />
     <Compile Include="Installer\Uninstaller.cs" />
     <Compile Include="Installer\RunEveryTimeInstaller.cs" />

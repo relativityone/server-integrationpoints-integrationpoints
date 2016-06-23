@@ -252,6 +252,7 @@
       <Link>AssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Helpers\TestBase.cs" />
+    <Compile Include="Integration\GetWorkspacesQueryTests.cs" />
     <Compile Include="Integration\SavedSearchQueryTests.cs" />
     <Compile Include="Unit\Controllers\API\IntegrationPointsAPIControllerTests.cs" />
     <Compile Include="Unit\Controllers\DestinationTypeControllerTests.cs" />
