@@ -13,32 +13,6 @@
 
 *** Test Cases ***
 
-| Entering an invalid address shows an Error Message
-| | [Documentation]	| Verifies that the correct message is shown when an invalid email address is entered 
-| | ...				| [id] 0a369d70-c41b-11e4-9dce-90b11c6c5ae4
-| | [tags] | manual | automateable 
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Enter valid values into each required field
-| | ... | 2. Enter the following into the Email Notification Recipients field: fred@law
-| | ... | 3. Click | Next
-| | ... |
-| | ... | Expected Results:
-| | ... | An error message should appear saying "Email(s) are improperly formatted."
-
-| Proceeding Post-Invalid email message
-| | [Documentation]	| Verifies that you can correct an email address that failed the email validation logic and proceeed to step 2
-| | ...				| [id] 0822ffb0-c41b-11e4-b3dd-90b11c6c5ae4
-| | [Setup]		| Require Test Case | Entering an invalid address shows an Error Message
-| | [tags] | manual | automateable 
-| | Run the following manual steps:
-| | ... | Steps:
-| | ... | 1. Change the email address to fred@law.com
-| | ... | 2. Click | Next
-| | ... |
-| | ... | Expected Results:
-| | ... | 1. Verify that Step 2 is shown
-
 | Unpopulated SMTP Configuration values will log an error
 | | [Documentation]	| Verify that when trying to send a notification with unpopulated SMTP configuration fields, that an error is logged in Relativity
 | | ...				| [id] 05e2aca1-c41b-11e4-9a53-90b11c6c5ae4
