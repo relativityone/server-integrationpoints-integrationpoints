@@ -1,5 +1,34 @@
 ﻿<script id="step3Export" type="text/html">
 	<div id="exportProviderFields" class="card">
 		<span class="label">Export Fields</span>
+
+		<div data-bind="validationMessage: mappedFields" class="icon-error legal-hold field-validation-error"></div>
+
+		<div class="table" id="selectFields">
+			<div class="cell">
+				<div class="list-title" style="margin: 10px 0px 5px 0px;">Source Fields:</div>
+				<select id="available-fields" class="list-box" name="available-field" data-bind="options: availableFields, selectedOptions: selectedAvailableFields, optionsText: 'displayName', doubleClick: addField" multiple="multiple"></select>
+			</div>
+			<div class="cell selection map-move">
+				<div>
+					<a href="#" id="add-all-fields" class="icon-move-last" data-bind="click: addAllFields"></a>
+					<a href="#" id="add-field" class="icon-move-next" data-bind="click: addField"></a>
+					<a href="#" id="remove-field" class="icon-move-previous" data-bind="click: removeField"></a>
+					<a href="#" id="remove-all-fields" class="icon-move-first" data-bind="click: removeAllFields"></a>
+				</div>
+			</div>
+			<div class="cell">
+				<div class="list-title" style="margin: 10px 0px 5px 0px;">Selected Fields:</div>
+				<select class="list-box" id="selected-fields" data-bind="options: mappedFields, selectedOptions: selectedMappedFields, optionsText: 'displayName', doubleClick: removeField" multiple="multiple"></select>
+			</div>
+			<div class="cell selection map-move">
+				<div>
+					<a href="#" id="move-field-top" class="icon-move-to-top" data-bind="click: moveFieldTop"></a>
+					<a href="#" id="move-field-up" class="icon-move-up" data-bind="click: moveFieldUp"></a>
+					<a href="#" id="move-field-down" class="icon-move-down" data-bind="click: moveFieldDown"></a>
+					<a href="#" id="move-field-bottom" class="icon-move-to-bottom" data-bind="click: moveFieldBottom"></a>
+				</div>
+			</div>
+		</div>
 	</div>
 </script>

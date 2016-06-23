@@ -193,9 +193,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstract\IExportTestCase.cs" />
+    <Compile Include="Abstract\IInvalidFileshareExportTestCase.cs" />
     <Compile Include="Helpers\ConfigSettings.cs" />
     <Compile Include="Helpers\DataFileFormatHelper.cs" />
     <Compile Include="Helpers\FileEncodingDetectionHelper.cs" />
+    <Compile Include="Helpers\LoggingMediatorForTestsFactory.cs" />
     <Compile Include="Helpers\UserPasswordCredentialProvider.cs" />
     <Compile Include="Helpers\WorkspaceService.cs" />
     <Compile Include="Process\ExportProcessRunnerTest.cs" />
@@ -203,7 +205,16 @@
     <Compile Include="TestCases\Base\DataFileEncodingTestCaseBase.cs" />
     <Compile Include="TestCases\Base\ExportTestCaseBase.cs" />
     <Compile Include="TestCases\Base\MetadataExportTestCaseBase.cs" />
+    <Compile Include="TestCases\ItShouldExportDataFileWithWindowsANSIEncoding.cs" />
+    <Compile Include="TestCases\ItShouldExportDataFileWithBigEndianEncoding.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathRelativeImage.cs" />
+    <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallSubdirectoryDigitPadding.cs" />
+    <Compile Include="TestCases\ItShouldLogItemErrorForTooSmallVolumeDigitPadding.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorForInvalidFilesharePathFormat.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorForNegativeSubdirectoryStartNumber.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorForNegativeVolumeStartNumber.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorForNotExistingFileshare.cs" />
+    <Compile Include="TestCases\ItShouldLogJobErrorWhenNotOverwritingExistingFiles.cs" />
     <Compile Include="TestCases\ItShouldNotExportFilePathWhenIncludeNativeFilesPathNotSelected.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathUserPrefixImage.cs" />
     <Compile Include="TestCases\ItShouldExportFilePathAbsoluteImage.cs" />
@@ -240,6 +251,10 @@
     <ProjectReference Include="..\kCura.IntegrationPoints.Core\kCura.IntegrationPoints.Core.csproj">
       <Project>{A1AE667B-1B6E-4BB9-AF1D-912620292283}</Project>
       <Name>kCura.IntegrationPoints.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kCura.IntegrationPoints.Data\kCura.IntegrationPoints.Data.csproj">
+      <Project>{599D771D-2AE7-4321-9BAC-BE06F827CE0A}</Project>
+      <Name>kCura.IntegrationPoints.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\kCura.IntegrationPoints.FilesDestinationProvider.Core\kCura.IntegrationPoints.FilesDestinationProvider.Core.csproj">
       <Project>{1fc70536-a8ef-48ce-b20a-e5c5c6723f23}</Project>
